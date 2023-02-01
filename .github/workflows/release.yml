@@ -1,7 +1,7 @@
 name: Release
 on:
   push:
-    branches: [main, ci/add-automatic-deployment-to-nearsocial]
+    branches: [main]
 jobs:
   deploy-widgets:
     runs-on: ubuntu-latest
