@@ -1,9 +1,22 @@
 const ownerId = "devgovgigs.near";
 
-const selectedBoardId = props.selectedBoardId ?? "nearsocial";
+const selectedBoardId = props.selectedBoardId ?? "mnwtransition";
 
 console.log("selectedBoardId", selectedBoardId);
 const boards = props.boards ?? [
+  {
+    name: "MyNearWallet Transition",
+    id: "mnwtransition",
+    config: {
+      requiredLabels: ["mnw-transition-applicant"],
+      columnLabels: [
+        "mnw-application-received",
+        "mnw-evaluated-by-wg",
+        "mwn-selection-decision",
+      ],
+      excludedLabels: [],
+    },
+  },
   {
     name: "near.social",
     id: "nearsocial",

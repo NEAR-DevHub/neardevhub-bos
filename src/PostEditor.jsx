@@ -77,17 +77,29 @@ const onClick = () => {
   }[postType];
   body["post_type"] = postType;
   if (mode == "Create") {
-    Near.call(ownerId, "add_post", {
-      parent_id: parentId,
-      labels,
-      body,
-    });
+    Near.call(
+      ownerId,
+      "add_post",
+      {
+        parent_id: parentId,
+        labels,
+        body,
+      },
+      40_000_000_000_000n,
+      parentId == null ? 0n : 2_000_000_000_000_000_000_000n
+    );
   } else if (mode == "Edit") {
-    Near.call(ownerId, "edit_post", {
-      id: postId,
-      labels,
-      body,
-    });
+    Near.call(
+      ownerId,
+      "edit_post",
+      {
+        id: postId,
+        labels,
+        body,
+      },
+      40_000_000_000_000n,
+      2_000_000_000_000_000_000_000n
+    );
   }
 };
 

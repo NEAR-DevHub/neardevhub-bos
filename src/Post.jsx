@@ -156,9 +156,15 @@ const containsLike = props.isPreview
   : post.likes.find((l) => l.author_id == context.accountId);
 const likeBtnClass = containsLike ? fillIcons.Like : emptyIcons.Like;
 const onLike = () => {
-  Near.call(ownerId, "add_like", {
-    post_id: postId,
-  });
+  Near.call(
+    ownerId,
+    "add_like",
+    {
+      post_id: postId,
+    },
+    40_000_000_000_000n,
+    2_000_000_000_000_000_000_000n
+  );
 };
 
 const btnCreatorWidget = (postType, icon, name) => {
