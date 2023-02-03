@@ -1,7 +1,7 @@
 name: Release
 on:
   push:
-    branches: [main]
+    branches: [main, ci/speed-up-near-social-installation]
 jobs:
   deploy-widgets:
     runs-on: ubuntu-latest
@@ -15,17 +15,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        profile: minimal
-        override: true
-
     - name: Install near-social CLI
       run: |
-        sudo apt-get install --assume-yes libudev-dev
-        cargo install --git https://github.com/FroVolod/near-social --rev b086be2e77e3f560564e54f56efd208158cfd0a4
+        curl --proto '=https' --tlsv1.2 -L -sSf https://github.com/FroVolod/near-social/releases/download/v0.1.1/installer.sh | sh
 
     - name: Deploy widgets
-      run: near-social deploy "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
+      run: |
+        which near-social
+        echo $PATH
+        ~/.cargo/bin/near-social deploy "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
