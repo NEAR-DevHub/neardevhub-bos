@@ -362,6 +362,7 @@ const postsList =
                 <Widget
                   src={`${ownerId}/widget/Post`}
                   props={{ id: childId, isUnderPost: true }}
+                  key={`subpost${childId}of${postId}`}
                 />
               );
             })
