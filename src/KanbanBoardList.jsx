@@ -39,7 +39,7 @@ const boards = props.boards ?? [
     name: "Funding",
     id: "funding",
     config: {
-      requiredLabels: ["funding-requested"],
+      requiredLabels: ["funding"],
       columnLabels: [
         "funding-requested",
         "funding-info-submitted",
