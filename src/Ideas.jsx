@@ -307,6 +307,18 @@ const navbar = (
               Boards
             </a>
           </li>
+       	  <li class="nav-item">
+            <a
+              class="nav-link active"
+              href="https://near.social/#/devgovgigs.near/widget/TeamsList"
+              target="_blank"
+              title="View teams and permissions"
+              role="button"
+            >
+              <i class="bi-people-fill"> </i>
+              Teams
+            </a>
+          </li>
 
           <li class="nav-item active ms-2">
             <Typeahead
