@@ -9,6 +9,8 @@ const snapshot = post.snapshot;
 const isUnderPost = props.isUnderPost ? true : false;
 const parentId = Near.view(ownerId, "get_parent_id", { post_id: postId });
 
+const referralQueryParam = props.referral ? `&referral=${props.referral}` : "";
+
 const childPostIdsUnordered =
   Near.view(ownerId, "get_children_ids", {
     post_id: postId,
@@ -86,7 +88,7 @@ const editControl = allowedToEdit ? (
 const shareButton = props.isPreview ? (<div></div>) : (
   <a
     class="card-link"
-    href={`https://near.social/#/devgovgigs.near/widget/Post?id=${postId}`}
+    href={`https://near.social/#/devgovgigs.near/widget/Post?id=${postId}${referralQueryParam}`}
     role="button"
     target="_blank"
     title="Open in new tab"
@@ -257,6 +259,7 @@ const CreatorWidget = (postType) => {
           postType,
           parentId: postId,
           mode: "Create",
+          referral: props.referral,
         }}
       />
     </div>
@@ -284,6 +287,7 @@ const EditorWidget = (postType) => {
           token: post.snapshot.sponsorship_token,
           supervisor: post.snapshot.supervisor,
           githubLink: post.snapshot.github_link,
+          referral: props.referral,
         }}
       />
     </div>
@@ -361,7 +365,7 @@ const postsList =
               return (
                 <Widget
                   src={`${ownerId}/widget/Post`}
-                  props={{ id: childId, isUnderPost: true }}
+                  props={{ id: childId, isUnderPost: true, referral: props.referral }}
                   key={`subpost${childId}of${postId}`}
                 />
               );

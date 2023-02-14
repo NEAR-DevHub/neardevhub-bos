@@ -4,7 +4,8 @@ const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
 
-const labelStrings = props.labels ?? [];
+const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
+const labelStrings = (props.labels ?? []).concat(referralLabels);
 const labels = labelStrings.map((s) => {
   return { name: s };
 });
