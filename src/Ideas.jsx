@@ -132,6 +132,7 @@ const editorsFooter = props.isPreview ? null : (
         props={{
           postType: "Comment",
           parentId: null,
+          referral: props.referral,
         }}
       />
     </div>
@@ -145,6 +146,7 @@ const editorsFooter = props.isPreview ? null : (
         props={{
           postType: "Idea",
           parentId: null,
+          referral: props.referral,
         }}
       />
     </div>
@@ -158,6 +160,7 @@ const editorsFooter = props.isPreview ? null : (
         props={{
           postType: "Submission",
           parentId: null,
+          referral: props.referral,
         }}
       />
     </div>
@@ -171,6 +174,7 @@ const editorsFooter = props.isPreview ? null : (
         props={{
           postType: "Attestation",
           parentId: null,
+          referral: props.referral,
         }}
       />
     </div>
@@ -184,6 +188,7 @@ const editorsFooter = props.isPreview ? null : (
         props={{
           postType: "Sponsorship",
           parentId: null,
+          referral: props.referral,
         }}
       />
     </div>
@@ -349,12 +354,18 @@ return (
     ) : state.selectedPost ? (
       <Widget
         src={`${ownerId}/widget/Post`}
-        props={{ id: state.selectedPost }}
+        props={{ id: state.selectedPost,
+          referral: props.referral,
+  }}
       />
     ) : (
       <Widget
         src={`${ownerId}/widget/IdeasList`}
-        props={{ recency: state.recency, label: state.label }}
+        props={{
+          recency: state.recency,
+          label: state.label,
+          referral: props.referral,
+}}
       />
     )}
   </div>
