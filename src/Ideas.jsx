@@ -21,6 +21,10 @@ if (context.accountId) {
     return "Initializing ...";
   }
   if (grantNotify === false) {
+    // Deposit 0.1NEAR in case the account has not performed any activity on near.social yet.
+    // We don't know if account needs this deposit but we don't want to risk having as a first UX
+    // when a person lands on gigs board a transaction that fails.
+    // This entire code needs to be replaced though. See https://github.com/near/devgigsboard-widgets/issues/15
     Near.call(
       "social.near",
       "grant_write_permission",
@@ -29,7 +33,7 @@ if (context.accountId) {
         keys: [context.accountId + "/index/notify"],
       },
       30_000_000_000_000n,
-      1n
+      100_000_000_000_000_000_000_000n
     );
   }
 }
