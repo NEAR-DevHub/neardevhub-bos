@@ -17,10 +17,10 @@ jobs:
 
     - name: Install near-social CLI
       run: |
-        curl --proto '=https' --tlsv1.2 -L -sSf https://github.com/FroVolod/near-social/releases/download/v0.1.1/installer.sh | sh
+        curl --proto '=https' --tlsv1.2 -L -sSf https://github.com/FroVolod/near-social/releases/download/v0.2.0/installer.sh | sh
 
     - name: Deploy widgets
       run: |
         which near-social
         echo $PATH
-        ~/.cargo/bin/near-social deploy "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
+        ~/.cargo/bin/near-social deploy "$NEAR_SOCIAL_ACCOUNT_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-for-transaction mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
