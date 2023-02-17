@@ -87,7 +87,7 @@ const onClick = () => {
         body,
       },
       40_000_000_000_000n,
-      parentId == null ? 0n : 2_000_000_000_000_000_000_000n
+      2_000_000_000_000_000_000_000n
     );
   } else if (mode == "Edit") {
     Near.call(
