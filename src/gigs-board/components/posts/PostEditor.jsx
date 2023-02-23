@@ -1,10 +1,36 @@
-const ownerId = "devgovgigs.near";
+/* INCLUDE: "common.jsx" */
+const nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
+const nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
+
+function widget(widgetName, widgetProps, key) {
+  widgetProps = {
+    ...widgetProps,
+    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
+    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+  };
+  return <Widget src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`} props={widgetProps} key={key} />;
+}
+
+function href(widgetName, linkProps) {
+  linkProps = { ...linkProps }
+  if (props.nearDevGovGigsContractAccountId) {
+    linkProps.nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId;
+  }
+  if (props.nearDevGovGigsWidgetsAccountId) {
+    linkProps.nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId;
+  }
+  const linkPropsQuery = Object.entries(linkProps).map(([key, value]) => `${key}=${value}`).join('&');
+  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""}${linkPropsQuery}`;
+}
+/* END_INCLUDE: "common.jsx" */
+
 const postType = props.postType ?? "Sponsorship";
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
 
-const labelStrings = props.labels ?? [];
+const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
+const labelStrings = (props.labels ?? []).concat(referralLabels);
 const labels = labelStrings.map((s) => {
   return { name: s };
 });
@@ -72,21 +98,34 @@ const onClick = () => {
       name: state.name,
       description: state.description,
       github_version: "V0",
+      github_link: state.githubLink,
     },
   }[postType];
   body["post_type"] = postType;
   if (mode == "Create") {
-    Near.call(ownerId, "add_post", {
-      parent_id: parentId,
-      labels,
-      body,
-    });
+    Near.call(
+      nearDevGovGigsContractAccountId,
+      "add_post",
+      {
+        parent_id: parentId,
+        labels,
+        body,
+      },
+      100_000_000_000_000n,
+      2_000_000_000_000_000_000_000n
+    );
   } else if (mode == "Edit") {
-    Near.call(ownerId, "edit_post", {
-      id: postId,
-      labels,
-      body,
-    });
+    Near.call(
+      nearDevGovGigsContractAccountId,
+      "edit_post",
+      {
+        id: postId,
+        labels,
+        body,
+      },
+      100_000_000_000_000n,
+      2_000_000_000_000_000_000_000n
+    );
   }
 };
 
@@ -110,7 +149,7 @@ const setLabels = (labels) => {
   });
   State.update({ labels, labelStrings });
 };
-const existingLabelStrings = Near.view(ownerId, "get_all_labels") ?? [];
+const existingLabelStrings = Near.view(nearDevGovGigsContractAccountId, "get_all_labels") ?? [];
 const existingLabels = existingLabelStrings.map((s) => {
   return { name: s };
 });
@@ -130,6 +169,17 @@ const labelEditor = (
     />
   </div>
 );
+
+const githubLinkDiv = fields.includes("githubLink") ? (
+  <div className="col-lg-12  mb-2">
+    Github Issue URL:
+    <input
+      type="text"
+      value={state.githubLink}
+      onChange={(event) => State.update({ githubLink: event.target.value })}
+    />
+  </div>
+) : null;
 
 const nameDiv = fields.includes("name") ? (
   <div className="col-lg-6  mb-2">
@@ -199,6 +249,8 @@ const disclaimer = (
 );
 
 const renamedPostType = postType == "Submission" ? "Solution" : postType;
+// Below there is a weird code with fields.includes("githubLink") ternary operator.
+// This is to hack around rendering bug of near.social.
 return (
   <div className="card">
     <div className="card-header">
@@ -206,15 +258,23 @@ return (
     </div>
 
     <div class="card-body">
-      <div className="row">
-        {blablabla}
-        {labelEditor}
-        {nameDiv}
-        {amountDiv}
-        {tokenDiv}
-        {supervisorDiv}
-        {descriptionDiv}
-      </div>
+      {fields.includes("githubLink") ? (
+        <div className="row">
+          {githubLinkDiv}
+          {labelEditor}
+          {nameDiv}
+          {descriptionDiv}
+        </div>
+      ) : (
+        <div className="row">
+          {labelEditor}
+          {nameDiv}
+          {amountDiv}
+          {tokenDiv}
+          {supervisorDiv}
+          {descriptionDiv}
+        </div>
+      )}
 
       <a className="btn btn-outline-primary mb-2" onClick={onClick}>
         Submit
@@ -223,9 +283,9 @@ return (
     </div>
     <div class="card-footer">
       Preview:
-      <Widget
-        src={`${ownerId}/widget/Post`}
-        props={{
+      {widget(
+        "components.posts.Post",
+        {
           isPreview: true,
           id: 0, // irrelevant
           post: {
@@ -243,8 +303,8 @@ return (
               github_link: state.githubLink,
             },
           },
-        }}
-      />
+        }
+      )}
     </div>
   </div>
 );

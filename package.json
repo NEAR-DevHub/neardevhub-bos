@@ -1,0 +1,21 @@
+{
+  "name": "devgigsboard-widgets",
+  "version": "1.0.0",
+  "description": "NEAR Developer Governance Gigs Board widgets for NEAR Social",
+  "dependencies": {
+    "replace-in-files": "^3.0.0"
+  },
+  "scripts": {
+    "build": "node build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/near/devgigsboard-widgets.git"
+  },
+  "author": "Near Inc <hello@nearprotocol.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/near/devgigsboard-widgets/issues"
+  },
+  "homepage": "https://github.com/near/devgigsboard-widgets#readme"
+}

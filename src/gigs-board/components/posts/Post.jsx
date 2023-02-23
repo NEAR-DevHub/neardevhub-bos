@@ -1,19 +1,49 @@
-const ownerId = "devgovgigs.near";
+/* INCLUDE: "common.jsx" */
+const nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
+const nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
+
+function widget(widgetName, widgetProps, key) {
+  widgetProps = {
+    ...widgetProps,
+    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
+    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+  };
+  return <Widget src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`} props={widgetProps} key={key} />;
+}
+
+function href(widgetName, linkProps) {
+  linkProps = { ...linkProps }
+  if (props.nearDevGovGigsContractAccountId) {
+    linkProps.nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId;
+  }
+  if (props.nearDevGovGigsWidgetsAccountId) {
+    linkProps.nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId;
+  }
+  const linkPropsQuery = Object.entries(linkProps).map(([key, value]) => `${key}=${value}`).join('&');
+  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""}${linkPropsQuery}`;
+}
+/* END_INCLUDE: "common.jsx" */
+
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
-const post = props.post ?? Near.view(ownerId, "get_post", { post_id: postId });
+const post = props.post ?? Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
+if (!post) {
+  return <div>Loading ...</div>;
+}
+const referral = props.referral;
+
 const snapshot = post.snapshot;
-// If this post is displayed under another post. Used to limit the size and decide whether to show link to parent.
+// If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
-const parentId = isUnderPost
-  ? null
-  : Near.view(ownerId, "get_parent_id", { post_id: postId });
+const parentId = Near.view(nearDevGovGigsContractAccountId, "get_parent_id", { post_id: postId });
 
 const childPostIdsUnordered =
-  Near.view(ownerId, "get_children_ids", {
+  Near.view(nearDevGovGigsContractAccountId, "get_children_ids", {
     post_id: postId,
   }) ?? [];
 
 const childPostIds = props.isPreview ? [] : childPostIdsUnordered.reverse();
+const expandable = props.isPreview ? false : (props.expandable ?? false);
+const defaultExpanded = expandable ? props.defaultExpanded : true;
 
 function readableDate(timestamp) {
   var a = new Date(timestamp);
@@ -24,29 +54,29 @@ const timestamp = readableDate(
   snapshot.timestamp ? snapshot.timestamp / 1000000 : Date.now()
 );
 
-const parentLink = isUnderPost ? null : (
-  <div className="card-header">
-    <a
-      href={`https://near.social/#/devgovgigs.near/widget/Post?id=${parentId}`}
-    >
-      <i class="bi bi-arrow-90deg-up"></i>Go to parent post
-    </a>
-  </div>
-);
+const linkToParent =
+  isUnderPost || !parentId ? (<div key="link-to-parent"></div>) : (
+    <div className="card-header" key="link-to-parent">
+      <a
+        href={href("Post", { id: parentId, referral })}
+      >
+        <i class="bi bi-arrow-90deg-up"></i>Go to parent{" "}
+      </a>
+    </div>
+  );
 
 const allowedToEdit =
   !props.isPreview &&
-  Near.view(ownerId, "is_allowed_to_edit", {
+  Near.view(nearDevGovGigsContractAccountId, "is_allowed_to_edit", {
     post_id: postId,
     editor: context.accountId,
-  }) == "true";
+  });
 
 const btnEditorWidget = (postType, name) => {
   return (
     <li>
       <a
         class="dropdown-item"
-        href="#"
         data-bs-toggle="collapse"
         href={`#collapse${postType}Editor${postId}`}
         role="button"
@@ -59,7 +89,7 @@ const btnEditorWidget = (postType, name) => {
   );
 };
 
-const editControl = !allowedToEdit ? (
+const editControl = allowedToEdit ? (
   <div class="btn-group" role="group">
     <a
       class="card-link px-2"
@@ -79,12 +109,12 @@ const editControl = !allowedToEdit ? (
       {btnEditorWidget("Comment", "Edit as a comment")}
     </ul>
   </div>
-) : null;
+) : (<div></div>);
 
-const shareButton = props.isPreview ? null : (
+const shareButton = props.isPreview ? (<div></div>) : (
   <a
     class="card-link"
-    href={`https://near.social/#/devgovgigs.near/widget/Post?id=${postId}`}
+    href={href("Post", { id: postId, referral })}
     role="button"
     target="_blank"
     title="Open in new tab"
@@ -94,12 +124,12 @@ const shareButton = props.isPreview ? null : (
 );
 
 const header = (
-  <div className="card-header">
+  <div className="card-header" key="header">
     <small class="text-muted">
       <div class="row justify-content-between">
         <div class="col-4">
           <Widget
-            src={`mob.near/widget/ProfileLine`}
+            src={`neardevgov.near/widget/ProfileLine`}
             props={{ accountId: post.author_id }}
           />
         </div>
@@ -122,6 +152,7 @@ const emptyIcons = {
   Submission: "bi-rocket",
   Attestation: "bi-check-circle",
   Sponsorship: "bi-cash-coin",
+  Github: "bi-github",
   Like: "bi-heart",
   Reply: "bi-reply",
 };
@@ -132,9 +163,12 @@ const fillIcons = {
   Submission: "bi-rocket-fill",
   Attestation: "bi-check-circle-fill",
   Sponsorship: "bi-cash-coin",
+  Github: "bi-github",
   Like: "bi-heart-fill",
   Reply: "bi-reply-fill",
 };
+
+// Trigger saving this widget.
 
 const borders = {
   Idea: "border-secondary",
@@ -142,6 +176,7 @@ const borders = {
   Submission: "border-secondary",
   Attestation: "border-secondary",
   Sponsorship: "border-secondary",
+  Github: "border-secondary",
 };
 
 const containsLike = props.isPreview
@@ -149,9 +184,15 @@ const containsLike = props.isPreview
   : post.likes.find((l) => l.author_id == context.accountId);
 const likeBtnClass = containsLike ? fillIcons.Like : emptyIcons.Like;
 const onLike = () => {
-  Near.call(ownerId, "add_like", {
-    post_id: postId,
-  });
+  Near.call(
+    nearDevGovGigsContractAccountId,
+    "add_like",
+    {
+      post_id: postId,
+    },
+    100_000_000_000_000n,
+    2_000_000_000_000_000_000_000n
+  );
 };
 
 const btnCreatorWidget = (postType, icon, name) => {
@@ -159,7 +200,6 @@ const btnCreatorWidget = (postType, icon, name) => {
     <li>
       <a
         class="dropdown-item"
-        href="#"
         data-bs-toggle="collapse"
         href={`#collapse${postType}Creator${postId}`}
         role="button"
@@ -173,7 +213,7 @@ const btnCreatorWidget = (postType, icon, name) => {
 };
 
 const buttonsFooter = props.isPreview ? null : (
-  <div class="row">
+  <div class="row" key="buttons-footer">
     <div class="col-8">
       <div class="btn-group" role="group" aria-label="Basic outlined example">
         <button
@@ -220,7 +260,7 @@ const buttonsFooter = props.isPreview ? null : (
           style={{ border: "0px" }}
           data-bs-toggle="collapse"
           href={`#collapseChildPosts${postId}`}
-          aria-expanded="false"
+          aria-expanded={defaultExpanded}
           aria-controls={`collapseChildPosts${postId}`}
         >
           <i class="bi bi-arrows-expand"> </i>{" "}
@@ -238,14 +278,15 @@ const CreatorWidget = (postType) => {
       id={`collapse${postType}Creator${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
-      <Widget
-        src={`${ownerId}/widget/PostEditor`}
-        props={{
+      {widget(
+        "components.posts.PostEditor",
+        {
           postType,
           parentId: postId,
           mode: "Create",
-        }}
-      />
+          referral: props.referral,
+        }
+      )}
     </div>
   );
 };
@@ -257,27 +298,29 @@ const EditorWidget = (postType) => {
       id={`collapse${postType}Editor${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
-      <Widget
-        src={`${ownerId}/widget/PostEditor`}
-        props={{
+      {widget(
+        "components.posts.PostEditor",
+        {
           postType,
-          id: postId,
+          postId,
           mode: "Edit",
           author_id: post.author_id,
           labels: post.snapshot.labels,
           name: post.snapshot.name,
           description: post.snapshot.description,
           amount: post.snapshot.amount,
-          token: post.snapshot.token,
+          token: post.snapshot.sponsorship_token,
           supervisor: post.snapshot.supervisor,
-        }}
-      />
+          githubLink: post.snapshot.github_link,
+          referral: props.referral,
+        }
+      )}
     </div>
   );
 };
 
 const editorsFooter = props.isPreview ? null : (
-  <div class="row" id={`accordion${postId}`}>
+  <div class="row" id={`accordion${postId}`} key="editors-footer">
     {CreatorWidget("Comment")}
     {EditorWidget("Comment")}
     {CreatorWidget("Idea")}
@@ -288,23 +331,29 @@ const editorsFooter = props.isPreview ? null : (
     {EditorWidget("Attestation")}
     {CreatorWidget("Sponsorship")}
     {EditorWidget("Sponsorship")}
+    {CreatorWidget("Github")}
+    {EditorWidget("Github")}
   </div>
 );
 
 const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
-const postLables = post.snapshot.labels ? (
-  <div class="card-title">
+const postLabels = post.snapshot.labels ? (
+  <div class="card-title" key="post-labels">
     {post.snapshot.labels.map((label) => {
-      return <span class="badge text-bg-primary me-1">{label}</span>;
+      return (
+        <a href={href("Feed", { label }, label)}>
+          <span class="badge text-bg-primary me-1">{label}</span>
+        </a>
+      );
     })}
   </div>
-) : null;
+) : (<div key="post-labels"></div>);
 
 const postTitle =
-  snapshot.post_type == "Comment" ? null : (
-    <h5 class="card-title">
+  snapshot.post_type == "Comment" ? (<div key="post-title"></div>) : (
+    <h5 class="card-title" key="post-title">
       <div className="row justify-content-between">
         <div class="col-9">
           <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
@@ -316,34 +365,29 @@ const postTitle =
 
 const postExtra =
   snapshot.post_type == "Sponsorship" ? (
-    <div>
+    <div key="post-extra">
       <h6 class="card-subtitle mb-2 text-muted">
         Maximum amount: {snapshot.amount} {snapshot.sponsorship_token}
       </h6>
       <h6 class="card-subtitle mb-2 text-muted">
         Supervisor:{" "}
         <Widget
-          src={`mob.near/widget/ProfileLine`}
+          src={`neardevgov.near/widget/ProfileLine`}
           props={{ accountId: snapshot.supervisor }}
         />
       </h6>
     </div>
-  ) : null;
+  ) : (<div></div>);
 
 const postsList =
-  props.isPreview || childPostIds.length == 0 ? null : (
-    <div class="row">
-      <div class="collapse" id={`collapseChildPosts${postId}`}>
-        {childPostIds
-          ? childPostIds.map((childId) => {
-              return (
-                <Widget
-                  src={`${ownerId}/widget/Post`}
-                  props={{ id: childId, isUnderPost: true }}
-                />
-              );
-            })
-          : ""}
+  props.isPreview || childPostIds.length == 0 ? (<div key="posts-list"></div>) : (
+    <div class="row" key="posts-list">
+      <div class={`collapse ${defaultExpanded ? "show" : ""}`} id={`collapseChildPosts${postId}`}>
+        {childPostIds.map((childId) => widget(
+          "components.posts.Post",
+          { id: childId, isUnderPost: true, referral: props.referral },
+          `subpost${childId}of${postId}`
+        ))}
       </div>
     </div>
   );
@@ -361,19 +405,19 @@ const limitedMarkdown = styled.div`
 
 // Should make sure the posts under the currently top viewed post are limited in size.
 const descriptionArea = isUnderPost ? (
-  <limitedMarkdown className="overflow-auto">
+  <limitedMarkdown className="overflow-auto" key="description-area">
     <Markdown class="card-text" text={snapshot.description}></Markdown>
   </limitedMarkdown>
 ) : (
-  <Markdown class="card-text" text={snapshot.description}></Markdown>
+  <Markdown class="card-text" text={snapshot.description} key="description-area"></Markdown>
 );
 
 return (
   <Card className={`card my-2 ${borders[snapshot.post_type]}`}>
-    {parentLink}
+    {linkToParent}
     {header}
     <div className="card-body">
-      {postLables}
+      {postLabels}
       {postTitle}
       {postExtra}
       {descriptionArea}
