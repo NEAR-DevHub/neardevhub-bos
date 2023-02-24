@@ -34,7 +34,7 @@ const snapshot = post.snapshot;
 const shareButton = (
   <a
     class="card-link"
-    href={href("Feed", { postId })}
+    href={href("Feed", { id: postId })}
     role="button"
     target="_blank"
     title="Open in new tab"
