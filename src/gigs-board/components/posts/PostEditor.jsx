@@ -1,6 +1,10 @@
 /* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
-const nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -8,19 +12,31 @@ function widget(widgetName, widgetProps, key) {
     nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
   };
-  return <Widget src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`} props={widgetProps} key={key} />;
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
 }
 
 function href(widgetName, linkProps) {
-  linkProps = { ...linkProps }
+  linkProps = { ...linkProps };
   if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId;
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
   }
   if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId;
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
   }
-  const linkPropsQuery = Object.entries(linkProps).map(([key, value]) => `${key}=${value}`).join('&');
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""}${linkPropsQuery}`;
+  const linkPropsQuery = Object.entries(linkProps)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
@@ -149,7 +165,8 @@ const setLabels = (labels) => {
   });
   State.update({ labels, labelStrings });
 };
-const existingLabelStrings = Near.view(nearDevGovGigsContractAccountId, "get_all_labels") ?? [];
+const existingLabelStrings =
+  Near.view(nearDevGovGigsContractAccountId, "get_all_labels") ?? [];
 const existingLabels = existingLabelStrings.map((s) => {
   return { name: s };
 });
@@ -283,28 +300,25 @@ return (
     </div>
     <div class="card-footer">
       Preview:
-      {widget(
-        "components.posts.Post",
-        {
-          isPreview: true,
-          id: 0, // irrelevant
-          post: {
-            author_id: state.author_id,
-            likes: [],
-            snapshot: {
-              editor_id: state.editor_id,
-              labels: state.labelStrings,
-              post_type: postType,
-              name: state.name,
-              description: state.description,
-              amount: state.amount,
-              sponsorship_token: state.token,
-              supervisor: state.supervisor,
-              github_link: state.githubLink,
-            },
+      {widget("components.posts.Post", {
+        isPreview: true,
+        id: 0, // irrelevant
+        post: {
+          author_id: state.author_id,
+          likes: [],
+          snapshot: {
+            editor_id: state.editor_id,
+            labels: state.labelStrings,
+            post_type: postType,
+            name: state.name,
+            description: state.description,
+            amount: state.amount,
+            sponsorship_token: state.token,
+            supervisor: state.supervisor,
+            github_link: state.githubLink,
           },
-        }
-      )}
+        },
+      })}
     </div>
   </div>
 );

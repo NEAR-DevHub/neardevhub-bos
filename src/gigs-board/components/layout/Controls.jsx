@@ -1,6 +1,10 @@
 /* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
-const nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -8,19 +12,31 @@ function widget(widgetName, widgetProps, key) {
     nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
   };
-  return <Widget src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`} props={widgetProps} key={key} />;
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
 }
 
 function href(widgetName, linkProps) {
-  linkProps = { ...linkProps }
+  linkProps = { ...linkProps };
   if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId;
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
   }
   if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId;
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
   }
-  const linkPropsQuery = Object.entries(linkProps).map(([key, value]) => `${key}=${value}`).join('&');
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""}${linkPropsQuery}`;
+  const linkPropsQuery = Object.entries(linkProps)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
@@ -107,70 +123,55 @@ return (
         id={`collapseCommentEditorNavbar`}
         data-bs-parent={`#accordionNavbar`}
       >
-        {widget(
-          "components.posts.PostEditor",
-          {
-            postType: "Comment",
-            parentId: null,
-            referral: props.referral,
-          }
-        )}
+        {widget("components.posts.PostEditor", {
+          postType: "Comment",
+          parentId: null,
+          referral: props.referral,
+        })}
       </div>
       <div
         class="collapse"
         id={`collapseIdeaEditorNavbar`}
         data-bs-parent={`#accordionNavbar`}
       >
-        {widget(
-          "components.posts.PostEditor",
-          {
-            postType: "Idea",
-            parentId: null,
-            referral: props.referral,
-          }
-        )}
+        {widget("components.posts.PostEditor", {
+          postType: "Idea",
+          parentId: null,
+          referral: props.referral,
+        })}
       </div>
       <div
         class="collapse"
         id={`collapseSubmissionEditorNavbar`}
         data-bs-parent={`#accordionNavbar`}
       >
-        {widget(
-          "components.posts.PostEditor",
-          {
-            postType: "Submission",
-            parentId: null,
-            referral: props.referral,
-          }
-        )}
+        {widget("components.posts.PostEditor", {
+          postType: "Submission",
+          parentId: null,
+          referral: props.referral,
+        })}
       </div>
       <div
         class="collapse"
         id={`collapseAttestationEditorNavbar`}
         data-bs-parent={`#accordionNavbar`}
       >
-        {widget(
-          "components.posts.PostEditor",
-          {
-            postType: "Attestation",
-            parentId: null,
-            referral: props.referral,
-          }
-        )}
+        {widget("components.posts.PostEditor", {
+          postType: "Attestation",
+          parentId: null,
+          referral: props.referral,
+        })}
       </div>
       <div
         class="collapse"
         id={`collapseSponsorshipEditorNavbar`}
         data-bs-parent={`#accordionNavbar`}
       >
-        {widget(
-          "components.posts.PostEditor",
-          {
-            postType: "Sponsorship",
-            parentId: null,
-            referral: props.referral,
-          }
-        )}
+        {widget("components.posts.PostEditor", {
+          postType: "Sponsorship",
+          parentId: null,
+          referral: props.referral,
+        })}
       </div>
     </div>
   </div>

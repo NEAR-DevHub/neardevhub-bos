@@ -1,6 +1,10 @@
 /* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
-const nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -8,24 +12,38 @@ function widget(widgetName, widgetProps, key) {
     nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
   };
-  return <Widget src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`} props={widgetProps} key={key} />;
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
 }
 
 function href(widgetName, linkProps) {
-  linkProps = { ...linkProps }
+  linkProps = { ...linkProps };
   if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId;
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
   }
   if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId;
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
   }
-  const linkPropsQuery = Object.entries(linkProps).map(([key, value]) => `${key}=${value}`).join('&');
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""}${linkPropsQuery}`;
+  const linkPropsQuery = Object.entries(linkProps)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
-const post = props.post ?? Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
+const post =
+  props.post ??
+  Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
 if (!post) {
   return <div>Loading ...</div>;
 }
@@ -34,7 +52,9 @@ const referral = props.referral;
 const snapshot = post.snapshot;
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
-const parentId = Near.view(nearDevGovGigsContractAccountId, "get_parent_id", { post_id: postId });
+const parentId = Near.view(nearDevGovGigsContractAccountId, "get_parent_id", {
+  post_id: postId,
+});
 
 const childPostIdsUnordered =
   Near.view(nearDevGovGigsContractAccountId, "get_children_ids", {
@@ -42,7 +62,7 @@ const childPostIdsUnordered =
   }) ?? [];
 
 const childPostIds = props.isPreview ? [] : childPostIdsUnordered.reverse();
-const expandable = props.isPreview ? false : (props.expandable ?? false);
+const expandable = props.isPreview ? false : props.expandable ?? false;
 const defaultExpanded = expandable ? props.defaultExpanded : true;
 
 function readableDate(timestamp) {
@@ -55,11 +75,11 @@ const timestamp = readableDate(
 );
 
 const linkToParent =
-  isUnderPost || !parentId ? (<div key="link-to-parent"></div>) : (
+  isUnderPost || !parentId ? (
+    <div key="link-to-parent"></div>
+  ) : (
     <div className="card-header" key="link-to-parent">
-      <a
-        href={href("Post", { id: parentId, referral })}
-      >
+      <a href={href("Post", { id: parentId, referral })}>
         <i class="bi bi-arrow-90deg-up"></i>Go to parent{" "}
       </a>
     </div>
@@ -109,9 +129,13 @@ const editControl = allowedToEdit ? (
       {btnEditorWidget("Comment", "Edit as a comment")}
     </ul>
   </div>
-) : (<div></div>);
+) : (
+  <div></div>
+);
 
-const shareButton = props.isPreview ? (<div></div>) : (
+const shareButton = props.isPreview ? (
+  <div></div>
+) : (
   <a
     class="card-link"
     href={href("Post", { id: postId, referral })}
@@ -278,15 +302,12 @@ const CreatorWidget = (postType) => {
       id={`collapse${postType}Creator${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
-      {widget(
-        "components.posts.PostEditor",
-        {
-          postType,
-          parentId: postId,
-          mode: "Create",
-          referral: props.referral,
-        }
-      )}
+      {widget("components.posts.PostEditor", {
+        postType,
+        parentId: postId,
+        mode: "Create",
+        referral: props.referral,
+      })}
     </div>
   );
 };
@@ -298,23 +319,20 @@ const EditorWidget = (postType) => {
       id={`collapse${postType}Editor${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
-      {widget(
-        "components.posts.PostEditor",
-        {
-          postType,
-          postId,
-          mode: "Edit",
-          author_id: post.author_id,
-          labels: post.snapshot.labels,
-          name: post.snapshot.name,
-          description: post.snapshot.description,
-          amount: post.snapshot.amount,
-          token: post.snapshot.sponsorship_token,
-          supervisor: post.snapshot.supervisor,
-          githubLink: post.snapshot.github_link,
-          referral: props.referral,
-        }
-      )}
+      {widget("components.posts.PostEditor", {
+        postType,
+        postId,
+        mode: "Edit",
+        author_id: post.author_id,
+        labels: post.snapshot.labels,
+        name: post.snapshot.name,
+        description: post.snapshot.description,
+        amount: post.snapshot.amount,
+        token: post.snapshot.sponsorship_token,
+        supervisor: post.snapshot.supervisor,
+        githubLink: post.snapshot.github_link,
+        referral: props.referral,
+      })}
     </div>
   );
 };
@@ -349,10 +367,14 @@ const postLabels = post.snapshot.labels ? (
       );
     })}
   </div>
-) : (<div key="post-labels"></div>);
+) : (
+  <div key="post-labels"></div>
+);
 
 const postTitle =
-  snapshot.post_type == "Comment" ? (<div key="post-title"></div>) : (
+  snapshot.post_type == "Comment" ? (
+    <div key="post-title"></div>
+  ) : (
     <h5 class="card-title" key="post-title">
       <div className="row justify-content-between">
         <div class="col-9">
@@ -377,17 +399,26 @@ const postExtra =
         />
       </h6>
     </div>
-  ) : (<div></div>);
+  ) : (
+    <div></div>
+  );
 
 const postsList =
-  props.isPreview || childPostIds.length == 0 ? (<div key="posts-list"></div>) : (
+  props.isPreview || childPostIds.length == 0 ? (
+    <div key="posts-list"></div>
+  ) : (
     <div class="row" key="posts-list">
-      <div class={`collapse ${defaultExpanded ? "show" : ""}`} id={`collapseChildPosts${postId}`}>
-        {childPostIds.map((childId) => widget(
-          "components.posts.Post",
-          { id: childId, isUnderPost: true, referral: props.referral },
-          `subpost${childId}of${postId}`
-        ))}
+      <div
+        class={`collapse ${defaultExpanded ? "show" : ""}`}
+        id={`collapseChildPosts${postId}`}
+      >
+        {childPostIds.map((childId) =>
+          widget(
+            "components.posts.Post",
+            { id: childId, isUnderPost: true, referral: props.referral },
+            `subpost${childId}of${postId}`
+          )
+        )}
       </div>
     </div>
   );
@@ -396,11 +427,10 @@ const Card = styled.div`
   &:hover {
     box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
   }
-
 `;
 
 const limitedMarkdown = styled.div`
-      max-height: 20em;
+  max-height: 20em;
 `;
 
 // Should make sure the posts under the currently top viewed post are limited in size.
@@ -409,7 +439,11 @@ const descriptionArea = isUnderPost ? (
     <Markdown class="card-text" text={snapshot.description}></Markdown>
   </limitedMarkdown>
 ) : (
-  <Markdown class="card-text" text={snapshot.description} key="description-area"></Markdown>
+  <Markdown
+    class="card-text"
+    text={snapshot.description}
+    key="description-area"
+  ></Markdown>
 );
 
 return (

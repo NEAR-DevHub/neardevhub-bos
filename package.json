@@ -2,10 +2,13 @@
   "name": "devgigsboard-widgets",
   "version": "1.0.0",
   "description": "NEAR Developer Governance Gigs Board widgets for NEAR Social",
-  "dependencies": {
+  "devDependencies": {
+    "prettier": "^2.8.4",
     "replace-in-files": "^3.0.0"
   },
   "scripts": {
+    "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
+    "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
     "build": "node build.js"
   },
   "repository": {

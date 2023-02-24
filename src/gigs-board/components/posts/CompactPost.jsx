@@ -1,6 +1,10 @@
 /* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
-const nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -8,24 +12,38 @@ function widget(widgetName, widgetProps, key) {
     nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
   };
-  return <Widget src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`} props={widgetProps} key={key} />;
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
 }
 
 function href(widgetName, linkProps) {
-  linkProps = { ...linkProps }
+  linkProps = { ...linkProps };
   if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId;
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
   }
   if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId;
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
   }
-  const linkPropsQuery = Object.entries(linkProps).map(([key, value]) => `${key}=${value}`).join('&');
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""}${linkPropsQuery}`;
+  const linkPropsQuery = Object.entries(linkProps)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
-const post = props.post ?? Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
+const post =
+  props.post ??
+  Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
 if (!post) {
   return <div>Loading ...</div>;
 }
@@ -94,10 +112,7 @@ const renamedPostType =
 const postLables = post.snapshot.labels ? (
   <div class="card-title">
     {post.snapshot.labels.map((label) => (
-      <a
-        href={href("Feed", { label })}
-        key={label}
-      >
+      <a href={href("Feed", { label })} key={label}>
         <span class="badge text-bg-primary me-1">{label}</span>
       </a>
     ))}
@@ -120,11 +135,10 @@ const Card = styled.div`
   &:hover {
     box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
   }
-
 `;
 
 const limitedMarkdown = styled.div`
-      max-height: 6em;
+  max-height: 6em;
 `;
 
 // Should make sure the posts under the currently top viewed post are limited in size.

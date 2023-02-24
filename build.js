@@ -1,20 +1,18 @@
-const fs = require('fs');
-const replaceInFiles = require('replace-in-files');
- 
+const fs = require("fs");
+const replaceInFiles = require("replace-in-files");
+
 const options = {
-  files: [
-    'src/**/*.jsx',
-  ],
+  files: ["src/**/*.jsx"],
   from: /\/\* INCLUDE: "common\.jsx" \*\/.*\/\* END_INCLUDE: "common\.jsx" \*\//gms,
-  //from: /\/\* INCLUDE: "common\.jsx" \*\/.*/gm,
-  //from: /common\.jsx/g,
-  to: `/* INCLUDE: "common.jsx" */\n${fs.readFileSync('./common.jsx', 'utf8').toString()}/* END_INCLUDE: "common.jsx" */`,
+  to: `/* INCLUDE: "common.jsx" */\n${fs
+    .readFileSync("./common.jsx", "utf8")
+    .toString()}/* END_INCLUDE: "common.jsx" */`,
 };
 
 replaceInFiles(options)
   .then(({ changedFiles, countOfMatchesByPaths }) => {
-    console.log('DONE');
+    console.log("DONE");
   })
-  .catch(error => {
-    console.error('Error occurred:', error);
+  .catch((error) => {
+    console.error("Error occurred:", error);
   });

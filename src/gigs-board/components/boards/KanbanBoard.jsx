@@ -1,6 +1,10 @@
 /* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
-const nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId || (context.widgetSrc ?? 'devgovgigs.near').split('/', 1)[0];
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -8,19 +12,31 @@ function widget(widgetName, widgetProps, key) {
     nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
   };
-  return <Widget src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`} props={widgetProps} key={key} />;
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
 }
 
 function href(widgetName, linkProps) {
-  linkProps = { ...linkProps }
+  linkProps = { ...linkProps };
   if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId = props.nearDevGovGigsContractAccountId;
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
   }
   if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId = props.nearDevGovGigsWidgetsAccountId;
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
   }
-  const linkPropsQuery = Object.entries(linkProps).map(([key, value]) => `${key}=${value}`).join('&');
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""}${linkPropsQuery}`;
+  const linkPropsQuery = Object.entries(linkProps)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
@@ -33,11 +49,12 @@ const columnLabels = props.columnLabels ?? [
 ];
 
 const labelsToIdSet = (labels) => {
-  const ids = labels.map((label) => (
-    Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-      label,
-    }) ?? []
-  ));
+  const ids = labels.map(
+    (label) =>
+      Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+        label,
+      }) ?? []
+  );
   const idsFlat = ids.flat(1);
   return new Set(idsFlat);
 };
@@ -91,10 +108,7 @@ return (
           <small class="text-muted">
             Required labels:
             {requiredLabels.map((label) => (
-              <a
-                href={href("Feed", { label })}
-                key={label}
-              >
+              <a href={href("Feed", { label })} key={label}>
                 <span class="badge text-bg-primary me-1">{label}</span>
               </a>
             ))}
@@ -106,10 +120,7 @@ return (
           <small class="text-muted">
             Excluded labels:
             {excludedLabels.map((label) => (
-              <a
-                href={href("Feed", { label })}
-                key={label}
-              >
+              <a href={href("Feed", { label })} key={label}>
                 <span class="badge text-bg-primary me-1">{label}</span>
               </a>
             ))}
@@ -125,13 +136,9 @@ return (
               <h6 class="card-title">
                 {col.label.toUpperCase()}({col.posts.length})
               </h6>
-              {col.posts.map((postId) => (
-                widget(
-                  "components.posts.CompactPost",
-                  { id: postId },
-                  postId
-                )
-              ))}
+              {col.posts.map((postId) =>
+                widget("components.posts.CompactPost", { id: postId }, postId)
+              )}
             </div>
           </div>
         </div>
