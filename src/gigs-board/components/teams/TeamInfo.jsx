@@ -1,10 +1,49 @@
-const ownerId = "devgovgigs.near";
+/* INCLUDE: "common.jsx" */
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+function widget(widgetName, widgetProps, key) {
+  widgetProps = {
+    ...widgetProps,
+    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
+    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+  };
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
+}
+
+function href(widgetName, linkProps) {
+  linkProps = { ...linkProps };
+  if (props.nearDevGovGigsContractAccountId) {
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
+  }
+  if (props.nearDevGovGigsWidgetsAccountId) {
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
+  }
+  const linkPropsQuery = Object.entries(linkProps)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
+}
+/* END_INCLUDE: "common.jsx" */
 
 const Card = styled.div`
   &:hover {
     box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
   }
-
 `;
 
 const metadata = props.members_list[props.member];
@@ -57,7 +96,7 @@ const permissionsRenderer = (permissionType) => {
       <p class="card-text" key={`${permissionType}-permissions`}>
         {permissionDesc[permissionType]}:
         {permissions.map((permission) => (
-          <span class="badge text-bg-primary" key={`${permission}-permission`}>
+          <span class="badge text-bg-primary" key={permission}>
             {permissionExplainer(permission)}
           </span>
         ))}
@@ -68,27 +107,8 @@ const permissionsRenderer = (permissionType) => {
   }
 };
 
-const childrenRenderer = () => {
-  let children = metadata.children;
-  if (children) {
-    return (
-      <div class="vstack">
-        {children.map((child) => (
-          <Widget
-            src={`${ownerId}/widget/TeamInfo`}
-            props={{ member: child, members_list: props.members_list }}
-            key={`subpost-${child}-of-${props.member}`}
-          />
-        ))}
-      </div>
-    );
-  } else {
-    return <div></div>;
-  }
-};
-
 return (
-  <Card className="card my-2 border-secondary" key={`member-${props.member}`}>
+  <Card className="card my-2 border-secondary">
     <div className="card-header">
       <small class="text-muted">{header}</small>
     </div>
@@ -98,8 +118,17 @@ return (
       </p>
       {permissionsRenderer("edit-post")}
       {permissionsRenderer("use-labels")}
-      {childrenRenderer()}
+      {metadata.children ? (
+        <div class="vstack">
+          {metadata.children.map((child) =>
+            widget(
+              "components.teams.TeamInfo",
+              { member: child, members_list: props.members_list },
+              child
+            )
+          )}
+        </div>
+      ) : null}
     </div>
   </Card>
 );
-
