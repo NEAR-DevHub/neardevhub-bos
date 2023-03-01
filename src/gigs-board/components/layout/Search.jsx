@@ -40,10 +40,29 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
+const onSearch = props.onSearch;
+const selectedLabels = props.searchQuery?.label
+  ? [{ name: props.searchQuery.label }]
+  : [];
+
+const labels = Near.view(nearDevGovGigsContractAccountId, "get_all_labels");
+if (!labels) {
+  return <div>Loading ...</div>;
+}
+const wrappedLabels = labels.map((label) => ({ name: label }));
+
+const onChange = (selectedLabels) => {
+  onSearch(selectedLabels[0]?.name);
+};
+
 return (
-  <>
-    {widget("components.layout.Controls")}
-    {widget("components.layout.Navbar", { children: props.navbarChildren })}
-    {props.children}
-  </>
+  <Typeahead
+    clearButton
+    id="basic-typeahead-single"
+    labelKey="name"
+    onChange={onChange}
+    options={wrappedLabels}
+    placeholder="Search by tag"
+    selected={selectedLabels}
+  />
 );

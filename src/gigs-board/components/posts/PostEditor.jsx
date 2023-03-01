@@ -81,7 +81,6 @@ let fields = {
   ],
   Github: ["githubLink", "name", "description"],
 }[postType];
-console.log("fields", fields);
 
 const onClick = () => {
   let labels = state.labelStrings;
