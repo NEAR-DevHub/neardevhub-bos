@@ -40,9 +40,30 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
+State.init({
+  propsLabel: props.label,
+  label: props.label,
+});
+
+// When rerendered with different props, State will be preserved, so we need to update the state when we detect that the props have changed.
+if (props.label !== state.propsLabel) {
+  State.update({
+    propsLabel: props.label,
+    label: props.label,
+  });
+}
+
+const onSearch = (label) => {
+  State.update({ label });
+};
+
 return widget("components.layout.Page", {
+  navbarChildren: widget("components.layout.Search", {
+    searchQuery: { label: state.label },
+    onSearch,
+  }),
   children: widget("components.posts.List", {
     recency: props.recency,
-    label: props.label,
+    label: state.label,
   }),
 });

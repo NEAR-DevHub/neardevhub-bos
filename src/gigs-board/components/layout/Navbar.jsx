@@ -83,17 +83,9 @@ return (
             </a>
           </li>
 
-          <li class="nav-item active ms-2">
-            <Typeahead
-              clearButton
-              id="basic-typeahead-single"
-              labelKey="name"
-              onChange={onLabelSelected}
-              options={wrappedLabels}
-              placeholder="Search"
-              defaultSelected={defaultSelectedLabels}
-            />
-          </li>
+          {props.children ? (
+            <li class="nav-item active ms-2">{props.children}</li>
+          ) : null}
         </ul>
       </div>
     </div>
