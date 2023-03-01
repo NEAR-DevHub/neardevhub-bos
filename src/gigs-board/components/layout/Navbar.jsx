@@ -76,9 +76,7 @@ return (
             <a
               class="nav-link active"
               href={href("Teams")}
-              target="_blank"
               title="View teams and permissions"
-              role="button"
             >
               <i class="bi-people-fill"> </i>
               Teams
