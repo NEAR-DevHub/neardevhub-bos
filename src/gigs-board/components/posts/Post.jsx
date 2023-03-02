@@ -433,15 +433,33 @@ const limitedMarkdown = styled.div`
   max-height: 20em;
 `;
 
+const onMention = (accountId) => (
+  <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
+    <Widget
+      src="neardevgov.near/widget/ProfileLine"
+      props={{
+        accountId: accountId.toLowerCase(),
+        hideAccountId: true,
+        tooltip: true,
+      }}
+    />
+  </span>
+);
+
 // Should make sure the posts under the currently top viewed post are limited in size.
 const descriptionArea = isUnderPost ? (
   <limitedMarkdown className="overflow-auto" key="description-area">
-    <Markdown class="card-text" text={snapshot.description}></Markdown>
+    <Markdown
+      class="card-text"
+      text={snapshot.description}
+      onMention={onMention}
+    />
   </limitedMarkdown>
 ) : (
   <Markdown
     class="card-text"
     text={snapshot.description}
+    onMention={onMention}
     key="description-area"
   ></Markdown>
 );
