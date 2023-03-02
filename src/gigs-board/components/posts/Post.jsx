@@ -11,6 +11,7 @@ function widget(widgetName, widgetProps, key) {
     ...widgetProps,
     nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+    referral: props.referral,
   };
   return (
     <Widget
@@ -31,6 +32,9 @@ function href(widgetName, linkProps) {
     linkProps.nearDevGovGigsWidgetsAccountId =
       props.nearDevGovGigsWidgetsAccountId;
   }
+  if (props.referral) {
+    linkProps.referral = props.referral;
+  }
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
@@ -47,7 +51,6 @@ const post =
 if (!post) {
   return <div>Loading ...</div>;
 }
-const referral = props.referral;
 
 const snapshot = post.snapshot;
 // If this post is displayed under another post. Used to limit the size.
@@ -79,7 +82,7 @@ const linkToParent =
     <div key="link-to-parent"></div>
   ) : (
     <div className="card-header" key="link-to-parent">
-      <a href={href("Post", { id: parentId, referral })}>
+      <a href={href("Post", { id: parentId })}>
         <i class="bi bi-arrow-90deg-up"></i>Go to parent{" "}
       </a>
     </div>
@@ -138,7 +141,7 @@ const shareButton = props.isPreview ? (
 ) : (
   <a
     class="card-link"
-    href={href("Post", { id: postId, referral })}
+    href={href("Post", { id: postId })}
     role="button"
     target="_blank"
     title="Open in new tab"
@@ -306,7 +309,6 @@ const CreatorWidget = (postType) => {
         postType,
         parentId: postId,
         mode: "Create",
-        referral: props.referral,
       })}
     </div>
   );
@@ -331,7 +333,6 @@ const EditorWidget = (postType) => {
         token: post.snapshot.sponsorship_token,
         supervisor: post.snapshot.supervisor,
         githubLink: post.snapshot.github_link,
-        referral: props.referral,
       })}
     </div>
   );
@@ -415,7 +416,7 @@ const postsList =
         {childPostIds.map((childId) =>
           widget(
             "components.posts.Post",
-            { id: childId, isUnderPost: true, referral: props.referral },
+            { id: childId, isUnderPost: true },
             `subpost${childId}of${postId}`
           )
         )}
