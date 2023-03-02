@@ -11,6 +11,7 @@ function widget(widgetName, widgetProps, key) {
     ...widgetProps,
     nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+    referral: props.referral,
   };
   return (
     <Widget
@@ -31,6 +32,9 @@ function href(widgetName, linkProps) {
     linkProps.nearDevGovGigsWidgetsAccountId =
       props.nearDevGovGigsWidgetsAccountId;
   }
+  if (props.referral) {
+    linkProps.referral = props.referral;
+  }
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
@@ -41,5 +45,7 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 return widget("components.layout.Page", {
-  children: widget("components.posts.Post", { id: props.id }),
+  children: widget("components.posts.Post", {
+    id: props.id,
+  }),
 });
