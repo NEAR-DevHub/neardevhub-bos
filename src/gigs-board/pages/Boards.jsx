@@ -46,7 +46,6 @@ function href(widgetName, linkProps) {
 
 const selectedBoardId = props.selectedBoardId ?? "mnwtransition";
 
-console.log("selectedBoardId", selectedBoardId);
 const boards = props.boards ?? [
   {
     name: "MyNearWallet Transition",
@@ -98,26 +97,22 @@ const boards = props.boards ?? [
   },
 ];
 
+// Bootstrap tabs documentation: https://getbootstrap.com/docs/5.2/components/navs-tabs
 const pageContent = (
   <div>
-    <ul class="nav nav-tabs my-3" id="pills-tab" role="tablist">
+    <ul class="nav nav-tabs my-3">
       {boards.map((board) => (
-        <li class="nav-item" role="presentation" key={board.id}>
-          <button
+        <li class="nav-item" key={board.id}>
+          <a
+            href={href("Boards", { selectedBoardId: board.id })}
             class={`nav-link ${board.id == selectedBoardId ? "active" : ""}`}
-            data-bs-toggle="pill"
-            data-bs-target={`#board${board.id}`}
-            type="button"
-            role="tab"
-            aria-controls={`board${board.id}`}
-            aria-selected={board.id == selectedBoardId ? "true" : "false"}
           >
             {board.name}
-          </button>
+          </a>
         </li>
       ))}
     </ul>
-    <div class="tab-content" id="pills-tabContent">
+    <div class="tab-content">
       {boards.map((board) => (
         <div
           class={`tab-pane fade ${
