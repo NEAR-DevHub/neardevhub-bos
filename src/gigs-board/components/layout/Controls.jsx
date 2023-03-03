@@ -48,7 +48,10 @@ return (
   <div class="card border-secondary mb-2">
     <div class="nav navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
-        <div class="navbar-brand">
+        <div
+          class="navbar-brand"
+          style={{ height: "2.5em", width: "2.5em", minWidth: "2.5em" }}
+        >
           <Widget
             src="mob.near/widget/ProfileImage"
             props={{
