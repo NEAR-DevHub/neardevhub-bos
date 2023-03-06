@@ -44,6 +44,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
+const footer = props.footer;
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
 const post =
   props.post ??
@@ -160,6 +161,7 @@ return (
       {postTitle}
       {descriptionArea}
       {postLables}
+      {footer}
     </div>
   </Card>
 );

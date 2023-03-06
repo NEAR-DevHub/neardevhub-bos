@@ -85,6 +85,34 @@ const postsPerLabel = columnLabels.map((cl) => {
   }
 });
 
+function updatePostLabels(postId, oldLabel, newLabel) {
+  const post = Near.view(nearDevGovGigsContractAccountId, "get_post", {
+    post_id: postId,
+  });
+  if (!post) {
+    console.log("There is no post to update labels for with the ID", postId);
+    return;
+  }
+  const postBody = post.snapshot;
+  const postLabels = postBody.labels;
+  const removeLabelIndex = postLabels.indexOf(oldLabel);
+  if (removeLabelIndex === -1) {
+    console.log(
+      "The post has already been moved (it is potentially a stale tab)."
+    );
+    // TODO: We should reload the board.
+    return;
+  }
+  postLabels[removeLabelIndex] = newLabel;
+  Near.call(
+    nearDevGovGigsContractAccountId,
+    "edit_post",
+    { id: postId, body: postBody, labels: postLabels },
+    100_000_000_000_000n,
+    2_000_000_000_000_000_000_000n
+  );
+}
+
 return (
   <div>
     <div class="row mb-2">
@@ -133,16 +161,39 @@ return (
       ) : null}
     </div>
     <div class="row">
-      {postsPerLabel.map((col) => (
+      {postsPerLabel.map((col, colIndex) => (
         <div class="col-4" key={col.label}>
           <div class="card">
             <div class="card-body border-secondary">
               <h6 class="card-title">
                 {col.label.toUpperCase()}({col.posts.length})
               </h6>
-              {col.posts.map((postId) =>
-                widget("components.posts.CompactPost", { id: postId }, postId)
-              )}
+              {col.posts.map((postId) => {
+                const nextColumnLabel = columnLabels[colIndex + 1];
+                let footer;
+                if (nextColumnLabel) {
+                  footer = (
+                    <div class="btn-group" role="group">
+                      <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        style={{ border: "0px" }}
+                        onClick={() =>
+                          updatePostLabels(postId, col.label, nextColumnLabel)
+                        }
+                      >
+                        <i class={`bi ${emptyIcons.Reply}`}> </i> Move to{" "}
+                        {nextColumnLabel}
+                      </button>
+                    </div>
+                  );
+                }
+                return widget(
+                  "components.posts.CompactPost",
+                  { id: postId, footer },
+                  postId
+                );
+              })}
             </div>
           </div>
         </div>
