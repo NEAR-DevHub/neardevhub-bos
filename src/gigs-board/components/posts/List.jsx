@@ -82,21 +82,28 @@ let postIds;
 if (props.label) {
   postIds = Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
     label: props.label,
-  }).reverse();
+  });
 } else if (props.recency == "all") {
-  postIds = (
-    Near.view(nearDevGovGigsContractAccountId, "get_all_post_ids") ?? []
-  ).reverse();
+  postIds = Near.view(nearDevGovGigsContractAccountId, "get_all_post_ids");
 } else {
-  postIds = (
-    Near.view(nearDevGovGigsContractAccountId, "get_children_ids") ?? []
-  ).reverse();
+  postIds = Near.view(nearDevGovGigsContractAccountId, "get_children_ids");
 }
 
+const loader = (
+  <div className="loader" key={"loader"}>
+    <span
+      className="spinner-grow spinner-grow-sm me-1"
+      role="status"
+      aria-hidden="true"
+    />
+    Loading ...
+  </div>
+);
+
 if (postIds === null) {
-  return "";
+  return loader;
 }
-const initialItems = postIds;
+const initialItems = postIds.reverse();
 //const initialItems = postIds.map(postId => ({ id: postId, ...Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId }) }));
 
 // const computeFetchFrom = (items, limit) => {
@@ -177,17 +184,6 @@ const makeMoreItems = () => {
   }
 };
 
-const loader = (
-  <div className="loader" key={"loader"}>
-    <span
-      className="spinner-grow spinner-grow-sm me-1"
-      role="status"
-      aria-hidden="true"
-    />
-    Loading ...
-  </div>
-);
-
 const fetchMore =
   props.manual &&
   (state.fetchFrom && state.items.length < state.displayCount
@@ -201,9 +197,6 @@ const fetchMore =
       ));
 
 const items = state.items ? state.items.slice(0, state.displayCount) : [];
-if (reverse) {
-  items.reverse();
-}
 
 const renderedItems = items.map(cachedRenderItem);
 
