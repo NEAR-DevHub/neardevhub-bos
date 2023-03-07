@@ -68,3 +68,14 @@ NOTE: If you have [devgigsboard contract](https://github.com/near/devgigsboard) 
 
 There is GitHub Actions automation that deploys all the widgets to [`devgovgigs.near` account](https://near.social/#/mob.near/widget/MyPage?accountId=devgovgigs.near) on mainnet on every push to the main branch.
 Thus, once a PR is merged, you should see the new version of the widgets on [DevGov Gigs Board](https://devgovgigs.near.social) in less then 15 seconds.
+
+### Storage Deposit
+
+near-social CLI [has a limitation regarding accurate storage usage calculations](https://github.com/FroVolod/near-social/issues/18), so sometimes there is a need to deposit extra tokens to cover the widgets storage cost.
+You can do that with [`near-cli-rs`](https://near.cli.rs):
+
+```
+near-cli-rs contract call-function as-transaction social.near storage_deposit '{"account_id": "YOUR_ACCOUNT_ID"}' --prepaid-gas '100 TeraGas' --attached-deposit '1 NEAR'
+```
+
+NOTE: near-cli-rs will interactively ask all the rest of the details to prepare the transaction.
