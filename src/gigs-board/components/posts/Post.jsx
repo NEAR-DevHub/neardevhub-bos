@@ -250,15 +250,13 @@ const buttonsFooter = props.isPreview ? null : (
           onClick={onLike}
         >
           <i class={`bi ${likeBtnClass}`}> </i>
-          Like ({post.likes.length ?? 0})
-          <Widget
-            src="mob.near/widget/LikeButton.Faces"
-            props={{
-              likesByUsers: Object.fromEntries(
-                post.likes.map(({ author_id }) => [author_id, ""])
-              ),
-            }}
-          />
+          {post.likes.length == 0
+            ? "Like"
+            : widget("components.layout.LikeButton.Faces", {
+                likesByUsers: Object.fromEntries(
+                  post.likes.map(({ author_id }) => [author_id, ""])
+                ),
+              })}
         </button>
         <div class="btn-group" role="group">
           <button
