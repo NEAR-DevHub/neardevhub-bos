@@ -210,16 +210,44 @@ const containsLike = props.isPreview
   ? false
   : post.likes.find((l) => l.author_id == context.accountId);
 const likeBtnClass = containsLike ? fillIcons.Like : emptyIcons.Like;
+// This must be outside onLike, because Near.view returns null at first, and when the view call finished, it returns true/false.
+// If checking this inside onLike, it will give `null` and we cannot tell the result is true or false.
+let grantNotify = Near.view("social.near", "is_write_permission_granted", {
+  predecessor_id: nearDevGovGigsContractAccountId,
+  key: context.accountId + "/index/notify",
+});
+if (grantNotify === null) {
+  return;
+}
 const onLike = () => {
-  Near.call(
-    nearDevGovGigsContractAccountId,
-    "add_like",
+  if (!context.accountId) {
+    return;
+  }
+  let likeTxn = [
     {
-      post_id: postId,
+      contractName: nearDevGovGigsContractAccountId,
+      methodName: "add_like",
+      args: {
+        post_id: postId,
+      },
+      deposit: Big(10).pow(21).mul(2),
+      gas: Big(10).pow(12).mul(100),
     },
-    100_000_000_000_000n,
-    2_000_000_000_000_000_000_000n
-  );
+  ];
+
+  if (grantNotify === false) {
+    likeTxn.unshift({
+      contractName: "social.near",
+      methodName: "grant_write_permission",
+      args: {
+        predecessor_id: nearDevGovGigsContractAccountId,
+        keys: [context.accountId + "/index/notify"],
+      },
+      deposit: Big(10).pow(23),
+      gas: Big(10).pow(12).mul(30),
+    });
+  }
+  Near.call(likeTxn);
 };
 
 const btnCreatorWidget = (postType, icon, name) => {

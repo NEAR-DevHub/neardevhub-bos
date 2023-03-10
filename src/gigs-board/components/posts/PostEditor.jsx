@@ -86,6 +86,15 @@ let fields = {
   Github: ["githubLink", "name", "description"],
 }[postType];
 
+// This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
+// If checking this inside onClick, it will give `null` and we cannot tell the result is true or false.
+let grantNotify = Near.view("social.near", "is_write_permission_granted", {
+  predecessor_id: nearDevGovGigsContractAccountId,
+  key: context.accountId + "/index/notify",
+});
+if (grantNotify === null) {
+  return;
+}
 const onClick = () => {
   let labels = state.labelStrings;
   var body = {
@@ -121,30 +130,49 @@ const onClick = () => {
     },
   }[postType];
   body["post_type"] = postType;
+  if (!context.accountId) {
+    return;
+  }
+  let txn = [];
   if (mode == "Create") {
-    Near.call(
-      nearDevGovGigsContractAccountId,
-      "add_post",
-      {
+    txn.push({
+      contractName: nearDevGovGigsContractAccountId,
+      methodName: "add_post",
+      args: {
         parent_id: parentId,
         labels,
         body,
       },
-      100_000_000_000_000n,
-      2_000_000_000_000_000_000_000n
-    );
+      deposit: Big(10).pow(21).mul(2),
+      gas: Big(10).pow(12).mul(100),
+    });
   } else if (mode == "Edit") {
-    Near.call(
-      nearDevGovGigsContractAccountId,
-      "edit_post",
-      {
+    txn.push({
+      contractName: nearDevGovGigsContractAccountId,
+      methodName: "edit_post",
+      args: {
         id: postId,
         labels,
         body,
       },
-      100_000_000_000_000n,
-      2_000_000_000_000_000_000_000n
-    );
+      deposit: Big(10).pow(21).mul(2),
+      gas: Big(10).pow(12).mul(100),
+    });
+  }
+  if (mode == "Create" || mode == "Edit") {
+    if (grantNotify === false) {
+      txn.unshift({
+        contractName: "social.near",
+        methodName: "grant_write_permission",
+        args: {
+          predecessor_id: nearDevGovGigsContractAccountId,
+          keys: [context.accountId + "/index/notify"],
+        },
+        deposit: Big(10).pow(23),
+        gas: Big(10).pow(12).mul(30),
+      });
+    }
+    Near.call(txn);
   }
 };
 
