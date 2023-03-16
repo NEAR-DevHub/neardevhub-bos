@@ -48,19 +48,6 @@ const selectedBoardId = props.selectedBoardId ?? "mnwtransition";
 
 const boards = props.boards ?? [
   {
-    name: "MyNearWallet Transition",
-    id: "mnwtransition",
-    config: {
-      requiredLabels: ["mnw-transition-applicant"],
-      columnLabels: [
-        "mnw-application-received",
-        "mnw-evaluated-by-wg",
-        "mwn-selection-decision",
-      ],
-      excludedLabels: [],
-    },
-  },
-  {
     name: "near.social",
     id: "nearsocial",
     config: {
@@ -84,13 +71,10 @@ const boards = props.boards ?? [
     config: {
       requiredLabels: ["funding"],
       columnLabels: [
-        "funding-requested",
-        "funding-info-submitted",
-        "funding-info-checked",
-        "funding-terms-agreed",
-        "funding-signed",
-        "funding-invoice-instructions-provided",
-        "funding-provided",
+        "funding-new-request",
+        "funding-information-collection",
+        "funding-processing",
+        "funding-funded",
       ],
       excludedLabels: [],
     },
