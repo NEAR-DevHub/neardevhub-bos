@@ -52,7 +52,11 @@ const boards = props.boards ?? [
     id: "nearsocial",
     config: {
       requiredLabels: ["near-social"],
-      columnLabels: ["widget", "integration", "feature-request"],
+      columns: [
+        { label: "widget", title: "Widget"},
+        { label: "integration", title: "Integration"},
+        { label: "feature-request", title: "Feature Request"},
+      ],
       excludedLabels: [],
     },
   },
@@ -61,7 +65,11 @@ const boards = props.boards ?? [
     id: "gigsboard",
     config: {
       requiredLabels: ["gigs-board"],
-      columnLabels: ["nep", "badges", "feature-request"],
+      columns: [
+        { label: "nep", title: "NEP"},
+        { label: "badges", title: "Badges"},
+        { label: "feature-request", title: "Feature Request"},
+      ],
       excludedLabels: [],
     },
   },
@@ -70,11 +78,11 @@ const boards = props.boards ?? [
     id: "funding",
     config: {
       requiredLabels: ["funding"],
-      columnLabels: [
-        "funding-new-request",
-        "funding-information-collection",
-        "funding-processing",
-        "funding-funded",
+      columns: [
+        { label: "funding-new-request", title: "New Request"},
+        { label: "funding-information-collection", title: "Information Collection"},
+        { label: "funding-processing", title: "Processing"},
+        { label: "funding-funded", title: "Funded"},
       ],
       excludedLabels: [],
     },
@@ -111,7 +119,7 @@ const pageContent = (
           {widget("components.boards.KanbanBoard", {
             requiredLabels: board.config.requiredLabels,
             excludedLabels: board.config.excludedLabels,
-            columnLabels: board.config.columnLabels,
+            columns: board.config.columns,
             boardId: board.id,
           })}
         </div>
