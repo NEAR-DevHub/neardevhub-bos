@@ -53,9 +53,9 @@ const boards = props.boards ?? [
     config: {
       requiredLabels: ["near-social"],
       columns: [
-        { label: "widget", title: "Widget"},
-        { label: "integration", title: "Integration"},
-        { label: "feature-request", title: "Feature Request"},
+        { label: "widget", title: "Widget" },
+        { label: "integration", title: "Integration" },
+        { label: "feature-request", title: "Feature Request" },
       ],
       excludedLabels: [],
     },
@@ -66,9 +66,9 @@ const boards = props.boards ?? [
     config: {
       requiredLabels: ["gigs-board"],
       columns: [
-        { label: "nep", title: "NEP"},
-        { label: "badges", title: "Badges"},
-        { label: "feature-request", title: "Feature Request"},
+        { label: "nep", title: "NEP" },
+        { label: "badges", title: "Badges" },
+        { label: "feature-request", title: "Feature Request" },
       ],
       excludedLabels: [],
     },
@@ -79,10 +79,13 @@ const boards = props.boards ?? [
     config: {
       requiredLabels: ["funding"],
       columns: [
-        { label: "funding-new-request", title: "New Request"},
-        { label: "funding-information-collection", title: "Information Collection"},
-        { label: "funding-processing", title: "Processing"},
-        { label: "funding-funded", title: "Funded"},
+        { label: "funding-new-request", title: "New Request" },
+        {
+          label: "funding-information-collection",
+          title: "Information Collection",
+        },
+        { label: "funding-processing", title: "Processing" },
+        { label: "funding-funded", title: "Funded" },
       ],
       excludedLabels: [],
     },
