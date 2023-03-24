@@ -97,6 +97,17 @@ const Gradient = styled.div`
   }
 `;
 
+const FeaturedCommunity = styled.div`
+   {
+    border: 1px solid #eceef0;
+
+    /* Shadow/sm */
+    box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.1),
+      0px 1px 2px rgba(16, 24, 40, 0.06);
+    border-radius: 16px;
+  }
+`;
+
 return (
   <>
     <Banner>
@@ -108,11 +119,33 @@ return (
       </a>
     </Logo>
     <Scroll>
-      {widget("components.layout.Controls")}
-      {widget("components.layout.Navbar", {
-        children: props.navbarChildren,
-      })}
-      {props.children}
+      <div class="row">
+        <div class="col-lg-9">
+          <div class="h5">Posts</div>
+          {widget("components.layout.Controls")}
+          {widget("components.layout.Navbar", {
+            children: props.navbarChildren,
+          })}
+          {props.children}
+        </div>
+        <div class="col-lg-3">
+          <div class="h5">Featured Communities</div>
+          <FeaturedCommunity>
+            <div class="p-3">
+              <div class="d-flex flex-row align-items-center">
+                <img src="https://ipfs.near.social/ipfs/bafkreihbjm67uavkjkvfqomzx5v63t6kossqwfuptdxfb4vbcpbw3gezdm"></img>
+                <div class="nav navbar-brand h1 p-2">Zero Knowledge</div>
+              </div>
+              <div class="mt-2 text-secondary">
+                Building a zero knowledge ecosystem on NEAR.
+              </div>
+            </div>
+            <div class="border-top p-3">
+              <a class="btn btn-light rounded-5 border w-100">View Details</a>
+            </div>
+          </FeaturedCommunity>
+        </div>
+      </div>
     </Scroll>
   </>
 );
