@@ -51,7 +51,7 @@ const Banner = styled.div`
     width: 100vw;
     height: 100px;
     background: #232323;
-    z-index: 2;
+    z-index: 11;
     margin-top: -24px;
 
     overflow: hidden;
@@ -62,7 +62,7 @@ const Logo = styled.div`
    {
     position: fixed;
     padding: 32px 0;
-    z-index: 4;
+    z-index: 13;
     margin-top: -24px;
 
     img {
@@ -93,7 +93,7 @@ const Gradient = styled.div`
     );
     opacity: 0.22;
     filter: blur(17vw);
-    z-index: 3;
+    z-index: 12;
   }
 `;
 
