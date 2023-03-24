@@ -103,7 +103,7 @@ return (
       <Gradient></Gradient>
     </Banner>
     <Logo>
-      <a href="https://devgovgigs.near.social">
+      <a href={href("Feed")}>
         <img src="https://ipfs.near.social/ipfs/bafkreifm5y7r6bqcjtef6wytrp7ysdxocmgmjffjziorqya4p7kbtamntu"></img>
       </a>
     </Logo>
