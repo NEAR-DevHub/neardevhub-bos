@@ -47,20 +47,38 @@ function href(widgetName, linkProps) {
 const Scroll = styled.div`
    {
     z-index: -1;
-    margin-top: calc(-24px + 100px + 25px);
+    margin-top: calc(-24px + 100px + 25px + 200px);
   }
 `;
 
 return (
   <>
     {widget("components.layout.Banner")}
+    {widget("components.layout.CommunityHeader", {
+      title: props.title,
+      icon: props.icon,
+      desc: props.desc,
+    })}
     <Scroll>
-      {props.header}
-      {widget("components.layout.Controls")}
-      {widget("components.layout.Navbar", {
-        children: props.navbarChildren,
-      })}
-      {props.children}
+      <div>
+        <Markdown class="card-text" text={"hello\n# aaa"}></Markdown>
+        Zero Knowledge (ZK) technology is gaining significant traction within
+        the NEAR community. This space brings together individuals, experts, and
+        organizations who are interested in developing a ZK ecosystem on NEAR.
+        Vision Drive the development of ZK technology on NEAR. Organization
+        There are two main groups involved in the Zero Knowledge community:
+        Working Group This formal group makes official decisions on proposals
+        and questions related to Zero Knowledge. They follow a strict process to
+        review proposals, recommend funding to DAO or grant programs, and hold
+        grant takers accountable. They engage with the broader community to
+        understand their needs and encourage ideation. Members Anton Yezhov
+        (yezhov.near) Garvit Goel (Garvit Goel) Igor Gulamov (Igor Gulamov)
+        Community Group This group provides an informal space to anyone
+        interested in Zero Knowledge and its applications. This self-organized
+        group is open to anyone and its not controlled by anyone but the people
+        who are organizing it. It offers a great opportunity to connect with
+        others to discuss ideas, share resources, and collaborate on projects.
+      </div>
     </Scroll>
   </>
 );
