@@ -1,7 +1,6 @@
 /* INCLUDE: "common.jsx" */
 const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+  props.nearDevGovGigsContractAccountId || "devgovgigs.near".split("/", 1)[0];
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -55,7 +54,6 @@ const Grey = styled.div`
 
     overflow: hidden;
     background: #f3f3f3;
-
   }
 `;
 
@@ -72,8 +70,7 @@ const Content = styled.div`
 // but it's not there in near social, need write such style here
 return (
   <>
-  <Grey>
-  </Grey>
+    <Grey></Grey>
 
     <Content>
       <div aria-label="breadcrumb">
@@ -99,24 +96,28 @@ return (
       <div>
         <ul class="nav nav-underline">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">
+            <a
+              class="nav-link active"
+              aria-current="page"
+              onClick={() => props.switchTab("Overview")}
+            >
               <i class="bi-house-door"> </i>
               Overview
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" onClick={() => props.switchTab("Discussions")}>
               <i class="bi-chat-square-text"> </i>
               Discussions
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" onClick={() => props.switchTab("Sponsorship")}>
               <i class="bi-kanban"> </i>
               Sponsorship
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" onClick={() => props.switchTab("Events")}>
             <a class="nav-link">
               <i class="bi-calendar"> </i>
               Events
@@ -125,5 +126,5 @@ return (
         </ul>
       </div>
     </Content>
-    </>
+  </>
 );

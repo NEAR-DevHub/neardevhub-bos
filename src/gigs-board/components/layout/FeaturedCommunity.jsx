@@ -1,7 +1,6 @@
 /* INCLUDE: "common.jsx" */
 const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+  props.nearDevGovGigsContractAccountId || "devgovgigs.near".split("/", 1)[0];
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -55,15 +54,18 @@ return (
   <Hover className="card">
     <a
       href={href("Community", {
-        tag: props.tag,
+        overviewId: props.overviewId,
+        eventsId: props.eventsId,
+        label: props.label,
         title: props.title,
         desc: props.desc,
         icon: props.icon,
       })}
+      class="text-decoration-none text-reset"
     >
       <img src={props.cover} class="card-img-top"></img>
+      <div class="h5 pt-3 ps-3">{props.title}</div>
+      <div class="ps-3 pb-2 text-secondary">{props.desc}</div>
     </a>
-    <div class="h5 pt-3 ps-3">{props.title}</div>
-    <div class="ps-3 pb-2 text-secondary">{props.desc}</div>
   </Hover>
 );

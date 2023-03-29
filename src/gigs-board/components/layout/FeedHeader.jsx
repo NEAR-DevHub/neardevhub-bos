@@ -1,7 +1,6 @@
 /* INCLUDE: "common.jsx" */
 const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+  props.nearDevGovGigsContractAccountId || "devgovgigs.near".split("/", 1)[0];
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -50,7 +49,9 @@ return (
     <div class="row">
       <div class="col">
         {widget("components.layout.FeaturedCommunity", {
-          tag: "zero-knowledge",
+          overviewId: 397,
+          eventsId: 401,
+          label: "zero-knowledge",
           icon: "https://ipfs.near.social/ipfs/bafkreigthuagbsrl2xbpk5h4bneoteiv4pqa5itokrqrm4wckgasa6d4nm",
           cover:
             "https://ipfs.near.social/ipfs/bafkreifuflol4fgihxcgpxkl56lygpgdisdfbizrjpt4jhir7mvx3ddh4a",
@@ -60,7 +61,7 @@ return (
       </div>
       <div class="col">
         {widget("components.layout.FeaturedCommunity", {
-          tag: "protocol",
+          label: "protocol",
           cover:
             "https://ipfs.near.social/ipfs/bafkreifuflol4fgihxcgpxkl56lygpgdisdfbizrjpt4jhir7mvx3ddh4a",
           title: "Protocol",
@@ -69,7 +70,7 @@ return (
       </div>
       <div class="col">
         {widget("components.layout.FeaturedCommunity", {
-          tag: "tooling",
+          label: "tooling",
           cover:
             "https://ipfs.near.social/ipfs/bafkreifuflol4fgihxcgpxkl56lygpgdisdfbizrjpt4jhir7mvx3ddh4a",
           title: "Tooling",
@@ -78,7 +79,7 @@ return (
       </div>
       <div class="col">
         {widget("components.layout.FeaturedCommunity", {
-          tag: "contract-standards",
+          label: "contract-standards",
           cover:
             "https://ipfs.near.social/ipfs/bafkreifuflol4fgihxcgpxkl56lygpgdisdfbizrjpt4jhir7mvx3ddh4a",
           title: "Contract Standards",
