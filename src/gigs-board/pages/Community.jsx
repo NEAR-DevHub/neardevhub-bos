@@ -1,6 +1,7 @@
 /* INCLUDE: "common.jsx" */
 const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId || "devgovgigs.near".split("/", 1)[0];
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -173,8 +174,8 @@ return (
         </div>
       ) : props.tab === "Discussions" ? (
         <div>
-          <div class="row mb-2">
-            <div class="col">
+          <div class="row mb-2 justify-content-center">
+            <div class="col w-auto">
               <small class="text-muted">
                 Required labels:
                 {discussionsRequiredLabels.map((label) => (
@@ -196,13 +197,13 @@ return (
         </div>
       ) : props.tab === "Sponsorship" ? (
         <div>
-          <div class="row mb-2">
-            <div class="col">
+          <div class="row mb-2 justify-content-center">
+            <div class="col w-auto">
               <small class="text-muted">
                 Post Type: <b>Sponsorship</b>
               </small>
             </div>
-            <div class="col">
+            <div class="col w-atuo">
               <small class="text-muted">
                 Required labels:
                 {sponsorshipRequiredLabels.map((label) => (
