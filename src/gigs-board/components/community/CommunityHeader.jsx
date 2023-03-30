@@ -97,7 +97,7 @@ return (
             <a
               class="nav-link active"
               aria-current="page"
-              href={href("Community", { label: props.label, tab: "Overview" })}
+              href={href("community.Overview", { label: props.label })}
             >
               <i class="bi-house-door"> </i>
               Overview
@@ -106,9 +106,8 @@ return (
           <li class="nav-item">
             <a
               class="nav-link"
-              href={href("Community", {
+              href={href("community.Discussions", {
                 label: props.label,
-                tab: "Discussions",
               })}
             >
               <i class="bi-chat-square-text"> </i>
@@ -118,9 +117,8 @@ return (
           <li class="nav-item">
             <a
               class="nav-link"
-              href={href("Community", {
+              href={href("community.Sponsorship", {
                 label: props.label,
-                tab: "Sponsorship",
               })}
             >
               <i class="bi-kanban"> </i>
@@ -130,7 +128,10 @@ return (
           <li class="nav-item">
             <a
               class="nav-link"
-              href={href("Community", { label: props.label, tab: "Events" })}
+              href={href("community.Events", {
+                label: props.label,
+                tab: "Events",
+              })}
             >
               <i class="bi-calendar"> </i>
               Events

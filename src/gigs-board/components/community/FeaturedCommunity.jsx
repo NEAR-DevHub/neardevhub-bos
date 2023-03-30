@@ -54,7 +54,7 @@ const Hover = styled.div`
 return (
   <Hover className="card">
     <a
-      href={href("Community", {
+      href={href("community.Overview", {
         label: props.label,
       })}
       class="text-decoration-none text-reset"
