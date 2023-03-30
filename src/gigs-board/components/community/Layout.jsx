@@ -106,6 +106,7 @@ return (
       icon: community.icon,
       desc: community.desc,
       label: props.label,
+      tab: props.tab,
     })}
     <Scroll>{props.children}</Scroll>
   </>

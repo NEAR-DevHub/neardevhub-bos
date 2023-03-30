@@ -118,12 +118,12 @@ const sponsorshipRequiredPosts = postIdsWithLabels(sponsorshipRequiredLabels);
 const Sponsorship = (
   <div>
     <div class="row mb-2 justify-content-center">
-      <div class="col w-auto">
+      <div class="col-md-auto">
         <small class="text-muted">
           Post Type: <b>Sponsorship</b>
         </small>
       </div>
-      <div class="col w-atuo">
+      <div class="col-md-auto">
         <small class="text-muted">
           Required labels:
           {sponsorshipRequiredLabels.map((label) => (
@@ -161,5 +161,6 @@ const Sponsorship = (
 
 return widget("components.community.Layout", {
   label: props.label,
+  tab: "Sponsorship",
   children: Sponsorship,
 });

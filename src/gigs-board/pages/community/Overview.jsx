@@ -123,5 +123,6 @@ const Overview = (
 
 return widget("components.community.Layout", {
   label: props.label,
+  tab: "Overview",
   children: Overview,
 });

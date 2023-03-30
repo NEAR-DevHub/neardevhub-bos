@@ -123,5 +123,6 @@ const Events = (
 
 return widget("components.community.Layout", {
   label: props.label,
+  tab: "Events",
   children: Events,
 });

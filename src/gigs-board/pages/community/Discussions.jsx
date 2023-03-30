@@ -116,8 +116,8 @@ const discussionRequiredPosts = postIdsWithLabels(discussionsRequiredLabels);
 
 const Discussions = (
   <div>
-    <div class="row mb-2 justify-content-center">
-      <div class="col w-auto">
+    <div class="row mb-2">
+      <div class="col text-center">
         <small class="text-muted">
           Required labels:
           {discussionsRequiredLabels.map((label) => (
@@ -143,5 +143,6 @@ const Discussions = (
 
 return widget("components.community.Layout", {
   label: props.label,
+  tab: "Discussions",
   children: Discussions,
 });
