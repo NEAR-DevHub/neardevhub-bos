@@ -10,6 +10,12 @@ const options = {
 };
 
 replaceInFiles(options)
+  .pipe({
+    from: /\/\* INCLUDE: "communities\.jsx" \*\/.*\/\* END_INCLUDE: "communities\.jsx" \*\//gms,
+    to: `/* INCLUDE: "communities.jsx" */\n${fs
+      .readFileSync("./communities.jsx", "utf8")
+      .toString()}/* END_INCLUDE: "communities.jsx" */`,
+  })
   .then(({ changedFiles, countOfMatchesByPaths }) => {
     console.log("DONE");
   })

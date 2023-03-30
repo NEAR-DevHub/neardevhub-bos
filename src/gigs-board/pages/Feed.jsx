@@ -61,7 +61,7 @@ const onSearch = (label) => {
 };
 
 return widget("components.layout.Page", {
-  header: widget("components.layout.FeedHeader"),
+  header: widget("components.community.FeedHeader"),
   navbarChildren: widget("components.layout.Search", {
     searchQuery: { label: state.label },
     onSearch,

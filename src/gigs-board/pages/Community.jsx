@@ -43,6 +43,47 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
+/* INCLUDE: "communities.jsx" */
+const communities = {
+  "zero-knowledge": {
+    overviewId: 397,
+    eventsId: 401,
+    icon: "https://ipfs.near.social/ipfs/bafkreigthuagbsrl2xbpk5h4bneoteiv4pqa5itokrqrm4wckgasa6d4nm",
+    cover:
+      "https://ipfs.near.social/ipfs/bafkreifuflol4fgihxcgpxkl56lygpgdisdfbizrjpt4jhir7mvx3ddh4a",
+    title: "Zero Knowledge",
+    desc: "Building a zero knowledge ecosystem on NEAR.",
+  },
+  protocol: {
+    overviewId: 412,
+    eventsId: 413,
+    icon: "https://ipfs.near.social/ipfs/bafkreidpitdafcnhkp4uyomacypdgqvxr35jtfnbxa5s6crby7qjk2nv5a",
+    cover:
+      "https://ipfs.near.social/ipfs/bafkreicg4svzfz5nvllomsahndgm7u62za4sib4mmbygxzhpcl4htqwr4a",
+    title: "Protocol",
+    desc: "Supporting the ongoing innovation of the NEAR Protocol.",
+  },
+  tooling: {
+    overviewId: 416,
+    eventsId: 417,
+    icon: "https://ipfs.near.social/ipfs/bafkreifayatdzw2xdh3niiapxubkqgmsctkdfgfg6qmsc4mcceqahezus4",
+    cover:
+      "https://ipfs.near.social/ipfs/bafkreiemxjll2evs54vr6tr75akup55swl65g7hqqxgransvxrgajgcj64",
+    title: "Tooling",
+    desc: "Supporting the ongoing innovation of tooling.",
+  },
+  "contract-standards": {
+    overviewId: 414,
+    eventsId: 415,
+    icon: "https://ipfs.near.social/ipfs/bafkreiepgdnu7soc6xgbyd4adicbf3eyxiiwqawn6tguaix6aklfpir634",
+    cover:
+      "https://ipfs.near.social/ipfs/bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey",
+    title: "Contract Standards",
+    desc: "Coordinating the contribution to the NEAR dapp standards.",
+  },
+};
+/* END_INCLUDE: "communities.jsx" */
+
 const Scroll = styled.div`
    {
     z-index: -1;
@@ -50,35 +91,27 @@ const Scroll = styled.div`
   }
 `;
 
-if (!props.overviewId) {
-  return;
+if (!props.label) {
+  return <div>Loading ...</div>;
 }
+
+const community = communities[props.label];
+
 const overviewPost = Near.view(nearDevGovGigsContractAccountId, "get_post", {
-  post_id: Number(props.overviewId),
+  post_id: community.overviewId,
 });
 if (!overviewPost) {
   return <div>Loading ...</div>;
 }
 
-if (!props.eventsId) {
-  return;
-}
 const eventsPost = Near.view(nearDevGovGigsContractAccountId, "get_post", {
-  post_id: Number(props.eventsId),
+  post_id: community.eventsId,
 });
 if (!eventsPost) {
   return <div>Loading ...</div>;
 }
 
-initState({
-  tab: "Overview",
-});
-
-function switchTab(tab) {
-  State.update({ tab });
-}
-
-const discussionsRequiredLabels = ["community", props.label];
+const discussionsRequiredLabels = [props.label];
 const sponsorshipRequiredLabels = ["funding-funded", props.label];
 
 const postIdsWithLabels = (labels) => {
@@ -91,7 +124,6 @@ const postIdsWithLabels = (labels) => {
     )
     .map((ids) => new Set(ids))
     .reduce((previous, current) => {
-      console.log(previous, current);
       let res = new Set();
       for (let id of current) {
         if (previous.has(id)) {
@@ -105,26 +137,25 @@ const postIdsWithLabels = (labels) => {
 
 const discussionRequiredPosts = postIdsWithLabels(discussionsRequiredLabels);
 const sponsorshipRequiredPosts = postIdsWithLabels(sponsorshipRequiredLabels);
-console.log(sponsorshipRequiredPosts);
 
 return (
   <>
     {widget("components.layout.Banner")}
-    {widget("components.layout.CommunityHeader", {
-      title: props.title,
-      icon: props.icon,
-      desc: props.desc,
-      switchTab,
+    {widget("components.community.CommunityHeader", {
+      title: community.title,
+      icon: community.icon,
+      desc: community.desc,
+      label: props.label,
     })}
     <Scroll>
-      {state.tab === "Overview" ? (
+      {!props.tab || props.tab === "Overview" ? (
         <div>
           <Markdown
             class="card-text"
             text={overviewPost.snapshot.description}
           ></Markdown>
         </div>
-      ) : state.tab === "Discussions" ? (
+      ) : props.tab === "Discussions" ? (
         <div>
           <div class="row mb-2">
             <div class="col">
@@ -147,7 +178,7 @@ return (
             </div>
           </div>
         </div>
-      ) : state.tab === "Sponsorship" ? (
+      ) : props.tab === "Sponsorship" ? (
         <div>
           <div class="row mb-2">
             <div class="col">
@@ -189,7 +220,7 @@ return (
             </div>
           </div>
         </div>
-      ) : state.tab === "Events" ? (
+      ) : props.tab === "Events" ? (
         <div>
           <Markdown
             class="card-text"
