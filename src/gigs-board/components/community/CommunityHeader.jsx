@@ -78,9 +78,6 @@ return (
           <li class="breadcrumb-item">
             <a href={href("Feed")}>Developer Governance</a>
           </li>
-          <li class="breadcrumb-item">
-            <a href={href("Feed")}>Communities</a>
-          </li>
           <li class="breadcrumb-item active" aria-current="page">
             {props.title}
           </li>

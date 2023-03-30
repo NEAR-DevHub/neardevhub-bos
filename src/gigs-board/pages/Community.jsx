@@ -48,9 +48,9 @@ const communities = {
   "zero-knowledge": {
     overviewId: 397,
     eventsId: 401,
-    icon: "https://ipfs.near.social/ipfs/bafkreigthuagbsrl2xbpk5h4bneoteiv4pqa5itokrqrm4wckgasa6d4nm",
+    icon: "https://ipfs.near.social/ipfs/bafkreiajwq6ep3n7veddozji2djv5vviyisabhycbweslvpwhsoyuzcwi4",
     cover:
-      "https://ipfs.near.social/ipfs/bafkreifuflol4fgihxcgpxkl56lygpgdisdfbizrjpt4jhir7mvx3ddh4a",
+      "https://ipfs.near.social/ipfs/bafkreihgxg5kwts2juldaeasveyuddkm6tcabmrat2aaq5u6uyljtyt7lu",
     title: "Zero Knowledge",
     desc: "Building a zero knowledge ecosystem on NEAR.",
   },
@@ -66,9 +66,9 @@ const communities = {
   tooling: {
     overviewId: 416,
     eventsId: 417,
-    icon: "https://ipfs.near.social/ipfs/bafkreifayatdzw2xdh3niiapxubkqgmsctkdfgfg6qmsc4mcceqahezus4",
+    icon: "https://ipfs.near.social/ipfs/bafkreie2eaj5czmpfe6pe53kojzcspgozebdsonffwvbxtpuipnwahybvi",
     cover:
-      "https://ipfs.near.social/ipfs/bafkreiemxjll2evs54vr6tr75akup55swl65g7hqqxgransvxrgajgcj64",
+      "https://ipfs.near.social/ipfs/bafkreiehzr7z2fhoqqmkt3z667wubccbch6sqtsnvd6msodyzpnf72cszy",
     title: "Tooling",
     desc: "Supporting the ongoing innovation of tooling.",
   },
@@ -132,11 +132,26 @@ const postIdsWithLabels = (labels) => {
       }
       return res;
     });
-  return [...ids];
+  ids.delete(communities[props.label].overviewId);
+  ids.delete(communities[props.label].eventsId);
+  return [...ids].reverse();
 };
 
 const discussionRequiredPosts = postIdsWithLabels(discussionsRequiredLabels);
 const sponsorshipRequiredPosts = postIdsWithLabels(sponsorshipRequiredLabels);
+
+const onMention = (accountId) => (
+  <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
+    <Widget
+      src="neardevgov.near/widget/ProfileLine"
+      props={{
+        accountId: accountId.toLowerCase(),
+        hideAccountId: true,
+        tooltip: true,
+      }}
+    />
+  </span>
+);
 
 return (
   <>
@@ -153,6 +168,7 @@ return (
           <Markdown
             class="card-text"
             text={overviewPost.snapshot.description}
+            onMention={onMention}
           ></Markdown>
         </div>
       ) : props.tab === "Discussions" ? (
@@ -169,7 +185,7 @@ return (
               </small>
             </div>
           </div>
-          {widget("components.layout.Controls")}
+          {widget("components.layout.Controls", {labels: discussionsRequiredLabels})}
           <div class="row">
             <div class="col">
               {discussionRequiredPosts.map((postId) =>
@@ -225,6 +241,7 @@ return (
           <Markdown
             class="card-text"
             text={eventsPost.snapshot.description}
+            onMention={onMention}
           ></Markdown>
         </div>
       ) : (
