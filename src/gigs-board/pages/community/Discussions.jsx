@@ -86,45 +86,29 @@ const communities = {
 /* END_INCLUDE: "communities.jsx" */
 
 if (!props.label) {
-  return <div>Loading ...</div>;
+  return (
+    <div class="alert alert-danger" role="alert">
+      Error: label is required
+    </div>
+  );
 }
 
-const postIdsWithLabels = (labels) => {
-  const ids = labels
-    .map(
-      (label) =>
-        Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-          label,
-        }) ?? []
-    )
-    .map((ids) => new Set(ids))
-    .reduce((previous, current) => {
-      let res = new Set();
-      for (let id of current) {
-        if (previous.has(id)) {
-          res.add(id);
-        }
-      }
-      return res;
-    });
-  ids.delete(communities[props.label].overviewId);
-  ids.delete(communities[props.label].eventsId);
-  return [...ids].reverse();
-};
-const discussionsRequiredLabels = [props.label];
-const discussionRequiredPosts = postIdsWithLabels(discussionsRequiredLabels);
+const label = props.label;
+
+const discussionRequiredPosts =
+  Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+    label,
+  }) ?? [];
 
 const Discussions = (
   <div>
     <div class="row mb-2">
       <div class="col text-center">
         <small class="text-muted">
-          Required labels:
-          {discussionsRequiredLabels.map((label) => (
-            <a href={href("Feed", { label })} key={label}>
-              <span class="badge text-bg-primary me-1">{label}</span>
-            </a>
-          ))}
+          Required label:
+          <a href={href("Feed", { label })} key={label}>
+            <span class="badge text-bg-primary me-1">{label}</span>
+          </a>
         </small>
       </div>
     </div>

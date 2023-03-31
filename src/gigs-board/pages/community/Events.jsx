@@ -86,7 +86,11 @@ const communities = {
 /* END_INCLUDE: "communities.jsx" */
 
 if (!props.label) {
-  return <div>Loading ...</div>;
+  return (
+    <div class="alert alert-danger" role="alert">
+      Error: label is required
+    </div>
+  );
 }
 
 const community = communities[props.label];

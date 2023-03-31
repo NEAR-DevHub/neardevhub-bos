@@ -86,7 +86,11 @@ const communities = {
 /* END_INCLUDE: "communities.jsx" */
 
 if (!props.label) {
-  return <div>Loading ...</div>;
+  return (
+    <div class="alert alert-danger" role="alert">
+      Error: label is required
+    </div>
+  );
 }
 
 const postIdsWithLabels = (labels) => {
@@ -112,7 +116,7 @@ const postIdsWithLabels = (labels) => {
   return [...ids].reverse();
 };
 
-const sponsorshipRequiredLabels = ["funding-funded", props.label];
+const sponsorshipRequiredLabels = ["funding", props.label];
 const sponsorshipRequiredPosts = postIdsWithLabels(sponsorshipRequiredLabels);
 
 const Sponsorship = (
@@ -139,7 +143,7 @@ const Sponsorship = (
         <div class="card">
           <div class="card-body border-secondary">
             <h6 class="card-title">
-              Funded ({sponsorshipRequiredPosts.length})
+              Sponsored Projects ({sponsorshipRequiredPosts.length})
             </h6>
             <div class="row">
               {sponsorshipRequiredPosts.map((postId) => (
