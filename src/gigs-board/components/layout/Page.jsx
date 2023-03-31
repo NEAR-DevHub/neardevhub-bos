@@ -44,23 +44,15 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const Scroll = styled.div`
-   {
-    z-index: -1;
-    margin-top: calc(-24px + 100px + 25px);
-  }
-`;
-
 return (
   <>
     {widget("components.layout.Banner")}
-    <Scroll>
+
       {props.header}
       {widget("components.layout.Controls")}
       {widget("components.layout.Navbar", {
         children: props.navbarChildren,
       })}
       {props.children}
-    </Scroll>
   </>
 );

@@ -45,39 +45,28 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 const Banner = styled.div`
-   {
-    position: fixed;
-    left: calc(-50vw + 50%);
-    width: 100vw;
-    height: 100px;
-    background: #232323;
-    z-index: 11;
-    margin-top: -24px;
+{
+  height: 100px;
+  background: #232323;
+  margin-top: -24px;
+  overflow: hidden !important;
+  padding: 32px;
 
-    overflow: hidden;
+  img {
+    height: 36px;
   }
-`;
-
-const Logo = styled.div`
-   {
-    position: fixed;
-    padding: 32px 0;
-    z-index: 13;
-    margin-top: -24px;
-
-    img {
-      height: 36px;
-    }
-  }
+  
+  margin-bottom: 25px;
+}
 `;
 
 const Gradient = styled.div`
    {
-    position: absolute;
+    position: relative;
     left: -48vw;
     width: 173vw;
     height: 70vw;
-    top: -40vw;
+    top: -70vw;
     transform: rotate(9.78deg);
     background: linear-gradient(
       -90deg,
@@ -86,19 +75,16 @@ const Gradient = styled.div`
     );
     opacity: 0.22;
     filter: blur(17vw);
-    z-index: 12;
   }
 `;
 
 return (
   <>
     <Banner>
-      <Gradient></Gradient>
-    </Banner>
-    <Logo>
       <a href={href("Feed")}>
         <img src="https://ipfs.near.social/ipfs/bafkreifm5y7r6bqcjtef6wytrp7ysdxocmgmjffjziorqya4p7kbtamntu"></img>
       </a>
-    </Logo>
+      <Gradient></Gradient>
+    </Banner>
   </>
 );

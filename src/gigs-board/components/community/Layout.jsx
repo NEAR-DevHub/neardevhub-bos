@@ -85,12 +85,10 @@ const communities = {
 };
 /* END_INCLUDE: "communities.jsx" */
 
-const Scroll = styled.div`
-   {
-    z-index: -1;
-    margin-top: calc(-24px + 100px + 25px + 200px);
-  }
-`;
+const Content = styled.div`
+{
+  padding: 0 32px;
+}`
 
 if (!props.label) {
   return (
@@ -112,6 +110,6 @@ return (
       label: props.label,
       tab: props.tab,
     })}
-    <Scroll>{props.children}</Scroll>
+    <Content>{props.children}</Content>
   </>
 );
