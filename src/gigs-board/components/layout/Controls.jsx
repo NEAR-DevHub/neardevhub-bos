@@ -133,6 +133,7 @@ return (
         {widget("components.posts.PostEditor", {
           postType: "Comment",
           parentId: null,
+          labels: props.labels,
         })}
       </div>
       <div
@@ -143,6 +144,7 @@ return (
         {widget("components.posts.PostEditor", {
           postType: "Idea",
           parentId: null,
+          labels: props.labels,
         })}
       </div>
       <div
@@ -153,6 +155,7 @@ return (
         {widget("components.posts.PostEditor", {
           postType: "Submission",
           parentId: null,
+          labels: props.labels,
         })}
       </div>
       <div
@@ -163,6 +166,7 @@ return (
         {widget("components.posts.PostEditor", {
           postType: "Attestation",
           parentId: null,
+          labels: props.labels,
         })}
       </div>
       <div
@@ -173,6 +177,7 @@ return (
         {widget("components.posts.PostEditor", {
           postType: "Sponsorship",
           parentId: null,
+          labels: props.labels,
         })}
       </div>
     </div>

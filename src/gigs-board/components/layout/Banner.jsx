@@ -44,15 +44,47 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
+const Banner = styled.div`
+{
+  height: 100px;
+  background: #232323;
+  margin-top: -24px;
+  overflow: hidden !important;
+  padding: 32px;
+
+  img {
+    height: 36px;
+  }
+  
+  margin-bottom: 25px;
+}
+`;
+
+const Gradient = styled.div`
+   {
+    position: relative;
+    left: -48vw;
+    width: 173vw;
+    height: 70vw;
+    top: -70vw;
+    transform: rotate(9.78deg);
+    background: linear-gradient(
+      -90deg,
+      rgb(0, 204, 255) 0.57%,
+      rgb(50, 82, 166) 100.57%
+    );
+    opacity: 0.22;
+    filter: blur(17vw);
+  }
+`;
+
 return (
   <>
-    {widget("components.layout.Banner")}
-
-      {props.header}
-      {widget("components.layout.Controls")}
-      {widget("components.layout.Navbar", {
-        children: props.navbarChildren,
-      })}
-      {props.children}
+    <Banner>
+      <a href={href("Feed")}>
+        <img src="https://ipfs.near.social/ipfs/bafkreifm5y7r6bqcjtef6wytrp7ysdxocmgmjffjziorqya4p7kbtamntu"></img>
+      </a>
+      <Gradient></Gradient>
+    </Banner>
   </>
 );
