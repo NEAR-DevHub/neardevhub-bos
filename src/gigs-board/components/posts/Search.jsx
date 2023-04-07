@@ -714,42 +714,22 @@ return (
           <strong>{state.processedQuery.join(" ")}</strong>:
         </div>
       )}
-    {
-      state.term && state.searchResult
-        ? widget("components.posts.List", {
-            searchResult: {
-              postIds: state.searchResult,
-              recency: props.recency,
-              label: props.label,
-            },
-          })
-        : widget("components.posts.List", {
-            recency: props.recency,
-            label: props.label,
-          })
-
-      // <InfiniteScroll
-      //   pageStart={0}
-      //   loadMore={showMoreSearchResults}
-      //   hasMore={state.shownSearchResults.length < state.searchResult.length}
-      //   loader={<div className="loader">Loading ...</div>}
-      // >
-      //     {widget()}
-      //   {state.shownSearchResults.map((postId) => {
-      //     return (
-      //       <div key={postId} style={{ "min-height": "10em" }}>
-      //         <Widget
-      //           src={`p516entropy.near/widget/SearchResultPost`}
-      //           props={{
-      //             post: getProcessedPostsCached().data[postId],
-      //             seachKeywords: getSearchResultsKeywordsFor(postId),
-      //           }}
-      //           key={key}
-      //         />
-      //       </div>
-      //     );
-      //   })}
-      // </InfiniteScroll>
-    }
+    {state.term && state.term.length > 2 && state.searchResult
+      ? widget("components.posts.List", {
+          searchResult: {
+            postIds: state.searchResult,
+            keywords: Object.fromEntries(
+              state.searchResult.map((postId) => {
+                return [postId, getSearchResultsKeywordsFor(postId)];
+              })
+            ),
+          },
+          recency: props.recency,
+          label: props.label,
+        })
+      : widget("components.posts.List", {
+          recency: props.recency,
+          label: props.label,
+        })}
   </div>
 );

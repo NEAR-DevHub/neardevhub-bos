@@ -45,7 +45,7 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 return (
-  <div class="card border-secondary">
+  <div class="card border-secondary mb-2">
     <div class="nav navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">

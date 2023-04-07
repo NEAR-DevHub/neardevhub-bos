@@ -49,10 +49,14 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const renderItem =
-  props.renderItem ??
-  ((postId) => (
-    // It is important to have a non-zero-height element as otherwise InfiniteScroll loads too many items on initial load
+console.log(props)
+
+function defaultRenderItem(postId, additionalProps) {
+  if (!additionalProps) {
+    additionalProps = {};
+  }
+  // It is important to have a non-zero-height element as otherwise InfiniteScroll loads too many items on initial load
+  return (
     <div style={{ minHeight: "150px" }}>
       {widget(
         `components.posts.Post`,
@@ -60,16 +64,28 @@ const renderItem =
           id: postId,
           expandable: true,
           defaultExpanded: false,
+          ...additionalProps,
         },
         postId
       )}
     </div>
-  ));
+  );
+};
+
+const renderItem =
+  props.renderItem ?? defaultRenderItem;
+
 const cachedRenderItem = (item, i) => {
+  if (props.searchResult && props.searchResult.keywords[item]) {
+    return renderItem(item, {
+      searchKeywords: props.searchResult.keywords[item],
+    });
+  }
+
   const key = JSON.stringify(item);
 
   if (!(key in state.cachedItems)) {
-    state.cachedItems[key] = renderItem(item, i);
+    state.cachedItems[key] = renderItem(item);
     State.update();
   }
   return state.cachedItems[key];
@@ -83,10 +99,10 @@ if (props.label) {
   postIds = Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
     label: props.label,
   });
-} else if (props.recency == "all") {
-  postIds = Near.view(nearDevGovGigsContractAccountId, "get_all_post_ids");
 } else if (props.searchResult) {
   postIds = props.searchResult.postIds;
+} else if (props.recency == "all") {
+  postIds = Near.view(nearDevGovGigsContractAccountId, "get_all_post_ids");
 } else {
   postIds = Near.view(nearDevGovGigsContractAccountId, "get_children_ids");
 }
@@ -200,6 +216,7 @@ const fetchMore =
 
 const items = state.items ? state.items.slice(0, state.displayCount) : [];
 
+console.log(items)
 const renderedItems = items.map(cachedRenderItem);
 
 return (
