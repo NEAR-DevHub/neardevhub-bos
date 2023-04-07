@@ -49,7 +49,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-console.log(props)
+console.log(props);
 
 function defaultRenderItem(postId, additionalProps) {
   if (!additionalProps) {
@@ -70,10 +70,9 @@ function defaultRenderItem(postId, additionalProps) {
       )}
     </div>
   );
-};
+}
 
-const renderItem =
-  props.renderItem ?? defaultRenderItem;
+const renderItem = props.renderItem ?? defaultRenderItem;
 
 const cachedRenderItem = (item, i) => {
   if (props.searchResult && props.searchResult.keywords[item]) {
@@ -95,12 +94,28 @@ const initialRenderLimit = props.initialRenderLimit ?? 3;
 const addDisplayCount = props.nextLimit ?? initialRenderLimit;
 
 let postIds;
-if (props.label) {
+if (props.searchResult) {
+  postIds = props.searchResult.postIds;
+  if (props.label) {
+    let postIdLabels = Near.view(
+      nearDevGovGigsContractAccountId,
+      "get_posts_by_label",
+      {
+        label: props.label,
+      }
+    );
+    if (postIdLabels === null) {
+      // wait until postIdLabels are loaded
+      postIds = null;
+    } else {
+      postIdLabels = new Set(postIdLabels);
+      postIds = postIds.filter((id) => postIdLabels.has(id));
+    }
+  }
+} else if (props.label) {
   postIds = Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
     label: props.label,
   });
-} else if (props.searchResult) {
-  postIds = props.searchResult.postIds;
 } else if (props.recency == "all") {
   postIds = Near.view(nearDevGovGigsContractAccountId, "get_all_post_ids");
 } else {
@@ -216,7 +231,7 @@ const fetchMore =
 
 const items = state.items ? state.items.slice(0, state.displayCount) : [];
 
-console.log(items)
+console.log(items);
 const renderedItems = items.map(cachedRenderItem);
 
 return (
