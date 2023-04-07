@@ -86,9 +86,10 @@ const communities = {
 /* END_INCLUDE: "communities.jsx" */
 
 const Content = styled.div`
-{
-  padding: 0 32px;
-}`
+   {
+    padding: 0 32px;
+  }
+`;
 
 if (!props.label) {
   return (
