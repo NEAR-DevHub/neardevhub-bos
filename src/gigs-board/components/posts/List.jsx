@@ -121,7 +121,7 @@ const loader = (
 if (postIds === null) {
   return loader;
 }
-const initialItems = postIds.reverse();
+const initialItems = props.searchResult ? postIds : postIds.reverse();
 //const initialItems = postIds.map(postId => ({ id: postId, ...Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId }) }));
 
 // const computeFetchFrom = (items, limit) => {
