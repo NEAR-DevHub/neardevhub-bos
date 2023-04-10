@@ -77,6 +77,25 @@ const timestamp = readableDate(
   snapshot.timestamp ? snapshot.timestamp / 1000000 : Date.now()
 );
 
+const postSearchKeywords = props.searchKeywords ? (
+  <div style={{ "font-family": "monospace" }} key="post-search-keywords">
+    <span>Found keywords: </span>
+    {props.searchKeywords.map((label) => {
+      return <span class="badge text-bg-info me-1">{label}</span>;
+    })}
+  </div>
+) : (
+  <div key="post-search-keywords"></div>
+);
+
+const searchKeywords = props.searchKeywords ? (
+  <div class="mb-1" key="search-keywords">
+    <small class="text-muted">{postSearchKeywords}</small>
+  </div>
+) : (
+  <div key="search-keywords"></div>
+);
+
 const linkToParent =
   isUnderPost || !parentId ? (
     <div key="link-to-parent"></div>
@@ -504,6 +523,7 @@ return (
     {linkToParent}
     {header}
     <div className="card-body">
+      {searchKeywords}
       {postLabels}
       {postTitle}
       {postExtra}

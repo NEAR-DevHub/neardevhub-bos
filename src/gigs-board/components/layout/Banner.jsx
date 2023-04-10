@@ -45,19 +45,19 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 const Banner = styled.div`
-{
-  height: 100px;
-  background: #232323;
-  margin-top: -24px;
-  overflow: hidden !important;
-  padding: 32px;
+   {
+    height: 100px;
+    background: #232323;
+    margin-top: -24px;
+    overflow: hidden !important;
+    padding: 32px;
 
-  img {
-    height: 36px;
+    img {
+      height: 36px;
+    }
+
+    margin-bottom: 25px;
   }
-  
-  margin-bottom: 25px;
-}
 `;
 
 const Gradient = styled.div`

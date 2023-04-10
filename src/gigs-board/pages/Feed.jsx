@@ -67,7 +67,7 @@ return widget("components.layout.Page", {
     searchQuery: { label: state.label },
     onSearch,
   }),
-  children: widget("components.posts.List", {
+  children: widget("components.posts.Search", {
     recency: props.recency,
     label: state.label,
   }),

@@ -84,7 +84,6 @@ const BreadcrumbBold = styled.b`
 // but it's not there in near social, need write such style here
 return (
   <>
-
     <Header>
       <div aria-label="breadcrumb">
         <ol class="breadcrumb">
