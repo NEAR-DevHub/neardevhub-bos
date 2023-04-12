@@ -269,18 +269,25 @@ const onLike = () => {
   Near.call(likeTxn);
 };
 
-const btnCreatorWidget = (postType, icon, name) => {
+const btnCreatorWidget = (postType, icon, name, desc) => {
   return (
-    <li>
+    <li class="py-1">
       <a
-        class="dropdown-item"
+        class="dropdown-item text-decoration-none d-flex align-items-center lh-sm"
+        style={{ color: "rgb(55,109,137)" }}
         data-bs-toggle="collapse"
         href={`#collapse${postType}Creator${postId}`}
         role="button"
         aria-expanded="false"
         aria-controls={`collapse${postType}Creator${postId}`}
       >
-        <i class={`bi ${icon}`}> </i> {name}
+        <i class={`bi ${icon}`} style={{ fontSize: "1.5rem" }}>
+          {" "}
+        </i>
+        <div class="ps-2 text-wrap" style={{ width: "18rem" }}>
+          <div>{name}</div>
+          <small style={{ fontWeight: 200, color: "grey" }}>{desc}</small>
+        </div>
       </a>
     </li>
   );
@@ -316,22 +323,39 @@ const buttonsFooter = props.isPreview ? null : (
             <i class={`bi ${emptyIcons.Reply}`}> </i> Reply
           </button>
           <ul class="dropdown-menu">
-            {btnCreatorWidget("Idea", emptyIcons.Idea, "Idea")}
-            {btnCreatorWidget("Submission", emptyIcons.Submission, "Solution")}
+            {btnCreatorWidget(
+              "Idea",
+              emptyIcons.Idea,
+              "Idea",
+              "Get feedback from the community about a problem, opportunity, or need."
+            )}
+            {btnCreatorWidget(
+              "Submission",
+              emptyIcons.Submission,
+              "Solution",
+              "Provide a specific proposal or implementation to an idea, optionally requesting funding."
+            )}
             {btnCreatorWidget(
               "Attestation",
               emptyIcons.Attestation,
-              "Attestation"
+              "Attestation",
+              "Formally review or validate a solution as a recognized expert."
             )}
             {btnCreatorWidget(
               "Sponsorship",
               emptyIcons.Sponsorship,
-              "Sponsorship"
+              "Sponsorship",
+              "Offer to fund projects, events, or proposals that match your needs."
             )}
             <li>
               <hr class="dropdown-divider" />
             </li>
-            {btnCreatorWidget("Comment", emptyIcons.Comment, "Comment")}
+            {btnCreatorWidget(
+              "Comment",
+              emptyIcons.Comment,
+              "Comment",
+              "Ask a question, provide information, or share a resource that is relevant to the thread."
+            )}
           </ul>
         </div>
         <button
