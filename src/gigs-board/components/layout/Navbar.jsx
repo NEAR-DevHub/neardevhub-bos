@@ -91,6 +91,43 @@ return (
             <li class="nav-item active ms-2">{props.children}</li>
           ) : null}
         </ul>
+        <div class="btn-group" role="group">
+          <button
+            type="button"
+            class="btn btn-outline-secondary rounded-circle"
+            style={{
+              width: "30px",
+              height: "30px",
+              padding: "6px 0px",
+              borderWidth: "0.5px",
+              lineHeight: "0px",
+            }}
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="bi bi-question-lg"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a
+                target="_blank"
+                class="dropdown-item"
+                href="https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=bug&template=bug_report.md&title="
+              >
+                Report a bug
+              </a>
+            </li>
+            <li>
+              <a
+                target="_blank"
+                class="dropdown-item"
+                href="https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=enhancement&template=feature-request.md&title="
+              >
+                Suggest an improvement
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
