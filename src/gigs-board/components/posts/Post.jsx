@@ -286,7 +286,7 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
         </i>
         <div class="ps-2 text-wrap" style={{ width: "18rem" }}>
           <div>{name}</div>
-          <small style={{ fontWeight: 200, color: "grey" }}>{desc}</small>
+          <small class="fw-light text-secondary">{desc}</small>
         </div>
       </a>
     </li>
