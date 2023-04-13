@@ -93,29 +93,55 @@ const cachedRenderItem = (item, i) => {
 const initialRenderLimit = props.initialRenderLimit ?? 3;
 const addDisplayCount = props.nextLimit ?? initialRenderLimit;
 
+function getPostsByLabel() {
+  return Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+    label: props.label,
+  });
+}
+
+function getPostsByAuthor() {
+  return Near.view(nearDevGovGigsContractAccountId, "get_posts_by_author", {
+    author: props.author,
+  });
+}
+
+function intersectPostsWithLabel(postIds) {
+  if (props.label) {
+    let postIdLabels = getPostsByLabel();
+    if (postIdLabels === null) {
+      // wait until postIdLabels are loaded
+      return null;
+    }
+    postIdLabels = new Set(postIdLabels);
+    return postIds.filter((id) => postIdLabels.has(id));
+  }
+  return postIds;
+}
+
+function intersectPostsWithAuthor(postIds) {
+  if (props.author) {
+    let postIdsByAuthor = getPostsByAuthor();
+    if (postIdsByAuthor == null) {
+      // wait until postIdsByAuthor are loaded
+      return null;
+    } else {
+      postIdsByAuthor = new Set(postIdsByAuthor);
+      return postIds.filter((id) => postIdsByAuthor.has(id));
+    }
+  }
+  return postIds;
+}
+
 let postIds;
 if (props.searchResult) {
   postIds = props.searchResult.postIds;
-  if (props.label) {
-    let postIdLabels = Near.view(
-      nearDevGovGigsContractAccountId,
-      "get_posts_by_label",
-      {
-        label: props.label,
-      }
-    );
-    if (postIdLabels === null) {
-      // wait until postIdLabels are loaded
-      postIds = null;
-    } else {
-      postIdLabels = new Set(postIdLabels);
-      postIds = postIds.filter((id) => postIdLabels.has(id));
-    }
-  }
+  postIds = intersectPostsWithLabel(postIds);
+  postIds = intersectPostsWithAuthor(postIds);
 } else if (props.label) {
-  postIds = Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-    label: props.label,
-  });
+  postIds = getPostsByLabel();
+  postIds = intersectPostsWithAuthor(postIds);
+} else if (props.author) {
+  postIds = getPostsByAuthor();
 } else if (props.recency == "all") {
   postIds = Near.view(nearDevGovGigsContractAccountId, "get_all_post_ids");
 } else {

@@ -725,10 +725,12 @@ return (
           },
           recency: props.recency,
           label: props.label,
+          author: props.author,
         })
       : widget("components.posts.List", {
           recency: props.recency,
           label: props.label,
+          author: props.author,
         })}
   </div>
 );
