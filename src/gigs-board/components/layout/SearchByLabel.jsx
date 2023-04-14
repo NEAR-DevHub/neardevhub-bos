@@ -44,43 +44,29 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-State.init({
-  propsLabel: props.label,
-  label: props.label,
-  author: props.author,
-});
+const onSearchLabel = props.onSearchLabel;
+const selectedLabels = props.searchQuery?.label
+  ? [{ name: props.searchQuery.label }]
+  : [];
 
-// When rerendered with different props, State will be preserved, so we need to update the state when we detect that the props have changed.
-if (props.label !== state.propsLabel) {
-  State.update({
-    propsLabel: props.label,
-    label: props.label,
-  });
+const labels = Near.view(nearDevGovGigsContractAccountId, "get_all_labels");
+if (!labels) {
+  return <div>Loading ...</div>;
 }
+const wrappedLabels = labels.map((label) => ({ name: label }));
 
-const onSearchLabel = (label) => {
-  State.update({ label });
+const onChange = (selectedLabels) => {
+  onSearchLabel(selectedLabels[0]?.name);
 };
 
-const onSearchAuthor = (author) => {
-  State.update({ author });
-};
-
-return widget("components.layout.Page", {
-  header: widget("components.community.FeedHeader"),
-  navbarChildren: [
-    widget("components.layout.SearchByLabel", {
-      searchQuery: { label: state.label },
-      onSearchLabel,
-    }),
-    widget("components.layout.SearchByAuthor", {
-      searchQuery: { author: state.author },
-      onSearchAuthor,
-    }),
-  ],
-  children: widget("components.posts.Search", {
-    recency: props.recency,
-    label: state.label,
-    author: state.author,
-  }),
-});
+return (
+  <Typeahead
+    clearButton
+    id="basic-typeahead-single"
+    labelKey="name"
+    onChange={onChange}
+    options={wrappedLabels}
+    placeholder="Search by tag"
+    selected={selectedLabels}
+  />
+);

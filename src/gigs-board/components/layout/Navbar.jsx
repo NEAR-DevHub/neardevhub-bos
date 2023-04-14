@@ -87,9 +87,11 @@ return (
             </a>
           </li>
 
-          {props.children ? (
-            <li class="nav-item active ms-2">{props.children}</li>
-          ) : null}
+          {props.children
+            ? props.children.map((child) => (
+                <li class="nav-item active ms-2">{child}</li>
+              ))
+            : null}
         </ul>
         <div class="btn-group" role="group">
           <button
