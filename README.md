@@ -1,81 +1,25 @@
-NEAR Gigs Board
-===============
+# 👋 Welcome to the NEAR Gigs Board!
 
-Gigs Board is a community platform to share ideas, match solutions, and receive support.
-Gigs Board was implemented [by NEAR Developer Governance community](https://neardevgov.org), and all major developments will be carried through the [DevGov Gigs Board](https://devgovgigs.near.social).
+[Gigs Board](https://near.social/#/mob.near/widget/MyPage?accountId=devgovgigs.near) is a decentralized community platform for NEAR developers to contribute to the ecosystem and stay informed on the latest topics. It enables anyone to share ideas, match solutions, and access technical support and funding. The Developer DAO team is actively developing the Gigs Board and welcoming open contributions from the community. We strive to maintain a transparent and efficient process for all.  
 
-This repository holds [NEAR Social](https://near.social) widgets to interact with the [Gigs Board smart-contract](https://github.com/near/devgigsboard).
+This repository holds [NEAR Social](https://near.social/) widgets to interact with the [Gigs Board smart-contract](https://github.com/near/devgigsboard). 
 
-## How to Contribute?
+## How to contribute?
 
-Join the forces by starting from the [project board](https://github.com/orgs/near/projects/60).
-Feel free to pick any issue from the Ready, Backlog, or New columns, clarify the requirements, if necessary, and indicate that you are interested in working on it by leaving comments.
-Also, you may suggest improvements by creating a [new issue](https://github.com/near/devgigsboard-widgets/issues/new).
+Anyone is welcome to contribute. Here are ways to get involved:  
 
-## How to Develop?
+* **Contribute code**: Review the list of [good first issues](https://github.com/near/devgigsboard-widgets/contribute). You can pick any issues from the [Backlog column](https://github.com/orgs/near/projects/60) and indicate your interest by leaving comments. Before you get started, we encourage you to check out [how we work](https://github.com/near/devgigsboard-widgets/blob/docs/how-we-work.md) and the [developer guidelines](https://github.com/near/devgigsboard-widgets/blob/docs/developer-guidelines.md).
+* **Report issues**: To report a [bug](https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=bug&template=bug_report.md&title=) or a [feature request](https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=enhancement&template=feature-request.md&title=), please review all open and closed [issues](https://github.com/near/devgigsboard-widgets/issues?q=is%3Aissue+is%3Aall+) to make sure no one has previously created a similar topic.
+* **Triage issues**: You are welcome to help us triage by verifying or reproducing bugs, adding more specific reproduction instructions, or voting on issues by adding a 👍 thumbs-up reaction to the issue's description comment.  
 
-JSX files in this repository are NEAR Social widgets, so before you start, [get familiar with the platform](https://thewiki.near.page/PastPresentAndFutureOfNearSocial).
+We grant commit access to the Developer DAO team and any active developers who have gained our trust by demonstrating high-quality contributions and ongoing commitment to our ecosystem.
 
-### Prerequisites
+## How we work
 
-We use `npm` and scripts in `package.json` to automate common developer tasks, so you will need NodeJS and then install project dependencies as usual:
+We communicate primarily over GitHub. We recommend configuring your [notifications](https://docs.github.com/en/account-and-profile/managing-subscriptions-and-notifications-on-github/setting-up-notifications/configuring-notifications) to ensure you get the latest updates.   
 
-```
-npm install
-```
+[Learn more](https://github.com/near/devgigsboard-widgets/blob/docs/how-we-work.md) about how we work asynchronously.  
 
-### Making Changes to common.jsx
+# Getting Help
 
-`common.jsx` contains a set of shared utilities that is often reused in Gigs Board widgets. When you need to change it, just edit the file in the root of the project, and update the widgets with this one command:
-
-```
-npm run build
-```
-
-### Code Style
-
-Before publishing, we use `prettier` to unify formatting:
-
-```
-npm run fmt
-```
-
-### Deploy for Testing
-
-Currently, there is no local development environment, so we use [testnet NEAR Social](https://test.near.social) to deploy widgets and test them out.
-
-To deploy the widgets, we use [`near-social` CLI](https://github.com/FroVolod/near-social). Start with this command and follow the interactive questionary:
-
-```
-near-social deploy
-```
-
-After successful deployment, you will see a full command that could be used to re-deploy the widgets without interactive questionary, like this:
-
-```
-near-social deploy gigs.frol14.testnet sign-as gigs.frol14.testnet network-config testnet sign-with-macos-keychain send
-```
-
-Once deployed, open `gigs-board.pages.Feed` widget on your account on testnet NEAR Social:
-
-```
-https://test.near.social/#/YOUR_ACCOUNT_ID/widget/gigs-board.pages.Feed?nearDevGovGigsContractAccountId=gigs.frol14.testnet
-```
-
-NOTE: If you have [devgigsboard contract](https://github.com/near/devgigsboard) deployed to the same account, you can skip the `nearDevGovGigsContractAccountId` argument, otherwise, feel free to use the contract deployed to `gigs.frol14.testnet`.
-
-### Deploy for Production
-
-There is GitHub Actions automation that deploys all the widgets to [`devgovgigs.near` account](https://near.social/#/mob.near/widget/MyPage?accountId=devgovgigs.near) on mainnet on every push to the main branch.
-Thus, once a PR is merged, you should see the new version of the widgets on [DevGov Gigs Board](https://devgovgigs.near.social) in less then 15 seconds.
-
-### Storage Deposit
-
-near-social CLI [has a limitation regarding accurate storage usage calculations](https://github.com/FroVolod/near-social/issues/18), so sometimes there is a need to deposit extra tokens to cover the widgets storage cost.
-You can do that with [`near-cli-rs`](https://near.cli.rs):
-
-```
-near-cli-rs contract call-function as-transaction social.near storage_deposit '{"account_id": "YOUR_ACCOUNT_ID"}' --prepaid-gas '100 TeraGas' --attached-deposit '1 NEAR'
-```
-
-NOTE: near-cli-rs will interactively ask all the rest of the details to prepare the transaction.
+If you are working on a specific issue, you can leave a comment. You can also drop a message on the [NEAR Dev](https://t.me/neardev) Telegram channel.
