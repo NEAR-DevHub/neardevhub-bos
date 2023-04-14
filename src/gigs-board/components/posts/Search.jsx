@@ -666,9 +666,9 @@ const showMoreSearchResults = () => {
 };
 
 return (
-  <div class="pb-2">
+  <div>
     <div
-      className="d-flex"
+      className="d-flex mb-2"
       style={{
         height: "38px",
       }}
@@ -709,7 +709,7 @@ return (
       state.processedQuery.length > 0 &&
       state.term.toLowerCase().trim() !== state.processedQuery.join(" ") && (
         <div class="mb-2" style={{ "font-family": "monospace" }}>
-          No results for {state.term}. Looking for
+          Looking for
           <strong>{state.processedQuery.join(" ")}</strong>:
         </div>
       )}

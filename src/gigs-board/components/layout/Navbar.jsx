@@ -57,7 +57,7 @@ return (
           </li>
           <li class="nav-item">
             <a class="nav-link active" href={href("Feed", { recency: "all" })}>
-              <i class="bi-fire"> </i>
+              <i class="bi-envelope-fill"> </i>
               Recent
             </a>
           </li>
@@ -68,6 +68,12 @@ return (
             >
               <i class="bi-repeat"> </i>
               Recurrent
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href={href("Feed", { recency: "hot" })}>
+              <i class="bi-fire"> </i>
+              Hottest
             </a>
           </li>
           <li class="nav-item">
