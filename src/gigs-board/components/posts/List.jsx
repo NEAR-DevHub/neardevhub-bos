@@ -96,15 +96,30 @@ const initialRenderLimit = props.initialRenderLimit ?? 3;
 const addDisplayCount = props.nextLimit ?? initialRenderLimit;
 
 function getPostsByLabel() {
-  return Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-    label: props.label,
-  });
+  let postIds = Near.view(
+    nearDevGovGigsContractAccountId,
+    "get_posts_by_label",
+    {
+      label: props.label,
+    }
+  );
+  if (postIds) {
+    postIds.reverse();
+  }
+  return postIds;
 }
 
 function getPostsByAuthor() {
-  return Near.view(nearDevGovGigsContractAccountId, "get_posts_by_author", {
-    author: props.author,
-  });
+  let postIds = Near.view(
+    nearDevGovGigsContractAccountId,
+    "get_posts_by_author",
+    {
+      author: props.author,
+    }
+  );
+  if (postIds) {
+    postIds.reverse();
+  }
 }
 
 function intersectPostsWithLabel(postIds) {
@@ -146,8 +161,14 @@ if (props.searchResult) {
   postIds = getPostsByAuthor();
 } else if (props.recency == "all") {
   postIds = Near.view(nearDevGovGigsContractAccountId, "get_all_post_ids");
+  if (postIds) {
+    postIds.reverse();
+  }
 } else {
   postIds = Near.view(nearDevGovGigsContractAccountId, "get_children_ids");
+  if (postIds) {
+    postIds.reverse();
+  }
 }
 
 const ONE_DAY = 60 * 60 * 24 * 1000;
@@ -234,8 +255,7 @@ const loader = (
 if (postIds === null) {
   return loader;
 }
-const initialItems =
-  props.searchResult || props.recency == "hot" ? postIds : postIds.reverse();
+const initialItems = postIds;
 //const initialItems = postIds.map(postId => ({ id: postId, ...Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId }) }));
 
 // const computeFetchFrom = (items, limit) => {
@@ -393,13 +413,20 @@ const Head =
 return (
   <>
     {Head}
-    <InfiniteScroll
-      pageStart={0}
-      loadMore={makeMoreItems}
-      hasMore={state.displayCount < state.items.length}
-      loader={loader}
-    >
-      {renderedItems}
-    </InfiniteScroll>
+    {state.items.length > 0 ? (
+      <InfiniteScroll
+        pageStart={0}
+        loadMore={makeMoreItems}
+        hasMore={state.displayCount < state.items.length}
+        loader={loader}
+      >
+        {renderedItems}
+      </InfiniteScroll>
+    ) : (
+      <p class="text-secondary">
+        No posts {props.searchResult ? "matches search" : ""} in
+        {getPeriodText(state.period).toLowerCase()}
+      </p>
+    )}
   </>
 );
