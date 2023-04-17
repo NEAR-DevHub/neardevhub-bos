@@ -1,10 +1,11 @@
-# Developer Guidelines
+# Contributing to NEAR Gigs Board Components
 
 We appreciate community contributions! Before you start writing code, we recommend for developers to:
 - Review the list of [good first issues](https://github.com/near/devgigsboard-widgets/contribute). You can pick any issues from the [Backlog column](https://github.com/orgs/near/projects/60) and indicate your interest by leaving comments. 
 - Get familiar with the [NEAR Social](https://thewiki.near.page/PastPresentAndFutureOfNearSocial) plaform, since the JSX files in this repository are NEAR Social widgets.
 
-### Prerequisites
+
+## Prerequisites
 
 We use `npm` and scripts in `package.json` to automate common developer tasks, so you will need NodeJS and then install project dependencies as usual:
 
@@ -12,21 +13,17 @@ We use `npm` and scripts in `package.json` to automate common developer tasks, s
 npm install
 ```
 
-### Making Changes to common.jsx
 
-`common.jsx` contains a set of shared utilities that is often reused in Gigs Board widgets. When you need to change it, just edit the file in the root of the project, and update the widgets with this one command:
-
-```
-npm run build
-```
-
-### Code Style
+## Code Style
 
 Before publishing, we use `prettier` to unify formatting:
 
 ```
 npm run fmt
 ```
+
+
+## Deployment
 
 ### Deploy for Testing
 
@@ -56,6 +53,17 @@ NOTE: If you have [devgigsboard contract](https://github.com/near/devgigsboard) 
 
 There is GitHub Actions automation that deploys all the widgets to [`devgovgigs.near` account](https://near.social/#/mob.near/widget/MyPage?accountId=devgovgigs.near) on mainnet on every push to the main branch.
 Thus, once a PR is merged, you should see the new version of the widgets on [DevGov Gigs Board](https://devgovgigs.near.social) in less then 15 seconds.
+
+
+## Helpful Tips
+
+### Making Changes to common.jsx
+
+`common.jsx` contains a set of shared utilities that is often reused in Gigs Board widgets. When you need to change it, just edit the file in the root of the project, and update the widgets with this one command:
+
+```
+npm run build
+```
 
 ### Storage Deposit
 
