@@ -196,8 +196,15 @@ const setLabels = (labels) => {
   });
   State.update({ labels, labelStrings });
 };
-const existingLabelStrings =
+let existingLabelStrings =
   Near.view(nearDevGovGigsContractAccountId, "get_all_labels") ?? [];
+existingLabelStrings = existingLabelStrings.filter((label) =>
+  Near.view(nearDevGovGigsContractAccountId, "is_allowed_to_use_labels", {
+    editor: context.accountId,
+    labels: [label],
+  })
+);
+const existingLabelSet = new Set(existingLabelStrings);
 const existingLabels = existingLabelStrings.map((s) => {
   return { name: s };
 });
@@ -213,7 +220,18 @@ const labelEditor = (
       placeholder="near.social, widget, NEP, standard, protocol, tool"
       selected={state.labels}
       positionFixed
-      allowNew
+      allowNew={(results, props) => {
+        return (
+          !existingLabelSet.has(props.text) &&
+          props.selected.filter((selected) => selected.name === props.text)
+            .length == 0 &&
+          Near.view(
+            nearDevGovGigsContractAccountId,
+            "is_allowed_to_use_labels",
+            { editor: context.accountId, labels: [props.text] }
+          )
+        );
+      }}
     />
   </div>
 );
