@@ -149,28 +149,6 @@ function intersectPostsWithAuthor(postIds) {
   return postIds;
 }
 
-let postIds;
-if (props.searchResult) {
-  postIds = props.searchResult.postIds;
-  postIds = intersectPostsWithLabel(postIds);
-  postIds = intersectPostsWithAuthor(postIds);
-} else if (props.label) {
-  postIds = getPostsByLabel();
-  postIds = intersectPostsWithAuthor(postIds);
-} else if (props.author) {
-  postIds = getPostsByAuthor();
-} else if (props.recency == "all") {
-  postIds = Near.view(nearDevGovGigsContractAccountId, "get_all_post_ids");
-  if (postIds) {
-    postIds.reverse();
-  }
-} else {
-  postIds = Near.view(nearDevGovGigsContractAccountId, "get_children_ids");
-  if (postIds) {
-    postIds.reverse();
-  }
-}
-
 const ONE_DAY = 60 * 60 * 24 * 1000;
 const ONE_WEEK = 60 * 60 * 24 * 1000 * 7;
 const ONE_MONTH = 60 * 60 * 24 * 1000 * 30;
@@ -236,6 +214,28 @@ const findHottestsPosts = (postIds, period) => {
   modifiedPosts.sort((a, b) => b.postScore - a.postScore);
   return modifiedPosts.map((post) => post.id);
 };
+
+let postIds;
+if (props.searchResult) {
+  postIds = props.searchResult.postIds;
+  postIds = intersectPostsWithLabel(postIds);
+  postIds = intersectPostsWithAuthor(postIds);
+} else if (props.label) {
+  postIds = getPostsByLabel();
+  postIds = intersectPostsWithAuthor(postIds);
+} else if (props.author) {
+  postIds = getPostsByAuthor();
+} else if (props.recency == "all") {
+  postIds = Near.view(nearDevGovGigsContractAccountId, "get_all_post_ids");
+  if (postIds) {
+    postIds.reverse();
+  }
+} else {
+  postIds = Near.view(nearDevGovGigsContractAccountId, "get_children_ids");
+  if (postIds) {
+    postIds.reverse();
+  }
+}
 
 if (props.recency == "hot") {
   postIds = findHottestsPosts(postIds, state.period);
