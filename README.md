@@ -1,8 +1,8 @@
-# 👋 Welcome to the NEAR Gigs Board!
+# 👋 Welcome to the NEAR DevHub!
 
-[Gigs Board](http://devgovgigs.near.social) is a decentralized community platform for NEAR developers to contribute to the ecosystem and stay informed on the latest topics. It enables anyone to share ideas, match solutions, and access technical support and funding. The Developer DAO team is actively developing the Gigs Board and welcoming open contributions from the community. We strive to maintain a transparent and efficient process for all.  
+[NEAR DevHub](http://devgovgigs.near.social) is a decentralized community platform for NEAR developers to contribute to the ecosystem and stay informed on the latest topics. It enables anyone to share ideas, match solutions, and access technical support and funding. The Developer DAO team is actively developing the DevHub and welcoming open contributions from the community. We strive to maintain a transparent and efficient process for all.  
 
-This repository holds [NEAR Social](https://near.social) widgets to interact with the [Gigs Board smart-contract](https://github.com/near/devgigsboard). 
+This repository holds [NEAR Social](https://near.social) widgets to interact with the [DevHub smart-contract](https://github.com/near/devgigsboard). 
 
 ## How to contribute?
 
