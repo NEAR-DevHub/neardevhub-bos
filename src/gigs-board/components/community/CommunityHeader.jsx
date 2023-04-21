@@ -89,7 +89,7 @@ return (
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
             <BreadcrumbLink href={href("Feed")}>
-              Developer Governance
+              DevHub
             </BreadcrumbLink>
           </li>
           <li class="breadcrumb-item active" aria-current="page">
