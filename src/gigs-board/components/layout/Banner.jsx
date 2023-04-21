@@ -46,45 +46,66 @@ function href(widgetName, linkProps) {
 
 const Banner = styled.div`
    {
-    height: 100px;
-    background: #232323;
+    height: 62px;
+    background: #181818;
     margin-top: -24px;
-    overflow: hidden !important;
-    padding: 32px;
+    padding: 16px 20px;
 
     img {
-      height: 36px;
+      height: 30px;
     }
 
     margin-bottom: 25px;
   }
 `;
 
-const Gradient = styled.div`
-   {
-    position: relative;
-    left: -48vw;
-    width: 173vw;
-    height: 70vw;
-    top: -70vw;
-    transform: rotate(9.78deg);
-    background: linear-gradient(
-      -90deg,
-      rgb(0, 204, 255) 0.57%,
-      rgb(50, 82, 166) 100.57%
-    );
-    opacity: 0.22;
-    filter: blur(17vw);
-  }
-`;
-
 return (
   <>
-    <Banner>
+    <Banner className="d-flex justify-content-between">
       <a href={href("Feed")}>
-        <img src="https://ipfs.near.social/ipfs/bafkreifm5y7r6bqcjtef6wytrp7ysdxocmgmjffjziorqya4p7kbtamntu"></img>
+        <img src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"></img>
       </a>
-      <Gradient></Gradient>
+      <div>
+        <a href="https://www.neardevgov.org/blog/near-developer-dao" class="text-white me-2">Developer DAO</a>
+        
+        <div class="btn-group" role="group">
+          <button
+            type="button"
+            class="btn btn-outline-light rounded-circle"
+            style={{
+              width: "30px",
+              height: "30px",
+              padding: "6px 0px",
+              borderWidth: "0.5px",
+              lineHeight: "0px",
+            }}
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="bi bi-question-lg"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a
+                target="_blank"
+                class="dropdown-item"
+                href="https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=bug&template=bug_report.md&title="
+              >
+                Report a bug
+              </a>
+            </li>
+            <li>
+              <a
+                target="_blank"
+                class="dropdown-item"
+                href="https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=enhancement&template=feature-request.md&title="
+              >
+                Suggest an improvement
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </Banner>
   </>
 );
