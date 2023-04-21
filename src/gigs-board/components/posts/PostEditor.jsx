@@ -187,6 +187,25 @@ const normalizeLabel = (label) =>
     .toLowerCase()
     .trim("-");
 
+const checkLabel = (label) => {
+  Near.asyncView(nearDevGovGigsContractAccountId, "is_allowed_to_use_labels", {
+    editor: context.accountId,
+    labels: [label],
+  }).then((allowed) => {
+    if (allowed) {
+      State.update({ warning: "" });
+    } else {
+      State.update({
+        warning:
+          'The label "' +
+          label +
+          '" is protected and can only be added by moderators',
+      });
+      return;
+    }
+  });
+};
+
 const setLabels = (labels) => {
   labels = labels.map((o) => {
     o.name = normalizeLabel(o.name);
@@ -209,7 +228,12 @@ const setLabels = (labels) => {
         });
         State.update({ labels, labelStrings });
       } else {
-        State.update({ warning: "No permission to remove " + removed });
+        State.update({
+          warning:
+            'The label "' +
+            removed +
+            '" is protected and can only be updated by moderators',
+        });
         return;
       }
     });
@@ -235,6 +259,7 @@ const labelEditor = (
     <Typeahead
       multiple
       labelKey="name"
+      onInputChange={checkLabel}
       onChange={setLabels}
       options={existingLabels}
       placeholder="near.social, widget, NEP, standard, protocol, tool"
