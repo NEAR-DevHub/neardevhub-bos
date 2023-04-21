@@ -1,4 +1,4 @@
-# Contributing to NEAR Gigs Board Components
+# Contributing to NEAR DevHub Components
 
 We appreciate community contributions! Before you start writing code, we recommend for developers to:
 - Review the list of [good first issues](https://github.com/near/devgigsboard-widgets/contribute). You can pick any issues from the [Backlog column](https://github.com/orgs/near/projects/60) and indicate your interest by leaving comments. 
@@ -59,7 +59,7 @@ Thus, once a PR is merged, you should see the new version of the widgets on [Dev
 
 ### Making Changes to common.jsx
 
-`common.jsx` contains a set of shared utilities that is often reused in Gigs Board widgets. When you need to change it, just edit the file in the root of the project, and update the widgets with this one command:
+`common.jsx` contains a set of shared utilities that is often reused in DevHub widgets. When you need to change it, just edit the file in the root of the project, and update the widgets with this one command:
 
 ```
 npm run build
