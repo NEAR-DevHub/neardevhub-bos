@@ -69,6 +69,7 @@ initState({
   token: props.token ?? "Near",
   supervisor: props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
+  warning: "",
 });
 
 let fields = {
@@ -186,18 +187,66 @@ const normalizeLabel = (label) =>
     .toLowerCase()
     .trim("-");
 
+const checkLabel = (label) => {
+  Near.asyncView(nearDevGovGigsContractAccountId, "is_allowed_to_use_labels", {
+    editor: context.accountId,
+    labels: [label],
+  }).then((allowed) => {
+    if (allowed) {
+      State.update({ warning: "" });
+    } else {
+      State.update({
+        warning:
+          'The label "' +
+          label +
+          '" is protected and can only be added by moderators',
+      });
+      return;
+    }
+  });
+};
+
 const setLabels = (labels) => {
   labels = labels.map((o) => {
     o.name = normalizeLabel(o.name);
     return o;
   });
-  let labelStrings = labels.map((o) => {
-    return o.name;
-  });
-  State.update({ labels, labelStrings });
+  if (labels.length < state.labels.length) {
+    let oldLabels = new Set(state.labels.map((label) => label.name));
+    for (let label of labels) {
+      oldLabels.delete(label.name);
+    }
+    let removed = oldLabels.values().next().value;
+    Near.asyncView(
+      nearDevGovGigsContractAccountId,
+      "is_allowed_to_use_labels",
+      { editor: context.accountId, labels: [removed] }
+    ).then((allowed) => {
+      if (allowed) {
+        let labelStrings = labels.map(({ name }) => name);
+        State.update({ labels, labelStrings });
+      } else {
+        State.update({
+          warning:
+            'The label "' +
+            removed +
+            '" is protected and can only be updated by moderators',
+        });
+        return;
+      }
+    });
+  } else {
+    let labelStrings = labels.map((o) => {
+      return o.name;
+    });
+    State.update({ labels, labelStrings });
+  }
 };
 const existingLabelStrings =
-  Near.view(nearDevGovGigsContractAccountId, "get_all_labels") ?? [];
+  Near.view(nearDevGovGigsContractAccountId, "get_all_allowed_labels", {
+    editor: context.accountId,
+  }) ?? [];
+const existingLabelSet = new Set(existingLabelStrings);
 const existingLabels = existingLabelStrings.map((s) => {
   return { name: s };
 });
@@ -208,12 +257,24 @@ const labelEditor = (
     <Typeahead
       multiple
       labelKey="name"
+      onInputChange={checkLabel}
       onChange={setLabels}
       options={existingLabels}
       placeholder="near.social, widget, NEP, standard, protocol, tool"
       selected={state.labels}
       positionFixed
-      allowNew
+      allowNew={(results, props) => {
+        return (
+          !existingLabelSet.has(props.text) &&
+          props.selected.filter((selected) => selected.name === props.text)
+            .length == 0 &&
+          Near.view(
+            nearDevGovGigsContractAccountId,
+            "is_allowed_to_use_labels",
+            { editor: context.accountId, labels: [props.text] }
+          )
+        );
+      }}
     />
   </div>
 );
@@ -306,6 +367,23 @@ return (
     </div>
 
     <div class="card-body">
+      {state.warning ? (
+        <div
+          class="alert alert-warning alert-dismissible fade show"
+          role="alert"
+        >
+          {state.warning}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+            onClick={() => State.update({ warning: "" })}
+          ></button>
+        </div>
+      ) : (
+        <></>
+      )}
       {fields.includes("githubLink") ? (
         <div className="row">
           {githubLinkDiv}
