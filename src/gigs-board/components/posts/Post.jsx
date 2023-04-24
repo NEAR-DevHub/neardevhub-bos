@@ -511,6 +511,21 @@ const limitedMarkdown = styled.div`
   max-height: 20em;
 `;
 
+const clampMarkdown = styled.div`
+  .clamp {
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    overflow-wrap: break-word;
+  }
+`;
+
+initState({
+  clamp: snapshot.description.split("\n").length > 5,
+});
+
 const onMention = (accountId) => (
   <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
     <Widget
@@ -534,12 +549,28 @@ const descriptionArea = isUnderPost ? (
     />
   </limitedMarkdown>
 ) : (
-  <Markdown
-    class="card-text"
-    text={snapshot.description}
-    onMention={onMention}
-    key="description-area"
-  ></Markdown>
+  <clampMarkdown>
+    <div class={state.clamp ? "clamp" : ""}>
+      <Markdown
+        class="card-text"
+        text={snapshot.description}
+        onMention={onMention}
+        key="description-area"
+      ></Markdown>
+    </div>
+    {state.clamp ? (
+      <div class="d-flex justify-content-center">
+        <a
+          class="btn btn-link text-secondary"
+          onClick={() => State.update({ clamp: false })}
+        >
+          Read More
+        </a>
+      </div>
+    ) : (
+      <></>
+    )}
+  </clampMarkdown>
 );
 
 return (
