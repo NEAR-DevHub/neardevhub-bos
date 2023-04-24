@@ -88,9 +88,7 @@ return (
       <div aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-            <BreadcrumbLink href={href("Feed")}>
-              DevHub
-            </BreadcrumbLink>
+            <BreadcrumbLink href={href("Feed")}>DevHub</BreadcrumbLink>
           </li>
           <li class="breadcrumb-item active" aria-current="page">
             <BreadcrumbBold>{props.title}</BreadcrumbBold>

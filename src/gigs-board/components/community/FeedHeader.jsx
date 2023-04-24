@@ -85,14 +85,17 @@ const communities = {
 };
 /* END_INCLUDE: "communities.jsx" */
 
-
 const Gradient = styled.div`
-  {
+   {
     margin-top: -25px;
     margin-bottom: 25px;
     height: 250px;
     text-align: center;
-    background: radial-gradient(circle, rgba(29,55,57,1) 30%, rgba(24,24,24,1) 80%); 
+    background: radial-gradient(
+      circle,
+      rgba(29, 55, 57, 1) 30%,
+      rgba(24, 24, 24, 1) 80%
+    );
 
     font-family: Arial, sans-serif;
   }
@@ -124,9 +127,15 @@ const Gradient = styled.div`
 return (
   <>
     <Gradient className="d-flex flex-column justify-content-center">
-      <div class="subtitle-above text-white opacity-75 mb-2">A decentralized community of</div>
-      <h1 class="mb-3 text-white slogan"><span class="text-primary-gradient">NEAR </span>Developers</h1>
-      <div class="subtitle-below text-white opacity-75">Share your ideas, match solutions, and access support and funding.</div>
+      <div class="subtitle-above text-white opacity-75 mb-2">
+        A decentralized community of
+      </div>
+      <h1 class="mb-3 text-white slogan">
+        <span class="text-primary-gradient">NEAR </span>Developers
+      </h1>
+      <div class="subtitle-below text-white opacity-75">
+        Share your ideas, match solutions, and access support and funding.
+      </div>
     </Gradient>
     <div class="h5 pb-3">Featured Communities</div>
     <div class="row">
