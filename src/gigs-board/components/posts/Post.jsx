@@ -513,18 +513,25 @@ const limitedMarkdown = styled.div`
 
 const clampMarkdown = styled.div`
   .clamp {
-    -webkit-line-clamp: 5;
-    -webkit-box-orient: vertical;
-    display: -webkit-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    overflow-wrap: break-word;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 1),
+      rgba(0, 0, 0, 0)
+    );
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
   }
 `;
 
+const contentArray = snapshot.description.split("\n");
+const needClamp = contentArray.length > 5;
+
 initState({
-  clamp: snapshot.description.split("\n").length > 5,
+  clamp: needClamp,
 });
+
+const clampedContent = needClamp
+  ? contentArray.slice(0, 5).join("\n")
+  : snapshot.description;
 
 const onMention = (accountId) => (
   <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
@@ -553,7 +560,7 @@ const descriptionArea = isUnderPost ? (
     <div class={state.clamp ? "clamp" : ""}>
       <Markdown
         class="card-text"
-        text={snapshot.description}
+        text={state.clamp ? clampedContent : snapshot.description}
         onMention={onMention}
         key="description-area"
       ></Markdown>
