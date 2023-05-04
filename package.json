@@ -9,7 +9,9 @@
   "scripts": {
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
     "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
-    "build": "node build.js"
+    "build": "npm run fmt && node build.js",
+    "dev:discovery": "~/.cargo/bin/bos-loader devgovgigs.near --path src",
+    "dev:social": "echo No command for near.social gateway!"
   },
   "repository": {
     "type": "git",
