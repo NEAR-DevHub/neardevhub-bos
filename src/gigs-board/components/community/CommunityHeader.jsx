@@ -74,93 +74,91 @@ const BreadcrumbLink = styled.a`
     text-decoration: none;
   }
 `;
+
 const BreadcrumbBold = styled.b`
    {
     color: #3252a6;
   }
 `;
 
+const { label, tab } = props;
+
+const topicTabs = [
+  {
+		contentProps: { label },
+    defaultActive: true,
+    iconClass: "bi-house-door",
+    path: "community.Overview",
+    title: "Overview",
+  },
+  {
+		contentProps: { label },
+    iconClass: "bi-chat-square-text",
+    path: "community.Discussions",
+    title: "Discussions",
+  },
+  {
+		contentProps: { label },
+    iconClass: "bi-kanban",
+    path: "community.Sponsorship",
+    title: "Sponsorship",
+  },
+  {
+		contentProps: { label },
+    iconClass: "bi-calendar",
+    path: "community.Events",
+    title: "Events",
+  },
+  {
+		contentProps: { label },
+    iconClass: "bi-github",
+    path: "community.GitHubActivity",
+    title: "Custom GH integration",
+  },
+];
+
 // TODO nav-underline is available in bootstrap: https://getbootstrap.com/docs/5.3/components/navs-tabs/#underline,
 // but it's not there in near social, need write such style here
 return (
-  <>
-    <Header>
-      <div aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item">
-            <BreadcrumbLink href={href("Feed")}>DevHub</BreadcrumbLink>
-          </li>
-          <li class="breadcrumb-item active" aria-current="page">
-            <BreadcrumbBold>{props.title}</BreadcrumbBold>
-          </li>
-        </ol>
-      </div>
-      <div class="d-flex flex-row align-items-center pb-3">
-        <img src={props.icon} width="95px" height="95px"></img>
-        <div>
-          <div class="h5 pt-3 ps-3">{props.title}</div>
-          <div class="ps-3 pb-2 text-secondary">{props.desc}</div>
-        </div>
-      </div>
+  <Header>
+    <div aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <BreadcrumbLink href={href("Feed")}>DevHub</BreadcrumbLink>
+        </li>
+
+        <li class="breadcrumb-item active" aria-current="page">
+          <BreadcrumbBold>{props.title}</BreadcrumbBold>
+        </li>
+      </ol>
+    </div>
+
+    <div class="d-flex flex-row align-items-center pb-3">
+      <img src={props.icon} width="95px" height="95px"></img>
+
       <div>
-        <NavUnderline className="nav">
-          <li class="nav-item">
-            <a
-              className={
-                props.tab === "Overview" ? "nav-link active" : "nav-link"
-              }
-              aria-current="page"
-              href={href("community.Overview", { label: props.label })}
-            >
-              <i class="bi-house-door"> </i>
-              Overview
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              className={
-                props.tab === "Discussions" ? "nav-link active" : "nav-link"
-              }
-              href={href("community.Discussions", {
-                label: props.label,
-              })}
-            >
-              <i class="bi-chat-square-text"> </i>
-              Discussions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              className={
-                props.tab === "Sponsorship" ? "nav-link active" : "nav-link"
-              }
-              href={href("community.Sponsorship", {
-                label: props.label,
-              })}
-            >
-              <i class="bi-kanban"> </i>
-              Sponsorship
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              className={
-                props.tab === "Events" ? "nav-link active" : "nav-link"
-              }
-              href={href("community.Events", {
-                label: props.label,
-                tab: "Events",
-              })}
-            >
-              <i class="bi-calendar"> </i>
-              Events
-            </a>
-          </li>
-        </NavUnderline>
+        <div class="h5 pt-3 ps-3">{props.title}</div>
+        <div class="ps-3 pb-2 text-secondary">{props.desc}</div>
       </div>
-    </Header>
-  </>
+    </div>
+
+    <div>
+      <NavUnderline className="nav">
+        {topicTabs.map(({ contentProps, defaultActive, iconClass, path, title }, topicIdx) =>
+          title ? (
+            <li class="nav-item">
+              <a
+                aria-current={defaultActive && "page"}
+                className={tab === title ? "nav-link active" : "nav-link"}
+                href={href(path, contentProps)}
+              >
+                {iconClass && <i class={iconClass} />}
+                {title}
+              </a>
+            </li>
+          ) : null
+        )}
+      </NavUnderline>
+    </div>
+  </Header>
 );
