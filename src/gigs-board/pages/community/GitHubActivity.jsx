@@ -44,11 +44,17 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const pulls = [];
+const { body: pullRequests } = fetch("https://api.github.com/repos/near/NEPs/pulls");
 
 const { label } = props;
 
-const TabContent = <div>GH integration placeholder</div>;
+const TabContent = (
+  <div>
+    {pullRequests.map((pullRequest, pullRequestIdx) => (
+      <p key={pullRequestIdx}>{JSON.stringify(pullRequest)}</p>
+    ))}
+  </div>
+);
 
 return widget("components.community.Layout", {
   label,

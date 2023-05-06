@@ -85,32 +85,32 @@ const { label, tab } = props;
 
 const topicTabs = [
   {
-		contentProps: { label },
+    contentProps: { label },
     defaultActive: true,
     iconClass: "bi-house-door",
     path: "community.Overview",
     title: "Overview",
   },
   {
-		contentProps: { label },
+    contentProps: { label },
     iconClass: "bi-chat-square-text",
     path: "community.Discussions",
     title: "Discussions",
   },
   {
-		contentProps: { label },
+    contentProps: { label },
     iconClass: "bi-kanban",
     path: "community.Sponsorship",
     title: "Sponsorship",
   },
   {
-		contentProps: { label },
+    contentProps: { label },
     iconClass: "bi-calendar",
     path: "community.Events",
     title: "Events",
   },
   {
-		contentProps: { label },
+    contentProps: { label },
     iconClass: "bi-github",
     path: "community.GitHubActivity",
     title: "Custom GH integration",
@@ -144,19 +144,20 @@ return (
 
     <div>
       <NavUnderline className="nav">
-        {topicTabs.map(({ contentProps, defaultActive, iconClass, path, title }, topicIdx) =>
-          title ? (
-            <li class="nav-item">
-              <a
-                aria-current={defaultActive && "page"}
-                className={tab === title ? "nav-link active" : "nav-link"}
-                href={href(path, contentProps)}
-              >
-                {iconClass && <i class={iconClass} />}
-                {title}
-              </a>
-            </li>
-          ) : null
+        {topicTabs.map(
+          ({ contentProps, defaultActive, iconClass, path, title }, topicIdx) =>
+            title ? (
+              <li class="nav-item">
+                <a
+                  aria-current={defaultActive && "page"}
+                  className={tab === title ? "nav-link active" : "nav-link"}
+                  href={href(path, contentProps)}
+                >
+                  {iconClass && <i class={iconClass} />}
+                  {title}
+                </a>
+              </li>
+            ) : null
         )}
       </NavUnderline>
     </div>
