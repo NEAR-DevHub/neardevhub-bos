@@ -112,13 +112,13 @@ const topicTabs = [
   {
     contentProps: {
       /**
-       * Either "new" or "view"
+       * Either "new" or "view".
        **/
-      action: "view",
+      action: "new",
 
       /**
        * Probably UUIDv4 assigned to the board upon its creation.
-       * Boards are stored on SocialDB and indexed by those ids.
+			 * The parameter is ignored if `action` is `"new"`.
        **/
       boardId: "probablyUUIDv4",
 

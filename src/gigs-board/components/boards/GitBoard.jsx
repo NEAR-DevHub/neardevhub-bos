@@ -44,46 +44,25 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const requiredLabels = props.requiredLabels ?? ["near-social"];
-const excludedLabels = props.excludedLabels ?? ["nft"];
-const columns = props.columns ?? [
-  { label: "widget", title: "Widget" },
-  { label: "integration", title: "Integration" },
-  { label: "feature-request", title: "Feature Request" },
-];
+const {
+  boardId = null,
+  columns,
+  excludedLabels = [],
+  name,
+  repoURL = null,
+  requiredLabels = [],
+} = props;
 
-const labelsToIdSet = (labels) => {
-  const ids = labels.map(
-    (label) =>
-      Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-        label,
-      }) ?? []
+if (repoURL) {
+  const { body: pullRequests } = fetch(
+    `https://api.github.com/repos/${repoURL
+      .split("/")
+      .slice(-2, -1)
+      .join("/")}/pulls`
   );
-  const idsFlat = ids.flat(1);
-  return new Set(idsFlat);
-};
 
-const requiredPostsSet = labelsToIdSet(requiredLabels);
-const excludedPostsSet = labelsToIdSet(excludedLabels);
-
-const postsPerLabel = columns.map((column) => {
-  let allIds = (
-    Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-      label: column.label,
-    }) ?? []
-  ).reverse();
-  if (requiredLabels.length > 0) {
-    return {
-      ...column,
-      posts: allIds.filter(
-        (i) => requiredPostsSet.has(i) && !excludedPostsSet.has(i)
-      ),
-    };
-  } else {
-    // No extra filtering is required.
-    return { ...column, posts: allIds };
-  }
-});
+  console.log(pullRequests);
+}
 
 return (
   <div>

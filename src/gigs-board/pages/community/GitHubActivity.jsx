@@ -44,39 +44,55 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const inputToBoard = ({
-  name = "NEAR Protocol NEPs",
-  repoURL = "https://github.com/near/NEPs",
-}) => {
-  const { body: pullRequests } = fetch(
-    `https://api.github.com/repos/${repoURL
-      .split("/")
-      .slice(-2, -1)
-      .join("/")}/pulls`
-  );
+const { action, boardId, label } = props;
 
-  console.board(pullRequests);
+const newBoardConfig = {
+  boardId: "probablyUUIDv4", // uuid-v4() ?
 
-  return {
-    boardId: "probablyUUIDv4", // uuid-v4() ?
+  columns: [
+    { label: "widget", title: "Widget" },
+    { label: "integration", title: "Integration" },
+    { label: "feature-request", title: "Feature Request" },
+  ],
 
-    columns: [
-      { label: "widget", title: "Widget" },
-      { label: "integration", title: "Integration" },
-      { label: "feature-request", title: "Feature Request" },
-    ],
-
-    excludedLabels: [],
-    name,
-    requiredLabels: ["near-social"],
-  };
+  excludedLabels: [],
+  name: "NEAR Protocol NEPs",
+  repoURL: "https://github.com/near/NEPs",
+  requiredLabels: ["near-social"],
 };
 
-const { action, boardId, label } = props;
+/**
+ * Reads a board config from SocialDB.
+ * Currently a mock.
+ *
+ * Boards are stored on SocialDB and indexed by those ids.
+ */
+const boardConfigByBoardId = ({ boardId }) => {
+  return {
+    probablyUUIDv4: {
+      columns: [],
+      excludedLabels: [],
+      name: "sample board",
+      repoURL: "https://github.com/near/NEPs",
+      requiredLabels: [],
+    },
+  }[boardId];
+};
 
 const TabContent = (
   <div class="flex column gap-4">
-    {widget("components.boards.GitBoard", inputToBoard())}
+    {action === "new" && (
+      <div>
+        <h4>New GitHub activity board</h4>
+
+        <form></form>
+      </div>
+    )}
+
+    {action === "new" && widget("components.boards.GitBoard", newBoardConfig)}
+
+    {action === "view" &&
+      widget("components.boards.GitBoard", boardConfigByBoardId(boardId))}
   </div>
 );
 
