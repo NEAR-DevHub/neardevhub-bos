@@ -110,10 +110,24 @@ const topicTabs = [
     title: "Events",
   },
   {
-    contentProps: { label },
+    contentProps: {
+      /**
+       * Either "new" or "view"
+       **/
+      action: "view",
+
+      /**
+       * Probably UUIDv4 assigned to the board upon its creation.
+       * Boards are stored on SocialDB and indexed by those ids.
+       **/
+      boardId: "probablyUUIDv4",
+
+      label,
+    },
+
     iconClass: "bi-github",
     path: "community.GitHubActivity",
-    title: "Custom GH integration",
+    title: "Custom GitHub board title",
   },
 ];
 

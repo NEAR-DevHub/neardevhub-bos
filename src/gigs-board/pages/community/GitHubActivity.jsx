@@ -44,15 +44,39 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const { body: pullRequests } = fetch("https://api.github.com/repos/near/NEPs/pulls");
+const inputToBoard = ({
+  name = "NEAR Protocol NEPs",
+  repoURL = "https://github.com/near/NEPs",
+}) => {
+  const { body: pullRequests } = fetch(
+    `https://api.github.com/repos/${repoURL
+      .split("/")
+      .slice(-2, -1)
+      .join("/")}/pulls`
+  );
 
-const { label } = props;
+  console.board(pullRequests);
+
+  return {
+    boardId: "probablyUUIDv4", // uuid-v4() ?
+
+    columns: [
+      { label: "widget", title: "Widget" },
+      { label: "integration", title: "Integration" },
+      { label: "feature-request", title: "Feature Request" },
+    ],
+
+    excludedLabels: [],
+    name,
+    requiredLabels: ["near-social"],
+  };
+};
+
+const { action, boardId, label } = props;
 
 const TabContent = (
-  <div>
-    {pullRequests.map((pullRequest, pullRequestIdx) => (
-      <p key={pullRequestIdx}>{JSON.stringify(pullRequest)}</p>
-    ))}
+  <div class="flex column gap-4">
+    {widget("components.boards.GitBoard", inputToBoard())}
   </div>
 );
 
