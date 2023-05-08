@@ -75,7 +75,7 @@ if (repoURL) {
         .join("/")}/pulls`
     );
 
-    console.log(response.body);
+    console.log(response);
 
     const pullRequestsByLabel = (response.body ?? []).reduce(
       (registry, item) => ({ ...registry, [item.labels[0]]: [item] }),
