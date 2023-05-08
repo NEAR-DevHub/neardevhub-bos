@@ -52,14 +52,14 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 const {
-  boardId = null,
-  contentTypes = { pullRequest: false, issue: false },
+  boardId,
+  contentTypes,
   columns,
-  excludedLabels = [],
+  excludedLabels,
   linkedPage,
   name,
-  repoURL = null,
-  requiredLabels = [],
+  repoURL,
+  requiredLabels,
 } = props;
 
 State.init({
@@ -71,27 +71,29 @@ if (repoURL) {
     const response = fetch(
       `https://api.github.com/repos/${repoURL
         .split("/")
-        .slice(-2, -1)
+        .slice(-2)
         .join("/")}/pulls`
     );
 
-    console.log(response);
-
     const pullRequestsByLabel = (response.body ?? []).reduce(
-      (registry, item) => ({ ...registry, [item.labels[0]]: [item] }),
+      (registry, item) => ({ ...registry, [item.labels[0].name]: [item] }),
       {}
     );
 
     console.log(pullRequestsByLabel);
+
+		State.update({ itemsByLabel: pullRequestsByLabel })
   }
 
   if (contentTypes.issue) {
     const response = fetch(
       `https://api.github.com/repos/${repoURL
         .split("/")
-        .slice(-2, -1)
+        .slice(-2)
         .join("/")}/issues`
     );
+
+		console.log(response.body)
 
     const issuesByLabel = (response.body ?? []).reduce(
       (registry, issue) => ({ ...registry, [issue.labels[0]]: issue }),
@@ -136,7 +138,7 @@ return (
 
               {items.map((item) => {
                 // widget("components.posts.CompactPost", { id: postId }, postId)
-                return item;
+                return <div class="card p-4">{item.title}</div>;
               })}
             </div>
           </div>
