@@ -85,40 +85,41 @@ if (grantNotify === null) {
   return;
 }
 
-const onSubmit = (post_type) => {
+const onSubmit = () => {
   let labels = state.labelStrings;
 
-  var body_options = {
-    Comment: { description: state.description, comment_version: "V2" },
-    Idea: {
-      name: state.name,
-      description: state.description,
-      idea_version: "V1",
-    },
-    Solution: {
-      name: state.name,
-      description: state.description,
+  let body = {
+    name: state.name,
+    description: state.description,
+  };
+
+  if (state.seekingFunding && state.postType === "Solution") {
+    // Sponsership
+    body = {
+      ...body,
+      postType: "Sponsership",
       amount: state.amount,
       sponsorship_token: state.token,
       supervisor: state.supervisor,
       submission_version: "V1",
-    },
-    Sponsorship: {
-      name: state.name,
-      description: state.description,
-      amount: state.amount,
-      sponsorship_token: state.token,
-      supervisor: state.supervisor,
-      sponsorship_version: "V1",
-    },
-  };
-
-  var body = body_options[post_type];
-  body.post_type = post_type === "Solution" ? "Submission" : post_type;
-
-  if (!context.accountId) {
-    return;
+    };
+  } else if (state.postType === "Solution") {
+    // Solution
+    body = {
+      ...body,
+      postType: "Submission",
+    };
+  } else {
+    // Idea
+    body = {
+      ...body,
+      postType: "Idea",
+      idea_version: "V1",
+    };
   }
+
+  if (!context.accountId) return;
+
   let txn = [];
   if (mode == "Create") {
     txn.push({
@@ -127,7 +128,7 @@ const onSubmit = (post_type) => {
       args: {
         parent_id: parentId,
         labels,
-        body,
+        body: body,
       },
       deposit: Big(10).pow(21).mul(2),
       gas: Big(10).pow(12).mul(100),
@@ -139,7 +140,7 @@ const onSubmit = (post_type) => {
       args: {
         id: postId,
         labels,
-        body,
+        body: body,
       },
       deposit: Big(10).pow(21).mul(2),
       gas: Big(10).pow(12).mul(100),
@@ -295,10 +296,6 @@ const descriptionDiv = (
     />
   </div>
 );
-
-const onFundraiseYes = (e) => {};
-
-const onFundraiseNo = (e) => {};
 
 const isFundraisingDiv = (
   <>
@@ -492,7 +489,7 @@ return (
               color: "#f3f3f3",
             }}
             className="btn btn-light mb-2 p-3"
-            onClick={() => onSubmit(state.postType)}
+            onClick={onSubmit}
           >
             Submit
           </button>
