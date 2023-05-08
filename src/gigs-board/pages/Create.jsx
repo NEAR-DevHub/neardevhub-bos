@@ -1,10 +1,11 @@
 /* INCLUDE: "common.jsx" */
+
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId = context.accountId;
+//   props.nearDevGovGigsWidgetsAccountId ||
+//   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -44,7 +45,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const postType = props.postType ?? "Sponsorship";
+const postType = props.postType === "Solution" ? props.postType : "Idea";
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
@@ -56,13 +57,15 @@ const labels = labelStrings.map((s) => {
 });
 
 initState({
+  seekingFunding: false,
+  //
   author_id: context.accountId,
   // Should be a list of objects with field "name".
   labels,
   // Should be a list of labels as strings.
   // Both of the label structures should be modified together.
   labelStrings,
-  postType,
+  postType: "Idea",
   name: props.name ?? "",
   description: props.description ?? "",
   amount: props.amount ?? "0",
@@ -71,21 +74,6 @@ initState({
   githubLink: props.githubLink ?? "",
   warning: "",
 });
-
-let fields = {
-  Comment: ["description"],
-  Idea: ["name", "description"],
-  Submission: ["name", "description"],
-  Attestation: ["name", "description"],
-  Sponsorship: [
-    "name",
-    "description",
-    "amount",
-    "sponsorship_token",
-    "supervisor",
-  ],
-  Github: ["githubLink", "name", "description"],
-}[postType];
 
 // This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onClick, it will give `null` and we cannot tell the result is true or false.
@@ -96,24 +84,24 @@ let grantNotify = Near.view("social.near", "is_write_permission_granted", {
 if (grantNotify === null) {
   return;
 }
-const onClick = () => {
+
+const onSubmit = (post_type) => {
   let labels = state.labelStrings;
-  var body = {
+
+  var body_options = {
     Comment: { description: state.description, comment_version: "V2" },
     Idea: {
       name: state.name,
       description: state.description,
       idea_version: "V1",
     },
-    Submission: {
+    Solution: {
       name: state.name,
       description: state.description,
+      amount: state.amount,
+      sponsorship_token: state.token,
+      supervisor: state.supervisor,
       submission_version: "V1",
-    },
-    Attestation: {
-      name: state.name,
-      description: state.description,
-      attestation_version: "V1",
     },
     Sponsorship: {
       name: state.name,
@@ -123,14 +111,11 @@ const onClick = () => {
       supervisor: state.supervisor,
       sponsorship_version: "V1",
     },
-    Github: {
-      name: state.name,
-      description: state.description,
-      github_version: "V0",
-      github_link: state.githubLink,
-    },
-  }[postType];
-  body["post_type"] = postType;
+  };
+
+  var body = body_options[post_type];
+  body.post_type = post_type === "Solution" ? "Submission" : post_type;
+
   if (!context.accountId) {
     return;
   }
@@ -175,6 +160,14 @@ const onClick = () => {
     }
     Near.call(txn);
   }
+};
+
+const onIdeaClick = () => {
+  State.update({ postType: "Idea", seekingFunding: false });
+};
+
+const onSolutionClick = () => {
+  State.update({ postType: "Solution" });
 };
 
 const normalizeLabel = (label) =>
@@ -252,8 +245,8 @@ const existingLabels = existingLabelStrings.map((s) => {
 });
 
 const labelEditor = (
-  <div className="col-lg-12  mb-2">
-    Labels:
+  <div className="col-lg-12 mb-2">
+    Labels
     <Typeahead
       multiple
       labelKey="name"
@@ -279,31 +272,20 @@ const labelEditor = (
   </div>
 );
 
-const githubLinkDiv = fields.includes("githubLink") ? (
-  <div className="col-lg-12  mb-2">
-    Github Issue URL:
-    <input
-      type="text"
-      value={state.githubLink}
-      onChange={(event) => State.update({ githubLink: event.target.value })}
-    />
-  </div>
-) : null;
-
-const nameDiv = fields.includes("name") ? (
-  <div className="col-lg-6  mb-2">
-    Title:
+const nameDiv = (
+  <div className="col-lg-6 mb-2">
+    Title
     <input
       type="text"
       value={state.name}
       onChange={(event) => State.update({ name: event.target.value })}
     />
   </div>
-) : null;
+);
 
-const descriptionDiv = fields.includes("description") ? (
-  <div className="col-lg-12  mb-2">
-    Description:
+const descriptionDiv = (
+  <div className="col-lg-12 mb-2">
+    Description
     <br />
     <textarea
       value={state.description}
@@ -313,40 +295,128 @@ const descriptionDiv = fields.includes("description") ? (
       onChange={(event) => State.update({ description: event.target.value })}
     />
   </div>
-) : null;
+);
 
-const amountDiv = fields.includes("amount") ? (
+const amountDiv = (
   <div className="col-lg-6  mb-2">
-    Amount:
+    Amount
     <input
       type="text"
       value={state.amount}
       onChange={(event) => State.update({ amount: event.target.value })}
     />
   </div>
-) : null;
+);
 
-const tokenDiv = fields.includes("sponsorship_token") ? (
-  <div className="col-lg-6  mb-2">
-    Tokens:
+const tokenDiv = (
+  <div className="col-lg-6 mb-2">
+    Tokens
     <input
       type="text"
       value={state.token}
       onChange={(event) => State.update({ token: event.target.value })}
     />
   </div>
-) : null;
+);
 
-const supervisorDiv = fields.includes("supervisor") ? (
+const supervisorDiv = (
   <div className="col-lg-6 mb-2">
-    Supervisor:
+    Supervisor
     <input
       type="text"
       value={state.supervisor}
       onChange={(event) => State.update({ supervisor: event.target.value })}
     />
   </div>
-) : null;
+);
+
+const onFundraiseChange = (e) => {
+  if (e.target.value === "yes") {
+    State.update({ seekingFunding: true });
+  } else {
+    State.update({ seekingFunding: false });
+  }
+};
+
+const isFundraisingDiv = (
+  <>
+    <p class="fs-6 fw-bold">
+      Are you seeking funding for your solution?
+      <span class="text-muted fw-normal">Optional</span>
+    </p>
+    <div class="mb-1">
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="inlineRadioOptions"
+          id="inlineRadio1"
+          onChange={onFundraiseChange}
+          value={"yes"}
+        />
+        <label class="form-check-label" for="inlineRadio1">
+          Yes
+        </label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="inlineRadioOptions"
+          id="inlineRadio2"
+          onChange={onFundraiseChange}
+          value={"no"}
+          defaultChecked
+        />
+        <label class="form-check-label" for="inlineRadio2">
+          No
+        </label>
+      </div>
+    </div>
+  </>
+);
+
+const fundraisingDiv = (
+  <div class="d-flex flex-column">
+    <div className="col-lg-6  mb-2">
+      Currency
+      <input
+        type="text"
+        value={state.token}
+        onChange={(event) => State.update({ token: event.target.value })}
+      />
+    </div>
+    <div className="col-lg-6 mb-2">
+      Total amount <span class="text-muted fw-normal">(Numbers Only)</span>
+      <input
+        type="text"
+        value={state.amount}
+        onChange={(event) => State.update({ amount: event.target.value })}
+      />
+    </div>
+    <div className="col-lg-6 mb-2">
+      <p>
+        Specific Sponser <span class="text-muted fw-normal">(Optional)</span>
+      </p>
+      <p style={{ fontSize: "15px" }} class="m-0 text-muted fw-light">
+        If you are requesting funding from a specific sponsor, please enter
+        their username.
+      </p>
+      <div class="input-group flex-nowrap">
+        <span class="input-group-text" id="addon-wrapping">
+          @
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter username"
+          value={state.supervisor}
+          onChange={(event) => State.update({ supervisor: event.target.value })}
+        />
+      </div>
+    </div>
+  </div>
+);
 
 const disclaimer = (
   <p>
@@ -357,77 +427,109 @@ const disclaimer = (
   </p>
 );
 
-const renamedPostType = postType == "Submission" ? "Solution" : postType;
-// Below there is a weird code with fields.includes("githubLink") ternary operator.
-// This is to hack around rendering bug of near.social.
 return (
-  <div className="card">
-    <div className="card-header">
-      {mode} {renamedPostType}
-    </div>
-
-    <div class="card-body">
-      {state.warning ? (
-        <div
-          class="alert alert-warning alert-dismissible fade show"
-          role="alert"
-        >
-          {state.warning}
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close"
-            onClick={() => State.update({ warning: "" })}
-          ></button>
+  <div class="bg-light d-flex flex-column flex-grow-1">
+    {widget("components.layout.Banner")}
+    <div class="mx-5 mb-5">
+      <div aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="gigs-board.pages.Feed">DevHub</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            Create new
+          </li>
+        </ol>
+      </div>
+      <h4>Create a new post</h4>
+      <p>{state.seekingFunding}</p>
+      <div class="card border-light">
+        <div class="card-body">
+          <p class="card-title fw-bold fs-6">What do you want to create?</p>
+          <div class="d-flex flex-row gap-2">
+            <button
+              onClick={onIdeaClick}
+              type="button"
+              class={`btn btn-outline-${
+                state.postType === "Idea" ? "dark" : "secondary"
+              }`}
+            >
+              <i class="bi bi-lightbulb"></i>
+              Idea
+            </button>
+            <button
+              onClick={onSolutionClick}
+              type="button"
+              class={`btn btn-outline-${
+                state.postType === "Idea" ? "secondary" : "dark"
+              }`}
+            >
+              <i class="bi bi-rocket"></i>
+              Solution
+            </button>
+          </div>
+          <p class="text-muted w-75">
+            {state.postType === "Idea"
+              ? "Get feedback from the community about a problem, opportunity, or need."
+              : "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution."}
+          </p>
+          {state.warning && (
+            <div
+              class="alert alert-warning alert-dismissible fade show"
+              role="alert"
+            >
+              {state.warning}
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+                onClick={() => State.update({ warning: "" })}
+              ></button>
+            </div>
+          )}
+          <div className="row">
+            {nameDiv}
+            {descriptionDiv}
+            {labelEditor}
+            {state.postType === "Solution" && isFundraisingDiv}
+            {state.seekingFunding && fundraisingDiv}
+          </div>
+          <a
+            style={{ width: "7rem" }}
+            className="btn btn-dark mb-2 p-3"
+            onClick={() => onSubmit(state.postType)}
+          >
+            Submit
+          </a>
+          {disclaimer}
         </div>
-      ) : (
-        <></>
-      )}
-      {fields.includes("githubLink") ? (
-        <div className="row">
-          {githubLinkDiv}
-          {labelEditor}
-          {nameDiv}
-          {descriptionDiv}
+        <div class="bg-light d-flex flex-row p-1 border-bottom"></div>
+        <div class="card-body">
+          <p class="text-muted m-0">Preview</p>
+          <div>
+            {widget("components.posts.Post", {
+              isPreview: true,
+              id: 0, // irrelevant
+              post: {
+                author_id: state.author_id,
+                likes: [],
+                snapshot: {
+                  editor_id: state.editor_id,
+                  labels: state.labelStrings,
+                  post_type: state.postType,
+                  name: state.name,
+                  description: state.description,
+                  amount: state.amount,
+                  sponsorship_token: state.token,
+                  supervisor: state.supervisor,
+                  github_link: state.githubLink,
+                },
+              },
+            })}
+          </div>
         </div>
-      ) : (
-        <div className="row">
-          {labelEditor}
-          {nameDiv}
-          {amountDiv}
-          {tokenDiv}
-          {supervisorDiv}
-          {descriptionDiv}
-        </div>
-      )}
-
-      <a className="btn btn-outline-primary mb-2" onClick={onSubmit}>
-        Submit
-      </a>
-      {disclaimer}
-    </div>
-    <div class="card-footer">
-      Preview:
-      {widget("components.posts.Post", {
-        isPreview: true,
-        id: 0, // irrelevant
-        post: {
-          author_id: state.author_id,
-          likes: [],
-          snapshot: {
-            editor_id: state.editor_id,
-            labels: state.labelStrings,
-            post_type: postType,
-            name: state.name,
-            description: state.description,
-            amount: state.amount,
-            sponsorship_token: state.token,
-            supervisor: state.supervisor,
-            github_link: state.githubLink,
-          },
-        },
-      })}
+      </div>
     </div>
   </div>
 );

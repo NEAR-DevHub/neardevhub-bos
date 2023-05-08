@@ -45,6 +45,15 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 return (
+  <div>
+    <a class="btn btn-primary" href="gigs-board.pages.Create">
+      <i class="bi bi-plus-circle-fill"></i>
+      Submit Idea / Solution
+    </a>
+  </div>
+);
+
+return (
   <div class="card border-secondary mb-2">
     <div class="nav navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
