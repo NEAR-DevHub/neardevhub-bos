@@ -45,8 +45,15 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 return (
-  <div>
-    <a class="btn btn-primary" href="gigs-board.pages.Create">
+  <div class="d-flex flex-row-reverse">
+    <a
+      class="btn btn-light"
+      style={{
+        backgroundColor: "#0C7283",
+        color: "#f3f3f3",
+      }}
+      href="gigs-board.pages.Create"
+    >
       <i class="bi bi-plus-circle-fill"></i>
       Submit Idea / Solution
     </a>

@@ -246,7 +246,7 @@ const existingLabels = existingLabelStrings.map((s) => {
 
 const labelEditor = (
   <div className="col-lg-12 mb-2">
-    Labels
+    <p className="fs-6 fw-bold mb-1">Labels</p>
     <Typeahead
       multiple
       labelKey="name"
@@ -274,7 +274,7 @@ const labelEditor = (
 
 const nameDiv = (
   <div className="col-lg-6 mb-2">
-    Title
+    <p className="fs-6 fw-bold mb-1">Title</p>
     <input
       type="text"
       value={state.name}
@@ -285,8 +285,7 @@ const nameDiv = (
 
 const descriptionDiv = (
   <div className="col-lg-12 mb-2">
-    Description
-    <br />
+    <p className="fs-6 fw-bold mb-1">Description</p>
     <textarea
       value={state.description}
       type="text"
@@ -297,77 +296,57 @@ const descriptionDiv = (
   </div>
 );
 
-const amountDiv = (
-  <div className="col-lg-6  mb-2">
-    Amount
-    <input
-      type="text"
-      value={state.amount}
-      onChange={(event) => State.update({ amount: event.target.value })}
-    />
-  </div>
-);
+const onFundraiseYes = (e) => {};
 
-const tokenDiv = (
-  <div className="col-lg-6 mb-2">
-    Tokens
-    <input
-      type="text"
-      value={state.token}
-      onChange={(event) => State.update({ token: event.target.value })}
-    />
-  </div>
-);
-
-const supervisorDiv = (
-  <div className="col-lg-6 mb-2">
-    Supervisor
-    <input
-      type="text"
-      value={state.supervisor}
-      onChange={(event) => State.update({ supervisor: event.target.value })}
-    />
-  </div>
-);
-
-const onFundraiseChange = (e) => {
-  if (e.target.value === "yes") {
-    State.update({ seekingFunding: true });
-  } else {
-    State.update({ seekingFunding: false });
-  }
-};
+const onFundraiseNo = (e) => {};
 
 const isFundraisingDiv = (
   <>
-    <p class="fs-6 fw-bold">
-      Are you seeking funding for your solution?
-      <span class="text-muted fw-normal">Optional</span>
-    </p>
-    <div class="mb-1">
+    <div class="mb-2">
+      <p class="fs-6 fw-bold mb-1">
+        Are you seeking funding for your solution?
+        <span class="text-muted fw-normal">Optional</span>
+      </p>
       <div class="form-check form-check-inline">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="inlineRadioOptions"
-          id="inlineRadio1"
-          onChange={onFundraiseChange}
-          value={"yes"}
-        />
+        <button
+          className="btn btn-light p-0"
+          style={{
+            backgroundColor: "#0C7283",
+            color: "#f3f3f3",
+            borderRadius: "100%",
+          }}
+          onClick={() => State.update({ seekingFunding: true })}
+        >
+          <i
+            style={{
+              opacity: state.seekingFunding ? 100 : 0,
+              margin: "3px 3px 0px 3px",
+            }}
+            class="bi bi-circle-fill"
+          ></i>
+        </button>
         <label class="form-check-label" for="inlineRadio1">
           Yes
         </label>
       </div>
       <div class="form-check form-check-inline">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="inlineRadioOptions"
-          id="inlineRadio2"
-          onChange={onFundraiseChange}
-          value={"no"}
-          defaultChecked
-        />
+        <button
+          className="btn btn-light p-0"
+          style={{
+            backgroundColor: "#0C7283",
+            color: "#f3f3f3",
+            borderRadius: "100%",
+          }}
+          onClick={() => State.update({ seekingFunding: false })}
+        >
+          <i
+            style={{
+              opacity: !state.seekingFunding ? 100 : 0,
+              margin: "3px 3px 0px 3px",
+            }}
+            class="bi bi-circle-fill"
+          ></i>
+        </button>
         <label class="form-check-label" for="inlineRadio2">
           No
         </label>
@@ -377,7 +356,7 @@ const isFundraisingDiv = (
 );
 
 const fundraisingDiv = (
-  <div class="d-flex flex-column">
+  <div class="d-flex flex-column mb-2">
     <div className="col-lg-6  mb-2">
       Currency
       <input
@@ -395,10 +374,10 @@ const fundraisingDiv = (
       />
     </div>
     <div className="col-lg-6 mb-2">
-      <p>
+      <p class="mb-1">
         Specific Sponser <span class="text-muted fw-normal">(Optional)</span>
       </p>
-      <p style={{ fontSize: "15px" }} class="m-0 text-muted fw-light">
+      <p style={{ fontSize: "13px" }} class="m-0 text-muted fw-light">
         If you are requesting funding from a specific sponsor, please enter
         their username.
       </p>
@@ -418,15 +397,6 @@ const fundraisingDiv = (
   </div>
 );
 
-const disclaimer = (
-  <p>
-    <i>
-      * Note, all projects that were granted sponsorships are required to pass
-      KYC to receive the funding.
-    </i>
-  </p>
-);
-
 return (
   <div class="bg-light d-flex flex-column flex-grow-1">
     {widget("components.layout.Banner")}
@@ -434,7 +404,15 @@ return (
       <div aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-            <a href="gigs-board.pages.Feed">DevHub</a>
+            <a
+              style={{
+                color: "#3252A6",
+              }}
+              className="fw-bold"
+              href="gigs-board.pages.Feed"
+            >
+              DevHub
+            </a>
           </li>
           <li class="breadcrumb-item active" aria-current="page">
             Create new
@@ -450,9 +428,15 @@ return (
             <button
               onClick={onIdeaClick}
               type="button"
-              class={`btn btn-outline-${
-                state.postType === "Idea" ? "dark" : "secondary"
-              }`}
+              class={`btn btn-outline-secondary`}
+              style={
+                state.postType === "Idea"
+                  ? {
+                      backgroundColor: "#0C7283",
+                      color: "#f3f3f3",
+                    }
+                  : {}
+              }
             >
               <i class="bi bi-lightbulb"></i>
               Idea
@@ -460,15 +444,21 @@ return (
             <button
               onClick={onSolutionClick}
               type="button"
-              class={`btn btn-outline-${
-                state.postType === "Idea" ? "secondary" : "dark"
-              }`}
+              class={`btn btn-outline-secondary`}
+              style={
+                state.postType !== "Idea"
+                  ? {
+                      backgroundColor: "#0C7283",
+                      color: "#f3f3f3",
+                    }
+                  : {}
+              }
             >
               <i class="bi bi-rocket"></i>
               Solution
             </button>
           </div>
-          <p class="text-muted w-75">
+          <p class="text-muted w-75 my-1">
             {state.postType === "Idea"
               ? "Get feedback from the community about a problem, opportunity, or need."
               : "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution."}
@@ -495,14 +485,17 @@ return (
             {state.postType === "Solution" && isFundraisingDiv}
             {state.seekingFunding && fundraisingDiv}
           </div>
-          <a
-            style={{ width: "7rem" }}
-            className="btn btn-dark mb-2 p-3"
+          <button
+            style={{
+              width: "7rem",
+              backgroundColor: "#0C7283",
+              color: "#f3f3f3",
+            }}
+            className="btn btn-light mb-2 p-3"
             onClick={() => onSubmit(state.postType)}
           >
             Submit
-          </a>
-          {disclaimer}
+          </button>
         </div>
         <div class="bg-light d-flex flex-row p-1 border-bottom"></div>
         <div class="card-body">
