@@ -2,6 +2,7 @@
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -13,6 +14,7 @@ function widget(widgetName, widgetProps, key) {
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
     referral: props.referral,
   };
+
   return (
     <Widget
       src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
@@ -24,20 +26,25 @@ function widget(widgetName, widgetProps, key) {
 
 function href(widgetName, linkProps) {
   linkProps = { ...linkProps };
+
   if (props.nearDevGovGigsContractAccountId) {
     linkProps.nearDevGovGigsContractAccountId =
       props.nearDevGovGigsContractAccountId;
   }
+
   if (props.nearDevGovGigsWidgetsAccountId) {
     linkProps.nearDevGovGigsWidgetsAccountId =
       props.nearDevGovGigsWidgetsAccountId;
   }
+
   if (props.referral) {
     linkProps.referral = props.referral;
   }
+
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
+
   return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
@@ -46,20 +53,27 @@ function href(widgetName, linkProps) {
 
 const { action, boardId, label } = props;
 
-const newBoardConfig = {
-  boardId: "probablyUUIDv4", // uuid-v4() ?
+State.init({
+  newBoardConfig: {
+    boardId: "probablyUUIDv4", // uuid-v4() ?
 
-  columns: [
-    { label: "widget", title: "Widget" },
-    { label: "integration", title: "Integration" },
-    { label: "feature-request", title: "Feature Request" },
-  ],
+    columns: [
+      { label: "widget", title: "Widget" },
+      { label: "integration", title: "Integration" },
+      { label: "feature-request", title: "Feature Request" },
+    ],
 
-  excludedLabels: [],
-  name: "NEAR Protocol NEPs",
-  repoURL: "https://github.com/near/NEPs",
-  requiredLabels: ["near-social"],
-};
+    contentTypes: {
+      pullRequest: true,
+      issue: false,
+    },
+
+    excludedLabels: [],
+    name: "NEAR Protocol NEPs",
+    repoURL: "https://github.com/near/NEPs",
+    requiredLabels: ["A-NEP"],
+  },
+});
 
 /**
  * Reads a board config from SocialDB.
@@ -70,6 +84,7 @@ const newBoardConfig = {
 const boardConfigByBoardId = ({ boardId }) => {
   return {
     probablyUUIDv4: {
+      id: "probablyUUIDv4",
       columns: [],
       excludedLabels: [],
       name: "sample board",
@@ -85,14 +100,18 @@ const TabContent = (
       <div>
         <h4>New GitHub activity board</h4>
 
-        <form></form>
+        <div></div>
       </div>
     )}
 
-    {action === "new" && widget("components.boards.GitBoard", newBoardConfig)}
+    {action === "new" &&
+      widget("components.boards.GitBoard", state.newBoardConfig)}
 
     {action === "view" &&
-      widget("components.boards.GitBoard", boardConfigByBoardId(boardId))}
+      widget("components.boards.GitBoard", {
+        ...boardConfigByBoardId(boardId),
+        linkedPage: "GitHubActivity",
+      })}
   </div>
 );
 
