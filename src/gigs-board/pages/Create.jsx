@@ -3,6 +3,7 @@
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
 const nearDevGovGigsWidgetsAccountId = context.accountId;
 props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -298,6 +299,7 @@ const descriptionDiv = (
 );
 
 const isFundraisingDiv = (
+  // This is jank with just btns and not radios. But the radios were glitchy af
   <>
     <div class="mb-2">
       <p class="fs-6 fw-bold mb-1">
@@ -308,20 +310,15 @@ const isFundraisingDiv = (
         <button
           className="btn btn-light p-0"
           style={{
-            backgroundColor: "#0C7283",
+            backgroundColor: state.seekingFunding ? "#0C7283" : "inherit",
             color: "#f3f3f3",
+            border: "solid #D9D9D9",
             borderRadius: "100%",
+            height: "20px",
+            width: "20px",
           }}
           onClick={() => State.update({ seekingFunding: true })}
-        >
-          <i
-            style={{
-              opacity: state.seekingFunding ? 100 : 0,
-              margin: "3px 3px 0px 3px",
-            }}
-            class="bi bi-circle-fill"
-          ></i>
-        </button>
+        ></button>
         <label class="form-check-label" for="inlineRadio1">
           Yes
         </label>
@@ -330,20 +327,15 @@ const isFundraisingDiv = (
         <button
           className="btn btn-light p-0"
           style={{
-            backgroundColor: "#0C7283",
+            backgroundColor: !state.seekingFunding ? "#0C7283" : "inherit",
             color: "#f3f3f3",
+            border: "solid #D9D9D9",
             borderRadius: "100%",
+            height: "20px",
+            width: "20px",
           }}
           onClick={() => State.update({ seekingFunding: false })}
-        >
-          <i
-            style={{
-              opacity: !state.seekingFunding ? 100 : 0,
-              margin: "3px 3px 0px 3px",
-            }}
-            class="bi bi-circle-fill"
-          ></i>
-        </button>
+        ></button>
         <label class="form-check-label" for="inlineRadio2">
           No
         </label>
@@ -356,11 +348,17 @@ const fundraisingDiv = (
   <div class="d-flex flex-column mb-2">
     <div className="col-lg-6  mb-2">
       Currency
-      <input
-        type="text"
-        value={state.token}
+      <select
         onChange={(event) => State.update({ token: event.target.value })}
-      />
+        class="form-select"
+        aria-label="Default select example"
+      >
+        <option selected value="NEAR">
+          NEAR
+        </option>
+        <option value="USDC">USDC</option>
+        <option value="USD">USD</option>
+      </select>
     </div>
     <div className="col-lg-6 mb-2">
       Total amount <span class="text-muted fw-normal">(Numbers Only)</span>
