@@ -128,6 +128,8 @@ const topicTabs = [
        * The parameter is ignored if `action` is `"new"`.
        **/
       boardId: "probablyUUIDv4",
+
+			label
     },
 
     iconClass: "bi-github",

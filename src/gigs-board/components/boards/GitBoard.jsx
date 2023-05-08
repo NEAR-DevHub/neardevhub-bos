@@ -73,7 +73,9 @@ if (repoURL) {
         .split("/")
         .slice(-2, -1)
         .join("/")}/pulls`
-    ).catch(console.error);
+    );
+
+    console.log(response.body);
 
     const pullRequestsByLabel = (response.body ?? []).reduce(
       (registry, item) => ({ ...registry, [item.labels[0]]: [item] }),
@@ -89,7 +91,7 @@ if (repoURL) {
         .split("/")
         .slice(-2, -1)
         .join("/")}/issues`
-    ).catch(console.error);
+    );
 
     const issuesByLabel = (response.body ?? []).reduce(
       (registry, issue) => ({ ...registry, [issue.labels[0]]: issue }),
@@ -129,7 +131,7 @@ return (
           <div class="card">
             <div class="card-body border-secondary">
               <h6 class="card-title">
-                {label}({items.length})
+                {label} ({items.length})
               </h6>
 
               {items.map((item) => {
