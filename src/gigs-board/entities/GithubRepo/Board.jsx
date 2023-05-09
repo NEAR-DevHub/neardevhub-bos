@@ -67,7 +67,7 @@ State.init({
 });
 
 if (repoURL) {
-  if (contentTypes.pullRequest) {
+  if (contentTypes.PullRequest) {
     const response = fetch(
       `https://api.github.com/repos/${repoURL
         .split("/")
@@ -76,16 +76,20 @@ if (repoURL) {
     );
 
     const pullRequestsByLabel = (response.body ?? []).reduce(
-      (registry, item) => ({ ...registry, [item.labels[0].name]: [item] }),
+      (registry, item) => {
+        const itemWithType = { ...item, type: "PullRequest" };
+
+        return { ...registry, [item.labels[0].name]: [itemWithType] };
+      },
       {}
     );
 
     console.log(pullRequestsByLabel);
 
-		State.update({ itemsByLabel: pullRequestsByLabel })
+    State.update({ itemsByLabel: pullRequestsByLabel });
   }
 
-  if (contentTypes.issue) {
+  if (contentTypes.Issue) {
     const response = fetch(
       `https://api.github.com/repos/${repoURL
         .split("/")
@@ -93,12 +97,13 @@ if (repoURL) {
         .join("/")}/issues`
     );
 
-		console.log(response.body)
+    console.log(response.body);
 
-    const issuesByLabel = (response.body ?? []).reduce(
-      (registry, issue) => ({ ...registry, [issue.labels[0]]: issue }),
-      {}
-    );
+    const issuesByLabel = (response.body ?? []).reduce((registry, issue) => {
+      const itemWithType = { ...item, type: "Issue" };
+
+      return { ...registry, [issue.labels[0]]: [itemWithType] };
+    }, {});
 
     console.log(issuesByLabel);
   }
@@ -136,10 +141,9 @@ return (
                 {label} ({items.length})
               </h6>
 
-              {items.map((item) => {
-                // widget("components.posts.CompactPost", { id: postId }, postId)
-                return <div class="card p-4">{item.title}</div>;
-              })}
+              {items.map((data) =>
+                widget("entities.GithubRepo.TicketCard", { data }, data.id)
+              )}
             </div>
           </div>
         </div>

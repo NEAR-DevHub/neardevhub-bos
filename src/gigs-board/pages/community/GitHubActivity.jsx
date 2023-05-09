@@ -64,8 +64,8 @@ State.init({
     ],
 
     contentTypes: {
-      pullRequest: true,
-      issue: false,
+      PullRequest: true,
+      Issue: false,
     },
 
     excludedLabels: [],
@@ -105,12 +105,12 @@ const TabContent = (
     )}
 
     {action === "new" &&
-      widget("components.boards.GitBoard", state.newBoardConfig)}
+      widget("entities.GithubRepo.Board", state.newBoardConfig)}
 
     {action === "view" &&
-      widget("components.boards.GitBoard", {
+      widget("entities.GithubRepo.Board", {
         ...boardConfigByBoardId(boardId),
-        linkedPage: "GitHubActivity",
+        linkedPage: "GithubActivity",
       })}
   </div>
 );

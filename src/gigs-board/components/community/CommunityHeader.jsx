@@ -129,11 +129,11 @@ const topicTabs = [
        **/
       boardId: "probablyUUIDv4",
 
-			label
+      label,
     },
 
     iconClass: "bi-github",
-    path: "community.GitHubActivity",
+    path: "community.GithubActivity",
     title: "Custom GitHub board title",
   },
 ];
