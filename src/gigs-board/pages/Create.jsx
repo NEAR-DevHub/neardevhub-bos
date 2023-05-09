@@ -363,7 +363,7 @@ const fundraisingDiv = (
     <div className="col-lg-6 mb-2">
       Total amount <span class="text-muted fw-normal">(Numbers Only)</span>
       <input
-        type="text"
+        type="number"
         value={state.amount}
         onChange={(event) => State.update({ amount: event.target.value })}
       />
