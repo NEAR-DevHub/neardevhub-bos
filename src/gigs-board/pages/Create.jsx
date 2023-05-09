@@ -304,7 +304,7 @@ const isFundraisingDiv = (
     <div class="mb-2">
       <p class="fs-6 fw-bold mb-1">
         Are you seeking funding for your solution?
-        <span class="text-muted fw-normal">Optional</span>
+        <span class="text-muted fw-normal">(Optional)</span>
       </p>
       <div class="form-check form-check-inline">
         <button
@@ -370,7 +370,7 @@ const fundraisingDiv = (
     </div>
     <div className="col-lg-6 mb-2">
       <p class="mb-1">
-        Specific Sponser <span class="text-muted fw-normal">(Optional)</span>
+        Specific Sponsor <span class="text-muted fw-normal">(Optional)</span>
       </p>
       <p style={{ fontSize: "13px" }} class="m-0 text-muted fw-light">
         If you are requesting funding from a specific sponsor, please enter
@@ -505,7 +505,10 @@ return (
                 snapshot: {
                   editor_id: state.editor_id,
                   labels: state.labelStrings,
-                  post_type: state.postType,
+                  post_type:
+                    state.postType === "Solution" && state.seekingFunding
+                      ? "Sponsorship"
+                      : state.postType,
                   name: state.name,
                   description: state.description,
                   amount: state.amount,
