@@ -2,9 +2,9 @@
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId = "benreilly.near";
+// props.nearDevGovGigsWidgetsAccountId ||
+// (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -666,6 +666,111 @@ const showMoreSearchResults = () => {
 };
 
 return (
+  <>
+    <div className="d-flex flex-row gap-4">
+      <div className="d-flex flex-row position-relative w-25">
+        <div className="position-absolute d-flex ps-3 flex-column h-100 justify-center">
+          {state.loading ? (
+            <span
+              className="spinner-grow spinner-grow-sm m-auto"
+              role="status"
+              aria-hidden="true"
+            />
+          ) : (
+            <i class="bi bi-search m-auto"></i>
+          )}
+        </div>
+        <input
+          type="search"
+          className="ps-5 form-control border border-0 bg-light"
+          value={state.term ?? ""}
+          onChange={(e) => updateInput(e.target.value)}
+          placeholder={props.placeholder ?? `Search Posts`}
+        />
+      </div>
+      <div class="dropdown">
+        <button
+          class="btn btn-light dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Sort
+        </button>
+        <ul class="dropdown-menu px-2 shadow">
+          <li>
+            <a
+              style={{ borderRadius: "5px" }}
+              class="dropdown-item link-underline link-underline-opacity-0"
+              href={href("Feed")}
+            >
+              Latest
+            </a>
+          </li>
+          <li>
+            <a
+              style={{ borderRadius: "5px" }}
+              class="dropdown-item link-underline link-underline-opacity-0"
+              href={href("Feed", { recency: "hot" })}
+            >
+              Hottest
+            </a>
+          </li>
+          <li>
+            <a
+              style={{ borderRadius: "5px" }}
+              class="dropdown-item link-underline link-underline-opacity-0"
+              href={href("Feed", { recency: "all" })}
+            >
+              All replies
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="dropdown">
+        {widget("components.layout.SearchByAuthor", {
+          authorQuery: props.authorQuery,
+          onSearchAuthor: props.onSearchAuthor,
+        })}
+      </div>
+      <div>
+        {widget("components.layout.SearchByLabel", {
+          labelQuery: props.labelQuery,
+          onSearchLabel: props.onSearchLabel,
+        })}
+      </div>
+    </div>
+    {state.processedQuery &&
+      state.processedQuery.length > 0 &&
+      state.term.toLowerCase().trim() !== state.processedQuery.join(" ") && (
+        <div class="mb-2" style={{ "font-family": "monospace" }}>
+          Looking for
+          <strong>{state.processedQuery.join(" ")}</strong>:
+        </div>
+      )}
+    {state.term && state.term.length > 1 && state.searchResult
+      ? widget("components.posts.List", {
+          searchResult: {
+            postIds: state.searchResult,
+            keywords: Object.fromEntries(
+              state.searchResult.map((postId) => {
+                return [postId, getSearchResultsKeywordsFor(postId)];
+              })
+            ),
+          },
+          recency: props.recency,
+          label: props.label,
+          author: props.author,
+        })
+      : widget("components.posts.List", {
+          recency: props.recency,
+          label: props.label,
+          author: props.author,
+        })}
+  </>
+);
+
+return (
   <div>
     <div
       className="d-flex mb-2"
@@ -705,6 +810,7 @@ return (
         placeholder={props.placeholder ?? `Search Posts`}
       />
     </div>
+
     {state.processedQuery &&
       state.processedQuery.length > 0 &&
       state.term.toLowerCase().trim() !== state.processedQuery.join(" ") && (

@@ -2,9 +2,9 @@
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId = "benreilly.near";
+// props.nearDevGovGigsWidgetsAccountId ||
+// (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -69,18 +69,24 @@ const onSearchAuthor = (author) => {
 return widget("components.layout.Page", {
   header: widget("components.community.FeedHeader"),
   navbarChildren: [
-    widget("components.layout.SearchByLabel", {
-      searchQuery: { label: state.label },
-      onSearchLabel,
-    }),
-    widget("components.layout.SearchByAuthor", {
-      searchQuery: { author: state.author },
-      onSearchAuthor,
-    }),
+    // widget("components.layout.SearchByLabel", {
+    //   searchQuery: { label: state.label },
+    //   onSearchLabel,
+    // }),
+    // widget("components.layout.SearchByAuthor", {
+    //   searchQuery: { author: state.author },
+    //   onSearchAuthor,
+    // }),
   ],
   children: widget("components.posts.Search", {
     recency: props.recency,
     label: state.label,
     author: state.author,
+    //
+    labelQuery: { label: state.label },
+    onSearchLabel,
+    //
+    authorQuery: { author: state.author },
+    onSearchAuthor,
   }),
 });
