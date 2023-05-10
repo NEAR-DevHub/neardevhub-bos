@@ -51,103 +51,128 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const {
+const GithubRepoBoard = ({
   boardId,
   contentTypes,
   columns,
-  excludedLabels,
   linkedPage,
   name,
   repoURL,
-  requiredLabels,
-} = props;
+}) => {
+  State.init({
+    ticketByColumn: columns.reduce(
+      (registry, { title }) => ({ ...registry, [title]: [] }),
+      {}
+    ),
+  });
 
-State.init({
-  itemsByLabel: {},
-});
+  if (repoURL) {
+    if (contentTypes.PullRequest) {
+      const pullRequests =
+        fetch(
+          `https://api.github.com/repos/${repoURL
+            .split("/")
+            .slice(-2)
+            .join("/")}/pulls`
+        ).body ?? [];
 
-if (repoURL) {
-  if (contentTypes.PullRequest) {
-    const response = fetch(
-      `https://api.github.com/repos/${repoURL
-        .split("/")
-        .slice(-2)
-        .join("/")}/pulls`
-    );
-
-    const pullRequestsByLabel = (response.body ?? []).reduce(
-      (registry, item) => {
+      const pullRequestByLabel = pullRequests.reduce((registry, item) => {
         const itemWithType = { ...item, type: "PullRequest" };
 
         return { ...registry, [item.labels[0].name]: [itemWithType] };
-      },
-      {}
-    );
+      }, {});
 
-    console.log(pullRequestsByLabel);
+      console.log(pullRequestByLabel);
 
-    State.update({ itemsByLabel: pullRequestsByLabel });
+      State.update(({ ticketByColumn }) => ({
+        ticketByColumn: Object.keys(ticketByColumn).reduce(
+          (registry, columnTitle) => ({
+            ...registry,
+
+            [columnTitle]: [
+              ...registry.columnTitle,
+
+              ...pullRequests.filter((pullRequest) =>
+                pullRequest.labels.some((label) =>
+                  columns[columnTitle].labelFilters.some(label.includes)
+                )
+              ),
+            ],
+          }),
+
+          ticketByColumn
+        ),
+      }));
+
+      console.log(state.ticketByColumn);
+    }
+
+    if (contentTypes.Issue) {
+      const issues =
+        fetch(
+          `https://api.github.com/repos/${repoURL
+            .split("/")
+            .slice(-2)
+            .join("/")}/issues`
+        ).body ?? [];
+
+      console.log(response.body);
+
+      const issuesByLabel = issues.reduce((registry, issue) => {
+        const itemWithType = { ...item, type: "Issue" };
+
+        return { ...registry, [issue.labels[0]]: [itemWithType] };
+      }, {});
+
+      console.log(issuesByLabel);
+
+      State.update(({ ticketByColumn }) => ({ ticketByColumn: issuesByLabel }));
+    }
   }
 
-  if (contentTypes.Issue) {
-    const response = fetch(
-      `https://api.github.com/repos/${repoURL
-        .split("/")
-        .slice(-2)
-        .join("/")}/issues`
-    );
+  return (
+    <div>
+      <div class="row mb-2">
+        {boardId ? (
+          <div class="col">
+            <small class="text-muted">
+              <a
+                class="card-link"
+                href={href(linkedPage, { boardId })}
+                rel="noreferrer"
+                role="button"
+                target="_blank"
+                title="Link to this board"
+              >
+                <span class="hstack gap-3">
+                  <i class="bi bi-share" />
+                  <span>Link to this board</span>
+                </span>
+              </a>
+            </small>
+          </div>
+        ) : null}
+      </div>
 
-    console.log(response.body);
+      <div class="row">
+        {columns.map((column) => (
+          <div class="col-3" key={column.title}>
+            <div class="card">
+              <div class="card-body border-secondary">
+                <h6 class="card-title">
+                  {label} ({items.length})
+                </h6>
 
-    const issuesByLabel = (response.body ?? []).reduce((registry, issue) => {
-      const itemWithType = { ...item, type: "Issue" };
-
-      return { ...registry, [issue.labels[0]]: [itemWithType] };
-    }, {});
-
-    console.log(issuesByLabel);
-  }
-}
-
-return (
-  <div>
-    <div class="row mb-2">
-      {boardId ? (
-        <div class="col">
-          <small class="text-muted">
-            <a
-              class="card-link"
-              href={href(linkedPage, { boardId })}
-              role="button"
-              target="_blank"
-              title="Link to this board"
-            >
-              <span class="hstack gap-3">
-                <i class="bi bi-share"></i>
-                <span>Link to this board</span>
-              </span>
-            </a>
-          </small>
-        </div>
-      ) : null}
-    </div>
-
-    <div class="row">
-      {Object.entries(state.itemsByLabel).map(([label, items]) => (
-        <div class="col-3" key={label}>
-          <div class="card">
-            <div class="card-body border-secondary">
-              <h6 class="card-title">
-                {label} ({items.length})
-              </h6>
-
-              {items.map((data) =>
-                widget("entities.GithubRepo.TicketCard", { data }, data.id)
-              )}
+                {state.ticketByColumn[column.title].map((data) =>
+                  widget("entities.GithubRepo.TicketCard", { data }, data.id)
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
+return GithubRepoBoard(props);

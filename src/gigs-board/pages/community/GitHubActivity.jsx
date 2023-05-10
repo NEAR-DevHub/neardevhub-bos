@@ -51,72 +51,77 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const { action, boardId, label } = props;
+const GithubActivityPage = ({ action, boardId, label }) => {
+  State.init({
+    newBoardConfig: {
+      boardId: "probablyUUIDv4", // uuid-v4() ?
 
-State.init({
-  newBoardConfig: {
-    boardId: "probablyUUIDv4", // uuid-v4() ?
+      columns: [
+        {
+          title: "DRAFT",
+          labelFilters: ["S-draft"],
+        },
+        {
+          title: "REVIEW",
+          labelFilters: ["S-review"],
+        },
+      ],
 
-    columns: [
-      { label: "widget", title: "Widget" },
-      { label: "integration", title: "Integration" },
-      { label: "feature-request", title: "Feature Request" },
-    ],
+      contentTypes: {
+        PullRequest: true,
+        Issue: false,
+      },
 
-    contentTypes: {
-      PullRequest: true,
-      Issue: false,
-    },
-
-    excludedLabels: [],
-    name: "NEAR Protocol NEPs",
-    repoURL: "https://github.com/near/NEPs",
-    requiredLabels: ["A-NEP"],
-  },
-});
-
-/**
- * Reads a board config from SocialDB.
- * Currently a mock.
- *
- * Boards are stored on SocialDB and indexed by those ids.
- */
-const boardConfigByBoardId = ({ boardId }) => {
-  return {
-    probablyUUIDv4: {
-      id: "probablyUUIDv4",
-      columns: [],
-      excludedLabels: [],
-      name: "sample board",
+      name: "NEAR Protocol NEPs",
       repoURL: "https://github.com/near/NEPs",
-      requiredLabels: [],
     },
-  }[boardId];
+  });
+
+  /**
+   * Reads a board config from DevHub contract storage.
+   * Currently a mock.
+   *
+   * Boards are indexed by their ids.
+   */
+  const boardConfigByBoardId = ({ boardId }) => {
+    return {
+      probablyUUIDv4: {
+        id: "probablyUUIDv4",
+        columns: [],
+        excludedLabels: [],
+        name: "sample board",
+        repoURL: "https://github.com/near/NEPs",
+        requiredLabels: [],
+      },
+    }[boardId];
+  };
+
+  const TabContent = (
+    <div class="flex column gap-4">
+      {action === "new" && (
+        <div>
+          <h4>New GitHub activity board</h4>
+
+          <div></div>
+        </div>
+      )}
+
+      {action === "new" &&
+        widget("entities.GithubRepo.Board", state.newBoardConfig)}
+
+      {action === "view" &&
+        widget("entities.GithubRepo.Board", {
+          ...boardConfigByBoardId(boardId),
+          linkedPage: "GithubActivity",
+        })}
+    </div>
+  );
+
+  return widget("components.community.Layout", {
+    label,
+    tab: "Custom GH integration",
+    children: TabContent,
+  });
 };
 
-const TabContent = (
-  <div class="flex column gap-4">
-    {action === "new" && (
-      <div>
-        <h4>New GitHub activity board</h4>
-
-        <div></div>
-      </div>
-    )}
-
-    {action === "new" &&
-      widget("entities.GithubRepo.Board", state.newBoardConfig)}
-
-    {action === "view" &&
-      widget("entities.GithubRepo.Board", {
-        ...boardConfigByBoardId(boardId),
-        linkedPage: "GithubActivity",
-      })}
-  </div>
-);
-
-return widget("components.community.Layout", {
-  label,
-  tab: "Custom GH integration",
-  children: TabContent,
-});
+return GithubActivityPage(props);

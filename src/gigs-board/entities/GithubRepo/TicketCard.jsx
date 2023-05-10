@@ -66,68 +66,70 @@ const ticketIcons = {
   PullRequest: "bi-git",
 };
 
-const {
-  data: { id, _links, description, labels, number, title, type, user },
-} = props;
-
-const header = (
-  <div className="card-header">
-    <small class="text-muted">
-      <div class="row justify-content-between">
-        <div class="col-4">
-          <a
-            className="link-dark text-truncate"
-            href={user.html_url}
-            target="_blank"
-          >
-            <img alt={`${user.login}'s GitHub avatar`} src={user.avatar_url} />
-            <span className="text-muted">@{user.login}</span>
-          </a>
-        </div>
-
-        <div class="col-5">
-          <div class="d-flex justify-content-end">
+const GithubRepoTicketCard = ({
+  data: { _links, labels, number, title, type, user },
+}) => (
+  <Card className="card my-2 border-secondary">
+    <div className="card-header">
+      <small class="text-muted">
+        <div class="row justify-content-between">
+          <div class="col-4">
             <a
-              class="card-link"
-              href={_links.self}
-              role="button"
+              className="link-dark text-truncate"
+              href={user.html_url}
+              rel="noreferrer"
               target="_blank"
-              title="Open in new tab"
             >
-              <div class="bi bi-share"></div>
+              <img
+                alt={`${user.login}'s GitHub avatar`}
+                src={user.avatar_url}
+              />
+              <span className="text-muted">@{user.login}</span>
             </a>
           </div>
-        </div>
-      </div>
-    </small>
-  </div>
-);
 
-return (
-  <Card className="card my-2 border-secondary">
-    {header}
+          <div class="col-5">
+            <div class="d-flex justify-content-end">
+              <a
+                class="card-link"
+                href={_links.self}
+                rel="noreferrer"
+                role="button"
+                target="_blank"
+                title="Open in new tab"
+              >
+                <i class="bi bi-share" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </small>
+    </div>
 
     <div className="card-body">
       <div class="card-text">
         <div className="row justify-content-between">
           <div class="col-9">
-            <i class={`bi ${ticketIcons[type]}`}></i>
-            {type}: {title}
+            <i class={`bi ${ticketIcons[type]}`} />
+            {type} #{number}: {title}
           </div>
         </div>
       </div>
 
-      <LimitedMarkdown className="overflow-auto">
-        <Markdown class="card-text" text={description}></Markdown>
-      </LimitedMarkdown>
-
       <div class="card-title">
         {labels.map((label) => (
-          <a href={href("Feed", { label })} key={label}>
-            <span class="badge text-bg-primary me-1">{label}</span>
+          <a href={label.url} key={label.id} title={label.description}>
+            <span
+              class="badge text-bg-primary me-1"
+              style={{ backgroundColor: label.color }}
+            >
+              {label.name}
+            </span>
           </a>
         ))}
       </div>
     </div>
   </Card>
 );
+
+return GithubRepoTicketCard(props);
