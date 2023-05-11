@@ -59,15 +59,54 @@ const onChangeAuthor = (selectedAuthors) => {
   onSearchAuthor(selectedAuthors[0]?.name);
 };
 
+function customMenu(results, menuProps, menuState) {
+  // return (
+
+  // );
+
+  return (
+    <div
+      // style={{ width: "10rem", maxHeight: "10rem", overflowY: "scroll" }}
+      // id="basic-typeahead-single"
+      aria-label="menu-options"
+      class="rbt-menu dropdown-menu show"
+      role="listbox"
+      // style="position: absolute; inset: 0px auto auto 0px; display: block; max-height: 300px; overflow: auto; transform: translate3d(0px, 38px, 0px); width: 160px;"
+      data-popper-reference-hidden="false"
+      data-popper-escaped="false"
+      data-popper-placement="bottom-start"
+    >
+      {results.map((result, idx) => (
+        <a
+          aria-label={result.name}
+          aria-selected="false"
+          id={`basic-typeahead-single-item-${idx}`}
+          role="option"
+          class="dropdown-item"
+          href="#"
+        >
+          {result.name}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+const aaaa = (
+  <div id="basic-typeahead-single" style={{ width: "10rem", border }}></div>
+);
 return (
   <>
     <Typeahead
       clearButton
+      className="bg-light border border-light"
+      style={{ width: "10rem" }}
       id="basic-typeahead-single"
       labelKey="name"
       onChange={onChangeAuthor}
       options={wrappedAuthors}
       placeholder="Search by author"
+      // renderMenu={customMenu}
       selected={selectedAuthors}
     />
   </>
