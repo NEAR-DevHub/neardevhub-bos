@@ -2,9 +2,9 @@
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-const nearDevGovGigsWidgetsAccountId = "benreilly.near";
-// props.nearDevGovGigsWidgetsAccountId ||
-// (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -49,7 +49,7 @@ return (
     {widget("components.layout.Banner")}
 
     {props.header}
-    {/* {widget("components.layout.Controls")} */}
+    {widget("components.layout.Controls")}
     {props.children}
   </>
 );
