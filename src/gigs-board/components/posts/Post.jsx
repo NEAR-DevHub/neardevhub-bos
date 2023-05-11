@@ -525,8 +525,10 @@ const clampMarkdown = styled.div`
   }
 `;
 
+// Determine if located in the post page.
+const isPostPage = Number.isInteger(props.id) && props.id > 0;
 const contentArray = snapshot.description.split("\n");
-const needClamp = contentArray.length > 5;
+const needClamp = !isPostPage && contentArray.length > 5;
 
 initState({
   clamp: needClamp,
