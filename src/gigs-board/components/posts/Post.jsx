@@ -196,6 +196,7 @@ const emptyIcons = {
   Idea: "bi-lightbulb",
   Comment: "bi-chat",
   Submission: "bi-rocket",
+  Solution: "bi-rocket",
   Attestation: "bi-check-circle",
   Sponsorship: "bi-cash-coin",
   Github: "bi-github",
@@ -464,18 +465,20 @@ const postTitle =
   );
 
 const postExtra =
-  snapshot.post_type == "Sponsorship" ? (
+  snapshot.post_type == "Sponsorship" || parseInt(snapshot.amount) > 0 ? (
     <div key="post-extra">
       <h6 class="card-subtitle mb-2 text-muted">
-        Maximum amount: {snapshot.amount} {snapshot.sponsorship_token}
+        Requested amount: {snapshot.amount} {snapshot.sponsorship_token}
       </h6>
-      <h6 class="card-subtitle mb-2 text-muted">
-        Supervisor:{" "}
-        <Widget
-          src={`neardevgov.near/widget/ProfileLine`}
-          props={{ accountId: snapshot.supervisor }}
-        />
-      </h6>
+      {snapshot.supervisor && (
+        <h6 class="card-subtitle mb-2 text-muted">
+          Requested Sponsor:{" "}
+          <Widget
+            src={`neardevgov.near/widget/ProfileLine`}
+            props={{ accountId: snapshot.supervisor }}
+          />
+        </h6>
+      )}
     </div>
   ) : (
     <div></div>

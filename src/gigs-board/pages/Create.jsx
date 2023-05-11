@@ -4,9 +4,9 @@ const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const nearDevGovGigsWidgetsAccountId = "benreilly.near";
+// props.nearDevGovGigsWidgetsAccountId ||
+// (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -69,7 +69,7 @@ initState({
   postType: "Idea",
   name: props.name ?? "",
   description: props.description ?? "",
-  amount: props.amount ?? "0",
+  amount: props.amount ?? "",
   token: props.token ?? "Near",
   supervisor: props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
@@ -364,8 +364,10 @@ const fundraisingDiv = (
       Total amount <span class="text-muted fw-normal">(Numbers Only)</span>
       <input
         type="number"
-        value={state.amount}
-        onChange={(event) => State.update({ amount: event.target.value })}
+        value={parseInt(state.amount) > 0 ? state.amount : ""}
+        onChange={(event) =>
+          State.update({ amount: Number(event.target.value).toString() })
+        }
       />
     </div>
     <div className="col-lg-6 mb-2">
@@ -505,10 +507,7 @@ return (
                 snapshot: {
                   editor_id: state.editor_id,
                   labels: state.labelStrings,
-                  post_type:
-                    state.postType === "Solution" && state.seekingFunding
-                      ? "Sponsorship"
-                      : state.postType,
+                  post_type: state.postType,
                   name: state.name,
                   description: state.description,
                   amount: state.amount,
