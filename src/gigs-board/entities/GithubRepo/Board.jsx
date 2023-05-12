@@ -76,25 +76,19 @@ const GithubRepoBoard = ({
             .join("/")}/pulls`
         ).body ?? [];
 
-      const pullRequestByLabel = pullRequests.reduce((registry, item) => {
-        const itemWithType = { ...item, type: "PullRequest" };
-
-        return { ...registry, [item.labels[0].name]: [itemWithType] };
-      }, {});
-
-      console.log(pullRequestByLabel);
-
-      State.update(({ ticketByColumn }) => ({
-        ticketByColumn: Object.keys(ticketByColumn).reduce(
-          (registry, columnTitle) => ({
+      State.update({
+        ticketByColumn: columns.reduce(
+          (registry, column) => ({
             ...registry,
 
-            [columnTitle]: [
-              ...registry.columnTitle,
+            [column.title]: [
+              ...(registry[column.title] ?? []),
 
               ...pullRequests.filter((pullRequest) =>
                 pullRequest.labels.some((label) =>
-                  columns[columnTitle].labelFilters.some(label.includes)
+                  column?.labelFilters.some((searchTerm) =>
+                    label.name.includes(searchTerm)
+                  )
                 )
               ),
             ],
@@ -102,10 +96,10 @@ const GithubRepoBoard = ({
 
           ticketByColumn
         ),
-      }));
-
-      console.log(state.ticketByColumn);
+      });
     }
+
+    console.log(state.ticketByColumn);
 
     if (contentTypes.Issue) {
       const issues =
@@ -160,10 +154,10 @@ const GithubRepoBoard = ({
             <div class="card">
               <div class="card-body border-secondary">
                 <h6 class="card-title">
-                  {label} ({items.length})
+                  {column.title} ({state.ticketByColumn[column.title].length})
                 </h6>
 
-                {state.ticketByColumn[column.title].map((data) =>
+                {(state.ticketByColumn[column.title] ?? []).map((data) =>
                   widget("entities.GithubRepo.TicketCard", { data }, data.id)
                 )}
               </div>

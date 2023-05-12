@@ -54,24 +54,14 @@ function href(widgetName, linkProps) {
 const GithubActivityPage = ({ action, boardId, label }) => {
   State.init({
     newBoardConfig: {
-      boardId: "probablyUUIDv4", // uuid-v4() ?
+      id: "probablyUUIDv4",
 
       columns: [
-        {
-          title: "DRAFT",
-          labelFilters: ["S-draft"],
-        },
-        {
-          title: "REVIEW",
-          labelFilters: ["S-review"],
-        },
+        { title: "DRAFT", labelFilters: ["S-draft"] },
+        { title: "REVIEW", labelFilters: ["S-review"] },
       ],
 
-      contentTypes: {
-        PullRequest: true,
-        Issue: false,
-      },
-
+      contentTypes: { Issue: false, PullRequest: true },
       name: "NEAR Protocol NEPs",
       repoURL: "https://github.com/near/NEPs",
     },
@@ -87,11 +77,15 @@ const GithubActivityPage = ({ action, boardId, label }) => {
     return {
       probablyUUIDv4: {
         id: "probablyUUIDv4",
-        columns: [],
-        excludedLabels: [],
-        name: "sample board",
+
+        columns: [
+          { title: "DRAFT", labelFilters: ["S-draft"] },
+          { title: "REVIEW", labelFilters: ["S-review"] },
+        ],
+
+        contentTypes: { Issue: false, PullRequest: true },
+        name: "NEAR Protocol NEPs",
         repoURL: "https://github.com/near/NEPs",
-        requiredLabels: [],
       },
     }[boardId];
   };
