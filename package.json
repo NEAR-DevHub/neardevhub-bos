@@ -1,26 +1,26 @@
 {
-	"name": "devgigsboard-widgets",
-	"version": "1.0.0",
-	"description": "NEAR Developer Governance Gigs Board widgets for NEAR Social",
-	"devDependencies": {
-		"prettier": "^2.8.4",
-		"replace-in-files": "^3.0.0"
-	},
-	"scripts": {
-		"fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
-		"fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
-		"build": "npm run fmt && node build.js",
-		"dev:loader": "~/.cargo/bin/bos-loader devgovgigs.near --path src",
-		"dev:social": "echo No command for near.social gateway!"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/near/devgigsboard-widgets.git"
-	},
-	"author": "Near Inc <hello@nearprotocol.com>",
-	"license": "ISC",
-	"bugs": {
-		"url": "https://github.com/near/devgigsboard-widgets/issues"
-	},
-	"homepage": "https://github.com/near/devgigsboard-widgets#readme"
+  "name": "devgigsboard-widgets",
+  "version": "1.0.0",
+  "description": "NEAR Developer Governance Gigs Board widgets for NEAR Social",
+  "devDependencies": {
+    "prettier": "^2.8.4",
+    "replace-in-files": "^3.0.0"
+  },
+  "scripts": {
+    "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
+    "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
+    "build": "npm run fmt && node build.js",
+    "dev:loader": "~/.cargo/bin/bos-loader devgovgigs.near --path src",
+    "dev:social": "echo No command for near.social gateway!"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/near/devgigsboard-widgets.git"
+  },
+  "author": "Near Inc <hello@nearprotocol.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/near/devgigsboard-widgets/issues"
+  },
+  "homepage": "https://github.com/near/devgigsboard-widgets#readme"
 }
