@@ -113,7 +113,7 @@ const GithubActivityPage = ({ action, boardId, label }) => {
 
   return widget("components.community.Layout", {
     label,
-    tab: "Custom GH integration",
+    tab: "Custom GitHub board title",
     children: TabContent,
   });
 };
