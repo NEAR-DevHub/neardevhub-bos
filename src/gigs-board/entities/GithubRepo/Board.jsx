@@ -68,13 +68,14 @@ const GithubRepoBoard = ({
 
   if (repoURL) {
     if (contentTypes.PullRequest) {
-      const pullRequests =
+      const pullRequests = (
         fetch(
           `https://api.github.com/repos/${repoURL
             .split("/")
             .slice(-2)
             .join("/")}/pulls`
-        ).body ?? [];
+        ).body ?? []
+      ).map((pullRequest) => ({ ...pullRequest, type: "PullRequest" }));
 
       State.update({
         ticketByColumn: columns.reduce(
@@ -102,25 +103,14 @@ const GithubRepoBoard = ({
     console.log(state.ticketByColumn);
 
     if (contentTypes.Issue) {
-      const issues =
+      const issues = (
         fetch(
           `https://api.github.com/repos/${repoURL
             .split("/")
             .slice(-2)
             .join("/")}/issues`
-        ).body ?? [];
-
-      console.log(response.body);
-
-      const issuesByLabel = issues.reduce((registry, issue) => {
-        const itemWithType = { ...item, type: "Issue" };
-
-        return { ...registry, [issue.labels[0]]: [itemWithType] };
-      }, {});
-
-      console.log(issuesByLabel);
-
-      State.update(({ ticketByColumn }) => ({ ticketByColumn: issuesByLabel }));
+        ).body ?? []
+      ).map((issue) => ({ ...issue, type: "Issue" }));
     }
   }
 
@@ -153,8 +143,12 @@ const GithubRepoBoard = ({
           <div class="col-3" key={column.title}>
             <div class="card">
               <div class="card-body border-secondary">
-                <h6 class="card-title">
-                  {column.title} ({state.ticketByColumn[column.title].length})
+                <h6 class="card-title d-flex align-items-center gap-2">
+                  {column.title}
+
+									<span class="badge rounded-pill bg-secondary">
+										{state.ticketByColumn[column.title].length}
+									</span>
                 </h6>
 
                 {(state.ticketByColumn[column.title] ?? []).map((data) =>

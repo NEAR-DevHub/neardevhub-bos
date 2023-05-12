@@ -61,9 +61,9 @@ const LimitedMarkdown = styled.div`
   max-height: 6em;
 `;
 
-const ticketIcons = {
-  Issue: "bi-lightbulb",
-  PullRequest: "bi-git",
+const ticketTypes = {
+  Issue: { displayName: "Issue", icon: "bi-lightbulb" },
+  PullRequest: { displayName: "Pull request", icon: "bi-git" },
 };
 
 const GithubRepoTicketCard = ({
@@ -72,19 +72,20 @@ const GithubRepoTicketCard = ({
   <Card className="card my-2 border-secondary">
     <div className="card-header">
       <small class="text-muted">
-        <div class="row justify-content-between">
+        <div class="row justify-content-between align-items-center">
           <div class="col-4">
             <a
-              className="link-dark text-truncate"
+              className="link-dark text-truncate text-decoration-none"
               href={user.html_url}
               rel="noreferrer"
               target="_blank"
             >
               <img
                 alt={`${user.login}'s GitHub avatar`}
+								className="img-fluid rounded"
                 src={user.avatar_url}
               />
-              <span className="text-muted">@{user.login}</span>
+              <span className="ms-1 text-muted">@{user.login}</span>
             </a>
           </div>
 
@@ -92,7 +93,7 @@ const GithubRepoTicketCard = ({
             <div class="d-flex justify-content-end">
               <a
                 class="card-link"
-                href={_links.self}
+                href={_links.html.href}
                 rel="noreferrer"
                 role="button"
                 target="_blank"
@@ -110,18 +111,22 @@ const GithubRepoTicketCard = ({
       <div class="card-text">
         <div className="row justify-content-between">
           <div class="col-9">
-            <i class={`bi ${ticketIcons[type]}`} />
-            {type} #{number}: {title}
+            <i class={`bi ${ticketTypes[type].icon}`} />
+            {ticketTypes[type].displayName} #{number}: {title}
           </div>
         </div>
       </div>
 
       <div class="card-title">
         {labels.map((label) => (
-          <a href={label.url} key={label.id} title={label.description}>
+          <a
+						href={label.url}
+						key={label.id}
+						title={label.description}
+					>
             <span
-              class="badge text-bg-primary me-1"
-              style={{ backgroundColor: label.color }}
+              class="badge me-1"
+              style={{ backgroundColor: `#${label.color}` }}
             >
               {label.name}
             </span>
