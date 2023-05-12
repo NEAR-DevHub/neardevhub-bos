@@ -97,40 +97,48 @@ if (!props.label) {
   );
 }
 
-const label = props.label;
+const community = communities[props.label];
 
-const discussionRequiredPosts =
-  Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-    label,
-  }) ?? [];
+const group = community.telegram;
 
-const Discussions = (
-  <div>
-    <div class="row mb-2">
-      <div class="col text-center">
-        <small class="text-muted">
-          Required label:
-          <a href={href("Feed", { label })} key={label}>
-            <span class="badge text-bg-primary me-1">{label}</span>
-          </a>
-        </small>
+const groupInfo = fetch(
+  `https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups/${group}`
+);
+if (groupInfo === null || !groupInfo.ok) {
+  return "Loading ...";
+}
+
+const messageIds = groupInfo.body.messageIds;
+
+const Telegram = (
+  <div class="">
+    {messageIds.map((i) => (
+      <div class="row">
+        <div class="col">
+          <iframe
+            id={"telegram-post-" + i}
+            key={"telegram-post-" + i}
+            src={"https://t.me/" + group + "/" + i + "?embed=1&userpic=true"}
+            scrolling="no"
+            style={{
+              overflow: "hidden",
+              colorScheme: "light dark",
+              border: "medium none",
+              minWidth: "100%",
+              minHeight: "100px",
+            }}
+            width="100%"
+            height="100%"
+            frameborder="0"
+          ></iframe>
+        </div>
       </div>
-    </div>
-    {widget("components.layout.Controls", {
-      labels: discussionsRequiredLabels,
-    })}
-    <div class="row">
-      <div class="col">
-        {discussionRequiredPosts.map((postId) =>
-          widget("components.posts.Post", { id: postId }, postId)
-        )}
-      </div>
-    </div>
+    ))}
   </div>
 );
 
 return widget("components.community.Layout", {
   label: props.label,
-  tab: "Discussions",
-  children: Discussions,
+  tab: "Telegram",
+  children: Telegram,
 });
