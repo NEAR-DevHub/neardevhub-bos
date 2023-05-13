@@ -7,6 +7,30 @@ const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
+/**
+ * Reads a board config from DevHub contract storage.
+ * Currently a mock.
+ *
+ * Boards are indexed by their ids.
+ */
+const boardConfigByBoardId = ({ boardId }) => {
+  return {
+    probablyUUIDv4: {
+      id: "probablyUUIDv4",
+
+      columns: [
+        { title: "Draft", labelFilters: ["S-draft"] },
+        { title: "Review", labelFilters: ["S-review"] },
+      ],
+
+      dataTypes: { Issue: true, PullRequest: true },
+      description: "",
+      repoURL: "https://github.com/near/NEPs",
+      title: "NEAR Protocol NEPs",
+    },
+  }[boardId];
+};
+
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
     ...widgetProps,
@@ -42,7 +66,8 @@ function href(widgetName, linkProps) {
   }
 
   const linkPropsQuery = Object.entries(linkProps)
-    .map(([key, value]) => `${key}=${value}`)
+    .map(([key, value]) => (value ?? null === null ? null : `${key}=${value}`))
+    .filter((nullable) => nullable !== null)
     .join("&");
 
   return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
@@ -127,23 +152,13 @@ const topicTabs = [
   },
   {
     contentProps: {
-      /**
-       * Either "new" or "view".
-       **/
-      action: "new",
-
-      /**
-       * Probably UUIDv4 assigned to the board upon its creation.
-       * The parameter is ignored if `action` is `"new"`.
-       **/
-      boardId: "probablyUUIDv4",
-
-      label,
+      boardId: null, // communityById("communityId").boards[0].id
+      label, // communities["communityId"].name
     },
 
     iconClass: "bi-github",
     path: "community.GithubActivity",
-    title: "Custom GitHub board title",
+    title: "GitHub board", // communityById("communityId").boards[0].title
   },
 ];
 

@@ -7,6 +7,30 @@ const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
+/**
+ * Reads a board config from DevHub contract storage.
+ * Currently a mock.
+ *
+ * Boards are indexed by their ids.
+ */
+const boardConfigByBoardId = ({ boardId }) => {
+  return {
+    probablyUUIDv4: {
+      id: "probablyUUIDv4",
+
+      columns: [
+        { title: "Draft", labelFilters: ["S-draft"] },
+        { title: "Review", labelFilters: ["S-review"] },
+      ],
+
+      dataTypes: { Issue: true, PullRequest: true },
+      description: "",
+      repoURL: "https://github.com/near/NEPs",
+      title: "NEAR Protocol NEPs",
+    },
+  }[boardId];
+};
+
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
     ...widgetProps,
@@ -42,7 +66,8 @@ function href(widgetName, linkProps) {
   }
 
   const linkPropsQuery = Object.entries(linkProps)
-    .map(([key, value]) => `${key}=${value}`)
+    .map(([key, value]) => (value ?? null === null ? null : `${key}=${value}`))
+    .filter((nullable) => nullable !== null)
     .join("&");
 
   return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
@@ -60,121 +85,168 @@ const FormCheckLabel = styled.label`
 `;
 /* END_INCLUDE: "common.jsx" */
 
-/**
- * Reads a board config from DevHub contract storage.
- * Currently a mock.
- *
- * Boards are indexed by their ids.
- */
-const boardConfigByBoardId = ({ boardId }) => {
-  return {
-    probablyUUIDv4: {
-      id: "probablyUUIDv4",
-
-      columns: [
-        { title: "DRAFT", labelFilters: ["S-draft"] },
-        { title: "REVIEW", labelFilters: ["S-review"] },
-      ],
-
-      dataTypes: { Issue: false, PullRequest: true },
-      name: "NEAR Protocol NEPs",
-      repoURL: "https://github.com/near/NEPs",
-    },
-  }[boardId];
-};
-
-const GithubActivityPage = ({ action, boardId, label }) => {
+const GithubActivityPage = ({ boardId, label }) => {
   State.init({
     boardConfig: {
       id: "probablyUUIDv4",
 
       columns: [
-        { title: "DRAFT", labelFilters: ["S-draft"] },
-        { title: "REVIEW", labelFilters: ["S-review"] },
+        { title: "Draft", labelFilters: ["S-draft"] },
+        { title: "Review", labelFilters: ["S-review"] },
       ],
 
       dataTypes: { Issue: false, PullRequest: true },
-      name: "NEAR Protocol NEPs",
+      description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",
+      title: "NEAR Protocol NEPs",
     },
   });
 
+	console.log(state.boardConfig)
+
+  const onRepoURLChange = ({ target: { value: repoURL } }) =>
+    State.update({ boardConfig: { repoURL } });
+
+  const onColumnStatusTitleChange =
+    ({ columnIdx }) =>
+    ({ target: { value: title } }) =>
+      State.update(({ boardConfig }) => ({
+        boardConfig: {
+          columns: boardConfig.columns.map((column, idx) =>
+            idx === columnIdx ? { ...column, title } : column
+          ),
+        },
+      }));
+
+  const onColumnLabelFiltersChange =
+    ({ columnIdx }) =>
+    ({ target: { value } }) =>
+      State.update(({ boardConfig }) => ({
+        boardConfig: {
+          columns: boardConfig.columns.map((column, idx) =>
+            idx === columnIdx
+              ? { ...column, labelFilters: value.split(",") }
+              : column
+          ),
+        },
+      }));
+
   return widget("components.community.Layout", {
     label,
-    tab: "Custom GitHub board title",
+    tab: state.boardConfig.title,
     children: (
       <div className="d-flex flex-column gap-4">
-        {action === "new" && (
-          <div className="d-flex flex-column gap-3 w-100">
-            <h4 className="m-0">New GitHub activity board</h4>
+        <div className="d-flex flex-column gap-3 w-100">
+          <h4 className="m-0">Board title</h4>
 
-            <div className="d-flex gap-3 flex-column flex-lg-row">
-              <div className="input-group">
-                <span className="input-group-text" id="basic-addon1">
-                  Repository URL
-                </span>
+          <div className="d-flex gap-3 flex-column flex-lg-row">
+            <div className="input-group">
+              <span className="input-group-text" id="basic-addon1">
+                Repository URL
+              </span>
 
-                <input
-                  aria-describedby="basic-addon1"
-                  aria-label="Repository URL"
-                  className="form-control"
-                  onChange={({ target: { value: repoURL } }) =>
-                    State.update({ boardConfig: { repoURL } })
-                  }
-                  placeholder="https://github.com/example-org/example-repo"
-                  type="text"
-                />
-              </div>
+              <input
+                aria-describedby="basic-addon1"
+                aria-label="Repository URL"
+                className="form-control"
+                onChange={onRepoURLChange}
+                placeholder="https://github.com/example-org/example-repo"
+                type="text"
+                value={state.boardConfig.repoURL}
+              />
+            </div>
 
-              <CompactContainer className="input-group flex-nowrap">
-                <span className="input-group-text" id="basic-addon1">
-                  Tracked data
-                </span>
+            <CompactContainer className="input-group flex-nowrap">
+              <span className="input-group-text" id="basic-addon1">
+                Tracked data
+              </span>
 
-                <CompactContainer className="form-control">
-                  <CompactContainer className="form-check form-switch">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="newGithubBoardDataTypeSwitchPullRequests"
-                      checked
-                    />
+              <CompactContainer className="form-control">
+                <CompactContainer className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="newGithubBoardDataTypeSwitchPullRequests"
+                    checked
+                  />
 
-                    <FormCheckLabel
-                      className="form-check-label"
-                      for="newGithubBoardDataTypeSwitchPullRequests"
-                    >
-                      Pull requests
-                    </FormCheckLabel>
-                  </CompactContainer>
+                  <FormCheckLabel
+                    className="form-check-label"
+                    for="newGithubBoardDataTypeSwitchPullRequests"
+                  >
+                    Pull requests
+                  </FormCheckLabel>
+                </CompactContainer>
 
-                  <CompactContainer className="form-check form-switch">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="newGithubBoardDataTypeSwitchIssues"
-                      checked
-                    />
+                <CompactContainer className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="newGithubBoardDataTypeSwitchIssues"
+                    checked
+                  />
 
-                    <FormCheckLabel
-                      className="form-check-label"
-                      for="newGithubBoardDataTypeSwitchIssues"
-                    >
-                      Issues
-                    </FormCheckLabel>
-                  </CompactContainer>
+                  <FormCheckLabel
+                    className="form-check-label"
+                    for="newGithubBoardDataTypeSwitchIssues"
+                  >
+                    Issues
+                  </FormCheckLabel>
                 </CompactContainer>
               </CompactContainer>
-            </div>
+            </CompactContainer>
           </div>
-        )}
 
-        {action === "new" &&
-          widget("entities.GithubRepo.Board", state.boardConfig)}
+          <h4 className="m-0">Columns</h4>
 
-        {action === "view" &&
+          <div className="d-flex flex-column gap-3">
+            {state.boardConfig.columns.map(
+              ({ title, labelFilters }, columnIdx) => (
+                <div className="input-group" key={`column-${columnIdx}`}>
+                  <span className="input-group-text d-flex flex-column w-25">
+                    <span id={`newGithubBoardColumnStatus-${title}`}>
+                      Status title
+                    </span>
+
+                    <input
+                      aria-describedby={`newGithubBoardColumnStatus-${title}`}
+                      aria-label="Status title"
+                      className="form-control"
+                      onChange={onColumnStatusTitleChange({ columnIdx })}
+                      placeholder="👀 Review"
+                      type="text"
+                      value={title}
+                    />
+                  </span>
+
+                  <span className="input-group-text d-flex flex-column w-75">
+                    <span
+                      id={`newGithubBoardColumnStatus-${title}-searchTerms`}
+                    >
+                      Search terms for included labels, comma-separated
+                    </span>
+
+                    <input
+                      aria-describedby={`newGithubBoardColumnStatus-${title}-searchTerms`}
+                      aria-label="Search terms for included labels"
+                      className="form-control"
+                      onChange={onColumnLabelFiltersChange({ columnIdx })}
+                      placeholder="S-draft, S-review, proposal, ..."
+                      type="text"
+                      value={labelFilters.join(", ")}
+                    />
+                  </span>
+                </div>
+              )
+            )}
+          </div>
+        </div>
+
+        {!boardId && widget("entities.GithubRepo.Board", state.boardConfig)}
+
+        {boardId &&
           widget("entities.GithubRepo.Board", {
             ...boardConfigByBoardId(boardId),
             linkedPage: "GithubActivity",
