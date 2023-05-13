@@ -49,6 +49,15 @@ function href(widgetName, linkProps) {
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
+
+const CompactContainer = styled.div`
+  width: fit-content !important;
+  max-width: 100%;
+`;
+
+const FormCheckLabel = styled.label`
+  white-space: nowrap;
+`;
 /* END_INCLUDE: "common.jsx" */
 
 const Card = styled.div`
@@ -69,11 +78,11 @@ const ticketTypes = {
 const GithubRepoTicketCard = ({
   data: { _links, labels, number, title, type, user },
 }) => (
-  <Card className="card my-2 border-secondary">
+  <Card className="card border-secondary">
     <div className="card-header">
-      <small class="text-muted">
-        <div class="row justify-content-between align-items-center">
-          <div class="col-4">
+      <small className="text-muted">
+        <div className="row justify-content-between align-items-center">
+          <div className="col-4">
             <a
               className="link-dark text-truncate text-decoration-none"
               href={user.html_url}
@@ -82,50 +91,44 @@ const GithubRepoTicketCard = ({
             >
               <img
                 alt={`${user.login}'s GitHub avatar`}
-								className="img-fluid rounded"
+                className="img-fluid rounded"
                 src={user.avatar_url}
               />
               <span className="ms-1 text-muted">@{user.login}</span>
             </a>
           </div>
 
-          <div class="col-5">
-            <div class="d-flex justify-content-end">
-              <a
-                class="card-link"
-                href={_links.html.href}
-                rel="noreferrer"
-                role="button"
-                target="_blank"
-                title="Open in new tab"
-              >
-                <i class="bi bi-share" />
-              </a>
-            </div>
+          <div className="col-1 d-flex justify-content-end">
+            <a
+              className="card-link"
+              href={_links.html.href}
+              rel="noreferrer"
+              role="button"
+              target="_blank"
+              title="Open in new tab"
+            >
+              <i className="bi bi-share" />
+            </a>
           </div>
         </div>
       </small>
     </div>
 
-    <div className="card-body">
-      <div class="card-text">
-        <div className="row justify-content-between">
-          <div class="col-9">
-            <i class={`bi ${ticketTypes[type].icon}`} />
-            {ticketTypes[type].displayName} #{number}: {title}
-          </div>
-        </div>
+    <div className="card-body d-flex flex-column gap-3">
+      <div className="card-text d-flex flex-column gap-3">
+        <span className="d-flex flex-nowrap gap-2">
+          <i className={`bi ${ticketTypes[type].icon}`} />
+          <span>{`${ticketTypes[type].displayName} #${number}`}</span>
+        </span>
+
+        <span>{title}</span>
       </div>
 
-      <div class="card-title">
+      <div className="card-title d-flex flex-wrap gap-2 m-0">
         {labels.map((label) => (
-          <a
-						href={label.url}
-						key={label.id}
-						title={label.description}
-					>
+          <a href={label.url} key={label.id} title={label.description}>
             <span
-              class="badge me-1"
+              className="badge"
               style={{ backgroundColor: `#${label.color}` }}
             >
               {label.name}

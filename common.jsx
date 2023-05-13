@@ -48,3 +48,12 @@ function href(widgetName, linkProps) {
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
+
+const CompactContainer = styled.div`
+  width: fit-content !important;
+  max-width: 100%;
+`;
+
+const FormCheckLabel = styled.label`
+  white-space: nowrap;
+`;
