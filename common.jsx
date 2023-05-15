@@ -68,8 +68,7 @@ function href(widgetName, linkProps) {
     .map(([key, value]) => (value ?? null === null ? null : `${key}=${value}`))
     .filter((nullable) => nullable !== null)
     .join("&");
-
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }

@@ -29,7 +29,7 @@ const boardConfigByBoardId = ({ boardId }) => {
       ],
 
       dataTypes: { Issue: true, PullRequest: true },
-      description: "",
+      description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",
       title: "NEAR Protocol NEPs",
     },
@@ -74,8 +74,7 @@ function href(widgetName, linkProps) {
     .map(([key, value]) => (value ?? null === null ? null : `${key}=${value}`))
     .filter((nullable) => nullable !== null)
     .join("&");
-
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }

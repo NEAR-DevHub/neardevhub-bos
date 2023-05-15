@@ -24,7 +24,7 @@ const boardConfigByBoardId = ({ boardId }) => {
       ],
 
       dataTypes: { Issue: true, PullRequest: true },
-      description: "",
+      description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",
       title: "NEAR Protocol NEPs",
     },
@@ -69,8 +69,7 @@ function href(widgetName, linkProps) {
     .map(([key, value]) => (value ?? null === null ? null : `${key}=${value}`))
     .filter((nullable) => nullable !== null)
     .join("&");
-
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
@@ -102,7 +101,10 @@ const GithubActivityPage = ({ boardId, label }) => {
     },
   });
 
-  console.log("Board config columns", JSON.stringify(state.boardConfig.columns));
+  console.log(
+    "Board config columns",
+    JSON.stringify(state.boardConfig.columns)
+  );
 
   const onRepoURLChange = ({ target: { value: repoURL } }) =>
     State.update({ boardConfig: { repoURL } });
@@ -125,7 +127,10 @@ const GithubActivityPage = ({ boardId, label }) => {
         boardConfig: {
           columns: boardConfig.columns.map((column, idx) =>
             idx === columnIdx
-              ? { ...column, labelFilters: value.split(",").map((string) => string.trim()) }
+              ? {
+                  ...column,
+                  labelFilters: value.split(",").map((string) => string.trim()),
+                }
               : column
           ),
         },
