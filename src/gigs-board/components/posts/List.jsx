@@ -107,6 +107,7 @@ function defaultRenderItem(postId, additionalProps) {
           id: postId,
           expandable: true,
           defaultExpanded: false,
+          isInList: true,
           ...additionalProps,
         },
         postId

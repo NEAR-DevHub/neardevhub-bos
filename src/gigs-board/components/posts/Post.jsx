@@ -563,8 +563,10 @@ const clampMarkdown = styled.div`
   }
 `;
 
+// Determine if located in the post page.
+const isInList = props.isInList;
 const contentArray = snapshot.description.split("\n");
-const needClamp = contentArray.length > 5;
+const needClamp = isInList && contentArray.length > 5;
 
 initState({
   clamp: needClamp,
