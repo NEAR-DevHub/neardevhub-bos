@@ -102,7 +102,7 @@ const GithubActivityPage = ({ boardId, label }) => {
     },
   });
 
-	console.log(state.boardConfig)
+  console.log("Board config columns", JSON.stringify(state.boardConfig.columns));
 
   const onRepoURLChange = ({ target: { value: repoURL } }) =>
     State.update({ boardConfig: { repoURL } });
@@ -125,7 +125,7 @@ const GithubActivityPage = ({ boardId, label }) => {
         boardConfig: {
           columns: boardConfig.columns.map((column, idx) =>
             idx === columnIdx
-              ? { ...column, labelFilters: value.split(",") }
+              ? { ...column, labelFilters: value.split(",").map((string) => string.trim()) }
               : column
           ),
         },
@@ -233,7 +233,7 @@ const GithubActivityPage = ({ boardId, label }) => {
                       aria-label="Search terms for included labels"
                       className="form-control"
                       onChange={onColumnLabelFiltersChange({ columnIdx })}
-                      placeholder="S-draft, S-review, proposal, ..."
+                      placeholder="draft, review, proposal, ..."
                       type="text"
                       value={labelFilters.join(", ")}
                     />
