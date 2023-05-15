@@ -38,7 +38,7 @@ function href(widgetName, linkProps) {
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
