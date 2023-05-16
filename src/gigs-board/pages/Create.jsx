@@ -46,7 +46,6 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const postType = props.postType === "Solution" ? props.postType : "Idea";
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
@@ -95,10 +94,10 @@ const onSubmit = () => {
   };
 
   if (state.seekingFunding && state.postType === "Solution") {
-    // Sponsership
+    //
     body = {
       ...body,
-      postType: "Sponsership",
+      postType: "Solution",
       amount: state.amount,
       sponsorship_token: state.token,
       supervisor: state.supervisor,
@@ -510,9 +509,9 @@ return (
                   post_type: state.postType,
                   name: state.name,
                   description: state.description,
-                  amount: state.amount,
-                  sponsorship_token: state.token,
-                  supervisor: state.supervisor,
+                  amount: state.seekingFunding ? state.amount : 0,
+                  sponsorship_token: state.seekingFunding ? state.token : 0,
+                  supervisor: state.seekingFunding ? state.supervisor : 0,
                   github_link: state.githubLink,
                 },
               },
