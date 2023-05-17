@@ -66,8 +66,8 @@ function href(widgetName, linkProps) {
   }
 
   const linkPropsQuery = Object.entries(linkProps)
-    .map(([key, value]) => (value === null ? null : `${key}=${value}`))
-    .filter((nullable) => nullable !== null)
+    .filter(([_key, nullable]) => (nullable ?? null) !== null)
+    .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
   return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${

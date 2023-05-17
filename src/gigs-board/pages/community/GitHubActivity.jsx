@@ -66,8 +66,8 @@ function href(widgetName, linkProps) {
   }
 
   const linkPropsQuery = Object.entries(linkProps)
-    .map(([key, value]) => (value === null ? null : `${key}=${value}`))
-    .filter((nullable) => nullable !== null)
+    .filter(([_key, nullable]) => (nullable ?? null) !== null)
+    .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
   return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
@@ -107,8 +107,21 @@ const GithubActivityPage = ({ boardId, label }) => {
     JSON.stringify(state.boardConfig.columns)
   );
 
+  const onBoardTitleChange = ({ target: { value: title } }) =>
+    State.update({ boardConfig: { title } });
+
   const onRepoURLChange = ({ target: { value: repoURL } }) =>
     State.update({ boardConfig: { repoURL } });
+
+  const onColumnCreate = () =>
+    State.update(({ boardConfig }) => ({
+      boardConfig: {
+        columns: [
+          ...boardConfig.columns,
+          { title: "New status", labelFilters: [] },
+        ],
+      },
+    }));
 
   const onColumnStatusTitleChange =
     ({ columnIdx }) =>
@@ -142,8 +155,23 @@ const GithubActivityPage = ({ boardId, label }) => {
     tab: state.boardConfig.title,
     children: (
       <div className="d-flex flex-column gap-4">
-        <div className="d-flex flex-column gap-3 w-100">
-          <h4 className="m-0">Board title</h4>
+        <div
+          className="d-flex flex-column gap-3 w-100 border border-dark-subtle rounded-2 p-3"
+          style={{ backgroundColor: "rgb(243, 243, 243)" }}
+        >
+          <span className="input-group-text d-flex flex-column w-25">
+            <span id="newGithubBoardTitle">Board title</span>
+
+            <input
+              aria-describedby="newGithubBoardTitle"
+              aria-label="Board title"
+              className="form-control"
+              onChange={onBoardTitleChange}
+              placeholder="NEAR Protocol NEPs"
+              type="text"
+              value={state.boardConfig.title}
+            />
+          </span>
 
           <div className="d-flex gap-3 flex-column flex-lg-row">
             <div className="input-group">
@@ -168,46 +196,43 @@ const GithubActivityPage = ({ boardId, label }) => {
               </span>
 
               <CompactContainer className="form-control">
-                <CompactContainer className="form-check form-switch">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="newGithubBoardDataTypeSwitchPullRequests"
-                    checked
-                  />
+                {Object.entries(state.boardConfig.dataTypes).map(
+                  ([dataTypeKey, dataTypeIncluded]) => (
+                    <CompactContainer className="form-check form-switch">
+                      <input
+                        disabled
+                        checked={dataTypeIncluded}
+                        className="form-check-input"
+                        id={`newGithubBoardDataTypeSwitch-${dataTypeKey}`}
+                        onClick={() =>
+                          State.update({
+                            boardConfig: {
+                              dataTypes: {
+                                [dataTypeKey]: !dataTypeIncluded,
+                              },
+                            },
+                          })
+                        }
+                        role="switch"
+                        type="checkbox"
+                      />
 
-                  <FormCheckLabel
-                    className="form-check-label"
-                    for="newGithubBoardDataTypeSwitchPullRequests"
-                  >
-                    Pull requests
-                  </FormCheckLabel>
-                </CompactContainer>
-
-                <CompactContainer className="form-check form-switch">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="newGithubBoardDataTypeSwitchIssues"
-                    checked
-                  />
-
-                  <FormCheckLabel
-                    className="form-check-label"
-                    for="newGithubBoardDataTypeSwitchIssues"
-                  >
-                    Issues
-                  </FormCheckLabel>
-                </CompactContainer>
+                      <FormCheckLabel
+                        className="form-check-label"
+                        for="newGithubBoardDataTypeSwitchPullRequests"
+                      >
+                        {dataTypeKey}
+                      </FormCheckLabel>
+                    </CompactContainer>
+                  )
+                )}
               </CompactContainer>
             </CompactContainer>
           </div>
 
           <h4 className="m-0">Columns</h4>
 
-          <div className="d-flex flex-column gap-3">
+          <div className="d-flex flex-column align-items-center gap-3">
             {state.boardConfig.columns.map(
               ({ title, labelFilters }, columnIdx) => (
                 <div className="input-group" key={`column-${columnIdx}`}>
@@ -231,7 +256,8 @@ const GithubActivityPage = ({ boardId, label }) => {
                     <span
                       id={`newGithubBoardColumnStatus-${title}-searchTerms`}
                     >
-                      Search terms for included labels, comma-separated
+                      Search terms for labels to attach to the status,
+                      comma-separated
                     </span>
 
                     <input
@@ -247,6 +273,11 @@ const GithubActivityPage = ({ boardId, label }) => {
                 </div>
               )
             )}
+
+            <button onClick={onColumnCreate} style={{ width: "fit-content" }}>
+              <i class="bi-plus" />
+              <span>New column</span>
+            </button>
           </div>
         </div>
 

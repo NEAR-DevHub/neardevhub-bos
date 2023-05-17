@@ -66,8 +66,8 @@ function href(widgetName, linkProps) {
   }
 
   const linkPropsQuery = Object.entries(linkProps)
-    .map(([key, value]) => (value === null ? null : `${key}=${value}`))
-    .filter((nullable) => nullable !== null)
+    .filter(([_key, nullable]) => (nullable ?? null) !== null)
+    .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
   return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
@@ -94,16 +94,30 @@ const GithubRepoBoard = ({
   repoURL,
 }) => {
   State.init({
-    pullRequestByColumn: columns.reduce(
-      (registry, { title }) => ({ ...registry, [title]: [] }),
-      {}
-    ),
-
-    issueByColumn: columns.reduce(
-      (registry, { title }) => ({ ...registry, [title]: [] }),
-      {}
-    ),
+    pullRequestByColumn: {},
+    issueByColumn: {},
   });
+
+  const dataToColumns = (data) =>
+    columns.reduce(
+      (registry, column) => ({
+        ...registry,
+
+        [column.title]: [
+          ...(registry[column.title] ?? []),
+
+          ...data.filter((pullRequest) =>
+            pullRequest.labels.some((label) =>
+              column?.labelFilters.some((searchTerm) =>
+                label.name.includes(searchTerm)
+              )
+            )
+          ),
+        ],
+      }),
+
+      {}
+    );
 
   if (repoURL) {
     if (dataTypes.PullRequest) {
@@ -117,25 +131,7 @@ const GithubRepoBoard = ({
       ).map((pullRequest) => ({ ...pullRequest, type: "PullRequest" }));
 
       State.update({
-        pullRequestByColumn: columns.reduce(
-          (registry, column) => ({
-            ...registry,
-
-            [column.title]: [
-              ...(registry[column.title] ?? []),
-
-              ...pullRequests.filter((pullRequest) =>
-                pullRequest.labels.some((label) =>
-                  column?.labelFilters.some((searchTerm) =>
-                    label.name.includes(searchTerm)
-                  )
-                )
-              ),
-            ],
-          }),
-
-          {}
-        ),
+        pullRequestByColumn: dataToColumns(pullRequests),
       });
     }
 
@@ -150,7 +146,13 @@ const GithubRepoBoard = ({
             .join("/")}/issues`
         ).body ?? []
       ).map((issue) => ({ ...issue, type: "Issue" }));
+
+      State.update({
+        issueByColumn: dataToColumns(issues),
+      });
     }
+
+    console.log(state.issueByColumn);
   }
 
   return (
@@ -186,7 +188,7 @@ const GithubRepoBoard = ({
                   {column.title}
 
                   <span className="badge rounded-pill bg-secondary">
-                    {state.pullRequestByColumn[column.title].length}
+                    {(state.pullRequestByColumn[column.title] ?? []).length}
                   </span>
                 </h6>
 
