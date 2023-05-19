@@ -4,7 +4,7 @@ on:
     branches: [main]
 jobs:
   deploy-mainnet:
-    uses: FroVolod/bos-cli-rs/.github/workflows/deploy-mainnet.yml@main
+    uses: FroVolod/bos-cli-rs/.github/workflows/deploy-mainnet.yml@master
     with:
       deploy-account-address: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
       signer-account-address: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
