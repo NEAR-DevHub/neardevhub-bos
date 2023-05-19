@@ -111,30 +111,21 @@ if (groupInfo === null || !groupInfo.ok) {
 const messageIds = groupInfo.body.messageIds;
 
 const Telegram = (
-  <div class="">
-    {messageIds.map((i) => (
-      <div class="row">
-        <div class="col">
-          <iframe
-            id={"telegram-post-" + i}
-            key={"telegram-post-" + i}
-            src={"https://t.me/" + group + "/" + i + "?embed=1&userpic=true"}
-            scrolling="no"
-            style={{
-              overflow: "hidden",
-              colorScheme: "light dark",
-              border: "medium none",
-              minWidth: "100%",
-              minHeight: "100px",
-            }}
-            width="100%"
-            height="100%"
-            frameborder="0"
-          ></iframe>
-        </div>
-      </div>
-    ))}
-  </div>
+  <>
+    <iframe
+      src={
+        "https://cg-msg-viewer.pages.dev/?group=" +
+        group +
+        "&messageIds=" +
+        messageIds
+      }
+      frameborder="0"
+      style={{
+        width: "100%",
+        height: "100vh",
+      }}
+    ></iframe>
+  </>
 );
 
 return widget("components.community.Layout", {
