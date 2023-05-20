@@ -48,7 +48,6 @@ return (
   <>
     {widget("components.layout.Banner")}
     {props.header}
-    {widget("components.layout.Controls")}
     {props.children}
   </>
 );
