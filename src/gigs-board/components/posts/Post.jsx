@@ -38,7 +38,7 @@ function href(widgetName, linkProps) {
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
@@ -522,8 +522,10 @@ const clampMarkdown = styled.div`
   }
 `;
 
+// Determine if located in the post page.
+const isInList = props.isInList;
 const contentArray = snapshot.description.split("\n");
-const needClamp = contentArray.length > 5;
+const needClamp = isInList && contentArray.length > 5;
 
 initState({
   clamp: needClamp,
