@@ -472,7 +472,7 @@ const postExtra =
       </h6>
       {snapshot.supervisor && (
         <h6 class="card-subtitle mb-2 text-muted">
-          Requested Sponsor:{" "}
+          Requested sponsor:{" "}
           <Widget
             src={`neardevgov.near/widget/ProfileLine`}
             props={{ accountId: snapshot.supervisor }}

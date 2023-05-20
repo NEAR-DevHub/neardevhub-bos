@@ -68,16 +68,6 @@ const onSearchAuthor = (author) => {
 
 return widget("components.layout.Page", {
   header: widget("components.community.FeedHeader"),
-  navbarChildren: [
-    // widget("components.layout.SearchByLabel", {
-    //   searchQuery: { label: state.label },
-    //   onSearchLabel,
-    // }),
-    // widget("components.layout.SearchByAuthor", {
-    //   searchQuery: { author: state.author },
-    //   onSearchAuthor,
-    // }),
-  ],
   children: widget("components.posts.Search", {
     recency: props.recency,
     label: state.label,

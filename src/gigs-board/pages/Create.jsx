@@ -70,7 +70,7 @@ initState({
   description: props.description ?? "",
   amount: props.amount ?? "",
   token: props.token ?? "Near",
-  supervisor: props.supervisor ?? "",
+  supervisor: props.supervisor ?? "neardevgov.near",
   githubLink: props.githubLink ?? "",
   warning: "",
 });
@@ -95,9 +95,14 @@ const onSubmit = () => {
 
   if (state.seekingFunding && state.postType === "Solution") {
     //
+
+    const fundingDesc = `
+${state.amount} ${state.token}`;
+
     body = {
       ...body,
-      postType: "Solution",
+      post_type: "Solution",
+      description: body.description,
       amount: state.amount,
       sponsorship_token: state.token,
       supervisor: state.supervisor,
@@ -107,13 +112,13 @@ const onSubmit = () => {
     // Solution
     body = {
       ...body,
-      postType: "Submission",
+      post_type: "Submission",
     };
   } else {
     // Idea
     body = {
       ...body,
-      postType: "Idea",
+      post_type: "Idea",
       idea_version: "V1",
     };
   }
@@ -360,18 +365,22 @@ const fundraisingDiv = (
       </select>
     </div>
     <div className="col-lg-6 mb-2">
-      Total amount <span class="text-muted fw-normal">(Numbers Only)</span>
+      Requested amount <span class="text-muted fw-normal">(Numbers Only)</span>
       <input
         type="number"
         value={parseInt(state.amount) > 0 ? state.amount : ""}
         onChange={(event) =>
-          State.update({ amount: Number(event.target.value).toString() })
+          State.update({
+            amount: Number(
+              event.target.value.toString().replace(/e/g, "")
+            ).toString(),
+          })
         }
       />
     </div>
     <div className="col-lg-6 mb-2">
       <p class="mb-1">
-        Specific Sponsor <span class="text-muted fw-normal">(Optional)</span>
+        Requested sponsor <span class="text-muted fw-normal">(Optional)</span>
       </p>
       <p style={{ fontSize: "13px" }} class="m-0 text-muted fw-light">
         If you are requesting funding from a specific sponsor, please enter
@@ -405,7 +414,7 @@ return (
                 color: "#3252A6",
               }}
               className="fw-bold"
-              href="gigs-board.pages.Feed"
+              href={href("Feed")}
             >
               DevHub
             </a>
