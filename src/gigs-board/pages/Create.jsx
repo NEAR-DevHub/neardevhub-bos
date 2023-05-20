@@ -96,15 +96,14 @@ const onSubmit = () => {
   if (state.seekingFunding && state.postType === "Solution") {
     //
 
-    const fundingDesc = `
-Requested amount: ${state.amount} ${state.token}
+    const fundingDesc = `Requested amount: ${state.amount} ${state.token}
 Requested sponsor: ${state.supervisor}
 `;
 
     body = {
       ...body,
       post_type: "Solution",
-      description: body.description + fundingDesc,
+      description: fundingDesc + body.description,
     };
   } else if (state.postType === "Solution") {
     // Solution
@@ -367,6 +366,7 @@ const fundraisingDiv = (
       <input
         type="number"
         value={parseInt(state.amount) > 0 ? state.amount : ""}
+        min={0}
         onChange={(event) =>
           State.update({
             amount: Number(
