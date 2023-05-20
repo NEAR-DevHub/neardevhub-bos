@@ -70,13 +70,29 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 
+const formHandler =
+  ({ formStateKey }) =>
+  ({ fieldName, updateHandler }) =>
+  (input) =>
+    State.update((lastState) => ({
+      ...lastState,
+
+      [formStateKey]: {
+        ...lastState[formStateKey],
+
+        [fieldName]:
+          typeof updateHandler === "function"
+            ? updateHandler({
+                input: input?.target?.value ?? input ?? null,
+                lastState,
+              })
+            : input?.target?.value ?? input ?? null,
+      },
+    }));
+
 const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
-`;
-
-const FormCheckLabel = styled.label`
-  white-space: nowrap;
 `;
 /* END_INCLUDE: "common.jsx" */
 
@@ -106,6 +122,12 @@ const GithubPage = ({ boardId, label }) => {
     ),
   });
 
+  const onBoardConfigChange = formHandler({
+    formStateKey: "boardConfig",
+  });
+
+  console.log(state);
+
   console.log(
     "Board config columns",
     JSON.stringify(state.boardConfig.columns)
@@ -117,25 +139,12 @@ const GithubPage = ({ boardId, label }) => {
       isEditorEnabled: !lastState.isEditorEnabled,
     }));
 
-  const onDataTypeToggle =
-    ({ typeName, isIncluded }) =>
-    () =>
-      State.update((lastState) => ({
-        ...lastState,
-        boardConfig: {
-          ...lastState.boardConfig,
-          dataTypes: {
-            ...lastState.boardConfig.dataTypes,
-            [typeName]: !isIncluded,
-          },
-        },
-      }));
-
-  const onBoardTitleChange = ({ target: { value: title } }) =>
-    State.update({ boardConfig: { title } });
-
-  const onRepoURLChange = ({ target: { value: repoURL } }) =>
-    State.update({ boardConfig: { repoURL } });
+  const dataTypeToggle =
+    ({ typeName }) =>
+    ({ lastState }) => ({
+      ...lastState.boardConfig.dataTypes,
+      [typeName]: !lastState.boardConfig.dataTypes[typeName],
+    });
 
   const onColumnCreate = () =>
     State.update((lastState) => ({
@@ -192,43 +201,45 @@ const GithubPage = ({ boardId, label }) => {
     children: (
       <div className="d-flex flex-column gap-4">
         <div className="d-flex justify-content-end">
-          <CompactContainer className="form-check form-switch">
-            <input
-              checked={state.isEditorEnabled}
-              className="form-check-input"
-              id="CommunityEditModeToggle"
-              onClick={onEditorToggle}
-              role="switch"
-              type="checkbox"
-            />
-
-            <FormCheckLabel
-              className="form-check-label"
-              for="CommunityEditModeToggle"
-            >
-              Editor mode
-            </FormCheckLabel>
-          </CompactContainer>
+          {widget("components.toggle", {
+            active: state.isEditorEnabled,
+            key: "editor-toggle",
+            label: "Editor mode",
+            onSwitch: onEditorToggle,
+          })}
         </div>
 
         {state.isEditorEnabled ? (
-          <div
-            className="d-flex flex-column gap-3 w-100 border border-dark-subtle rounded-2 p-3"
-            style={{ backgroundColor: "rgb(243, 243, 243)" }}
-          >
-            <span className="input-group-text d-flex flex-column w-25">
-              <span id="newGithubBoardTitle">Board title</span>
+          <div className="d-flex flex-column gap-3 w-100 border border-dark rounded-2 p-4">
+            <div className="d-flex gap-3">
+              <div className="input-group-text d-flex flex-column w-25">
+                <span id="newGithubBoardTitle">Board title</span>
 
-              <input
-                aria-describedby="newGithubBoardTitle"
-                aria-label="Board title"
-                className="form-control"
-                onChange={onBoardTitleChange}
-                placeholder="NEAR Protocol NEPs"
-                type="text"
-                value={state.boardConfig.title}
-              />
-            </span>
+                <input
+                  aria-describedby="newGithubBoardTitle"
+                  aria-label="Board title"
+                  className="form-control"
+                  onChange={onBoardConfigChange({ fieldName: "title" })}
+                  placeholder="NEAR Protocol NEPs"
+                  type="text"
+                  value={state.boardConfig.title}
+                />
+              </div>
+
+              <div className="input-group-text d-flex flex-column w-75">
+                <span id="newGithubBoardTitle">Description</span>
+
+                <input
+                  aria-describedby="newGithubBoardTitle"
+                  aria-label="Board title"
+                  className="form-control"
+                  onChange={onBoardConfigChange({ fieldName: "description" })}
+                  placeholder="Latest NEAR Enhancement Proposals by status."
+                  type="text"
+                  value={state.boardConfig.title}
+                />
+              </div>
+            </div>
 
             <div className="d-flex gap-3 flex-column flex-lg-row">
               <div className="input-group">
@@ -240,7 +251,7 @@ const GithubPage = ({ boardId, label }) => {
                   aria-describedby="basic-addon1"
                   aria-label="Repository URL"
                   className="form-control"
-                  onChange={onRepoURLChange}
+                  onChange={onBoardConfigChange({ fieldName: "repoURL" })}
                   placeholder="https://github.com/example-org/example-repo"
                   type="text"
                   value={state.boardConfig.repoURL}
@@ -252,27 +263,23 @@ const GithubPage = ({ boardId, label }) => {
                   Tracked data
                 </span>
 
-                <CompactContainer className="form-control">
+                <CompactContainer className="form-control d-flex flex-column gap-2">
                   {Object.entries(state.boardConfig.dataTypes).map(
-                    ([typeName, isIncluded]) => (
-                      <CompactContainer className="form-check form-switch">
-                        <input
-                          checked={isIncluded}
-                          className="form-check-input"
-                          id={`newGithubBoardDataTypeToggle-${typeName}`}
-                          onClick={onDataTypeToggle({ typeName, isIncluded })}
-                          role="switch"
-                          type="checkbox"
-                        />
+                    ([key, active]) =>
+                      widget(
+                        "components.toggle",
+                        {
+                          active,
+                          key,
+                          label: key,
 
-                        <FormCheckLabel
-                          className="form-check-label"
-                          for="newGithubBoardDataTypeTogglePullRequests"
-                        >
-                          {typeName}
-                        </FormCheckLabel>
-                      </CompactContainer>
-                    )
+                          onSwitch: onBoardConfigChange({
+                            fieldName: "dataTypes",
+                            updateHandler: dataTypeToggle({ typeName }),
+                          }),
+                        },
+                        key
+                      )
                   )}
                 </CompactContainer>
               </CompactContainer>

@@ -70,13 +70,29 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 
+const formHandler =
+  ({ formStateKey }) =>
+  ({ fieldName, updateHandler }) =>
+  (input) =>
+    State.update((lastState) => ({
+      ...lastState,
+
+      [formStateKey]: {
+        ...lastState[formStateKey],
+
+        [fieldName]:
+          typeof updateHandler === "function"
+            ? updateHandler({
+                input: input?.target?.value ?? input ?? null,
+                lastState,
+              })
+            : input?.target?.value ?? input ?? null,
+      },
+    }));
+
 const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
-`;
-
-const FormCheckLabel = styled.label`
-  white-space: nowrap;
 `;
 /* END_INCLUDE: "common.jsx" */
 
@@ -157,9 +173,10 @@ const CommunityHeader = ({ label, tab }) => {
   const onEditorToggle = () =>
     State.update((lastState) => ({
       ...lastState,
+
       shared: {
         ...lastState.shared,
-        shared: { isEditorEnabled: !lastState.shared.isEditorEnabled },
+        isEditorEnabled: !lastState.shared.isEditorEnabled,
       },
     }));
 
@@ -185,23 +202,12 @@ const CommunityHeader = ({ label, tab }) => {
           </div>
         </div>
 
-        <CompactContainer className="form-check form-switch">
-          <input
-            checked={state.isEditorEnabled}
-            className="form-check-input"
-            id="CommunityEditModeToggle"
-            onClick={onEditorToggle}
-            role="switch"
-            type="checkbox"
-          />
-
-          <FormCheckLabel
-            className="form-check-label"
-            for="CommunityEditModeToggle"
-          >
-            Editor mode ( WIP )
-          </FormCheckLabel>
-        </CompactContainer>
+        {widget("components.toggle", {
+          active: state.shared.isEditorEnabled,
+          key: "community-editor-toggle",
+          label: "Editor mode ( WIP )",
+          onSwitch: onEditorToggle,
+        })}
       </div>
 
       <NavUnderline className="nav">

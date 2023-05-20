@@ -69,11 +69,27 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 
+const formHandler =
+  ({ formStateKey }) =>
+  ({ fieldName, updateHandler }) =>
+  (input) =>
+    State.update((lastState) => ({
+      ...lastState,
+
+      [formStateKey]: {
+        ...lastState[formStateKey],
+
+        [fieldName]:
+          typeof updateHandler === "function"
+            ? updateHandler({
+                input: input?.target?.value ?? input ?? null,
+                lastState,
+              })
+            : input?.target?.value ?? input ?? null,
+      },
+    }));
+
 const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
-`;
-
-const FormCheckLabel = styled.label`
-  white-space: nowrap;
 `;
