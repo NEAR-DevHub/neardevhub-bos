@@ -166,7 +166,7 @@ const GithubRepoBoard = ({
   return (
     <div className="d-flex flex-column gap-3">
       <div className="d-flex justify-content-between">
-        <i class="placeholder" />
+        <i className="placeholder" />
 
         <h5 className="h5 d-inline-flex gap-2 m-0">
           <i className="bi bi-kanban-fill" />
@@ -188,13 +188,13 @@ const GithubRepoBoard = ({
             </span>
           </a>
         ) : (
-          <i class="placeholder" />
+          <i className="placeholder" />
         )}
       </div>
 
-      <div class="py-1 text-secondary text-center">{description}</div>
+      <div className="py-1 text-secondary text-center">{description}</div>
 
-      <div className="d-flex gap-3 overflow-x-auto">
+      <div className="d-flex gap-3" style={{ overflowX: "auto" }}>
         {columns.length > 0 ? (
           columns.map((column) => (
             <div className="col-3" key={column.title}>
