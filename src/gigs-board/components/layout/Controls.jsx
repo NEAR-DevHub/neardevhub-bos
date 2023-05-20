@@ -52,7 +52,7 @@ return (
         backgroundColor: "#0C7283",
         color: "#f3f3f3",
       }}
-      href="gigs-board.pages.Create"
+      href={href("Create")}
     >
       <i class="bi bi-plus-circle-fill"></i>
       Submit Idea / Solution

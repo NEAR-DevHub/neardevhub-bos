@@ -102,7 +102,7 @@ Requested sponsor: ${state.supervisor}
 
     body = {
       ...body,
-      post_type: "Solution",
+      post_type: "Submission",
       description: fundingDesc + body.description,
     };
   } else if (state.postType === "Solution") {
