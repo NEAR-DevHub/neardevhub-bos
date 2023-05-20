@@ -204,7 +204,7 @@ const CommunityHeader = ({ label, tab }) => {
             className="form-check-label"
             for="CommunityEditModeToggle"
           >
-            Editor mode
+            Editor mode ( WIP )
           </FormCheckLabel>
         </CompactContainer>
       </div>
