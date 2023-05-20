@@ -148,10 +148,14 @@ const GithubActivityPage = ({ boardId, label }) => {
     State.update({ boardConfig: { repoURL } });
 
   const onColumnCreate = () =>
-    State.update(({ boardConfig }) => ({
+    State.update((lastState) => ({
+			...lastState,
+
       boardConfig: {
+				...lastState.boardConfig,
+
         columns: [
-          ...boardConfig.columns,
+          ...lastState.boardConfig.columns,
           { title: "New status", labelFilters: [] },
         ],
       },
@@ -160,8 +164,12 @@ const GithubActivityPage = ({ boardId, label }) => {
   const onColumnStatusTitleChange =
     ({ columnIdx }) =>
     ({ target: { value: title } }) =>
-      State.update(({ boardConfig }) => ({
+      State.update((lastState) => ({
+				...lastState,
+
         boardConfig: {
+					...lastState.boardConfig,
+
           columns: boardConfig.columns.map((column, idx) =>
             idx === columnIdx ? { ...column, title } : column
           ),
@@ -171,9 +179,13 @@ const GithubActivityPage = ({ boardId, label }) => {
   const onColumnLabelFiltersChange =
     ({ columnIdx }) =>
     ({ target: { value } }) =>
-      State.update(({ boardConfig }) => ({
+      State.update((lastState) => ({
+				...lastState,
+
         boardConfig: {
-          columns: boardConfig.columns.map((column, idx) =>
+					...lastState.boardConfig,
+
+          columns: lastState.boardConfig.columns.map((column, idx) =>
             idx === columnIdx
               ? {
                   ...column,
