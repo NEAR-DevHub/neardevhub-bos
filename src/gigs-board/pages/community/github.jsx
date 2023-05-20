@@ -332,10 +332,10 @@ const GithubPage = ({ boardId, label }) => {
           </div>
         ) : null}
 
-        {!boardId && widget("entities.GithubRepo.Board", state.boardConfig)}
+        {!boardId && widget("entity.github-repo.board", state.boardConfig)}
 
         {boardId &&
-          widget("entities.GithubRepo.Board", {
+          widget("entity.github-repo.board", {
             ...boardConfigByBoardId(boardId),
             pageLink: href("community.github", { boardId }),
           })}

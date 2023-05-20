@@ -80,13 +80,7 @@ const FormCheckLabel = styled.label`
 `;
 /* END_INCLUDE: "common.jsx" */
 
-const GithubRepoBoard = ({
-  dataTypes,
-  columns,
-  pageURL,
-  repoURL,
-  title,
-}) => {
+const GithubRepoBoard = ({ dataTypes, columns, pageURL, repoURL, title }) => {
   State.init({
     pullRequestByColumn: {},
     issueByColumn: {},
@@ -185,7 +179,11 @@ const GithubRepoBoard = ({
                 </h6>
 
                 {(state.pullRequestByColumn[column.title] ?? []).map((data) =>
-                  widget("entities.GithubRepo.TicketCard", { data }, data.id)
+                  widget(
+                    "entity.github-repo.ticket",
+                    { data, format: "card" },
+                    data.id
+                  )
                 )}
               </CompactContainer>
             </CompactContainer>
