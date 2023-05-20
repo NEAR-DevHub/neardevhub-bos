@@ -38,8 +38,11 @@ const ToggleLabel = styled.label`
   white-space: nowrap;
 `;
 
-const Toggle = ({ active, key, label, onSwitch }) => (
-  <ToggleRoot className="d-flex align-items-center gap-2">
+const Toggle = ({ active, className, key, label, onSwitch, ...rest }) => (
+  <ToggleRoot
+    className={["d-flex align-items-center gap-2", className].join(" ")}
+    {...rest}
+  >
     <ToggleSwitchRoot
       checked={active}
       id={`toggle-${key}`}

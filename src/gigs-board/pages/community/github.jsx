@@ -17,7 +17,11 @@ const boardConfigByBoardId = ({ boardId }) => {
   return {
     probablyUUIDv4: {
       id: "probablyUUIDv4",
-      columns: [{ title: "Draft", labelFilters: ["S-draft"] }],
+      columns: [
+        { title: "Draft", labelFilters: ["S-draft"] },
+        { title: "Review", labelFilters: ["S-review"] },
+        { title: "HALP!", labelFilters: ["help"] },
+      ],
       dataTypes: { Issue: true, PullRequest: true },
       description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",
@@ -108,8 +112,8 @@ const GithubPage = ({ boardId, label }) => {
   State.init({
     boardConfig: {
       id: "probablyUUIDv4",
-      columns: [{ title: "Draft", labelFilters: ["S-draft"] }],
-      dataTypes: { Issue: false, PullRequest: true },
+      columns: [],
+      dataTypes: { Issue: true, PullRequest: false },
       description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",
       title: "NEAR Protocol NEPs",
@@ -140,10 +144,10 @@ const GithubPage = ({ boardId, label }) => {
     }));
 
   const dataTypeToggle =
-    ({ typeName }) =>
+    ({ key }) =>
     ({ lastState }) => ({
       ...lastState.boardConfig.dataTypes,
-      [typeName]: !lastState.boardConfig.dataTypes[typeName],
+      [key]: !lastState.boardConfig.dataTypes[key],
     });
 
   const onColumnCreate = () =>
@@ -160,7 +164,7 @@ const GithubPage = ({ boardId, label }) => {
       },
     }));
 
-  const onColumnStatusTitleChange =
+  const onColumnTitleChange =
     ({ columnIdx }) =>
     ({ target: { value: title } }) =>
       State.update((lastState) => ({
@@ -199,21 +203,38 @@ const GithubPage = ({ boardId, label }) => {
     label,
     tab: "GitHub",
     children: (
-      <div className="d-flex flex-column gap-4">
-        <div className="d-flex justify-content-end">
-          {widget("components.toggle", {
-            active: state.isEditorEnabled,
-            key: "editor-toggle",
-            label: "Editor mode",
-            onSwitch: onEditorToggle,
-          })}
-        </div>
+      <div className="d-flex flex-column gap-4 pb-4">
+        {widget("components.toggle", {
+          active: state.isEditorEnabled,
+
+          className: [
+            "position-fixed",
+            "d-flex justify-content-center align-items-center",
+            "shadow-md rounded-pill p-4",
+          ].join(" "),
+
+          key: "editor-toggle",
+          label: "Editor mode",
+          onSwitch: onEditorToggle,
+
+          style: {
+            zIndex: 99,
+            right: 24,
+            bottom: 24,
+            backgroundColor: "#f3f3f3",
+          },
+        })}
 
         {state.isEditorEnabled ? (
           <div className="d-flex flex-column gap-3 w-100 border border-dark rounded-2 p-4">
-            <div className="d-flex gap-3">
+            <h5 className="h5 d-inline-flex gap-2 m-0">
+              <i className="bi bi-kanban-fill" />
+              <span>{state.boardConfig.title} board configuration</span>
+            </h5>
+
+            <div className="d-flex gap-3 flex-column flex-lg-row">
               <div className="input-group-text d-flex flex-column w-25">
-                <span id="newGithubBoardTitle">Board title</span>
+                <span id="newGithubBoardTitle">Title</span>
 
                 <input
                   aria-describedby="newGithubBoardTitle"
@@ -226,26 +247,8 @@ const GithubPage = ({ boardId, label }) => {
                 />
               </div>
 
-              <div className="input-group-text d-flex flex-column w-75">
-                <span id="newGithubBoardTitle">Description</span>
-
-                <input
-                  aria-describedby="newGithubBoardTitle"
-                  aria-label="Board title"
-                  className="form-control"
-                  onChange={onBoardConfigChange({ fieldName: "description" })}
-                  placeholder="Latest NEAR Enhancement Proposals by status."
-                  type="text"
-                  value={state.boardConfig.title}
-                />
-              </div>
-            </div>
-
-            <div className="d-flex gap-3 flex-column flex-lg-row">
-              <div className="input-group">
-                <span className="input-group-text" id="basic-addon1">
-                  Repository URL
-                </span>
+              <div className="input-group-text d-flex flex-column justify-content-evenly w-75">
+                <span id="newGithubBoardTitle">Repository URL</span>
 
                 <input
                   aria-describedby="basic-addon1"
@@ -257,41 +260,57 @@ const GithubPage = ({ boardId, label }) => {
                   value={state.boardConfig.repoURL}
                 />
               </div>
+            </div>
 
-              <CompactContainer className="input-group flex-nowrap">
-                <span className="input-group-text" id="basic-addon1">
-                  Tracked data
+            <div className="d-flex gap-3 flex-column flex-lg-row">
+              <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-3 ps-0">
+                <span
+                  className="d-inline-flex gap-2"
+                  id="newGithubBoardTrackedData"
+                >
+                  <i class="bi bi-database-fill" />
+                  <span>Tracked data</span>
                 </span>
 
-                <CompactContainer className="form-control d-flex flex-column gap-2">
-                  {Object.entries(state.boardConfig.dataTypes).map(
-                    ([key, active]) =>
-                      widget(
-                        "components.toggle",
-                        {
-                          active,
-                          key,
-                          label: key,
+                {Object.entries(state.boardConfig.dataTypes).map(
+                  ([key, active]) =>
+                    widget(
+                      "components.toggle",
+                      {
+                        active,
+                        key,
+                        label: key,
 
-                          onSwitch: onBoardConfigChange({
-                            fieldName: "dataTypes",
-                            updateHandler: dataTypeToggle({ typeName }),
-                          }),
-                        },
-                        key
-                      )
-                  )}
-                </CompactContainer>
+                        onSwitch: onBoardConfigChange({
+                          fieldName: "dataTypes",
+                          updateHandler: dataTypeToggle({ key }),
+                        }),
+                      },
+                      key
+                    )
+                )}
               </CompactContainer>
+
+              <div className="input-group-text d-flex flex-column w-100">
+                <span id="newGithubBoardDescription">Description</span>
+
+                <textarea
+                  aria-describedby="newGithubBoardDescription"
+                  aria-label="Board title"
+                  className="form-control h-75"
+                  onChange={onBoardConfigChange({ fieldName: "description" })}
+                  placeholder="Latest NEAR Enhancement Proposals by status."
+                  type="text"
+                  value={state.boardConfig.description}
+                />
+              </div>
             </div>
 
             <div className="d-flex align-items-center justify-content-between">
-              <h4 className="m-0">Columns</h4>
-
-              <button onClick={onColumnCreate} style={{ width: "fit-content" }}>
-                <i class="bi-plus" />
-                <span>New column</span>
-              </button>
+              <span className="d-inline-flex gap-2 m-0">
+                <i className="bi bi-list-task" />
+                <span>Columns</span>
+              </span>
             </div>
 
             <div className="d-flex flex-column align-items-center gap-3">
@@ -299,15 +318,13 @@ const GithubPage = ({ boardId, label }) => {
                 ({ title, labelFilters }, columnIdx) => (
                   <div className="input-group" key={`column-${columnIdx}`}>
                     <span className="input-group-text d-flex flex-column w-25">
-                      <span id={`newGithubBoardColumnStatus-${title}`}>
-                        Status title
-                      </span>
+                      <span id={`newGithubBoardColumn-${title}`}>Title</span>
 
                       <input
-                        aria-describedby={`newGithubBoardColumnStatus-${title}`}
-                        aria-label="Status title"
+                        aria-describedby={`newGithubBoardColumn-${title}`}
+                        aria-label="Column title"
                         className="form-control"
-                        onChange={onColumnStatusTitleChange({ columnIdx })}
+                        onChange={onColumnTitleChange({ columnIdx })}
                         placeholder="👀 Review"
                         type="text"
                         value={title}
@@ -316,6 +333,7 @@ const GithubPage = ({ boardId, label }) => {
 
                     <span className="input-group-text d-flex flex-column w-75">
                       <span
+                        className="text-wrap"
                         id={`newGithubBoardColumnStatus-${title}-searchTerms`}
                       >
                         Search terms for labels to attach to the status,
@@ -327,7 +345,7 @@ const GithubPage = ({ boardId, label }) => {
                         aria-label="Search terms for included labels"
                         className="form-control"
                         onChange={onColumnLabelFiltersChange({ columnIdx })}
-                        placeholder="draft, review, proposal, ..."
+                        placeholder="WG-, draft, review, proposal, ..."
                         type="text"
                         value={labelFilters.join(", ")}
                       />
@@ -335,6 +353,34 @@ const GithubPage = ({ boardId, label }) => {
                   </div>
                 )
               )}
+            </div>
+
+            <div className="d-flex align-items-center justify-content-between">
+              <button
+                className="btn btn-outline-secondary d-inline-flex gap-2"
+                disabled={state.boardConfig.columns.length >= 6}
+                onClick={onColumnCreate}
+                style={{ width: "fit-content" }}
+              >
+                <i class="bi bi-plus-lg" />
+                <span>New column</span>
+              </button>
+
+              <button
+                disabled
+                className="btn btn-primary d-inline-flex gap-2 align-items-center"
+                style={{ width: "fit-content" }}
+              >
+                <i
+                  class="bi bi-cloud-arrow-up-fill lh-1"
+                  style={{ paddingTop: 2 }}
+                />
+
+                <span>
+                  Save {(boardId ?? null) === null ? "changes" : "board"}
+                  <span>( WIP )</span>
+                </span>
+              </button>
             </div>
           </div>
         ) : null}
@@ -344,7 +390,7 @@ const GithubPage = ({ boardId, label }) => {
         {boardId &&
           widget("entity.github-repo.board", {
             ...boardConfigByBoardId(boardId),
-            pageLink: href("community.github", { boardId }),
+            pageURL: boardId ? href("community.github", { boardId }) : null,
           })}
       </div>
     ),

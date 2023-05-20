@@ -17,7 +17,11 @@ const boardConfigByBoardId = ({ boardId }) => {
   return {
     probablyUUIDv4: {
       id: "probablyUUIDv4",
-      columns: [{ title: "Draft", labelFilters: ["S-draft"] }],
+      columns: [
+        { title: "Draft", labelFilters: ["S-draft"] },
+        { title: "Review", labelFilters: ["S-review"] },
+        { title: "HALP!", labelFilters: ["help"] },
+      ],
       dataTypes: { Issue: true, PullRequest: true },
       description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",

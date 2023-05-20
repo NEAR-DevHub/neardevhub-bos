@@ -17,7 +17,11 @@ const boardConfigByBoardId = ({ boardId }) => {
   return {
     probablyUUIDv4: {
       id: "probablyUUIDv4",
-      columns: [{ title: "Draft", labelFilters: ["S-draft"] }],
+      columns: [
+        { title: "Draft", labelFilters: ["S-draft"] },
+        { title: "Review", labelFilters: ["S-review"] },
+        { title: "HALP!", labelFilters: ["help"] },
+      ],
       dataTypes: { Issue: true, PullRequest: true },
       description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",
@@ -96,10 +100,18 @@ const CompactContainer = styled.div`
 `;
 /* END_INCLUDE: "common.jsx" */
 
-const GithubRepoBoard = ({ dataTypes, columns, pageURL, repoURL, title }) => {
+const GithubRepoBoard = ({
+  columns,
+  dataTypes,
+  description,
+  pageURL,
+  repoURL,
+  title,
+}) => {
   State.init({
     pullRequestByColumn: {},
     issueByColumn: {},
+    ticketByColumn: {},
   });
 
   const dataToColumns = (data) =>
@@ -124,47 +136,44 @@ const GithubRepoBoard = ({ dataTypes, columns, pageURL, repoURL, title }) => {
     );
 
   if (repoURL) {
-    if (dataTypes.PullRequest) {
-      const pullRequests = (
-        fetch(
-          `https://api.github.com/repos/${repoURL
-            .split("/")
-            .slice(-2)
-            .join("/")}/pulls`
-        ).body ?? []
-      ).map((pullRequest) => ({ ...pullRequest, type: "PullRequest" }));
+    const pullRequests = dataTypes.PullRequest
+      ? (
+          fetch(
+            `https://api.github.com/repos/${repoURL
+              .split("/")
+              .slice(-2)
+              .join("/")}/pulls`
+          ).body ?? []
+        ).map((pullRequest) => ({ ...pullRequest, type: "PullRequest" }))
+      : [];
 
-      State.update({
-        pullRequestByColumn: dataToColumns(pullRequests),
-      });
-    }
+    const issues = dataTypes.Issue
+      ? (
+          fetch(
+            `https://api.github.com/repos/${repoURL
+              .split("/")
+              .slice(-2)
+              .join("/")}/issues`
+          ).body ?? []
+        ).map((issue) => ({ ...issue, type: "Issue" }))
+      : [];
 
-    console.log(state.pullRequestByColumn);
-
-    if (dataTypes.Issue) {
-      const issues = (
-        fetch(
-          `https://api.github.com/repos/${repoURL
-            .split("/")
-            .slice(-2)
-            .join("/")}/issues`
-        ).body ?? []
-      ).map((issue) => ({ ...issue, type: "Issue" }));
-
-      State.update({
-        issueByColumn: dataToColumns(issues),
-      });
-    }
-
-    console.log(state.issueByColumn);
+    State.update({
+      ticketByColumn: dataToColumns([...issues, ...pullRequests]),
+    });
   }
 
   return (
     <div className="d-flex flex-column gap-3">
       <div className="d-flex justify-content-between">
-        <h3 class="m-0">{title}</h3>
+        <i class="placeholder" />
 
-        {true ? (
+        <h5 className="h5 d-inline-flex gap-2 m-0">
+          <i className="bi bi-kanban-fill" />
+          <span>{title} board</span>
+        </h5>
+
+        {pageURL ? (
           <a
             className="card-link d-inline-flex"
             href={pageURL}
@@ -178,33 +187,46 @@ const GithubRepoBoard = ({ dataTypes, columns, pageURL, repoURL, title }) => {
               <span>Link to this board</span>
             </span>
           </a>
-        ) : null}
+        ) : (
+          <i class="placeholder" />
+        )}
       </div>
 
-      <div className="row">
-        {columns.map((column) => (
-          <div className="col-3" key={column.title}>
-            <CompactContainer className="card">
-              <CompactContainer className="card-body d-flex flex-column gap-3 border-secondary">
-                <h6 className="card-title d-flex align-items-center gap-2">
-                  {column.title}
+      <div class="py-1 text-secondary text-center">{description}</div>
 
-                  <span className="badge rounded-pill bg-secondary">
-                    {(state.pullRequestByColumn[column.title] ?? []).length}
-                  </span>
-                </h6>
+      <div className="d-flex overflow-x-auto">
+        {columns.length > 0 ? (
+          columns.map((column) => (
+            <div className="col-3" key={column.title}>
+              <CompactContainer className="card">
+                <CompactContainer className="card-body d-flex flex-column gap-3 border-secondary">
+                  <h6 className="card-title d-flex align-items-center gap-2">
+                    {column.title}
 
-                {(state.pullRequestByColumn[column.title] ?? []).map((data) =>
-                  widget(
-                    "entity.github-repo.ticket",
-                    { data, format: "card" },
-                    data.id
-                  )
-                )}
+                    <span className="badge rounded-pill bg-secondary">
+                      {(state.ticketByColumn[column.title] ?? []).length}
+                    </span>
+                  </h6>
+
+                  {(state.ticketByColumn[column.title] ?? []).map((data) =>
+                    widget(
+                      "entity.github-repo.ticket",
+                      { data, format: "card" },
+                      data.id
+                    )
+                  )}
+                </CompactContainer>
               </CompactContainer>
-            </CompactContainer>
+            </div>
+          ))
+        ) : (
+          <div
+            className="d-flex align-items-center justify-content-center w-100 text-black-50 opacity-50"
+            style={{ height: 384 }}
+          >
+            No columns were created so far.
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

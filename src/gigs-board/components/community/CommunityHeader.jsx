@@ -17,7 +17,11 @@ const boardConfigByBoardId = ({ boardId }) => {
   return {
     probablyUUIDv4: {
       id: "probablyUUIDv4",
-      columns: [{ title: "Draft", labelFilters: ["S-draft"] }],
+      columns: [
+        { title: "Draft", labelFilters: ["S-draft"] },
+        { title: "Review", labelFilters: ["S-review"] },
+        { title: "HALP!", labelFilters: ["help"] },
+      ],
       dataTypes: { Issue: true, PullRequest: true },
       description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",
@@ -131,22 +135,22 @@ const BreadcrumbBold = styled.b`
 const topicTabs = [
   {
     defaultActive: true,
-    iconClass: "bi-house-door",
+    iconClass: "bi bi-house-door",
     path: "community.Overview",
     title: "Overview",
   },
   {
-    iconClass: "bi-chat-square-text",
+    iconClass: "bi bi-chat-square-text",
     path: "community.Discussions",
     title: "Discussions",
   },
   {
-    iconClass: "bi-kanban",
+    iconClass: "bi bi-coin",
     path: "community.Sponsorship",
     title: "Sponsorship",
   },
   {
-    iconClass: "bi-calendar",
+    iconClass: "bi bi-calendar",
     path: "community.Events",
     title: "Events",
   },
@@ -155,7 +159,7 @@ const topicTabs = [
       boardId: null, // communityById("communityId").boards[0].id
     },
 
-    iconClass: "bi-github",
+    iconClass: "bi bi-github",
     path: "community.github",
     title: "GitHub", // communityById("communityId").boards[0].title
   },
@@ -217,11 +221,14 @@ const CommunityHeader = ({ label, tab }) => {
               <li className="nav-item" key={title}>
                 <a
                   aria-current={defaultActive && "page"}
-                  className={tab === title ? "nav-link active" : "nav-link"}
+                  className={[
+                    "d-inline-flex gap-2",
+                    tab === title ? "nav-link active" : "nav-link",
+                  ].join(" ")}
                   href={href(path, { ...(contentProps ?? {}), label })}
                 >
                   {iconClass && <i className={iconClass} />}
-                  {title}
+                  <span>{title}</span>
                 </a>
               </li>
             ) : null
