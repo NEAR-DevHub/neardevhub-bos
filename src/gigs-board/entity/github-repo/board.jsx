@@ -194,7 +194,7 @@ const GithubRepoBoard = ({
 
       <div class="py-1 text-secondary text-center">{description}</div>
 
-      <div className="d-flex overflow-x-auto">
+      <div className="d-flex gap-3 overflow-x-auto">
         {columns.length > 0 ? (
           columns.map((column) => (
             <div className="col-3" key={column.title}>
