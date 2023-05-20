@@ -17,12 +17,7 @@ const boardConfigByBoardId = ({ boardId }) => {
   return {
     probablyUUIDv4: {
       id: "probablyUUIDv4",
-
-      columns: [
-        { title: "Draft", labelFilters: ["S-draft"] },
-        { title: "Review", labelFilters: ["S-review"] },
-      ],
-
+      columns: [{ title: "Draft", labelFilters: ["S-draft"] }],
       dataTypes: { Issue: true, PullRequest: true },
       description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",
@@ -97,12 +92,7 @@ const GithubActivityPage = ({ boardId, label }) => {
   State.init({
     boardConfig: {
       id: "probablyUUIDv4",
-
-      columns: [
-        { title: "Draft", labelFilters: ["S-draft"] },
-        { title: "Review", labelFilters: ["S-review"] },
-      ],
-
+      columns: [{ title: "Draft", labelFilters: ["S-draft"] }],
       dataTypes: { Issue: false, PullRequest: true },
       description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",
@@ -149,10 +139,10 @@ const GithubActivityPage = ({ boardId, label }) => {
 
   const onColumnCreate = () =>
     State.update((lastState) => ({
-			...lastState,
+      ...lastState,
 
       boardConfig: {
-				...lastState.boardConfig,
+        ...lastState.boardConfig,
 
         columns: [
           ...lastState.boardConfig.columns,
@@ -165,10 +155,10 @@ const GithubActivityPage = ({ boardId, label }) => {
     ({ columnIdx }) =>
     ({ target: { value: title } }) =>
       State.update((lastState) => ({
-				...lastState,
+        ...lastState,
 
         boardConfig: {
-					...lastState.boardConfig,
+          ...lastState.boardConfig,
 
           columns: lastState.boardConfig.columns.map((column, idx) =>
             idx === columnIdx ? { ...column, title } : column
@@ -180,10 +170,10 @@ const GithubActivityPage = ({ boardId, label }) => {
     ({ columnIdx }) =>
     ({ target: { value } }) =>
       State.update((lastState) => ({
-				...lastState,
+        ...lastState,
 
         boardConfig: {
-					...lastState.boardConfig,
+          ...lastState.boardConfig,
 
           columns: lastState.boardConfig.columns.map((column, idx) =>
             idx === columnIdx
