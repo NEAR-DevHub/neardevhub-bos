@@ -233,7 +233,7 @@ const GithubPage = ({ boardId, label }) => {
             </h5>
 
             <div className="d-flex gap-3 flex-column flex-lg-row">
-              <div className="input-group-text d-flex flex-column w-25">
+              <div className="input-group-text d-flex flex-column flex-1">
                 <span id="newGithubBoardTitle">Title</span>
 
                 <input
@@ -247,7 +247,12 @@ const GithubPage = ({ boardId, label }) => {
                 />
               </div>
 
-              <div className="input-group-text d-flex flex-column justify-content-evenly w-75">
+              <div
+                className={[
+                  "input-group-text",
+                  "d-flex flex-column justify-content-evenly flex-4 flex-grow-1",
+                ].join(" ")}
+              >
                 <span id="newGithubBoardTitle">Repository URL</span>
 
                 <input
@@ -316,8 +321,11 @@ const GithubPage = ({ boardId, label }) => {
             <div className="d-flex flex-column align-items-center gap-3">
               {state.boardConfig.columns.map(
                 ({ title, labelFilters }, columnIdx) => (
-                  <div className="input-group" key={`column-${columnIdx}`}>
-                    <span className="input-group-text d-flex flex-column w-25">
+                  <div
+                    className="d-flex flex-column flex-lg-row gap-3 w-100"
+                    key={`column-${columnIdx}`}
+                  >
+                    <span className="input-group-text d-flex flex-column flex-1">
                       <span id={`newGithubBoardColumn-${title}`}>Title</span>
 
                       <input
@@ -331,13 +339,12 @@ const GithubPage = ({ boardId, label }) => {
                       />
                     </span>
 
-                    <span className="input-group-text d-flex flex-column w-75">
+                    <span className="input-group-text d-flex flex-column flex-4 flex-grow-1">
                       <span
                         className="text-wrap"
                         id={`newGithubBoardColumnStatus-${title}-searchTerms`}
                       >
-                        Search terms for labels to attach to the status,
-                        comma-separated
+                        Search terms for labels to attach, comma-separated
                       </span>
 
                       <input
