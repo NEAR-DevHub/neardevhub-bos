@@ -90,8 +90,8 @@ const GithubRepoBoard = ({
   dataTypes,
   columns,
   linkedPage,
-  name,
   repoURL,
+  title,
 }) => {
   State.init({
     pullRequestByColumn: {},
@@ -156,28 +156,26 @@ const GithubRepoBoard = ({
   }
 
   return (
-    <div className="d-flex gap-3">
-      {boardId ? (
-        <div className="row">
-          <div className="col">
-            <small className="text-muted">
-              <a
-                className="card-link"
-                href={href(linkedPage, { boardId })}
-                rel="noreferrer"
-                role="button"
-                target="_blank"
-                title="Link to this board"
-              >
-                <span className="hstack gap-3">
-                  <i className="bi bi-share" />
-                  <span>Link to this board</span>
-                </span>
-              </a>
-            </small>
-          </div>
-        </div>
-      ) : null}
+    <div className="d-flex flex-column gap-3">
+      <div className="d-flex justify-content-between">
+        <h3 class="m-0">{title}</h3>
+
+        {true ? (
+          <a
+            className="card-link d-inline-flex"
+            href={href(linkedPage, { boardId })}
+            rel="noreferrer"
+            role="button"
+            target="_blank"
+            title="Link to this board"
+          >
+            <span className="hstack gap-3">
+              <i className="bi bi-share" />
+              <span>Link to this board</span>
+            </span>
+          </a>
+        ) : null}
+      </div>
 
       <div className="row">
         {columns.map((column) => (

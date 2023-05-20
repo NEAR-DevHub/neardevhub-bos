@@ -86,6 +86,14 @@ const FormCheckLabel = styled.label`
 /* END_INCLUDE: "common.jsx" */
 
 const GithubActivityPage = ({ boardId, label }) => {
+  console.log(
+    "CommunityHeader state requested from GithubActivity page",
+    Storage.get(
+      "state",
+      `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.components.community.CommunityHeader`
+    )
+  );
+
   State.init({
     boardConfig: {
       id: "probablyUUIDv4",
@@ -100,12 +108,38 @@ const GithubActivityPage = ({ boardId, label }) => {
       repoURL: "https://github.com/near/NEPs",
       title: "NEAR Protocol NEPs",
     },
+
+    isEditorEnabled: false,
+    ...Storage.get(
+      "state",
+      `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.components.community.CommunityHeader`
+    ),
   });
 
   console.log(
     "Board config columns",
     JSON.stringify(state.boardConfig.columns)
   );
+
+  const onEditorToggle = () =>
+    State.update((lastState) => ({
+      ...lastState,
+      isEditorEnabled: !lastState.isEditorEnabled,
+    }));
+
+  const onDataTypeToggle =
+    ({ typeName, isIncluded }) =>
+    () =>
+      State.update((lastState) => ({
+        ...lastState,
+        boardConfig: {
+          ...lastState.boardConfig,
+          dataTypes: {
+            ...lastState.boardConfig.dataTypes,
+            [typeName]: !isIncluded,
+          },
+        },
+      }));
 
   const onBoardTitleChange = ({ target: { value: title } }) =>
     State.update({ boardConfig: { title } });
@@ -155,131 +189,146 @@ const GithubActivityPage = ({ boardId, label }) => {
     tab: state.boardConfig.title,
     children: (
       <div className="d-flex flex-column gap-4">
-        <div
-          className="d-flex flex-column gap-3 w-100 border border-dark-subtle rounded-2 p-3"
-          style={{ backgroundColor: "rgb(243, 243, 243)" }}
-        >
-          <span className="input-group-text d-flex flex-column w-25">
-            <span id="newGithubBoardTitle">Board title</span>
-
+        <div className="d-flex justify-content-end">
+          <CompactContainer className="form-check form-switch">
             <input
-              aria-describedby="newGithubBoardTitle"
-              aria-label="Board title"
-              className="form-control"
-              onChange={onBoardTitleChange}
-              placeholder="NEAR Protocol NEPs"
-              type="text"
-              value={state.boardConfig.title}
+              checked={state.isEditorEnabled}
+              className="form-check-input"
+              id="CommunityEditModeToggle"
+              onClick={onEditorToggle}
+              role="switch"
+              type="checkbox"
             />
-          </span>
 
-          <div className="d-flex gap-3 flex-column flex-lg-row">
-            <div className="input-group">
-              <span className="input-group-text" id="basic-addon1">
-                Repository URL
-              </span>
+            <FormCheckLabel
+              className="form-check-label"
+              for="CommunityEditModeToggle"
+            >
+              Editor mode
+            </FormCheckLabel>
+          </CompactContainer>
+        </div>
+
+        {state.isEditorEnabled ? (
+          <div
+            className="d-flex flex-column gap-3 w-100 border border-dark-subtle rounded-2 p-3"
+            style={{ backgroundColor: "rgb(243, 243, 243)" }}
+          >
+            <span className="input-group-text d-flex flex-column w-25">
+              <span id="newGithubBoardTitle">Board title</span>
 
               <input
-                aria-describedby="basic-addon1"
-                aria-label="Repository URL"
+                aria-describedby="newGithubBoardTitle"
+                aria-label="Board title"
                 className="form-control"
-                onChange={onRepoURLChange}
-                placeholder="https://github.com/example-org/example-repo"
+                onChange={onBoardTitleChange}
+                placeholder="NEAR Protocol NEPs"
                 type="text"
-                value={state.boardConfig.repoURL}
+                value={state.boardConfig.title}
               />
+            </span>
+
+            <div className="d-flex gap-3 flex-column flex-lg-row">
+              <div className="input-group">
+                <span className="input-group-text" id="basic-addon1">
+                  Repository URL
+                </span>
+
+                <input
+                  aria-describedby="basic-addon1"
+                  aria-label="Repository URL"
+                  className="form-control"
+                  onChange={onRepoURLChange}
+                  placeholder="https://github.com/example-org/example-repo"
+                  type="text"
+                  value={state.boardConfig.repoURL}
+                />
+              </div>
+
+              <CompactContainer className="input-group flex-nowrap">
+                <span className="input-group-text" id="basic-addon1">
+                  Tracked data
+                </span>
+
+                <CompactContainer className="form-control">
+                  {Object.entries(state.boardConfig.dataTypes).map(
+                    ([typeName, isIncluded]) => (
+                      <CompactContainer className="form-check form-switch">
+                        <input
+                          checked={isIncluded}
+                          className="form-check-input"
+                          id={`newGithubBoardDataTypeToggle-${typeName}`}
+                          onClick={onDataTypeToggle({ typeName, isIncluded })}
+                          role="switch"
+                          type="checkbox"
+                        />
+
+                        <FormCheckLabel
+                          className="form-check-label"
+                          for="newGithubBoardDataTypeTogglePullRequests"
+                        >
+                          {typeName}
+                        </FormCheckLabel>
+                      </CompactContainer>
+                    )
+                  )}
+                </CompactContainer>
+              </CompactContainer>
             </div>
 
-            <CompactContainer className="input-group flex-nowrap">
-              <span className="input-group-text" id="basic-addon1">
-                Tracked data
-              </span>
+            <div className="d-flex align-items-center justify-content-between">
+              <h4 className="m-0">Columns</h4>
 
-              <CompactContainer className="form-control">
-                {Object.entries(state.boardConfig.dataTypes).map(
-                  ([dataTypeKey, dataTypeIncluded]) => (
-                    <CompactContainer className="form-check form-switch">
+              <button onClick={onColumnCreate} style={{ width: "fit-content" }}>
+                <i class="bi-plus" />
+                <span>New column</span>
+              </button>
+            </div>
+
+            <div className="d-flex flex-column align-items-center gap-3">
+              {state.boardConfig.columns.map(
+                ({ title, labelFilters }, columnIdx) => (
+                  <div className="input-group" key={`column-${columnIdx}`}>
+                    <span className="input-group-text d-flex flex-column w-25">
+                      <span id={`newGithubBoardColumnStatus-${title}`}>
+                        Status title
+                      </span>
+
                       <input
-                        disabled
-                        checked={dataTypeIncluded}
-                        className="form-check-input"
-                        id={`newGithubBoardDataTypeSwitch-${dataTypeKey}`}
-                        onClick={() =>
-                          State.update({
-                            boardConfig: {
-                              dataTypes: {
-                                [dataTypeKey]: !dataTypeIncluded,
-                              },
-                            },
-                          })
-                        }
-                        role="switch"
-                        type="checkbox"
+                        aria-describedby={`newGithubBoardColumnStatus-${title}`}
+                        aria-label="Status title"
+                        className="form-control"
+                        onChange={onColumnStatusTitleChange({ columnIdx })}
+                        placeholder="👀 Review"
+                        type="text"
+                        value={title}
                       />
+                    </span>
 
-                      <FormCheckLabel
-                        className="form-check-label"
-                        for="newGithubBoardDataTypeSwitchPullRequests"
+                    <span className="input-group-text d-flex flex-column w-75">
+                      <span
+                        id={`newGithubBoardColumnStatus-${title}-searchTerms`}
                       >
-                        {dataTypeKey}
-                      </FormCheckLabel>
-                    </CompactContainer>
-                  )
-                )}
-              </CompactContainer>
-            </CompactContainer>
-          </div>
+                        Search terms for labels to attach to the status,
+                        comma-separated
+                      </span>
 
-          <h4 className="m-0">Columns</h4>
-
-          <div className="d-flex flex-column align-items-center gap-3">
-            {state.boardConfig.columns.map(
-              ({ title, labelFilters }, columnIdx) => (
-                <div className="input-group" key={`column-${columnIdx}`}>
-                  <span className="input-group-text d-flex flex-column w-25">
-                    <span id={`newGithubBoardColumnStatus-${title}`}>
-                      Status title
+                      <input
+                        aria-describedby={`newGithubBoardColumnStatus-${title}-searchTerms`}
+                        aria-label="Search terms for included labels"
+                        className="form-control"
+                        onChange={onColumnLabelFiltersChange({ columnIdx })}
+                        placeholder="draft, review, proposal, ..."
+                        type="text"
+                        value={labelFilters.join(", ")}
+                      />
                     </span>
-
-                    <input
-                      aria-describedby={`newGithubBoardColumnStatus-${title}`}
-                      aria-label="Status title"
-                      className="form-control"
-                      onChange={onColumnStatusTitleChange({ columnIdx })}
-                      placeholder="👀 Review"
-                      type="text"
-                      value={title}
-                    />
-                  </span>
-
-                  <span className="input-group-text d-flex flex-column w-75">
-                    <span
-                      id={`newGithubBoardColumnStatus-${title}-searchTerms`}
-                    >
-                      Search terms for labels to attach to the status,
-                      comma-separated
-                    </span>
-
-                    <input
-                      aria-describedby={`newGithubBoardColumnStatus-${title}-searchTerms`}
-                      aria-label="Search terms for included labels"
-                      className="form-control"
-                      onChange={onColumnLabelFiltersChange({ columnIdx })}
-                      placeholder="draft, review, proposal, ..."
-                      type="text"
-                      value={labelFilters.join(", ")}
-                    />
-                  </span>
-                </div>
-              )
-            )}
-
-            <button onClick={onColumnCreate} style={{ width: "fit-content" }}>
-              <i class="bi-plus" />
-              <span>New column</span>
-            </button>
+                  </div>
+                )
+              )}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         {!boardId && widget("entities.GithubRepo.Board", state.boardConfig)}
 
