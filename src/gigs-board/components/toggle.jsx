@@ -1,5 +1,6 @@
 const ToggleRoot = styled.div`
-  width: fit-content !important;
+  justify-content: space-between;
+  width: fit-content;
   max-width: 100%;
 `;
 
@@ -38,11 +39,27 @@ const ToggleLabel = styled.label`
   white-space: nowrap;
 `;
 
-const Toggle = ({ active, className, key, label, onSwitch, ...rest }) => (
+const Toggle = ({
+  active,
+  className,
+  direction,
+  key,
+  label,
+  onSwitch,
+  ...rest
+}) => (
   <ToggleRoot
-    className={["d-flex align-items-center gap-2", className].join(" ")}
+    className={[
+      "d-flex justify-content-between, align-items-center gap-3",
+      direction === "rtl" ? "flex-row-reverse" : "",
+      className,
+    ].join(" ")}
     {...rest}
   >
+    <ToggleLabel className="" htmlFor={`toggle-${key}`}>
+      {label}
+    </ToggleLabel>
+
     <ToggleSwitchRoot
       checked={active}
       id={`toggle-${key}`}
@@ -50,10 +67,6 @@ const Toggle = ({ active, className, key, label, onSwitch, ...rest }) => (
     >
       <ToggleSwitchThumb className="bg-light" />
     </ToggleSwitchRoot>
-
-    <ToggleLabel className="" htmlFor={`toggle-${key}`}>
-      {label}
-    </ToggleLabel>
   </ToggleRoot>
 );
 

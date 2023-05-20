@@ -213,6 +213,7 @@ const GithubPage = ({ boardId, label }) => {
             "shadow-md rounded-pill p-4",
           ].join(" "),
 
+          direction: "rtl",
           key: "editor-toggle",
           label: "Editor mode",
           onSwitch: onEditorToggle,
@@ -233,7 +234,7 @@ const GithubPage = ({ boardId, label }) => {
             </h5>
 
             <div className="d-flex gap-3 flex-column flex-lg-row">
-              <div className="input-group-text d-flex flex-column flex-1">
+              <div className="input-group-text d-flex flex-column flex-1 flex-shrink-0">
                 <span id="newGithubBoardTitle">Title</span>
 
                 <input
@@ -250,7 +251,7 @@ const GithubPage = ({ boardId, label }) => {
               <div
                 className={[
                   "input-group-text",
-                  "d-flex flex-column justify-content-evenly flex-4 flex-grow-1",
+                  "d-flex flex-column justify-content-evenly flex-4 w-100",
                 ].join(" ")}
               >
                 <span id="newGithubBoardTitle">Repository URL</span>
@@ -283,6 +284,7 @@ const GithubPage = ({ boardId, label }) => {
                       "components.toggle",
                       {
                         active,
+                        className: "w-100",
                         key,
                         label: key,
 
@@ -321,43 +323,54 @@ const GithubPage = ({ boardId, label }) => {
             <div className="d-flex flex-column align-items-center gap-3">
               {state.boardConfig.columns.map(
                 ({ title, labelFilters }, columnIdx) => (
-                  <div
-                    className="d-flex flex-column flex-lg-row gap-3 w-100"
-                    key={`column-${columnIdx}`}
-                  >
-                    <span className="input-group-text d-flex flex-column flex-1">
-                      <span id={`newGithubBoardColumn-${title}`}>Title</span>
+                  <>
 
-                      <input
-                        aria-describedby={`newGithubBoardColumn-${title}`}
-                        aria-label="Column title"
-                        className="form-control"
-                        onChange={onColumnTitleChange({ columnIdx })}
-                        placeholder="👀 Review"
-                        type="text"
-                        value={title}
-                      />
-                    </span>
+									{columnIdx > 0 && <hr className="d-lg-none border-2 w-100" />}
 
-                    <span className="input-group-text d-flex flex-column flex-4 flex-grow-1">
-                      <span
-                        className="text-wrap"
-                        id={`newGithubBoardColumnStatus-${title}-searchTerms`}
-                      >
-                        Search terms for labels to attach, comma-separated
+                    <div
+                      className="d-flex flex-column flex-lg-row gap-3 align-items-center w-100"
+                      key={`column-${columnIdx}`}
+                    >
+                      <span className="input-group-text d-flex flex-column flex-2 flex-shrink-0">
+                        <span id={`newGithubBoardColumn-${title}`}>Title</span>
+
+                        <input
+                          aria-describedby={`newGithubBoardColumn-${title}`}
+                          aria-label="Column title"
+                          className="form-control"
+                          onChange={onColumnTitleChange({ columnIdx })}
+                          placeholder="👀 Review"
+                          type="text"
+                          value={title}
+                        />
                       </span>
 
-                      <input
-                        aria-describedby={`newGithubBoardColumnStatus-${title}-searchTerms`}
-                        aria-label="Search terms for included labels"
-                        className="form-control"
-                        onChange={onColumnLabelFiltersChange({ columnIdx })}
-                        placeholder="WG-, draft, review, proposal, ..."
-                        type="text"
-                        value={labelFilters.join(", ")}
-                      />
-                    </span>
-                  </div>
+                      <i class="bi bi-arrow-right flex-1 fs-1 d-sm-none d-lg-block" />
+
+                      <span
+                        className="input-group-text d-flex flex-column flex-4 flex-grow-1"
+                        style={{ width: "inherit" }}
+                      >
+                        <span
+                          className="text-wrap"
+                          id={`newGithubBoardColumnStatus-${title}-searchTerms`}
+                        >
+                          Search terms for labels to attach, comma-separated
+                        </span>
+
+                        <input
+                          aria-describedby={`newGithubBoardColumnStatus-${title}-searchTerms`}
+                          aria-label="Search terms for included labels"
+                          className="form-control"
+                          onChange={onColumnLabelFiltersChange({ columnIdx })}
+                          placeholder="WG-, draft, review, proposal, ..."
+                          type="text"
+                          value={labelFilters.join(", ")}
+                        />
+                      </span>
+                    </div>
+
+                  </>
                 )
               )}
             </div>
