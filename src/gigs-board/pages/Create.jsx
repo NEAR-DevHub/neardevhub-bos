@@ -97,16 +97,14 @@ const onSubmit = () => {
     //
 
     const fundingDesc = `
-${state.amount} ${state.token}`;
+Requested amount: ${state.amount} ${state.token}
+Requested sponsor: ${state.supervisor}
+`;
 
     body = {
       ...body,
       post_type: "Solution",
-      description: body.description,
-      amount: state.amount,
-      sponsorship_token: state.token,
-      supervisor: state.supervisor,
-      submission_version: "V1",
+      description: body.description + fundingDesc,
     };
   } else if (state.postType === "Solution") {
     // Solution
