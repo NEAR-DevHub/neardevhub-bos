@@ -324,8 +324,9 @@ const GithubPage = ({ boardId, label }) => {
               {state.boardConfig.columns.map(
                 ({ title, labelFilters }, columnIdx) => (
                   <>
-
-									{columnIdx > 0 && <hr className="d-lg-none border-2 w-100" />}
+                    {columnIdx > 0 && (
+                      <hr className="d-lg-none border-2 w-100" />
+                    )}
 
                     <div
                       className="d-flex flex-column flex-lg-row gap-3 align-items-center w-100"
@@ -369,7 +370,6 @@ const GithubPage = ({ boardId, label }) => {
                         />
                       </span>
                     </div>
-
                   </>
                 )
               )}
