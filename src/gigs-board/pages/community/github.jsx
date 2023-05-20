@@ -159,7 +159,7 @@ const GithubPage = ({ boardId, label }) => {
 
         columns: [
           ...lastState.boardConfig.columns,
-          { title: "New status", labelFilters: [] },
+          { title: "New column", labelFilters: [] },
         ],
       },
     }));
