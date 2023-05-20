@@ -124,8 +124,9 @@ const GithubRepoBoard = ({
 
           ...data.filter((pullRequest) =>
             pullRequest.labels.some((label) =>
-              column?.labelFilters.some((searchTerm) =>
-                label.name.includes(searchTerm)
+              column?.labelFilters.some(
+                (searchTerm) =>
+                  searchTerm.length > 0 && label.name.includes(searchTerm)
               )
             )
           ),
