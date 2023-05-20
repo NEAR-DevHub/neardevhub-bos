@@ -170,7 +170,7 @@ const GithubActivityPage = ({ boardId, label }) => {
         boardConfig: {
 					...lastState.boardConfig,
 
-          columns: boardConfig.columns.map((column, idx) =>
+          columns: lastState.boardConfig.columns.map((column, idx) =>
             idx === columnIdx ? { ...column, title } : column
           ),
         },
