@@ -140,8 +140,8 @@ const topicTabs = [
     },
 
     iconClass: "bi-github",
-    path: "community.GithubActivity",
-    title: "GitHub board", // communityById("communityId").boards[0].title
+    path: "community.github",
+    title: "GitHub", // communityById("communityId").boards[0].title
   },
 ];
 

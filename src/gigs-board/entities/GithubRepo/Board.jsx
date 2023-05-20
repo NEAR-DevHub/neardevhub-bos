@@ -81,10 +81,9 @@ const FormCheckLabel = styled.label`
 /* END_INCLUDE: "common.jsx" */
 
 const GithubRepoBoard = ({
-  boardId,
   dataTypes,
   columns,
-  linkedPage,
+  pageURL,
   repoURL,
   title,
 }) => {
@@ -158,7 +157,7 @@ const GithubRepoBoard = ({
         {true ? (
           <a
             className="card-link d-inline-flex"
-            href={href(linkedPage, { boardId })}
+            href={pageURL}
             rel="noreferrer"
             role="button"
             target="_blank"

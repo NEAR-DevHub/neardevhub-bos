@@ -80,9 +80,9 @@ const FormCheckLabel = styled.label`
 `;
 /* END_INCLUDE: "common.jsx" */
 
-const GithubActivityPage = ({ boardId, label }) => {
+const GithubPage = ({ boardId, label }) => {
   console.log(
-    "CommunityHeader state requested from GithubActivity page",
+    "CommunityHeader state requested from Github page",
     Storage.get(
       "state",
       `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.components.community.CommunityHeader`
@@ -188,7 +188,7 @@ const GithubActivityPage = ({ boardId, label }) => {
 
   return widget("components.community.Layout", {
     label,
-    tab: state.boardConfig.title,
+    tab: "GitHub",
     children: (
       <div className="d-flex flex-column gap-4">
         <div className="d-flex justify-content-end">
@@ -337,11 +337,11 @@ const GithubActivityPage = ({ boardId, label }) => {
         {boardId &&
           widget("entities.GithubRepo.Board", {
             ...boardConfigByBoardId(boardId),
-            linkedPage: "GithubActivity",
+            pageLink: href("community.github", { boardId }),
           })}
       </div>
     ),
   });
 };
 
-return GithubActivityPage(props);
+return GithubPage(props);
