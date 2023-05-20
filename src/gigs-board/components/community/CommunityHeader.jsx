@@ -86,15 +86,10 @@ const FormCheckLabel = styled.label`
 /* END_INCLUDE: "common.jsx" */
 
 const Header = styled.div`
-   {
-    height: 204px;
-    overflow: hidden;
-    background: #f3f3f3;
-    padding: 10px 0;
-    margin-top: -25px;
-    margin-bottom: 25px;
-    padding-left: 32px;
-  }
+  overflow: hidden;
+  background: #f3f3f3;
+  margin-top: -25px;
+  margin-bottom: 25px;
 `;
 
 const NavUnderline = styled.ul`
@@ -122,30 +117,24 @@ const BreadcrumbBold = styled.b`
   }
 `;
 
-const { label, tab } = props;
-
 const topicTabs = [
   {
-    contentProps: { label },
     defaultActive: true,
     iconClass: "bi-house-door",
     path: "community.Overview",
     title: "Overview",
   },
   {
-    contentProps: { label },
     iconClass: "bi-chat-square-text",
     path: "community.Discussions",
     title: "Discussions",
   },
   {
-    contentProps: { label },
     iconClass: "bi-kanban",
     path: "community.Sponsorship",
     title: "Sponsorship",
   },
   {
-    contentProps: { label },
     iconClass: "bi-calendar",
     path: "community.Events",
     title: "Events",
@@ -153,7 +142,6 @@ const topicTabs = [
   {
     contentProps: {
       boardId: null, // communityById("communityId").boards[0].id
-      label, // communities["communityId"].name
     },
 
     iconClass: "bi-github",
@@ -162,49 +150,84 @@ const topicTabs = [
   },
 ];
 
-// TODO nav-underline is available in bootstrap: https://getbootstrap.com/docs/5.3/components/navs-tabs/#underline,
-// but it's not there in near social, need write such style here
-return (
-  <Header>
-    <div aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+const CommunityHeader = ({ label, tab }) => {
+  State.init({ shared: { isEditorEnabled: false } });
+  Storage.set("state", state.shared);
+
+  console.log(
+    "CommunityHeader state requested locally",
+    Storage.get("state").isEditorEnabled
+  );
+
+  const onEditorToggle = () =>
+    State.update((lastState) => ({
+      ...lastState,
+      shared: {
+        ...lastState,
+        shared: { isEditorEnabled: !lastState.shared.isEditorEnabled },
+      },
+    }));
+
+  return (
+    <Header className="d-flex flex-column gap-3 px-4 pt-3">
+      <ol className="breadcrumb">
+        <li className="breadcrumb-item">
           <BreadcrumbLink href={href("Feed")}>DevHub</BreadcrumbLink>
         </li>
 
-        <li class="breadcrumb-item active" aria-current="page">
+        <li className="breadcrumb-item active" aria-current="page">
           <BreadcrumbBold>{props.title}</BreadcrumbBold>
         </li>
       </ol>
-    </div>
 
-    <div class="d-flex flex-row align-items-center pb-3">
-      <img src={props.icon} width="95px" height="95px"></img>
+      <div className="d-flex justify-content-between">
+        <div className="d-flex align-items-center">
+          <img src={props.icon} width="95px" height="95px"></img>
 
-      <div>
-        <div class="h5 pt-3 ps-3">{props.title}</div>
-        <div class="ps-3 pb-2 text-secondary">{props.desc}</div>
+          <div>
+            <div className="h5 pt-3 ps-3">{props.title}</div>
+            <div className="ps-3 pb-2 text-secondary">{props.desc}</div>
+          </div>
+        </div>
+
+        <CompactContainer className="form-check form-switch">
+          <input
+            checked={state.isEditorEnabled}
+            className="form-check-input"
+            id="CommunityEditModeToggle"
+            onClick={onEditorToggle}
+            role="switch"
+            type="checkbox"
+          />
+
+          <FormCheckLabel
+            className="form-check-label"
+            for="CommunityEditModeToggle"
+          >
+            Editor mode
+          </FormCheckLabel>
+        </CompactContainer>
       </div>
-    </div>
 
-    <div>
       <NavUnderline className="nav">
         {topicTabs.map(
-          ({ contentProps, defaultActive, iconClass, path, title }, topicIdx) =>
+          ({ contentProps, defaultActive, iconClass, path, title }) =>
             title ? (
-              <li class="nav-item">
+              <li className="nav-item" key={title}>
                 <a
                   aria-current={defaultActive && "page"}
                   className={tab === title ? "nav-link active" : "nav-link"}
-                  href={href(path, contentProps)}
+                  href={href(path, { ...(contentProps ?? {}), label })}
                 >
-                  {iconClass && <i class={iconClass} />}
+                  {iconClass && <i className={iconClass} />}
                   {title}
                 </a>
               </li>
             ) : null
         )}
       </NavUnderline>
-    </div>
-  </Header>
-);
+    </Header>
+  );
+};
+
+return CommunityHeader(props);
