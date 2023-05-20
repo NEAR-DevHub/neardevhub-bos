@@ -163,7 +163,7 @@ const CommunityHeader = ({ label, tab }) => {
     State.update((lastState) => ({
       ...lastState,
       shared: {
-        ...lastState,
+        ...lastState.shared,
         shared: { isEditorEnabled: !lastState.shared.isEditorEnabled },
       },
     }));
