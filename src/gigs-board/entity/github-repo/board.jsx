@@ -7,29 +7,6 @@ const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
-/**
- * Reads a board config from DevHub contract storage.
- * Currently a mock.
- *
- * Boards are indexed by their ids.
- */
-const boardConfigByBoardId = ({ boardId }) => {
-  return {
-    probablyUUIDv4: {
-      id: "probablyUUIDv4",
-      columns: [
-        { title: "Draft", labelFilters: ["S-draft"] },
-        { title: "Review", labelFilters: ["S-review"] },
-        { title: "HALP!", labelFilters: ["help"] },
-      ],
-      dataTypes: { Issue: true, PullRequest: true },
-      description: "Latest NEAR Enhancement Proposals by status",
-      repoURL: "https://github.com/near/NEPs",
-      title: "NEAR Protocol NEPs",
-    },
-  }[boardId];
-};
-
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
     ...widgetProps,
@@ -73,32 +50,42 @@ function href(widgetName, linkProps) {
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
+/* END_INCLUDE: "common.jsx" */
 
-const formHandler =
-  ({ formStateKey }) =>
-  ({ fieldName, updateHandler }) =>
-  (input) =>
-    State.update((lastState) => ({
-      ...lastState,
-
-      [formStateKey]: {
-        ...lastState[formStateKey],
-
-        [fieldName]:
-          typeof updateHandler === "function"
-            ? updateHandler({
-                input: input?.target?.value ?? input ?? null,
-                lastState,
-              })
-            : input?.target?.value ?? input ?? null,
-      },
-    }));
+/* INCLUDE: "shared/lib/gui" */
+const Card = styled.div`
+  &:hover {
+    box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+  }
+`;
 
 const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
 `;
-/* END_INCLUDE: "common.jsx" */
+/* END_INCLUDE: "shared/lib/gui" */
+
+const dataToColumns = (data, columns) =>
+  columns.reduce(
+    (registry, column) => ({
+      ...registry,
+
+      [column.title]: [
+        ...(registry[column.title] ?? []),
+
+        ...data.filter((ticket) =>
+          ticket.labels.some((label) =>
+            column?.labelTerms.some(
+              (searchTerm) =>
+                searchTerm.length > 0 && label.name.includes(searchTerm)
+            )
+          )
+        ),
+      ],
+    }),
+
+    {}
+  );
 
 const GithubRepoBoard = ({
   columns,
@@ -109,32 +96,8 @@ const GithubRepoBoard = ({
   title,
 }) => {
   State.init({
-    pullRequestByColumn: {},
-    issueByColumn: {},
     ticketByColumn: {},
   });
-
-  const dataToColumns = (data) =>
-    columns.reduce(
-      (registry, column) => ({
-        ...registry,
-
-        [column.title]: [
-          ...(registry[column.title] ?? []),
-
-          ...data.filter((pullRequest) =>
-            pullRequest.labels.some((label) =>
-              column?.labelFilters.some(
-                (searchTerm) =>
-                  searchTerm.length > 0 && label.name.includes(searchTerm)
-              )
-            )
-          ),
-        ],
-      }),
-
-      {}
-    );
 
   if (repoURL) {
     const pullRequests = dataTypes.PullRequest
@@ -160,7 +123,7 @@ const GithubRepoBoard = ({
       : [];
 
     State.update({
-      ticketByColumn: dataToColumns([...issues, ...pullRequests]),
+      ticketByColumn: dataToColumns([...issues, ...pullRequests], columns),
     });
   }
 

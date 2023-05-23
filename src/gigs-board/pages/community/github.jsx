@@ -7,29 +7,6 @@ const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
-/**
- * Reads a board config from DevHub contract storage.
- * Currently a mock.
- *
- * Boards are indexed by their ids.
- */
-const boardConfigByBoardId = ({ boardId }) => {
-  return {
-    probablyUUIDv4: {
-      id: "probablyUUIDv4",
-      columns: [
-        { title: "Draft", labelFilters: ["S-draft"] },
-        { title: "Review", labelFilters: ["S-review"] },
-        { title: "HALP!", labelFilters: ["help"] },
-      ],
-      dataTypes: { Issue: true, PullRequest: true },
-      description: "Latest NEAR Enhancement Proposals by status",
-      repoURL: "https://github.com/near/NEPs",
-      title: "NEAR Protocol NEPs",
-    },
-  }[boardId];
-};
-
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
     ...widgetProps,
@@ -73,42 +50,82 @@ function href(widgetName, linkProps) {
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
+/* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "shared/mocks" */
+/**
+ * Reads a board config from DevHub contract storage.
+ * Currently a mock.
+ *
+ * Boards are indexed by their ids.
+ */
+const boardConfigByBoardId = ({ boardId }) => ({
+  id: boardId,
 
-const formHandler =
-  ({ formStateKey }) =>
-  ({ fieldName, updateHandler }) =>
+  columns: [
+    {
+      description: "Lorem ipsum",
+      labelTerms: ["S-draft"],
+      title: "Draft",
+    },
+    {
+      description: "Dolor sit",
+      labelTerms: ["S-review"],
+      title: "Review",
+    },
+  ],
+
+  dataTypes: { Issue: true, PullRequest: true },
+  description: "Latest NEAR Enhancement Proposals by status",
+  repoURL: "https://github.com/near/NEPs",
+  title: "NEAR Protocol NEPs",
+});
+/* END_INCLUDE: "shared/mocks" */
+/* INCLUDE: "shared/lib/form" */
+const formUpdater =
+  ({ path }) =>
+  ({ field, via }) =>
   (input) =>
     State.update((lastState) => ({
       ...lastState,
 
-      [formStateKey]: {
-        ...lastState[formStateKey],
+      [path]: {
+        ...lastState[path],
 
-        [fieldName]:
-          typeof updateHandler === "function"
-            ? updateHandler({
+        [field]:
+          typeof via === "function"
+            ? via({
                 input: input?.target?.value ?? input ?? null,
                 lastState,
               })
             : input?.target?.value ?? input ?? null,
       },
     }));
+/* END_INCLUDE: "shared/lib/form" */
+/* INCLUDE: "shared/lib/gui" */
+const Card = styled.div`
+  &:hover {
+    box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+  }
+`;
 
 const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
 `;
-/* END_INCLUDE: "common.jsx" */
+/* END_INCLUDE: "shared/lib/gui" */
+/* INCLUDE: "shared/lib/uuid" */
+const uuid = () =>
+  [Date.now().toString(16)]
+    .concat(
+      Array.from(
+        { length: 4 },
+        () => Math.floor(Math.random() * 0xffffffff) & 0xffffffff
+      ).map((value) => value.toString(16))
+    )
+    .join("-");
+/* END_INCLUDE: "shared/lib/uuid" */
 
 const GithubPage = ({ boardId, label }) => {
-  console.log(
-    "CommunityHeader state requested from Github page",
-    Storage.get(
-      "state",
-      `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.components.community.CommunityHeader`
-    )
-  );
-
   State.init({
     boardConfig: {
       id: "probablyUUIDv4",
@@ -126,16 +143,9 @@ const GithubPage = ({ boardId, label }) => {
     ),
   });
 
-  const onBoardConfigChange = formHandler({
-    formStateKey: "boardConfig",
-  });
-
   console.log(state);
 
-  console.log(
-    "Board config columns",
-    JSON.stringify(state.boardConfig.columns)
-  );
+  const boardConfigUpdate = formUpdater({ path: "boardConfig" });
 
   const onEditorToggle = () =>
     State.update((lastState) => ({
@@ -150,54 +160,31 @@ const GithubPage = ({ boardId, label }) => {
       [key]: !lastState.boardConfig.dataTypes[key],
     });
 
-  const onColumnCreate = () =>
-    State.update((lastState) => ({
-      ...lastState,
+  const columnCreate = ({ lastState }) => [
+    ...lastState.boardConfig.columns,
+    { description: "", labelTerms: [], title: "New column" },
+  ];
 
-      boardConfig: {
-        ...lastState.boardConfig,
+  const columnUpdate =
+    ({ idx, propName }) =>
+    ({ input, lastState }) =>
+      lastState.boardConfig.columns.map((column, columnIdx) =>
+        idx === columnIdx
+          ? {
+              ...column,
 
-        columns: [
-          ...lastState.boardConfig.columns,
-          { title: "New column", labelFilters: [] },
-        ],
-      },
-    }));
+              [propName]:
+                propName === "labelTerms"
+                  ? input.split(",").map((string) => string.trim())
+                  : input,
+            }
+          : column
+      );
 
-  const onColumnTitleChange =
-    ({ columnIdx }) =>
-    ({ target: { value: title } }) =>
-      State.update((lastState) => ({
-        ...lastState,
-
-        boardConfig: {
-          ...lastState.boardConfig,
-
-          columns: lastState.boardConfig.columns.map((column, idx) =>
-            idx === columnIdx ? { ...column, title } : column
-          ),
-        },
-      }));
-
-  const onColumnLabelFiltersChange =
-    ({ columnIdx }) =>
-    ({ target: { value } }) =>
-      State.update((lastState) => ({
-        ...lastState,
-
-        boardConfig: {
-          ...lastState.boardConfig,
-
-          columns: lastState.boardConfig.columns.map((column, idx) =>
-            idx === columnIdx
-              ? {
-                  ...column,
-                  labelFilters: value.split(",").map((string) => string.trim()),
-                }
-              : column
-          ),
-        },
-      }));
+  console.log(
+    "Board config columns",
+    JSON.stringify(state.boardConfig.columns)
+  );
 
   return widget("components.community.Layout", {
     label,
@@ -241,7 +228,7 @@ const GithubPage = ({ boardId, label }) => {
                   aria-describedby="newGithubBoardTitle"
                   aria-label="Board title"
                   className="form-control"
-                  onChange={onBoardConfigChange({ fieldName: "title" })}
+                  onChange={boardConfigUpdate({ field: "title" })}
                   placeholder="NEAR Protocol NEPs"
                   type="text"
                   value={state.boardConfig.title}
@@ -260,7 +247,7 @@ const GithubPage = ({ boardId, label }) => {
                   aria-describedby="basic-addon1"
                   aria-label="Repository URL"
                   className="form-control"
-                  onChange={onBoardConfigChange({ fieldName: "repoURL" })}
+                  onChange={boardConfigUpdate({ field: "repoURL" })}
                   placeholder="https://github.com/example-org/example-repo"
                   type="text"
                   value={state.boardConfig.repoURL}
@@ -283,14 +270,11 @@ const GithubPage = ({ boardId, label }) => {
                     widget(
                       "components.toggle",
                       {
-                        active,
-                        className: "w-100",
-                        key,
-                        label: key,
+                        ...{ active, className: "w-100", key, label: key },
 
-                        onSwitch: onBoardConfigChange({
-                          fieldName: "dataTypes",
-                          updateHandler: dataTypeToggle({ key }),
+                        onSwitch: boardConfigUpdate({
+                          field: "dataTypes",
+                          via: dataTypeToggle({ key }),
                         }),
                       },
                       key
@@ -305,7 +289,7 @@ const GithubPage = ({ boardId, label }) => {
                   aria-describedby="newGithubBoardDescription"
                   aria-label="Board title"
                   className="form-control h-75"
-                  onChange={onBoardConfigChange({ fieldName: "description" })}
+                  onChange={boardConfigUpdate({ field: "description" })}
                   placeholder="Latest NEAR Enhancement Proposals by status."
                   type="text"
                   value={state.boardConfig.description}
@@ -321,65 +305,70 @@ const GithubPage = ({ boardId, label }) => {
             </div>
 
             <div className="d-flex flex-column align-items-center gap-3">
-              {state.boardConfig.columns.map(
-                ({ title, labelFilters }, columnIdx) => (
-                  <>
-                    {columnIdx > 0 && (
-                      <hr className="d-lg-none border-2 w-100" />
-                    )}
+              {state.boardConfig.columns.map(({ title, labelTerms }, idx) => (
+                <>
+                  {idx > 0 && <hr className="d-lg-none border-2 w-100" />}
 
-                    <div
-                      className="d-flex flex-column flex-lg-row gap-3 align-items-center w-100"
-                      key={`column-${columnIdx}`}
+                  <div
+                    className="d-flex flex-column flex-lg-row gap-3 align-items-center w-100"
+                    key={`column-${idx}`}
+                  >
+                    <span className="input-group-text d-flex flex-column flex-2 flex-shrink-0">
+                      <span id={`newGithubBoardColumn-${title}`}>Title</span>
+
+                      <input
+                        aria-describedby={`newGithubBoardColumn-${title}`}
+                        aria-label="Column title"
+                        className="form-control"
+                        onChange={boardConfigUpdate({
+                          field: "columns",
+                          via: columnUpdate({ idx, propName: "title" }),
+                        })}
+                        placeholder="👀 Review"
+                        type="text"
+                        value={title}
+                      />
+                    </span>
+
+                    <i class="bi bi-arrow-right flex-1 fs-1 d-sm-none d-lg-block" />
+
+                    <span
+                      className="input-group-text d-flex flex-column flex-4 flex-grow-1"
+                      style={{ width: "inherit" }}
                     >
-                      <span className="input-group-text d-flex flex-column flex-2 flex-shrink-0">
-                        <span id={`newGithubBoardColumn-${title}`}>Title</span>
-
-                        <input
-                          aria-describedby={`newGithubBoardColumn-${title}`}
-                          aria-label="Column title"
-                          className="form-control"
-                          onChange={onColumnTitleChange({ columnIdx })}
-                          placeholder="👀 Review"
-                          type="text"
-                          value={title}
-                        />
-                      </span>
-
-                      <i class="bi bi-arrow-right flex-1 fs-1 d-sm-none d-lg-block" />
-
                       <span
-                        className="input-group-text d-flex flex-column flex-4 flex-grow-1"
-                        style={{ width: "inherit" }}
+                        className="text-wrap"
+                        id={`newGithubBoardColumnStatus-${title}-searchTerms`}
                       >
-                        <span
-                          className="text-wrap"
-                          id={`newGithubBoardColumnStatus-${title}-searchTerms`}
-                        >
-                          Search terms for labels to attach, comma-separated
-                        </span>
-
-                        <input
-                          aria-describedby={`newGithubBoardColumnStatus-${title}-searchTerms`}
-                          aria-label="Search terms for included labels"
-                          className="form-control"
-                          onChange={onColumnLabelFiltersChange({ columnIdx })}
-                          placeholder="WG-, draft, review, proposal, ..."
-                          type="text"
-                          value={labelFilters.join(", ")}
-                        />
+                        Search terms for labels to attach, comma-separated
                       </span>
-                    </div>
-                  </>
-                )
-              )}
+
+                      <input
+                        aria-describedby={`newGithubBoardColumnStatus-${title}-searchTerms`}
+                        aria-label="Search terms for included labels"
+                        className="form-control"
+                        onChange={boardConfigUpdate({
+                          field: "columns",
+                          via: columnUpdate({ idx, propName: "labelTerms" }),
+                        })}
+                        placeholder="WG-, draft, review, proposal, ..."
+                        type="text"
+                        value={labelTerms.join(", ")}
+                      />
+                    </span>
+                  </div>
+                </>
+              ))}
             </div>
 
             <div className="d-flex align-items-center justify-content-between">
               <button
                 className="btn btn-outline-secondary d-inline-flex gap-2"
                 disabled={state.boardConfig.columns.length >= 6}
-                onClick={onColumnCreate}
+                onClick={boardConfigUpdate({
+                  field: "columns",
+                  via: columnCreate,
+                })}
                 style={{ width: "fit-content" }}
               >
                 <i class="bi bi-plus-lg" />

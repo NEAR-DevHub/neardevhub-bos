@@ -7,29 +7,6 @@ const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
-/**
- * Reads a board config from DevHub contract storage.
- * Currently a mock.
- *
- * Boards are indexed by their ids.
- */
-const boardConfigByBoardId = ({ boardId }) => {
-  return {
-    probablyUUIDv4: {
-      id: "probablyUUIDv4",
-      columns: [
-        { title: "Draft", labelFilters: ["S-draft"] },
-        { title: "Review", labelFilters: ["S-review"] },
-        { title: "HALP!", labelFilters: ["help"] },
-      ],
-      dataTypes: { Issue: true, PullRequest: true },
-      description: "Latest NEAR Enhancement Proposals by status",
-      repoURL: "https://github.com/near/NEPs",
-      title: "NEAR Protocol NEPs",
-    },
-  }[boardId];
-};
-
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
     ...widgetProps,
@@ -73,38 +50,19 @@ function href(widgetName, linkProps) {
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
-
-const formHandler =
-  ({ formStateKey }) =>
-  ({ fieldName, updateHandler }) =>
-  (input) =>
-    State.update((lastState) => ({
-      ...lastState,
-
-      [formStateKey]: {
-        ...lastState[formStateKey],
-
-        [fieldName]:
-          typeof updateHandler === "function"
-            ? updateHandler({
-                input: input?.target?.value ?? input ?? null,
-                lastState,
-              })
-            : input?.target?.value ?? input ?? null,
-      },
-    }));
-
-const CompactContainer = styled.div`
-  width: fit-content !important;
-  max-width: 100%;
-`;
 /* END_INCLUDE: "common.jsx" */
-
+/* INCLUDE: "shared/lib/gui" */
 const Card = styled.div`
   &:hover {
     box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
   }
 `;
+
+const CompactContainer = styled.div`
+  width: fit-content !important;
+  max-width: 100%;
+`;
+/* END_INCLUDE: "shared/lib/gui" */
 
 const metadata = props.members_list[props.member];
 const isTeam = props.member.startsWith("team:");
