@@ -7,12 +7,13 @@ const formUpdater =
 
       [path]: {
         ...lastState[path],
+        hasChanges: true,
 
         [field]:
           typeof via === "function"
             ? via({
                 input: input?.target?.value ?? input ?? null,
-                lastState,
+                lastFieldState: lastState[path][field],
               })
             : input?.target?.value ?? input ?? null,
       },

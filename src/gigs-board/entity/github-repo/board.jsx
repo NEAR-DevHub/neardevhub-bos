@@ -66,12 +66,12 @@ const CompactContainer = styled.div`
 /* END_INCLUDE: "shared/lib/gui" */
 
 const dataToColumns = (data, columns) =>
-  columns.reduce(
+  Object.values(columns).reduce(
     (registry, column) => ({
       ...registry,
 
-      [column.title]: [
-        ...(registry[column.title] ?? []),
+      [column.id]: [
+        ...(registry[column.id] ?? []),
 
         ...data.filter((ticket) =>
           ticket.labels.some((label) =>
@@ -87,6 +87,8 @@ const dataToColumns = (data, columns) =>
     {}
   );
 
+const withType = (type) => (data) => ({ ...data, type });
+
 const GithubRepoBoard = ({
   columns,
   dataTypes,
@@ -96,7 +98,7 @@ const GithubRepoBoard = ({
   title,
 }) => {
   State.init({
-    ticketByColumn: {},
+    ticketsByColumn: {},
   });
 
   if (repoURL) {
@@ -108,7 +110,7 @@ const GithubRepoBoard = ({
               .slice(-2)
               .join("/")}/pulls`
           ).body ?? []
-        ).map((pullRequest) => ({ ...pullRequest, type: "PullRequest" }))
+        ).map(withType("PullRequest"))
       : [];
 
     const issues = dataTypes.Issue
@@ -119,73 +121,87 @@ const GithubRepoBoard = ({
               .slice(-2)
               .join("/")}/issues`
           ).body ?? []
-        ).map((issue) => ({ ...issue, type: "Issue" }))
+        ).map(withType("Issue"))
       : [];
 
     State.update({
-      ticketByColumn: dataToColumns([...issues, ...pullRequests], columns),
+      ticketsByColumn: dataToColumns([...issues, ...pullRequests], columns),
     });
   }
 
   return (
-    <div className="d-flex flex-column gap-3">
-      <div className="d-flex justify-content-between">
-        <i className="placeholder" />
-
-        <h5 className="h5 d-inline-flex gap-2 m-0">
-          <i className="bi bi-kanban-fill" />
-          <span>{title} board</span>
-        </h5>
-
-        {pageURL ? (
-          <a
-            className="card-link d-inline-flex"
-            href={pageURL}
-            rel="noreferrer"
-            role="button"
-            target="_blank"
-            title="Link to this board"
-          >
-            <span className="hstack gap-3">
-              <i className="bi bi-share" />
-              <span>Link to this board</span>
-            </span>
-          </a>
-        ) : (
+    <div className="d-flex flex-column gap-4 py-4">
+      <div className="d-flex flex-column gap-2">
+        <div className="d-flex justify-content-between">
           <i className="placeholder" />
-        )}
+
+          <h5 className="h5 d-inline-flex gap-2 m-0">
+            <i className="bi bi-kanban-fill" />
+            <span>{title}</span>
+          </h5>
+
+          {pageURL ? (
+            <a
+              className="card-link d-inline-flex"
+              href={pageURL}
+              rel="noreferrer"
+              role="button"
+              target="_blank"
+              title="Link to this board"
+            >
+              <span className="hstack gap-3">
+                <i className="bi bi-share" />
+                <span>Link to this board</span>
+              </span>
+            </a>
+          ) : (
+            <i className="placeholder" />
+          )}
+        </div>
+
+        <div className="py-1 text-secondary text-center">{description}</div>
       </div>
 
-      <div className="py-1 text-secondary text-center">{description}</div>
-
       <div className="d-flex gap-3" style={{ overflowX: "auto" }}>
-        {columns.length > 0 ? (
-          columns.map((column) => (
-            <div className="col-3" key={column.title}>
-              <CompactContainer className="card">
-                <CompactContainer className="card-body d-flex flex-column gap-3 border-secondary">
-                  <h6 className="card-title d-flex align-items-center gap-2">
+        {Object.keys(columns).length > 0 ? (
+          Object.values(columns).map((column) => (
+            <div className="col-3" key={column.id}>
+              <div className="card">
+                <div
+                  className={[
+                    "card-body d-flex flex-column gap-3",
+                    "border border-2 border-secondary rounded-2",
+                  ].join(" ")}
+                >
+                  <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
                     {column.title}
 
                     <span className="badge rounded-pill bg-secondary">
-                      {(state.ticketByColumn[column.title] ?? []).length}
+                      {(state.ticketsByColumn[column.id] ?? []).length}
                     </span>
                   </h6>
 
-                  {(state.ticketByColumn[column.title] ?? []).map((data) =>
-                    widget(
-                      "entity.github-repo.ticket",
-                      { data, format: "card" },
-                      data.id
-                    )
-                  )}
-                </CompactContainer>
-              </CompactContainer>
+                  <p class="text-secondary m-0">{column.description}</p>
+
+                  <div class="d-flex flex-column gap-3">
+                    {(state.ticketsByColumn[column.id] ?? []).map((data) =>
+                      widget(
+                        "entity.github-repo.ticket",
+                        { data, format: "card" },
+                        data.id
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           ))
         ) : (
           <div
-            className="d-flex align-items-center justify-content-center w-100 text-black-50 opacity-50"
+            className={[
+              "d-flex align-items-center justify-content-center",
+              "w-100 text-black-50 opacity-50",
+            ].join(" ")}
             style={{ height: 384 }}
           >
             No columns were created so far.

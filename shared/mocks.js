@@ -7,18 +7,19 @@
 const boardConfigByBoardId = ({ boardId }) => ({
   id: boardId,
 
-  columns: [
-    {
+  columns: {
+    [uuid()]: {
       description: "Lorem ipsum",
       labelTerms: ["S-draft"],
       title: "Draft",
     },
-    {
+
+    [uuid()]: {
       description: "Dolor sit",
       labelTerms: ["S-review"],
       title: "Review",
     },
-  ],
+  },
 
   dataTypes: { Issue: true, PullRequest: true },
   description: "Latest NEAR Enhancement Proposals by status",

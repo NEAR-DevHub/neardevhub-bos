@@ -162,7 +162,7 @@ const CommunityHeader = ({ label, tab }) => {
           active: state.shared.isEditorEnabled,
           direction: "rtl",
           key: "community-editor-toggle",
-          label: "Editor mode ( WIP )",
+          label: "( WIP ) Editor mode",
           onSwitch: onEditorToggle,
         })}
       </div>
