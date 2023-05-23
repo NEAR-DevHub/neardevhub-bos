@@ -224,8 +224,10 @@ const GithubPage = ({ boardId, label }) => {
 
         {state.isEditorEnabled ? (
           <div
-            className="d-flex flex-column gap-3 border border-2 border-primary rounded-2 p-3 w-100"
-            style={{ backgroundColor: "#f3f3f3" }}
+            className={[
+              "d-flex flex-column gap-3",
+              "border border-2 border-primary rounded-2 p-3 w-100",
+            ].join(" ")}
           >
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-kanban-fill" />
@@ -318,9 +320,9 @@ const GithubPage = ({ boardId, label }) => {
             </div>
 
             <div
-              className={[
-                "d-flex flex-column align-items-center gap-3",
-              ].join(" ")}
+              className={["d-flex flex-column align-items-center gap-3"].join(
+                " "
+              )}
             >
               {Object.values(state.boardConfig.columns).map(
                 ({ id, description, labelTerms, title }) => (
@@ -329,21 +331,13 @@ const GithubPage = ({ boardId, label }) => {
                     key={id}
                   >
                     <div className="d-flex flex-column flex-lg-row gap-3 align-items-center w-100">
-                      <div
-                        className={[
-                          "input-group-text d-flex flex-column",
-                          "flex-grow-1 flex-md-grow-0 flex-shrink-0",
-													"border-0 bg-transparent"
-                        ].join(" ")}
-                      >
-                        <span
-                          id={`${state.boardConfig.id}-column-${id}-${title}-title`}
-                        >
+                      <div className="d-flex flex-column flex-grow-1 flex-md-grow-0 flex-shrink-0">
+                        <span id={`${state.boardConfig.id}-column-${id}-title`}>
                           Title
                         </span>
 
                         <input
-                          aria-describedby={`${state.boardConfig.id}-column-${id}-${title}-title`}
+                          aria-describedby={`${state.boardConfig.id}-column-${id}-title`}
                           className="form-control"
                           onChange={boardConfigUpdate({
                             field: "columns",
@@ -355,20 +349,15 @@ const GithubPage = ({ boardId, label }) => {
                         />
                       </div>
 
-                      <div
-                        className={[
-                          "d-flex flex-column flex-grow-1",
-                          "input-group-text border-0 bg-transparent w-100",
-                        ].join(" ")}
-                      >
+                      <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
                         <span
-                          id={`${state.boardConfig.id}-column-${id}-${title}-description`}
+                          id={`${state.boardConfig.id}-column-${id}-description`}
                         >
                           Description
                         </span>
 
                         <input
-                          aria-describedby={`${state.boardConfig.id}-column-${id}-${title}-description`}
+                          aria-describedby={`${state.boardConfig.id}-column-${id}-description`}
                           className="form-control"
                           onChange={boardConfigUpdate({
                             field: "columns",
@@ -382,7 +371,7 @@ const GithubPage = ({ boardId, label }) => {
                     </div>
 
                     <div
-                      className="input-group-text d-flex flex-column border-0 bg-transparent"
+                      className="d-flex flex-column"
                       style={{ width: "inherit" }}
                     >
                       <span
