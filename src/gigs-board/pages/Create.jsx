@@ -90,20 +90,18 @@ const onSubmit = () => {
 
   let body = {
     name: state.name,
-    description: state.description,
+    description: generateDescription(
+      state.description,
+      state.amount,
+      state.token,
+      state.supervisor
+    ),
   };
 
   if (state.seekingFunding && state.postType === "Solution") {
-    //
-
-    const fundingDesc = `Requested amount: ${state.amount} ${state.token}
-Requested sponsor: ${state.supervisor}
-`;
-
     body = {
       ...body,
       post_type: "Submission",
-      description: fundingDesc + body.description,
     };
   } else if (state.postType === "Solution") {
     // Solution
@@ -400,6 +398,12 @@ const fundraisingDiv = (
   </div>
 );
 
+function generateDescription(text, amount, token, supervisor) {
+  const funding = `###### Requested amount: ${amount} ${token}\n###### Requested sponsor: ${supervisor}\n`;
+  if (amount > 0 && token && supervisor) return funding + text;
+  return text;
+}
+
 return (
   <div class="bg-light d-flex flex-column flex-grow-1">
     {widget("components.layout.Banner")}
@@ -515,10 +519,12 @@ return (
                   labels: state.labelStrings,
                   post_type: state.postType,
                   name: state.name,
-                  description: state.description,
-                  amount: state.seekingFunding ? state.amount : 0,
-                  sponsorship_token: state.seekingFunding ? state.token : 0,
-                  supervisor: state.seekingFunding ? state.supervisor : 0,
+                  description: generateDescription(
+                    state.description,
+                    state.amount,
+                    state.token,
+                    state.supervisor
+                  ),
                   github_link: state.githubLink,
                 },
               },
