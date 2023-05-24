@@ -82,26 +82,96 @@ const boardConfigByBoardId = ({ boardId }) => ({
 });
 /* END_INCLUDE: "shared/mocks" */
 /* INCLUDE: "shared/lib/form" */
-const formUpdater =
-  ({ path }) =>
-  ({ field, via }) =>
-  (input) =>
-    State.update((lastState) => ({
-      ...lastState,
+/**
+ *! TODO: Extract into separate library module
+ *! once `useForm` is converted into a form factory widget
+ */
+const traversalUpdate = ({
+  input,
+  target: treeOrBranch,
+  path: [currentBranchKey, ...remainingBranch],
+  params,
+  via: nodeUpdate,
+}) => {
+  console.log("traversalUpdate INPUT >>>>>>>>>", input);
 
-      [path]: {
-        ...lastState[path],
-        hasChanges: true,
+  return {
+    ...treeOrBranch,
 
-        [field]:
-          typeof via === "function"
-            ? via({
-                input: input?.target?.value ?? input ?? null,
-                lastFieldState: lastState[path][field],
-              })
-            : input?.target?.value ?? input ?? null,
-      },
-    }));
+    [currentBranchKey]:
+      remainingBranch.length > 0
+        ? traversalUpdate({
+            input,
+
+            target:
+              typeof treeOrBranch[currentBranchKey] === "object"
+                ? treeOrBranch[currentBranchKey]
+                : {
+                    ...((treeOrBranch[currentBranchKey] ?? null) !== null
+                      ? { __archivedLeaf__: treeOrBranch[currentBranchKey] }
+                      : {}),
+                  },
+
+            path: remainingBranch,
+            via: nodeUpdate,
+          })
+        : nodeUpdate({
+            input,
+            lastKnownState: treeOrBranch[currentBranchKey],
+            params,
+          }),
+  };
+};
+
+const fieldDefaultUpdate = ({
+  input,
+  lastKnownState,
+  params: { stringToArrayBy },
+}) => {
+  console.log("fieldDefaultUpdate INPUT >>>>>>>>>", input);
+  console.log("fieldDefaultUpdate LAST_KNOWN_STATE >>>>>>>>>", lastKnownState);
+
+  if (typeof input === "string") {
+    return Array.isArray(lastKnownState)
+      ? input.split(stringToArrayBy ?? ",").map((string) => string.trim())
+      : input;
+  } else if ((input ?? null) === null) {
+    switch (typeof lastKnownState) {
+      case "boolean": {
+        return !lastKnownState;
+      }
+
+      default: {
+        return input;
+      }
+    }
+  }
+};
+
+const useForm = ({ stateKey: formStateKey }) => ({
+  /**
+   * TODO: Also output `formState: state[formStateKey]` if it doesn't break the VM
+   */
+
+  formUpdate:
+    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
+    (fieldInput) =>
+      State.update((lastKnownState) => {
+        console.log("FIELD INPUT >>>>>>>>>", fieldInput);
+
+        return traversalUpdate({
+          input: fieldInput?.target?.value ?? fieldInput,
+          target: lastKnownState,
+          path: [formStateKey, ...fieldPath],
+          params,
+
+          via:
+            typeof fieldCustomUpdate === "function"
+              ? fieldCustomUpdate
+              : fieldDefaultUpdate,
+        });
+      }),
+});
 /* END_INCLUDE: "shared/lib/form" */
 /* INCLUDE: "shared/lib/gui" */
 const Card = styled.div`
@@ -132,7 +202,7 @@ const GithubPage = ({ boardId, label }) => {
     boardConfig: {
       id: uuid(),
       columns: {},
-      dataTypes: { Issue: true, PullRequest: false },
+      dataTypes: { Issue: false, PullRequest: true },
       description: "Latest NEAR Enhancement Proposals by status",
       repoURL: "https://github.com/near/NEPs",
       title: "NEAR Protocol NEPs",
@@ -145,55 +215,28 @@ const GithubPage = ({ boardId, label }) => {
     ),
   });
 
-  console.log(state);
+  const { formUpdate } = useForm({ stateKey: "boardConfig" });
 
-  const boardConfigUpdate = formUpdater({ path: "boardConfig" });
+  console.log(state.boardConfig);
 
   const onEditorToggle = () =>
-    State.update((lastState) => ({
-      ...lastState,
-      isEditorEnabled: !lastState.isEditorEnabled,
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      isEditorEnabled: !lastKnownState.isEditorEnabled,
     }));
 
-  const dataTypeToggle =
-    ({ key }) =>
-    ({ lastFieldState }) => ({
-      ...lastFieldState,
-      [key]: !lastFieldState[key],
-    });
-
-  const columnsCreateNew = ({ lastFieldState }) => {
-    if (Object.keys(lastFieldState).length < 6) {
+  const columnsCreateNew = ({ lastKnownState }) => {
+    if (Object.keys(lastKnownState).length < 6) {
       const id = uuid();
 
       return {
-        ...lastFieldState,
+        ...lastKnownState,
         [id]: { id, description: "", labelTerms: [], title: "New column" },
       };
     } else {
-      return lastFieldState;
+      return lastKnownState;
     }
   };
-
-  const columnsUpdate =
-    ({ id, prop, split }) =>
-    ({ input, lastFieldState }) => ({
-      ...lastFieldState,
-
-      [id]: {
-        ...lastFieldState[id],
-
-        [prop]:
-          Array.isArray(lastFieldState[id][prop]) && typeof input === "string"
-            ? input.split(split ?? ",").map((string) => string.trim())
-            : input,
-      },
-    });
-
-  console.log(
-    "Board config columns",
-    JSON.stringify(Object.values(state.boardConfig.columns))
-  );
 
   return widget("components.community.Layout", {
     label,
@@ -241,7 +284,7 @@ const GithubPage = ({ boardId, label }) => {
                 <input
                   aria-describedby={`${state.boardConfig.id}-title`}
                   className="form-control"
-                  onChange={boardConfigUpdate({ field: "title" })}
+                  onChange={formUpdate({ path: ["title"] })}
                   placeholder="NEAR Protocol NEPs"
                   type="text"
                   value={state.boardConfig.title}
@@ -261,7 +304,7 @@ const GithubPage = ({ boardId, label }) => {
                 <input
                   aria-describedby={`${state.boardConfig.id}-repoURL`}
                   className="form-control"
-                  onChange={boardConfigUpdate({ field: "repoURL" })}
+                  onChange={formUpdate({ path: ["repoURL"] })}
                   placeholder="https://github.com/example-org/example-repo"
                   type="text"
                   value={state.boardConfig.repoURL}
@@ -285,11 +328,7 @@ const GithubPage = ({ boardId, label }) => {
                       "components.toggle",
                       {
                         ...{ active, className: "w-100", key, label: key },
-
-                        onSwitch: boardConfigUpdate({
-                          field: "dataTypes",
-                          via: dataTypeToggle({ key }),
-                        }),
+                        onSwitch: formUpdate({ path: ["dataTypes", key] }),
                       },
                       key
                     )
@@ -304,7 +343,7 @@ const GithubPage = ({ boardId, label }) => {
                 <textarea
                   aria-describedby={`${state.boardConfig.id}-description`}
                   className="form-control h-75"
-                  onChange={boardConfigUpdate({ field: "description" })}
+                  onChange={formUpdate({ path: ["description"] })}
                   placeholder="Latest NEAR Enhancement Proposals by status."
                   type="text"
                   value={state.boardConfig.description}
@@ -319,11 +358,7 @@ const GithubPage = ({ boardId, label }) => {
               </span>
             </div>
 
-            <div
-              className={["d-flex flex-column align-items-center gap-3"].join(
-                " "
-              )}
-            >
+            <div className="d-flex flex-column align-items-center gap-3">
               {Object.values(state.boardConfig.columns).map(
                 ({ id, description, labelTerms, title }) => (
                   <div
@@ -339,9 +374,8 @@ const GithubPage = ({ boardId, label }) => {
                         <input
                           aria-describedby={`${state.boardConfig.id}-column-${id}-title`}
                           className="form-control"
-                          onChange={boardConfigUpdate({
-                            field: "columns",
-                            via: columnsUpdate({ id, prop: "title" }),
+                          onChange={formUpdate({
+                            path: ["columns", id, "title"],
                           })}
                           placeholder="👀 Review"
                           type="text"
@@ -359,9 +393,8 @@ const GithubPage = ({ boardId, label }) => {
                         <input
                           aria-describedby={`${state.boardConfig.id}-column-${id}-description`}
                           className="form-control"
-                          onChange={boardConfigUpdate({
-                            field: "columns",
-                            via: columnsUpdate({ id, prop: "description" }),
+                          onChange={formUpdate({
+                            path: ["columns", id, "description"],
                           })}
                           placeholder="NEPs that need a review by Subject Matter Experts."
                           type="text"
@@ -385,9 +418,8 @@ const GithubPage = ({ boardId, label }) => {
                         aria-describedby={`${state.boardConfig.id}-column-${title}-searchTerms`}
                         aria-label="Search terms for included labels"
                         className="form-control"
-                        onChange={boardConfigUpdate({
-                          field: "columns",
-                          via: columnsUpdate({ id, prop: "labelTerms" }),
+                        onChange={formUpdate({
+                          path: ["columns", id, "labelTerms"],
                         })}
                         placeholder="WG-, draft, review, proposal, ..."
                         type="text"
@@ -403,8 +435,8 @@ const GithubPage = ({ boardId, label }) => {
               <button
                 className="btn btn-secondary d-inline-flex gap-2"
                 disabled={Object.keys(state.boardConfig.columns).length >= 6}
-                onClick={boardConfigUpdate({
-                  field: "columns",
+                onClick={formUpdate({
+                  path: ["columns"],
                   via: columnsCreateNew,
                 })}
                 style={{
