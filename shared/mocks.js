@@ -13,15 +13,13 @@ const boardConfigByBoardId = ({ boardId }) => ({
       labelTerms: ["S-draft"],
       title: "Draft",
     },
-
-    [uuid()]: {
-      description: "Dolor sit",
-      labelTerms: ["S-review"],
-      title: "Review",
-    },
   },
 
-  dataTypes: { Issue: true, PullRequest: true },
+  dataTypes: {
+    Issue: { enabled: false, locked: true },
+    PullRequest: { enabled: true, locked: true },
+  },
+
   description: "Latest NEAR Enhancement Proposals by status",
   repoURL: "https://github.com/near/NEPs",
   title: "NEAR Protocol NEPs",

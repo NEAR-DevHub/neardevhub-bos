@@ -102,7 +102,7 @@ const GithubRepoBoard = ({
   });
 
   if (repoURL) {
-    const pullRequests = dataTypes.PullRequest
+    const pullRequests = dataTypes.PullRequest.enabled
       ? (
           fetch(
             `https://api.github.com/repos/${repoURL
@@ -113,7 +113,7 @@ const GithubRepoBoard = ({
         ).map(withType("PullRequest"))
       : [];
 
-    const issues = dataTypes.Issue
+    const issues = dataTypes.Issue.enabled
       ? (
           fetch(
             `https://api.github.com/repos/${repoURL

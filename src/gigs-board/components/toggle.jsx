@@ -17,6 +17,10 @@ const ToggleSwitchRoot = styled("Switch.Root")`
   &[data-state="checked"] {
     background-color: #00d084;
   }
+
+  &[data-disabled=""] {
+    opacity: 0.7;
+  }
 `;
 
 const ToggleSwitchThumb = styled("Switch.Thumb")`
@@ -43,6 +47,7 @@ const Toggle = ({
   active,
   className,
   direction,
+  disabled,
   key,
   label,
   onSwitch,
@@ -56,16 +61,16 @@ const Toggle = ({
     ].join(" ")}
     {...rest}
   >
-    <ToggleLabel className="" htmlFor={`toggle-${key}`}>
-      {label}
-    </ToggleLabel>
+    <ToggleLabel htmlFor={`toggle-${key}`}>{label}</ToggleLabel>
 
     <ToggleSwitchRoot
       checked={active}
       id={`toggle-${key}`}
-      onCheckedChange={onSwitch}
+      onCheckedChange={disabled ? null : onSwitch}
+      title={disabled ? `Permanently ${active ? "enabled" : "disabled"}` : null}
+      {...{ disabled }}
     >
-      <ToggleSwitchThumb className="bg-light" />
+      {!disabled && <ToggleSwitchThumb className="bg-light" />}
     </ToggleSwitchRoot>
   </ToggleRoot>
 );

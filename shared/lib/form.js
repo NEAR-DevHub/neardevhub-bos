@@ -8,74 +8,74 @@ const traversalUpdate = ({
   path: [currentBranchKey, ...remainingBranch],
   params,
   via: nodeUpdate,
-}) => {
-  console.log("traversalUpdate INPUT >>>>>>>>>", input);
+}) => ({
+  ...treeOrBranch,
 
-  return {
-    ...treeOrBranch,
+  [currentBranchKey]:
+    remainingBranch.length > 0
+      ? traversalUpdate({
+          input,
 
-    [currentBranchKey]:
-      remainingBranch.length > 0
-        ? traversalUpdate({
-            input,
+          target:
+            typeof treeOrBranch[currentBranchKey] === "object"
+              ? treeOrBranch[currentBranchKey]
+              : {
+                  ...((treeOrBranch[currentBranchKey] ?? null) !== null
+                    ? { __archivedLeaf__: treeOrBranch[currentBranchKey] }
+                    : {}),
+                },
 
-            target:
-              typeof treeOrBranch[currentBranchKey] === "object"
-                ? treeOrBranch[currentBranchKey]
-                : {
-                    ...((treeOrBranch[currentBranchKey] ?? null) !== null
-                      ? { __archivedLeaf__: treeOrBranch[currentBranchKey] }
-                      : {}),
-                  },
-
-            path: remainingBranch,
-            via: nodeUpdate,
-          })
-        : nodeUpdate({
-            input,
-            lastKnownState: treeOrBranch[currentBranchKey],
-            params,
-          }),
-  };
-};
+          path: remainingBranch,
+          via: nodeUpdate,
+        })
+      : nodeUpdate({
+          input,
+          lastKnownState: treeOrBranch[currentBranchKey],
+          params,
+        }),
+});
 
 const fieldDefaultUpdate = ({
   input,
   lastKnownState,
-  params: { stringToArrayBy },
+  params: { arrayDelimiter },
 }) => {
-  console.log("fieldDefaultUpdate INPUT >>>>>>>>>", input);
-  console.log("fieldDefaultUpdate LAST_KNOWN_STATE >>>>>>>>>", lastKnownState);
+  switch (typeof input) {
+    case "boolean":
+      return input;
 
-  if (typeof input === "string") {
-    return Array.isArray(lastKnownState)
-      ? input.split(stringToArrayBy ?? ",").map((string) => string.trim())
-      : input;
-  } else if ((input ?? null) === null) {
-    switch (typeof lastKnownState) {
-      case "boolean": {
-        return !lastKnownState;
-      }
+    case "object":
+      return Array.isArray(input) && typeof lastKnownState === "string"
+        ? input.join(arrayDelimiter ?? ",")
+        : input;
 
-      default: {
-        return input;
-      }
+    case "string":
+      return Array.isArray(lastKnownState)
+        ? input.split(arrayDelimiter ?? ",").map((string) => string.trim())
+        : input;
+
+    default: {
+      if ((input ?? null) === null) {
+        switch (typeof lastKnownState) {
+          case "boolean":
+            return !lastKnownState;
+
+          default:
+            return lastKnownState;
+        }
+      } else return input;
     }
   }
 };
 
 const useForm = ({ stateKey: formStateKey }) => ({
-  /**
-   * TODO: Also output `formState: state[formStateKey]` if it doesn't break the VM
-   */
+  formState: state[formStateKey],
 
   formUpdate:
     ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
     (fieldInput) =>
-      State.update((lastKnownState) => {
-        console.log("FIELD INPUT >>>>>>>>>", fieldInput);
-
-        return traversalUpdate({
+      State.update((lastKnownState) =>
+        traversalUpdate({
           input: fieldInput?.target?.value ?? fieldInput,
           target: lastKnownState,
           path: [formStateKey, ...fieldPath],
@@ -85,6 +85,6 @@ const useForm = ({ stateKey: formStateKey }) => ({
             typeof fieldCustomUpdate === "function"
               ? fieldCustomUpdate
               : fieldDefaultUpdate,
-        });
-      }),
+        })
+      ),
 });
