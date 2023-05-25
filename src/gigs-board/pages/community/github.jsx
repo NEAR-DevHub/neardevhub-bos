@@ -71,7 +71,7 @@ const boardConfigByBoardId = ({ boardId }) => ({
 
   dataTypes: {
     Issue: { enabled: false, locked: true },
-    PullRequest: { enabled: false, locked: false },
+    PullRequest: { enabled: true, locked: true },
   },
 
   description: "Latest NEAR Enhancement Proposals by status",
@@ -220,7 +220,7 @@ const GithubPage = ({ boardId, label }) => {
 
   const { formState, formUpdate } = useForm({ stateKey: "boardConfig" });
 
-	console.log(formState)
+  console.log(formState);
 
   const onEditorToggle = () =>
     State.update((lastKnownState) => ({
