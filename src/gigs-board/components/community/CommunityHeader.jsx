@@ -149,7 +149,7 @@ const CommunityHeader = ({ label, tab }) => {
           </div>
         </div>
 
-        {widget("components.toggle", {
+        {widget("components.atom.toggle", {
           active: state.shared.isEditorEnabled,
           className: "visually-hidden",
           direction: "rtl",

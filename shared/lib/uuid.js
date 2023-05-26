@@ -7,3 +7,9 @@ const uuid = () =>
       ).map((value) => value.toString(16))
     )
     .join("-");
+
+const uuidIndexed = (data) => {
+  const id = uuid();
+
+  return Object.fromEntries([[id, { ...data, id }]]);
+};

@@ -91,8 +91,10 @@ const withType = (type) => (data) => ({ ...data, type });
 
 const GithubRepoBoard = ({
   columns,
-  dataTypes,
+  dataTypesIncluded,
   description,
+  editorTrigger,
+  isEditable,
   pageURL,
   repoURL,
   title,
@@ -102,7 +104,7 @@ const GithubRepoBoard = ({
   });
 
   if (repoURL) {
-    const pullRequests = dataTypes.PullRequest.enabled
+    const pullRequests = dataTypesIncluded.PullRequest
       ? (
           fetch(
             `https://api.github.com/repos/${repoURL
@@ -113,7 +115,7 @@ const GithubRepoBoard = ({
         ).map(withType("PullRequest"))
       : [];
 
-    const issues = dataTypes.Issue.enabled
+    const issues = dataTypesIncluded.Issue
       ? (
           fetch(
             `https://api.github.com/repos/${repoURL
@@ -131,25 +133,6 @@ const GithubRepoBoard = ({
 
   return (
     <div className="d-flex flex-column gap-4 pb-4">
-      <div className="d-flex justify-content-between">
-        <i class="placeholder" />
-        {pageURL ? (
-          <a
-            className="card-link d-inline-flex"
-            href={pageURL}
-            rel="noreferrer"
-            role="button"
-            target="_blank"
-            title="Link to this board"
-          >
-            <span className="hstack gap-3">
-              <i className="bi bi-share" />
-              <span>Link to this board</span>
-            </span>
-          </a>
-        ) : null}
-      </div>
-
       <div className="d-flex flex-column align-items-center gap-2">
         <h5 className="h5 d-inline-flex gap-2 m-0">
           <i className="bi bi-kanban-fill" />
@@ -157,6 +140,44 @@ const GithubRepoBoard = ({
         </h5>
 
         <p className="m-0 py-1 text-secondary text-center">{description}</p>
+      </div>
+
+      <div className="d-flex justify-content-end gap-3">
+        {pageURL ? (
+          <a
+            className="card-link d-inline-flex me-auto"
+            href={pageURL}
+            rel="noreferrer"
+            role="button"
+            target="_blank"
+            title="Link to this board"
+          >
+            <span className="hstack gap-2">
+              <i className="bi bi-share" />
+              <span>Open in new tab</span>
+            </span>
+          </a>
+        ) : null}
+
+        {pageURL ? (
+          <button
+            className="btn btn-sm btn-outline-secondary d-inline-flex gap-2"
+            onClick={() => clipboard.writeText(pageURL)}
+          >
+            <i className="bi bi-clipboard-fill" />
+            <span>Copy link</span>
+          </button>
+        ) : null}
+
+        {isEditable ? (
+          <button
+            className="btn btn-sm btn-primary d-inline-flex gap-2"
+            onClick={editorTrigger}
+          >
+            <i className="bi bi-wrench-adjustable-circle-fill" />
+            <span>Configure</span>
+          </button>
+        ) : null}
       </div>
 
       <div className="d-flex gap-3" style={{ overflowX: "auto" }}>

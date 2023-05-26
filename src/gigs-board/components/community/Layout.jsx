@@ -94,11 +94,7 @@ const communities = {
                 },
               },
 
-              dataTypes: {
-                Issue: { enabled: false, locked: true },
-                PullRequest: { enabled: true, locked: true },
-              },
-
+              dataTypesIncluded: { Issue: false, PullRequest: true },
               description: "Latest NEAR Enhancement Proposals by status",
               repoURL: "https://github.com/near/NEPs",
               title: "NEAR Protocol NEPs",

@@ -60,7 +60,7 @@ const CommunityGithubPage = ({ label }) =>
       <div className="d-flex flex-column">
         {widget("feature.github.integration.kanban", {
           label,
-          pageURL: href("community.github"),
+          pageURL: href("community.github", { label }),
         })}
       </div>
     ),

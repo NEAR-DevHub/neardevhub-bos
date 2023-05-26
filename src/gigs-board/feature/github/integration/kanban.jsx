@@ -165,6 +165,12 @@ const uuid = () =>
       ).map((value) => value.toString(16))
     )
     .join("-");
+
+const uuidIndexed = (data) => {
+  const id = uuid();
+
+  return Object.fromEntries([[id, { ...data, id }]]);
+};
 /* END_INCLUDE: "shared/lib/uuid" */
 /* INCLUDE: "shared/mocks" */
 const communities = {
@@ -208,11 +214,7 @@ const communities = {
                 },
               },
 
-              dataTypes: {
-                Issue: { enabled: false, locked: true },
-                PullRequest: { enabled: true, locked: true },
-              },
-
+              dataTypesIncluded: { Issue: false, PullRequest: true },
               description: "Latest NEAR Enhancement Proposals by status",
               repoURL: "https://github.com/near/NEPs",
               title: "NEAR Protocol NEPs",
@@ -251,18 +253,18 @@ const communities = {
 };
 /* END_INCLUDE: "shared/mocks" */
 
+const dataTypesLocked = {
+  Issue: true,
+  PullRequest: true,
+};
+
 const boardConfigDefaults = {
   id: uuid(),
   columns: {},
-
-  dataTypes: {
-    Issue: { enabled: false, locked: true },
-    PullRequest: { enabled: true, locked: true },
-  },
-
-  description: "Latest NEAR Enhancement Proposals by status",
-  repoURL: "https://github.com/near/NEPs",
-  title: "NEAR Protocol NEPs",
+  dataTypesIncluded: { Issue: false, PullRequest: true },
+  description: "",
+  repoURL: "",
+  title: "",
 };
 
 const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
@@ -272,6 +274,8 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
   State.init({
     boardConfig: null,
 
+    editingMode: "form",
+    isEditingAllowed: true, // According to user permission level
     isEditorEnabled: false,
 
     ...Storage.get(
@@ -282,10 +286,16 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
 
   console.log(state.boardConfig);
 
-  const onEditorToggle = () =>
+  const onEditorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      isEditorEnabled: !lastKnownState.isEditorEnabled,
+      isEditorEnabled: forcedState ?? !lastKnownState.isEditorEnabled,
+    }));
+
+  const onEditingModeChange = ({ target: { value } }) =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      editingMode: value,
     }));
 
   if (
@@ -302,46 +312,183 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       boardConfig: boardConfigDefaults,
-			isEditorEnabled: true,
+      isEditorEnabled: true,
     }));
 
   const { formState, formUpdate } = useForm({ stateKey: "boardConfig" });
 
-  const columnsCreateNew = ({ lastKnownState }) => {
-    if (Object.keys(lastKnownState).length < 6) {
-      const id = uuid();
+  const columnsCreateNew = ({ lastKnownState }) =>
+    Object.keys(lastKnownState).length < 6
+      ? {
+          ...lastKnownState,
+          ...uuidIndexed({
+            description: "",
+            labelTerms: [],
+            title: "New column",
+          }),
+        }
+      : lastKnownState;
 
-      return {
-        ...lastKnownState,
-        [id]: { id, description: "", labelTerms: [], title: "New column" },
-      };
-    }
-  };
+  const form =
+    formState !== null ? (
+      <>
+        <div className="d-flex gap-3 flex-column flex-lg-row">
+          <div className="input-group-text border-0 d-flex flex-column flex-1 flex-shrink-0">
+            <span id={`${formState.id}-title`}>Title</span>
+
+            <input
+              aria-describedby={`${formState.id}-title`}
+              className="form-control"
+              onChange={formUpdate({ path: ["title"] })}
+              placeholder="NEAR Protocol NEPs"
+              type="text"
+              value={formState.title}
+            />
+          </div>
+
+          <div
+            className={[
+              "input-group-text border-0",
+              "d-flex flex-column justify-content-evenly flex-4 w-100",
+            ].join(" ")}
+          >
+            <span id={`${formState.id}-repoURL`}>GitHub repository URL</span>
+
+            <input
+              aria-describedby={`${formState.id}-repoURL`}
+              className="form-control"
+              onChange={formUpdate({ path: ["repoURL"] })}
+              placeholder="https://github.com/example-org/example-repo"
+              type="text"
+              value={formState.repoURL}
+            />
+          </div>
+        </div>
+        <div className="d-flex gap-3 flex-column flex-lg-row">
+          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-3 ps-0">
+            <span
+              className="d-inline-flex gap-2"
+              id={`${formState.id}-dataTypesIncluded`}
+            >
+              <i class="bi bi-database-fill" />
+              <span>Tracked data</span>
+            </span>
+
+            {Object.entries(formState.dataTypesIncluded).map(
+              ([typeName, enabled]) =>
+                widget(
+                  "components.atom.toggle",
+                  {
+                    active: enabled,
+                    className: "w-100",
+                    disabled: dataTypesLocked[typeName],
+                    key: typeName,
+                    label: typeName,
+
+                    onSwitch: formUpdate({
+                      path: ["dataTypesIncluded", typeName],
+                    }),
+                  },
+
+                  typeName
+                )
+            )}
+          </CompactContainer>
+
+          <div className="input-group-text border-0 d-flex flex-column w-100">
+            <span id={`${formState.id}-description`}>Description</span>
+
+            <textarea
+              aria-describedby={`${formState.id}-description`}
+              className="form-control h-75"
+              onChange={formUpdate({ path: ["description"] })}
+              placeholder="Latest NEAR Enhancement Proposals by status."
+              type="text"
+              value={formState.description}
+            />
+          </div>
+        </div>
+
+        <div className="d-flex align-items-center justify-content-between">
+          <span className="d-inline-flex gap-2 m-0">
+            <i className="bi bi-list-task" />
+            <span>Columns ( max. 6 )</span>
+          </span>
+        </div>
+
+        <div className="d-flex flex-column align-items-center gap-3">
+          {Object.values(formState.columns).map(
+            ({ id, description, labelTerms, title }) => (
+              <div
+                class="d-flex flex-column gap-3 rounded-2 p-3 w-100 bg-secondary bg-opacity-25"
+                key={id}
+              >
+                <div className="d-flex flex-column flex-lg-row gap-3 align-items-center w-100">
+                  <div className="d-flex flex-column flex-grow-1 flex-md-grow-0 flex-shrink-0">
+                    <span id={`${formState.id}-column-${id}-title`}>Title</span>
+
+                    <input
+                      aria-describedby={`${formState.id}-column-${id}-title`}
+                      className="form-control"
+                      onChange={formUpdate({
+                        path: ["columns", id, "title"],
+                      })}
+                      placeholder="👀 Review"
+                      type="text"
+                      value={title}
+                    />
+                  </div>
+
+                  <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
+                    <span id={`${formState.id}-column-${id}-description`}>
+                      Description
+                    </span>
+
+                    <input
+                      aria-describedby={`${formState.id}-column-${id}-description`}
+                      className="form-control"
+                      onChange={formUpdate({
+                        path: ["columns", id, "description"],
+                      })}
+                      placeholder="NEPs that need a review by Subject Matter Experts."
+                      type="text"
+                      value={description}
+                    />
+                  </div>
+                </div>
+
+                <div
+                  className="d-flex flex-column"
+                  style={{ width: "inherit" }}
+                >
+                  <span
+                    className="text-wrap"
+                    id={`${formState.id}-column-${title}-searchTerms`}
+                  >
+                    Search terms for labels to attach, comma-separated
+                  </span>
+
+                  <input
+                    aria-describedby={`${formState.id}-column-${title}-searchTerms`}
+                    aria-label="Search terms for included labels"
+                    className="form-control"
+                    onChange={formUpdate({
+                      path: ["columns", id, "labelTerms"],
+                    })}
+                    placeholder="WG-, draft, review, proposal, ..."
+                    type="text"
+                    value={labelTerms.join(", ")}
+                  />
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </>
+    ) : null;
 
   return (
     <div className="d-flex flex-column gap-4">
-      {widget("components.toggle", {
-        active: state.isEditorEnabled,
-
-        className: [
-          "position-fixed",
-          "d-flex justify-content-center align-items-center",
-          "shadow-md rounded-pill p-4",
-        ].join(" "),
-
-        direction: "rtl",
-        key: "editor-toggle",
-        label: "Editor mode",
-        onSwitch: onEditorToggle,
-
-        style: {
-          zIndex: 99,
-          right: 24,
-          bottom: 24,
-          backgroundColor: "#f3f3f3",
-        },
-      })}
-
       {state.isEditorEnabled && formState !== null ? (
         <div
           className={[
@@ -349,170 +496,43 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
             "border border-2 border-primary rounded-2 p-3 w-100",
           ].join(" ")}
         >
-          <h5 className="h5 d-inline-flex gap-2 m-0">
-            <i className="bi bi-kanban-fill" />
-            <span>{formState.title} board configuration</span>
-          </h5>
+          <div className="d-flex align-items-center justify-content-between gap-3">
+            <h5 className="h5 d-inline-flex gap-2 m-0">
+              <i className="bi bi-wrench-adjustable-circle-fill" />
+              <span>Board configuration</span>
+            </h5>
 
-          <div className="d-flex gap-3 flex-column flex-lg-row">
-            <div className="input-group-text border-0 d-flex flex-column flex-1 flex-shrink-0">
-              <span id={`${formState.id}-title`}>Title</span>
+            {widget("components.atom.button-switch", {
+              currentValue: state.editingMode,
+              key: "editingMode",
+              onChange: onEditingModeChange,
 
-              <input
-                aria-describedby={`${formState.id}-title`}
-                className="form-control"
-                onChange={formUpdate({ path: ["title"] })}
-                placeholder="NEAR Protocol NEPs"
-                type="text"
-                value={formState.title}
-              />
-            </div>
+              options: [
+                { label: "Form", value: "form" },
+                { label: "JSON", value: "JSON" },
+              ],
 
-            <div
-              className={[
-                "input-group-text border-0",
-                "d-flex flex-column justify-content-evenly flex-4 w-100",
-              ].join(" ")}
-            >
-              <span id={`${formState.id}-repoURL`}>GitHub repository URL</span>
-
-              <input
-                aria-describedby={`${formState.id}-repoURL`}
-                className="form-control"
-                onChange={formUpdate({ path: ["repoURL"] })}
-                placeholder="https://github.com/example-org/example-repo"
-                type="text"
-                value={formState.repoURL}
-              />
-            </div>
+              title: "Editing mode selection",
+            })}
           </div>
 
-          <div className="d-flex gap-3 flex-column flex-lg-row">
-            <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-3 ps-0">
-              <span
-                className="d-inline-flex gap-2"
-                id={`${formState.id}-dataTypes`}
-              >
-                <i class="bi bi-database-fill" />
-                <span>Tracked data</span>
-              </span>
-
-              {Object.entries(formState.dataTypes).map(
-                ([typeName, { enabled, locked }]) =>
-                  widget(
-                    "components.toggle",
-                    {
-                      active: enabled,
-                      className: "w-100",
-                      disabled: locked,
-                      key: typeName,
-                      label: typeName,
-
-                      onSwitch: formUpdate({
-                        path: ["dataTypes", typeName, "enabled"],
-                      }),
-                    },
-
-                    typeName
-                  )
-              )}
-            </CompactContainer>
-
-            <div className="input-group-text border-0 d-flex flex-column w-100">
-              <span id={`${formState.id}-description`}>Description</span>
-
+          {state.editingMode === "form" ? (
+            form
+          ) : (
+            <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
               <textarea
-                aria-describedby={`${formState.id}-description`}
-                className="form-control h-75"
-                onChange={formUpdate({ path: ["description"] })}
-                placeholder="Latest NEAR Enhancement Proposals by status."
+                className="form-control"
+                disabled
+                rows="12"
                 type="text"
-                value={formState.description}
+                value={JSON.stringify(formState, null, "\t")}
               />
             </div>
-          </div>
+          )}
 
-          <div className="d-flex align-items-center justify-content-between">
-            <span className="d-inline-flex gap-2 m-0">
-              <i className="bi bi-list-task" />
-              <span>Columns ( max. 6 )</span>
-            </span>
-          </div>
-
-          <div className="d-flex flex-column align-items-center gap-3">
-            {Object.values(formState.columns).map(
-              ({ id, description, labelTerms, title }) => (
-                <div
-                  class="d-flex flex-column gap-3 rounded-2 p-3 w-100 bg-secondary bg-opacity-25"
-                  key={id}
-                >
-                  <div className="d-flex flex-column flex-lg-row gap-3 align-items-center w-100">
-                    <div className="d-flex flex-column flex-grow-1 flex-md-grow-0 flex-shrink-0">
-                      <span id={`${formState.id}-column-${id}-title`}>
-                        Title
-                      </span>
-
-                      <input
-                        aria-describedby={`${formState.id}-column-${id}-title`}
-                        className="form-control"
-                        onChange={formUpdate({
-                          path: ["columns", id, "title"],
-                        })}
-                        placeholder="👀 Review"
-                        type="text"
-                        value={title}
-                      />
-                    </div>
-
-                    <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
-                      <span id={`${formState.id}-column-${id}-description`}>
-                        Description
-                      </span>
-
-                      <input
-                        aria-describedby={`${formState.id}-column-${id}-description`}
-                        className="form-control"
-                        onChange={formUpdate({
-                          path: ["columns", id, "description"],
-                        })}
-                        placeholder="NEPs that need a review by Subject Matter Experts."
-                        type="text"
-                        value={description}
-                      />
-                    </div>
-                  </div>
-
-                  <div
-                    className="d-flex flex-column"
-                    style={{ width: "inherit" }}
-                  >
-                    <span
-                      className="text-wrap"
-                      id={`${formState.id}-column-${title}-searchTerms`}
-                    >
-                      Search terms for labels to attach, comma-separated
-                    </span>
-
-                    <input
-                      aria-describedby={`${formState.id}-column-${title}-searchTerms`}
-                      aria-label="Search terms for included labels"
-                      className="form-control"
-                      onChange={formUpdate({
-                        path: ["columns", id, "labelTerms"],
-                      })}
-                      placeholder="WG-, draft, review, proposal, ..."
-                      type="text"
-                      value={labelTerms.join(", ")}
-                    />
-                  </div>
-                </div>
-              )
-            )}
-          </div>
-
-          <div className="d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center justify-content-end gap-3">
             <button
-              className="btn btn-secondary d-inline-flex gap-2"
+              className="btn btn-outline-secondary d-inline-flex gap-2 me-auto"
               disabled={Object.keys(formState.columns).length >= 6}
               onClick={formUpdate({
                 path: ["columns"],
@@ -524,30 +544,48 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
             </button>
 
             <button
+              className="btn btn-outline-danger d-inline-flex gap-2 align-items-center"
+              onClick={() => onEditorToggle(false)}
+              style={{ width: "fit-content" }}
+            >
+              <span>Cancel</span>
+            </button>
+
+            <button
               disabled={!formState.hasChanges}
               className="btn btn-primary d-inline-flex gap-2 align-items-center"
               style={{ width: "fit-content" }}
             >
-              <span>💾</span>
-              <span>Save configuration</span>
+              <i className="bi bi-file-arrow-up-fill" />
+              <span>Save</span>
             </button>
           </div>
         </div>
       ) : null}
 
       {state.boardConfig !== null ? (
-        widget("entity.github-repo.board", { ...state.boardConfig, pageURL })
+        widget("entity.github-repo.board", {
+          ...state.boardConfig,
+          editorTrigger: () => onEditorToggle(true),
+          isEditable: state.isEditingAllowed,
+          pageURL,
+        })
       ) : (
-        <div className="d-flex flex-column align-items-center gap-2">
+        <div
+          className="d-flex flex-column align-items-center justify-content-center gap-4"
+          style={{ height: 384 }}
+        >
           <h5 className="h5 d-inline-flex gap-2 m-0">
-            <i className="bi bi-kanban-fill" />
-
-            <span>
-              This community doesn't have GitHub boards at this moment
-            </span>
+            This community doesn't have GitHub integrations
           </h5>
 
-          <div className="btn btn-primary" onClick={onBoardsCreateNew}>Create new</div>
+          <button
+            className="btn btn-primary d-inline-flex gap-2"
+            onClick={onBoardsCreateNew}
+          >
+            <i class="bi bi-kanban-fill" />
+            <span>Create board</span>
+          </button>
         </div>
       )}
     </div>
