@@ -121,11 +121,6 @@ const CommunityHeader = ({ label, tab }) => {
   State.init({ shared: { isEditorEnabled: false } });
   Storage.set("state", state.shared);
 
-  console.log(
-    "CommunityHeader state requested locally",
-    Storage.get("state").isEditorEnabled
-  );
-
   const onEditorToggle = () =>
     State.update((lastState) => ({
       ...lastState,
@@ -160,6 +155,7 @@ const CommunityHeader = ({ label, tab }) => {
 
         {widget("components.toggle", {
           active: state.shared.isEditorEnabled,
+					className: "visually-hidden",
           direction: "rtl",
           key: "community-editor-toggle",
           label: "( WIP ) Editor mode",
