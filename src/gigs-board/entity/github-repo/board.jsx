@@ -74,11 +74,12 @@ const dataToColumns = (data, columns) =>
         ...(registry[column.id] ?? []),
 
         ...data.filter((ticket) =>
-          ticket.labels.some((label) =>
-            column?.labelTerms.some(
-              (searchTerm) =>
-                searchTerm.length > 0 && label.name.includes(searchTerm)
-            )
+          column?.labelSearchTerms.every((searchTerm) =>
+            searchTerm.length > 0
+              ? ticket.labels.some((label) =>
+                  label.name.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+              : true
           )
         ),
       ],

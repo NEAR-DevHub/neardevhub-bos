@@ -35,7 +35,7 @@ const communities = {
                 "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630": {
                   id: "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630",
                   description: "Lorem ipsum",
-                  labelTerms: ["S-draft"],
+                  labelSearchTerms: ["S-draft"],
                   title: "Draft",
                 },
               },

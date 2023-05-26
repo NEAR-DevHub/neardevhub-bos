@@ -210,7 +210,7 @@ const communities = {
                 "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630": {
                   id: "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630",
                   description: "Lorem ipsum",
-                  labelTerms: ["S-draft"],
+                  labelSearchTerms: ["S-draft"],
                   title: "Draft",
                 },
               },
@@ -324,7 +324,7 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
           ...lastKnownState,
           ...uuidIndexed({
             description: "",
-            labelTerms: [],
+            labelSearchTerms: [],
             title: "New column",
           }),
         }
@@ -419,7 +419,7 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
 
         <div className="d-flex flex-column align-items-center gap-3">
           {Object.values(formState.columns).map(
-            ({ id, description, labelTerms, title }) => (
+            ({ id, description, labelSearchTerms, title }) => (
               <div
                 class="d-flex flex-column gap-3 rounded-2 p-3 w-100 bg-secondary bg-opacity-25"
                 key={id}
@@ -466,7 +466,8 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
                     className="text-wrap"
                     id={`${formState.id}-column-${title}-searchTerms`}
                   >
-                    Search terms for labels to attach, comma-separated
+                    Search terms for labels the included tickets MUST have,
+                    comma-separated
                   </span>
 
                   <input
@@ -474,11 +475,11 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
                     aria-label="Search terms for included labels"
                     className="form-control"
                     onChange={formUpdate({
-                      path: ["columns", id, "labelTerms"],
+                      path: ["columns", id, "labelSearchTerms"],
                     })}
                     placeholder="WG-, draft, review, proposal, ..."
                     type="text"
-                    value={labelTerms.join(", ")}
+                    value={labelSearchTerms.join(", ")}
                   />
                 </div>
               </div>
