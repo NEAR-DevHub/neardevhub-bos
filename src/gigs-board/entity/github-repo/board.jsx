@@ -130,36 +130,33 @@ const GithubRepoBoard = ({
   }
 
   return (
-    <div className="d-flex flex-column gap-4 py-4">
-      <div className="d-flex flex-column gap-2">
-        <div className="d-flex justify-content-between">
-          <i className="placeholder" />
+    <div className="d-flex flex-column gap-4 pb-4">
+      <div className="d-flex justify-content-between">
+        <i class="placeholder" />
+        {pageURL ? (
+          <a
+            className="card-link d-inline-flex"
+            href={pageURL}
+            rel="noreferrer"
+            role="button"
+            target="_blank"
+            title="Link to this board"
+          >
+            <span className="hstack gap-3">
+              <i className="bi bi-share" />
+              <span>Link to this board</span>
+            </span>
+          </a>
+        ) : null}
+      </div>
 
-          <h5 className="h5 d-inline-flex gap-2 m-0">
-            <i className="bi bi-kanban-fill" />
-            <span>{title}</span>
-          </h5>
+      <div className="d-flex flex-column align-items-center gap-2">
+        <h5 className="h5 d-inline-flex gap-2 m-0">
+          <i className="bi bi-kanban-fill" />
+          <span>{title}</span>
+        </h5>
 
-          {pageURL ? (
-            <a
-              className="card-link d-inline-flex"
-              href={pageURL}
-              rel="noreferrer"
-              role="button"
-              target="_blank"
-              title="Link to this board"
-            >
-              <span className="hstack gap-3">
-                <i className="bi bi-share" />
-                <span>Link to this board</span>
-              </span>
-            </a>
-          ) : (
-            <i className="placeholder" />
-          )}
-        </div>
-
-        <div className="py-1 text-secondary text-center">{description}</div>
+        <p className="m-0 py-1 text-secondary text-center">{description}</p>
       </div>
 
       <div className="d-flex gap-3" style={{ overflowX: "auto" }}>

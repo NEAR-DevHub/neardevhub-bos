@@ -107,13 +107,9 @@ const topicTabs = [
     title: "Events",
   },
   {
-    contentProps: {
-      boardId: null, // communityById("communityId").boards[0].id
-    },
-
     iconClass: "bi bi-github",
     path: "community.github",
-    title: "GitHub", // communityById("communityId").boards[0].title
+    title: "GitHub",
   },
 ];
 
@@ -155,7 +151,7 @@ const CommunityHeader = ({ label, tab }) => {
 
         {widget("components.toggle", {
           active: state.shared.isEditorEnabled,
-					className: "visually-hidden",
+          className: "visually-hidden",
           direction: "rtl",
           key: "community-editor-toggle",
           label: "( WIP ) Editor mode",
@@ -164,23 +160,22 @@ const CommunityHeader = ({ label, tab }) => {
       </div>
 
       <NavUnderline className="nav">
-        {topicTabs.map(
-          ({ contentProps, defaultActive, iconClass, path, title }) =>
-            title ? (
-              <li className="nav-item" key={title}>
-                <a
-                  aria-current={defaultActive && "page"}
-                  className={[
-                    "d-inline-flex gap-2",
-                    tab === title ? "nav-link active" : "nav-link",
-                  ].join(" ")}
-                  href={href(path, { ...(contentProps ?? {}), label })}
-                >
-                  {iconClass && <i className={iconClass} />}
-                  <span>{title}</span>
-                </a>
-              </li>
-            ) : null
+        {topicTabs.map(({ defaultActive, iconClass, path, title }) =>
+          title ? (
+            <li className="nav-item" key={title}>
+              <a
+                aria-current={defaultActive && "page"}
+                className={[
+                  "d-inline-flex gap-2",
+                  tab === title ? "nav-link active" : "nav-link",
+                ].join(" ")}
+                href={href(path, { label })}
+              >
+                {iconClass && <i className={iconClass} />}
+                <span>{title}</span>
+              </a>
+            </li>
+          ) : null
         )}
       </NavUnderline>
     </Header>

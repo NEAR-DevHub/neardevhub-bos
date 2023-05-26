@@ -11,12 +11,6 @@ const options = {
 
 replaceInFiles(options)
   .pipe({
-    from: /\/\* INCLUDE: "communities\.jsx" \*\/.*\/\* END_INCLUDE: "communities\.jsx" \*\//gms,
-    to: `/* INCLUDE: "communities.jsx" */\n${fs
-      .readFileSync("./communities.jsx", "utf8")
-      .toString()}/* END_INCLUDE: "communities.jsx" */`,
-  })
-  .pipe({
     from: /\/\* INCLUDE: "shared\/lib\/form" \*\/.*\/\* END_INCLUDE: "shared\/lib\/form" \*\//gms,
     to: `/* INCLUDE: "shared/lib/form" */\n${fs
       .readFileSync("./shared/lib/form.js", "utf8")
