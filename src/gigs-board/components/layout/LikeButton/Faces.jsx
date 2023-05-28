@@ -42,6 +42,50 @@ function href(widgetName, linkProps) {
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
+
+const WrapperWidget = ({ children, id }) => {
+  const storageType = "local"; // Hard-coded storage type
+
+  // This function handles the state change for the children widgets
+  const handleStateChange = (key, value) => {
+    // Use the unique identifier to create a unique storage key
+    const storageKey = `${id}_${key}`;
+
+    console.log(`Setting value for ${storageKey}: `, value); // Console log added here
+
+    // Update the local storage with the new state
+    localStorage.setItem(storageKey, JSON.stringify(value));
+    console.log(`State saved in local storage for ${storageKey}`); // Console log added here
+  };
+
+  // This function initializes the state of the children widgets
+  const initState = (key, defaultValue) => {
+    // Use the unique identifier to create a unique storage key
+    const storageKey = `${id}_${key}`;
+
+    let storedValue = localStorage.getItem(storageKey);
+    console.log(
+      `Retrieved value from local storage for ${storageKey}: `,
+      storedValue
+    ); // Console log added here
+
+    if (storedValue) {
+      try {
+        return JSON.parse(storedValue);
+      } catch (e) {
+        console.error("Error parsing JSON from storage", e);
+      }
+    }
+    return defaultValue;
+  };
+
+  // Render the children widgets and pass the state management functions as props
+  return React.Children.map(children, (child) =>
+    child && typeof child === "object"
+      ? React.cloneElement(child, { handleStateChange, initState })
+      : child
+  );
+};
 /* END_INCLUDE: "common.jsx" */
 
 const accountId = context.accountId;
