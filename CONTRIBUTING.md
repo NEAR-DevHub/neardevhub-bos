@@ -4,24 +4,24 @@ We appreciate community contributions! Before you start writing code, we recomme
 - Review the list of [good first issues](https://github.com/near/devgigsboard-widgets/contribute). You can pick any issues from the [Backlog column](https://github.com/orgs/near/projects/60) and indicate your interest by leaving comments. 
 - Get familiar with the [NEAR Social](https://thewiki.near.page/PastPresentAndFutureOfNearSocial) plaform, since the JSX files in this repository are NEAR Social components.
 
-- Review the list of [good first issues](https://github.com/near/devgigsboard-widgets/contribute). You can pick any issues from the [Backlog column](https://github.com/orgs/near/projects/60) and indicate your interest by leaving comments.
-- Get familiar with the [NEAR Social](https://thewiki.near.page/PastPresentAndFutureOfNearSocial) plaform, since the JSX files in this repository are NEAR Social widgets.
 
 ## Prerequisites
 
 We use `npm` and scripts in `package.json` to automate common developer tasks, so you will need NodeJS and then install project dependencies as usual:
 
-```shell
+```
 npm install
 ```
+
 
 ## Code Style
 
 Before publishing, we use `prettier` to unify formatting:
 
-```shell
+```
 npm run fmt
 ```
+
 
 ## Deployment
 
@@ -43,7 +43,7 @@ bos components deploy gigs.frol14.testnet sign-as gigs.frol14.testnet network-co
 
 Once deployed, open `gigs-board.pages.Feed` widget on your account on testnet NEAR Social:
 
-```shell
+```
 https://test.near.social/#/YOUR_ACCOUNT_ID/widget/gigs-board.pages.Feed?nearDevGovGigsContractAccountId=gigs.frol14.testnet
 ```
 
@@ -54,13 +54,14 @@ NOTE: If you have [DevHub contract](https://github.com/near/neardevhub-contract)
 There is GitHub Actions automation that deploys all the widgets to [`devgovgigs.near` account](https://near.social/#/mob.near/widget/MyPage?accountId=devgovgigs.near) on mainnet on every push to the main branch.
 Thus, once a PR is merged, you should see the new version of the widgets on [DevHub](https://neardevhub.org) in less then 15 seconds.
 
+
 ## Helpful Tips
 
 ### Making Changes to common.jsx
 
 `common.jsx` contains a set of shared utilities that is often reused in DevHub widgets. When you need to change it, just edit the file in the root of the project, and update the widgets with this one command:
 
-```shell
+```
 npm run build
 ```
 

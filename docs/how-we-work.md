@@ -1,6 +1,6 @@
 # How we work
 
-We use a lightweight asynchronous project management approach to enable collaboration between individuals from various time zones.
+We use a lightweight asynchronous project management approach to enable collaboration between individuals from various time zones. 
 
 ## Kanban Project Board
 
@@ -15,10 +15,10 @@ We use a [Kanban board](https://github.com/orgs/near/projects/60/views/1) to tra
 
 ## Triaging
 
-Triaging is the process of reviewing all new issues to ensure they are ready for development. Here's how we do it:
+Triaging is the process of reviewing all new issues to ensure they are ready for development. Here's how we do it:   
 
 1. **Validation**: We review new issues in the triage column and determine if they are valid, actionable, and useful. We may update the title or description, verify the reproduction steps, remove duplicates, and apply the appropriate [labels](https://github.com/near/devgigsboard-widgets/labels).
-2. **Prioritization**: We use a prioritization system with four levels:
+2. **Prioritization**: We use a prioritization system with four levels: 
     * **P0**: Critical issues that need immediate attention.
     * **P1**: High-priority issues to address next.
     * **P2**: Medium-priority issues to address in the coming weeks.
