@@ -309,7 +309,7 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
     }));
   }
 
-  const onBoardsCreateNew = () =>
+  const boardsCreateNew = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       boardConfig: boardConfigDefaults,
@@ -322,6 +322,7 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
     Object.keys(lastKnownState).length < 6
       ? {
           ...lastKnownState,
+
           ...uuidIndexed({
             description: "",
             labelSearchTerms: [],
@@ -329,6 +330,13 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
           }),
         }
       : lastKnownState;
+
+  const columnsDeleteById =
+    (id) =>
+    ({ lastKnownState }) =>
+      Object.fromEntries(
+        Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
+      );
 
   const form =
     formState !== null ? (
@@ -365,6 +373,7 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
             />
           </div>
         </div>
+
         <div className="d-flex gap-3 flex-column flex-lg-row">
           <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-3 ps-0">
             <span
@@ -424,8 +433,11 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
                 class="d-flex flex-column gap-3 rounded-2 p-3 w-100 bg-secondary bg-opacity-25"
                 key={id}
               >
-                <div className="d-flex flex-column flex-lg-row gap-3 align-items-center w-100">
-                  <div className="d-flex flex-column flex-grow-1 flex-md-grow-0 flex-shrink-0">
+                <div class="d-flex gap-3">
+                  <div
+                    className="d-flex flex-column flex-grow-1"
+                    style={{ width: "inherit" }}
+                  >
                     <span id={`${formState.id}-column-${id}-title`}>Title</span>
 
                     <input
@@ -440,22 +452,36 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
                     />
                   </div>
 
-                  <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
-                    <span id={`${formState.id}-column-${id}-description`}>
-                      Description
-                    </span>
+                  <button
+                    class="btn btn-outline-danger"
+                    onClick={formUpdate({
+                      path: ["columns"],
+                      via: columnsDeleteById(id),
+                    })}
+                    title="Delete column"
+                  >
+                    <i class="bi bi-file-earmark-minus-fill" />
+                  </button>
+                </div>
 
-                    <input
-                      aria-describedby={`${formState.id}-column-${id}-description`}
-                      className="form-control"
-                      onChange={formUpdate({
-                        path: ["columns", id, "description"],
-                      })}
-                      placeholder="NEPs that need a review by Subject Matter Experts."
-                      type="text"
-                      value={description}
-                    />
-                  </div>
+                <div
+                  className="d-flex flex-column"
+                  style={{ width: "inherit" }}
+                >
+                  <span id={`${formState.id}-column-${id}-description`}>
+                    Description
+                  </span>
+
+                  <input
+                    aria-describedby={`${formState.id}-column-${id}-description`}
+                    className="form-control"
+                    onChange={formUpdate({
+                      path: ["columns", id, "description"],
+                    })}
+                    placeholder="NEPs that need a review by Subject Matter Experts."
+                    type="text"
+                    value={description}
+                  />
                 </div>
 
                 <div
@@ -466,8 +492,8 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
                     className="text-wrap"
                     id={`${formState.id}-column-${title}-searchTerms`}
                   >
-                    Search terms for labels the included tickets MUST have,
-                    comma-separated
+                    Search terms for all the labels MUST be presented in
+                    included tickets, comma-separated
                   </span>
 
                   <input
@@ -583,7 +609,7 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
 
           <button
             className="btn btn-primary d-inline-flex gap-2"
-            onClick={onBoardsCreateNew}
+            onClick={boardsCreateNew}
           >
             <i class="bi bi-kanban-fill" />
             <span>Create board</span>
