@@ -285,8 +285,6 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
     ),
   });
 
-  console.log(state.boardConfig);
-
   const onEditorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
