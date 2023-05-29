@@ -1,8 +1,8 @@
-# 👋 Welcome to the NEAR DevHub
+# 👋 Welcome to the NEAR DevHub!
 
 [NEAR DevHub](http://devgovgigs.near.social) is a decentralized community platform for NEAR developers to contribute to the ecosystem and stay informed on the latest topics. It enables anyone to share ideas, match solutions, and access technical support and funding. The Developer DAO team is actively developing the DevHub and welcoming open contributions from the community. We strive to maintain a transparent and efficient process for all.  
 
-This repository holds [NEAR Social](https://near.social) widgets to interact with the [DevHub smart-contract](https://github.com/near/devgigsboard).
+This repository holds [NEAR Social](https://near.social) widgets to interact with the [DevHub smart-contract](https://github.com/near/devgigsboard). 
 
 ## How to contribute?
 
@@ -16,10 +16,10 @@ We grant commit access to the Developer DAO team and any active developers who h
 
 ## How we work
 
-We communicate primarily over GitHub. We recommend configuring your [notifications](https://docs.github.com/en/account-and-profile/managing-subscriptions-and-notifications-on-github/setting-up-notifications/configuring-notifications) to ensure you get the latest updates.
+We communicate primarily over GitHub. We recommend configuring your [notifications](https://docs.github.com/en/account-and-profile/managing-subscriptions-and-notifications-on-github/setting-up-notifications/configuring-notifications) to ensure you get the latest updates.   
 
 [Learn more](https://github.com/near/devgigsboard-widgets/blob/main/docs/how-we-work.md) about how we work asynchronously.  
 
-## Getting Help
+# Getting Help
 
 If you are working on a specific issue, you can leave a comment. You can also drop a message on the [NEAR Dev](https://t.me/neardev) Telegram channel.
