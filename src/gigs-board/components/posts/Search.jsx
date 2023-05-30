@@ -38,8 +38,9 @@ function href(widgetName, linkProps) {
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""
-    }${linkPropsQuery}`;
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
@@ -752,22 +753,22 @@ return (
       )}
     {state.term && state.term.length > 1 && state.searchResult
       ? widget("components.posts.List", {
-        searchResult: {
-          postIds: state.searchResult,
-          keywords: Object.fromEntries(
-            state.searchResult.map((postId) => {
-              return [postId, getSearchResultsKeywordsFor(postId)];
-            })
-          ),
-        },
-        recency: props.recency,
-        label: props.label,
-        author: props.author,
-      })
+          searchResult: {
+            postIds: state.searchResult,
+            keywords: Object.fromEntries(
+              state.searchResult.map((postId) => {
+                return [postId, getSearchResultsKeywordsFor(postId)];
+              })
+            ),
+          },
+          recency: props.recency,
+          label: props.label,
+          author: props.author,
+        })
       : widget("components.posts.List", {
-        recency: props.recency,
-        label: props.label,
-        author: props.author,
-      })}
+          recency: props.recency,
+          label: props.label,
+          author: props.author,
+        })}
   </>
 );
