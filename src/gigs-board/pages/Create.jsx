@@ -40,9 +40,8 @@ function href(widgetName, linkProps) {
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
+  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""
+    }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
@@ -394,7 +393,7 @@ const fundraisingDiv = (
 );
 
 function generateDescription(text, amount, token, supervisor) {
-  const funding = `###### Requested amount: ${amount} ${token}\n###### Requested sponsor: ${supervisor}\n`;
+  const funding = `###### Requested amount: ${amount} ${token}\n###### Requested sponsor: @${supervisor}\n`;
   if (amount > 0 && token && supervisor) return funding + text;
   return text;
 }
@@ -434,9 +433,9 @@ return (
               style={
                 state.postType === "Idea"
                   ? {
-                      backgroundColor: "#0C7283",
-                      color: "#f3f3f3",
-                    }
+                    backgroundColor: "#0C7283",
+                    color: "#f3f3f3",
+                  }
                   : {}
               }
             >
@@ -450,9 +449,9 @@ return (
               style={
                 state.postType !== "Idea"
                   ? {
-                      backgroundColor: "#0C7283",
-                      color: "#f3f3f3",
-                    }
+                    backgroundColor: "#0C7283",
+                    color: "#f3f3f3",
+                  }
                   : {}
               }
             >
