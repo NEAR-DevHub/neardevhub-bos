@@ -111,14 +111,12 @@ if (groupInfo === null || !groupInfo.ok) {
 const messageIds = groupInfo.body.messageIds;
 
 const Telegram = (
-  <>
+  <div>
     <iframe
-      iframeResizer={{ log: true, heightCalculationMethod: "scroll" }}
+      iframeResizer={{ log: true }}
       src={
-        "https://cg-msg-viewer.pages.dev/?group=" +
-        group +
-        "&messageIds=" +
-        messageIds
+        "https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups-ui/" +
+        group
       }
       frameborder="0"
       style={{
@@ -126,7 +124,7 @@ const Telegram = (
         minWidth: "100%",
       }}
     ></iframe>
-  </>
+  </div>
 );
 
 return widget("components.community.Layout", {
