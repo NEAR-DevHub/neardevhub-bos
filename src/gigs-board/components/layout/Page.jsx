@@ -47,12 +47,7 @@ function href(widgetName, linkProps) {
 return (
   <>
     {widget("components.layout.Banner")}
-
     {props.header}
-    {widget("components.layout.Controls")}
-    {widget("components.layout.Navbar", {
-      children: props.navbarChildren,
-    })}
     {props.children}
   </>
 );

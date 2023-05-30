@@ -402,7 +402,7 @@ return (
         </div>
       )}
 
-      <a className="btn btn-outline-primary mb-2" onClick={onClick}>
+      <a className="btn btn-outline-primary mb-2" onClick={onSubmit}>
         Submit
       </a>
       {disclaimer}
