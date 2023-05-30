@@ -38,9 +38,8 @@ function href(widgetName, linkProps) {
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""
+    }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
@@ -739,78 +738,10 @@ return (
           onSearchLabel: props.onSearchLabel,
         })}
       </div>
-    </div>
-    {state.processedQuery &&
-      state.processedQuery.length > 0 &&
-      state.term.toLowerCase().trim() !== state.processedQuery.join(" ") && (
-        <div class="mb-2" style={{ "font-family": "monospace" }}>
-          Looking for
-          <strong>{state.processedQuery.join(" ")}</strong>:
-        </div>
-      )}
-    {state.term && state.term.length > 1 && state.searchResult
-      ? widget("components.posts.List", {
-          searchResult: {
-            postIds: state.searchResult,
-            keywords: Object.fromEntries(
-              state.searchResult.map((postId) => {
-                return [postId, getSearchResultsKeywordsFor(postId)];
-              })
-            ),
-          },
-          recency: props.recency,
-          label: props.label,
-          author: props.author,
-        })
-      : widget("components.posts.List", {
-          recency: props.recency,
-          label: props.label,
-          author: props.author,
-        })}
-  </>
-);
-
-return (
-  <div>
-    <div
-      className="d-flex mb-2"
-      style={{
-        height: "38px",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          left: "30px",
-          display: "flex",
-          height: "38px",
-          "align-items": "center",
-        }}
-      >
-        {state.loading ? (
-          <div>
-            <span
-              className="spinner-grow spinner-grow-sm me-1"
-              role="status"
-              aria-hidden="true"
-            />
-          </div>
-        ) : (
-          <div>🔍</div>
-        )}
+      <div className="d-flex flex-row-reverse flex-grow-1">
+        {props.children}
       </div>
-      <input
-        type="search"
-        style={{
-          "padding-left": "40px",
-        }}
-        className="form-control"
-        value={state.term ?? ""}
-        onChange={(e) => updateInput(e.target.value)}
-        placeholder={props.placeholder ?? `Search Posts`}
-      />
     </div>
-
     {state.processedQuery &&
       state.processedQuery.length > 0 &&
       state.term.toLowerCase().trim() !== state.processedQuery.join(" ") && (
@@ -821,22 +752,22 @@ return (
       )}
     {state.term && state.term.length > 1 && state.searchResult
       ? widget("components.posts.List", {
-          searchResult: {
-            postIds: state.searchResult,
-            keywords: Object.fromEntries(
-              state.searchResult.map((postId) => {
-                return [postId, getSearchResultsKeywordsFor(postId)];
-              })
-            ),
-          },
-          recency: props.recency,
-          label: props.label,
-          author: props.author,
-        })
+        searchResult: {
+          postIds: state.searchResult,
+          keywords: Object.fromEntries(
+            state.searchResult.map((postId) => {
+              return [postId, getSearchResultsKeywordsFor(postId)];
+            })
+          ),
+        },
+        recency: props.recency,
+        label: props.label,
+        author: props.author,
+      })
       : widget("components.posts.List", {
-          recency: props.recency,
-          label: props.label,
-          author: props.author,
-        })}
-  </div>
+        recency: props.recency,
+        label: props.label,
+        author: props.author,
+      })}
+  </>
 );

@@ -38,9 +38,8 @@ function href(widgetName, linkProps) {
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""
+    }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
@@ -69,6 +68,7 @@ const onSearchAuthor = (author) => {
 return widget("components.layout.Page", {
   header: widget("components.community.FeedHeader"),
   children: widget("components.posts.Search", {
+    children: widget("components.layout.Controls"),
     recency: props.recency,
     label: state.label,
     author: state.author,
