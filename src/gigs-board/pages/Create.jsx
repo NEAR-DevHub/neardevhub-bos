@@ -69,7 +69,7 @@ initState({
   name: props.name ?? "",
   description: props.description ?? "",
   amount: props.amount ?? "",
-  token: props.token ?? "Near",
+  token: props.token ?? "NEAR",
   supervisor: props.supervisor ?? "neardevgov.near",
   githubLink: props.githubLink ?? "",
   warning: "",
@@ -98,16 +98,11 @@ const onSubmit = () => {
     ),
   };
 
-  if (state.seekingFunding && state.postType === "Solution") {
+  if (state.postType === "Solution") {
     body = {
       ...body,
       post_type: "Submission",
-    };
-  } else if (state.postType === "Solution") {
-    // Solution
-    body = {
-      ...body,
-      post_type: "Submission",
+      submission_version: "V1",
     };
   } else {
     // Idea
@@ -306,36 +301,36 @@ const isFundraisingDiv = (
         <span class="text-muted fw-normal">(Optional)</span>
       </p>
       <div class="form-check form-check-inline">
-        <button
-          className="btn btn-light p-0"
-          style={{
-            backgroundColor: state.seekingFunding ? "#0C7283" : "inherit",
-            color: "#f3f3f3",
-            border: "solid #D9D9D9",
-            borderRadius: "100%",
-            height: "20px",
-            width: "20px",
-          }}
-          onClick={() => State.update({ seekingFunding: true })}
-        ></button>
-        <label class="form-check-label" for="inlineRadio1">
+        <label class="form-check-label">
+          <button
+            className="btn btn-light p-0"
+            style={{
+              backgroundColor: state.seekingFunding ? "#0C7283" : "inherit",
+              color: "#f3f3f3",
+              border: "solid #D9D9D9",
+              borderRadius: "100%",
+              height: "20px",
+              width: "20px",
+            }}
+            onClick={() => State.update({ seekingFunding: true })}
+          />
           Yes
         </label>
       </div>
       <div class="form-check form-check-inline">
-        <button
-          className="btn btn-light p-0"
-          style={{
-            backgroundColor: !state.seekingFunding ? "#0C7283" : "inherit",
-            color: "#f3f3f3",
-            border: "solid #D9D9D9",
-            borderRadius: "100%",
-            height: "20px",
-            width: "20px",
-          }}
-          onClick={() => State.update({ seekingFunding: false })}
-        ></button>
-        <label class="form-check-label" for="inlineRadio2">
+        <label class="form-check-label">
+          <button
+            className="btn btn-light p-0"
+            style={{
+              backgroundColor: !state.seekingFunding ? "#0C7283" : "inherit",
+              color: "#f3f3f3",
+              border: "solid #D9D9D9",
+              borderRadius: "100%",
+              height: "20px",
+              width: "20px",
+            }}
+            onClick={() => State.update({ seekingFunding: false })}
+          />
           No
         </label>
       </div>
