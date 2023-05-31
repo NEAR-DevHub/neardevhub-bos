@@ -53,8 +53,8 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 const onSearchLabel = props.onSearchLabel;
-const selectedLabels = props.searchQuery?.label
-  ? [{ name: props.searchQuery.label }]
+const selectedLabels = props.labelQuery?.label
+  ? [{ name: props.labelQuery.label }]
   : [];
 
 const labels = Near.view(nearDevGovGigsContractAccountId, "get_all_labels");

@@ -65,6 +65,7 @@ const communities = {
 
     title: "Zero Knowledge",
     desc: "Building a zero knowledge ecosystem on NEAR.",
+    telegram: "NearZeroKnowledge",
   },
 
   protocol: {
@@ -104,6 +105,8 @@ const communities = {
         },
       },
     },
+
+    telegram: "NEAR_Protocol_Community_Group",
   },
 
   tooling: {
@@ -117,6 +120,7 @@ const communities = {
 
     title: "Tooling",
     desc: "Supporting the ongoing innovation of tooling.",
+    telegram: "NEAR_Tools_Community_Group",
   },
 
   "contract-standards": {
@@ -130,6 +134,7 @@ const communities = {
 
     title: "Contract Standards",
     desc: "Coordinating the contribution to the NEAR dapp standards.",
+    telegram: "nearnft",
   },
 };
 /* END_INCLUDE: "shared/mocks" */
@@ -162,7 +167,7 @@ const Discussions = (
       </div>
     </div>
     {widget("components.layout.Controls", {
-      labels: discussionsRequiredLabels,
+      labels: label,
     })}
     <div class="row">
       <div class="col">

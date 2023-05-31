@@ -139,12 +139,6 @@ const communities = {
 };
 /* END_INCLUDE: "shared/mocks" */
 
-const Content = styled.div`
-   {
-    padding: 0 32px;
-  }
-`;
-
 if (!props.label) {
   return (
     <div class="alert alert-danger" role="alert">
@@ -155,16 +149,28 @@ if (!props.label) {
 
 const community = communities[props.label];
 
-return (
-  <>
-    {widget("components.layout.Banner")}
-    {widget("components.community.CommunityHeader", {
-      title: community.title,
-      icon: community.icon,
-      desc: community.desc,
-      label: props.label,
-      tab: props.tab,
-    })}
-    <Content>{props.children}</Content>
-  </>
+const group = community.telegram;
+
+const Telegram = (
+  <div>
+    <iframe
+      iframeResizer
+      src={
+        "https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups-ui/" +
+        group
+      }
+      frameborder="0"
+      // Required by iframeResizer
+      style={{
+        width: "1px",
+        minWidth: "100%",
+      }}
+    ></iframe>
+  </div>
 );
+
+return widget("components.community.Layout", {
+  label: props.label,
+  tab: "Telegram",
+  children: Telegram,
+});

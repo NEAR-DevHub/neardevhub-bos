@@ -53,8 +53,8 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 const onSearchAuthor = props.onSearchAuthor;
-const selectedAuthors = props.searchQuery?.author
-  ? [{ name: props.searchQuery.author }]
+const selectedAuthors = props.authorQuery?.author
+  ? [{ name: props.authorQuery.author }]
   : [];
 
 const authors = Near.view(nearDevGovGigsContractAccountId, "get_all_authors");
