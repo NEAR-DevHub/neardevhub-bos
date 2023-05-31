@@ -101,24 +101,16 @@ const community = communities[props.label];
 
 const group = community.telegram;
 
-const groupInfo = fetch(
-  `https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups/${group}`
-);
-if (groupInfo === null || !groupInfo.ok) {
-  return "Loading ...";
-}
-
-const messageIds = groupInfo.body.messageIds;
-
 const Telegram = (
   <div>
     <iframe
-      iframeResizer={{ log: true }}
+      iframeResizer
       src={
         "https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups-ui/" +
         group
       }
       frameborder="0"
+      // Required by iframeResizer
       style={{
         width: "1px",
         minWidth: "100%",
