@@ -117,7 +117,7 @@ const Discussions = (
       </div>
     </div>
     {widget("components.layout.Controls", {
-      labels: discussionsRequiredLabels,
+      labels: label,
     })}
     <div class="row">
       <div class="col">

@@ -96,7 +96,7 @@ let grantNotify = Near.view("social.near", "is_write_permission_granted", {
 if (grantNotify === null) {
   return;
 }
-const onClick = () => {
+const onSubmit = () => {
   let labels = state.labelStrings;
   var body = {
     Comment: { description: state.description, comment_version: "V2" },
@@ -402,7 +402,7 @@ return (
         </div>
       )}
 
-      <a className="btn btn-outline-primary mb-2" onClick={onClick}>
+      <a className="btn btn-outline-primary mb-2" onClick={onSubmit}>
         Submit
       </a>
       {disclaimer}
