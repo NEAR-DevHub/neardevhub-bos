@@ -54,6 +54,7 @@ const communities = {
       "https://ipfs.near.social/ipfs/bafkreihgxg5kwts2juldaeasveyuddkm6tcabmrat2aaq5u6uyljtyt7lu",
     title: "Zero Knowledge",
     desc: "Building a zero knowledge ecosystem on NEAR.",
+    telegram: "NearZeroKnowledge",
   },
   protocol: {
     overviewId: 412,
@@ -63,6 +64,7 @@ const communities = {
       "https://ipfs.near.social/ipfs/bafkreicg4svzfz5nvllomsahndgm7u62za4sib4mmbygxzhpcl4htqwr4a",
     title: "Protocol",
     desc: "Supporting the ongoing innovation of the NEAR Protocol.",
+    telegram: "NEAR_Protocol_Community_Group",
   },
   tooling: {
     overviewId: 416,
@@ -72,6 +74,7 @@ const communities = {
       "https://ipfs.near.social/ipfs/bafkreiehzr7z2fhoqqmkt3z667wubccbch6sqtsnvd6msodyzpnf72cszy",
     title: "Tooling",
     desc: "Supporting the ongoing innovation of tooling.",
+    telegram: "NEAR_Tools_Community_Group",
   },
   "contract-standards": {
     overviewId: 414,
@@ -81,6 +84,7 @@ const communities = {
       "https://ipfs.near.social/ipfs/bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey",
     title: "Contract Standards",
     desc: "Coordinating the contribution to the NEAR dapp standards.",
+    telegram: "nearnft",
   },
 };
 /* END_INCLUDE: "communities.jsx" */

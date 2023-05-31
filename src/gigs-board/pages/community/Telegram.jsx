@@ -38,7 +38,7 @@ function href(widgetName, linkProps) {
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+  return `#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
@@ -97,40 +97,30 @@ if (!props.label) {
   );
 }
 
-const label = props.label;
+const community = communities[props.label];
 
-const discussionRequiredPosts =
-  Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-    label,
-  }) ?? [];
+const group = community.telegram;
 
-const Discussions = (
+const Telegram = (
   <div>
-    <div class="row mb-2">
-      <div class="col text-center">
-        <small class="text-muted">
-          Required label:
-          <a href={href("Feed", { label })} key={label}>
-            <span class="badge text-bg-primary me-1">{label}</span>
-          </a>
-        </small>
-      </div>
-    </div>
-    {widget("components.layout.Controls", {
-      labels: label,
-    })}
-    <div class="row">
-      <div class="col">
-        {discussionRequiredPosts.map((postId) =>
-          widget("components.posts.Post", { id: postId }, postId)
-        )}
-      </div>
-    </div>
+    <iframe
+      iframeResizer
+      src={
+        "https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups-ui/" +
+        group
+      }
+      frameborder="0"
+      // Required by iframeResizer
+      style={{
+        width: "1px",
+        minWidth: "100%",
+      }}
+    ></iframe>
   </div>
 );
 
 return widget("components.community.Layout", {
   label: props.label,
-  tab: "Discussions",
-  children: Discussions,
+  tab: "Telegram",
+  children: Telegram,
 });

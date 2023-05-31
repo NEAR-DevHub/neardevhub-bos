@@ -159,6 +159,21 @@ return (
               Events
             </a>
           </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              className={
+                props.tab === "Telegram" ? "nav-link active" : "nav-link"
+              }
+              href={href("community.Telegram", {
+                label: props.label,
+                tab: "Telegram",
+              })}
+            >
+              <i class="bi-telegram"> </i>
+              Telegram
+            </a>
+          </li>
         </NavUnderline>
       </div>
     </Header>
