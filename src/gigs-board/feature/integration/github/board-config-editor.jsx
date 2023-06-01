@@ -273,7 +273,7 @@ const boardConfigDefaults = {
   title: "",
 };
 
-const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
+const GithubBoardConfigEditor = ({ label, pageURL }) => {
   const communityGitHubKanbanBoards =
     communities[label].integrations?.github?.kanban?.boards ?? {};
 
@@ -623,4 +623,4 @@ const GithubIntegrationSetupFrame = ({ label, pageURL }) => {
   );
 };
 
-return GithubIntegrationSetupFrame(props);
+return GithubBoardConfigEditor(props);

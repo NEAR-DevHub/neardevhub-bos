@@ -58,7 +58,7 @@ const CommunityGithubPage = ({ label }) =>
     tab: "GitHub",
     children: (
       <div className="d-flex flex-column">
-        {widget("feature.github.integration.kanban", {
+        {widget("feature.integration.github.board-config-editor", {
           label,
           pageURL: "near.org" + href("community.github", { label }),
         })}
