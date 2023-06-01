@@ -204,11 +204,7 @@ const GithubRepoBoard = ({
 
                   <div class="d-flex flex-column gap-3">
                     {(state.ticketsByColumn[column.id] ?? []).map((data) =>
-                      widget(
-                        "entity.github-repo.ticket",
-                        { data, format: "card" },
-                        data.id
-                      )
+                      widget("entity.github-repo.ticket", { data }, data.id)
                     )}
                   </div>
                 </div>

@@ -111,6 +111,11 @@ const topicTabs = [
     path: "community.github",
     title: "GitHub",
   },
+  {
+    iconClass: "bi bi-telegram",
+    path: "community.Telegram",
+    title: "Telegram",
+  },
 ];
 
 const CommunityHeader = ({ label, tab }) => {
