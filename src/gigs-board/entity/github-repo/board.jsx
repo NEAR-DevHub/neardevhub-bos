@@ -98,14 +98,12 @@ const GithubRepoBoard = ({
   isEditable,
   pageURL,
   repoURL,
-  ticketDisplayMode,
+  ticketState,
   title,
 }) => {
-  const displayMode =
-    ticketDisplayMode === "open" ||
-    ticketDisplayMode === "closed" ||
-    ticketDisplayMode === "all"
-      ? ticketDisplayMode
+  const ticketStateForSure =
+    ticketState === "open" || ticketState === "closed" || ticketState === "all"
+      ? ticketState
       : "all";
 
   State.init({
@@ -120,7 +118,7 @@ const GithubRepoBoard = ({
               .split("/")
               .slice(-2)
               .concat(["pulls"])
-              .join("/")}?state=${displayMode}`
+              .join("/")}?state=${ticketStateForSure}`
           ).body ?? []
         ).map(withType("PullRequest"))
       : [];
@@ -132,7 +130,7 @@ const GithubRepoBoard = ({
               .split("/")
               .slice(-2)
               .concat(["issues"])
-              .join("/")}state=${displayMode}`
+              .join("/")}state=${ticketStateForSure}`
           ).body ?? []
         ).map(withType("Issue"))
       : [];

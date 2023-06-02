@@ -266,6 +266,7 @@ const communities = {
             dataTypesIncluded: { Issue: false, PullRequest: true },
             description: "Latest NEAR Enhancement Proposals by status",
             repoURL: "https://github.com/near/NEPs",
+            ticketState: "all",
             title: "NEAR Protocol NEPs",
           },
         },
@@ -353,6 +354,7 @@ const communities = {
             dataTypesIncluded: { Issue: false, PullRequest: true },
             description: "Latest NEAR Enhancement Proposals by status",
             repoURL: "https://github.com/near/NEPs",
+            ticketState: "all",
             title: "NEAR Tooling NEPs",
           },
         },
@@ -440,6 +442,7 @@ const communities = {
             dataTypesIncluded: { Issue: false, PullRequest: true },
             description: "Latest NEAR Enhancement Proposals by status",
             repoURL: "https://github.com/near/NEPs",
+            ticketState: "all",
             title: "NEAR Contract Standards NEPs",
           },
         },
@@ -462,6 +465,7 @@ const boardConfigDefaults = {
   dataTypesIncluded: { Issue: false, PullRequest: true },
   description: "",
   repoURL: "",
+  ticketState: "all",
   title: "",
 };
 
@@ -598,6 +602,30 @@ const GithubBoardConfigEditor = ({ label, pageURL }) => {
                   typeName
                 )
             )}
+          </CompactContainer>
+
+          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-3 ps-0">
+            <span
+              className="d-inline-flex gap-2"
+              id={`${formState.id}-dataTypesIncluded`}
+            >
+              <i class="bi bi-database-fill" />
+              <span>Ticket state</span>
+            </span>
+
+            {widget("components.atom.button-switch", {
+              currentValue: formState.ticketState,
+              key: "ticketState",
+              onChange: formUpdate({ path: ["ticketState"] }),
+
+              options: [
+                { label: "All", value: "all" },
+                { label: "Open", value: "open" },
+                { label: "Closed", value: "closed" },
+              ],
+
+              title: "Editing mode selection",
+            })}
           </CompactContainer>
 
           <div className="input-group-text border-0 d-flex flex-column w-100">
@@ -799,7 +827,7 @@ const GithubBoardConfigEditor = ({ label, pageURL }) => {
           style={{ height: 384 }}
         >
           <h5 className="h5 d-inline-flex gap-2 m-0">
-            This community doesn't have GitHub integrations
+            This community doesn't have GitHub boards.
           </h5>
 
           <button
@@ -807,7 +835,7 @@ const GithubBoardConfigEditor = ({ label, pageURL }) => {
             onClick={boardsCreateNew}
           >
             <i class="bi bi-kanban-fill" />
-            <span>Create board</span>
+            <span>Create one</span>
           </button>
         </div>
       )}
