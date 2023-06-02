@@ -477,7 +477,7 @@ const GithubBoardConfigEditor = ({ label, pageURL }) => {
     boardConfig: null,
 
     editingMode: "form",
-    isEditingAllowed: true, // According to user permission level
+    isEditingAllowed: false, // According to user permission level
     isEditorEnabled: false,
 
     ...Storage.get(
