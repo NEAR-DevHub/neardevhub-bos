@@ -1,4 +1,3 @@
 const CommunitiesPage = () => {
-
-	return <div></div>
-}
+  return <div></div>;
+};
