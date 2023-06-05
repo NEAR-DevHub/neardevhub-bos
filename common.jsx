@@ -53,7 +53,7 @@ const WrapperWidget = ({ children, id }) => {
     console.log(`Setting value for ${storageKey}: `, value); // Console log added here
 
     // Update the local storage with the new state
-    localStorage.setItem(storageKey, JSON.stringify(value));
+    Storage.set(storageKey, JSON.stringify(value));
     console.log(`State saved in local storage for ${storageKey}`); // Console log added here
   };
 
@@ -62,7 +62,7 @@ const WrapperWidget = ({ children, id }) => {
     // Use the unique identifier to create a unique storage key
     const storageKey = `${id}_${key}`;
 
-    let storedValue = localStorage.getItem(storageKey);
+    let storedValue = Storage.get(storageKey);
     console.log(
       `Retrieved value from local storage for ${storageKey}: `,
       storedValue
