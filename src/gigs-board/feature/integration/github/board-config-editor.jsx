@@ -286,7 +286,7 @@ const GithubBoardConfigEditor = ({ label, pageURL }) => {
 
     ...Storage.get(
       "state",
-      `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.components.community.CommunityHeader`
+      `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.entity.community.header`
     ),
   });
 

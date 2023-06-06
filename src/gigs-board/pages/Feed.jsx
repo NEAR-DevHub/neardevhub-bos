@@ -75,7 +75,7 @@ const onSearchAuthor = (author) => {
 };
 
 return widget("components.layout.Page", {
-  header: widget("components.community.FeedHeader"),
+  header: widget("entity.community.FeedHeader"),
   children: widget("components.posts.Search", {
     children: widget("components.layout.Controls"),
     recency: props.recency,

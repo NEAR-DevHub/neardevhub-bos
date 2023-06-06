@@ -179,7 +179,7 @@ const Overview = (
   </div>
 );
 
-return widget("components.community.Layout", {
+return widget("entity.community.Layout", {
   label: props.label,
   tab: "Overview",
   children: Overview,
