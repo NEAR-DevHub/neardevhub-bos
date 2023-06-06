@@ -11,13 +11,18 @@ const CompactContainer = styled.div`
 `;
 /* END_INCLUDE: "shared/lib/gui" */
 
+const ticketStates = {
+  closed: { displayName: "Closed", icon: "bi-lock-fill" },
+  open: { displayName: "Open", icon: "bi-unlock-fill" },
+};
+
 const ticketTypes = {
   Issue: { displayName: "Issue", icon: "bi-lightbulb-fill" },
   PullRequest: { displayName: "Pull request", icon: "bi-git" },
 };
 
 const GithubRepoTicket = ({
-  data: { _links, labels, number, title, type, user },
+  data: { _links, labels, number, state: ticketState, title, type, user },
 }) => (
   <Card className="card border-secondary">
     <div className="card-header">
@@ -59,6 +64,11 @@ const GithubRepoTicket = ({
     <div className="card-body d-flex flex-column gap-3">
       <div className="card-text d-flex flex-column gap-3">
         <span className="d-flex flex-nowrap gap-2">
+          <i
+            className={`bi ${ticketStates[ticketState].icon}`}
+            title={ticketStates[ticketState].displayName}
+          />
+
           <i className={`bi ${ticketTypes[type].icon}`} />
           <span>{`${ticketTypes[type].displayName} #${number}`}</span>
         </span>
