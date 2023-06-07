@@ -142,6 +142,13 @@ const onSubmit = () => {
   if (!context.accountId) {
     return;
   }
+  
+  const mentionRegex = /@\w+\.near/g;
+  let mentionMatches = state.description.match(mentionRegex);
+  if (mentionMatches) {
+      mentionMatches = mentionMatches.map(m => m.substring(1));
+  }
+
   let txn = [];
   if (mode == "Create") {
     txn.push({
