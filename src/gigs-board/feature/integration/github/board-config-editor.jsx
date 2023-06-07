@@ -465,23 +465,24 @@ const boardConfigDefaults = {
   dataTypesIncluded: { Issue: false, PullRequest: true },
   description: "",
   repoURL: "",
+  ticketState: "all",
   title: "",
 };
 
-const GithubKanbanBoardEditor = ({ label, pageURL }) => {
+const GithubBoardConfigEditor = ({ label, pageURL }) => {
   const communityGitHubKanbanBoards =
-    communities[label].integrations?.github?.kanban?.boards ?? {};
+    communities[label].integrations?.github?.boards ?? {};
 
   State.init({
     boardConfig: null,
 
     editingMode: "form",
-    isEditingAllowed: true, // According to user permission level
+    isEditingAllowed: false, // According to user permission level
     isEditorEnabled: false,
 
     ...Storage.get(
       "state",
-      `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.entity.community.header`
+      `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.components.community.CommunityHeader`
     ),
   });
 
@@ -601,6 +602,30 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
                   typeName
                 )
             )}
+          </CompactContainer>
+
+          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-3 ps-0">
+            <span
+              className="d-inline-flex gap-2"
+              id={`${formState.id}-dataTypesIncluded`}
+            >
+              <i class="bi bi-database-fill" />
+              <span>Ticket state</span>
+            </span>
+
+            {widget("components.atom.button-switch", {
+              currentValue: formState.ticketState,
+              key: "ticketState",
+              onChange: formUpdate({ path: ["ticketState"] }),
+
+              options: [
+                { label: "All", value: "all" },
+                { label: "Open", value: "open" },
+                { label: "Closed", value: "closed" },
+              ],
+
+              title: "Editing mode selection",
+            })}
           </CompactContainer>
 
           <div className="input-group-text border-0 d-flex flex-column w-100">
@@ -802,7 +827,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
           style={{ height: 384 }}
         >
           <h5 className="h5 d-inline-flex gap-2 m-0">
-            This community doesn't have GitHub integrations
+            This community doesn't have GitHub boards.
           </h5>
 
           <button
@@ -810,7 +835,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
             onClick={boardsCreateNew}
           >
             <i class="bi bi-kanban-fill" />
-            <span>Create board</span>
+            <span>Create one</span>
           </button>
         </div>
       )}
@@ -818,4 +843,4 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
   );
 };
 
-return GithubKanbanBoardEditor(props);
+return GithubBoardConfigEditor(props);
