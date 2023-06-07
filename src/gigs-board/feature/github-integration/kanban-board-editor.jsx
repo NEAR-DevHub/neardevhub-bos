@@ -623,4 +623,4 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
   );
 };
 
-return GithubBoardConfigEditor(props);
+return GithubKanbanBoardEditor(props);
