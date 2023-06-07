@@ -55,7 +55,6 @@ function href(widgetName, linkProps) {
 const Header = styled.div`
   overflow: hidden;
   background: #f3f3f3;
-  margin-top: -25px;
   margin-bottom: 25px;
 `;
 

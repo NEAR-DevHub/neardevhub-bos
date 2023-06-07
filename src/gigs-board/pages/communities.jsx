@@ -140,15 +140,31 @@ const communities = {
 /* END_INCLUDE: "shared/mocks" */
 
 const CommunitiesPage = ({}) => (
-  <div>
-    <div class="row">
-      {Object.entries(communities).map(([label, community]) => {
-        return (
-          <div class="col">
-            {widget("entity.community.card", { label, ...community }, label)}
-          </div>
-        );
-      })}
+  <div className="d-flex flex-column">
+    {widget("components.layout.Banner", { style: { marginBottom: 0 } })}
+
+    <div className="d-flex flex-column gap-4 p-4">
+      <div className="d-flex justify-content-between">
+        <div className="d-flex flex-column gap-2">
+          <h1 className="m-0 fs-4">Communities</h1>
+
+          <p className="m-0 text-secondary fs-6">
+            Discover NEAR developer communities
+          </p>
+        </div>
+
+        <div className="d-flex flex-column justify-content-center">
+          <a className="btn btn-primary" href={href("community.new")}>
+            Create community
+          </a>
+        </div>
+      </div>
+
+      <div className="d-flex gap-4">
+        {Object.entries(communities).map(([label, community]) =>
+          widget("entity.community.card", { label, ...community }, label)
+        )}
+      </div>
     </div>
   </div>
 );

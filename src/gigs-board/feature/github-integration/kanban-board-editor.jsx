@@ -273,7 +273,7 @@ const boardConfigDefaults = {
   title: "",
 };
 
-const GithubBoardConfigEditor = ({ label, pageURL }) => {
+const GithubKanbanBoardEditor = ({ label, pageURL }) => {
   const communityGitHubKanbanBoards =
     communities[label].integrations?.github?.kanban?.boards ?? {};
 

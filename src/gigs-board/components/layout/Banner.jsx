@@ -56,14 +56,12 @@ const Banner = styled.div`
    {
     height: 62px;
     background: #181818;
-    margin-top: -24px;
+    margin-top: -25px;
     padding: 16px 20px;
 
     img {
       height: 30px;
     }
-
-    margin-bottom: 25px;
   }
 `;
 

@@ -141,7 +141,6 @@ const communities = {
 
 const Gradient = styled.div`
    {
-    margin-top: -25px;
     margin-bottom: 25px;
     height: 250px;
     text-align: center;
