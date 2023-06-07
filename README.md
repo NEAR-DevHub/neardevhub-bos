@@ -20,6 +20,8 @@ We communicate primarily over GitHub. We recommend configuring your [notificatio
 
 [Learn more](https://github.com/near/devgigsboard-widgets/blob/main/docs/how-we-work.md) about how we work asynchronously.  
 
+**Please follow [this process](https://github.com/near/devgigsboard-widgets/blob/main/docs/contribution.md) if you work on a regular basis.**
+
 # Getting Help
 
 If you are working on a specific issue, you can leave a comment. You can also drop a message on the [NEAR Dev](https://t.me/neardev) Telegram channel.
