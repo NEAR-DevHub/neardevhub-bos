@@ -145,7 +145,7 @@ const GithubRepoBoard = ({
       <div className="d-flex flex-column align-items-center gap-2">
         <h5 className="h5 d-inline-flex gap-2 m-0">
           <i className="bi bi-kanban-fill" />
-          <span>{title}</span>
+          <span>{(title?.length ?? 0) > 0 ? title : "Untitled board"}</span>
         </h5>
 
         <p className="m-0 py-1 text-secondary text-center">{description}</p>
@@ -170,7 +170,7 @@ const GithubRepoBoard = ({
 
         {pageURL ? (
           <button
-            className="btn btn-sm btn-outline-secondary d-inline-flex gap-2"
+            className="btn shadow btn-sm btn-outline-secondary d-inline-flex gap-2"
             onClick={() => clipboard.writeText(pageURL)}
           >
             <i className="bi bi-clipboard-fill" />
@@ -180,7 +180,7 @@ const GithubRepoBoard = ({
 
         {isEditable ? (
           <button
-            className="btn btn-sm btn-primary d-inline-flex gap-2"
+            className="btn shadow btn-sm btn-primary d-inline-flex gap-2"
             onClick={editorTrigger}
           >
             <i className="bi bi-wrench-adjustable-circle-fill" />
