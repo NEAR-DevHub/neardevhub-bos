@@ -1,4 +1,4 @@
-const CommunityEditorAboutForm = ({}) => {
+const CommunityEditorAboutSection = ({}) => {
   return (
     <div className="">
       <div className=""></div>
@@ -6,4 +6,4 @@ const CommunityEditorAboutForm = ({}) => {
   );
 };
 
-return CommunityEditorAboutForm(props);
+return CommunityEditorAboutSection(props);

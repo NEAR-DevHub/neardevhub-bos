@@ -144,10 +144,25 @@ const useForm = ({ stateKey: formStateKey }) => ({
 });
 /* END_INCLUDE: "shared/lib/form" */
 
+const coverURL =
+  "https://ipfs.near.social/ipfs/bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey";
+
 const CommunityEditorBrandingSection = ({}) => {
   return (
-    <div class="card mb-3">
-      <img src={""} class="card-img-top" alt="Community card cover preview" />
+    <div class="card shadow mb-3" style={{ height: 240 }}>
+      <div
+        alt="Community card cover preview"
+        class="card-img-top"
+        style={{
+          background: [
+            "center",
+            "/",
+            "cover",
+            "no-repeat",
+            `url(${coverURL})`,
+          ].join(" "),
+        }}
+      />
 
       <div class="card-body">
         <h5 class="card-title">Community name</h5>
@@ -158,4 +173,4 @@ const CommunityEditorBrandingSection = ({}) => {
   );
 };
 
-return CommunityEditorAboutForm(props);
+return CommunityEditorBrandingSection(props);

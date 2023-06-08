@@ -1,4 +1,4 @@
-const CommunityEditorPermissionsForm = ({}) => {
+const CommunityEditorPermissionsSection = ({}) => {
   return (
     <div className="">
       <div className=""></div>
@@ -6,4 +6,4 @@ const CommunityEditorPermissionsForm = ({}) => {
   );
 };
 
-return CommunityEditorPermissionsForm(props);
+return CommunityEditorPermissionsSection(props);
