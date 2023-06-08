@@ -7,7 +7,7 @@ const ButtonSwitch = ({
   title,
 }) => (
   <div
-    className={["btn-group", className ?? ""].join(" ")}
+    className={["btn-group shadow", className ?? ""].join(" ")}
     role="group"
     aria-label={title}
     key={`${key}-${value}`}

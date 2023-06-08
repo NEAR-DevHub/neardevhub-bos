@@ -540,7 +540,12 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
     formState !== null ? (
       <>
         <div className="d-flex gap-3 flex-column flex-lg-row">
-          <div className="input-group-text border-0 d-flex flex-column flex-1 flex-shrink-0">
+          <div
+            className={[
+              "input-group-text border-0",
+              "d-flex flex-column gap-1 flex-1 flex-shrink-0 align-items-start",
+            ].join(" ")}
+          >
             <span id={`${formState.id}-title`}>Title</span>
 
             <input
@@ -556,7 +561,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
           <div
             className={[
               "input-group-text border-0",
-              "d-flex flex-column justify-content-evenly flex-4 w-100",
+              "d-flex flex-column gap-1 align-items-start justify-content-evenly flex-4 w-100",
             ].join(" ")}
           >
             <span id={`${formState.id}-repoURL`}>GitHub repository URL</span>
@@ -603,7 +608,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
             )}
           </CompactContainer>
 
-          <div className="input-group-text border-0 d-flex flex-column w-100">
+          <div className="input-group-text border-0 d-flex gap-1 flex-column align-items-start w-100">
             <span id={`${formState.id}-description`}>Description</span>
 
             <textarea
@@ -651,7 +656,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
                   </div>
 
                   <button
-                    class="btn btn-outline-danger"
+                    class="btn shadow btn-outline-danger"
                     onClick={formUpdate({
                       path: ["columns"],
                       via: columnsDeleteById(id),
@@ -716,19 +721,14 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
   return (
     <div className="d-flex flex-column gap-4">
       {state.isEditorEnabled && formState !== null ? (
-        <div
-          className={[
-            "d-flex flex-column gap-3",
-            "border border-2 border-primary rounded-2 p-3 w-100",
-          ].join(" ")}
-        >
+        <div className="d-flex flex-column gap-3 p-3 w-100 rounded-2 shadow">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-wrench-adjustable-circle-fill" />
               <span>Board configuration</span>
             </h5>
 
-            {widget("components.atom.button-switch", {
+            {widget("components.molecule.button-switch", {
               currentValue: state.editingMode,
               key: "editingMode",
               onChange: onEditingModeChange,
@@ -758,7 +758,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
 
           <div className="d-flex align-items-center justify-content-end gap-3">
             <button
-              className="btn btn-outline-secondary d-inline-flex gap-2 me-auto"
+              className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
               disabled={Object.keys(formState.columns).length >= 6}
               onClick={formUpdate({
                 path: ["columns"],
@@ -770,7 +770,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
             </button>
 
             <button
-              className="btn btn-outline-danger d-inline-flex gap-2 align-items-center"
+              className="btn shadow btn-outline-danger d-inline-flex gap-2 align-items-center"
               onClick={() => onEditorToggle(false)}
               style={{ width: "fit-content" }}
             >
@@ -779,7 +779,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
 
             <button
               disabled={!formState.hasChanges}
-              className="btn btn-primary d-inline-flex gap-2 align-items-center"
+              className="btn shadow btn-primary d-inline-flex gap-2 align-items-center"
               style={{ width: "fit-content" }}
             >
               <i className="bi bi-file-arrow-up-fill" />
@@ -806,7 +806,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
           </h5>
 
           <button
-            className="btn btn-primary d-inline-flex gap-2"
+            className="btn shadow btn-primary d-inline-flex gap-2"
             onClick={boardsCreateNew}
           >
             <i class="bi bi-kanban-fill" />
