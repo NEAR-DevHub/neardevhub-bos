@@ -38,9 +38,8 @@ function href(widgetName, linkProps) {
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""
+    }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "communities.jsx" */
@@ -124,40 +123,166 @@ const Overview = (
   </div>
 );
 
+const SocialMediaIcons = (
+  <div className="mb-2 d-flex gap-2 flex-wrap">
+    <a
+      className="btn btn-outline-secondary border-0"
+      href="#/mob.near/widget/ProfilePage?accountId=self.social.near"
+    >
+      <i className="bi bi-person-circle"></i>
+    </a>
+    <a
+      className="btn btn-outline-secondary border-0"
+      href="https://t.me/NearSocial"
+    >
+      <i className="bi bi-telegram"></i>
+    </a>
+    <a
+      className="btn btn-outline-secondary border-0"
+      href="https://github.com/NearSocial"
+    >
+      <i className="bi bi-github"></i>
+    </a>
+    <a
+      className="btn btn-outline-secondary border-0"
+      href="https://twitter.com/NearSocial_"
+    >
+      <i className="bi bi-twitter"></i>
+    </a>
+    <a
+      className="btn btn-outline-secondary border-0"
+      href="https://thewiki.near.page/near.social"
+    >
+      <i className="bi bi-wikipedia"></i>
+    </a>
+  </div>
+);
+
+const CommunitySummary = (
+  <div>
+    {/* Use short description from communities data */}
+    <Markdown text={community.desc} onMention={onMention} />
+    {SocialMediaIcons}
+    <div className="d-flex justify-content-between align-items-center">
+    </div>
+  </div>
+);
+
+// const CommunityOverview = (
+//   <Card
+//     // Use title from communities data
+//     title={community.title + " Overview"}
+//     content={CommunitySummary}
+//   />
+// );
+
 /* Card components */
 const CardContainer = styled.div`
-  border: 1px solid #ccc;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-`;
+    border: 1px solid #ccc;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    `;
 
 const CardTitle = styled.h3`
-  margin-bottom: 8px;
-`;
+    margin-bottom: 8px;
+    `;
 
 const CardContent = styled.p`
-  margin-bottom: 8px;
-`;
+    margin-bottom: 8px;
+    `;
 
 const Card = ({ title, content }) => {
   return (
     <CardContainer>
       <CardTitle>{title}</CardTitle>
       <CardContent>{content}</CardContent>
+
     </CardContainer>
   );
 };
 
 const CommunityOverview = (
   <Card
-    title="Community Overview"
-    content="Description for the community. More details go here."
-  />
+    content={CommunitySummary}
+    title={community.title}>
+  </Card>
+);
+const mockTeamMembers = [
+  {
+    id: "code_king.near",
+    role: "Admin",
+    avatar: "https://avatars.dicebear.com/api/avataaars/code_king.svg",
+  },
+  {
+    id: "java_jester.near",
+    role: "Moderator",
+    avatar: "https://avatars.dicebear.com/api/avataaars/java_jester.svg",
+  },
+  {
+    id: "css_queen.near",
+    role: "Owner",
+    avatar: "https://avatars.dicebear.com/api/avataaars/css_queen.svg",
+  },
+  {
+    id: "js_joker.near",
+    role: "Member",
+    avatar: "https://avatars.dicebear.com/api/avataaars/js_joker.svg",
+  },
+  {
+    id: "python_princess.near",
+    role: "Admin",
+    avatar: "https://avatars.dicebear.com/api/avataaars/python_princess.svg",
+  }
+];
+
+// Define a role ranking map
+const roleRanking = {
+  "Owner": 1,
+  "Admin": 2,
+  "Moderator": 3,
+  "Member": 4,
+};
+
+// Function to sort members by role
+const sortMembersByRole = (a, b) => {
+  return roleRanking[a.role] - roleRanking[b.role];
+};
+
+const sortedTeamMembers = mockTeamMembers.sort(sortMembersByRole);
+
+const TeamMember = ({ member }) => (
+  <div className="d-flex align-items-center mb-3 justify-content-between">
+    <div className="d-flex align-items-center">
+      <img
+        src={member.avatar}
+        alt={member.id}
+        style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+        className="mr-3"
+      />
+      <strong>{member.id}</strong>
+    </div>
+    <span>{member.role}</span>
+  </div>
+);s
+
+// Team Members List
+const TeamMembersList = mockTeamMembers.map((member) => (
+  <TeamMember key={member.id} member={member} />
+));
+
+// More Info Button
+const MoreInfoButton = (
+  <div className="row justify-content-center">
+    <button type="button" class="btn btn-link">More Info</button>
+  </div>
 );
 
-const TeamsCard = <Card title={"Team Members"}></Card>;
+// Team Card
+const TeamsCard = (
+  <Card title={"Team Members"} content={<div>{TeamMembersList}{MoreInfoButton}</div>}></Card>
+);
 
 return (
   <div className="row">
