@@ -4,7 +4,7 @@ const nearDevGovGigsContractAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+  (context.widgetSrc ?? "jgdev.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -42,50 +42,6 @@ function href(widgetName, linkProps) {
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
-
-const WrapperWidget = ({ children, id }) => {
-  const storageType = "local"; // Hard-coded storage type
-
-  // This function handles the state change for the children widgets
-  const handleStateChange = (key, value) => {
-    // Use the unique identifier to create a unique storage key
-    const storageKey = `${id}_${key}`;
-
-    console.log(`Setting value for ${storageKey}: `, value); // Console log added here
-
-    // Update the local storage with the new state
-    localStorage.setItem(storageKey, JSON.stringify(value));
-    console.log(`State saved in local storage for ${storageKey}`); // Console log added here
-  };
-
-  // This function initializes the state of the children widgets
-  const initState = (key, defaultValue) => {
-    // Use the unique identifier to create a unique storage key
-    const storageKey = `${id}_${key}`;
-
-    let storedValue = localStorage.getItem(storageKey);
-    console.log(
-      `Retrieved value from local storage for ${storageKey}: `,
-      storedValue
-    ); // Console log added here
-
-    if (storedValue) {
-      try {
-        return JSON.parse(storedValue);
-      } catch (e) {
-        console.error("Error parsing JSON from storage", e);
-      }
-    }
-    return defaultValue;
-  };
-
-  // Render the children widgets and pass the state management functions as props
-  return React.Children.map(children, (child) =>
-    child && typeof child === "object"
-      ? React.cloneElement(child, { handleStateChange, initState })
-      : child
-  );
-};
 /* END_INCLUDE: "common.jsx" */
 
 const WrapperWidget = ({ children, id, storageType }) => {
@@ -96,11 +52,11 @@ const WrapperWidget = ({ children, id, storageType }) => {
 
     if (storageType === "local") {
       // Update the local storage with the new state
-      localStorage.setItem(storageKey, JSON.stringify(value));
+      Storage.set(storageKey, JSON.stringify(value));
     } else if (storageType === "sync") {
       // Update the sync storage with the new state
       // Replace this with the appropriate API call for your sync storage
-      syncStorage.setItem(storageKey, JSON.stringify(value));
+      Storage.set(storageKey, JSON.stringify(value));
     }
   };
 
@@ -111,11 +67,7 @@ const WrapperWidget = ({ children, id, storageType }) => {
 
     let storedValue;
     if (storageType === "local") {
-      storedValue = localStorage.getItem(storageKey);
-    } else if (storageType === "sync") {
-      // Retrieve the value from sync storage
-      // Replace this with the appropriate API call for your sync storage
-      storedValue = syncStorage.getItem(storageKey);
+      storedValue = Storage.get(storageKey);
     }
 
     if (storedValue) {

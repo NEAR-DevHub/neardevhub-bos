@@ -4,7 +4,7 @@ const nearDevGovGigsContractAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+  (context.widgetSrc ?? "jgdev.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -42,52 +42,7 @@ function href(widgetName, linkProps) {
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
-
-const WrapperWidget = ({ children, id }) => {
-  const storageType = "local"; // Hard-coded storage type
-
-  // This function handles the state change for the children widgets
-  const handleStateChange = (key, value) => {
-    // Use the unique identifier to create a unique storage key
-    const storageKey = `${id}_${key}`;
-
-    console.log(`Setting value for ${storageKey}: `, value); // Console log added here
-
-    // Update the local storage with the new state
-    localStorage.setItem(storageKey, JSON.stringify(value));
-    console.log(`State saved in local storage for ${storageKey}`); // Console log added here
-  };
-
-  // This function initializes the state of the children widgets
-  const initState = (key, defaultValue) => {
-    // Use the unique identifier to create a unique storage key
-    const storageKey = `${id}_${key}`;
-
-    let storedValue = localStorage.getItem(storageKey);
-    console.log(
-      `Retrieved value from local storage for ${storageKey}: `,
-      storedValue
-    ); // Console log added here
-
-    if (storedValue) {
-      try {
-        return JSON.parse(storedValue);
-      } catch (e) {
-        console.error("Error parsing JSON from storage", e);
-      }
-    }
-    return defaultValue;
-  };
-
-  // Render the children widgets and pass the state management functions as props
-  return React.Children.map(children, (child) =>
-    child && typeof child === "object"
-      ? React.cloneElement(child, { handleStateChange, initState })
-      : child
-  );
-};
 /* END_INCLUDE: "common.jsx" */
-
 /* INCLUDE: "communities.jsx" */
 const communities = {
   "zero-knowledge": {
@@ -169,8 +124,54 @@ const Overview = (
   </div>
 );
 
-return widget("components.community.Layout", {
-  label: props.label,
-  tab: "Overview",
-  children: Overview,
-});
+/* Card components */
+const CardContainer = styled.div`
+  border: 1px solid #ccc;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+`;
+
+const CardTitle = styled.h3`
+  margin-bottom: 8px;
+`;
+
+const CardContent = styled.p`
+  margin-bottom: 8px;
+`;
+
+const Card = ({ title, content }) => {
+  return (
+    <CardContainer>
+      <CardTitle>{title}</CardTitle>
+      <CardContent>{content}</CardContent>
+    </CardContainer>
+  );
+};
+
+const CommunityOverview = (
+  <Card
+    title="Community Overview"
+    content="Description for the community. More details go here."
+  />
+);
+
+const TeamsCard = <Card title={"Team Members"}></Card>;
+
+return (
+  <div className="row">
+    <div className="col-xs-12 col-md-8">
+      {widget("components.community.Layout", {
+        label: props.label,
+        tab: "Overview",
+        children: Overview,
+      })}
+    </div>
+    <div className="col-xs-12 col-md-4">
+      {CommunityOverview}
+      <br></br>
+      {TeamsCard}
+    </div>
+  </div>
+);
