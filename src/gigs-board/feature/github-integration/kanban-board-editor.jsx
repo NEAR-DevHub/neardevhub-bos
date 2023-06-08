@@ -200,75 +200,72 @@ const communities = {
     title: "Protocol",
     desc: "Supporting the ongoing innovation of the NEAR Protocol.",
 
-    integrations: {
-      github: {
-        boards: {
-          "18855b9c9f2-216091d-6484800b-42593f54-6102b48a": {
-            id: "18855b9c9f2-216091d-6484800b-42593f54-6102b48a",
+    github: {
+      kanbanBoards: {
+        "18855b9c9f2-216091d-6484800b-42593f54-6102b48a": {
+          id: "18855b9c9f2-216091d-6484800b-42593f54-6102b48a",
 
-            columns: {
-              "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630": {
-                id: "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630",
+          columns: {
+            "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630": {
+              id: "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630",
 
-                description:
-                  "NEPs that need a moderator review or author revision.",
+              description:
+                "NEPs that need a moderator review or author revision.",
 
-                labelSearchTerms: ["WG-protocol", "S-draft"],
-                title: "📄 Draft",
-              },
-
-              "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9": {
-                description:
-                  "NEPS that need a review by Subject Matter Experts.",
-
-                labelSearchTerms: ["WG-protocol", "S-review"],
-                title: "👀 Review",
-                id: "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9",
-              },
-
-              "18877dd71e5-47d177b8-5505178-640a5937--17968e87": {
-                description:
-                  "NEPS in the final review stage that need the work group voting indications.",
-
-                labelSearchTerms: ["WG-protocol", "S-voting"],
-                title: "✔ Voting",
-                id: "18877dd71e5-47d177b8-5505178-640a5937--17968e87",
-              },
-
-              "18877e14753--5b0ca250-1edea464-523fd579--5ebde527": {
-                description:
-                  "NEPS that were reviewed and approved by a work group.",
-
-                labelSearchTerms: ["WG-protocol", "S-approved"],
-                title: "✅ Approved NEPs",
-                id: "18877e14753--5b0ca250-1edea464-523fd579--5ebde527",
-              },
-
-              "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81": {
-                description:
-                  "NEPS that were reviewed and approved by a work group or NEP moderators.",
-
-                labelSearchTerms: ["WG-protocol", "A-NEP-GrammarFix"],
-                title: "🔧 Approved Fixes",
-                id: "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81",
-              },
-
-              "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be": {
-                description:
-                  "NEPs that were retracted by the author or had no activity for over two months.",
-
-                labelSearchTerms: ["WG-protocol", "S-retracted"],
-                title: "❌ RETRACTED",
-                id: "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be",
-              },
+              labelSearchTerms: ["WG-protocol", "S-draft"],
+              title: "📄 Draft",
             },
 
-            dataTypesIncluded: { Issue: false, PullRequest: true },
-            description: "Latest NEAR Enhancement Proposals by status",
-            repoURL: "https://github.com/near/NEPs",
-            ticketState: "all",
-            title: "NEAR Protocol NEPs",
+            "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9": {
+              description: "NEPS that need a review by Subject Matter Experts.",
+
+              labelSearchTerms: ["WG-protocol", "S-review"],
+              title: "👀 Review",
+              id: "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9",
+            },
+
+            "18877dd71e5-47d177b8-5505178-640a5937--17968e87": {
+              description:
+                "NEPS in the final review stage that need the work group voting indications.",
+
+              labelSearchTerms: ["WG-protocol", "S-voting"],
+              title: "✔ Voting",
+              id: "18877dd71e5-47d177b8-5505178-640a5937--17968e87",
+            },
+
+            "18877e14753--5b0ca250-1edea464-523fd579--5ebde527": {
+              description:
+                "NEPS that were reviewed and approved by a work group.",
+
+              labelSearchTerms: ["WG-protocol", "S-approved"],
+              title: "✅ Approved NEPs",
+              id: "18877e14753--5b0ca250-1edea464-523fd579--5ebde527",
+            },
+
+            "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81": {
+              description:
+                "NEPS that were reviewed and approved by a work group or NEP moderators.",
+
+              labelSearchTerms: ["WG-protocol", "A-NEP-GrammarFix"],
+              title: "🔧 Approved Fixes",
+              id: "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81",
+            },
+
+            "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be": {
+              description:
+                "NEPs that were retracted by the author or had no activity for over two months.",
+
+              labelSearchTerms: ["WG-protocol", "S-retracted"],
+              title: "❌ RETRACTED",
+              id: "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be",
+            },
           },
+
+          dataTypesIncluded: { Issue: false, PullRequest: true },
+          description: "Latest NEAR Enhancement Proposals by status",
+          repoURL: "https://github.com/near/NEPs",
+          ticketState: "all",
+          title: "NEAR Protocol NEPs",
         },
       },
     },
@@ -288,75 +285,72 @@ const communities = {
     title: "Tooling",
     desc: "Supporting the ongoing innovation of tooling.",
 
-    integrations: {
-      github: {
-        boards: {
-          "18855b9c9f2-216091d-6484800b-42593f54-6102b48a": {
-            id: "18855b9c9f2-216091d-6484800b-42593f54-6102b48a",
+    github: {
+      kanbanBoards: {
+        "18855b9c9f2-216091d-6484800b-42593f54-6102b48a": {
+          id: "18855b9c9f2-216091d-6484800b-42593f54-6102b48a",
 
-            columns: {
-              "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630": {
-                id: "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630",
+          columns: {
+            "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630": {
+              id: "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630",
 
-                description:
-                  "NEPs that need a moderator review or author revision.",
+              description:
+                "NEPs that need a moderator review or author revision.",
 
-                labelSearchTerms: ["WG-tools", "S-draft"],
-                title: "📄 Draft",
-              },
-
-              "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9": {
-                description:
-                  "NEPS that need a review by Subject Matter Experts.",
-
-                labelSearchTerms: ["WG-tools", "S-review"],
-                title: "👀 Review",
-                id: "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9",
-              },
-
-              "18877dd71e5-47d177b8-5505178-640a5937--17968e87": {
-                description:
-                  "NEPS in the final review stage that need the work group voting indications.",
-
-                labelSearchTerms: ["WG-tools", "S-voting"],
-                title: "✔ Voting",
-                id: "18877dd71e5-47d177b8-5505178-640a5937--17968e87",
-              },
-
-              "18877e14753--5b0ca250-1edea464-523fd579--5ebde527": {
-                description:
-                  "NEPS that were reviewed and approved by a work group.",
-
-                labelSearchTerms: ["WG-tools", "S-approved"],
-                title: "✅ Approved NEPs",
-                id: "18877e14753--5b0ca250-1edea464-523fd579--5ebde527",
-              },
-
-              "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81": {
-                description:
-                  "NEPS that were reviewed and approved by a work group or NEP moderators.",
-
-                labelSearchTerms: ["WG-tools", "A-NEP-GrammarFix"],
-                title: "🔧 Approved Fixes",
-                id: "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81",
-              },
-
-              "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be": {
-                description:
-                  "NEPs that were retracted by the author or had no activity for over two months.",
-
-                labelSearchTerms: ["WG-tools", "S-retracted"],
-                title: "❌ RETRACTED",
-                id: "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be",
-              },
+              labelSearchTerms: ["WG-tools", "S-draft"],
+              title: "📄 Draft",
             },
 
-            dataTypesIncluded: { Issue: false, PullRequest: true },
-            description: "Latest NEAR Enhancement Proposals by status",
-            repoURL: "https://github.com/near/NEPs",
-            ticketState: "all",
-            title: "NEAR Tooling NEPs",
+            "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9": {
+              description: "NEPS that need a review by Subject Matter Experts.",
+
+              labelSearchTerms: ["WG-tools", "S-review"],
+              title: "👀 Review",
+              id: "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9",
+            },
+
+            "18877dd71e5-47d177b8-5505178-640a5937--17968e87": {
+              description:
+                "NEPS in the final review stage that need the work group voting indications.",
+
+              labelSearchTerms: ["WG-tools", "S-voting"],
+              title: "✔ Voting",
+              id: "18877dd71e5-47d177b8-5505178-640a5937--17968e87",
+            },
+
+            "18877e14753--5b0ca250-1edea464-523fd579--5ebde527": {
+              description:
+                "NEPS that were reviewed and approved by a work group.",
+
+              labelSearchTerms: ["WG-tools", "S-approved"],
+              title: "✅ Approved NEPs",
+              id: "18877e14753--5b0ca250-1edea464-523fd579--5ebde527",
+            },
+
+            "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81": {
+              description:
+                "NEPS that were reviewed and approved by a work group or NEP moderators.",
+
+              labelSearchTerms: ["WG-tools", "A-NEP-GrammarFix"],
+              title: "🔧 Approved Fixes",
+              id: "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81",
+            },
+
+            "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be": {
+              description:
+                "NEPs that were retracted by the author or had no activity for over two months.",
+
+              labelSearchTerms: ["WG-tools", "S-retracted"],
+              title: "❌ RETRACTED",
+              id: "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be",
+            },
           },
+
+          dataTypesIncluded: { Issue: false, PullRequest: true },
+          description: "Latest NEAR Enhancement Proposals by status",
+          repoURL: "https://github.com/near/NEPs",
+          ticketState: "all",
+          title: "NEAR Tooling NEPs",
         },
       },
     },
@@ -376,75 +370,72 @@ const communities = {
     title: "Contract Standards",
     desc: "Coordinating the contribution to the NEAR dapp standards.",
 
-    integrations: {
-      github: {
-        boards: {
-          "18855b9c9f2-216091d-6484800b-42593f54-6102b48a": {
-            id: "18855b9c9f2-216091d-6484800b-42593f54-6102b48a",
+    github: {
+      kanbanBoards: {
+        "18855b9c9f2-216091d-6484800b-42593f54-6102b48a": {
+          id: "18855b9c9f2-216091d-6484800b-42593f54-6102b48a",
 
-            columns: {
-              "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630": {
-                id: "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630",
+          columns: {
+            "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630": {
+              id: "18855f4a93e-76a9b704-14c3ebdb-1e6c0f05-22653630",
 
-                description:
-                  "NEPs that need a moderator review or author revision.",
+              description:
+                "NEPs that need a moderator review or author revision.",
 
-                labelSearchTerms: ["WG-contract-standards", "S-draft"],
-                title: "📄 Draft",
-              },
-
-              "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9": {
-                description:
-                  "NEPS that need a review by Subject Matter Experts.",
-
-                labelSearchTerms: ["WG-contract-standards", "S-review"],
-                title: "👀 Review",
-                id: "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9",
-              },
-
-              "18877dd71e5-47d177b8-5505178-640a5937--17968e87": {
-                description:
-                  "NEPS in the final review stage that need the work group voting indications.",
-
-                labelSearchTerms: ["WG-contract-standards", "S-voting"],
-                title: "✔ Voting",
-                id: "18877dd71e5-47d177b8-5505178-640a5937--17968e87",
-              },
-
-              "18877e14753--5b0ca250-1edea464-523fd579--5ebde527": {
-                description:
-                  "NEPS that were reviewed and approved by a work group.",
-
-                labelSearchTerms: ["WG-contract-standards", "S-approved"],
-                title: "✅ Approved NEPs",
-                id: "18877e14753--5b0ca250-1edea464-523fd579--5ebde527",
-              },
-
-              "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81": {
-                description:
-                  "NEPS that were reviewed and approved by a work group or NEP moderators.",
-
-                labelSearchTerms: ["WG-contract-standards", "A-NEP-GrammarFix"],
-                title: "🔧 Approved Fixes",
-                id: "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81",
-              },
-
-              "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be": {
-                description:
-                  "NEPs that were retracted by the author or had no activity for over two months.",
-
-                labelSearchTerms: ["WG-contract-standards", "S-retracted"],
-                title: "❌ RETRACTED",
-                id: "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be",
-              },
+              labelSearchTerms: ["WG-contract-standards", "S-draft"],
+              title: "📄 Draft",
             },
 
-            dataTypesIncluded: { Issue: false, PullRequest: true },
-            description: "Latest NEAR Enhancement Proposals by status",
-            repoURL: "https://github.com/near/NEPs",
-            ticketState: "all",
-            title: "NEAR Contract Standards NEPs",
+            "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9": {
+              description: "NEPS that need a review by Subject Matter Experts.",
+
+              labelSearchTerms: ["WG-contract-standards", "S-review"],
+              title: "👀 Review",
+              id: "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9",
+            },
+
+            "18877dd71e5-47d177b8-5505178-640a5937--17968e87": {
+              description:
+                "NEPS in the final review stage that need the work group voting indications.",
+
+              labelSearchTerms: ["WG-contract-standards", "S-voting"],
+              title: "✔ Voting",
+              id: "18877dd71e5-47d177b8-5505178-640a5937--17968e87",
+            },
+
+            "18877e14753--5b0ca250-1edea464-523fd579--5ebde527": {
+              description:
+                "NEPS that were reviewed and approved by a work group.",
+
+              labelSearchTerms: ["WG-contract-standards", "S-approved"],
+              title: "✅ Approved NEPs",
+              id: "18877e14753--5b0ca250-1edea464-523fd579--5ebde527",
+            },
+
+            "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81": {
+              description:
+                "NEPS that were reviewed and approved by a work group or NEP moderators.",
+
+              labelSearchTerms: ["WG-contract-standards", "A-NEP-GrammarFix"],
+              title: "🔧 Approved Fixes",
+              id: "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81",
+            },
+
+            "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be": {
+              description:
+                "NEPs that were retracted by the author or had no activity for over two months.",
+
+              labelSearchTerms: ["WG-contract-standards", "S-retracted"],
+              title: "❌ RETRACTED",
+              id: "18877e40c46--76d23f4d-578f24a8--2cfcd190--74aa77be",
+            },
           },
+
+          dataTypesIncluded: { Issue: false, PullRequest: true },
+          description: "Latest NEAR Enhancement Proposals by status",
+          repoURL: "https://github.com/near/NEPs",
+          ticketState: "all",
+          title: "NEAR Contract Standards NEPs",
         },
       },
     },
@@ -465,16 +456,16 @@ const boardConfigDefaults = {
   dataTypesIncluded: { Issue: false, PullRequest: true },
   description: "",
   repoURL: "",
+  ticketState: "all",
   title: "",
 };
 
 const GithubKanbanBoardEditor = ({ label, pageURL }) => {
   const communityGitHubKanbanBoards =
-    communities[label].integrations?.github?.kanban?.boards ?? {};
+    communities[label]?.github?.kanbanBoards ?? {};
 
   State.init({
     boardConfig: null,
-
     editingMode: "form",
     isEditingAllowed: true, // According to user permission level
     isEditorEnabled: false,
@@ -540,50 +531,36 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
     formState !== null ? (
       <>
         <div className="d-flex gap-3 flex-column flex-lg-row">
-          <div
-            className={[
-              "input-group-text border-0",
-              "d-flex flex-column gap-1 flex-1 flex-shrink-0 align-items-start",
-            ].join(" ")}
-          >
-            <span id={`${formState.id}-title`}>Title</span>
+          {widget(
+            "components.molecule.text-input",
+            {
+              className: "flex-shrink-0",
+              key: `${formState.id}-title`,
+              label: "Title",
+              onChange: formUpdate({ path: ["title"] }),
+              placeholder: "NEAR Protocol NEPs",
+              value: formState.title,
+            },
+            `${formState.id}-title`
+          )}
 
-            <input
-              aria-describedby={`${formState.id}-title`}
-              className="form-control"
-              onChange={formUpdate({ path: ["title"] })}
-              placeholder="NEAR Protocol NEPs"
-              type="text"
-              value={formState.title}
-            />
-          </div>
-
-          <div
-            className={[
-              "input-group-text border-0",
-              "d-flex flex-column gap-1 align-items-start justify-content-evenly flex-4 w-100",
-            ].join(" ")}
-          >
-            <span id={`${formState.id}-repoURL`}>GitHub repository URL</span>
-
-            <input
-              aria-describedby={`${formState.id}-repoURL`}
-              className="form-control"
-              onChange={formUpdate({ path: ["repoURL"] })}
-              placeholder="https://github.com/example-org/example-repo"
-              type="text"
-              value={formState.repoURL}
-            />
-          </div>
+          {widget("components.molecule.text-input", {
+            className: "w-100",
+            key: `${formState.id}-repoURL`,
+            label: "GitHub repository URL",
+            onChange: formUpdate({ path: ["repoURL"] }),
+            placeholder: "https://github.com/example-org/example-repo",
+            value: formState.repoURL,
+          })}
         </div>
 
         <div className="d-flex gap-3 flex-column flex-lg-row">
-          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-3 ps-0">
+          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
             <span
               className="d-inline-flex gap-2"
               id={`${formState.id}-dataTypesIncluded`}
             >
-              <i class="bi bi-database-fill" />
+              <i className="bi bi-database-fill" />
               <span>Tracked data</span>
             </span>
 
@@ -591,6 +568,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
               ([typeName, enabled]) =>
                 widget(
                   "components.atom.toggle",
+
                   {
                     active: enabled,
                     className: "w-100",
@@ -608,18 +586,40 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
             )}
           </CompactContainer>
 
-          <div className="input-group-text border-0 d-flex gap-1 flex-column align-items-start w-100">
-            <span id={`${formState.id}-description`}>Description</span>
+          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
+            <span
+              className="d-inline-flex gap-2"
+              id={`${formState.id}-dataTypesIncluded`}
+            >
+              <i class="bi bi-database-fill" />
+              <span>Ticket state</span>
+            </span>
 
-            <textarea
-              aria-describedby={`${formState.id}-description`}
-              className="form-control h-75"
-              onChange={formUpdate({ path: ["description"] })}
-              placeholder="Latest NEAR Enhancement Proposals by status."
-              type="text"
-              value={formState.description}
-            />
-          </div>
+            {widget("components.atom.button-switch", {
+              currentValue: formState.ticketState,
+              key: "ticketState",
+              onChange: formUpdate({ path: ["ticketState"] }),
+
+              options: [
+                { label: "All", value: "all" },
+                { label: "Open", value: "open" },
+                { label: "Closed", value: "closed" },
+              ],
+
+              title: "Editing mode selection",
+            })}
+          </CompactContainer>
+
+          {widget("components.molecule.text-input", {
+            className: "w-100",
+            inputProps: { className: "h-75" },
+            key: `${formState.id}-description`,
+            label: "Description",
+            multiline: true,
+            onChange: formUpdate({ path: ["description"] }),
+            placeholder: "Latest NEAR Enhancement Proposals by status.",
+            value: formState.description,
+          })}
         </div>
 
         <div className="d-flex align-items-center justify-content-between">
@@ -633,83 +633,63 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
           {Object.values(formState.columns).map(
             ({ id, description, labelSearchTerms, title }) => (
               <div
-                class="d-flex flex-column gap-3 rounded-2 p-3 w-100 bg-secondary bg-opacity-25"
+                className="d-flex gap-3 border border-secondary rounded-2 p-3 w-100"
                 key={id}
               >
-                <div class="d-flex gap-3">
-                  <div
-                    className="d-flex flex-column flex-grow-1"
-                    style={{ width: "inherit" }}
-                  >
-                    <span id={`${formState.id}-column-${id}-title`}>Title</span>
+                <div className="d-flex flex-column gap-1 w-100">
+                  {widget("components.molecule.text-input", {
+                    className: "flex-grow-1",
+                    key: `${formState.id}-column-${id}-title`,
+                    label: "Title",
+                    onChange: formUpdate({ path: ["columns", id, "title"] }),
+                    placeholder: "👀 Review",
+                    value: title,
+                  })}
 
-                    <input
-                      aria-describedby={`${formState.id}-column-${id}-title`}
-                      className="form-control"
-                      onChange={formUpdate({
-                        path: ["columns", id, "title"],
-                      })}
-                      placeholder="👀 Review"
-                      type="text"
-                      value={title}
-                    />
-                  </div>
+                  {widget("components.molecule.text-input", {
+                    className: "flex-grow-1",
+                    key: `${formState.id}-column-${id}-description`,
+                    label: "Description",
 
+                    onChange: formUpdate({
+                      path: ["columns", id, "description"],
+                    }),
+
+                    placeholder:
+                      "NEPs that need a review by Subject Matter Experts.",
+
+                    value: description,
+                  })}
+
+                  {widget("components.molecule.text-input", {
+                    key: `${formState.id}-column-${title}-labelSearchTerms`,
+
+                    label: `Search terms for all the labels
+											MUST be presented in included tickets, comma-separated`,
+
+                    onChange: formUpdate({
+                      path: ["columns", id, "labelSearchTerms"],
+                    }),
+
+                    placeholder: "WG-, draft, review, proposal, ...",
+                    value: labelSearchTerms.join(", "),
+                  })}
+                </div>
+
+                <div
+                  className="d-flex flex-column gap-3 border-start p-3 pe-0"
+                  style={{ marginTop: -16, marginBottom: -16 }}
+                >
                   <button
-                    class="btn shadow btn-outline-danger"
+                    className="btn btn-outline-danger shadow"
                     onClick={formUpdate({
                       path: ["columns"],
                       via: columnsDeleteById(id),
                     })}
                     title="Delete column"
                   >
-                    <i class="bi bi-file-earmark-minus-fill" />
+                    <i className="bi bi-trash-fill" />
                   </button>
-                </div>
-
-                <div
-                  className="d-flex flex-column"
-                  style={{ width: "inherit" }}
-                >
-                  <span id={`${formState.id}-column-${id}-description`}>
-                    Description
-                  </span>
-
-                  <input
-                    aria-describedby={`${formState.id}-column-${id}-description`}
-                    className="form-control"
-                    onChange={formUpdate({
-                      path: ["columns", id, "description"],
-                    })}
-                    placeholder="NEPs that need a review by Subject Matter Experts."
-                    type="text"
-                    value={description}
-                  />
-                </div>
-
-                <div
-                  className="d-flex flex-column"
-                  style={{ width: "inherit" }}
-                >
-                  <span
-                    className="text-wrap"
-                    id={`${formState.id}-column-${title}-searchTerms`}
-                  >
-                    Search terms for all the labels MUST be presented in
-                    included tickets, comma-separated
-                  </span>
-
-                  <input
-                    aria-describedby={`${formState.id}-column-${title}-searchTerms`}
-                    aria-label="Search terms for included labels"
-                    className="form-control"
-                    onChange={formUpdate({
-                      path: ["columns", id, "labelSearchTerms"],
-                    })}
-                    placeholder="WG-, draft, review, proposal, ..."
-                    type="text"
-                    value={labelSearchTerms.join(", ")}
-                  />
                 </div>
               </div>
             )
@@ -760,17 +740,14 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
             <button
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
               disabled={Object.keys(formState.columns).length >= 6}
-              onClick={formUpdate({
-                path: ["columns"],
-                via: columnsCreateNew,
-              })}
+              onClick={formUpdate({ path: ["columns"], via: columnsCreateNew })}
             >
-              <i class="bi bi-plus-lg" />
+              <i className="bi bi-plus-lg" />
               <span>New column</span>
             </button>
 
             <button
-              className="btn shadow btn-outline-danger d-inline-flex gap-2 align-items-center"
+              className="btn btn-outline-danger border-0 d-inline-flex gap-2 align-items-center"
               onClick={() => onEditorToggle(false)}
               style={{ width: "fit-content" }}
             >
@@ -779,10 +756,10 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
 
             <button
               disabled={!formState.hasChanges}
-              className="btn shadow btn-primary d-inline-flex gap-2 align-items-center"
+              className="btn shadow btn-success d-inline-flex gap-2 align-items-center"
               style={{ width: "fit-content" }}
             >
-              <i className="bi bi-file-arrow-up-fill" />
+              <i className="bi bi-cloud-arrow-up-fill" />
               <span>Save</span>
             </button>
           </div>
@@ -809,7 +786,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
             className="btn shadow btn-primary d-inline-flex gap-2"
             onClick={boardsCreateNew}
           >
-            <i class="bi bi-kanban-fill" />
+            <i className="bi bi-kanban-fill" />
             <span>Create board</span>
           </button>
         </div>
