@@ -152,15 +152,6 @@ const CommunityHeader = ({ label, tab }) => {
             <div className="ps-3 pb-2 text-secondary">{props.desc}</div>
           </div>
         </div>
-
-        {widget("components.atom.toggle", {
-          active: state.shared.isEditorEnabled,
-          className: "visually-hidden",
-          direction: "rtl",
-          key: "community-editor-toggle",
-          label: "( WIP ) Editor mode",
-          onSwitch: onEditorToggle,
-        })}
       </div>
 
       <NavUnderline className="nav">
