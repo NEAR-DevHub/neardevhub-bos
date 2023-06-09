@@ -200,7 +200,7 @@ const Form = ({
         : null,
 
     children: (
-      <div className="flex-grow-1 d-flex flex-column gap-3">
+      <div className="flex-grow-1 d-flex flex-column gap-1">
         {fieldsRender({
           formState,
           formUpdate,
@@ -209,7 +209,7 @@ const Form = ({
         })}
 
         {isMutable && state.isEditorActive ? (
-          <div className="d-flex align-items-center justify-content-end gap-3 mt-auto">
+          <div className="d-flex align-items-center justify-content-end gap-3 pt-3 mt-auto">
             {actionsAdditional ? (
               <div className="me-auto">{actionsAdditional}</div>
             ) : null}
@@ -221,7 +221,7 @@ const Form = ({
             })}
 
             {widget("components.atom.button", {
-              adornment: <i className="bi bi-cloud-arrow-up-fill" />,
+              adornment: <i className="bi bi-arrow-down-circle-fill" />,
               className: "btn-success",
               disabled: noSubmit,
               label: actionLabelSubmit ?? "Submit",

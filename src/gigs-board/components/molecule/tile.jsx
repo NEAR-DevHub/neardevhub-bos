@@ -1,6 +1,6 @@
 const Tile = ({ children, headerSlotRight, heading, headingAdornment }) => (
   <div
-    className="d-flex flex-column gap-3 shadow border rounded-2 p-3 w-100"
+    className="d-flex flex-column gap-3 shadow border rounded-2 p-4 w-100"
     style={{ maxWidth: 896, minHeight: 240 }}
   >
     <div
