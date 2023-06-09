@@ -84,66 +84,6 @@ const communities = {
 };
 /* END_INCLUDE: "communities.jsx" */
 
-/* INCLUDE: "mockcommunity.jsx" */
-const SocialMediaIcons = (
-  <div className="mb-2 d-flex gap-2 flex-wrap flex-column">
-    <a
-      className="btn btn-outline-secondary border-0 d-flex align-items-center"
-      href="#/mob.near/widget/ProfilePage?accountId=self.social.near"
-    >
-      <i className="bi bi-person-circle"></i>
-      <span className="ms-2">Person Circle</span>
-    </a>
-    <a
-      className="btn btn-outline-secondary border-0 d-flex align-items-center"
-      href="https://t.me/NearSocial"
-    >
-      <i className="bi bi-telegram"></i>
-      <span className="ms-2">Telegram</span>
-    </a>
-    <a
-      className="btn btn-outline-secondary border-0 d-flex align-items-center"
-      href="https://github.com/NearSocial"
-    >
-      <i className="bi bi-github"></i>
-      <span className="ms-2">GitHub</span>
-    </a>
-    <a
-      className="btn btn-outline-secondary border-0 d-flex align-items-center"
-      href="https://twitter.com/NearSocial_"
-    >
-      <i className="bi bi-twitter"></i>
-      <span className="ms-2">Twitter</span>
-    </a>
-    <a
-      className="btn btn-outline-secondary border-0 d-flex align-items-center"
-      href="https://thewiki.near.page/near.social"
-    >
-      <i className="bi bi-wikipedia"></i>
-      <span className="ms-2">Wikipedia</span>
-    </a>
-  </div>
-);
-
-const mockTeamMembers = [
-  {
-    id: "code_king.near",
-    role: "Admin",
-    avatar: "https://avatars.dicebear.com/api/avataaars/code_king.svg",
-  },
-  {
-    id: "java_jester.near",
-    role: "Moderator",
-    avatar: "https://avatars.dicebear.com/api/avataaars/java_jester.svg",
-  },
-  {
-    id: "css_queen.near",
-    role: "Owner",
-    avatar: "https://avatars.dicebear.com/api/avataaars/css_queen.svg",
-  },
-];
-/* END_INCLUDE: "mockcommunity.jsx" */
-
 if (!props.label) {
   return (
     <div class="alert alert-danger" role="alert">
@@ -174,19 +114,6 @@ const onMention = (accountId) => (
   </span>
 );
 
-const SocialMediaIconsWithLabel = community.socials ? (
-  <div className="d-flex flex-column">
-    {Object.entries(community.socials).map(([key, value]) => (
-      <div className="d-flex align-items-center mb-2">
-        <Icon name={key} class="mr-2" />
-        <a href={value} target="_blank" rel="noopener noreferrer">
-          {key}
-        </a>
-      </div>
-    ))}
-  </div>
-) : null;
-
 const Overview = (
   <div>
     <Markdown
@@ -195,110 +122,6 @@ const Overview = (
       onMention={onMention}
     ></Markdown>
   </div>
-);
-
-const CommunitySummary = (
-  <div>
-    <Markdown text={community.desc} onMention={onMention} />
-    {LabelsDisplay}
-    {SocialMediaIcons}
-  </div>
-);
-
-// const CommunityOverview = (
-//   <Card
-//     // Use title from communities data
-//     title={community.title + " Overview"}
-//     content={CommunitySummary}
-//   />
-// );
-
-/* Card components */
-const CardContainer = styled.div`
-  border: none;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-`;
-
-const CardTitle = styled.h3`
-  margin-bottom: 8px;
-`;
-
-const CardContent = styled.p`
-  margin-bottom: 8px;
-`;
-
-const Card = ({ title, content }) => {
-  return (
-    <CardContainer>
-      <CardTitle>{title}</CardTitle>
-      <CardContent>{content}</CardContent>
-    </CardContainer>
-  );
-};
-
-const CommunityOverview = (
-  <Card content={CommunitySummary} title={community.title}></Card>
-);
-
-// Define a role ranking map
-const roleRanking = {
-  Owner: 1,
-  Admin: 2,
-  Moderator: 3,
-  Member: 4,
-};
-
-// Function to sort members by role
-const sortMembersByRole = (a, b) => {
-  return roleRanking[a.role] - roleRanking[b.role];
-};
-
-const sortedTeamMembers = mockTeamMembers.sort(sortMembersByRole);
-
-const TeamMember = ({ member }) => (
-  <div className="d-flex align-items-center mb-3 justify-content-between">
-    <div className="d-flex align-items-center">
-      <img
-        src={member.avatar}
-        alt={member.id}
-        style={{ width: "50px", height: "50px", borderRadius: "50%" }}
-        className="mr-3"
-      />
-      <strong>{member.id}</strong>
-    </div>
-    <span>{member.role}</span>
-  </div>
-);
-s;
-
-// Team Members List
-const TeamMembersList = mockTeamMembers.map((member) => (
-  <TeamMember key={member.id} member={member} />
-));
-
-// More Info Button
-const MoreInfoButton = (
-  <div className="row justify-content-center">
-    <button type="button" class="btn btn-link">
-      More Info
-    </button>
-  </div>
-);
-
-// Team Card
-const TeamsCard = (
-  <Card
-    title={"Team Members"}
-    content={
-      <div>
-        {TeamMembersList}
-        {MoreInfoButton}
-      </div>
-    }
-  ></Card>
 );
 
 return (
@@ -313,10 +136,16 @@ return (
     </div>
     <div className="row">
       <div className="col-xs-12 col-lg-8">{Overview}</div>
-      <div className="col-xs-12 col-lg-4">
-        {CommunityOverview}
-        <br></br>
-        {TeamsCard}
+      <div class="col-4 container-fluid">
+        <Widget
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.Sidebar`}
+          props={{
+            metadata: metadata,
+            accountId: accountId,
+            widgetName: widgetName,
+            label: props.label,
+          }}
+        />
       </div>
     </div>
   </div>

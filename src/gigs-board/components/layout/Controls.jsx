@@ -45,7 +45,10 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 return (
-  <div class="card border-secondary mb-2">
+  <div
+    class="card mb-2"
+    style={{ boxShadow: "1px 1px 3px rgba(0, 128, 128, 0.33)" }}
+  >
     <div class="nav navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
         <div

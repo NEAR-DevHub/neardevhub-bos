@@ -188,7 +188,10 @@ const header = (
           />
         </div>
         <div class="col-5">
-          <div class="d-flex justify-content-end">
+          <div
+            class="d-flex justify-content-end"
+            style={{ color: "rgba(0, 0, 0, 0.8)" }}
+          >
             {editControl}
             {timestamp}
             <div class="bi bi-clock-history px-2"></div>
@@ -303,13 +306,17 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
 };
 
 const buttonsFooter = props.isPreview ? null : (
-  <div class="row" key="buttons-footer">
+  <div class="row my-2" key="buttons-footer">
     <div class="col-8">
-      <div class="btn-group" role="group" aria-label="Basic outlined example">
+      <div
+        class="btn-group text-sm"
+        role="group"
+        aria-label="Basic outlined example"
+      >
         <button
           type="button"
-          class="btn btn-outline-primary"
-          style={{ border: "0px" }}
+          class="btn btn-outline-secondary"
+          style={{ border: "0px", opacity: "0.7" }}
           onClick={onLike}
         >
           <i class={`bi ${likeBtnClass}`}> </i>
@@ -321,11 +328,11 @@ const buttonsFooter = props.isPreview ? null : (
                 ),
               })}
         </button>
-        <div class="btn-group" role="group">
+        <div class="btn-group text-sm" role="group">
           <button
             type="button"
-            class="btn btn-outline-primary"
-            style={{ border: "0px" }}
+            class="btn btn-outline-secondary"
+            style={{ border: "0px", opacity: "0.84" }}
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
@@ -369,8 +376,8 @@ const buttonsFooter = props.isPreview ? null : (
         </div>
         <button
           type="button"
-          class="btn btn-outline-primary"
-          style={{ border: "0px" }}
+          class="btn btn-outline-secondary text-sm"
+          style={{ border: "0px", opacity: "0.84" }}
           data-bs-toggle="collapse"
           href={`#collapseChildPosts${postId}`}
           aria-expanded={defaultExpanded}
@@ -444,27 +451,27 @@ const editorsFooter = props.isPreview ? null : (
 const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
-// const postLabels = post.snapshot.labels ? (
-//   <div class="card-title" key="post-labels">
-//     {post.snapshot.labels.map((label) => {
-//       return (
-//         <a href={href("Feed", { label }, label)}>
-//           <span
-//             class="badge me-1"
-//             style={{
-//               color: "rgba(0, 0, 0, 0.75)",
-//               border: "1px solid rgba(0, 0, 0, 0.75)",
-//             }}
-//           >
-//             {label}
-//           </span>
-//         </a>
-//       );
-//     })}
-//   </div>
-// ) : (
-//   <div key="post-labels"></div>
-// );
+const postLabels = post.snapshot.labels ? (
+  <div class="card-title" key="post-labels">
+    {post.snapshot.labels.map((label) => {
+      return (
+        <a href={href("Feed", { label }, label)}>
+          <span
+            class="badge me-1"
+            style={{
+              color: "rgba(0, 0, 0, 0.5)",
+              border: "1px solid rgba(0, 0, 0, 0.075)",
+            }}
+          >
+            {label}
+          </span>
+        </a>
+      );
+    })}
+  </div>
+) : (
+  <div key="post-labels"></div>
+);
 
 const postTitle =
   snapshot.post_type == "Comment" ? (
@@ -570,7 +577,6 @@ const clampMarkdown = styled.div`
     overflow: hidden;
   }
 `;
-
 const descriptionArea = isUnderPost ? (
   <limitedMarkdown className="overflow-auto" key="description-area">
     <Markdown
@@ -590,17 +596,20 @@ const descriptionArea = isUnderPost ? (
       ></Markdown>
     </div>
     {state.clamp && isContentLong ? (
-      <div className="d-flex justify-content-center">
+      <div className="d-flex justify-content-end">
         <a
+          style={{ fontSize: "0.8rem", fontWeight: 400 }}
           className="btn btn-link text-secondary"
           onClick={() => State.update({ clamp: false })}
         >
-          Show More
+          <br></br>
+          See More...
         </a>
       </div>
     ) : !state.clamp && isContentLong ? (
-      <div className="d-flex justify-content-center">
+      <div className="d-flex justify-content-end">
         <a
+          style={{ fontSize: "0.8rem", fontWeight: 400 }}
           className="btn btn-link text-secondary"
           onClick={() => State.update({ clamp: true })}
         >
@@ -618,6 +627,7 @@ return (
     <div className="card-body">
       {searchKeywords}
       {postTitle}
+      <br></br>
       {postExtra}
       {descriptionArea}
       {postLabels}
