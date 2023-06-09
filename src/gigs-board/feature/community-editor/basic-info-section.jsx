@@ -172,38 +172,38 @@ const CommunityEditorBasicInfoSection = ({ data, isEditingAllowed }) => {
         )}
 
 				{(!isMutable || !isEditorActive) ? (
-					<div>{formState.name}</div>
+					<div>{formState.bio}</div>
 				) : (
 					widget("components.molecule.text-input", {
 						className: "w-100",
-						key: `${formState.handle}-name`,
-						label: "Community name",
-						onChange: formUpdate({ path: ["name"] }),
-						value: formState.name,
+						key: `${formState.handle}-bio`,
+						label: "Short bio",
+						onChange: formUpdate({ path: ["bio"] }),
+						value: formState.bio,
 					})
 				)}
 
 				{(!isMutable || !isEditorActive) ? (
-					<div>{formState.name}</div>
+					<div>{formState.handle}</div>
 				) : (
 					widget("components.molecule.text-input", {
 						className: "w-100",
-						key: `${formState.handle}-name`,
-						label: "Community name",
-						onChange: formUpdate({ path: ["name"] }),
-						value: formState.name,
+						key: `${formState.handle}-handle`,
+						label: "Handle",
+						onChange: formUpdate({ path: ["handle"] }),
+						value: formState.handle,
 					})
 				)}
 
 				{(!isMutable || !isEditorActive) ? (
-					<div>{formState.name}</div>
+					<div>{formState.tags}</div>
 				) : (
 					widget("components.molecule.text-input", {
 						className: "w-100",
-						key: `${formState.handle}-name`,
-						label: "Community name",
-						onChange: formUpdate({ path: ["name"] }),
-						value: formState.name,
+						key: `${formState.handle}-tags`,
+						label: "Tags",
+						onChange: formUpdate({ path: ["tags"] }),
+						value: formState.tags,
 					})
 				)}
       </>
