@@ -147,7 +147,6 @@ const mockTeamMembers = [
   },
 ];
 /* END_INCLUDE: "mockcommunity.jsx" */
-
 if (!props.label) {
   return (
     <div class="alert alert-danger" role="alert">
@@ -165,14 +164,6 @@ const discussionRequiredPosts =
 
 const community = communities[props.label];
 
-const SearchResults = (
-  <div class="row">
-    <div class="col">
-      {widget("components.search.Search", { query: 'your-query-string' })}
-    </div>
-  </div>
-);
-
 const onMention = (accountId) => (
   <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
     <Widget
@@ -184,26 +175,6 @@ const onMention = (accountId) => (
       }}
     />
   </span>
-);
-
-const LabelsDisplay = (
-  <div className="d-flex flex-wrap gap-2 mb-2">
-    {tags.length > 0 && (
-      <div>
-        {tags.map((tag, i) => (
-          <span
-            key={i}
-            className="me-1 mb-1 fw-light badge border border-secondary text-bg-light"
-          >
-            #{tag}
-          </span>
-        ))}
-      </div>
-    )}
-    <div className="collapse public-tags">
-      <Widget src="mob.near/widget/PublicTags" props={{ accountId }} />
-    </div>
-  </div>
 );
 
 // START OF SIDEBAR
@@ -218,10 +189,13 @@ const CommunitySummary = (
 const Card = ({ title, content }) => (
   <div
     className="card"
-    style={{ border: "none", boxShadow: "0 4px 8px 0 rgba(0,0,0,0.1)" }}
+    style={{
+      maxWidth: "400px", // set the max-width as needed
+      border: "none",
+      boxShadow: "0 4px 8px 0 rgba(0,0,0,0.1)",
+    }}
   >
     <div className="card-body">
-      {/* <h5 className="card-title">{title}</h5> */}
       <p className="card-text">{content}</p>
     </div>
   </div>
@@ -285,107 +259,49 @@ const MoreInfoButton = (
 
 // Team Card
 const TeamsCard = (
-  <Card
-    title={"Team Members"}
-    content={
-      <div>
-        <h4>Group Moderators</h4>
-        <br></br>
-        {TeamMembersList}
-        {MoreInfoButton}
-      </div>
-    }
-  ></Card>
+  <div style={{ width: "100%", maxWidth: "400px" }}>
+    <Card
+      title={"Team Members"}
+      content={
+        <div>
+          <h4>Group Moderators</h4>
+          <br></br>
+          {TeamMembersList}
+          {MoreInfoButton}
+        </div>
+      }
+    ></Card>
+  </div>
 );
 
 // Define the Sidebar component
 const Sidebar = () => (
-  <div class="col-md-4">
+  <div class="col-md-5 d-flex flex-column align-items-end">
     {CommunityOverview}
     <br></br>
     {TeamsCard}
   </div>
 );
-// END OF SIDEBAR
 
-// Update the Discussions layout to include the sidebar
-const Discussions = (
-  <div class="row">
-    <div class="col-md-8">
-      {widget("components.layout.Controls", {
-        labels: discussionsRequiredLabels,
-      })}
-      <div className="row mb-2">
-        <div className="col">
-          <small className="text-muted">
-            Required label:
-            <a href={href("Feed", { label })} key={label}>
-              <span
-                className="badge text-bg-grey me-1"
-                style={{
-                  color: "black",
-                  fontSize: "1.em",
-                  boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
-                }}
-              >
-                {label}
-              </span>
-            </a>
-          </small>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          {discussionRequiredPosts.map((postId) =>
-            widget("components.posts.Search", { id: postId }, postId)
-          )}
-        </div>
-      </div>
-    </div>
-    <Sidebar />
+// Define a wrapper component for the content to the left of the sidebar
+const Content = () => (
+  <div class="col-md-6">
+    {/* 
+      Place the components or content you want to display to the left of 
+      the sidebar here.
+    */}
   </div>
 );
 
-
-return widget("components.community.Layout", {
-  label: props.label,
-  tab: "Discussions",
-  children: (
+// Define the layout for the page
+const PageLayout = () => (
+  <div class="container">
     <div class="row">
-      <div class="col-md-8">
-        {widget("components.layout.Controls", {
-          labels: discussionsRequiredLabels,
-        })}
-        <div className="row mb-2">
-          <div className="col">
-            <small className="text-muted">
-              Required label:
-              <a href={href("Feed", { label })} key={label}>
-                <span
-                  className="badge text-bg-grey me-1"
-                  style={{
-                    color: "black",
-                    fontSize: "1.em",
-                    boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
-                  }}
-                >
-                  {label}
-                </span>
-              </a>
-            </small>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col">
-            {discussionRequiredPosts.map((postId) =>
-              widget("components.posts.Search", { id: postId, collapsed: true }, postId)  // Here, add a property 'collapsed' with value 'true' to the Post widget.
-            )}
-          </div>
-        </div>
-      </div>
+      <Content />
       <Sidebar />
     </div>
-  ),
-});
+  </div>
+);
+
+return <PageLayout />;
+// END OF SIDEBAR

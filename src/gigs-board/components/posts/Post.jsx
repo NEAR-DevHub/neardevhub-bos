@@ -173,7 +173,7 @@ const header = (
   <div
     className="d-flex flex-row align-items-center"
     style={{
-      fontSize: "1.333em",
+      fontSize: "1em",
       paddingTop: "20px",
       paddingLeft: "20px",
       paddingRight: "20px",
@@ -196,6 +196,7 @@ const header = (
           </div>
         </div>
       </div>
+      <br></br>
     </div>
   </div>
 );
@@ -411,9 +412,9 @@ const EditorWidget = (postType) => {
         postId,
         mode: "Edit",
         author_id: post.author_id,
-        labels: post.snapshot.labels,
         name: post.snapshot.name,
         description: post.snapshot.description,
+        labels: post.snapshot.labels,
         amount: post.snapshot.amount,
         token: post.snapshot.sponsorship_token,
         supervisor: post.snapshot.supervisor,
@@ -443,19 +444,27 @@ const editorsFooter = props.isPreview ? null : (
 const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
-const postLabels = post.snapshot.labels ? (
-  <div class="card-title" key="post-labels">
-    {post.snapshot.labels.map((label) => {
-      return (
-        <a href={href("Feed", { label }, label)}>
-          <span class="badge text-bg-primary me-1">{label}</span>
-        </a>
-      );
-    })}
-  </div>
-) : (
-  <div key="post-labels"></div>
-);
+// const postLabels = post.snapshot.labels ? (
+//   <div class="card-title" key="post-labels">
+//     {post.snapshot.labels.map((label) => {
+//       return (
+//         <a href={href("Feed", { label }, label)}>
+//           <span
+//             class="badge me-1"
+//             style={{
+//               color: "rgba(0, 0, 0, 0.75)",
+//               border: "1px solid rgba(0, 0, 0, 0.75)",
+//             }}
+//           >
+//             {label}
+//           </span>
+//         </a>
+//       );
+//     })}
+//   </div>
+// ) : (
+//   <div key="post-labels"></div>
+// );
 
 const postTitle =
   snapshot.post_type == "Comment" ? (
@@ -511,18 +520,11 @@ const postsList =
 
 const Card = styled.div`
   &:hover {
-    box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   }
-`;
-
-const limitedMarkdown = styled.div`
-  max-height: 20em;
-`;
-
-const clampMarkdown = styled.div`
-  .clamp {
-    /* No need for any mask now */
-  }
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  border: none;
 `;
 
 // Determine if located in the post page.
@@ -530,13 +532,10 @@ const isInList = props.isInList;
 const contentArray = snapshot.description.split("\n");
 const needClamp = isInList && contentArray.length > 5;
 
+// Initialize 'clamp' to 'true' if the content is long enough, otherwise 'false'
 initState({
   clamp: needClamp,
 });
-
-const clampedContent = needClamp
-  ? contentArray.slice(0, 5).join("\n")
-  : snapshot.description;
 
 const onMention = (accountId) => (
   <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
@@ -551,57 +550,77 @@ const onMention = (accountId) => (
   </span>
 );
 
-// Should make sure the posts under the currently top viewed post are limited in size.
+// Determine whether the content is longer than 4 lines
+const isContentLong = contentArray.length > 4;
+
+const clampedContent = state.clamp
+  ? contentArray.slice(0, 5).join("\n")
+  : snapshot.description;
+
+// Your CSS classes for styling. Make sure the names match exactly with the ones you're using in your divs.
+const limitedMarkdown = styled.div`
+  max-height: 20em;
+`;
+
+const clampMarkdown = styled.div`
+  .clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+`;
+
 const descriptionArea = isUnderPost ? (
   <limitedMarkdown className="overflow-auto" key="description-area">
     <Markdown
-      class="card-text"
+      className="card-text"
       text={snapshot.description}
       onMention={onMention}
     />
   </limitedMarkdown>
 ) : (
   <clampMarkdown>
-    <div class={state.clamp ? "clamp" : ""}>
+    <div className={state.clamp ? "clamp" : ""}>
       <Markdown
-        class="card-text"
+        className="card-text"
         text={state.clamp ? clampedContent : snapshot.description}
         onMention={onMention}
         key="description-area"
       ></Markdown>
     </div>
-    {state.clamp ? (
-      <div class="d-flex justify-content-center">
+    {state.clamp && isContentLong ? (
+      <div className="d-flex justify-content-center">
         <a
-          class="btn btn-link text-secondary"
+          className="btn btn-link text-secondary"
           onClick={() => State.update({ clamp: false })}
         >
-          Read More
+          Show More
         </a>
       </div>
-    ) : (
-      <div class="d-flex justify-content-center">
+    ) : !state.clamp && isContentLong ? (
+      <div className="d-flex justify-content-center">
         <a
-          class="btn btn-link text-secondary"
+          className="btn btn-link text-secondary"
           onClick={() => State.update({ clamp: true })}
         >
           Close
         </a>
       </div>
-    )}
+    ) : null}
   </clampMarkdown>
 );
 
 return (
-  <Card className={`card my-2 ${borders[snapshot.post_type]}`}>
+  <Card className={`card my-2`} style={{ border: "none" }}>
     {linkToParent}
     {header}
     <div className="card-body">
       {searchKeywords}
-      {postLabels}
       {postTitle}
       {postExtra}
       {descriptionArea}
+      {postLabels}
       {buttonsFooter}
       {editorsFooter}
       {postsList}
