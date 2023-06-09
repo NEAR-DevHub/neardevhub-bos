@@ -149,7 +149,7 @@ const coverURL =
 
 const CommunityEditorBrandingSection = ({}) => {
   return (
-    <div class="card shadow mb-3" style={{ height: 240 }}>
+    <div class="card shadow w-100" style={{ maxWidth: 896, height: 240 }}>
       <div
         alt="Community card cover preview"
         class="card-img-top"
@@ -161,11 +161,12 @@ const CommunityEditorBrandingSection = ({}) => {
             "no-repeat",
             `url(${coverURL})`,
           ].join(" "),
+          height: "calc(100% - 84px)",
         }}
       />
 
       <div class="card-body">
-        <h5 class="card-title">Community name</h5>
+        <h5 class="h5">Community name</h5>
 
         <p class="card-text">Short bio, I guess</p>
       </div>

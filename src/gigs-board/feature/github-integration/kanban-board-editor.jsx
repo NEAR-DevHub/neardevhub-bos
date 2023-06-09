@@ -468,7 +468,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
     boardConfig: null,
     editingMode: "form",
     isEditingAllowed: true, // According to user permission level
-    isEditorEnabled: false,
+    isEditorActive: false,
 
     ...Storage.get(
       "state",
@@ -479,7 +479,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
   const onEditorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      isEditorEnabled: forcedState ?? !lastKnownState.isEditorEnabled,
+      isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
     }));
 
   const onEditingModeChange = ({ target: { value } }) =>
@@ -498,14 +498,14 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
     }));
   }
 
+  const { formState, formUpdate } = useForm({ stateKey: "boardConfig" });
+
   const boardsCreateNew = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       boardConfig: boardConfigDefaults,
-      isEditorEnabled: true,
+      isEditorActive: true,
     }));
-
-  const { formState, formUpdate } = useForm({ stateKey: "boardConfig" });
 
   const columnsCreateNew = ({ lastKnownState }) =>
     Object.keys(lastKnownState).length < 6
@@ -700,7 +700,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
 
   return (
     <div className="d-flex flex-column gap-4">
-      {state.isEditorEnabled && formState !== null ? (
+      {state.isEditorActive && formState !== null ? (
         <div className="d-flex flex-column gap-3 p-3 w-100 rounded-2 shadow">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">

@@ -51,7 +51,6 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-
 /* INCLUDE: "shared/lib/form" */
 /**
  *! TODO: Extract into separate library module
@@ -145,12 +144,94 @@ const useForm = ({ stateKey: formStateKey }) => ({
 });
 /* END_INCLUDE: "shared/lib/form" */
 
-const CommunityEditorPermissionsSection = ({}) => {
-  return (
-    <div className="">
-      <div className=""></div>
-    </div>
-  );
+const Form = ({
+  actionLabelCancel,
+  actionLabelSubmit,
+  actionsAdditional,
+  className,
+  fieldsRender,
+  heading,
+  initialState,
+  isMutable,
+  onCancel,
+  onSubmit,
+}) => {
+  State.init({
+    data: initialState ?? {},
+    isEditorActive: false,
+  });
+
+  const onEditorToggle = (forcedState) =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
+    }));
+
+  const { formState, formUpdate } = useForm({ stateKey: "data" }),
+    noSubmit = JSON.stringify(formState) === JSON.stringify(initialState ?? {});
+
+  const onCancelClick = () => {
+    onEditorToggle(false);
+
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      data: initialState,
+    }));
+
+    return onCancel ? onCancel() : null;
+  };
+
+  const onSubmitClick = () => {
+    return onSubmit ? onSubmit(state.data) : null;
+  };
+
+  return widget("components.molecule.tile", {
+    className,
+    heading,
+
+    headerSlotRight:
+      isMutable && !state.isEditorActive
+        ? widget("components.atom.button", {
+            adornment: <i className="bi bi-pencil-square" />,
+            className: "btn-sm btn-primary",
+            label: "Edit",
+            onClick: () => onEditorToggle(true),
+          })
+        : null,
+
+    children: (
+      <div className="flex-grow-1 d-flex flex-column gap-3">
+        {fieldsRender({
+          formState,
+          formUpdate,
+          isEditorActive: state.isEditorActive,
+          isMutable,
+        })}
+
+        {isMutable && state.isEditorActive ? (
+          <div className="d-flex align-items-center justify-content-end gap-3 mt-auto">
+            {actionsAdditional ? (
+              <div className="me-auto">{actionsAdditional}</div>
+            ) : null}
+
+            {widget("components.atom.button", {
+              className: "btn-outline-danger shadow-none border-0",
+              label: actionLabelCancel ?? "Cancel",
+              onClick: onCancelClick,
+            })}
+
+            {widget("components.atom.button", {
+              adornment: <i className="bi bi-cloud-arrow-up-fill" />,
+              className: "btn-success",
+              disabled: noSubmit,
+              label: actionLabelSubmit ?? "Submit",
+              onClick: onSubmitClick,
+            })}
+          </div>
+        ) : null}
+      </div>
+    ),
+  });
 };
 
-return CommunityEditorPermissionsSection(props);
+return Form(props);

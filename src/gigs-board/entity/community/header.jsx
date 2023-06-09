@@ -118,19 +118,6 @@ const topicTabs = [
 ];
 
 const CommunityHeader = ({ label, tab }) => {
-  State.init({ shared: { isEditorEnabled: false } });
-  Storage.set("state", state.shared);
-
-  const onEditorToggle = () =>
-    State.update((lastState) => ({
-      ...lastState,
-
-      shared: {
-        ...lastState.shared,
-        isEditorEnabled: !lastState.shared.isEditorEnabled,
-      },
-    }));
-
   return (
     <Header className="d-flex flex-column gap-3 px-4 pt-3">
       <ol className="breadcrumb">

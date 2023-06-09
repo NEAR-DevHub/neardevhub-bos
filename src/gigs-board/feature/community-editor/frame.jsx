@@ -52,13 +52,26 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityEditorFrame = ({}) => {
+const CommunityEditorFrame = ({ handle }) => {
+  const isEditingAllowed = true; // According to user permission level
+
   return (
-    <div className="d-flex flex-column gap-4 p-4">
-      {widget("feature.community-editor.branding-section", {})}
-      {widget("feature.community-editor.basic-info-section", {})}
-      {widget("feature.community-editor.about-section", {})}
-      {widget("feature.community-editor.permissions-section", {})}
+    <div className="d-flex flex-column align-items-center gap-4 p-4">
+      {widget("feature.community-editor.branding-section", {
+        isEditingAllowed,
+      })}
+
+      {widget("feature.community-editor.basic-info-section", {
+        isEditingAllowed,
+      })}
+
+      {widget("feature.community-editor.about-section", {
+        isEditingAllowed,
+      })}
+
+      {widget("feature.community-editor.permissions-section", {
+        isEditingAllowed,
+      })}
     </div>
   );
 };
