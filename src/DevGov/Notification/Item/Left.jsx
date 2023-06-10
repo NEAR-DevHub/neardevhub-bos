@@ -65,6 +65,8 @@ return props.type ? (
       ? "replied"
       : type == "edit"
       ? "edited"
+      : type == "mention"
+      ? "mentioned"
       : "???"}{" "}
     your
     <a className="fw-bold text-muted" href={href("Post", { id: props.post })}>
