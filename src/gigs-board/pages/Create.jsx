@@ -133,7 +133,7 @@ const onSubmit = () => {
         labels,
         body: body,
       },
-      deposit: Big(10).pow(21).mul(2),
+      deposit: Big(10).pow(21).mul(3),
       gas: Big(10).pow(12).mul(100),
     });
   } else if (mode == "Edit") {
