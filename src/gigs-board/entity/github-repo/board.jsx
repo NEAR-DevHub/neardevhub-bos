@@ -197,7 +197,7 @@ const GithubRepoBoard = ({
                 <div
                   className={[
                     "card-body d-flex flex-column gap-3",
-                    "border border-2 border-secondary rounded-2",
+                    "border border-2 border-secondary rounded-4",
                   ].join(" ")}
                 >
                   <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">

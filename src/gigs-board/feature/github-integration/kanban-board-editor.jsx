@@ -633,7 +633,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
           {Object.values(formState.columns).map(
             ({ id, description, labelSearchTerms, title }) => (
               <div
-                className="d-flex gap-3 border border-secondary rounded-2 p-3 w-100"
+                className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
                 key={id}
               >
                 <div className="d-flex flex-column gap-1 w-100">
@@ -701,7 +701,7 @@ const GithubKanbanBoardEditor = ({ label, pageURL }) => {
   return (
     <div className="d-flex flex-column gap-4">
       {state.isEditorActive && formState !== null ? (
-        <div className="d-flex flex-column gap-3 p-3 w-100 rounded-2 shadow">
+        <div className="d-flex flex-column gap-3 p-3 w-100 rounded-4 shadow">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-wrench-adjustable-circle-fill" />

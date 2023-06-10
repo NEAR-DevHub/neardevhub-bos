@@ -192,8 +192,10 @@ const Form = ({
     headerSlotRight:
       isMutable && !state.isEditorActive
         ? widget("components.atom.button", {
-            adornment: <i className="bi bi-pencil-square" />,
-            className: "btn-sm btn-primary",
+            classNames: {
+              root: "btn-sm btn-primary",
+              adornment: "bi bi-pen-fill",
+            },
             label: "Edit",
             onClick: () => onEditorToggle(true),
           })
@@ -215,14 +217,17 @@ const Form = ({
             ) : null}
 
             {widget("components.atom.button", {
-              className: "btn-outline-danger shadow-none border-0",
+              classNames: { root: "btn-outline-danger shadow-none border-0" },
               label: actionLabelCancel ?? "Cancel",
               onClick: onCancelClick,
             })}
 
             {widget("components.atom.button", {
-              adornment: <i className="bi bi-arrow-down-circle-fill" />,
-              className: "btn-success",
+              classNames: {
+                root: "btn-success",
+                adornment: "bi bi-arrow-down-circle-fill",
+              },
+
               disabled: noSubmit,
               label: actionLabelSubmit ?? "Submit",
               onClick: onSubmitClick,

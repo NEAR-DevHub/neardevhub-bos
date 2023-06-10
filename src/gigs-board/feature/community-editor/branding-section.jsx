@@ -149,10 +149,13 @@ const coverURL =
 
 const CommunityEditorBrandingSection = ({}) => {
   return (
-    <div class="card shadow w-100" style={{ maxWidth: 896, height: 240 }}>
+    <div
+      class="card shadow rounded-4 w-100"
+      style={{ maxWidth: 896, height: 240 }}
+    >
       <div
         alt="Community card cover preview"
-        class="card-img-top"
+        class="card-img-top rounded-top-4"
         style={{
           background: [
             "center",
