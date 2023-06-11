@@ -65,7 +65,7 @@ const CommunityEditorBrandingSection = ({}) => {
   return (
     <div
       className="card shadow rounded-4 w-100"
-      style={{ maxWidth: 896, height: 240 }}
+      style={{ maxWidth: 896, height: 320 }}
     >
       <CardCover
         alt="Community card cover preview"

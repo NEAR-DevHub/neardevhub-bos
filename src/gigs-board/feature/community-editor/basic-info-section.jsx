@@ -67,6 +67,7 @@ const CommunityEditorBasicInfoSection = ({ data, isEditingAllowed }) => {
         ) : (
           widget("components.molecule.text-input", {
             className: "w-100",
+            inputProps: { max: 20 },
             key: `${formState.handle}-name`,
             label: "Community name",
             onChange: formUpdate({ path: ["name"] }),
@@ -79,6 +80,7 @@ const CommunityEditorBasicInfoSection = ({ data, isEditingAllowed }) => {
         ) : (
           widget("components.molecule.text-input", {
             className: "w-100",
+            inputProps: { max: 40 },
             key: `${formState.handle}-bio`,
             label: "Short bio",
             onChange: formUpdate({ path: ["bio"] }),
@@ -91,6 +93,7 @@ const CommunityEditorBasicInfoSection = ({ data, isEditingAllowed }) => {
         ) : (
           widget("components.molecule.text-input", {
             className: "w-100",
+            inputProps: { max: 40 },
             key: `${formState.handle}-handle`,
             label: "Handle",
             onChange: formUpdate({ path: ["handle"] }),
@@ -99,13 +102,14 @@ const CommunityEditorBasicInfoSection = ({ data, isEditingAllowed }) => {
         )}
 
         {!isMutable || !isEditorActive ? (
-          <div>{formState.tags}</div>
+          <div>{formState.tag}</div>
         ) : (
           widget("components.molecule.text-input", {
             className: "w-100",
-            key: `${formState.handle}-tags`,
-            label: "Tags",
-            onChange: formUpdate({ path: ["tags"] }),
+            inputProps: { max: 20 },
+            key: `${formState.handle}-tag`,
+            label: "Tag",
+            onChange: formUpdate({ path: ["tag"] }),
             value: formState.tags,
           })
         )}
