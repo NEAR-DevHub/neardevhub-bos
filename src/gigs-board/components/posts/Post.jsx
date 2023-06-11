@@ -38,9 +38,8 @@ function href(widgetName, linkProps) {
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""
+    }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
@@ -164,44 +163,83 @@ const shareButton = props.isPreview ? (
     role="button"
     target="_blank"
     title="Open in new tab"
+    style={{ color: "rgb(0,128,128)", border: "1em" }}
   >
     <div class="bi bi-share"></div>
   </a>
 );
 
+const StyledLink = styled.a`
+  color: rgba(0, 0, 0, 0.8);
+  font-size: inherit;
+  font-style: italic;
+  font-weight: bold;
+  opacity: 0.75;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const StyledDiv = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: end;
+  align-items: center;
+  width: 100%;
+  color: rgba(0, 0, 0, 0.8);
+`;
+
+const ResponsiveDiv = styled.div`
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  width: 100%;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
+const accountId = post.author_id;
 const header = (
-  <div
-    className="d-flex flex-row align-items-center"
-    style={{
-      fontSize: "1em",
-      paddingTop: "20px",
-      paddingLeft: "20px",
-      paddingRight: "20px",
-    }}
-  >
-    <div className="flex-grow-1 text-truncate">
-      <div class="row justify-content-between">
-        <div class="col-4">
+  <ResponsiveDiv className="py-2 px-3" style={{ fontSize: "1em" }}>
+    <div className="d-flex align-items-center">
+      <div className="col-auto d-flex align-items-center">
+        <div className="square rounded-circle" style={{ overflow: "hidden", width: "4em", height: "4em", backgroundColor: "#008080" }}>
           <Widget
-            src={`neardevgov.near/widget/ProfileLine`}
-            props={{ accountId: post.author_id }}
+            key="image"
+            src="mob.near/widget/ProfileImage"
+            props={{
+              style: { width: "100%", height: "100%" },
+              profile,
+              accountId,
+            }}
           />
         </div>
-        <div class="col-5">
-          <div
-            class="d-flex justify-content-end"
-            style={{ color: "rgba(0, 0, 0, 0.8)" }}
+        <div style={{ marginLeft: "1em" }}>
+          <span style={{ fontSize: "1.5em", fontWeight: "bold" }}>
+            {post.author_id}
+          </span>
+          <span
+            key="accountId"
+            className="text-muted ms-1"
+            style={{ display: "block", fontSize: "1em" }}
           >
-            {editControl}
-            {timestamp}
-            <div class="bi bi-clock-history px-2"></div>
-            {shareButton}
-          </div>
+            @{post.author_id}
+          </span>
         </div>
       </div>
-      <br></br>
     </div>
-  </div>
+    <StyledDiv>
+      {editControl}
+      <span className="px-2">{timestamp}</span>
+      <div className="bi bi-clock-history px-2"></div>
+      {shareButton}
+    </StyledDiv>
+  </ResponsiveDiv>
 );
 
 const emptyIcons = {
@@ -323,10 +361,10 @@ const buttonsFooter = props.isPreview ? null : (
           {post.likes.length == 0
             ? "Like"
             : widget("components.layout.LikeButton.Faces", {
-                likesByUsers: Object.fromEntries(
-                  post.likes.map(({ author_id }) => [author_id, ""])
-                ),
-              })}
+              likesByUsers: Object.fromEntries(
+                post.likes.map(({ author_id }) => [author_id, ""])
+              ),
+            })}
         </button>
         <div class="btn-group text-sm" role="group">
           <button
@@ -455,7 +493,7 @@ const postLabels = post.snapshot.labels ? (
   <div class="card-title" key="post-labels">
     {post.snapshot.labels.map((label) => {
       return (
-        <a href={href("Feed", { label }, label)}>
+        <StyledLink href={href("Feed", { label }, label)}>
           <span
             class="badge me-1"
             style={{
@@ -465,7 +503,7 @@ const postLabels = post.snapshot.labels ? (
           >
             {label}
           </span>
-        </a>
+        </StyledLink>
       );
     })}
   </div>

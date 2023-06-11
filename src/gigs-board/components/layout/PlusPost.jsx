@@ -78,13 +78,13 @@ return (
     )}
     <button
       style={{
-        fontSize: "1.11em",
+        fontSize: "1em",
         backgroundColor: "#008080",
         color: "white",
-        borderRadius: "7px",
+        borderRadius: "4px",
         float: "right",
         padding: "10px",
-        height: "50px",
+        height: "45px",
         width: "95px",
         display: "flex",
         justifyContent: "center",
@@ -100,14 +100,23 @@ return (
           color: "#008080",
           borderRadius: "50%",
           padding: "5px",
-          display: "block",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
           marginRight: "5px",
-          lineHeight: "1",
+          height: "15px",
+          width: "15px",
         }}
       >
-        {state.showModal ? "-" : "+"}
+        <span style={{ lineHeight: "0", marginTop: "3px" }}>
+          {state.showModal ? "-" : "+"}
+        </span>
       </span>
-      {state.showModal ? "   Close" : "    Post"}
+      <span
+        style={{ alignSelf: "center", marginTop: "4px", marginLeft: "5px" }}
+      >
+        {state.showModal ? " Close" : " Post"}
+      </span>
     </button>
   </>
 );

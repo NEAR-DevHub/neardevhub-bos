@@ -86,63 +86,50 @@ const communities = {
 /* END_INCLUDE: "communities.jsx" */
 
 /* INCLUDE: "mockcommunity.jsx" */
-const SocialMediaIcons = (
-  <div className="mb-2 d-flex gap-2 flex-wrap flex-column">
-    <a
-      className="btn btn-outline-secondary border-0 d-flex align-items-center"
-      href="#/mob.near/widget/ProfilePage?accountId=self.social.near"
-    >
-      <i className="bi bi-person-circle"></i>
-      <span className="ms-2">Person Circle</span>
-    </a>
-    <a
-      className="btn btn-outline-secondary border-0 d-flex align-items-center"
-      href="https://t.me/NearSocial"
-    >
-      <i className="bi bi-telegram"></i>
-      <span className="ms-2">Telegram</span>
-    </a>
-    <a
-      className="btn btn-outline-secondary border-0 d-flex align-items-center"
-      href="https://github.com/NearSocial"
-    >
-      <i className="bi bi-github"></i>
-      <span className="ms-2">GitHub</span>
-    </a>
-    <a
-      className="btn btn-outline-secondary border-0 d-flex align-items-center"
-      href="https://twitter.com/NearSocial_"
-    >
-      <i className="bi bi-twitter"></i>
-      <span className="ms-2">Twitter</span>
-    </a>
-    <a
-      className="btn btn-outline-secondary border-0 d-flex align-items-center"
-      href="https://thewiki.near.page/near.social"
-    >
-      <i className="bi bi-wikipedia"></i>
-      <span className="ms-2">Wikipedia</span>
-    </a>
-  </div>
-);
+const socialLinks = [
+  {
+    href: "#/mob.near/widget/ProfilePage?accountId=self.social.near",
+    iconClass: "bi bi-globe",
+    label: community.title,
+  },
+
+  {
+    href: "https://github.com/NearSocial",
+    iconClass: "bi bi-github",
+    label: community.title,
+  },
+  {
+    href: "https://twitter.com/NearSocial_",
+    iconClass: "bi bi-twitter",
+    label: community.title,
+  },
+  {
+    href: "https://t.me/NearSocial",
+    iconClass: "bi bi-telegram",
+    label: community.title,
+  },
+];
 
 const mockTeamMembers = [
   {
     id: "css_queen",
     role: "Owner",
-    avatar: "https://avatars.dicebear.com/api/avataaars/css_queen.svg",
+    avatar:
+      "https://paras.id/_next/image?url=https%3A%2F%2Fparas-cdn.imgix.net%2F219f4d987a6c8e3c5af385c0a7c892477f870941%3Fw%3D400&w=828&q=75",
     wallet: "@css_queen.near",
   },
   {
     id: "js_joker",
     role: "Moderator",
-    avatar: "https://avatars.dicebear.com/api/avataaars/js_joker.svg",
+    avatar:
+      "https://paras.id/_next/image?url=https%3A%2F%2Fparas-cdn.imgix.net%2F6196b861da8a91415f23e551a5e88c0ac0671c0d%3Fw%3D400&w=1080&q=75",
     wallet: "@js_joker.near",
   },
   {
     id: "python_princess",
     role: "Admin",
-    avatar: "https://avatars.dicebear.com/api/avataaars/python_princess.svg",
+    avatar:
+      "https://paras.id/_next/image?url=https%3A%2F%2Fparas-cdn.imgix.net%2Fca017da093f9b4b0ee8fae85bb3ef57477590674%3Fw%3D400&w=2048&q=75",
     wallet: "@python_princess.near",
   },
 ];
@@ -178,21 +165,68 @@ const onMention = (accountId) => (
 );
 
 // START OF SIDEBAR
-const CommunitySummary = (
-  <div>
-    <Markdown text={community.desc} onMention={onMention} />
-    {LabelsDisplay}
-    {SocialMediaIcons}
+// Social Links Master Styling
+const SocialLink = ({ link, index }) => (
+  <a
+    className={`btn btn-outline-secondary border-0 d-flex align-items-center`}
+    href={link.href}
+    style={{ marginLeft: index !== 0 ? "0px" : "0px" }}
+  >
+    <i className={link.iconClass}></i>
+    <span className="ms-1">{link.label || community.title}</span>
+  </a>
+);
+
+// Social Media Icons
+const SocialMediaIcons = (
+  <div
+    className="mb-1 d-flex gap-2 flex-wrap flex-column"
+    style={{ padding: "0px" }}
+  >
+    {socialLinks.map((link, index) => (
+      <SocialLink key={index} link={link} index={index} />
+    ))}
   </div>
 );
 
-const Card = ({ title, content }) => (
+const CommunitySummary = (
+  <div style={{ top: "0", left: "0" }}>
+    <Markdown text={community.desc} onMention={onMention} />
+    <h3 className="mt-2 mb-2">{community.label}</h3>
+    <div className="row mb-2 align-items-center d-flex justify-content-between">
+      <div className="col-auto">
+        <div className="d-flex align-items-center">
+          <a href={href("Feed", { label })} key={label}>
+            <span
+              className="badge text-bg-grey ms-1"
+              style={{
+                color: "rgba(0, 0, 0, 0.7)",
+                fontSize: "1em",
+                fontWeight: "normal",
+                boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
+                padding: "0.2em 0.5em",
+              }}
+            >
+              <div>{label}</div>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <br></br>
+    <br></br>
+    {socialLinks.map((link, index) => (
+      <SocialLink key={index} link={link} index={index} />
+    ))}
+  </div>
+);
+
+const Card = ({ content }) => (
   <div
     className="card"
     style={{
       maxWidth: "400px", // set the max-width as needed
       border: "none",
-      boxShadow: "0 4px 8px 0 rgba(0,0,0,0.1)",
     }}
   >
     <div className="card-body">
@@ -202,39 +236,27 @@ const Card = ({ title, content }) => (
 );
 
 const CommunityOverview = (
-  <Card title={`${community.title} Overview`} content={CommunitySummary} />
+  <Card title={`${community.title} Overview`} content={CommunitySummary}></Card>
 );
 
-// Define a role ranking map
-const roleRanking = {
-  Owner: 1,
-  Admin: 2,
-  Moderator: 3,
-  Member: 4,
-};
-
-// Function to sort members by role
-const sortMembersByRole = (a, b) => {
-  return roleRanking[a.role] - roleRanking[b.role];
-};
-
-const sortedTeamMembers = mockTeamMembers.sort(sortMembersByRole);
-
 const TeamMember = ({ member }) => (
-  <div className="d-flex align-items-start mb-1 justify-content-between">
-    <div className="d-flex align-items-center">
-      <img
-        src={member.avatar}
-        alt={member.id}
-        style={{ width: "50px", height: "50px", borderRadius: "50%" }}
-        className="mr-3"
-      />
-      <div>
-        <h5>{member.id}</h5>
-        <p>{member.wallet}</p>
-      </div>
+  <div className="d-flex align-items-start mb-1 justify-content-start">
+    <img
+      src={member.avatar}
+      alt={member.id}
+      style={{
+        width: "50px",
+        height: "50px",
+        borderRadius: "50%",
+        marginRight: "10px",
+      }}
+    />
+    <div style={{ paddingTop: "7px" }}>
+      <h6 style={{ fontSize: "110%", fontWeight: "bold", marginBottom: "0" }}>
+        {member.id}
+      </h6>
+      <p style={{ fontSize: "100%" }}>{member.wallet}</p>
     </div>
-    <span>{member.role}</span>
   </div>
 );
 
@@ -245,14 +267,18 @@ const TeamMembersList = mockTeamMembers.map((member) => (
 
 // More Info Button
 const MoreInfoButton = (
-  <div className="row justify-content-center">
+  <div className="d-flex justify-content-start">
     <button
       type="button"
       class="btn btn-link"
-      style={{ color: "black" }}
+      style={{
+        color: "black",
+        fontSize: "0.8rem",
+        fontWeight: "bold",
+      }}
       href="#"
     >
-      More Info
+      See More
     </button>
   </div>
 );
@@ -264,8 +290,15 @@ const TeamsCard = (
       title={"Team Members"}
       content={
         <div>
-          <h4>Group Moderators</h4>
-          <br></br>
+          <h5
+            style={{
+              fontSize: "1.3rem",
+              fontWeight: "800",
+              marginBottom: "20px",
+            }}
+          >
+            Group Moderators
+          </h5>
           {TeamMembersList}
           {MoreInfoButton}
         </div>
@@ -278,7 +311,7 @@ const TeamsCard = (
 const Sidebar = () => (
   <div class="col-md-12 d-flex flex-column align-items-end">
     {CommunityOverview}
-    <br></br>
+    <hr style={{ width: "100%", borderTop: "4px solid #00000033" }} />
     {TeamsCard}
   </div>
 );

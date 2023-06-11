@@ -44,30 +44,48 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const access_info =
-  Near.view(nearDevGovGigsContractAccountId, "get_access_control_info") ?? null;
-const root_members =
-  Near.view(nearDevGovGigsContractAccountId, "get_root_members") ?? null;
-
-if (!access_info || !root_members) {
-  return <div>Loading...</div>;
+const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
+const post =
+  props.post ??
+  Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
+if (!post) {
+  return <div>Loading ...</div>;
 }
 
-const pageContent = (
-  <div>
-    {widget("components.teams.LabelsPermissions", {
-      rules: access_info.rules_list,
-    })}
-    {Object.keys(root_members).map((member) =>
-      widget(
-        "components.teams.TeamInfo",
-        { member, members_list: access_info.members_list },
-        member
-      )
+return (
+  <>
+    {!hideImage && (
+      <Widget
+        className="col-auto aspect-ratio-square"
+        key="image"
+        src="mob.near/widget/ProfileImage"
+        props={{
+          style: {
+            width: "3em",
+            height: "3em",
+            marginRight: "0.1em",
+            borderRadius: "50%",
+            "@media (max-width: 768px)": {
+              // Small screens
+              marginBottom: "12em",
+            },
+            "@media (min-width: 768px)": {
+              // Medium screens
+              marginBottom: "6em",
+            },
+          },
+          profile,
+          accountId: "post.author_id",
+          className: "d-inline-block rounded-circle",
+          imageClassName: "rounded w-100 h-100 align-top",
+        }}
+      />
     )}
-  </div>
+    {!hideName && <span key="name">{name}</span>}
+    {!hideAccountId && (
+      <span key="accountId" className="text-muted ms-1">
+        @{accountId}
+      </span>
+    )}
+  </>
 );
-
-return widget("components.layout.Page", {
-  children: pageContent,
-});

@@ -103,9 +103,13 @@ const discussionRequiredPosts =
 const community = communities[props.label];
 
 const SearchResults = (
-  <div class="row">
-    <div class="col">
-      {widget("components.search.Search", { query: "your-query-string" })}
+  <div style={{ display: "none" }}>
+    <div class="row">
+      <div class="col">
+        {widget("components.post.DiscussionFeed", {
+          query: "your-query-string",
+        })}
+      </div>
     </div>
   </div>
 );
@@ -158,7 +162,7 @@ const Discussions = (
                 className="badge text-bg-grey me-1"
                 style={{
                   color: "black",
-                  fontSize: "1.em",
+                  fontSize: "1.3em",
                   boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
                 }}
               >
@@ -166,14 +170,6 @@ const Discussions = (
               </span>
             </a>
           </small>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          {discussionRequiredPosts.map((postId) =>
-            widget("components.posts.Search", { id: postId }, postId)
-          )}
         </div>
       </div>
     </div>
@@ -187,6 +183,13 @@ const Discussions = (
         }}
       />
     </div>
+    <div class="row">
+      <div class="col">
+        {discussionRequiredPosts.map((postId) =>
+          widget("components.posts.DiscussionFeed", { id: postId }, postId)
+        )}
+      </div>
+    </div>
   </div>
 );
 
@@ -196,34 +199,44 @@ return widget("components.community.Layout", {
   children: (
     <div class="row">
       <div class="col-md-8">
-        <div className="row mb-2">
-          <div className="col">
-            <small className="text-muted">
-              Required label:
+        <div
+          className="row align-items-center d-flex justify-content-between"
+          style={{ marginTop: "18px" }}
+        >
+          <div className="col-auto">
+            <div className="d-flex align-items-center">
+              <small className="text-muted" style={{ fontSize: "1.15em" }}>
+                Required tag:
+              </small>
               <a href={href("Feed", { label })} key={label}>
                 <span
-                  className="badge text-bg-grey me-1"
+                  className="badge text-bg-grey ms-1"
                   style={{
-                    color: "black",
-                    fontSize: "1.em",
+                    color: "rgba(0, 0, 0, 0.7)",
+                    fontSize: "1em",
+                    fontWeight: "normal",
                     boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
+                    padding: "0.2em 0.5em",
                   }}
                 >
                   {label}
                 </span>
               </a>
-            </small>
+            </div>
           </div>
-          {widget("components.layout.PlusPost", {
-            labels: discussionsRequiredLabels,
-          })}
+          <div className="col-auto aspect-ratio-square">
+            {widget("components.layout.PlusPost", {
+              labels: discussionsRequiredLabels,
+            })}
+          </div>
         </div>
 
+        <br></br>
         <div class="row">
           <div class="col">
             {discussionRequiredPosts.map((postId) =>
               widget(
-                "components.posts.Search",
+                "components.posts.DiscussionFeed",
                 { id: postId, collapsed: true },
                 postId
               )
