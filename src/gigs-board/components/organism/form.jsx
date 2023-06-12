@@ -204,15 +204,15 @@ const Form = ({
       ? fieldsRenderCustom
       : fieldsRenderDefault;
 
-  const fieldValues = pick(data, Object.keys(schema));
+  const fieldValues = pick(data, Object.keys(schema)) ?? {};
 
   State.init({
     initialState: fieldValues,
-    data: fieldValues ?? {},
+    data: fieldValues,
     isEditorActive: false,
   });
 
-  console.log(state.initialState);
+  console.log(state.data);
 
   const onEditorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -220,9 +220,10 @@ const Form = ({
       isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
     }));
 
-  const { formState, formUpdate } = useForm({ stateKey: "data" }),
-    noSubmit =
-      JSON.stringify(formState) === JSON.stringify(state.initialState ?? {});
+  const { formState, formUpdate } = useForm({ stateKey: "data" });
+
+  const noSubmit =
+    JSON.stringify(formState) === JSON.stringify(state.initialState ?? {});
 
   const onCancelClick = () => {
     State.update((lastKnownState) => ({

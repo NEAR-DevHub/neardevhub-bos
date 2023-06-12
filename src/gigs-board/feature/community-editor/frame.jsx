@@ -120,7 +120,7 @@ const CommunityEditorFrame = ({ handle }) => {
 
             schema: {
               name: {
-                inputProps: { max: 30 },
+                inputProps: { max: 30, required: true },
                 label: "Name",
                 order: 1,
               },
@@ -131,6 +131,8 @@ const CommunityEditorFrame = ({ handle }) => {
 
                   placeholder:
                     "Describe your community in one short sentence that will appear in the discovery communities page.",
+
+                  required: true,
                 },
 
                 label: "Description",
@@ -143,6 +145,8 @@ const CommunityEditorFrame = ({ handle }) => {
 
                   placeholder:
                     "Choose unique URL handle for your community by adding letters and numbers. Example: zero-knowledge.",
+
+                  required: true,
                 },
 
                 label: "Handle",
@@ -155,6 +159,8 @@ const CommunityEditorFrame = ({ handle }) => {
 
                   placeholder:
                     "Choose one tag for your community. Any posts with this tag will show up in your community feed.",
+
+                  required: true,
                 },
 
                 label: "Tag",
@@ -219,15 +225,9 @@ const CommunityEditorFrame = ({ handle }) => {
             submitLabel: state.isCommunityNew ? "Next" : "Save",
 
             schema: {
-              owner: {
-                inputProps: { max: 100 },
-                label: "Owner",
-                order: 1,
-              },
-
               moderators: {
-                label: "Moderators",
-                order: 2,
+                label: "Admins",
+                order: 1,
               },
             },
           })}
@@ -238,8 +238,8 @@ const CommunityEditorFrame = ({ handle }) => {
           >
             {state.isCommunityNew
               ? widget("components.atom.button", {
-                  classNames: { root: "btn-success" },
-									disabled: true,
+                  classNames: { root: "btn-lg btn-success" },
+                  disabled: true,
                   label: "🚀 Launch ( coming soon! )",
                   onClick: onSubmit,
                 })
@@ -247,9 +247,9 @@ const CommunityEditorFrame = ({ handle }) => {
 
             {!state.isCommunityNew
               ? widget("components.atom.button", {
-                  classNames: { root: "btn-outline-danger border-none" },
+                  classNames: { root: "btn-lg btn-outline-danger border-none" },
                   disabled: true,
-                  label: "☢️ Delete community",
+                  label: "Delete community",
                   onClick: () => {},
                 })
               : null}
