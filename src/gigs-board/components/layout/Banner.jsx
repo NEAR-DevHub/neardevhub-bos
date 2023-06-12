@@ -72,6 +72,11 @@ return (
         <img src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"></img>
       </a>
       <div>
+        {props.showCommunities ? (
+          <a href={href("communities", {})} class="text-white me-2">
+            Communities
+          </a>
+        ) : null}
         <a
           href="https://www.neardevgov.org/blog/near-developer-dao"
           class="text-white me-2"
