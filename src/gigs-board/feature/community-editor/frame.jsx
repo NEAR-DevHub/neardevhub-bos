@@ -138,13 +138,25 @@ const CommunityEditorFrame = ({ handle }) => {
               },
 
               handle: {
-                inputProps: { max: 40 },
+                inputProps: {
+                  max: 40,
+
+                  placeholder:
+                    "Choose unique URL handle for your community by adding letters and numbers. Example: zero-knowledge.",
+                },
+
                 label: "Handle",
                 order: 3,
               },
 
               tag: {
-                inputProps: { max: 20 },
+                inputProps: {
+                  max: 20,
+
+                  placeholder:
+                    "Choose one tag for your community. Any posts with this tag will show up in your community feed.",
+                },
+
                 label: "Tag",
                 order: 4,
               },
@@ -161,7 +173,13 @@ const CommunityEditorFrame = ({ handle }) => {
 
             schema: {
               bio: {
-                inputProps: { max: 200 },
+                inputProps: {
+                  max: 200,
+
+                  placeholder:
+                    "Tell more about your community. This will appear in the About section of your community’s homepage.",
+                },
+
                 label: "Bio",
                 order: 1,
               },
