@@ -334,19 +334,19 @@ const communities = {
 };
 /* END_INCLUDE: "shared/mocks" */
 
-if (!props.tag) {
+if (!props.handle) {
   return (
     <div class="alert alert-danger" role="alert">
-      Error: label is required
+      Error: community handle not found in URL parameters
     </div>
   );
 }
 
-const label = props.tag;
+const { tag } = communities[props.handle];
 
 const discussionRequiredPosts =
   Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-    label,
+    label: tag,
   }) ?? [];
 
 const Discussions = (
@@ -354,15 +354,15 @@ const Discussions = (
     <div class="row mb-2">
       <div class="col text-center">
         <small class="text-muted">
-          Required label:
-          <a href={href("Feed", { label })} key={label}>
-            <span class="badge text-bg-primary me-1">{label}</span>
+          Required tags:
+          <a href={href("Feed", { tag })} key={tag}>
+            <span class="badge text-bg-primary me-1">{tag}</span>
           </a>
         </small>
       </div>
     </div>
     {widget("components.layout.Controls", {
-      labels: label,
+      labels: tag,
     })}
     <div class="row">
       <div class="col">
@@ -375,7 +375,7 @@ const Discussions = (
 );
 
 return widget("entity.community.Layout", {
-  tag: props.tag,
+  handle: props.handle,
   tab: "Discussions",
   children: Discussions,
 });

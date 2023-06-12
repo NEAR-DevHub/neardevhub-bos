@@ -469,9 +469,9 @@ const boardConfigDefaults = {
   title: "",
 };
 
-const GithubKanbanBoardEditor = ({ label, pageURL }) => {
+const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   const communityGitHubKanbanBoards =
-    communities[label]?.github?.kanbanBoards ?? {};
+    communities[communityHandle]?.github?.kanbanBoards ?? {};
 
   State.init({
     boardConfig: null,

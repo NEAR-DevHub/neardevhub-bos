@@ -334,15 +334,15 @@ const communities = {
 };
 /* END_INCLUDE: "shared/mocks" */
 
-if (!props.tag) {
+if (!props.handle) {
   return (
     <div class="alert alert-danger" role="alert">
-      Error: label is required
+      Error: community handle not found in URL parameters
     </div>
   );
 }
 
-const community = communities[props.tag];
+const community = communities[props.handle];
 
 const eventsPost = Near.view(nearDevGovGigsContractAccountId, "get_post", {
   post_id: community.events_id,
@@ -375,7 +375,7 @@ const Events = (
 );
 
 return widget("entity.community.Layout", {
-  tag: props.tag,
+  handle: props.handle,
   tab: "Events",
   children: Events,
 });

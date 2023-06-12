@@ -392,9 +392,9 @@ const header = (
       </div>
 
       <div className="row">
-        {Object.entries(communities).map(([label, community]) => (
+        {Object.entries(communities).map(([handle, community]) => (
           <div className="col">
-            {widget("entity.community.card", { label, ...community }, label)}
+            {widget("entity.community.card", community, handle)}
           </div>
         ))}
       </div>
@@ -414,19 +414,19 @@ const header = (
   </div>
 );
 
-const FeedPage = ({ author, label, recency }) => {
-  State.init({ propsLabel: label, label, author });
+const FeedPage = ({ author, recency, tag }) => {
+  State.init({ propsTag: tag, tag, author });
 
   // When rerendered with different props, State will be preserved, so we need to update the state when we detect that the props have changed.
-  if (label !== state.propsLabel) {
+  if (tag !== state.propsTag) {
     State.update({
-      propsLabel: label,
-      label,
+			propsTag: tag,
+      tag,
     });
   }
 
   const onSearchLabel = (value) => {
-    State.update({ label: value });
+    State.update({ tag: value });
   };
 
   const onSearchAuthor = (value) => {
@@ -439,10 +439,10 @@ const FeedPage = ({ author, label, recency }) => {
     children: widget("components.posts.Search", {
       children: widget("components.layout.Controls"),
       recency,
-      label,
+      label: tag,
       author,
       //
-      labelQuery: { label },
+      labelQuery: { label: tag },
       onSearchLabel,
       //
       authorQuery: { author },

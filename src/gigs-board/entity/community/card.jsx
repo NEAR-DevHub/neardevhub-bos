@@ -59,10 +59,10 @@ const Hover = styled.div`
   }
 `;
 
-const CommunityCard = ({ banner_url, description, name, tag }) => (
+const CommunityCard = ({ banner_url, description, handle, name }) => (
   <Hover className="card">
     <a
-      href={href("community.Overview", { tag })}
+      href={href("community.Overview", { handle })}
       class="text-decoration-none text-reset"
     >
       <img src={banner_url} class="card-img-top"></img>

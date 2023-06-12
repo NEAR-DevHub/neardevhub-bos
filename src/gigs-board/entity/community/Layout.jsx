@@ -340,15 +340,15 @@ const Content = styled.div`
   }
 `;
 
-if (!props.tag) {
+if (!props.handle) {
   return (
     <div class="alert alert-danger" role="alert">
-      Error: label is required
+      Error: community handle not found in URL parameters
     </div>
   );
 }
 
-const community = communities[props.tag];
+const community = communities[props.handle];
 
 return (
   <>
@@ -358,7 +358,7 @@ return (
       logo_url: community.logo_url,
       banner_url: community.banner_url,
       description: community.description,
-      tag: props.tag,
+      handle: props.handle,
       tab: props.tab,
     })}
     <Content>{props.children}</Content>

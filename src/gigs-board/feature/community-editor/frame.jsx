@@ -59,10 +59,10 @@ const pick = (object, subsetKeys) =>
 /* END_INCLUDE: "shared/lib/record" */
 
 const communityDefaults = {
-  moderators: [],
+  admins: [],
 };
 
-const CommunityEditorFrame = ({ handle }) => {
+const CommunityEditorFrame = ({ communityHandle }) => {
   State.init({
     isCommunityNew: true,
     data: null,
@@ -70,7 +70,7 @@ const CommunityEditorFrame = ({ handle }) => {
 
   console.log(state.data);
 
-  if (typeof handle === "string" && state.data === null) {
+  if (typeof communityHandle === "string" && state.data === null) {
     /**
      * !TODO: get community data and update state only if it exists
      * ! otherwise, set data to null
@@ -225,7 +225,7 @@ const CommunityEditorFrame = ({ handle }) => {
             submitLabel: state.isCommunityNew ? "Next" : "Save",
 
             schema: {
-              moderators: {
+              admins: {
                 label: "Admins",
                 order: 1,
               },

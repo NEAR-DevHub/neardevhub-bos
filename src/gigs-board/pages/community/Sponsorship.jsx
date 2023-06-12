@@ -334,20 +334,22 @@ const communities = {
 };
 /* END_INCLUDE: "shared/mocks" */
 
-if (!props.tag) {
+if (!props.handle) {
   return (
     <div class="alert alert-danger" role="alert">
-      Error: label is required
+      Error: community handle not found in URL parameters
     </div>
   );
 }
 
-const postIdsWithLabels = (labels) => {
-  const ids = labels
+const community = communities[props.handle];
+
+const postIdsWithTags = (tags) => {
+  const ids = tags
     .map(
-      (label) =>
+      (tag) =>
         Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-          label,
+          label: tag,
         }) ?? []
     )
     .map((ids) => new Set(ids))
@@ -360,13 +362,13 @@ const postIdsWithLabels = (labels) => {
       }
       return res;
     });
-  ids.delete(communities[props.tag].overview_id);
-  ids.delete(communities[props.tag].events_id);
+  ids.delete(community.overview_id);
+  ids.delete(community.events_id);
   return [...ids].reverse();
 };
 
-const sponsorshipRequiredLabels = ["funding", props.tag];
-const sponsorshipRequiredPosts = postIdsWithLabels(sponsorshipRequiredLabels);
+const sponsorshipRequiredTags = ["funding", community.tag];
+const sponsorshipRequiredPosts = postIdsWithTags(sponsorshipRequiredTags);
 
 const Sponsorship = (
   <div>
@@ -378,10 +380,10 @@ const Sponsorship = (
       </div>
       <div class="col-md-auto">
         <small class="text-muted">
-          Required labels:
-          {sponsorshipRequiredLabels.map((label) => (
-            <a href={href("Feed", { label })} key={label}>
-              <span class="badge text-bg-primary me-1">{label}</span>
+          Required tags:
+          {sponsorshipRequiredTags.map((tag) => (
+            <a href={href("Feed", { tag })} key={tag}>
+              <span class="badge text-bg-primary me-1">{tag}</span>
             </a>
           ))}
         </small>
@@ -413,7 +415,7 @@ const Sponsorship = (
 );
 
 return widget("entity.community.Layout", {
-  tag: props.tag,
+  handle: props.handle,
   tab: "Sponsorship",
   children: Sponsorship,
 });

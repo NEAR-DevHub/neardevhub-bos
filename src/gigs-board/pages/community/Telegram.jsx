@@ -334,15 +334,15 @@ const communities = {
 };
 /* END_INCLUDE: "shared/mocks" */
 
-if (!props.tag) {
+if (!props.handle) {
   return (
     <div class="alert alert-danger" role="alert">
-      Error: label is required
+      Error: community handle not found in URL parameters
     </div>
   );
 }
 
-const community = communities[props.tag];
+const community = communities[props.handle];
 
 const group = community.telegram_handle;
 
@@ -365,7 +365,7 @@ const Telegram = (
 );
 
 return widget("entity.community.Layout", {
-  tag: props.tag,
+  handle: props.handle,
   tab: "Telegram",
   children: Telegram,
 });

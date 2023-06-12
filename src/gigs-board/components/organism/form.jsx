@@ -212,8 +212,6 @@ const Form = ({
     isEditorActive: false,
   });
 
-  console.log(state.data);
-
   const onEditorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,

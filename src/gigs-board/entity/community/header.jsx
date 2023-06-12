@@ -117,7 +117,7 @@ const topicTabs = [
   },
 ];
 
-const CommunityHeader = ({ tab, tag }) => {
+const CommunityHeader = ({ handle, tab }) => {
   return (
     <Header className="d-flex flex-column gap-3 px-4 pt-3">
       <ol className="breadcrumb">
@@ -151,7 +151,7 @@ const CommunityHeader = ({ tab, tag }) => {
                   "d-inline-flex gap-2",
                   tab === title ? "nav-link active" : "nav-link",
                 ].join(" ")}
-                href={href(path, { tag })}
+                href={href(path, { handle })}
               >
                 {iconClass && <i className={iconClass} />}
                 <span>{title}</span>
