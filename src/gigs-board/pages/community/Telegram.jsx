@@ -55,30 +55,34 @@ function href(widgetName, linkProps) {
 /* INCLUDE: "shared/mocks" */
 const communities = {
   "zero-knowledge": {
-    overviewId: 397,
-    eventsId: 401,
+    handle: "zero-knowledge",
+    name: "Zero Knowledge",
+    description: "Building a zero knowledge ecosystem on NEAR.",
+    tag: "zero-knowledge",
+    telegram_handle: "NearZeroKnowledge",
 
-    icon: "https://ipfs.near.social/ipfs/bafkreiajwq6ep3n7veddozji2djv5vviyisabhycbweslvpwhsoyuzcwi4",
+    logo_url:
+      "https://ipfs.near.social/ipfs/bafkreiajwq6ep3n7veddozji2djv5vviyisabhycbweslvpwhsoyuzcwi4",
 
-    cover:
+    banner_url:
       "https://ipfs.near.social/ipfs/bafkreihgxg5kwts2juldaeasveyuddkm6tcabmrat2aaq5u6uyljtyt7lu",
 
-    title: "Zero Knowledge",
-    desc: "Building a zero knowledge ecosystem on NEAR.",
-    telegram: "NearZeroKnowledge",
+    overview_id: 397,
+    events_id: 401,
   },
 
   protocol: {
-    overviewId: 412,
-    eventsId: 413,
+    handle: "protocol",
+    name: "Protocol",
+    description: "Supporting the ongoing innovation of the NEAR Protocol.",
+    tag: "protocol",
+    telegram_handle: "NEAR_Protocol_Community_Group",
 
-    icon: "https://ipfs.near.social/ipfs/bafkreidpitdafcnhkp4uyomacypdgqvxr35jtfnbxa5s6crby7qjk2nv5a",
+    logo_url:
+      "https://ipfs.near.social/ipfs/bafkreidpitdafcnhkp4uyomacypdgqvxr35jtfnbxa5s6crby7qjk2nv5a",
 
-    cover:
+    banner_url:
       "https://ipfs.near.social/ipfs/bafkreicg4svzfz5nvllomsahndgm7u62za4sib4mmbygxzhpcl4htqwr4a",
-
-    title: "Protocol",
-    desc: "Supporting the ongoing innovation of the NEAR Protocol.",
 
     github: {
       kanbanBoards: {
@@ -97,7 +101,7 @@ const communities = {
             },
 
             "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9": {
-              description: "NEPS that need a review by Subject Matter Experts.",
+              description: "NEPs that need a review by Subject Matter Experts.",
 
               labelSearchTerms: ["WG-protocol", "S-review"],
               title: "👀 Review",
@@ -106,7 +110,7 @@ const communities = {
 
             "18877dd71e5-47d177b8-5505178-640a5937--17968e87": {
               description:
-                "NEPS in the final review stage that need the work group voting indications.",
+                "NEPs in the final review stage that need the work group voting indications.",
 
               labelSearchTerms: ["WG-protocol", "S-voting"],
               title: "✔ Voting",
@@ -115,7 +119,7 @@ const communities = {
 
             "18877e14753--5b0ca250-1edea464-523fd579--5ebde527": {
               description:
-                "NEPS that were reviewed and approved by a work group.",
+                "NEPs that were reviewed and approved by a work group.",
 
               labelSearchTerms: ["WG-protocol", "S-approved"],
               title: "✅ Approved NEPs",
@@ -124,7 +128,7 @@ const communities = {
 
             "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81": {
               description:
-                "NEPS that were reviewed and approved by a work group or NEP moderators.",
+                "NEPs that were reviewed and approved by a work group or NEP moderators.",
 
               labelSearchTerms: ["WG-protocol", "A-NEP-GrammarFix"],
               title: "🔧 Approved Fixes",
@@ -150,20 +154,22 @@ const communities = {
       },
     },
 
-    telegram: "NEAR_Protocol_Community_Group",
+    overview_id: 412,
+    events_id: 413,
   },
 
   tooling: {
-    overviewId: 416,
-    eventsId: 417,
+    handle: "tooling",
+    name: "Tooling",
+    description: "Supporting the ongoing innovation of tooling.",
+    tag: "tooling",
+    telegram_handle: "NEAR_Tools_Community_Group",
 
-    icon: "https://ipfs.near.social/ipfs/bafkreie2eaj5czmpfe6pe53kojzcspgozebdsonffwvbxtpuipnwahybvi",
+    logo_url:
+      "https://ipfs.near.social/ipfs/bafkreie2eaj5czmpfe6pe53kojzcspgozebdsonffwvbxtpuipnwahybvi",
 
-    cover:
+    banner_url:
       "https://ipfs.near.social/ipfs/bafkreiehzr7z2fhoqqmkt3z667wubccbch6sqtsnvd6msodyzpnf72cszy",
-
-    title: "Tooling",
-    desc: "Supporting the ongoing innovation of tooling.",
 
     github: {
       kanbanBoards: {
@@ -182,7 +188,7 @@ const communities = {
             },
 
             "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9": {
-              description: "NEPS that need a review by Subject Matter Experts.",
+              description: "NEPs that need a review by Subject Matter Experts.",
 
               labelSearchTerms: ["WG-tools", "S-review"],
               title: "👀 Review",
@@ -191,7 +197,7 @@ const communities = {
 
             "18877dd71e5-47d177b8-5505178-640a5937--17968e87": {
               description:
-                "NEPS in the final review stage that need the work group voting indications.",
+                "NEPs in the final review stage that need the work group voting indications.",
 
               labelSearchTerms: ["WG-tools", "S-voting"],
               title: "✔ Voting",
@@ -200,7 +206,7 @@ const communities = {
 
             "18877e14753--5b0ca250-1edea464-523fd579--5ebde527": {
               description:
-                "NEPS that were reviewed and approved by a work group.",
+                "NEPs that were reviewed and approved by a work group.",
 
               labelSearchTerms: ["WG-tools", "S-approved"],
               title: "✅ Approved NEPs",
@@ -209,7 +215,7 @@ const communities = {
 
             "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81": {
               description:
-                "NEPS that were reviewed and approved by a work group or NEP moderators.",
+                "NEPs that were reviewed and approved by a work group or NEP moderators.",
 
               labelSearchTerms: ["WG-tools", "A-NEP-GrammarFix"],
               title: "🔧 Approved Fixes",
@@ -235,20 +241,22 @@ const communities = {
       },
     },
 
-    telegram: "NEAR_Tools_Community_Group",
+    overview_id: 416,
+    events_id: 417,
   },
 
   "contract-standards": {
-    overviewId: 414,
-    eventsId: 415,
+    handle: "contract-standards",
+    name: "Contract Standards",
+    description: "Coordinating the contribution to the NEAR dapp standards.",
+    tag: "contract-standards",
+    telegram_handle: "nearnft",
 
-    icon: "https://ipfs.near.social/ipfs/bafkreiepgdnu7soc6xgbyd4adicbf3eyxiiwqawn6tguaix6aklfpir634",
+    logo_url:
+      "https://ipfs.near.social/ipfs/bafkreiepgdnu7soc6xgbyd4adicbf3eyxiiwqawn6tguaix6aklfpir634",
 
-    cover:
+    banner_url:
       "https://ipfs.near.social/ipfs/bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey",
-
-    title: "Contract Standards",
-    desc: "Coordinating the contribution to the NEAR dapp standards.",
 
     github: {
       kanbanBoards: {
@@ -267,7 +275,7 @@ const communities = {
             },
 
             "18877dc932c-c309c28--4b95e909--220e9bbb--51ff54c9": {
-              description: "NEPS that need a review by Subject Matter Experts.",
+              description: "NEPs that need a review by Subject Matter Experts.",
 
               labelSearchTerms: ["WG-contract-standards", "S-review"],
               title: "👀 Review",
@@ -276,7 +284,7 @@ const communities = {
 
             "18877dd71e5-47d177b8-5505178-640a5937--17968e87": {
               description:
-                "NEPS in the final review stage that need the work group voting indications.",
+                "NEPs in the final review stage that need the work group voting indications.",
 
               labelSearchTerms: ["WG-contract-standards", "S-voting"],
               title: "✔ Voting",
@@ -285,7 +293,7 @@ const communities = {
 
             "18877e14753--5b0ca250-1edea464-523fd579--5ebde527": {
               description:
-                "NEPS that were reviewed and approved by a work group.",
+                "NEPs that were reviewed and approved by a work group.",
 
               labelSearchTerms: ["WG-contract-standards", "S-approved"],
               title: "✅ Approved NEPs",
@@ -294,7 +302,7 @@ const communities = {
 
             "18877e2f94c-4cc0ff57--1fb016c6--39ce0459-23922e81": {
               description:
-                "NEPS that were reviewed and approved by a work group or NEP moderators.",
+                "NEPs that were reviewed and approved by a work group or NEP moderators.",
 
               labelSearchTerms: ["WG-contract-standards", "A-NEP-GrammarFix"],
               title: "🔧 Approved Fixes",
@@ -320,12 +328,13 @@ const communities = {
       },
     },
 
-    telegram: "nearnft",
+    overview_id: 414,
+    events_id: 415,
   },
 };
 /* END_INCLUDE: "shared/mocks" */
 
-if (!props.label) {
+if (!props.tag) {
   return (
     <div class="alert alert-danger" role="alert">
       Error: label is required
@@ -333,9 +342,9 @@ if (!props.label) {
   );
 }
 
-const community = communities[props.label];
+const community = communities[props.tag];
 
-const group = community.telegram;
+const group = community.telegram_handle;
 
 const Telegram = (
   <div>
@@ -356,7 +365,7 @@ const Telegram = (
 );
 
 return widget("entity.community.Layout", {
-  label: props.label,
+  tag: props.tag,
   tab: "Telegram",
   children: Telegram,
 });

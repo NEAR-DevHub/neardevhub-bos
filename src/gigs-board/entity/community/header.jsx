@@ -117,7 +117,7 @@ const topicTabs = [
   },
 ];
 
-const CommunityHeader = ({ label, tab }) => {
+const CommunityHeader = ({ tab, tag }) => {
   return (
     <Header className="d-flex flex-column gap-3 px-4 pt-3">
       <ol className="breadcrumb">
@@ -126,17 +126,17 @@ const CommunityHeader = ({ label, tab }) => {
         </li>
 
         <li className="breadcrumb-item active" aria-current="page">
-          <BreadcrumbBold>{props.title}</BreadcrumbBold>
+          <BreadcrumbBold>{props.name}</BreadcrumbBold>
         </li>
       </ol>
 
       <div className="d-flex justify-content-between">
         <div className="d-flex align-items-center">
-          <img src={props.icon} width="95px" height="95px"></img>
+          <img src={props.logo_url} width="95px" height="95px"></img>
 
           <div>
-            <div className="h5 pt-3 ps-3">{props.title}</div>
-            <div className="ps-3 pb-2 text-secondary">{props.desc}</div>
+            <div className="h5 pt-3 ps-3">{props.name}</div>
+            <div className="ps-3 pb-2 text-secondary">{props.description}</div>
           </div>
         </div>
       </div>
@@ -151,7 +151,7 @@ const CommunityHeader = ({ label, tab }) => {
                   "d-inline-flex gap-2",
                   tab === title ? "nav-link active" : "nav-link",
                 ].join(" ")}
-                href={href(path, { label })}
+                href={href(path, { tag })}
               >
                 {iconClass && <i className={iconClass} />}
                 <span>{title}</span>

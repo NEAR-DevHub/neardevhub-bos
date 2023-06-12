@@ -770,12 +770,12 @@ return (
             ),
           },
           recency: props.recency,
-          label: props.label,
+          tag: props.tag,
           author: props.author,
         })
       : widget("components.posts.List", {
           recency: props.recency,
-          label: props.label,
+          tag: props.tag,
           author: props.author,
         })}
   </>

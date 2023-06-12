@@ -109,7 +109,7 @@ function getPostsByLabel() {
     nearDevGovGigsContractAccountId,
     "get_posts_by_label",
     {
-      label: props.label,
+      label: props.tag,
     }
   );
   if (postIds) {
@@ -133,7 +133,7 @@ function getPostsByAuthor() {
 }
 
 function intersectPostsWithLabel(postIds) {
-  if (props.label) {
+  if (props.tag) {
     let postIdLabels = getPostsByLabel();
     if (postIdLabels === null) {
       // wait until postIdLabels are loaded
@@ -230,7 +230,7 @@ if (props.searchResult) {
   postIds = props.searchResult.postIds;
   postIds = intersectPostsWithLabel(postIds);
   postIds = intersectPostsWithAuthor(postIds);
-} else if (props.label) {
+} else if (props.tag) {
   postIds = getPostsByLabel();
   postIds = intersectPostsWithAuthor(postIds);
 } else if (props.author) {

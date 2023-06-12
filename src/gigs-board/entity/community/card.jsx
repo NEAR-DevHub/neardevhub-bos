@@ -59,15 +59,15 @@ const Hover = styled.div`
   }
 `;
 
-const CommunityCard = ({ cover, desc, label, title }) => (
+const CommunityCard = ({ banner_url, description, name, tag }) => (
   <Hover className="card">
     <a
-      href={href("community.Overview", { label })}
+      href={href("community.Overview", { tag })}
       class="text-decoration-none text-reset"
     >
-      <img src={cover} class="card-img-top"></img>
-      <div class="h5 pt-3 ps-3">{title}</div>
-      <div class="ps-3 pb-2 text-secondary">{desc}</div>
+      <img src={banner_url} class="card-img-top"></img>
+      <div class="h5 pt-3 ps-3">{name}</div>
+      <div class="ps-3 pb-2 text-secondary">{description}</div>
     </a>
   </Hover>
 );
