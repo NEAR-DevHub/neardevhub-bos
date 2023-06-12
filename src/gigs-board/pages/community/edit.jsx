@@ -52,11 +52,11 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityNewPage = () => (
+const CommunityEditPage = ({ handle }) => (
   <div className="d-flex flex-column">
     {widget("components.layout.Banner", { style: { marginBottom: 0 } })}
-    {widget("feature.community-editor.frame", {})}
+    {widget("feature.community-editor.frame", { handle })}
   </div>
 );
 
-return CommunityNewPage(props);
+return CommunityEditPage(props);
