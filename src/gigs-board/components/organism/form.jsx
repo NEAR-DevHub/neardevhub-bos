@@ -143,23 +143,76 @@ const useForm = ({ stateKey: formStateKey }) => ({
       ),
 });
 /* END_INCLUDE: "shared/lib/form" */
+/* INCLUDE: "shared/lib/record" */
+const pick = (object, subsetKeys) =>
+  Object.fromEntries(
+    Object.entries(object ?? {}).filter(([key, _]) => subsetKeys.includes(key))
+  );
+/* END_INCLUDE: "shared/lib/record" */
+
+const fieldsRenderDefault = ({ schema, formState, formUpdate, isEditable }) => (
+  <>
+    {Object.entries(schema).map(([fieldKey, fieldProps]) => (
+      <>
+        {!isEditable && (
+          <div
+            className="d-flex gap-3"
+            key={`${formState.handle}-${fieldKey}`}
+            style={{ order: fieldProps.order }}
+          >
+            <label className="fw-bold w-25">{fieldProps.label}</label>
+
+            <p
+              className={
+                (formState[fieldKey] ?? null) === null ? "text-muted" : ""
+              }
+            >
+              {formState[fieldKey] ?? "none"}
+            </p>
+          </div>
+        )}
+
+        {isEditable &&
+          widget("components.molecule.text-input", {
+            ...fieldProps,
+            className: "w-100",
+            key: `${formState.handle}-${fieldKey}`,
+            onChange: formUpdate({ path: [fieldKey] }),
+            style: { order: fieldProps.order },
+            value: formState[fieldKey],
+          })}
+      </>
+    ))}
+  </>
+);
 
 const Form = ({
-  actionLabelCancel,
-  actionLabelSubmit,
   actionsAdditional,
-  className,
-  fieldsRender,
+  cancelLabel,
+  classNames,
+  data,
+  fieldsRender: fieldsRenderCustom,
   heading,
-  initialState,
   isMutable,
   onCancel,
   onSubmit,
+  schema,
+  submitLabel,
 }) => {
+  const fieldsRender =
+    typeof fieldsRenderCustom === "function"
+      ? fieldsRenderCustom
+      : fieldsRenderDefault;
+
+  const fieldValues = pick(data, Object.keys(schema));
+
   State.init({
-    data: initialState ?? {},
+    initialState: fieldValues,
+    data: fieldValues ?? {},
     isEditorActive: false,
   });
+
+  console.log(state.initialState);
 
   const onEditorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -168,25 +221,26 @@ const Form = ({
     }));
 
   const { formState, formUpdate } = useForm({ stateKey: "data" }),
-    noSubmit = JSON.stringify(formState) === JSON.stringify(initialState ?? {});
+    noSubmit =
+      JSON.stringify(formState) === JSON.stringify(state.initialState ?? {});
 
   const onCancelClick = () => {
-    onEditorToggle(false);
-
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: initialState,
+      data: lastKnownState.initialState,
+      isEditorActive: false,
     }));
 
-    return onCancel ? onCancel() : null;
+    return typeof onCancel === "function" ? onCancel() : null;
   };
 
   const onSubmitClick = () => {
-    return onSubmit ? onSubmit(state.data) : null;
+    onEditorToggle(false);
+    return typeof onSubmit === "function" ? onSubmit(formState) : null;
   };
 
   return widget("components.molecule.tile", {
-    className,
+    className: classNames.root,
     heading,
 
     headerSlotRight:
@@ -196,6 +250,7 @@ const Form = ({
               root: "btn-sm btn-primary",
               adornment: "bi bi-pen-fill",
             },
+
             label: "Edit",
             onClick: () => onEditorToggle(true),
           })
@@ -206,8 +261,8 @@ const Form = ({
         {fieldsRender({
           formState,
           formUpdate,
-          isEditorActive: state.isEditorActive,
-          isMutable,
+          isEditable: isMutable && state.isEditorActive,
+          schema,
         })}
 
         {isMutable && state.isEditorActive ? (
@@ -218,18 +273,18 @@ const Form = ({
 
             {widget("components.atom.button", {
               classNames: { root: "btn-outline-danger shadow-none border-0" },
-              label: actionLabelCancel ?? "Cancel",
+              label: cancelLabel ?? "Cancel",
               onClick: onCancelClick,
             })}
 
             {widget("components.atom.button", {
               classNames: {
                 root: "btn-success",
-                adornment: "bi bi-arrow-down-circle-fill",
+                adornment: `bi ${classNames.submitAdornment}`,
               },
 
               disabled: noSubmit,
-              label: actionLabelSubmit ?? "Submit",
+              label: submitLabel ?? "Submit",
               onClick: onSubmitClick,
             })}
           </div>

@@ -11,7 +11,7 @@ const Button = ({ classNames, label, ...restProps }) => (
   <ButtonRoot
     className={[
       "btn shadow d-inline-flex align-items-center gap-2 rounded-pill p-2",
-      classNames.root ?? "",
+      classNames.root ?? "btn-primary",
     ].join(" ")}
     style={{ width: "fit-content" }}
     {...restProps}

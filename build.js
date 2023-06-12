@@ -23,6 +23,12 @@ replaceInFiles(options)
       .toString()}/* END_INCLUDE: "shared/lib/gui" */`,
   })
   .pipe({
+    from: /\/\* INCLUDE: "shared\/lib\/record" \*\/.*\/\* END_INCLUDE: "shared\/lib\/record" \*\//gms,
+    to: `/* INCLUDE: "shared/lib/record" */\n${fs
+      .readFileSync("./shared/lib/record.js", "utf8")
+      .toString()}/* END_INCLUDE: "shared/lib/record" */`,
+  })
+  .pipe({
     from: /\/\* INCLUDE: "shared\/lib\/uuid" \*\/.*\/\* END_INCLUDE: "shared\/lib\/uuid" \*\//gms,
     to: `/* INCLUDE: "shared/lib/uuid" */\n${fs
       .readFileSync("./shared/lib/uuid.js", "utf8")
