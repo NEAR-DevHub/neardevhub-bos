@@ -1,7 +1,21 @@
 const ButtonRoot = styled.button`
+  min-height: 42;
+  line-height: 1.5;
+
+  &.btn-sm {
+    min-height: 32;
+    line-height: 1;
+  }
+
+  &.btn-lg {
+    min-height: 48;
+    line-height: 1.7;
+  }
+
   & *:first-child {
     padding-left: 4px;
   }
+
   & *:last-child {
     padding-right: 4px;
   }
@@ -17,13 +31,10 @@ const Button = ({ classNames, label, ...restProps }) => (
     {...restProps}
   >
     {classNames.adornment ? (
-      <i
-        className={[classNames.adornment].join(" ")}
-        style={{ lineHeight: 1 }}
-      />
+      <i className={classNames.adornment} style={{ lineHeight: "inherit" }} />
     ) : null}
 
-    <span className={[classNames.label].join(" ")} style={{ lineHeight: 1 }}>
+    <span className={classNames.label} style={{ lineHeight: "inherit" }}>
       {label}
     </span>
   </ButtonRoot>
