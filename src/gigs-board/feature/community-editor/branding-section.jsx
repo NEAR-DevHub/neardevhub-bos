@@ -58,27 +58,27 @@ const CardCover = styled.div`
   height: calc(100% - 84px);
 `;
 
-const coverURL =
+const banner_url =
   "https://ipfs.near.social/ipfs/bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey";
 
-const CommunityEditorBrandingSection = ({}) => {
+const CommunityEditorBrandingSection = ({ data }) => {
   return (
     <div
       className="card shadow rounded-4 w-100"
       style={{ maxWidth: 896, height: 320 }}
     >
       <CardCover
-        alt="Community card cover preview"
+        alt="Community banner preview"
         className="card-img-top"
         style={{
-          background: `center / cover no-repeat url(${coverURL})`,
+          background: `center / cover no-repeat url(${banner_url})`,
         }}
       />
 
       <div className="card-body p-4">
-        <h5 className="h5">Community name</h5>
+        <h5 className="h5">{data.name}</h5>
 
-        <p className="card-text">Short bio, I guess</p>
+        <p className="card-text">{data.description}</p>
       </div>
     </div>
   );
