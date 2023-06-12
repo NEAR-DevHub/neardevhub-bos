@@ -239,7 +239,8 @@ const CommunityEditorFrame = ({ handle }) => {
             {state.isCommunityNew
               ? widget("components.atom.button", {
                   classNames: { root: "btn-success" },
-                  label: "🚀 Launch",
+									disabled: true,
+                  label: "🚀 Launch ( coming soon! )",
                   onClick: onSubmit,
                 })
               : null}
