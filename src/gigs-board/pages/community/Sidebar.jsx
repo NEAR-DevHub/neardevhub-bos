@@ -111,6 +111,12 @@ const socialLinks = [
 ];
 
 const mockTeamMembers = [
+  // {
+  //   id: "${community.member}",
+  //   role: "${community.role}",
+  //   avatar: "${community.profileImage}",
+  //   wallet: "${community.accountId}",
+  // },
   {
     id: "css_queen",
     role: "Owner",

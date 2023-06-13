@@ -136,17 +136,6 @@ return (
     </div>
     <div className="row">
       <div className="col-xs-12 col-lg-8">{Overview}</div>
-      <div class="col-4 container-fluid">
-        <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.Sidebar`}
-          props={{
-            metadata: metadata,
-            accountId: accountId,
-            widgetName: widgetName,
-            label: props.label,
-          }}
-        />
-      </div>
     </div>
   </div>
 );

@@ -225,7 +225,7 @@ return widget("components.community.Layout", {
             </div>
           </div>
           <div className="col-auto aspect-ratio-square">
-            {widget("components.layout.PlusPost", {
+            {widget("components.layout.Controls", {
               labels: discussionsRequiredLabels,
             })}
           </div>

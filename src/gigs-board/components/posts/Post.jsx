@@ -38,8 +38,9 @@ function href(widgetName, linkProps) {
   const linkPropsQuery = Object.entries(linkProps)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""
-    }${linkPropsQuery}`;
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
@@ -189,6 +190,9 @@ const StyledDiv = styled.div`
   align-items: center;
   width: 100%;
   color: rgba(0, 0, 0, 0.8);
+  padding: "15px";
+  margin-right: 16px;
+  font-size: 1.2em;
 `;
 
 const ResponsiveDiv = styled.div`
@@ -196,7 +200,7 @@ const ResponsiveDiv = styled.div`
   justify-content: end;
   align-items: center;
   width: 100%;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
@@ -204,11 +208,23 @@ const ResponsiveDiv = styled.div`
 `;
 
 const accountId = post.author_id;
+
 const header = (
-  <ResponsiveDiv className="py-2 px-3" style={{ fontSize: "1em" }}>
-    <div className="d-flex align-items-center">
-      <div className="col-auto d-flex align-items-center">
-        <div className="square rounded-circle" style={{ overflow: "hidden", width: "4em", height: "4em", backgroundColor: "#008080" }}>
+  <ResponsiveDiv className="py-1 px-3" style={{ fontSize: "1em" }}>
+    <div className="d-flex align-items-center justify-content-between">
+      <div
+        className="col-auto d-flex align-items-center"
+        style={{ padding: "10px" }}
+      >
+        <div
+          className="square rounded-circle"
+          style={{
+            overflow: "hidden",
+            width: "3.33em",
+            height: "3.33em",
+            backgroundColor: "#008080",
+          }}
+        >
           <Widget
             key="image"
             src="mob.near/widget/ProfileImage"
@@ -220,13 +236,18 @@ const header = (
           />
         </div>
         <div style={{ marginLeft: "1em" }}>
-          <span style={{ fontSize: "1.5em", fontWeight: "bold" }}>
+          <span style={{ fontSize: "1.35em", fontWeight: "700" }}>
             {post.author_id}
           </span>
           <span
             key="accountId"
-            className="text-muted ms-1"
-            style={{ display: "block", fontSize: "1em" }}
+            className="text-muted "
+            style={{
+              display: "block",
+              fontSize: "1.2em",
+              fontWeight: "500",
+              marginTop: "-8px",
+            }}
           >
             @{post.author_id}
           </span>
@@ -361,10 +382,10 @@ const buttonsFooter = props.isPreview ? null : (
           {post.likes.length == 0
             ? "Like"
             : widget("components.layout.LikeButton.Faces", {
-              likesByUsers: Object.fromEntries(
-                post.likes.map(({ author_id }) => [author_id, ""])
-              ),
-            })}
+                likesByUsers: Object.fromEntries(
+                  post.likes.map(({ author_id }) => [author_id, ""])
+                ),
+              })}
         </button>
         <div class="btn-group text-sm" role="group">
           <button
@@ -490,7 +511,7 @@ const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
 const postLabels = post.snapshot.labels ? (
-  <div class="card-title" key="post-labels">
+  <div class="card-title" key="post-labels" style={{ padding: "10px" }}>
     {post.snapshot.labels.map((label) => {
       return (
         <StyledLink href={href("Feed", { label }, label)}>
@@ -516,8 +537,11 @@ const postTitle =
     <div key="post-title"></div>
   ) : (
     <h5 class="card-title" key="post-title">
-      <div className="row justify-content-between">
-        <div class="col-9">
+      <div
+        className="row justify-content-between"
+        style={{ padding: "5px", fontSize: "1.3em", fontWeight: "600" }}
+      >
+        <div class="col-12">
           <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
           {renamedPostType}: {snapshot.name}
         </div>
@@ -528,7 +552,7 @@ const postTitle =
 const postExtra =
   snapshot.post_type == "Sponsorship" ? (
     <div key="post-extra">
-      <h6 class="card-subtitle mb-2 text-muted">
+      <h6 class="card-subtitle mb-2 text-muted" style={{ padding: "10px" }}>
         Maximum amount: {snapshot.amount} {snapshot.sponsorship_token}
       </h6>
       <h6 class="card-subtitle mb-2 text-muted">
@@ -545,9 +569,9 @@ const postExtra =
 
 const postsList =
   props.isPreview || childPostIds.length == 0 ? (
-    <div key="posts-list"></div>
+    <div key="posts-list" style={{ padding: "15px" }}></div>
   ) : (
-    <div class="row" key="posts-list">
+    <div class="row" key="posts-list" style={{ padding: "15px" }}>
       <div
         class={`collapse ${defaultExpanded ? "show" : ""}`}
         id={`collapseChildPosts${postId}`}
@@ -610,13 +634,17 @@ const limitedMarkdown = styled.div`
 const clampMarkdown = styled.div`
   .clamp {
     display: -webkit-box;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 `;
 const descriptionArea = isUnderPost ? (
-  <limitedMarkdown className="overflow-auto" key="description-area">
+  <limitedMarkdown
+    className="overflow-auto"
+    key="description-area"
+    style={{ padding: "15px" }}
+  >
     <Markdown
       className="card-text"
       text={snapshot.description}
@@ -625,7 +653,10 @@ const descriptionArea = isUnderPost ? (
   </limitedMarkdown>
 ) : (
   <clampMarkdown>
-    <div className={state.clamp ? "clamp" : ""}>
+    <div
+      className={state.clamp ? "clamp" : ""}
+      style={{ padding: "15px", fontSize: "1.25rem" }}
+    >
       <Markdown
         className="card-text"
         text={state.clamp ? clampedContent : snapshot.description}
@@ -635,24 +666,28 @@ const descriptionArea = isUnderPost ? (
     </div>
     {state.clamp && isContentLong ? (
       <div className="d-flex justify-content-end">
-        <a
-          style={{ fontSize: "0.8rem", fontWeight: 400 }}
-          className="btn btn-link text-secondary"
-          onClick={() => State.update({ clamp: false })}
-        >
-          <br></br>
-          See More...
-        </a>
+        <StyledLink>
+          <a
+            style={{ fontSize: "1rem", fontWeight: 800 }}
+            className="btn btn-link text-black"
+            onClick={() => State.update({ clamp: false })}
+          >
+            <br></br>
+            See More...
+          </a>
+        </StyledLink>
       </div>
     ) : !state.clamp && isContentLong ? (
       <div className="d-flex justify-content-end">
-        <a
-          style={{ fontSize: "0.8rem", fontWeight: 400 }}
-          className="btn btn-link text-secondary"
-          onClick={() => State.update({ clamp: true })}
-        >
-          Close
-        </a>
+        <StyledLink>
+          <a
+            style={{ fontSize: "1rem", fontWeight: 800, padding: "10px" }}
+            className="btn btn-link text-black"
+            onClick={() => State.update({ clamp: true })}
+          >
+            ^ Close
+          </a>
+        </StyledLink>
       </div>
     ) : null}
   </clampMarkdown>
@@ -662,7 +697,7 @@ return (
   <Card className={`card my-2`} style={{ border: "none" }}>
     {linkToParent}
     {header}
-    <div className="card-body">
+    <div className="card-body ">
       {searchKeywords}
       {postTitle}
       <br></br>
