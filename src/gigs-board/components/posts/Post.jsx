@@ -207,6 +207,7 @@ const ResponsiveDiv = styled.div`
   }
 `;
 
+
 const accountId = post.author_id;
 
 const header = (

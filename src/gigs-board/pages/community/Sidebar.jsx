@@ -117,6 +117,7 @@ const mockTeamMembers = [
   //   avatar: "${community.profileImage}",
   //   wallet: "${community.accountId}",
   // },
+
   {
     id: "css_queen",
     role: "Owner",

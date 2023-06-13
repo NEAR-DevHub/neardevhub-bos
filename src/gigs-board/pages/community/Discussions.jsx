@@ -230,7 +230,6 @@ return widget("components.community.Layout", {
             })}
           </div>
         </div>
-
         <br></br>
         <div class="row">
           <div class="col">
