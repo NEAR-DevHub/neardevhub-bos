@@ -52,34 +52,30 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
+State.init({
+  copiedShareUrl: false,
+});
+const canEdit = true;
+const shareUrl = window.location.href;
+
 const Header = styled.div`
   overflow: hidden;
-  background: #f3f3f3;
+  background: #fff;
   margin-bottom: 25px;
 `;
 
 const NavUnderline = styled.ul`
+  border-bottom: 1px #eceef0 solid;
+
   a {
-    color: #3252a6;
+    color: #687076;
     text-decoration: none;
   }
 
   a.active {
     font-weight: bold;
-    border-bottom: 2px solid #0c7283;
-  }
-`;
-
-const BreadcrumbLink = styled.a`
-   {
-    color: #3252a6;
-    text-decoration: none;
-  }
-`;
-
-const BreadcrumbBold = styled.b`
-   {
-    color: #3252a6;
+    color: #0c7283;
+    border-bottom: 4px solid #0c7283;
   }
 `;
 
@@ -117,32 +113,99 @@ const topicTabs = [
   },
 ];
 
-const CommunityHeader = ({ handle, tab }) => {
+const buttonString = `
+height: 40px;
+font-size: 14px;
+border-color: #e3e3e0;
+`;
+
+const Link = styled.a`
+  ${buttonString}
+`;
+
+const Button = styled.button`
+  ${buttonString}
+`;
+
+const BannerImage = styled.img`
+  max-width: 100%;
+  width: 1320px;
+  height: 240px;
+`;
+
+const LogoImage = styled.img`
+  top: -50px;
+`;
+
+const SizedDiv = styled.div`
+  width: 150px;
+  height: 100px;
+`;
+
+const CommunityHeader = ({ handle, label, tab }) => {
   return (
     <Header className="d-flex flex-column gap-3 px-4 pt-3">
-      <ol className="breadcrumb">
-        <li className="breadcrumb-item">
-          <BreadcrumbLink href={href("Feed")}>DevHub</BreadcrumbLink>
-        </li>
-
-        <li className="breadcrumb-item active" aria-current="page">
-          <BreadcrumbBold>{props.name}</BreadcrumbBold>
-        </li>
-      </ol>
-
-      <div className="d-flex justify-content-between">
-        <div className="d-flex align-items-center">
-          <img src={props.logo_url} width="95px" height="95px"></img>
-
+      <BannerImage
+        src={props.banner_url}
+        className="object-fit-cover"
+        alt="Community Banner"
+      ></BannerImage>
+      <div className="d-md-flex d-block justify-content-between container">
+        <div className="d-md-flex d-block align-items-end">
+          <div className="position-relative">
+            <SizedDiv>
+              <LogoImage
+                src={props.logo_url}
+                alt="Community Icon"
+                width="150"
+                height="150"
+                className="border border-3 border-white rounded-circle shadow position-absolute"
+              ></LogoImage>
+            </SizedDiv>
+          </div>
           <div>
-            <div className="h5 pt-3 ps-3">{props.name}</div>
+            <div className="h1 pt-3 ps-3 text-nowrap">{props.name}</div>
             <div className="ps-3 pb-2 text-secondary">{props.description}</div>
           </div>
+        </div>
+        <div className="d-flex align-items-end">
+          {canEdit && (
+            <Link
+              href={href("community.new", { label })}
+              className="border border-1 text-nowrap rounded-pill p-2 m-2 bg-white text-dark font-weight-bold"
+            >
+              <i className="bi bi-gear" /> Edit Community
+            </Link>
+          )}
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip>Copy URL to clipboard</Tooltip>}
+          >
+            <Button
+              type="button"
+              className="ms-3 border border-1 text-nowrap rounded-pill p-2 m-2 bg-white text-dark font-weight-bold"
+              onMouseLeave={() => {
+                State.update({ copiedShareUrl: false });
+              }}
+              onClick={() => {
+                clipboard.writeText(shareUrl).then(() => {
+                  State.update({ copiedShareUrl: true });
+                });
+              }}
+            >
+              {state.copiedShareUrl ? (
+                <i className="bi bi-16 bi-check"></i>
+              ) : (
+                <i className="bi bi-16 bi-link-45deg"></i>
+              )}
+              Share
+            </Button>
+          </OverlayTrigger>
         </div>
       </div>
 
       <NavUnderline className="nav">
-        {topicTabs.map(({ defaultActive, iconClass, path, title }) =>
+        {topicTabs.map(({ defaultActive, path, title }) =>
           title ? (
             <li className="nav-item" key={title}>
               <a
@@ -153,7 +216,6 @@ const CommunityHeader = ({ handle, tab }) => {
                 ].join(" ")}
                 href={href(path, { handle })}
               >
-                {iconClass && <i className={iconClass} />}
                 <span>{title}</span>
               </a>
             </li>
