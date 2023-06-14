@@ -279,7 +279,7 @@ const Form = ({
 
   const { formState, formUpdate } = useForm({ stateKey: "data" });
 
-  const noSubmit =
+  const noChanges =
     JSON.stringify(formState) === JSON.stringify(state.initialState ?? {});
 
   const onCancelClick = () => {
@@ -338,6 +338,7 @@ const Form = ({
 
             {widget("components.atom.button", {
               classNames: { root: "btn-outline-danger shadow-none border-0" },
+              disabled: noChanges,
               label: cancelLabel ?? "Cancel",
               onClick: onCancelClick,
             })}
@@ -348,7 +349,7 @@ const Form = ({
                 adornment: `bi ${classNames.submitAdornment}`,
               },
 
-              disabled: noSubmit,
+              disabled: noChanges,
               label: submitLabel ?? "Submit",
               onClick: onSubmitClick,
             })}
