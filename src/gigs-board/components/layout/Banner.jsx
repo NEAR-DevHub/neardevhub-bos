@@ -73,11 +73,9 @@ return (
       </a>
 
       <div className="d-flex align-items-center gap-3">
-        {props.showCommunities ? (
-          <a href={href("communities", {})} class="text-white me-2">
-            Communities
-          </a>
-        ) : null}
+        <a href={href("communities", {})} class="text-white me-2">
+          Communities
+        </a>
 
         <a
           className="text-white"
