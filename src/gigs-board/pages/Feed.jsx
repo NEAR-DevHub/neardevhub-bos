@@ -420,7 +420,7 @@ const FeedPage = ({ author, recency, tag }) => {
   // When rerendered with different props, State will be preserved, so we need to update the state when we detect that the props have changed.
   if (tag !== state.propsTag) {
     State.update({
-			propsTag: tag,
+      propsTag: tag,
       tag,
     });
   }

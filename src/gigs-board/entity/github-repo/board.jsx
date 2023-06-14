@@ -63,6 +63,15 @@ const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
 `;
+
+const Magnifiable = styled.div`
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+  transition: box-shadow 0.6s;
+
+  &:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+`;
 /* END_INCLUDE: "shared/lib/gui" */
 
 const dataToColumns = (data, columns) =>
@@ -193,7 +202,7 @@ const GithubRepoBoard = ({
         {Object.keys(columns).length > 0 ? (
           Object.values(columns).map((column) => (
             <div className="col-3" key={column.id}>
-              <div className="card">
+              <div className="card rounded-4">
                 <div
                   className={[
                     "card-body d-flex flex-column gap-3",

@@ -125,22 +125,22 @@ const fieldDefaultUpdate = ({
 const useForm = ({ stateKey: formStateKey }) => ({
   formState: state[formStateKey],
 
-  formUpdate:
-    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
-    (fieldInput) =>
-      State.update((lastKnownState) =>
-        traversalUpdate({
-          input: fieldInput?.target?.value ?? fieldInput,
-          target: lastKnownState,
-          path: [formStateKey, ...fieldPath],
-          params,
+  formUpdate: ({ path: fieldPath, via: fieldCustomUpdate, ...params }) => (
+    fieldInput
+  ) =>
+    State.update((lastKnownState) =>
+      traversalUpdate({
+        input: fieldInput?.target?.value ?? fieldInput,
+        target: lastKnownState,
+        path: [formStateKey, ...fieldPath],
+        params,
 
-          via:
-            typeof fieldCustomUpdate === "function"
-              ? fieldCustomUpdate
-              : fieldDefaultUpdate,
-        })
-      ),
+        via:
+          typeof fieldCustomUpdate === "function"
+            ? fieldCustomUpdate
+            : fieldDefaultUpdate,
+      })
+    ),
 });
 /* END_INCLUDE: "shared/lib/form" */
 /* INCLUDE: "shared/lib/gui" */
@@ -153,6 +153,15 @@ const Card = styled.div`
 const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
+`;
+
+const Magnifiable = styled.div`
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+  transition: box-shadow 0.6s;
+
+  &:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
 `;
 /* END_INCLUDE: "shared/lib/gui" */
 /* INCLUDE: "shared/lib/uuid" */
@@ -529,12 +538,10 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         }
       : lastKnownState;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownState }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownState }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
+    );
 
   const form =
     formState !== null ? (
@@ -671,10 +678,11 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                   })}
 
                   {widget("components.molecule.text-input", {
+                    format: "comma-separated",
                     key: `${formState.id}-column-${title}-labelSearchTerms`,
 
                     label: `Search terms for all the labels
-											MUST be presented in included tickets, comma-separated`,
+											MUST be presented in included tickets`,
 
                     onChange: formUpdate({
                       path: ["columns", id, "labelSearchTerms"],
@@ -710,7 +718,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   return (
     <div className="d-flex flex-column gap-4">
       {state.isEditorActive && formState !== null ? (
-        <div className="d-flex flex-column gap-3 p-3 w-100 rounded-4 shadow">
+        <Magnifiable className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-wrench-adjustable-circle-fill" />
@@ -772,7 +780,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
               <span>Save</span>
             </button>
           </div>
-        </div>
+        </Magnifiable>
       ) : null}
 
       {state.boardConfig !== null ? (

@@ -31,7 +31,7 @@ const Button = ({ classNames, label, ...restProps }) => (
     {...restProps}
   >
     {classNames.adornment ? (
-      <i className={classNames.adornment} style={{ lineHeight: "inherit" }} />
+      <i className={classNames.adornment} style={{ lineHeight: 1 }} />
     ) : null}
 
     <span className={classNames.label} style={{ lineHeight: "inherit" }}>

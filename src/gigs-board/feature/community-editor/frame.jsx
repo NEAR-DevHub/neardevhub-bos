@@ -59,38 +59,45 @@ const pick = (object, subsetKeys) =>
 /* END_INCLUDE: "shared/lib/record" */
 
 const communityDefaults = {
-  admins: [],
+  handle: "",
+  name: "",
+  description: "",
+  tag: "",
+  bio_markdown: "",
+  admins: [context.accountId],
 };
 
 const CommunityEditorFrame = ({ communityHandle }) => {
   State.init({
-    isCommunityNew: true,
+    activeSection: 0,
     data: null,
+    isCommunityNew: true,
+    isEditingAllowed: false,
   });
 
   console.log(state.data);
 
   if (typeof communityHandle === "string" && state.data === null) {
-    /**
-     * !TODO: get community data and update state only if it exists
-     * ! otherwise, set data to null
-     **/
-    const data = null;
+    const data = Near.view(
+      nearDevGovGigsContractAccountId,
+      "get_community",
+      JSON.stringify({ handle: communityHandle })
+    );
 
     State.update((lastKnownState) => ({
       ...lastKnownState,
       data,
       isCommunityNew: false,
+      isEditingAllowed: data?.admins.includes(context.accountId),
     }));
-  } else if (state.data === null) {
+  } else if (typeof communityHandle !== "string" && state.data === null) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       data: communityDefaults,
       isCommunityNew: true,
+      isEditingAllowed: true,
     }));
   }
-
-  const isEditingAllowed = true; // According to user permission level
 
   const onSubformSubmit = (partial) =>
     State.update((lastKnownState) => ({
@@ -98,7 +105,23 @@ const CommunityEditorFrame = ({ communityHandle }) => {
       data: { ...lastKnownState.data, ...partial },
     }));
 
-  const onSubmit = () => {};
+  const onSubmit = () =>
+    Near.call(
+      nearDevGovGigsContractAccountId,
+      state.isCommunityNew ? "add_community" : "edit_community",
+
+      JSON.stringify({
+        handle: state.data.handle,
+
+        community: {
+          ...state.data,
+
+          admins: state.data.admins.filter(
+            (maybeAccountId) => maybeAccountId.length > 0
+          ),
+        },
+      })
+    );
 
   return (
     <div className="d-flex flex-column align-items-center gap-4 p-4">
@@ -106,7 +129,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
         <>
           {widget("feature.community-editor.branding-section", {
             data: state.data,
-            isEditingAllowed,
+            isEditingAllowed: state.isEditingAllowed,
             onSubmit: onSubformSubmit,
           })}
 
@@ -114,19 +137,27 @@ const CommunityEditorFrame = ({ communityHandle }) => {
             classNames: { submitAdornment: "bi-arrow-down-circle-fill" },
             data: state.data,
             heading: "Basic information",
-            isMutable: isEditingAllowed,
+            isEditorActive: true,
+            isMutable: state.isEditingAllowed,
             onSubmit: onSubformSubmit,
             submitLabel: state.isCommunityNew ? "Next" : "Save",
 
             schema: {
               name: {
-                inputProps: { max: 30, required: true },
+                inputProps: {
+                  min: 2,
+                  max: 30,
+                  placeholder: "Community name.",
+                  required: true,
+                },
+
                 label: "Name",
                 order: 1,
               },
 
               description: {
                 inputProps: {
+                  min: 2,
                   max: 60,
 
                   placeholder:
@@ -141,6 +172,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
 
               handle: {
                 inputProps: {
+                  min: 2,
                   max: 40,
 
                   placeholder:
@@ -155,6 +187,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
 
               tag: {
                 inputProps: {
+                  min: 2,
                   max: 20,
 
                   placeholder:
@@ -173,13 +206,16 @@ const CommunityEditorFrame = ({ communityHandle }) => {
             classNames: { submitAdornment: "bi-arrow-down-circle-fill" },
             data: state.data,
             heading: "About",
-            isMutable: isEditingAllowed,
+            isMutable: state.isEditingAllowed,
             onSubmit: onSubformSubmit,
             submitLabel: state.isCommunityNew ? "Next" : "Save",
 
             schema: {
-              bio: {
+              bio_markdown: {
+                format: "markdown",
+
                 inputProps: {
+                  min: 2,
                   max: 200,
 
                   placeholder:
@@ -187,29 +223,30 @@ const CommunityEditorFrame = ({ communityHandle }) => {
                 },
 
                 label: "Bio",
+                multiline: true,
                 order: 1,
               },
 
               twitter_handle: {
-                inputProps: { max: 30 },
+                inputProps: { min: 2, max: 30 },
                 label: "Twitter",
                 order: 2,
               },
 
               github_handle: {
-                inputProps: { max: 30 },
+                inputProps: { min: 2, max: 30 },
                 label: "Github",
                 order: 3,
               },
 
               telegram_handle: {
-                inputProps: { max: 30 },
+                inputProps: { min: 2, max: 30 },
                 label: "Telegram",
                 order: 4,
               },
 
               website_url: {
-                inputProps: { max: 40 },
+                inputProps: { min: 2, max: 40 },
                 label: "Website",
                 order: 5,
               },
@@ -220,12 +257,14 @@ const CommunityEditorFrame = ({ communityHandle }) => {
             classNames: { submitAdornment: "bi-arrow-down-circle-fill" },
             data: state.data,
             heading: "Permissions",
-            isMutable: isEditingAllowed,
+            isMutable: state.isEditingAllowed,
             onSubmit: onSubformSubmit,
             submitLabel: state.isCommunityNew ? "Next" : "Save",
 
             schema: {
               admins: {
+                format: "comma-separated",
+                inputProps: { required: true },
                 label: "Admins",
                 order: 1,
               },
@@ -233,14 +272,18 @@ const CommunityEditorFrame = ({ communityHandle }) => {
           })}
 
           <div
-            className="d-flex justify-content-center pb-4 w-100"
+            className="d-flex justify-content-center p-4 w-100"
             style={{ maxWidth: 896 }}
           >
             {state.isCommunityNew
               ? widget("components.atom.button", {
-                  classNames: { root: "btn-lg btn-success" },
-                  disabled: true,
-                  label: "🚀 Launch ( coming soon! )",
+                  classNames: {
+                    root: "btn-lg btn-success",
+                    adornment: "bi bi-rocket-takeoff-fill",
+                  },
+
+                  disabled: !state.isEditingAllowed,
+                  label: "Launch",
                   onClick: onSubmit,
                 })
               : null}
@@ -256,7 +299,10 @@ const CommunityEditorFrame = ({ communityHandle }) => {
           </div>
         </>
       ) : (
-        <div className="d-flex flex-column justify-content-center align-items-center">
+        <div
+          className="d-flex flex-column justify-content-center align-items-center w-100"
+          style={{ height: 384 }}
+        >
           <h2 className="h2">Community doesn't exist.</h2>
         </div>
       )}
