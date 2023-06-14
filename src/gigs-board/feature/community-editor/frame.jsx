@@ -108,11 +108,16 @@ const CommunityEditorFrame = ({ communityHandle }) => {
     }));
   }
 
-  const onSubformSubmit = (partial) =>
+  const onSubformSubmit = (partial) => {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       data: { ...lastKnownState.data, ...partial },
     }));
+
+    if (!state.isCommunityNew) {
+      onSubmit();
+    }
+  };
 
   const onSubmit = () =>
     Near.call(
@@ -153,7 +158,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
             classNames: { submitAdornment: "bi-arrow-down-circle-fill" },
             data: state.data,
             heading: "Basic information",
-            isEditorActive: true,
+            isEditorActive: state.isCommunityNew,
             isMutable: state.isEditingAllowed || state.isSupervisionAllowed,
             onSubmit: onSubformSubmit,
             submitLabel: state.isCommunityNew ? "Next" : "Save",
@@ -341,6 +346,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
                     classNames: {
                       root: "btn-lg btn-outline-danger border-none",
                     },
+
                     disabled: true,
                     label: "Delete community",
                     onClick: onDelete,

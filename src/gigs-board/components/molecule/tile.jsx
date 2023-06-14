@@ -5,11 +5,6 @@ const Card = styled.div`
   }
 `;
 
-const CompactContainer = styled.div`
-  width: fit-content !important;
-  max-width: 100%;
-`;
-
 const Magnifiable = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
   transition: box-shadow 0.6s;
@@ -22,6 +17,7 @@ const Magnifiable = styled.div`
 
 const Tile = ({
   children,
+  id,
   headerSlotRight,
   heading,
   headingAdornment,
@@ -33,6 +29,7 @@ const Tile = ({
       !noFrame ? "p-4" : "",
     ].join(" ")}
     style={{ maxWidth: 896, minHeight: 240 }}
+    {...{ id }}
   >
     {!noFrame && (
       <div

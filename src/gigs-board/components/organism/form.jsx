@@ -256,6 +256,7 @@ const Form = ({
   onSubmit,
   schema,
   submitLabel,
+  ...restProps
 }) => {
   const fieldsRender =
     typeof fieldsRenderCustom === "function"
@@ -289,13 +290,13 @@ const Form = ({
       isEditorActive: false,
     }));
 
-    typeof onSubmit === "function" && onSubmit(lastKnownState.initialState);
-    return typeof onCancel === "function" ? onCancel() : null;
+    if (typeof onSubmit === "function") onSubmit(lastKnownState.initialState);
+    if (typeof onCancel === "function") onCancel();
   };
 
   const onSubmitClick = () => {
     onEditorToggle(false);
-    return typeof onSubmit === "function" ? onSubmit(formState) : null;
+    if (typeof onSubmit === "function") onSubmit(formState);
   };
 
   return widget("components.molecule.tile", {
@@ -357,6 +358,8 @@ const Form = ({
         ) : null}
       </div>
     ),
+
+    ...restProps,
   });
 };
 

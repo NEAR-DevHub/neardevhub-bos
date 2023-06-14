@@ -58,11 +58,6 @@ const Card = styled.div`
   }
 `;
 
-const CompactContainer = styled.div`
-  width: fit-content !important;
-  max-width: 100%;
-`;
-
 const Magnifiable = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
   transition: box-shadow 0.6s;
@@ -79,61 +74,73 @@ const Banner = styled.div`
   height: calc(100% - 100px);
 `;
 
+const communityBrandingDefaults = {
+  banner_cid: "bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey",
+  logo_cid: "bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey",
+};
+
 const CommunityEditorBrandingSection = ({
   data: { description, name, ...data },
   isEditingAllowed,
   onSubmit,
 }) => {
-  return widget("components.organism.form", {
+  State.init({
     data: {
-      banner_url:
-        data.banner_url ??
-        "https://ipfs.near.social/ipfs/bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey",
+      banner: {
+        cid:
+          data.banner_url?.split?.("/")?.at?.(-1) ??
+          communityBrandingDefaults.banner_cid,
+      },
 
-      logo_url:
-        data.logo_url ??
-        "https://ipfs.near.social/ipfs/bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey",
+      logo: {
+        cid:
+          data.logo_url?.split?.("/")?.at?.(-1) ??
+          communityBrandingDefaults.logo_cid,
+      },
     },
-
-    isMutable: isEditingAllowed,
-    noEditorFrame: true,
-    onSubmit,
-
-    fieldsRender: ({
-      formState: { banner_url, logo_url },
-      formUpdate,
-      isEditable,
-      onFormSubmit,
-    }) => (
-      <Magnifiable
-        className="card rounded-4 w-100"
-        style={{ maxWidth: 896, height: 280 }}
-      >
-        <Banner
-          alt="Community banner preview"
-          className="card-img-top"
-          style={{
-            background: `center / cover no-repeat url(${banner_url})`,
-          }}
-        />
-
-        <img
-          alt="Community logo preview"
-          class="img-fluid rounded-circle ms-5 border border-4 border-white"
-          src={logo_url}
-          style={{ marginTop: -64, width: 128, height: 128 }}
-        />
-
-        <div
-          className="card-body p-4"
-          style={{ marginTop: -64, marginLeft: 180, height: 84 }}
-        >
-          <h5 className="h5">{name}</h5>
-          <p className="card-text">{description}</p>
-        </div>
-      </Magnifiable>
-    ),
   });
+
+  const toSubmit = {
+    banner_url: `https://ipfs.near.social/ipfs/${
+      state.data.banner.cid ?? communityBrandingDefaults.banner_cid
+    }`,
+
+    logo_url: `https://ipfs.near.social/ipfs/${
+      state.data.logo.cid ?? communityBrandingDefaults.logo_cid
+    }`,
+  };
+
+  return (
+    <Magnifiable
+      className="card rounded-4 w-100"
+      style={{ maxWidth: 896, height: 280 }}
+    >
+      <Banner
+        alt="Community banner preview"
+        className="card-img-top"
+        style={{
+          background: `center / cover no-repeat url(${toSubmit.banner_url})`,
+        }}
+      >
+        <IpfsImageUpload image={state.data.banner} />
+      </Banner>
+
+      <img
+        alt="Community logo preview"
+        class="img-fluid rounded-circle ms-5 border border-4 border-white"
+        src={logo_url}
+        style={{ marginTop: -64, width: 128, height: 128 }}
+      />
+
+      <div
+        className="card-body p-4"
+        style={{ marginTop: -64, marginLeft: 180, height: 84 }}
+      >
+        <h5 className="h5">{name}</h5>
+        <p className="card-text">{description}</p>
+      </div>
+    </Magnifiable>
+  );
 };
 
 return CommunityEditorBrandingSection(props);
