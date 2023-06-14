@@ -78,17 +78,18 @@ const CommunityEditorFrame = ({ communityHandle }) => {
   console.log(state.data);
 
   if (typeof communityHandle === "string" && state.data === null) {
-    const data = Near.view(
-      nearDevGovGigsContractAccountId,
-      "get_community",
-      JSON.stringify({ handle: communityHandle })
-    );
+    const data =
+      Near.view(
+        nearDevGovGigsContractAccountId,
+        "get_community",
+        JSON.stringify({ handle: communityHandle })
+      ) ?? null;
 
     State.update((lastKnownState) => ({
       ...lastKnownState,
       data,
       isCommunityNew: false,
-      isEditingAllowed: data?.admins.includes(context.accountId),
+      isEditingAllowed: (data?.admins ?? []).includes(context.accountId),
     }));
   } else if (typeof communityHandle !== "string" && state.data === null) {
     State.update((lastKnownState) => ({
