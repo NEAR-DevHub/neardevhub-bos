@@ -73,6 +73,14 @@ const CommunityEditorFrame = ({ communityHandle }) => {
     data: null,
     isCommunityNew: true,
     isEditingAllowed: false,
+
+    isSupervisionAllowed:
+      Near.view(
+        nearDevGovGigsContractAccountId,
+        "get_access_control_info"
+      ).members_list["team:moderators"]?.children?.includes?.(
+        context.accountId
+      ) ?? false,
   });
 
   console.log(state.data);
@@ -124,6 +132,13 @@ const CommunityEditorFrame = ({ communityHandle }) => {
       })
     );
 
+  const onDelete = () =>
+    Near.call(
+      nearDevGovGigsContractAccountId,
+      "delete_community",
+      JSON.stringify({ handle: communityHandle })
+    );
+
   return (
     <div className="d-flex flex-column align-items-center gap-4 p-4">
       {state.data !== null ? (
@@ -139,7 +154,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
             data: state.data,
             heading: "Basic information",
             isEditorActive: true,
-            isMutable: state.isEditingAllowed,
+            isMutable: state.isEditingAllowed || state.isSupervisionAllowed,
             onSubmit: onSubformSubmit,
             submitLabel: state.isCommunityNew ? "Next" : "Save",
 
@@ -207,7 +222,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
             classNames: { submitAdornment: "bi-arrow-down-circle-fill" },
             data: state.data,
             heading: "About",
-            isMutable: state.isEditingAllowed,
+            isMutable: state.isEditingAllowed || state.isSupervisionAllowed,
             onSubmit: onSubformSubmit,
             submitLabel: state.isCommunityNew ? "Next" : "Save",
 
@@ -258,7 +273,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
             classNames: { submitAdornment: "bi-arrow-down-circle-fill" },
             data: state.data,
             heading: "Permissions",
-            isMutable: state.isEditingAllowed,
+            isMutable: state.isEditingAllowed || state.isSupervisionAllowed,
             onSubmit: onSubformSubmit,
             submitLabel: state.isCommunityNew ? "Next" : "Save",
 
@@ -272,32 +287,80 @@ const CommunityEditorFrame = ({ communityHandle }) => {
             },
           })}
 
-          <div
-            className="d-flex justify-content-center p-4 w-100"
-            style={{ maxWidth: 896 }}
-          >
-            {state.isCommunityNew
-              ? widget("components.atom.button", {
-                  classNames: {
-                    root: "btn-lg btn-success",
-                    adornment: "bi bi-rocket-takeoff-fill",
-                  },
+          {widget("components.organism.form", {
+            classNames: { submitAdornment: "bi-arrow-down-circle-fill" },
+            data: state.data?.wiki1 ?? {},
+            heading: "Wiki page 1",
+            isMutable: state.isEditingAllowed || state.isSupervisionAllowed,
+            onSubmit: (value) => onSubformSubmit({ wiki1: value }),
+            submitLabel: state.isCommunityNew ? "Next" : "Save",
 
-                  disabled: !state.isEditingAllowed,
-                  label: "Launch",
-                  onClick: onSubmit,
-                })
-              : null}
+            schema: {
+              name: {
+                label: "Name",
+                order: 1,
+              },
 
-            {!state.isCommunityNew
-              ? widget("components.atom.button", {
-                  classNames: { root: "btn-lg btn-outline-danger border-none" },
-                  disabled: true,
-                  label: "Delete community",
-                  onClick: () => {},
-                })
-              : null}
-          </div>
+              content_markdown: {
+                format: "markdown",
+                label: "Content",
+                order: 2,
+              },
+            },
+          })}
+
+          {widget("components.organism.form", {
+            classNames: { submitAdornment: "bi-arrow-down-circle-fill" },
+            data: state.data?.wiki2 ?? {},
+            heading: "Wiki page 2",
+            isMutable: state.isEditingAllowed || state.isSupervisionAllowed,
+            onSubmit: (value) => onSubformSubmit({ wiki2: value }),
+            submitLabel: state.isCommunityNew ? "Next" : "Save",
+
+            schema: {
+              name: {
+                label: "Name",
+                order: 1,
+              },
+
+              content_markdown: {
+                format: "markdown",
+                label: "Content",
+                order: 2,
+              },
+            },
+          })}
+
+          {state.isEditingAllowed || state.isSupervisionAllowed ? (
+            <div
+              className="d-flex justify-content-center p-4 w-100"
+              style={{ maxWidth: 896 }}
+            >
+              {state.isSupervisionAllowed && !state.isCommunityNew
+                ? widget("components.atom.button", {
+                    classNames: {
+                      root: "btn-lg btn-outline-danger border-none",
+                    },
+                    disabled: true,
+                    label: "Delete community",
+                    onClick: onDelete,
+                  })
+                : null}
+
+              {state.isCommunityNew
+                ? widget("components.atom.button", {
+                    classNames: {
+                      root: "btn-lg btn-success",
+                      adornment: "bi bi-rocket-takeoff-fill",
+                    },
+
+                    disabled: !state.isEditingAllowed,
+                    label: "Launch",
+                    onClick: onSubmit,
+                  })
+                : null}
+            </div>
+          ) : null}
         </>
       ) : (
         <div
