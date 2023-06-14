@@ -125,22 +125,22 @@ const fieldDefaultUpdate = ({
 const useForm = ({ stateKey: formStateKey }) => ({
   formState: state[formStateKey],
 
-  formUpdate:
-    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
-    (fieldInput) =>
-      State.update((lastKnownState) =>
-        traversalUpdate({
-          input: fieldInput?.target?.value ?? fieldInput,
-          target: lastKnownState,
-          path: [formStateKey, ...fieldPath],
-          params,
+  formUpdate: ({ path: fieldPath, via: fieldCustomUpdate, ...params }) => (
+    fieldInput
+  ) =>
+    State.update((lastKnownState) =>
+      traversalUpdate({
+        input: fieldInput?.target?.value ?? fieldInput,
+        target: lastKnownState,
+        path: [formStateKey, ...fieldPath],
+        params,
 
-          via:
-            typeof fieldCustomUpdate === "function"
-              ? fieldCustomUpdate
-              : fieldDefaultUpdate,
-        })
-      ),
+        via:
+          typeof fieldCustomUpdate === "function"
+            ? fieldCustomUpdate
+            : fieldDefaultUpdate,
+      })
+    ),
 });
 /* END_INCLUDE: "shared/lib/form" */
 /* INCLUDE: "shared/lib/gui" */
@@ -487,11 +487,6 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     editingMode: "form",
     isEditingAllowed: true, // According to user permission level
     isEditorActive: false,
-
-    ...Storage.get(
-      "state",
-      `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.entity.community.header`
-    ),
   });
 
   const onEditorToggle = (forcedState) =>
@@ -538,12 +533,10 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         }
       : lastKnownState;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownState }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownState }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
+    );
 
   const form =
     formState !== null ? (

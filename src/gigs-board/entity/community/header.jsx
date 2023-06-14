@@ -156,7 +156,7 @@ const SizedDiv = styled.div`
   height: 100px;
 `;
 
-const CommunityHeader = ({ handle, label, tab }) => {
+const CommunityHeader = ({ handle, tab }) => {
   return (
     <Header className="d-flex flex-column gap-3 px-4 pt-3">
       <BannerImage
@@ -185,7 +185,7 @@ const CommunityHeader = ({ handle, label, tab }) => {
         <div className="d-flex align-items-end">
           {canEdit && (
             <Link
-              href={href("community.new", { label })}
+              href={href("community.edit", { handle })}
               className="border border-1 text-nowrap rounded-pill p-2 m-2 bg-white text-dark font-weight-bold"
             >
               <i className="bi bi-gear" /> Edit Community
