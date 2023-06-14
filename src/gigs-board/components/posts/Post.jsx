@@ -190,7 +190,7 @@ const StyledDiv = styled.div`
   align-items: center;
   width: 100%;
   color: rgba(0, 0, 0, 0.8);
-  padding: "15px";
+  // padding: "15px";
   margin-right: 16px;
   font-size: 1.2em;
 `;
@@ -215,7 +215,7 @@ const header = (
     <div className="d-flex align-items-center justify-content-between">
       <div
         className="col-auto d-flex align-items-center"
-        style={{ padding: "10px" }}
+        style={{ padding: "20px" }}
       >
         <div
           className="square rounded-circle"
@@ -285,8 +285,6 @@ const fillIcons = {
   Like: "bi-heart-fill",
   Reply: "bi-reply-fill",
 };
-
-// Trigger saving this widget.
 
 const borders = {
   Idea: "border-secondary",
@@ -366,7 +364,7 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
 };
 
 const buttonsFooter = props.isPreview ? null : (
-  <div class="row my-2" key="buttons-footer">
+  <div class="row " key="buttons-footer">
     <div class="col-8">
       <div
         class="btn-group text-sm"
@@ -512,20 +510,25 @@ const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
 const postLabels = post.snapshot.labels ? (
-  <div class="card-title" key="post-labels" style={{ padding: "10px" }}>
+  <div class="card-title" key="post-labels" >
     {post.snapshot.labels.map((label) => {
       return (
-        <StyledLink href={href("Feed", { label }, label)}>
+        <>
+        <a href={href("Feed", { label })} key={label}>
           <span
-            class="badge me-1"
+            className="badge ms-1"
             style={{
-              color: "rgba(0, 0, 0, 0.5)",
-              border: "1px solid rgba(0, 0, 0, 0.075)",
+              color: "rgba(0, 0, 0, 0.7)",
+              fontSize: "1em",
+              fontWeight: "normal",
+              padding: "0.2em 0.5em",
+              border: "1px solid rgba(0, 80, 80, 0.2)",
             }}
           >
             {label}
           </span>
-        </StyledLink>
+        </a>
+        </>
       );
     })}
   </div>
@@ -540,7 +543,7 @@ const postTitle =
     <h5 class="card-title" key="post-title">
       <div
         className="row justify-content-between"
-        style={{ padding: "5px", fontSize: "1.3em", fontWeight: "600" }}
+        style={{ fontSize: "1.3em", fontWeight: "600" }}
       >
         <div class="col-12">
           <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
@@ -553,10 +556,10 @@ const postTitle =
 const postExtra =
   snapshot.post_type == "Sponsorship" ? (
     <div key="post-extra">
-      <h6 class="card-subtitle mb-2 text-muted" style={{ padding: "10px" }}>
+      <h6 class="card-subtitle  text-muted">
         Maximum amount: {snapshot.amount} {snapshot.sponsorship_token}
       </h6>
-      <h6 class="card-subtitle mb-2 text-muted">
+      <h6 class="card-subtitle  text-muted">
         Supervisor:{" "}
         <Widget
           src={`neardevgov.near/widget/ProfileLine`}
@@ -570,9 +573,9 @@ const postExtra =
 
 const postsList =
   props.isPreview || childPostIds.length == 0 ? (
-    <div key="posts-list" style={{ padding: "15px" }}></div>
+    <div key="posts-list"></div>
   ) : (
-    <div class="row" key="posts-list" style={{ padding: "15px" }}>
+    <div class="row" key="posts-list">
       <div
         class={`collapse ${defaultExpanded ? "show" : ""}`}
         id={`collapseChildPosts${postId}`}
@@ -590,11 +593,11 @@ const postsList =
 
 const Card = styled.div`
   &:hover {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: none;
   }
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  border: none;
+  box-shadow: none;
+  border: 3px solid #008080;
+  border-radius: 5px;
 `;
 
 // Determine if located in the post page.
@@ -621,7 +624,7 @@ const onMention = (accountId) => (
 );
 
 // Determine whether the content is longer than 4 lines
-const isContentLong = contentArray.length > 4;
+const isContentLong = contentArray.length > 5;
 
 const clampedContent = state.clamp
   ? contentArray.slice(0, 5).join("\n")
@@ -629,7 +632,7 @@ const clampedContent = state.clamp
 
 // Your CSS classes for styling. Make sure the names match exactly with the ones you're using in your divs.
 const limitedMarkdown = styled.div`
-  max-height: 20em;
+  max-height: 23em;
 `;
 
 const clampMarkdown = styled.div`
@@ -644,7 +647,7 @@ const descriptionArea = isUnderPost ? (
   <limitedMarkdown
     className="overflow-auto"
     key="description-area"
-    style={{ padding: "15px" }}
+    style={{ paddingLeft: "15px", paddingRight: "15px", marginBottom: "-30px" }}
   >
     <Markdown
       className="card-text"
@@ -656,7 +659,7 @@ const descriptionArea = isUnderPost ? (
   <clampMarkdown>
     <div
       className={state.clamp ? "clamp" : ""}
-      style={{ padding: "15px", fontSize: "1.25rem" }}
+      style={{ fontSize: "1.25rem", paddingLeft: "15px", paddingRight: "15px", marginBottom: "-10px" }}
     >
       <Markdown
         className="card-text"
@@ -682,7 +685,7 @@ const descriptionArea = isUnderPost ? (
       <div className="d-flex justify-content-end">
         <StyledLink>
           <a
-            style={{ fontSize: "1rem", fontWeight: 800, padding: "10px" }}
+            style={{ fontSize: "1rem", fontWeight: 800 }}
             className="btn btn-link text-black"
             onClick={() => State.update({ clamp: true })}
           >
@@ -695,7 +698,9 @@ const descriptionArea = isUnderPost ? (
 );
 
 return (
-  <Card className={`card my-2`} style={{ border: "none" }}>
+  <Card 
+  className={`card my-2`} 
+  >
     {linkToParent}
     {header}
     <div className="card-body ">

@@ -147,6 +147,8 @@ const LabelsDisplay = (
   </div>
 );
 
+
+
 const Discussions = (
   <div class="row">
     <div class="col-md-8">
@@ -198,7 +200,7 @@ return widget("components.community.Layout", {
   tab: "Discussions",
   children: (
     <div class="row">
-      <div class="col-md-8">
+      <div class="col-md-9">
         <div
           className="row align-items-center d-flex justify-content-between"
           style={{ marginTop: "18px" }}
@@ -210,13 +212,13 @@ return widget("components.community.Layout", {
               </small>
               <a href={href("Feed", { label })} key={label}>
                 <span
-                  className="badge text-bg-grey ms-1"
+                  className="badge ms-1"
                   style={{
                     color: "rgba(0, 0, 0, 0.7)",
                     fontSize: "1em",
                     fontWeight: "normal",
-                    boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
                     padding: "0.2em 0.5em",
+                    border: "1px solid rgba(0, 80, 80, 0.2)",
                   }}
                 >
                   {label}
@@ -243,7 +245,7 @@ return widget("components.community.Layout", {
           </div>
         </div>
       </div>
-      <div class="col-4 container-fluid">
+      <div class="col-3 container-fluid">
         <Widget
           src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.Sidebar`}
           props={{

@@ -232,7 +232,6 @@ const Card = ({ content }) => (
   <div
     className="card"
     style={{
-      maxWidth: "400px", // set the max-width as needed
       border: "none",
     }}
   >
@@ -277,7 +276,7 @@ const MoreInfoButton = (
   <div className="d-flex justify-content-start">
     <button
       type="button"
-      class="btn btn-link"
+      class="btn"
       style={{
         color: "black",
         fontSize: "0.8rem",
@@ -292,7 +291,7 @@ const MoreInfoButton = (
 
 // Team Card
 const TeamsCard = (
-  <div style={{ width: "100%", maxWidth: "400px" }}>
+  <div style={{ width: "100%"}}>
     <Card
       title={"Team Members"}
       content={
