@@ -398,16 +398,6 @@ const header = (
           </div>
         ))}
       </div>
-
-      <div className="d-flex justify-content-end">
-        <a
-          className="btn btn-outline-secondary d-flex gap-2"
-          href={href("communities")}
-        >
-          <i className="bi bi-arrow-right-circle-fill" />
-          <span>Discover more</span>
-        </a>
-      </div>
     </div>
 
     <div className="h5 pb-4">Activity</div>

@@ -71,18 +71,24 @@ return (
       <a href={href("Feed")}>
         <img src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"></img>
       </a>
-      <div>
+
+      <div className="d-flex align-items-center gap-3">
+        <a href={href("communities")} className="text-white me-2">
+          Communities
+        </a>
+
         <a
+          className="text-white"
           href="https://www.neardevgov.org/blog/near-developer-dao"
-          class="text-white me-2"
+          target="_blank"
         >
           Developer DAO
         </a>
 
-        <div class="btn-group" role="group">
+        <div className="btn-group" role="group">
           <button
             type="button"
-            class="btn btn-outline-light rounded-circle"
+            className="btn btn-outline-light rounded-circle"
             style={{
               width: "30px",
               height: "30px",
@@ -93,22 +99,24 @@ return (
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            <i class="bi bi-question-lg"></i>
+            <i className="bi bi-question-lg"></i>
           </button>
-          <ul class="dropdown-menu dropdown-menu-end">
+
+          <ul className="dropdown-menu dropdown-menu-end">
             <li>
               <a
                 target="_blank"
-                class="dropdown-item"
+                className="dropdown-item"
                 href="https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=bug&template=bug_report.md&title="
               >
                 Report a bug
               </a>
             </li>
+
             <li>
               <a
                 target="_blank"
-                class="dropdown-item"
+                className="dropdown-item"
                 href="https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=enhancement&template=feature-request.md&title="
               >
                 Suggest an improvement
