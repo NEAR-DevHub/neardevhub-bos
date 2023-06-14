@@ -4,7 +4,7 @@ const nearDevGovGigsContractAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "jgdev.near").split("/", 1)[0];
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -206,7 +206,6 @@ const ResponsiveDiv = styled.div`
     align-items: flex-start;
   }
 `;
-
 
 const accountId = post.author_id;
 
@@ -510,24 +509,24 @@ const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
 const postLabels = post.snapshot.labels ? (
-  <div class="card-title" key="post-labels" >
+  <div class="card-title" key="post-labels">
     {post.snapshot.labels.map((label) => {
       return (
         <>
-        <a href={href("Feed", { label })} key={label}>
-          <span
-            className="badge ms-1"
-            style={{
-              color: "rgba(0, 0, 0, 0.7)",
-              fontSize: "1em",
-              fontWeight: "normal",
-              padding: "0.2em 0.5em",
-              border: "1px solid rgba(0, 80, 80, 0.2)",
-            }}
-          >
-            {label}
-          </span>
-        </a>
+          <a href={href("Feed", { label })} key={label}>
+            <span
+              className="badge ms-1"
+              style={{
+                color: "rgba(0, 0, 0, 0.7)",
+                fontSize: "1em",
+                fontWeight: "normal",
+                padding: "0.2em 0.5em",
+                border: "1px solid rgba(0, 80, 80, 0.2)",
+              }}
+            >
+              {label}
+            </span>
+          </a>
         </>
       );
     })}
@@ -643,6 +642,7 @@ const clampMarkdown = styled.div`
     overflow: hidden;
   }
 `;
+
 const descriptionArea = isUnderPost ? (
   <limitedMarkdown
     className="overflow-auto"
@@ -659,10 +659,15 @@ const descriptionArea = isUnderPost ? (
   <clampMarkdown>
     <div
       className={state.clamp ? "clamp" : ""}
-      style={{ fontSize: "1.25rem", paddingLeft: "15px", paddingRight: "15px", marginBottom: "-10px" }}
+      style={{
+        fontSize: "1.25rem",
+        paddingLeft: "15px",
+        paddingRight: "15px",
+        marginBottom: "-10px",
+      }}
     >
       <Markdown
-        className="card-text"
+        className="card-text --bs-btn-hover-color: #008080;"
         text={state.clamp ? clampedContent : snapshot.description}
         onMention={onMention}
         key="description-area"
@@ -698,9 +703,7 @@ const descriptionArea = isUnderPost ? (
 );
 
 return (
-  <Card 
-  className={`card my-2`} 
-  >
+  <Card className={`card my-2`}>
     {linkToParent}
     {header}
     <div className="card-body ">
