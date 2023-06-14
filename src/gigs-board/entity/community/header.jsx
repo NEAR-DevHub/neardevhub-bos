@@ -55,7 +55,21 @@ function href(widgetName, linkProps) {
 State.init({
   copiedShareUrl: false,
 });
-const canEdit = true;
+
+const canEdit =
+  (Near.view(
+    nearDevGovGigsContractAccountId,
+    "get_access_control_info"
+  ).members_list["team:moderators"]?.children?.includes?.(context.accountId) ??
+    false) ||
+  (
+    Near.view(
+      nearDevGovGigsContractAccountId,
+      "get_community",
+      JSON.stringify({ handle: communityHandle })
+    )?.admins ?? []
+  ).includes(context.accountId);
+
 const shareUrl = window.location.href;
 
 const Header = styled.div`
