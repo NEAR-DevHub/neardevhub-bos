@@ -72,6 +72,66 @@ const Banner = styled.div`
   border-top-left-radius: var(--bs-border-radius-xl) !important;
   border-top-right-radius: var(--bs-border-radius-xl) !important;
   height: calc(100% - 100px);
+
+  & > div :not(.btn) {
+    position: absolute;
+    display: none;
+    margin: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .btn {
+    border: none;
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: #087990;
+    --bs-btn-border-color: #087990;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #055160;
+    --bs-btn-hover-border-color: #055160;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #055160;
+    --bs-btn-active-border-color: #055160;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+`;
+
+const Logo = styled.div`
+  height: calc(100% - 100px);
+
+  & > div :not(.btn) {
+    position: absolute;
+    display: none;
+    margin: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .btn {
+    border: none;
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: #087990;
+    --bs-btn-border-color: #087990;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #055160;
+    --bs-btn-hover-border-color: #055160;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #055160;
+    --bs-btn-active-border-color: #055160;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 `;
 
 const communityBrandingDefaults = {
@@ -100,7 +160,7 @@ const CommunityEditorBrandingSection = ({
     },
   });
 
-  const toSubmit = {
+  onSubmit({
     banner_url: `https://ipfs.near.social/ipfs/${
       state.data.banner.cid ?? communityBrandingDefaults.banner_cid
     }`,
@@ -108,7 +168,7 @@ const CommunityEditorBrandingSection = ({
     logo_url: `https://ipfs.near.social/ipfs/${
       state.data.logo.cid ?? communityBrandingDefaults.logo_cid
     }`,
-  };
+  });
 
   return (
     <Magnifiable
@@ -117,20 +177,29 @@ const CommunityEditorBrandingSection = ({
     >
       <Banner
         alt="Community banner preview"
-        className="card-img-top"
+        className="card-img-top d-flex flex-column justify-content-end align-items-end p-4"
         style={{
-          background: `center / cover no-repeat url(${toSubmit.banner_url})`,
+          background: `center / cover no-repeat url(${data.banner_url})`,
         }}
       >
         <IpfsImageUpload image={state.data.banner} />
       </Banner>
 
-      <img
+      <Logo
         alt="Community logo preview"
-        class="img-fluid rounded-circle ms-5 border border-4 border-white"
-        src={logo_url}
-        style={{ marginTop: -64, width: 128, height: 128 }}
-      />
+        className={[
+          "d-flex flex-column justify-content-center align-items-center",
+          "rounded-circle ms-5 border border-4 border-white",
+        ].join(" ")}
+        style={{
+          marginTop: -64,
+          width: 128,
+          height: 128,
+          background: `center / cover no-repeat url(${data.logo_url})`,
+        }}
+      >
+        <IpfsImageUpload image={state.data.logo} />
+      </Logo>
 
       <div
         className="card-body p-4"

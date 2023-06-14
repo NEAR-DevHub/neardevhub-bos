@@ -20,18 +20,18 @@ const ButtonRoot = styled.button`
 
   &.btn-primary {
     border: none;
-    --bs-btn-color: #fff;
+    --bs-btn-color: #ffffff;
     --bs-btn-bg: #087990;
     --bs-btn-border-color: #087990;
-    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-color: #ffffff;
     --bs-btn-hover-bg: #055160;
     --bs-btn-hover-border-color: #055160;
     --bs-btn-focus-shadow-rgb: 49, 132, 253;
-    --bs-btn-active-color: #fff;
+    --bs-btn-active-color: #ffffff;
     --bs-btn-active-bg: #055160;
     --bs-btn-active-border-color: #055160;
     --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-color: #ffffff;
     --bs-btn-disabled-bg: #0551604a;
   }
 
