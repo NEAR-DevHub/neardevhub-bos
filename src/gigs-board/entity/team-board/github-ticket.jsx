@@ -37,7 +37,7 @@ const ticketTypes = {
   PullRequest: { displayName: "Pull request", icon: "bi-git" },
 };
 
-const GithubRepoTicket = ({
+const GithubTicket = ({
   data: { _links, labels, number, state: ticketState, title, type, user },
 }) => (
   <AttractableDiv className="card border-secondary">
@@ -108,4 +108,4 @@ const GithubRepoTicket = ({
   </AttractableDiv>
 );
 
-return GithubRepoTicket(props);
+return GithubTicket(props);

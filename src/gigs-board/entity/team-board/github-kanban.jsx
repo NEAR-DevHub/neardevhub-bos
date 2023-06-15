@@ -106,7 +106,7 @@ const dataToColumns = (data, columns) =>
 
 const withType = (type) => (data) => ({ ...data, type });
 
-const GithubRepoBoard = ({
+const GithubKanbanTeamBoard = ({
   columns,
   dataTypesIncluded,
   description,
@@ -228,7 +228,11 @@ const GithubRepoBoard = ({
 
                   <div class="d-flex flex-column gap-3">
                     {(state.ticketsByColumn[column.id] ?? []).map((data) =>
-                      widget("entity.github-repo.ticket", { data }, data.id)
+                      widget(
+                        "entity.team-board.github-ticket",
+                        { data },
+                        data.id
+                      )
                     )}
                   </div>
                 </div>
@@ -251,4 +255,4 @@ const GithubRepoBoard = ({
   );
 };
 
-return GithubRepoBoard(props);
+return GithubKanbanTeamBoard(props);

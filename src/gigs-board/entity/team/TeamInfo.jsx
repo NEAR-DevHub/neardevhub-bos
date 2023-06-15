@@ -156,7 +156,7 @@ return (
         <div class="vstack">
           {metadata.children.map((child) =>
             widget(
-              "components.teams.TeamInfo",
+              "entity.team.TeamInfo",
               { member: child, members_list: props.members_list },
               child
             )

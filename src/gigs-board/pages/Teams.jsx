@@ -85,12 +85,12 @@ if (!access_info || !root_members) {
 
 const pageContent = (
   <div>
-    {widget("components.teams.LabelsPermissions", {
+    {widget("entity.team.LabelsPermissions", {
       rules: access_info.rules_list,
     })}
     {Object.keys(root_members).map((member) =>
       widget(
-        "components.teams.TeamInfo",
+        "entity.team.TeamInfo",
         { member, members_list: access_info.members_list },
         member
       )

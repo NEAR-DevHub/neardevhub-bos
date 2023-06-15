@@ -125,22 +125,22 @@ const fieldDefaultUpdate = ({
 const useForm = ({ stateKey: formStateKey }) => ({
   formState: state[formStateKey],
 
-  formUpdate:
-    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
-    (fieldInput) =>
-      State.update((lastKnownState) =>
-        traversalUpdate({
-          input: fieldInput?.target?.value ?? fieldInput,
-          target: lastKnownState,
-          path: [formStateKey, ...fieldPath],
-          params,
+  formUpdate: ({ path: fieldPath, via: fieldCustomUpdate, ...params }) => (
+    fieldInput
+  ) =>
+    State.update((lastKnownState) =>
+      traversalUpdate({
+        input: fieldInput?.target?.value ?? fieldInput,
+        target: lastKnownState,
+        path: [formStateKey, ...fieldPath],
+        params,
 
-          via:
-            typeof fieldCustomUpdate === "function"
-              ? fieldCustomUpdate
-              : fieldDefaultUpdate,
-        })
-      ),
+        via:
+          typeof fieldCustomUpdate === "function"
+            ? fieldCustomUpdate
+            : fieldDefaultUpdate,
+      })
+    ),
 });
 /* END_INCLUDE: "core/lib/form" */
 /* INCLUDE: "core/lib/gui/attractable" */
@@ -545,12 +545,10 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         }
       : lastKnownState;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownState }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownState }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
+    );
 
   const form =
     formState !== null ? (
@@ -793,7 +791,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       ) : null}
 
       {state.boardConfig !== null ? (
-        widget("entity.github-repo.board", {
+        widget("entity.team-board.github-kanban", {
           ...state.boardConfig,
           editorTrigger: () => onEditorToggle(true),
           isEditable: state.isEditingAllowed,
