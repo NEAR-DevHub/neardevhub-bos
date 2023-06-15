@@ -51,7 +51,7 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "shared/lib/form" */
+/* INCLUDE: "core/lib/form" */
 /**
  *! TODO: Extract into separate library module
  *! once `useForm` is converted into a form factory widget
@@ -142,8 +142,8 @@ const useForm = ({ stateKey: formStateKey }) => ({
         })
       ),
 });
-/* END_INCLUDE: "shared/lib/form" */
-/* INCLUDE: "shared/lib/gui/attractable" */
+/* END_INCLUDE: "core/lib/form" */
+/* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
   transition: box-shadow 0.6s;
@@ -170,8 +170,8 @@ const AttractableImage = styled.img`
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   }
 `;
-/* END_INCLUDE: "shared/lib/gui/attractable" */
-/* INCLUDE: "shared/lib/uuid" */
+/* END_INCLUDE: "core/lib/gui/attractable" */
+/* INCLUDE: "core/lib/uuid" */
 const uuid = () =>
   [Date.now().toString(16)]
     .concat(
@@ -187,8 +187,8 @@ const uuidIndexed = (data) => {
 
   return Object.fromEntries([[id, { ...data, id }]]);
 };
-/* END_INCLUDE: "shared/lib/uuid" */
-/* INCLUDE: "shared/mocks" */
+/* END_INCLUDE: "core/lib/uuid" */
+/* INCLUDE: "core/mocks" */
 const communities = {
   "zero-knowledge": {
     handle: "zero-knowledge",
@@ -468,7 +468,7 @@ const communities = {
     events_id: 415,
   },
 };
-/* END_INCLUDE: "shared/mocks" */
+/* END_INCLUDE: "core/mocks" */
 
 const CompactContainer = styled.div`
   width: fit-content !important;

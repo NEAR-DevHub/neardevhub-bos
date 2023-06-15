@@ -51,7 +51,7 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "shared/lib/gui/attractable" */
+/* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
   transition: box-shadow 0.6s;
@@ -78,7 +78,7 @@ const AttractableImage = styled.img`
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   }
 `;
-/* END_INCLUDE: "shared/lib/gui/attractable" */
+/* END_INCLUDE: "core/lib/gui/attractable" */
 
 const Banner = styled.div`
   border-top-left-radius: var(--bs-border-radius-xl) !important;
@@ -146,7 +146,7 @@ const Logo = styled.div`
 
 const communityBrandingDefaults = {
   banner_cid: "bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
-  logo_cid: "bafkreiarbtqjhnkwtgkadq3fzzomfwmmk4cfrnt6haaxr4rgdp6jk2q66i",
+  logo_cid: "bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
 };
 
 const CommunityEditorBrandingSection = ({

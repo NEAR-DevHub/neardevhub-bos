@@ -51,7 +51,7 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "shared/lib/form" */
+/* INCLUDE: "core/lib/form" */
 /**
  *! TODO: Extract into separate library module
  *! once `useForm` is converted into a form factory widget
@@ -142,13 +142,13 @@ const useForm = ({ stateKey: formStateKey }) => ({
         })
       ),
 });
-/* END_INCLUDE: "shared/lib/form" */
-/* INCLUDE: "shared/lib/record" */
+/* END_INCLUDE: "core/lib/form" */
+/* INCLUDE: "core/lib/record" */
 const pick = (object, subsetKeys) =>
   Object.fromEntries(
     Object.entries(object ?? {}).filter(([key, _]) => subsetKeys.includes(key))
   );
-/* END_INCLUDE: "shared/lib/record" */
+/* END_INCLUDE: "core/lib/record" */
 
 const fieldParamsByType = {
   array: {

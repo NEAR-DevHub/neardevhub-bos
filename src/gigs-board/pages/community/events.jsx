@@ -52,7 +52,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-/* INCLUDE: "shared/mocks" */
+/* INCLUDE: "core/mocks" */
 const communities = {
   "zero-knowledge": {
     handle: "zero-knowledge",
@@ -332,7 +332,7 @@ const communities = {
     events_id: 415,
   },
 };
-/* END_INCLUDE: "shared/mocks" */
+/* END_INCLUDE: "core/mocks" */
 
 if (!props.handle) {
   return (

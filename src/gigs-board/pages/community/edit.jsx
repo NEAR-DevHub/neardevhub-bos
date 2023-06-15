@@ -55,7 +55,7 @@ function href(widgetName, linkProps) {
 const CommunityEditPage = ({ handle }) => (
   <div className="d-flex flex-column">
     {widget("components.layout.Banner", { style: { marginBottom: 0 } })}
-    {widget("feature.community-editor.frame", { communityHandle: handle })}
+    {widget("feature.community-editor.frame", { handle })}
   </div>
 );
 

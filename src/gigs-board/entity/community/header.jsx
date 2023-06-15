@@ -51,22 +51,21 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/adapter/dev-hub" */
+const contractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
-State.init({
-  copiedShareUrl: false,
-});
+const DevHub = {
+  get_access_control_info: () =>
+    Near.view(contractAccountId, "get_access_control_info"),
 
-const canEdit =
-  (Near.view(
-    nearDevGovGigsContractAccountId,
-    "get_access_control_info"
-  ).members_list["team:moderators"]?.children?.includes?.(context.accountId) ??
-    false) ||
-  (
-    Near.view(nearDevGovGigsContractAccountId, "get_community", {
-      handle: communityHandle,
-    })?.admins ?? []
-  ).includes(context.accountId);
+  get_community: ({ handle }) =>
+    Near.view(contractAccountId, "get_community", { handle }),
+
+  get_root_members: () => Near.view(contractAccountId, "get_root_members"),
+};
+/* END_INCLUDE: "core/adapter/dev-hub" */
 
 const Header = styled.div`
   overflow: hidden;
@@ -153,6 +152,21 @@ const SizedDiv = styled.div`
 `;
 
 const CommunityHeader = ({ handle, tab }) => {
+  State.init({
+    copiedShareUrl: false,
+  });
+
+  const canEdit =
+    (DevHub.get_access_control_info().members_list[
+      "team:moderators"
+    ]?.children?.includes?.(context.accountId) ??
+      false) ||
+    (
+      Near.view(nearDevGovGigsContractAccountId, "get_community", {
+        handle,
+      })?.admins ?? []
+    ).includes(context.accountId);
+
   return (
     <Header className="d-flex flex-column gap-3 px-4 pt-3">
       <BannerImage
@@ -160,6 +174,7 @@ const CommunityHeader = ({ handle, tab }) => {
         className="object-fit-cover"
         alt="Community Banner"
       ></BannerImage>
+
       <div className="d-md-flex d-block justify-content-between container">
         <div className="d-md-flex d-block align-items-end">
           <div className="position-relative">
@@ -173,11 +188,13 @@ const CommunityHeader = ({ handle, tab }) => {
               ></LogoImage>
             </SizedDiv>
           </div>
+
           <div>
             <div className="h1 pt-3 ps-3 text-nowrap">{props.name}</div>
             <div className="ps-3 pb-2 text-secondary">{props.description}</div>
           </div>
         </div>
+
         <div className="d-flex align-items-end">
           {canEdit && (
             <Link
@@ -187,6 +204,7 @@ const CommunityHeader = ({ handle, tab }) => {
               <i className="bi bi-gear" /> Edit Community
             </Link>
           )}
+
           <OverlayTrigger
             placement="top"
             overlay={<Tooltip>Copy URL to clipboard</Tooltip>}

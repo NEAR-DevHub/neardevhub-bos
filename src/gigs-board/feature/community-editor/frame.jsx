@@ -51,12 +51,27 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "shared/lib/record" */
+/* INCLUDE: "core/lib/record" */
 const pick = (object, subsetKeys) =>
   Object.fromEntries(
     Object.entries(object ?? {}).filter(([key, _]) => subsetKeys.includes(key))
   );
-/* END_INCLUDE: "shared/lib/record" */
+/* END_INCLUDE: "core/lib/record" */
+/* INCLUDE: "core/adapter/dev-hub" */
+const contractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+const DevHub = {
+  get_access_control_info: () =>
+    Near.view(contractAccountId, "get_access_control_info"),
+
+  get_community: ({ handle }) =>
+    Near.view(contractAccountId, "get_community", { handle }),
+
+  get_root_members: () => Near.view(contractAccountId, "get_root_members"),
+};
+/* END_INCLUDE: "core/adapter/dev-hub" */
 
 const communityDefaults = {
   handle: "",
@@ -67,7 +82,7 @@ const communityDefaults = {
   admins: [context.accountId],
 };
 
-const CommunityEditorFrame = ({ communityHandle }) => {
+const CommunityEditorFrame = ({ handle }) => {
   State.init({
     activeSection: 0,
     data: null,
@@ -75,21 +90,16 @@ const CommunityEditorFrame = ({ communityHandle }) => {
     isEditingAllowed: false,
 
     isSupervisionAllowed:
-      Near.view(
-        nearDevGovGigsContractAccountId,
-        "get_access_control_info"
-      ).members_list["team:moderators"]?.children?.includes?.(
-        context.accountId
-      ) ?? false,
+      DevHub.get_access_control_info().members_list[
+        "team:moderators"
+      ]?.children?.includes?.(context.accountId) ?? false,
   });
 
+  // TODO: Remove before release!
   console.log(state.data);
 
-  if (typeof communityHandle === "string" && state.data === null) {
-    const data =
-      Near.view(nearDevGovGigsContractAccountId, "get_community", {
-        handle: communityHandle,
-      }) ?? null;
+  if (typeof handle === "string" && state.data === null) {
+    const data = DevHub.get_community({ handle }) ?? null;
 
     State.update((lastKnownState) => ({
       ...lastKnownState,
@@ -97,7 +107,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
       isCommunityNew: false,
       isEditingAllowed: (data?.admins ?? []).includes(context.accountId),
     }));
-  } else if (typeof communityHandle !== "string" && state.data === null) {
+  } else if (typeof handle !== "string" && state.data === null) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       data: communityDefaults,
@@ -111,10 +121,6 @@ const CommunityEditorFrame = ({ communityHandle }) => {
       ...lastKnownState,
       data: { ...lastKnownState.data, ...partial },
     }));
-
-    if (!state.isCommunityNew) {
-      onSubmit();
-    }
   };
 
   const onSubmit = () =>
@@ -123,7 +129,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
       state.isCommunityNew ? "add_community" : "edit_community",
 
       {
-        handle: state.data.handle,
+        handle: state.isCommunityNew ? state.data.handle : handle,
 
         community: {
           ...state.data,
@@ -136,9 +142,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
     );
 
   const onDelete = () =>
-    Near.call(nearDevGovGigsContractAccountId, "delete_community", {
-      handle: communityHandle,
-    });
+    Near.call(nearDevGovGigsContractAccountId, "delete_community", { handle });
 
   return (
     <div className="d-flex flex-column align-items-center gap-4 p-4">
@@ -332,7 +336,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
             },
           })}
 
-          {state.isCommunityNew || state.isSupervisionAllowed ? (
+          {state.isEditingAllowed ? (
             <div
               className="d-flex justify-content-center p-4 w-100"
               style={{ maxWidth: 896 }}
@@ -349,18 +353,21 @@ const CommunityEditorFrame = ({ communityHandle }) => {
                   })
                 : null}
 
-              {state.isCommunityNew
-                ? widget("components.atom.button", {
-                    classNames: {
-                      root: "btn-lg btn-success",
-                      adornment: "bi bi-rocket-takeoff-fill",
-                    },
+              {widget("components.atom.button", {
+                classNames: {
+                  root: "btn-lg btn-success",
+                  adornment: [
+                    "bi",
+                    state.isCommunityNew
+                      ? "bi-rocket-takeoff-fill"
+                      : "bi-cloud-arrow-up-fill",
+                  ].join(" "),
+                },
 
-                    disabled: !state.isEditingAllowed,
-                    label: "Launch",
-                    onClick: onSubmit,
-                  })
-                : null}
+                disabled: !state.isEditingAllowed,
+                label: state.isCommunityNew ? "Launch" : "Save",
+                onClick: onSubmit,
+              })}
             </div>
           ) : null}
         </>
