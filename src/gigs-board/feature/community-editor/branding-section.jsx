@@ -207,8 +207,18 @@ const CommunityEditorBrandingSection = ({
         className="card-body p-4"
         style={{ marginTop: -64, marginLeft: 180, height: 84 }}
       >
-        <h5 className="h5">{name}</h5>
-        <p className="card-text">{description}</p>
+        <h5
+          className="h5 text-nowrap overflow-hidden"
+          style={{ textOverflow: "ellipsis" }}
+        >
+          {name}
+        </h5>
+        <p
+          className="card-text text-nowrap overflow-hidden"
+          style={{ textOverflow: "ellipsis" }}
+        >
+          {description}
+        </p>
       </div>
     </Magnifiable>
   );

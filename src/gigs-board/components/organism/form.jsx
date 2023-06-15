@@ -193,7 +193,7 @@ const fieldsRenderDefault = ({ schema, formState, formUpdate, isEditable }) => (
                 <label className="fw-bold w-25">{label}</label>
 
                 {format !== "markdown" ? (
-                  <p className={contentDisplayClassName}>
+                  <p className={[contentDisplayClassName, "w-75"].join(" ")}>
                     {(fieldType === "array"
                       ? formState[fieldKey]
                           .filter((string) => string.length > 0)
@@ -202,7 +202,7 @@ const fieldsRenderDefault = ({ schema, formState, formUpdate, isEditable }) => (
                     )?.toString?.() || "none"}
                   </p>
                 ) : (
-                  <p className={contentDisplayClassName}>
+                  <p className={[contentDisplayClassName, "w-75"].join(" ")}>
                     {(formState[fieldKey]?.length ?? 0) > 0 ? (
                       <Markdown text={formState[fieldKey]} />
                     ) : (
