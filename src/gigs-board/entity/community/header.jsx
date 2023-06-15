@@ -70,8 +70,6 @@ const canEdit =
     )?.admins ?? []
   ).includes(context.accountId);
 
-const shareUrl = window.location.href;
-
 const Header = styled.div`
   overflow: hidden;
   background: #fff;
@@ -202,9 +200,13 @@ const CommunityHeader = ({ handle, tab }) => {
                 State.update({ copiedShareUrl: false });
               }}
               onClick={() => {
-                clipboard.writeText(shareUrl).then(() => {
-                  State.update({ copiedShareUrl: true });
-                });
+                clipboard
+                  .writeText(
+                    "https://near.org" + href("community.Overview", { handle })
+                  )
+                  .then(() => {
+                    State.update({ copiedShareUrl: true });
+                  });
               }}
             >
               {state.copiedShareUrl ? (
