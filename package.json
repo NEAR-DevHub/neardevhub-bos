@@ -9,7 +9,8 @@
   "scripts": {
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
     "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
-    "build": "node build.js"
+    "build": "npm run fmt && node build.js",
+    "dev": "~/.cargo/bin/bos-loader devgovgigs.near --path src"
   },
   "repository": {
     "type": "git",

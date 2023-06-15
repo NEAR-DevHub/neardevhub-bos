@@ -5,8 +5,7 @@ const nearDevGovGigsContractAccountId =
 
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
-  // (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-  (context.widgetSrc ?? "jgdev.near").split("/", 1)[0];
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -343,160 +342,30 @@ if (!props.label) {
   );
 }
 
-const label = props.label;
-
-const discussionRequiredPosts =
-  Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-    label,
-  }) ?? [];
-
 const community = communities[props.label];
 
-const SearchResults = (
-  <div style={{ display: "none" }}>
-    <div class="row">
-      <div class="col">
-        {widget("components.post.DiscussionFeed", {
-          query: "your-query-string",
-        })}
-      </div>
-    </div>
-  </div>
-);
+const group = community.telegram;
 
-const onMention = (accountId) => (
-  <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
-    <Widget
-      src="neardevgov.near/widget/ProfileLine"
-      props={{
-        accountId: accountId.toLowerCase(),
-        hideAccountId: true,
-        tooltip: true,
+const Telegram = (
+  <div>
+    <iframe
+      iframeResizer
+      src={
+        "https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups-ui/" +
+        group
+      }
+      frameborder="0"
+      // Required by iframeResizer
+      style={{
+        width: "1px",
+        minWidth: "100%",
       }}
-    />
-  </span>
-);
-
-const LabelsDisplay = (
-  <div className="d-flex flex-wrap gap-2 mb-2">
-    {tags.length > 0 && (
-      <div>
-        {tags.map((tag, i) => (
-          <span
-            key={i}
-            className="me-1 mb-1 fw-light badge border border-secondary text-bg-light"
-          >
-            #{tag}
-          </span>
-        ))}
-      </div>
-    )}
-    <div className="collapse public-tags">
-      <Widget src="mob.near/widget/PublicTags" props={{ accountId }} />
-    </div>
-  </div>
-);
-
-const Discussions = (
-  <div class="row">
-    <div class="col-md-8">
-      {widget("components.layout.Controls", {
-        labels: discussionsRequiredLabels,
-      })}
-      <div className="row mb-2">
-        <div className="col">
-          <small className="text-muted">
-            Required label:
-            <a href={href("Feed", { label })} key={label}>
-              <span
-                className="badge text-bg-grey me-1"
-                style={{
-                  color: "black",
-                  fontSize: "1.3em",
-                  boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
-                }}
-              >
-                {label}
-              </span>
-            </a>
-          </small>
-        </div>
-      </div>
-    </div>
-    {widget("components.layout.Controls", {
-      labels: label,
-    })}
-    <div class="row">
-      <div class="col">
-        {discussionRequiredPosts.map((postId) =>
-          widget("components.posts.DiscussionFeed", { id: postId }, postId)
-        )}
-      </div>
-    </div>
+    ></iframe>
   </div>
 );
 
 return widget("components.community.Layout", {
   label: props.label,
-  tab: "Discussions",
-  children: (
-    <div class="row">
-      <div class="col-md-9">
-        <div
-          className="row align-items-center d-flex justify-content-between"
-          style={{ marginTop: "18px" }}
-        >
-          <div className="col-auto">
-            <div className="d-flex align-items-center">
-              <small className="text-muted" style={{ fontSize: "1.15em" }}>
-                Required tag:
-              </small>
-              <a href={href("Feed", { label })} key={label}>
-                <span
-                  className="badge ms-1"
-                  style={{
-                    color: "rgba(0, 0, 0, 0.7)",
-                    fontSize: "1em",
-                    fontWeight: "normal",
-                    padding: "0.2em 0.5em",
-                    border: "1px solid rgba(0, 80, 80, 0.2)",
-                  }}
-                >
-                  {label}
-                </span>
-              </a>
-            </div>
-          </div>
-          <div className="col-auto aspect-ratio-square">
-            {widget("components.layout.Controls", {
-              labels: discussionsRequiredLabels,
-            })}
-          </div>
-        </div>
-        <br></br>
-        <div class="row">
-          <div class="col">
-            {discussionRequiredPosts.map((postId) =>
-              widget(
-                "components.posts.DiscussionFeed",
-                { id: postId, collapsed: true },
-                postId
-              )
-            )}
-          </div>
-        </div>
-      </div>
-      <div class="col-3 container-fluid">
-        <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.Sidebar`}
-          props={{
-            metadata: metadata,
-            accountId: accountId,
-            widgetName: widgetName,
-            label: props.label,
-          }}
-        />
-      </div>
-    </div>
-  ),
+  tab: "Telegram",
+  children: Telegram,
 });

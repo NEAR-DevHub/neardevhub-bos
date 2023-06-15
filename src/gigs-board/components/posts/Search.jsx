@@ -2,6 +2,7 @@
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
   // (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -14,6 +15,7 @@ function widget(widgetName, widgetProps, key) {
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
     referral: props.referral,
   };
+
   return (
     <Widget
       src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
@@ -25,20 +27,26 @@ function widget(widgetName, widgetProps, key) {
 
 function href(widgetName, linkProps) {
   linkProps = { ...linkProps };
+
   if (props.nearDevGovGigsContractAccountId) {
     linkProps.nearDevGovGigsContractAccountId =
       props.nearDevGovGigsContractAccountId;
   }
+
   if (props.nearDevGovGigsWidgetsAccountId) {
     linkProps.nearDevGovGigsWidgetsAccountId =
       props.nearDevGovGigsWidgetsAccountId;
   }
+
   if (props.referral) {
     linkProps.referral = props.referral;
   }
+
   const linkPropsQuery = Object.entries(linkProps)
+    .filter(([_key, nullable]) => (nullable ?? null) !== null)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
+
   return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
@@ -667,44 +675,82 @@ const showMoreSearchResults = () => {
 };
 
 return (
-  <div>
-    <div
-      className="d-flex mb-2"
-      style={{
-        height: "38px",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          left: "30px",
-          display: "flex",
-          height: "38px",
-          "align-items": "center",
-        }}
-      >
-        {state.loading ? (
-          <div>
+  <>
+    <div className="d-flex flex-row gap-4">
+      <div className="d-flex flex-row position-relative w-25">
+        <div className="position-absolute d-flex ps-3 flex-column h-100 justify-center">
+          {state.loading ? (
             <span
-              className="spinner-grow spinner-grow-sm me-1"
+              className="spinner-grow spinner-grow-sm m-auto"
               role="status"
               aria-hidden="true"
             />
-          </div>
-        ) : (
-          <div>🔍</div>
-        )}
+          ) : (
+            <i class="bi bi-search m-auto"></i>
+          )}
+        </div>
+        <input
+          type="search"
+          className="ps-5 form-control border border-0 bg-light"
+          value={state.term ?? ""}
+          onChange={(e) => updateInput(e.target.value)}
+          placeholder={props.placeholder ?? `Search Posts`}
+        />
       </div>
-      <input
-        type="search"
-        style={{
-          "padding-left": "40px",
-        }}
-        className="form-control"
-        value={state.term ?? ""}
-        onChange={(e) => updateInput(e.target.value)}
-        placeholder={props.placeholder ?? `Search Posts`}
-      />
+      <div class="dropdown">
+        <button
+          class="btn btn-light dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Sort
+        </button>
+        <ul class="dropdown-menu px-2 shadow">
+          <li>
+            <a
+              style={{ borderRadius: "5px" }}
+              class="dropdown-item link-underline link-underline-opacity-0"
+              href={href("Feed")}
+            >
+              Latest
+            </a>
+          </li>
+          <li>
+            <a
+              style={{ borderRadius: "5px" }}
+              class="dropdown-item link-underline link-underline-opacity-0"
+              href={href("Feed", { recency: "hot" })}
+            >
+              Hottest
+            </a>
+          </li>
+          <li>
+            <a
+              style={{ borderRadius: "5px" }}
+              class="dropdown-item link-underline link-underline-opacity-0"
+              href={href("Feed", { recency: "all" })}
+            >
+              All replies
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="dropdown">
+        {widget("components.layout.SearchByAuthor", {
+          authorQuery: props.authorQuery,
+          onSearchAuthor: props.onSearchAuthor,
+        })}
+      </div>
+      <div>
+        {widget("components.layout.SearchByLabel", {
+          labelQuery: props.labelQuery,
+          onSearchLabel: props.onSearchLabel,
+        })}
+      </div>
+      <div className="d-flex flex-row-reverse flex-grow-1">
+        {props.children}
+      </div>
     </div>
     {state.processedQuery &&
       state.processedQuery.length > 0 &&
@@ -733,5 +779,5 @@ return (
           label: props.label,
           author: props.author,
         })}
-  </div>
+  </>
 );

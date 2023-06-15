@@ -5,8 +5,7 @@ const nearDevGovGigsContractAccountId =
 
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
-  // (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-  (context.widgetSrc ?? "jgdev.near").split("/", 1)[0];
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -53,29 +52,18 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const onSearchLabel = props.onSearchLabel;
-const selectedLabels = props.labelQuery?.label
-  ? [{ name: props.labelQuery.label }]
-  : [];
+const CommunityGithubPage = ({ label }) =>
+  widget("components.community.Layout", {
+    label,
+    tab: "GitHub",
+    children: (
+      <div className="d-flex flex-column">
+        {widget("feature.integration.github.board-config-editor", {
+          label,
+          pageURL: "near.org" + href("community.github", { label }),
+        })}
+      </div>
+    ),
+  });
 
-const labels = Near.view(nearDevGovGigsContractAccountId, "get_all_labels");
-if (!labels) {
-  return <div>Loading ...</div>;
-}
-const wrappedLabels = labels.map((label) => ({ name: label }));
-
-const onChange = (selectedLabels) => {
-  onSearchLabel(selectedLabels[0]?.name);
-};
-
-return (
-  <Typeahead
-    clearButton
-    id="basic-typeahead-single"
-    labelKey="name"
-    onChange={onChange}
-    options={wrappedLabels}
-    placeholder="Search by tag"
-    selected={selectedLabels}
-  />
-);
+return CommunityGithubPage(props);
