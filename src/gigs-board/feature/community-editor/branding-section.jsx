@@ -135,8 +135,8 @@ const Logo = styled.div`
 `;
 
 const communityBrandingDefaults = {
-  banner_cid: "bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey",
-  logo_cid: "bafkreiaowjqxds24fwcliyriintjd4ucciprii2rdxjmxgi7f5dmzuscey",
+  banner_cid: "bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
+  logo_cid: "bafkreiarbtqjhnkwtgkadq3fzzomfwmmk4cfrnt6haaxr4rgdp6jk2q66i",
 };
 
 const CommunityEditorBrandingSection = ({
