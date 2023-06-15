@@ -344,38 +344,28 @@ if (!props.label) {
 
 const community = communities[props.label];
 
-const eventsPost = Near.view(nearDevGovGigsContractAccountId, "get_post", {
-  post_id: community.eventsId,
-});
-if (!eventsPost) {
-  return <div>Loading ...</div>;
-}
+const group = community.telegram;
 
-const onMention = (accountId) => (
-  <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
-    <Widget
-      src="neardevgov.near/widget/ProfileLine"
-      props={{
-        accountId: accountId.toLowerCase(),
-        hideAccountId: true,
-        tooltip: true,
-      }}
-    />
-  </span>
-);
-
-const Events = (
+const Telegram = (
   <div>
-    <Markdown
-      class="card-text"
-      text={eventsPost.snapshot.description}
-      onMention={onMention}
-    ></Markdown>
+    <iframe
+      iframeResizer
+      src={
+        "https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups-ui/" +
+        group
+      }
+      frameborder="0"
+      // Required by iframeResizer
+      style={{
+        width: "1px",
+        minWidth: "100%",
+      }}
+    ></iframe>
   </div>
 );
 
 return widget("components.community.Layout", {
   label: props.label,
-  tab: "Events",
-  children: Events,
+  tab: "Telegram",
+  children: Telegram,
 });
