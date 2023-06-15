@@ -249,25 +249,25 @@ const CommunityEditorFrame = ({ communityHandle }) => {
               },
 
               twitter_handle: {
-                inputProps: { min: 2, max: 30 },
+                inputProps: { min: 2, max: 60 },
                 label: "Twitter",
                 order: 2,
               },
 
               github_handle: {
-                inputProps: { min: 2, max: 30 },
+                inputProps: { min: 2, max: 60 },
                 label: "Github",
                 order: 3,
               },
 
               telegram_handle: {
-                inputProps: { min: 2, max: 30 },
+                inputProps: { min: 2, max: 60 },
                 label: "Telegram",
                 order: 4,
               },
 
               website_url: {
-                inputProps: { min: 2, max: 40 },
+                inputProps: { min: 2, max: 60 },
                 label: "Website",
                 order: 5,
               },
