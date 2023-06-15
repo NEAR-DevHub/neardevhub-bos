@@ -149,7 +149,7 @@ return (
                 {column.title}({column.posts.length})
               </h6>
               {column.posts.map((postId) =>
-                widget("components.posts.CompactPost", { id: postId }, postId)
+                widget("entity.post.CompactPost", { id: postId }, postId)
               )}
             </div>
           </div>

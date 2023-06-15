@@ -69,7 +69,7 @@ function defaultRenderItem(postId, additionalProps) {
   return (
     <div style={{ minHeight: "150px" }}>
       {widget(
-        `components.posts.Post`,
+        `entity.post.Post`,
         {
           id: postId,
           expandable: true,

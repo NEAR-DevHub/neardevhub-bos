@@ -417,7 +417,7 @@ return (
     </div>
     <div class="card-footer">
       Preview:
-      {widget("components.posts.Post", {
+      {widget("entity.post.Post", {
         isPreview: true,
         id: 0, // irrelevant
         post: {

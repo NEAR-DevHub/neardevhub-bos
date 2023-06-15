@@ -58,12 +58,21 @@ const contractAccountId =
 
 const DevHub = {
   get_access_control_info: () =>
-    Near.view(contractAccountId, "get_access_control_info"),
+    Near.view(contractAccountId, "get_access_control_info") ?? null,
 
   get_community: ({ handle }) =>
-    Near.view(contractAccountId, "get_community", { handle }),
+    Near.view(contractAccountId, "get_community", { handle }) ?? null,
 
-  get_root_members: () => Near.view(contractAccountId, "get_root_members"),
+  get_post: ({ post_id }) =>
+    Near.view(contractAccountId, "get_post", { post_id }) ?? null,
+
+  get_posts_by_label: ({ label }) =>
+    Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+      label,
+    }) ?? null,
+
+  get_root_members: () =>
+    Near.view(contractAccountId, "get_root_members") ?? null,
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
@@ -87,40 +96,6 @@ const NavUnderline = styled.ul`
     border-bottom: 4px solid #0c7283;
   }
 `;
-
-const topicTabs = [
-  {
-    defaultActive: true,
-    iconClass: "bi bi-house-door",
-    path: "community.overview",
-    title: "Overview",
-  },
-  {
-    iconClass: "bi bi-chat-square-text",
-    path: "community.discussions",
-    title: "Discussions",
-  },
-  {
-    iconClass: "bi bi-coin",
-    path: "community.sponsorship",
-    title: "Sponsorship",
-  },
-  {
-    iconClass: "bi bi-calendar",
-    path: "community.events",
-    title: "Events",
-  },
-  {
-    iconClass: "bi bi-github",
-    path: "community.github",
-    title: "GitHub",
-  },
-  {
-    iconClass: "bi bi-telegram",
-    path: "community.telegram",
-    title: "Telegram",
-  },
-];
 
 const buttonString = `
 height: 40px;
@@ -151,57 +126,99 @@ const SizedDiv = styled.div`
   height: 100px;
 `;
 
-const CommunityHeader = ({ handle, tab }) => {
+const CommunityHeader = ({ activeTabTitle, handle }) => {
   State.init({
     copiedShareUrl: false,
   });
 
-  const canEdit =
+  const {
+    admins,
+    banner_url,
+    description,
+    logo_url,
+    name,
+    wiki1,
+    wiki2,
+  } = DevHub.get_community({ handle }) ?? {
+    admins: [],
+  };
+
+  const tabs = [
+    {
+      defaultActive: true,
+      iconClass: "bi bi-house-door",
+      route: "community.activity",
+      title: "Activity",
+    },
+
+    ...[wiki1, wiki2]
+      .filter((maybeWikiPage) => maybeWikiPage ?? false)
+      .map(({ name }, idx) => ({
+        params: { id: idx + 1 },
+        route: "community.wiki",
+        title: name,
+      })),
+
+    {
+      iconClass: "bi bi-coin",
+      route: "community.sponsorship",
+      title: "Sponsorship",
+    },
+    {
+      iconClass: "bi bi-github",
+      route: "community.github",
+      title: "GitHub",
+    },
+    {
+      iconClass: "bi bi-telegram",
+      route: "community.telegram",
+      title: "Telegram",
+    },
+  ];
+
+  const isEditingAllowed =
     (DevHub.get_access_control_info().members_list[
       "team:moderators"
     ]?.children?.includes?.(context.accountId) ??
       false) ||
-    (
-      Near.view(nearDevGovGigsContractAccountId, "get_community", {
-        handle,
-      })?.admins ?? []
-    ).includes(context.accountId);
+    admins.includes(context.accountId);
 
   return (
     <Header className="d-flex flex-column gap-3 px-4 pt-3">
       <BannerImage
-        src={props.banner_url}
+        src={banner_url}
         className="object-fit-cover"
-        alt="Community Banner"
-      ></BannerImage>
+        alt="Community banner"
+      />
 
       <div className="d-md-flex d-block justify-content-between container">
         <div className="d-md-flex d-block align-items-end">
           <div className="position-relative">
             <SizedDiv>
               <LogoImage
-                src={props.logo_url}
-                alt="Community Icon"
+                src={logo_url}
+                alt="Community logo"
                 width="150"
                 height="150"
                 className="border border-3 border-white rounded-circle shadow position-absolute"
-              ></LogoImage>
+              />
             </SizedDiv>
           </div>
 
           <div>
-            <div className="h1 pt-3 ps-3 text-nowrap">{props.name}</div>
-            <div className="ps-3 pb-2 text-secondary">{props.description}</div>
+            <div className="h1 pt-3 ps-3 text-nowrap">{name}</div>
+            <div className="ps-3 pb-2 text-secondary">{description}</div>
           </div>
         </div>
 
         <div className="d-flex align-items-end">
-          {canEdit && (
+          {isEditingAllowed && (
             <Link
-              href={href("community.edit", { handle })}
+              href={href("community.edit-info", { handle })}
               className="border border-1 text-nowrap rounded-pill p-2 m-2 bg-white text-dark font-weight-bold"
             >
-              <i className="bi bi-gear" /> Edit Community
+              <i className="bi bi-gear" />
+              <span>Edit information</span>
             </Link>
           )}
 
@@ -218,7 +235,7 @@ const CommunityHeader = ({ handle, tab }) => {
               onClick={() => {
                 clipboard
                   .writeText(
-                    "https://near.org" + href("community.overview", { handle })
+                    "https://near.org" + href("community.activity", { handle })
                   )
                   .then(() => {
                     State.update({ copiedShareUrl: true });
@@ -230,23 +247,24 @@ const CommunityHeader = ({ handle, tab }) => {
               ) : (
                 <i className="bi bi-16 bi-link-45deg"></i>
               )}
-              Share
+
+              <span>Share</span>
             </Button>
           </OverlayTrigger>
         </div>
       </div>
 
       <NavUnderline className="nav">
-        {topicTabs.map(({ defaultActive, path, title }) =>
+        {tabs.map(({ defaultActive, params, route, title }) =>
           title ? (
             <li className="nav-item" key={title}>
               <a
                 aria-current={defaultActive && "page"}
                 className={[
                   "d-inline-flex gap-2",
-                  tab === title ? "nav-link active" : "nav-link",
+                  activeTabTitle === title ? "nav-link active" : "nav-link",
                 ].join(" ")}
-                href={href(path, { handle })}
+                href={href(route, { handle, ...(params ?? {}) })}
               >
                 <span>{title}</span>
               </a>

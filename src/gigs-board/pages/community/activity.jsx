@@ -76,42 +76,60 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const access_info = DevHub.get_access_control_info() ?? null;
-
-if (!access_info) {
-  return <div>Loading...</div>;
-}
-
-const rules_list = props.rules_list ?? access_info.rules_list;
-
-const permissionExplainer = (permission) => {
-  if (permission.startsWith("starts-with:")) {
-    let s = permission.substring("starts-with:".length);
-    if (s == "") {
-      return "Any label";
-    } else {
-      return `Labels that start with "${s}"`;
-    }
-  } else {
-    return permission;
+const CommunityActivityPage = ({ handle }) => {
+  if (!handle) {
+    return (
+      <div class="alert alert-danger" role="alert">
+        Error: community handle not found in URL parameters
+      </div>
+    );
   }
+
+  const communityData = DevHub.get_community({ handle });
+
+  const communityPostIds =
+    DevHub.get_posts_by_label({ label: communityData?.tag }) ?? [];
+
+  return widget("components.template.community-page", {
+    handle,
+    title: "Overview",
+
+    children:
+      communityData !== null ? (
+        <div>
+          <div class="row mb-2">
+            <div class="col text-center">
+              <small class="text-muted">
+                <span>Required tags:</span>
+
+                <a
+                  href={href("Feed", { tag: communityData.tag })}
+                  key={communityData.tag}
+                >
+                  <span class="badge text-bg-primary me-1">
+                    {communityData.tag}
+                  </span>
+                </a>
+              </small>
+            </div>
+          </div>
+
+          {widget("components.layout.Controls", {
+            labels: tag,
+          })}
+
+          <div class="row">
+            <div class="col">
+              {communityPostIds.map((postId) =>
+                widget("entity.post.Post", { id: postId }, postId)
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div>Loading ...</div>
+      ),
+  });
 };
 
-return (
-  <div className="card border-secondary" key="labelpermissions">
-    <div className="card-header">
-      <i class="bi-lock-fill"> </i>
-      <small class="text-muted">Restricted Labels</small>
-    </div>
-    <ul class="list-group list-group-flush">
-      {Object.entries(rules_list).map(([pattern, metadata]) => (
-        <li class="list-group-item" key={pattern}>
-          <span class="badge text-bg-primary" key={`${pattern}-permission`}>
-            {permissionExplainer(pattern)}
-          </span>{" "}
-          {metadata.description}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+return CommunityActivityPage(props);

@@ -364,8 +364,8 @@ const Telegram = (
   </div>
 );
 
-return widget("entity.community.layout", {
+return widget("components.template.community-page", {
   handle: props.handle,
-  tab: "Telegram",
+  title: "Telegram",
   children: Telegram,
 });

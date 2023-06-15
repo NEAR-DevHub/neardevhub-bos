@@ -52,7 +52,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const DiscussionsPage = ({ handle }) => {
+const CommunityPageTemplate = ({ handle, title }) => {
   if (!handle) {
     return (
       <div class="alert alert-danger" role="alert">
@@ -61,55 +61,13 @@ const DiscussionsPage = ({ handle }) => {
     );
   }
 
-  const communityData = Near.view(
-    nearDevGovGigsContractAccountId,
-    "get_community",
-    { handle }
+  return (
+    <>
+      {widget("components.layout.Banner")}
+      {widget("entity.community.header", { activeTabTitle: title, handle })}
+      <div style={{ padding: "0 32px" }}>{props.children}</div>
+    </>
   );
-
-  console.log(communityData);
-
-  const discussionRequiredPosts =
-    Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-      label: communityData.tag,
-    }) ?? [];
-
-  return widget("entity.community.layout", {
-    handle,
-    tab: "Discussions",
-
-    children: (
-      <div>
-        <div class="row mb-2">
-          <div class="col text-center">
-            <small class="text-muted">
-              Required tags:
-              <a
-                href={href("Feed", { tag: communityData.tag })}
-                key={communityData.tag}
-              >
-                <span class="badge text-bg-primary me-1">
-                  {communityData.tag}
-                </span>
-              </a>
-            </small>
-          </div>
-        </div>
-
-        {widget("components.layout.Controls", {
-          labels: tag,
-        })}
-
-        <div class="row">
-          <div class="col">
-            {discussionRequiredPosts.map((postId) =>
-              widget("components.posts.Post", { id: postId }, postId)
-            )}
-          </div>
-        </div>
-      </div>
-    ),
-  });
 };
 
-return DiscussionsPage(props);
+CommunityPageTemplate(props);

@@ -51,25 +51,30 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/adapter/dev-hub" */
+const contractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
-if (!props.handle) {
-  return (
-    <div class="alert alert-danger" role="alert">
-      Error: community handle not found in URL parameters
-    </div>
-  );
-}
+const DevHub = {
+  get_access_control_info: () =>
+    Near.view(contractAccountId, "get_access_control_info") ?? null,
 
-const community = Near.view(nearDevGovGigsContractAccountId, "get_community", {
-  handle: props.handle,
-});
+  get_community: ({ handle }) =>
+    Near.view(contractAccountId, "get_community", { handle }) ?? null,
 
-const overviewPost = Near.view(nearDevGovGigsContractAccountId, "get_post", {
-  post_id: community.overview_id,
-});
-if (!overviewPost) {
-  return <div>Loading ...</div>;
-}
+  get_post: ({ post_id }) =>
+    Near.view(contractAccountId, "get_post", { post_id }) ?? null,
+
+  get_posts_by_label: ({ label }) =>
+    Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+      label,
+    }) ?? null,
+
+  get_root_members: () =>
+    Near.view(contractAccountId, "get_root_members") ?? null,
+};
+/* END_INCLUDE: "core/adapter/dev-hub" */
 
 const onMention = (accountId) => (
   <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
@@ -84,18 +89,41 @@ const onMention = (accountId) => (
   </span>
 );
 
-const Overview = (
-  <div>
-    <Markdown
-      class="card-text"
-      text={overviewPost.snapshot.description}
-      onMention={onMention}
-    ></Markdown>
-  </div>
-);
+const WikiPage = ({ handle, id }) => {
+  if (!handle) {
+    return (
+      <div class="alert alert-danger" role="alert">
+        Error: community handle not found in URL parameters
+      </div>
+    );
+  } else if (!id) {
+    return (
+      <div class="alert alert-danger" role="alert">
+        Error: wiki page id not found in URL parameters
+      </div>
+    );
+  }
 
-return widget("entity.community.layout", {
-  handle: props.handle,
-  tab: "Overview",
-  children: Overview,
-});
+  const communityData = DevHub.get_community({ handle });
+
+  const { name, content_markdown: text } = communityData?.[`wiki${id}`] ?? {
+    name: "",
+    content_markdown: "This page doesn't exist.",
+  };
+
+  return widget("components.template.community-page", {
+    handle,
+    title: name,
+
+    children:
+      communityData !== null ? (
+        <div>
+          <Markdown className="card-text" {...{ onMention, text }} />
+        </div>
+      ) : (
+        <div>Loading ...</div>
+      ),
+  });
+};
+
+return WikiPage(props);

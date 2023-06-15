@@ -147,7 +147,7 @@ const FeedPage = ({ author, recency, tag }) => {
   return widget("components.layout.Page", {
     header,
 
-    children: widget("components.posts.Search", {
+    children: widget("entity.post.Search", {
       children: widget("components.layout.Controls"),
       recency,
       label: tag,

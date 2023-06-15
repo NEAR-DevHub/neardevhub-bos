@@ -511,7 +511,7 @@ return (
         <div class="card-body">
           <p class="text-muted m-0">Preview</p>
           <div>
-            {widget("components.posts.Post", {
+            {widget("entity.post.Post", {
               isPreview: true,
               id: 0, // irrelevant
               post: {

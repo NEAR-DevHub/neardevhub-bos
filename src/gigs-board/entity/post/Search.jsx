@@ -760,7 +760,7 @@ return (
         </div>
       )}
     {state.term && state.term.length > 1 && state.searchResult
-      ? widget("components.posts.List", {
+      ? widget("entity.post.List", {
           searchResult: {
             postIds: state.searchResult,
             keywords: Object.fromEntries(
@@ -773,7 +773,7 @@ return (
           tag: props.tag,
           author: props.author,
         })
-      : widget("components.posts.List", {
+      : widget("entity.post.List", {
           recency: props.recency,
           tag: props.tag,
           author: props.author,

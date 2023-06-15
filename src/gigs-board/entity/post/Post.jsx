@@ -418,7 +418,7 @@ const CreatorWidget = (postType) => {
       id={`collapse${postType}Creator${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
-      {widget("components.posts.PostEditor", {
+      {widget("entity.post.PostEditor", {
         postType,
         parentId: postId,
         mode: "Create",
@@ -434,7 +434,7 @@ const EditorWidget = (postType) => {
       id={`collapse${postType}Editor${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
-      {widget("components.posts.PostEditor", {
+      {widget("entity.post.PostEditor", {
         postType,
         postId,
         mode: "Edit",
@@ -528,7 +528,7 @@ const postsList =
       >
         {childPostIds.map((childId) =>
           widget(
-            "components.posts.Post",
+            "entity.post.Post",
             { id: childId, isUnderPost: true },
             `subpost${childId}of${postId}`
           )

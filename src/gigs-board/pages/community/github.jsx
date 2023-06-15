@@ -53,9 +53,10 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 const CommunityGithubPage = ({ handle }) =>
-  widget("entity.community.layout", {
+  widget("components.template.community-page", {
     handle,
-    tab: "GitHub",
+    title: "GitHub",
+
     children: (
       <div className="d-flex flex-column">
         {widget("feature.github-integration.kanban-board-editor", {
