@@ -60,6 +60,9 @@ const DevHub = {
   get_access_control_info: () =>
     Near.view(contractAccountId, "get_access_control_info") ?? null,
 
+  get_all_communities: () =>
+    Near.view(contractAccountId, "get_all_communities") ?? null,
+
   get_community: ({ handle }) =>
     Near.view(contractAccountId, "get_community", { handle }) ?? null,
 

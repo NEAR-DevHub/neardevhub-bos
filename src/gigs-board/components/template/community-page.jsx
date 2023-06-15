@@ -52,7 +52,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityPageTemplate = ({ handle, title }) => {
+const CommunityPageTemplate = ({ children, handle, title }) => {
   if (!handle) {
     return (
       <div class="alert alert-danger" role="alert">
@@ -65,9 +65,9 @@ const CommunityPageTemplate = ({ handle, title }) => {
     <>
       {widget("components.layout.Banner")}
       {widget("entity.community.header", { activeTabTitle: title, handle })}
-      <div style={{ padding: "0 32px" }}>{props.children}</div>
+      <div style={{ padding: "0 32px" }}>{children}</div>
     </>
   );
 };
 
-CommunityPageTemplate(props);
+return CommunityPageTemplate(props);

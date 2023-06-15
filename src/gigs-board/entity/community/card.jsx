@@ -80,45 +80,94 @@ const AttractableImage = styled.img`
 `;
 /* END_INCLUDE: "core/lib/gui/attractable" */
 
-const CommunityCard = ({ banner_url, description, handle, logo_url, name }) => (
-  <AttractableLink
-    href={href("community.activity", { handle })}
-    className="rounded-4 text-black text-decoration-none"
-    style={{ background: `center / cover no-repeat url(${banner_url})` }}
-  >
-    <div
-      className="d-flex align-items-center gap-3 rounded-4 border p-2"
+const CommunityCard = ({
+  banner_url,
+  description,
+  format,
+  handle,
+  isBannerEnabled,
+  logo_url,
+  name,
+}) => {
+  const link = href("community.activity", { handle });
+
+  const formatSmall = (
+    <AttractableLink
+      href={link}
+      className="d-flex flex-shrink-0 rounded-4 border border-2 p-3 text-black text-decoration-none"
       style={{
-        background: "rgba(255, 255, 255, 0.6)",
-        backdropFilter: "blur(2px)",
+        background: isBannerEnabled
+          ? `center / cover no-repeat url(${banner_url})`
+          : "#ffffff",
+
         width: 320,
         height: 100,
       }}
     >
-      <AttractableImage
-        alt="Community logo"
-        className="rounded-circle"
-        src={logo_url}
-        style={{ width: 70, height: 70 }}
+      <div
+        className="d-flex align-items-center gap-3 rounded-4 w-100 h-100"
+        style={{
+          background: "rgba(255, 255, 255, 0.9)",
+          backdropFilter: "blur(4px)",
+        }}
+      >
+        <AttractableImage
+          alt="Community logo"
+          className="rounded-circle"
+          src={logo_url}
+          style={{ width: 70, height: 70 }}
+        />
+
+        <div className="d-flex flex-column justify-content-center gap-1 w-100">
+          <h5
+            className="h5 m-0 text-nowrap overflow-hidden"
+            style={{ textOverflow: "ellipsis" }}
+          >
+            {name}
+          </h5>
+
+          <p
+            className="card-text text-secondary overflow-hidden"
+            style={{ fontSize: 12, textOverflow: "ellipsis" }}
+          >
+            {description}
+          </p>
+        </div>
+      </div>
+    </AttractableLink>
+  );
+
+  const formatMedium = (
+    <AttractableLink
+      className="card d-flex flex-column flex-shrink-0 text-decoration-none text-reset"
+      href={link}
+      style={{ width: "23%", maxWidth: 304 }}
+    >
+      <div
+        className="card-img-top w-100"
+        style={{
+          background: `center / cover no-repeat url(${banner_url})`,
+          height: 164,
+        }}
       />
 
-      <div className="d-flex flex-column justify-content-center gap-1 w-100">
-        <h5
-          className="h5 m-0 text-nowrap overflow-hidden"
-          style={{ textOverflow: "ellipsis" }}
-        >
-          {name}
-        </h5>
-
-        <p
-          className="card-text text-secondary overflow-hidden"
-          style={{ fontSize: 12, textOverflow: "ellipsis" }}
-        >
-          {description}
-        </p>
+      <div className="d-flex flex-column gap-2 p-3 card-text">
+        <h5 class="h5 m-0">{name}</h5>
+        <span class="text-secondary text-wrap">{description}</span>
       </div>
-    </div>
-  </AttractableLink>
-);
+    </AttractableLink>
+  );
+
+  switch (format) {
+    case "small":
+      return formatSmall;
+
+    case "medium":
+      return formatMedium;
+
+    default:
+      return formatSmall;
+  }
+};
 
 return CommunityCard(props);

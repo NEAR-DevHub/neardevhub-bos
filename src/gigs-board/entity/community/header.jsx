@@ -60,6 +60,9 @@ const DevHub = {
   get_access_control_info: () =>
     Near.view(contractAccountId, "get_access_control_info") ?? null,
 
+  get_all_communities: () =>
+    Near.view(contractAccountId, "get_all_communities") ?? null,
+
   get_community: ({ handle }) =>
     Near.view(contractAccountId, "get_community", { handle }) ?? null,
 
@@ -131,17 +134,10 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     copiedShareUrl: false,
   });
 
-  const {
-    admins,
-    banner_url,
-    description,
-    logo_url,
-    name,
-    wiki1,
-    wiki2,
-  } = DevHub.get_community({ handle }) ?? {
-    admins: [],
-  };
+  const { admins, banner_url, description, logo_url, name, wiki1, wiki2 } =
+    DevHub.get_community({ handle }) ?? {
+      admins: [],
+    };
 
   const tabs = [
     {

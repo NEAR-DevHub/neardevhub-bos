@@ -73,7 +73,7 @@ return (
       </a>
 
       <div className="d-flex align-items-center gap-3">
-        <a href={href("communities", {})} class="text-white me-2">
+        <a href={href("communities")} class="text-white me-2">
           Communities
         </a>
 

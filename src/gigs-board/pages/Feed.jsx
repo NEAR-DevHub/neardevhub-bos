@@ -51,6 +51,33 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/adapter/dev-hub" */
+const contractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+const DevHub = {
+  get_access_control_info: () =>
+    Near.view(contractAccountId, "get_access_control_info") ?? null,
+
+  get_all_communities: () =>
+    Near.view(contractAccountId, "get_all_communities") ?? null,
+
+  get_community: ({ handle }) =>
+    Near.view(contractAccountId, "get_community", { handle }) ?? null,
+
+  get_post: ({ post_id }) =>
+    Near.view(contractAccountId, "get_post", { post_id }) ?? null,
+
+  get_posts_by_label: ({ label }) =>
+    Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+      label,
+    }) ?? null,
+
+  get_root_members: () =>
+    Near.view(contractAccountId, "get_root_members") ?? null,
+};
+/* END_INCLUDE: "core/adapter/dev-hub" */
 
 const Gradient = styled.div`
    {
@@ -110,14 +137,16 @@ const header = (
         <h5 className="h5 m-0">Featured Communities</h5>
       </div>
 
-      <div className="row">
-        {Near.view(nearDevGovGigsContractAccountId, "get_all_communities").map(
-          (community) => (
-            <div className="col">
-              {widget("entity.community.card", community, community.handle)}
-            </div>
-          )
-        )}
+      <div className="d-flex gap-4 justify-content-center">
+        {(DevHub.get_all_communities() ?? [])
+          .slice(0, 4)
+          .map((community) =>
+            widget(
+              "entity.community.card",
+              { ...community, format: "medium" },
+              community.handle
+            )
+          )}
       </div>
     </div>
 
@@ -150,13 +179,13 @@ const FeedPage = ({ author, recency, tag }) => {
     children: widget("entity.post.Search", {
       children: widget("components.layout.Controls"),
       recency,
-      label: tag,
+      label: state.tag,
       author,
       //
-      labelQuery: { label: tag },
+      labelQuery: { label: state.tag },
       onSearchLabel,
       //
-      authorQuery: { author },
+      authorQuery: { author: state.author },
       onSearchAuthor,
     }),
   });
