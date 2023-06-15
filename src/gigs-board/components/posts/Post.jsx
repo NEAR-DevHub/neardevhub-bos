@@ -582,21 +582,6 @@ const postsList =
     </div>
   );
 
-const limitedMarkdown = styled.div`
-  max-height: 20em;
-`;
-
-const clampMarkdown = styled.div`
-  .clamp {
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 1),
-      rgba(0, 0, 0, 0)
-    );
-    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
-  }
-`;
-
 // Determine if located in the post page.
 
 const isInList = props.isInList;
