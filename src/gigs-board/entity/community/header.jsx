@@ -93,22 +93,22 @@ const topicTabs = [
   {
     defaultActive: true,
     iconClass: "bi bi-house-door",
-    path: "community.Overview",
+    path: "community.overview",
     title: "Overview",
   },
   {
     iconClass: "bi bi-chat-square-text",
-    path: "community.Discussions",
+    path: "community.discussions",
     title: "Discussions",
   },
   {
     iconClass: "bi bi-coin",
-    path: "community.Sponsorship",
+    path: "community.sponsorship",
     title: "Sponsorship",
   },
   {
     iconClass: "bi bi-calendar",
-    path: "community.Events",
+    path: "community.events",
     title: "Events",
   },
   {
@@ -118,7 +118,7 @@ const topicTabs = [
   },
   {
     iconClass: "bi bi-telegram",
-    path: "community.Telegram",
+    path: "community.telegram",
     title: "Telegram",
   },
 ];
@@ -200,7 +200,7 @@ const CommunityHeader = ({ handle, tab }) => {
               onClick={() => {
                 clipboard
                   .writeText(
-                    "https://near.org" + href("community.Overview", { handle })
+                    "https://near.org" + href("community.overview", { handle })
                   )
                   .then(() => {
                     State.update({ copiedShareUrl: true });

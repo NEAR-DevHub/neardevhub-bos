@@ -82,7 +82,7 @@ const AttractableImage = styled.img`
 
 const CommunityCard = ({ banner_url, description, handle, logo_url, name }) => (
   <AttractableLink
-    href={href("community.Overview", { handle })}
+    href={href("community.overview", { handle })}
     className="rounded-4 text-black text-decoration-none"
     style={{ background: `center / cover no-repeat url(${banner_url})` }}
   >

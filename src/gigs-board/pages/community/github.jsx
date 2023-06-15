@@ -53,7 +53,7 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 const CommunityGithubPage = ({ handle }) =>
-  widget("entity.community.Layout", {
+  widget("entity.community.layout", {
     handle,
     tab: "GitHub",
     children: (

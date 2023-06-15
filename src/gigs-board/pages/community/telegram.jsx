@@ -342,40 +342,30 @@ if (!props.handle) {
   );
 }
 
-const { tag } = communities[props.handle];
+const community = communities[props.handle];
 
-const discussionRequiredPosts =
-  Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-    label: tag,
-  }) ?? [];
+const group = community.telegram_handle;
 
-const Discussions = (
+const Telegram = (
   <div>
-    <div class="row mb-2">
-      <div class="col text-center">
-        <small class="text-muted">
-          Required tags:
-          <a href={href("Feed", { tag })} key={tag}>
-            <span class="badge text-bg-primary me-1">{tag}</span>
-          </a>
-        </small>
-      </div>
-    </div>
-    {widget("components.layout.Controls", {
-      labels: tag,
-    })}
-    <div class="row">
-      <div class="col">
-        {discussionRequiredPosts.map((postId) =>
-          widget("components.posts.Post", { id: postId }, postId)
-        )}
-      </div>
-    </div>
+    <iframe
+      iframeResizer
+      src={
+        "https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups-ui/" +
+        group
+      }
+      frameborder="0"
+      // Required by iframeResizer
+      style={{
+        width: "1px",
+        minWidth: "100%",
+      }}
+    ></iframe>
   </div>
 );
 
-return widget("entity.community.Layout", {
+return widget("entity.community.layout", {
   handle: props.handle,
-  tab: "Discussions",
-  children: Discussions,
+  tab: "Telegram",
+  children: Telegram,
 });

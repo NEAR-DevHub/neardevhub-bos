@@ -342,40 +342,40 @@ if (!props.handle) {
   );
 }
 
-const community = communities[props.handle];
+const { tag } = communities[props.handle];
 
-const eventsPost = Near.view(nearDevGovGigsContractAccountId, "get_post", {
-  post_id: community.events_id,
-});
-if (!eventsPost) {
-  return <div>Loading ...</div>;
-}
+const discussionRequiredPosts =
+  Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+    label: tag,
+  }) ?? [];
 
-const onMention = (accountId) => (
-  <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
-    <Widget
-      src="neardevgov.near/widget/ProfileLine"
-      props={{
-        accountId: accountId.toLowerCase(),
-        hideAccountId: true,
-        tooltip: true,
-      }}
-    />
-  </span>
-);
-
-const Events = (
+const Discussions = (
   <div>
-    <Markdown
-      class="card-text"
-      text={eventsPost.snapshot.description}
-      onMention={onMention}
-    ></Markdown>
+    <div class="row mb-2">
+      <div class="col text-center">
+        <small class="text-muted">
+          Required tags:
+          <a href={href("Feed", { tag })} key={tag}>
+            <span class="badge text-bg-primary me-1">{tag}</span>
+          </a>
+        </small>
+      </div>
+    </div>
+    {widget("components.layout.Controls", {
+      labels: tag,
+    })}
+    <div class="row">
+      <div class="col">
+        {discussionRequiredPosts.map((postId) =>
+          widget("components.posts.Post", { id: postId }, postId)
+        )}
+      </div>
+    </div>
   </div>
 );
 
-return widget("entity.community.Layout", {
+return widget("entity.community.layout", {
   handle: props.handle,
-  tab: "Events",
-  children: Events,
+  tab: "Discussions",
+  children: Discussions,
 });

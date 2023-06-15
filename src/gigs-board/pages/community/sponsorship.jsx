@@ -414,7 +414,7 @@ const Sponsorship = (
   </div>
 );
 
-return widget("entity.community.Layout", {
+return widget("entity.community.layout", {
   handle: props.handle,
   tab: "Sponsorship",
   children: Sponsorship,
