@@ -4,7 +4,8 @@ const nearDevGovGigsContractAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+  // (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+  (context.widgetSrc ?? "jgdev.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -52,10 +53,7 @@ return (
         backgroundColor: "#0C7283",
         color: "#f3f3f3",
       }}
-      // href={href("Create", { labels: props.labels })}
-      href={href(
-        "https://near.social/#/devgovgigs.near/widget/gigs-board.pages.Create?labels={props.labels}"
-      )}
+      href={href("Create", { labels: props.labels })}
     >
       <i class="bi bi-plus-circle-fill"></i>
       Submit Idea / Solution

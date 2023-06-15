@@ -4,7 +4,8 @@ const nearDevGovGigsContractAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 const nearDevGovGigsWidgetsAccountId =
   props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+  // (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+  (context.widgetSrc ?? "jgdev.near").split("/", 1)[0];
 
 function widget(widgetName, widgetProps, key) {
   widgetProps = {
@@ -322,21 +323,10 @@ const Sidebar = () => (
   </div>
 );
 
-// Define a wrapper component for the content to the left of the sidebar
-const Content = () => (
-  <div class="col-md-0">
-    {/* 
-      Place the components or content you want to display to the left of 
-      the sidebar here.
-    */}
-  </div>
-);
-
 // Define the layout for the page
 const PageLayout = () => (
   <div class="container">
     <div class="row">
-      <Content />
       <Sidebar />
     </div>
   </div>
@@ -347,10 +337,10 @@ return <PageLayout />;
 
 // USAGE
 // copy and paste this into the return function of a page you want the sidebar on
-// make sure to add `col-mb-8` to the class of the div you want to
+// make sure to add `col-mb-9` to the class of the div you want to
 // take up 2/3 of the screen to the left
 
-// then make sure to add `col-mb-4` to the class of the div you want to
+// then make sure to add `col-mb-3` to the class of the div you want to
 // take up 1/3 of the screen to the
 
 {
