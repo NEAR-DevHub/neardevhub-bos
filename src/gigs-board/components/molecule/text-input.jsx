@@ -20,7 +20,10 @@ const TextInput = ({
         className ?? "",
       ].join(" ")}
     >
-      <span className="d-flex justify-content-between gap-3 w-100" id={key}>
+      <span
+        className="d-flex justify-content-between align-items-center gap-3 w-100"
+        id={key}
+      >
         <span className="d-inline-flex gap-1 text-wrap">
           <span>{label}</span>
           {inputProps.required ? <span className="text-danger">*</span> : null}
@@ -37,6 +40,13 @@ const TextInput = ({
           >
             {format}
           </span>
+        ) : null}
+
+        {(inputProps.max ?? null) !== null ? (
+          <span
+            className="d-inline-flex text-muted"
+            style={{ fontSize: 12 }}
+          >{`${value?.length ?? 0} / ${inputProps.max}`}</span>
         ) : null}
       </span>
 
