@@ -17,10 +17,10 @@ replaceInFiles(options)
       .toString()}/* END_INCLUDE: "shared/lib/form" */`,
   })
   .pipe({
-    from: /\/\* INCLUDE: "shared\/lib\/gui" \*\/.*\/\* END_INCLUDE: "shared\/lib\/gui" \*\//gms,
-    to: `/* INCLUDE: "shared/lib/gui" */\n${fs
-      .readFileSync("./shared/lib/gui.js", "utf8")
-      .toString()}/* END_INCLUDE: "shared/lib/gui" */`,
+    from: /\/\* INCLUDE: "shared\/lib\/gui\/attractable" \*\/.*\/\* END_INCLUDE: "shared\/lib\/gui\/attractable" \*\//gms,
+    to: `/* INCLUDE: "shared/lib/gui/attractable" */\n${fs
+      .readFileSync("./shared/lib/gui/attractable.js", "utf8")
+      .toString()}/* END_INCLUDE: "shared/lib/gui/attractable" */`,
   })
   .pipe({
     from: /\/\* INCLUDE: "shared\/lib\/record" \*\/.*\/\* END_INCLUDE: "shared\/lib\/record" \*\//gms,

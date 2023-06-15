@@ -125,22 +125,22 @@ const fieldDefaultUpdate = ({
 const useForm = ({ stateKey: formStateKey }) => ({
   formState: state[formStateKey],
 
-  formUpdate: ({ path: fieldPath, via: fieldCustomUpdate, ...params }) => (
-    fieldInput
-  ) =>
-    State.update((lastKnownState) =>
-      traversalUpdate({
-        input: fieldInput?.target?.value ?? fieldInput,
-        target: lastKnownState,
-        path: [formStateKey, ...fieldPath],
-        params,
+  formUpdate:
+    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
+    (fieldInput) =>
+      State.update((lastKnownState) =>
+        traversalUpdate({
+          input: fieldInput?.target?.value ?? fieldInput,
+          target: lastKnownState,
+          path: [formStateKey, ...fieldPath],
+          params,
 
-        via:
-          typeof fieldCustomUpdate === "function"
-            ? fieldCustomUpdate
-            : fieldDefaultUpdate,
-      })
-    ),
+          via:
+            typeof fieldCustomUpdate === "function"
+              ? fieldCustomUpdate
+              : fieldDefaultUpdate,
+        })
+      ),
 });
 /* END_INCLUDE: "shared/lib/form" */
 /* INCLUDE: "shared/lib/record" */

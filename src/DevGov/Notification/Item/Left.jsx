@@ -46,8 +46,9 @@ function href(widgetName, linkProps) {
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""
-    }${linkPropsQuery}`;
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 
@@ -61,12 +62,12 @@ return props.type ? (
     {type == "like"
       ? "liked your"
       : type == "reply"
-        ? "replied to your"
-        : type == "edit"
-          ? "edited your"
-          : type == "mention"
-            ? "mentioned you in their"
-            : "???"}{" "}
+      ? "replied to your"
+      : type == "edit"
+      ? "edited your"
+      : type == "mention"
+      ? "mentioned you in their"
+      : "???"}{" "}
     <a className="fw-bold text-muted" href={href("Post", { id: props.post })}>
       Developer Governance post
     </a>

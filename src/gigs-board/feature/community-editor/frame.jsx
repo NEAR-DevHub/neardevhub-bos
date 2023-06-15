@@ -87,11 +87,9 @@ const CommunityEditorFrame = ({ communityHandle }) => {
 
   if (typeof communityHandle === "string" && state.data === null) {
     const data =
-      Near.view(
-        nearDevGovGigsContractAccountId,
-        "get_community",
-        JSON.stringify({ handle: communityHandle })
-      ) ?? null;
+      Near.view(nearDevGovGigsContractAccountId, "get_community", {
+        handle: communityHandle,
+      }) ?? null;
 
     State.update((lastKnownState) => ({
       ...lastKnownState,
@@ -124,7 +122,7 @@ const CommunityEditorFrame = ({ communityHandle }) => {
       nearDevGovGigsContractAccountId,
       state.isCommunityNew ? "add_community" : "edit_community",
 
-      JSON.stringify({
+      {
         handle: state.data.handle,
 
         community: {
@@ -134,15 +132,13 @@ const CommunityEditorFrame = ({ communityHandle }) => {
             (maybeAccountId) => maybeAccountId.length > 0
           ),
         },
-      })
+      }
     );
 
   const onDelete = () =>
-    Near.call(
-      nearDevGovGigsContractAccountId,
-      "delete_community",
-      JSON.stringify({ handle: communityHandle })
-    );
+    Near.call(nearDevGovGigsContractAccountId, "delete_community", {
+      handle: communityHandle,
+    });
 
   return (
     <div className="d-flex flex-column align-items-center gap-4 p-4">

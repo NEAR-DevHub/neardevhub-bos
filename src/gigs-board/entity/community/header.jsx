@@ -63,11 +63,9 @@ const canEdit =
   ).members_list["team:moderators"]?.children?.includes?.(context.accountId) ??
     false) ||
   (
-    Near.view(
-      nearDevGovGigsContractAccountId,
-      "get_community",
-      JSON.stringify({ handle: communityHandle })
-    )?.admins ?? []
+    Near.view(nearDevGovGigsContractAccountId, "get_community", {
+      handle: communityHandle,
+    })?.admins ?? []
   ).includes(context.accountId);
 
 const Header = styled.div`
