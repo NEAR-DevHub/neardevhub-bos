@@ -182,7 +182,9 @@ const CommunityEditorBrandingSection = ({
           background: `center / cover no-repeat url(${data.banner_url})`,
         }}
       >
-        <IpfsImageUpload image={state.data.banner} />
+        {isEditingAllowed ? (
+          <IpfsImageUpload image={state.data.banner} />
+        ) : null}
       </Banner>
 
       <Logo
@@ -198,7 +200,7 @@ const CommunityEditorBrandingSection = ({
           background: `center / cover no-repeat url(${data.logo_url})`,
         }}
       >
-        <IpfsImageUpload image={state.data.logo} />
+        {isEditingAllowed ? <IpfsImageUpload image={state.data.logo} /> : null}
       </Logo>
 
       <div
