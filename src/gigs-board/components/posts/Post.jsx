@@ -44,7 +44,6 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
 const post =
   props.post ??
@@ -52,32 +51,26 @@ const post =
 if (!post) {
   return <div>Loading ...</div>;
 }
-
 const snapshot = post.snapshot;
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
 const parentId = Near.view(nearDevGovGigsContractAccountId, "get_parent_id", {
   post_id: postId,
 });
-
 const childPostIdsUnordered =
   Near.view(nearDevGovGigsContractAccountId, "get_children_ids", {
     post_id: postId,
   }) ?? [];
-
 const childPostIds = props.isPreview ? [] : childPostIdsUnordered.reverse();
 const expandable = props.isPreview ? false : props.expandable ?? false;
 const defaultExpanded = expandable ? props.defaultExpanded : false;
-
 function readableDate(timestamp) {
   var a = new Date(timestamp);
   return a.toDateString() + " " + a.toLocaleTimeString();
 }
-
 const timestamp = readableDate(
   snapshot.timestamp ? snapshot.timestamp / 1000000 : Date.now()
 );
-
 const postSearchKeywords = props.searchKeywords ? (
   <div style={{ "font-family": "monospace" }} key="post-search-keywords">
     <span>Found keywords: </span>
@@ -88,7 +81,6 @@ const postSearchKeywords = props.searchKeywords ? (
 ) : (
   <div key="post-search-keywords"></div>
 );
-
 const searchKeywords = props.searchKeywords ? (
   <div class="mb-1" key="search-keywords">
     <small class="text-muted">{postSearchKeywords}</small>
@@ -96,7 +88,6 @@ const searchKeywords = props.searchKeywords ? (
 ) : (
   <div key="search-keywords"></div>
 );
-
 const linkToParent =
   isUnderPost || !parentId ? (
     <div key="link-to-parent"></div>
@@ -107,14 +98,12 @@ const linkToParent =
       </a>
     </div>
   );
-
 const allowedToEdit =
   !props.isPreview &&
   Near.view(nearDevGovGigsContractAccountId, "is_allowed_to_edit", {
     post_id: postId,
     editor: context.accountId,
   });
-
 const btnEditorWidget = (postType, name) => {
   return (
     <li>
@@ -131,7 +120,6 @@ const btnEditorWidget = (postType, name) => {
     </li>
   );
 };
-
 const editControl = allowedToEdit ? (
   <div class="btn-group" role="group">
     <a
@@ -155,7 +143,6 @@ const editControl = allowedToEdit ? (
 ) : (
   <div></div>
 );
-
 const shareButton = props.isPreview ? (
   <div></div>
 ) : (
@@ -170,7 +157,6 @@ const shareButton = props.isPreview ? (
     <div class="bi bi-share"></div>
   </a>
 );
-
 const StyledLink = styled.a`
   color: rgba(0, 0, 0, 0.8);
   font-size: inherit;
@@ -178,12 +164,10 @@ const StyledLink = styled.a`
   font-weight: bold;
   opacity: 0.75;
   text-decoration: none;
-
   &:hover {
     text-decoration: underline;
   }
 `;
-
 const StyledDiv = styled.div`
   display: flex;
   flex-wrap: nowrap;
@@ -201,7 +185,6 @@ const ResponsiveDiv = styled.div`
   justify-content: end;
   align-items: center;
   width: 100%;
-
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
@@ -209,7 +192,6 @@ const ResponsiveDiv = styled.div`
 `;
 
 const accountId = post.author_id;
-
 const header = (
   <ResponsiveDiv className="py-1 px-3" style={{ fontSize: "1em" }}>
     <div className="d-flex align-items-center justify-content-between">
@@ -263,7 +245,6 @@ const header = (
     </StyledDiv>
   </ResponsiveDiv>
 );
-
 const emptyIcons = {
   Idea: "bi-lightbulb",
   Comment: "bi-chat",
@@ -274,7 +255,6 @@ const emptyIcons = {
   Like: "bi-heart",
   Reply: "bi-reply",
 };
-
 const fillIcons = {
   Idea: "bi-lightbulb-fill",
   Comment: "bi-chat-fill",
@@ -294,7 +274,6 @@ const borders = {
   Sponsorship: "border-secondary",
   Github: "border-secondary",
 };
-
 const containsLike = props.isPreview
   ? false
   : post.likes.find((l) => l.author_id == context.accountId);
@@ -323,7 +302,6 @@ const onLike = () => {
       gas: Big(10).pow(12).mul(100),
     },
   ];
-
   if (grantNotify === false) {
     likeTxn.unshift({
       contractName: "social.near",
@@ -338,7 +316,6 @@ const onLike = () => {
   }
   Near.call(likeTxn);
 };
-
 const btnCreatorWidget = (postType, icon, name, desc) => {
   return (
     <li class="py-1">
@@ -364,7 +341,7 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
 };
 
 const buttonsFooter = props.isPreview ? null : (
-  <div class="row " key="buttons-footer">
+  <div class="row" key="buttons-footer">
     <div class="col-8">
       <div
         class="btn-group text-sm"
@@ -448,7 +425,6 @@ const buttonsFooter = props.isPreview ? null : (
     </div>
   </div>
 );
-
 const CreatorWidget = (postType) => {
   return (
     <div
@@ -464,7 +440,6 @@ const CreatorWidget = (postType) => {
     </div>
   );
 };
-
 const EditorWidget = (postType) => {
   return (
     <div
@@ -488,7 +463,6 @@ const EditorWidget = (postType) => {
     </div>
   );
 };
-
 const editorsFooter = props.isPreview ? null : (
   <div class="row" id={`accordion${postId}`} key="editors-footer">
     {CreatorWidget("Comment")}
@@ -505,7 +479,6 @@ const editorsFooter = props.isPreview ? null : (
     {EditorWidget("Github")}
   </div>
 );
-
 const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
@@ -535,7 +508,6 @@ const postLabels = post.snapshot.labels ? (
 ) : (
   <div key="post-labels"></div>
 );
-
 const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
@@ -552,7 +524,6 @@ const postTitle =
       </div>
     </h5>
   );
-
 const postExtra =
   snapshot.post_type == "Sponsorship" ? (
     <div key="post-extra">
@@ -570,7 +541,6 @@ const postExtra =
   ) : (
     <div></div>
   );
-
 const postsList =
   props.isPreview || childPostIds.length == 0 ? (
     <div key="posts-list"></div>
@@ -601,15 +571,14 @@ const Card = styled.div`
 `;
 
 // Determine if located in the post page.
+
 const isInList = props.isInList;
 const contentArray = snapshot.description.split("\n");
 const needClamp = isInList && contentArray.length > 5;
-
 // Initialize 'clamp' to 'true' if the content is long enough, otherwise 'false'
 initState({
   clamp: needClamp,
 });
-
 const onMention = (accountId) => (
   <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
     <Widget
@@ -643,7 +612,6 @@ const clampMarkdown = styled.div`
     overflow: hidden;
   }
 `;
-
 const descriptionArea = isUnderPost ? (
   <limitedMarkdown
     className="overflow-auto"
@@ -668,7 +636,7 @@ const descriptionArea = isUnderPost ? (
       }}
     >
       <Markdown
-        className="card-text --bs-btn-hover-color: #008080;"
+        className="card-text"
         text={state.clamp ? clampedContent : snapshot.description}
         onMention={onMention}
         key="description-area"
