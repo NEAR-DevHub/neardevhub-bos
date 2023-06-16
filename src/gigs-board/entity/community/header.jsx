@@ -104,19 +104,11 @@ const NavUnderline = styled.ul`
   }
 `;
 
-const buttonString = `
-	height: 40px;
-	font-size: 14px;
-	border-color: #e3e3e0;
-	background-color: #ffffff;
-`;
-
-const Link = styled.a`
-  ${buttonString}
-`;
-
 const Button = styled.button`
-  ${buttonString}
+  height: 40px;
+  font-size: 14px;
+  border-color: #e3e3e0;
+  background-color: #ffffff;
 `;
 
 const Banner = styled.div`
@@ -151,8 +143,6 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     accessControlInfo.members_list["team:moderators"]?.children?.includes(
       context.accountId
     ) ?? false;
-
-  console.log(accessControlInfo, { isSupervisionAllowed });
 
   const tabs = [
     {
