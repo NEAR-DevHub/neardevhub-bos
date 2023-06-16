@@ -122,7 +122,7 @@ const CommunityActivityPage = ({ handle }) => {
           </div>
 
           {widget("components.layout.Controls", {
-            labels: tag,
+            labels: communityData.tag,
           })}
 
           <div class="row">
