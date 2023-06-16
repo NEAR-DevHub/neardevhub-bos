@@ -303,7 +303,12 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
 
   const onSubmit = DevHub.edit_community_github({
     handle: communityHandle,
-    github: JSON.stringify(formState),
+    github: JSON.stringify({
+      kanbanBoards: {
+        ...communityGitHubKanbanBoards,
+        [formState.id]: formState,
+      },
+    }),
   });
 
   const form =
@@ -535,7 +540,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
             </button>
 
             <button
-              disabled={!formState.hasChanges}
+              disabled={false}
               className="btn shadow btn-success d-inline-flex gap-2 align-items-center"
               onClick={onSubmit}
               style={{ width: "fit-content" }}
