@@ -10,7 +10,8 @@
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
     "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
     "build": "npm run fmt && node build.js",
-    "dev": "~/.cargo/bin/bos-loader devgovgigs.near --path src"
+    "dev": "~/.cargo/bin/bos-loader devgovgigs.near --path src",
+    "it": "npm run fmt && npm run build && npm run fmt:check && bos components deploy jgdev.near sign-as jgdev.near network-config mainnet"
   },
   "repository": {
     "type": "git",
