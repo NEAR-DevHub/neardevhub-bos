@@ -3,6 +3,10 @@ const contractAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  edit_community_github: ({ handle, github }) =>
+    Near.call(contractAccountId, "edit_community_github", { handle, github }) ??
+    null,
+
   get_access_control_info: () =>
     Near.view(contractAccountId, "get_access_control_info") ?? null,
 

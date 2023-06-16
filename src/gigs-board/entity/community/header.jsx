@@ -57,6 +57,10 @@ const contractAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  edit_community_github: ({ handle, github }) =>
+    Near.call(contractAccountId, "edit_community_github", { handle, github }) ??
+    null,
+
   get_access_control_info: () =>
     Near.view(contractAccountId, "get_access_control_info") ?? null,
 
@@ -141,6 +145,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     description,
     logo_url,
     name,
+    telegram_handle,
     wiki1,
     wiki2,
   } = DevHub.get_community({ handle }) ?? {
@@ -168,16 +173,22 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       route: "community.sponsorship",
       title: "Sponsorship",
     },
+
     {
       iconClass: "bi bi-github",
       route: "community.github",
       title: "GitHub",
     },
-    {
-      iconClass: "bi bi-telegram",
-      route: "community.telegram",
-      title: "Telegram",
-    },
+
+    ...(telegram_handle !== null
+      ? [
+          {
+            iconClass: "bi bi-telegram",
+            route: "community.telegram",
+            title: "Telegram",
+          },
+        ]
+      : []),
   ];
 
   const isEditingAllowed =

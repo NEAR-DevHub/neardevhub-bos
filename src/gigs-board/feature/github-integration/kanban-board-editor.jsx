@@ -125,22 +125,22 @@ const fieldDefaultUpdate = ({
 const useForm = ({ stateKey: formStateKey }) => ({
   formState: state[formStateKey],
 
-  formUpdate:
-    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
-    (fieldInput) =>
-      State.update((lastKnownState) =>
-        traversalUpdate({
-          input: fieldInput?.target?.value ?? fieldInput,
-          target: lastKnownState,
-          path: [formStateKey, ...fieldPath],
-          params,
+  formUpdate: ({ path: fieldPath, via: fieldCustomUpdate, ...params }) => (
+    fieldInput
+  ) =>
+    State.update((lastKnownState) =>
+      traversalUpdate({
+        input: fieldInput?.target?.value ?? fieldInput,
+        target: lastKnownState,
+        path: [formStateKey, ...fieldPath],
+        params,
 
-          via:
-            typeof fieldCustomUpdate === "function"
-              ? fieldCustomUpdate
-              : fieldDefaultUpdate,
-        })
-      ),
+        via:
+          typeof fieldCustomUpdate === "function"
+            ? fieldCustomUpdate
+            : fieldDefaultUpdate,
+      })
+    ),
 });
 /* END_INCLUDE: "core/lib/form" */
 /* INCLUDE: "core/lib/gui/attractable" */
@@ -194,6 +194,10 @@ const contractAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  edit_community_github: ({ handle, github }) =>
+    Near.call(contractAccountId, "edit_community_github", { handle, github }) ??
+    null,
+
   get_access_control_info: () =>
     Near.view(contractAccountId, "get_access_control_info") ?? null,
 
@@ -238,7 +242,8 @@ const boardConfigDefaults = {
 
 const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   const communityGitHubKanbanBoards =
-    communities[communityHandle]?.github?.kanbanBoards ?? {};
+    DevHub.get_community({ handle: communityHandle })?.github?.kanbanBoards ??
+    {};
 
   State.init({
     boardConfig: null,
@@ -291,12 +296,15 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         }
       : lastKnownState;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownState }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownState }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
+    );
+
+  const onSubmit = DevHub.edit_community_github({
+    handle: communityHandle,
+    github: JSON.stringify(formState),
+  });
 
   const form =
     formState !== null ? (
@@ -529,6 +537,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
             <button
               disabled={!formState.hasChanges}
               className="btn shadow btn-success d-inline-flex gap-2 align-items-center"
+              onClick={onSubmit}
               style={{ width: "fit-content" }}
             >
               <i className="bi bi-cloud-arrow-up-fill" />
