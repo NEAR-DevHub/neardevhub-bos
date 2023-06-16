@@ -99,6 +99,12 @@ const communityDefaults = {
 };
 
 const CommunityEditorFrame = ({ handle }) => {
+  const accessControlInfo = DevHub.get_access_control_info();
+
+  if (accessControlInfo === null || communityData === null) {
+    return <div>Loading...</div>;
+  }
+
   State.init({
     activeSection: 0,
     data: null,
@@ -106,9 +112,9 @@ const CommunityEditorFrame = ({ handle }) => {
     isEditingAllowed: false,
 
     isSupervisionAllowed:
-      DevHub.get_access_control_info().members_list[
-        "team:moderators"
-      ]?.children?.includes?.(context.accountId) ?? false,
+      accessControlInfo.members_list["team:moderators"]?.children?.includes?.(
+        context.accountId
+      ) ?? false,
   });
 
   if (typeof handle === "string" && state.data === null) {
@@ -263,13 +269,13 @@ const CommunityEditorFrame = ({ handle }) => {
 
               twitter_handle: {
                 inputProps: { min: 2, max: 60 },
-                label: "Twitter",
+                label: "Twitter handle",
                 order: 2,
               },
 
               github_handle: {
                 inputProps: { min: 2, max: 60 },
-                label: "Github",
+                label: "Github organization handle",
                 order: 3,
               },
 
