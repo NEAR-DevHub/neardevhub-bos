@@ -143,7 +143,14 @@ const header = (
 
       <div className="d-flex gap-4">
         {(DevHub.get_all_communities() ?? [])
-          .slice(0, 4)
+          .filter(({ handle }) =>
+            [
+              "zero-knowledge",
+              "protocol",
+              "contract-standards",
+              "education",
+            ].includes(handle)
+          )
           .map((community) =>
             widget(
               "entity.community.card",
