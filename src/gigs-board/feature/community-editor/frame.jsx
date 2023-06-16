@@ -115,7 +115,7 @@ const CommunityEditorFrame = ({ handle }) => {
   console.log(DevHub.get_access_control_info());
 
   if (typeof handle === "string" && state.data === null) {
-    const data = DevHub.get_community({ handle }) ?? null;
+    const data = DevHub.get_community({ handle });
 
     State.update((lastKnownState) => ({
       ...lastKnownState,
