@@ -141,7 +141,7 @@ const header = (
         <h5 className="h5 m-0">Featured Communities</h5>
       </div>
 
-      <div className="d-flex gap-4 justify-content-center">
+      <div className="d-flex gap-4">
         {(DevHub.get_all_communities() ?? [])
           .slice(0, 4)
           .map((community) =>
