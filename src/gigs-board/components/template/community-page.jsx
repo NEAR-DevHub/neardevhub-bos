@@ -63,7 +63,7 @@ const CommunityPageTemplate = ({ children, handle, title }) => {
 
   return (
     <>
-      {widget("components.layout.Banner")}
+      {widget("components.layout.app-header")}
       {widget("entity.community.header", { activeTabTitle: title, handle })}
       <div style={{ padding: "0 32px" }}>{children}</div>
     </>

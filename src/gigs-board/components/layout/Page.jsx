@@ -54,7 +54,7 @@ function href(widgetName, linkProps) {
 
 return (
   <>
-    {widget("components.layout.Banner", {})}
+    {widget("components.layout.app-header", {})}
     {props.header}
     {props.children}
   </>

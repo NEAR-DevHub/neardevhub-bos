@@ -409,7 +409,7 @@ function generateDescription(text, amount, token, supervisor) {
 
 return (
   <div class="bg-light d-flex flex-column flex-grow-1">
-    {widget("components.layout.Banner")}
+    {widget("components.layout.app-header")}
     <div class="mx-5 mb-5">
       <div aria-label="breadcrumb">
         <ol class="breadcrumb">

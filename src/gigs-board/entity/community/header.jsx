@@ -101,9 +101,10 @@ const NavUnderline = styled.ul`
 `;
 
 const buttonString = `
-height: 40px;
-font-size: 14px;
-border-color: #e3e3e0;
+	height: 40px;
+	font-size: 14px;
+	border-color: #e3e3e0;
+	background-color: #ffffff;
 `;
 
 const Link = styled.a`
@@ -114,7 +115,7 @@ const Button = styled.button`
   ${buttonString}
 `;
 
-const BannerImage = styled.img`
+const Banner = styled.div`
   max-width: 100%;
   width: 1320px;
   height: 240px;
@@ -134,10 +135,17 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     copiedShareUrl: false,
   });
 
-  const { admins, banner_url, description, logo_url, name, wiki1, wiki2 } =
-    DevHub.get_community({ handle }) ?? {
-      admins: [],
-    };
+  const {
+    admins,
+    banner_url,
+    description,
+    logo_url,
+    name,
+    wiki1,
+    wiki2,
+  } = DevHub.get_community({ handle }) ?? {
+    admins: [],
+  };
 
   const tabs = [
     {
@@ -180,11 +188,10 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     admins.includes(context.accountId);
 
   return (
-    <Header className="d-flex flex-column gap-3 px-4 pt-3">
-      <BannerImage
-        src={banner_url}
+    <Header className="d-flex flex-column gap-3">
+      <Banner
         className="object-fit-cover"
-        alt="Community banner"
+        style={{ background: `center / cover no-repeat url(${banner_url})` }}
       />
 
       <div className="d-md-flex d-block justify-content-between container">
@@ -207,11 +214,14 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           </div>
         </div>
 
-        <div className="d-flex align-items-end">
+        <div className="d-flex align-items-end gap-3">
           {isEditingAllowed && (
             <Link
               href={href("community.edit-info", { handle })}
-              className="border border-1 text-nowrap rounded-pill p-2 m-2 bg-white text-dark font-weight-bold"
+              className={[
+                "d-flex align-items-center gap-2 border border-1 rounded-pill px-3 py-2",
+                "text-decoration-none text-dark text-nowrap font-weight-bold fs-6",
+              ].join(" ")}
             >
               <i className="bi bi-gear" />
               <span>Edit information</span>
@@ -224,7 +234,10 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           >
             <Button
               type="button"
-              className="ms-3 border border-1 text-nowrap rounded-pill p-2 m-2 bg-white text-dark font-weight-bold"
+              className={[
+                "d-flex align-items-center gap-2 border border-1 rounded-pill px-3 py-2",
+                "text-dark text-nowrap font-weight-bold fs-6",
+              ].join(" ")}
               onMouseLeave={() => {
                 State.update({ copiedShareUrl: false });
               }}
