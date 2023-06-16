@@ -660,7 +660,7 @@ const postExtra =
         style={{
           marginLeft: "1rem",
           marginBottom: "1rem",
-          fontSize: "1.25789em",
+          fontSize: "1.25em",
           fontWeight: "600",
         }}
       >
@@ -671,7 +671,7 @@ const postExtra =
         style={{
           marginLeft: "1rem",
           marginBottom: "1.5rem",
-          fontSize: "1.25789em",
+          fontSize: "1.25em",
           fontWeight: "600",
         }}
       >

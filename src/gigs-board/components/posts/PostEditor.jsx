@@ -83,7 +83,7 @@ initState({
   githubLink: props.githubLink ?? "",
   warning: "",
 });
-const savedState = localStorage.getItem("widgetState");
+const savedState = Storage.getItem("widgetState");
 if (savedState) {
   handleStateChange(JSON.parse(savedState));
 }
