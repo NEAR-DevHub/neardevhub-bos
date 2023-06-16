@@ -241,9 +241,14 @@ const boardConfigDefaults = {
 };
 
 const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
+  const communityData = DevHub.get_community({ handle: communityHandle });
+
+  if (communityData === null) {
+    return <div>Loading...</div>;
+  }
+
   const communityGitHubKanbanBoards =
-    DevHub.get_community({ handle: communityHandle })?.github?.kanbanBoards ??
-    {};
+    JSON.parse(communityData.github)?.kanbanBoards ?? {};
 
   State.init({
     boardConfig: null,
@@ -301,15 +306,17 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
     );
 
-  const onSubmit = DevHub.edit_community_github({
-    handle: communityHandle,
-    github: JSON.stringify({
-      kanbanBoards: {
-        ...communityGitHubKanbanBoards,
-        [formState.id]: formState,
-      },
-    }),
-  });
+  const onSubmit = () =>
+    DevHub.edit_community_github({
+      handle: communityHandle,
+
+      github: JSON.stringify({
+        kanbanBoards: {
+          ...communityGitHubKanbanBoards,
+          [formState.id]: formState,
+        },
+      }),
+    });
 
   const form =
     formState !== null ? (
@@ -379,7 +386,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
               <span>Ticket state</span>
             </span>
 
-            {widget("components.atom.button-switch", {
+            {widget("components.molecule.button-switch", {
               currentValue: formState.ticketState,
               key: "ticketState",
               onChange: formUpdate({ path: ["ticketState"] }),

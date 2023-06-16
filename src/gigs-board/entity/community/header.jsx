@@ -139,18 +139,16 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     copiedShareUrl: false,
   });
 
-  const {
-    admins,
-    banner_url,
-    description,
-    logo_url,
-    name,
-    telegram_handle,
-    wiki1,
-    wiki2,
-  } = DevHub.get_community({ handle }) ?? {
-    admins: [],
-  };
+  const accessControlInfo = DevHub.get_access_control_info();
+
+  const isSupervisionAllowed =
+    accessControlInfo?.children?.includes?.(context.accountId) ?? false;
+
+  const communityData = DevHub.get_community({ handle });
+
+  if (accessControlInfo === null || communityData === null) {
+    return <div>Loading...</div>;
+  }
 
   const tabs = [
     {
@@ -160,7 +158,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Activity",
     },
 
-    ...[wiki1, wiki2]
+    ...[communityData.wiki1, communityData.wiki2]
       .filter((maybeWikiPage) => maybeWikiPage ?? false)
       .map(({ name }, idx) => ({
         params: { id: idx + 1 },
@@ -180,7 +178,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "GitHub",
     },
 
-    ...(telegram_handle !== null
+    ...(communityData.telegram_handle !== null
       ? [
           {
             iconClass: "bi bi-telegram",
@@ -192,17 +190,16 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   ];
 
   const isEditingAllowed =
-    (DevHub.get_access_control_info().members_list[
-      "team:moderators"
-    ]?.children?.includes?.(context.accountId) ??
-      false) ||
-    admins.includes(context.accountId);
+    isSupervisionAllowed ||
+    communityData?.admins?.includes?.(context.accountId);
 
   return (
     <Header className="d-flex flex-column gap-3">
       <Banner
         className="object-fit-cover"
-        style={{ background: `center / cover no-repeat url(${banner_url})` }}
+        style={{
+          background: `center / cover no-repeat url(${communityData.banner_url})`,
+        }}
       />
 
       <div className="d-md-flex d-block justify-content-between container">
@@ -210,7 +207,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           <div className="position-relative">
             <SizedDiv>
               <LogoImage
-                src={logo_url}
+                src={communityData.logo_url}
                 alt="Community logo"
                 width="150"
                 height="150"
@@ -220,15 +217,18 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           </div>
 
           <div>
-            <div className="h1 pt-3 ps-3 text-nowrap">{name}</div>
-            <div className="ps-3 pb-2 text-secondary">{description}</div>
+            <div className="h1 pt-3 ps-3 text-nowrap">{communityData.name}</div>
+
+            <div className="ps-3 pb-2 text-secondary">
+              {communityData.description}
+            </div>
           </div>
         </div>
 
         <div className="d-flex align-items-end gap-3">
           {isEditingAllowed && (
             <Link
-              href={href("community.edit-info", { handle })}
+              href={`/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.edit-info?handle=${handle}`}
               className={[
                 "d-flex align-items-center gap-2 border border-1 rounded-pill px-3 py-2",
                 "text-decoration-none text-dark text-nowrap font-weight-bold fs-6",

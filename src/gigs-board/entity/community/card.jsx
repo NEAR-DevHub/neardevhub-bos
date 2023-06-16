@@ -89,6 +89,9 @@ const CommunityCard = ({
   logo_url,
   name,
 }) => {
+  const renderFormat =
+    format === "small" || format === "medium" ? format : "small";
+
   const link = href("community.activity", { handle });
 
   const formatSmall = (
@@ -158,16 +161,10 @@ const CommunityCard = ({
     </AttractableLink>
   );
 
-  switch (format) {
-    case "small":
-      return formatSmall;
-
-    case "medium":
-      return formatMedium;
-
-    default:
-      return formatSmall;
-  }
+  return {
+    small: formatSmall,
+    medium: formatMedium,
+  }[renderFormat];
 };
 
 return CommunityCard(props);

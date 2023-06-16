@@ -99,7 +99,7 @@ const CommunityActivityPage = ({ handle }) => {
 
   return widget("components.template.community-page", {
     handle,
-    title: "Overview",
+    title: "Activity",
 
     children:
       communityData !== null ? (

@@ -112,7 +112,7 @@ const CommunityEditorFrame = ({ handle }) => {
   });
 
   // TODO: Remove before release!
-  console.log(state.data);
+  console.log(DevHub.get_access_control_info());
 
   if (typeof handle === "string" && state.data === null) {
     const data = DevHub.get_community({ handle }) ?? null;
@@ -278,7 +278,7 @@ const CommunityEditorFrame = ({ handle }) => {
 
               telegram_handle: {
                 inputProps: { min: 2, max: 60 },
-                label: "Telegram",
+                label: "Telegram handle",
                 order: 4,
               },
 
@@ -325,6 +325,7 @@ const CommunityEditorFrame = ({ handle }) => {
               content_markdown: {
                 format: "markdown",
                 label: "Content",
+                multiline: true,
                 order: 2,
               },
             },
@@ -347,12 +348,13 @@ const CommunityEditorFrame = ({ handle }) => {
               content_markdown: {
                 format: "markdown",
                 label: "Content",
+                multiline: true,
                 order: 2,
               },
             },
           })}
 
-          {state.isEditingAllowed ? (
+          {state.isSupervisionAllowed || state.isEditingAllowed ? (
             <div
               className="d-flex justify-content-center p-4 w-100"
               style={{ maxWidth: 896 }}
@@ -363,7 +365,7 @@ const CommunityEditorFrame = ({ handle }) => {
                       root: "btn-lg btn-outline-danger border-none",
                     },
 
-                    disabled: true,
+                    disabled: !state.isSupervisionAllowed,
                     label: "Delete community",
                     onClick: onDelete,
                   })
@@ -380,7 +382,10 @@ const CommunityEditorFrame = ({ handle }) => {
                   ].join(" "),
                 },
 
-                disabled: !state.isEditingAllowed,
+                disabled: !(state.isCommunityNew
+                  ? true
+                  : state.isSupervisionAllowed || state.isEditingAllowed),
+
                 label: state.isCommunityNew ? "Launch" : "Save",
                 onClick: onSubmit,
               })}
