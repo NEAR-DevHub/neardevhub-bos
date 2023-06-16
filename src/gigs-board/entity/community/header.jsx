@@ -141,14 +141,14 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
 
   const accessControlInfo = DevHub.get_access_control_info();
 
-  const isSupervisionAllowed =
-    accessControlInfo?.children?.includes?.(context.accountId) ?? false;
-
   const communityData = DevHub.get_community({ handle });
 
   if (accessControlInfo === null || communityData === null) {
     return <div>Loading...</div>;
   }
+
+  const isSupervisionAllowed =
+    accessControlInfo?.children?.includes?.(context.accountId) ?? false;
 
   const tabs = [
     {
