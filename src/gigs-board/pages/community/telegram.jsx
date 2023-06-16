@@ -83,28 +83,40 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const access_info = DevHub.get_access_control_info() ?? null,
-  root_members = DevHub.get_root_members() ?? null;
+if (!props.handle) {
+  return (
+    <div class="alert alert-danger" role="alert">
+      Error: community handle not found in URL parameters
+    </div>
+  );
+}
 
-if (!access_info || !root_members) {
+const communityData = DevHub.get_community({ handle: props.handle });
+
+if (communityData === null) {
   return <div>Loading...</div>;
 }
 
-const pageContent = (
+const Telegram = (
   <div>
-    {widget("entity.team.LabelsPermissions", {
-      rules: access_info.rules_list,
-    })}
-    {Object.keys(root_members).map((member) =>
-      widget(
-        "entity.team.TeamInfo",
-        { member, members_list: access_info.members_list },
-        member
-      )
-    )}
+    <iframe
+      iframeResizer
+      src={
+        "https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups-ui/" +
+        communityData.telegram_handle
+      }
+      frameborder="0"
+      // Required by iframeResizer
+      style={{
+        width: "1px",
+        minWidth: "100%",
+      }}
+    ></iframe>
   </div>
 );
 
-return widget("components.layout.Page", {
-  children: pageContent,
+return widget("components.template.community-page", {
+  handle: props.handle,
+  title: "Telegram",
+  children: Telegram,
 });

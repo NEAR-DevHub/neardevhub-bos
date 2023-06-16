@@ -83,28 +83,60 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const access_info = DevHub.get_access_control_info() ?? null,
-  root_members = DevHub.get_root_members() ?? null;
+const CommunityActivityPage = ({ handle }) => {
+  if (!handle) {
+    return (
+      <div class="alert alert-danger" role="alert">
+        Error: community handle not found in URL parameters
+      </div>
+    );
+  }
 
-if (!access_info || !root_members) {
-  return <div>Loading...</div>;
-}
+  const communityData = DevHub.get_community({ handle });
 
-const pageContent = (
-  <div>
-    {widget("entity.team.LabelsPermissions", {
-      rules: access_info.rules_list,
-    })}
-    {Object.keys(root_members).map((member) =>
-      widget(
-        "entity.team.TeamInfo",
-        { member, members_list: access_info.members_list },
-        member
-      )
-    )}
-  </div>
-);
+  const communityPostIds =
+    DevHub.get_posts_by_label({ label: communityData?.tag }) ?? [];
 
-return widget("components.layout.Page", {
-  children: pageContent,
-});
+  return widget("components.template.community-page", {
+    handle,
+    title: "Activity",
+
+    children:
+      communityData !== null ? (
+        <div>
+          <div class="row mb-2">
+            <div class="col text-center">
+              <small class="text-muted">
+                <span>Required tags:</span>
+
+                <a
+                  href={href("Feed", { tag: communityData.tag })}
+                  key={communityData.tag}
+                >
+                  <span class="badge text-bg-primary me-1">
+                    {communityData.tag}
+                  </span>
+                </a>
+              </small>
+            </div>
+          </div>
+
+          {widget("components.layout.Controls", {
+            labels: communityData.tag,
+          })}
+
+          <div class="row">
+            <div class="col">
+              {communityPostIds.map((postId) =>
+                widget("entity.post.Post", { id: postId }, postId)
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div>Loading ...</div>
+      ),
+  });
+};
+
+return CommunityActivityPage(props);

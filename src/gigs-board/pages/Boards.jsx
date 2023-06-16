@@ -127,7 +127,7 @@ const pageContent = (
           tabindex="0"
           key={board.id}
         >
-          {widget("components.boards.KanbanBoard", {
+          {widget("entity.team-board.kanban", {
             requiredLabels: board.config.requiredLabels,
             excludedLabels: board.config.excludedLabels,
             columns: board.config.columns,

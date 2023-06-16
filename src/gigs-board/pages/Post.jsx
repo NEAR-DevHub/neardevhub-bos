@@ -53,7 +53,7 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 return widget("components.layout.Page", {
-  children: widget("components.posts.Post", {
+  children: widget("entity.post.Post", {
     id: props.id,
   }),
 });

@@ -29,7 +29,6 @@ const ToggleSwitchThumb = styled("Switch.Thumb")`
   width: 21px;
   height: 21px;
   border-radius: 9999px;
-  box-shadow: 0 2px 2px var(--blackA7);
   transition: transform 100ms;
   transform: translateX(2px);
   will-change: transform;
@@ -65,12 +64,13 @@ const Toggle = ({
 
     <ToggleSwitchRoot
       checked={active}
+      className="shadow-none"
       id={`toggle-${key}`}
       onCheckedChange={disabled ? null : onSwitch}
       title={disabled ? `Permanently ${active ? "enabled" : "disabled"}` : null}
       {...{ disabled }}
     >
-      {!disabled && <ToggleSwitchThumb className="bg-light" />}
+      {!disabled && <ToggleSwitchThumb className="bg-light shadow" />}
     </ToggleSwitchRoot>
   </ToggleRoot>
 );

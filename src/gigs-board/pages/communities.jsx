@@ -83,28 +83,34 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const access_info = DevHub.get_access_control_info() ?? null,
-  root_members = DevHub.get_root_members() ?? null;
+const CommunitiesPage = () => (
+  <div className="d-flex flex-column">
+    {widget("components.layout.app-header", { style: { marginBottom: 0 } })}
 
-if (!access_info || !root_members) {
-  return <div>Loading...</div>;
-}
+    <div className="d-flex flex-column gap-4 p-4">
+      <div className="d-flex justify-content-between">
+        <div className="d-flex flex-column gap-2">
+          <h1 className="m-0 fs-4">Communities</h1>
 
-const pageContent = (
-  <div>
-    {widget("entity.team.LabelsPermissions", {
-      rules: access_info.rules_list,
-    })}
-    {Object.keys(root_members).map((member) =>
-      widget(
-        "entity.team.TeamInfo",
-        { member, members_list: access_info.members_list },
-        member
-      )
-    )}
+          <p className="m-0 text-secondary fs-6">
+            Discover NEAR developer communities
+          </p>
+        </div>
+
+        <div className="d-flex flex-column justify-content-center">
+          <a className="btn btn-primary" href={href("community.new")}>
+            Create community
+          </a>
+        </div>
+      </div>
+
+      <div className="d-flex flex-wrap gap-4">
+        {(DevHub.get_all_communities() ?? []).map((community) =>
+          widget("entity.community.card", community, community.handle)
+        )}
+      </div>
+    </div>
   </div>
 );
 
-return widget("components.layout.Page", {
-  children: pageContent,
-});
+return CommunitiesPage(props);

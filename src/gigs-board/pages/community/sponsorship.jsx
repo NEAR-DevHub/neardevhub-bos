@@ -83,28 +83,87 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const access_info = DevHub.get_access_control_info() ?? null,
-  root_members = DevHub.get_root_members() ?? null;
+if (!props.handle) {
+  return (
+    <div class="alert alert-danger" role="alert">
+      Error: community handle not found in URL parameters
+    </div>
+  );
+}
 
-if (!access_info || !root_members) {
+const communityData = DevHub.get_community({ handle: props.handle });
+
+if (communityData === null) {
   return <div>Loading...</div>;
 }
 
-const pageContent = (
+const postIdsWithTags = (tags) => {
+  const ids = tags
+    .map(
+      (tag) =>
+        Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+          label: tag,
+        }) ?? []
+    )
+    .map((ids) => new Set(ids))
+    .reduce((previous, current) => {
+      let res = new Set();
+      for (let id of current) {
+        if (previous.has(id)) {
+          res.add(id);
+        }
+      }
+      return res;
+    });
+
+  return [...ids].reverse();
+};
+
+const sponsorshipRequiredTags = ["funding", communityData.tag];
+const sponsorshipRequiredPosts = postIdsWithTags(sponsorshipRequiredTags);
+
+const Sponsorship = (
   <div>
-    {widget("entity.team.LabelsPermissions", {
-      rules: access_info.rules_list,
-    })}
-    {Object.keys(root_members).map((member) =>
-      widget(
-        "entity.team.TeamInfo",
-        { member, members_list: access_info.members_list },
-        member
-      )
-    )}
+    <div class="row mb-2 justify-content-center">
+      <div class="col-md-auto">
+        <small class="text-muted">
+          Post Type: <b>Sponsorship</b>
+        </small>
+      </div>
+      <div class="col-md-auto">
+        <small class="text-muted">
+          Required tags:
+          {sponsorshipRequiredTags.map((tag) => (
+            <a href={href("Feed", { tag })} key={tag}>
+              <span class="badge text-bg-primary me-1">{tag}</span>
+            </a>
+          ))}
+        </small>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-body border-secondary">
+            <h6 class="card-title">
+              Sponsored Projects ({sponsorshipRequiredPosts.length})
+            </h6>
+            <div class="row">
+              {sponsorshipRequiredPosts.map((postId) => (
+                <div class="col-3">
+                  {widget("entity.post.CompactPost", { id: postId }, postId)}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 );
 
-return widget("components.layout.Page", {
-  children: pageContent,
+return widget("components.template.community-page", {
+  handle: props.handle,
+  title: "Sponsorship",
+  children: Sponsorship,
 });

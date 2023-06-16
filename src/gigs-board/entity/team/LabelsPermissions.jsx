@@ -83,28 +83,42 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const access_info = DevHub.get_access_control_info() ?? null,
-  root_members = DevHub.get_root_members() ?? null;
+const access_info = DevHub.get_access_control_info() ?? null;
 
-if (!access_info || !root_members) {
+if (!access_info) {
   return <div>Loading...</div>;
 }
 
-const pageContent = (
-  <div>
-    {widget("entity.team.LabelsPermissions", {
-      rules: access_info.rules_list,
-    })}
-    {Object.keys(root_members).map((member) =>
-      widget(
-        "entity.team.TeamInfo",
-        { member, members_list: access_info.members_list },
-        member
-      )
-    )}
+const rules_list = props.rules_list ?? access_info.rules_list;
+
+const permissionExplainer = (permission) => {
+  if (permission.startsWith("starts-with:")) {
+    let s = permission.substring("starts-with:".length);
+    if (s == "") {
+      return "Any label";
+    } else {
+      return `Labels that start with "${s}"`;
+    }
+  } else {
+    return permission;
+  }
+};
+
+return (
+  <div className="card border-secondary" key="labelpermissions">
+    <div className="card-header">
+      <i class="bi-lock-fill"> </i>
+      <small class="text-muted">Restricted Labels</small>
+    </div>
+    <ul class="list-group list-group-flush">
+      {Object.entries(rules_list).map(([pattern, metadata]) => (
+        <li class="list-group-item" key={pattern}>
+          <span class="badge text-bg-primary" key={`${pattern}-permission`}>
+            {permissionExplainer(pattern)}
+          </span>{" "}
+          {metadata.description}
+        </li>
+      ))}
+    </ul>
   </div>
 );
-
-return widget("components.layout.Page", {
-  children: pageContent,
-});

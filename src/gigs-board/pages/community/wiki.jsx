@@ -83,28 +83,54 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const access_info = DevHub.get_access_control_info() ?? null,
-  root_members = DevHub.get_root_members() ?? null;
-
-if (!access_info || !root_members) {
-  return <div>Loading...</div>;
-}
-
-const pageContent = (
-  <div>
-    {widget("entity.team.LabelsPermissions", {
-      rules: access_info.rules_list,
-    })}
-    {Object.keys(root_members).map((member) =>
-      widget(
-        "entity.team.TeamInfo",
-        { member, members_list: access_info.members_list },
-        member
-      )
-    )}
-  </div>
+const onMention = (accountId) => (
+  <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
+    <Widget
+      src="neardevgov.near/widget/ProfileLine"
+      props={{
+        accountId: accountId.toLowerCase(),
+        hideAccountId: true,
+        tooltip: true,
+      }}
+    />
+  </span>
 );
 
-return widget("components.layout.Page", {
-  children: pageContent,
-});
+const WikiPage = ({ handle, id }) => {
+  if (!handle) {
+    return (
+      <div class="alert alert-danger" role="alert">
+        Error: community handle not found in URL parameters
+      </div>
+    );
+  } else if (!id) {
+    return (
+      <div class="alert alert-danger" role="alert">
+        Error: wiki page id not found in URL parameters
+      </div>
+    );
+  }
+
+  const communityData = DevHub.get_community({ handle });
+
+  const { name, content_markdown: text } = communityData?.[`wiki${id}`] ?? {
+    name: "",
+    content_markdown: "This page doesn't exist.",
+  };
+
+  return widget("components.template.community-page", {
+    handle,
+    title: name,
+
+    children:
+      communityData !== null ? (
+        <div>
+          <Markdown className="card-text" {...{ onMention, text }} />
+        </div>
+      ) : (
+        <div>Loading ...</div>
+      ),
+  });
+};
+
+return WikiPage(props);

@@ -11,28 +11,34 @@ const options = {
 
 replaceInFiles(options)
   .pipe({
-    from: /\/\* INCLUDE: "shared\/lib\/form" \*\/.*\/\* END_INCLUDE: "shared\/lib\/form" \*\//gms,
-    to: `/* INCLUDE: "shared/lib/form" */\n${fs
-      .readFileSync("./shared/lib/form.js", "utf8")
-      .toString()}/* END_INCLUDE: "shared/lib/form" */`,
+    from: /\/\* INCLUDE: "core\/lib\/form" \*\/.*\/\* END_INCLUDE: "core\/lib\/form" \*\//gms,
+    to: `/* INCLUDE: "core/lib/form" */\n${fs
+      .readFileSync("./core/lib/form.js", "utf8")
+      .toString()}/* END_INCLUDE: "core/lib/form" */`,
   })
   .pipe({
-    from: /\/\* INCLUDE: "shared\/lib\/gui" \*\/.*\/\* END_INCLUDE: "shared\/lib\/gui" \*\//gms,
-    to: `/* INCLUDE: "shared/lib/gui" */\n${fs
-      .readFileSync("./shared/lib/gui.js", "utf8")
-      .toString()}/* END_INCLUDE: "shared/lib/gui" */`,
+    from: /\/\* INCLUDE: "core\/lib\/gui\/attractable" \*\/.*\/\* END_INCLUDE: "core\/lib\/gui\/attractable" \*\//gms,
+    to: `/* INCLUDE: "core/lib/gui/attractable" */\n${fs
+      .readFileSync("./core/lib/gui/attractable.js", "utf8")
+      .toString()}/* END_INCLUDE: "core/lib/gui/attractable" */`,
   })
   .pipe({
-    from: /\/\* INCLUDE: "shared\/lib\/uuid" \*\/.*\/\* END_INCLUDE: "shared\/lib\/uuid" \*\//gms,
-    to: `/* INCLUDE: "shared/lib/uuid" */\n${fs
-      .readFileSync("./shared/lib/uuid.js", "utf8")
-      .toString()}/* END_INCLUDE: "shared/lib/uuid" */`,
+    from: /\/\* INCLUDE: "core\/lib\/record" \*\/.*\/\* END_INCLUDE: "core\/lib\/record" \*\//gms,
+    to: `/* INCLUDE: "core/lib/record" */\n${fs
+      .readFileSync("./core/lib/record.js", "utf8")
+      .toString()}/* END_INCLUDE: "core/lib/record" */`,
   })
   .pipe({
-    from: /\/\* INCLUDE: "shared\/mocks" \*\/.*\/\* END_INCLUDE: "shared\/mocks" \*\//gms,
-    to: `/* INCLUDE: "shared/mocks" */\n${fs
-      .readFileSync("./shared/mocks.js", "utf8")
-      .toString()}/* END_INCLUDE: "shared/mocks" */`,
+    from: /\/\* INCLUDE: "core\/lib\/uuid" \*\/.*\/\* END_INCLUDE: "core\/lib\/uuid" \*\//gms,
+    to: `/* INCLUDE: "core/lib/uuid" */\n${fs
+      .readFileSync("./core/lib/uuid.js", "utf8")
+      .toString()}/* END_INCLUDE: "core/lib/uuid" */`,
+  })
+  .pipe({
+    from: /\/\* INCLUDE: "core\/adapter\/dev-hub" \*\/.*\/\* END_INCLUDE: "core\/adapter\/dev-hub" \*\//gms,
+    to: `/* INCLUDE: "core/adapter/dev-hub" */\n${fs
+      .readFileSync("./core/adapter/dev-hub.js", "utf8")
+      .toString()}/* END_INCLUDE: "core/adapter/dev-hub" */`,
   })
   .then(({ changedFiles, countOfMatchesByPaths }) => {
     console.log("DONE");
