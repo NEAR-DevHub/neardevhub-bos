@@ -72,28 +72,37 @@ const post =
 if (!post) {
   return <div>Loading ...</div>;
 }
+
 const snapshot = post.snapshot;
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
 const parentId = Near.view(nearDevGovGigsContractAccountId, "get_parent_id", {
   post_id: postId,
 });
+
 const childPostIdsUnordered =
   Near.view(nearDevGovGigsContractAccountId, "get_children_ids", {
     post_id: postId,
   }) ?? [];
+
 const childPostIds = props.isPreview ? [] : childPostIdsUnordered.reverse();
 const expandable = props.isPreview ? false : props.expandable ?? false;
 const defaultExpanded = expandable ? props.defaultExpanded : false;
+
 function readableDate(timestamp) {
   var a = new Date(timestamp);
   return a.toDateString() + " " + a.toLocaleTimeString();
 }
+
 const timestamp = readableDate(
   snapshot.timestamp ? snapshot.timestamp / 1000000 : Date.now()
 );
+
 const postSearchKeywords = props.searchKeywords ? (
-  <div style={{ "font-family": "monospace" }} key="post-search-keywords">
+  <div
+    style={{ marginLeft: "1rem", fontFamily: "monospace" }}
+    key="post-search-keywords"
+  >
     <span>Found keywords: </span>
     {props.searchKeywords.map((label) => {
       return <span class="badge text-bg-info me-1">{label}</span>;
@@ -102,13 +111,17 @@ const postSearchKeywords = props.searchKeywords ? (
 ) : (
   <div key="post-search-keywords"></div>
 );
+
 const searchKeywords = props.searchKeywords ? (
   <div class="mb-1" key="search-keywords">
-    <small class="text-muted">{postSearchKeywords}</small>
+    <small class="text-muted" style={{ marginLeft: "1rem" }}>
+      {postSearchKeywords}
+    </small>
   </div>
 ) : (
   <div key="search-keywords"></div>
 );
+
 const linkToParent =
   isUnderPost || !parentId ? (
     <div key="link-to-parent"></div>
@@ -119,12 +132,14 @@ const linkToParent =
       </a>
     </div>
   );
+
 const allowedToEdit =
   !props.isPreview &&
   Near.view(nearDevGovGigsContractAccountId, "is_allowed_to_edit", {
     post_id: postId,
     editor: context.accountId,
   });
+
 const btnEditorWidget = (postType, name) => {
   return (
     <li>
@@ -141,6 +156,7 @@ const btnEditorWidget = (postType, name) => {
     </li>
   );
 };
+
 const editControl = allowedToEdit ? (
   <div class="btn-group" role="group">
     <a
@@ -164,6 +180,7 @@ const editControl = allowedToEdit ? (
 ) : (
   <div></div>
 );
+
 const shareButton = props.isPreview ? (
   <div></div>
 ) : (
@@ -178,6 +195,7 @@ const shareButton = props.isPreview ? (
     <div class="bi bi-share"></div>
   </a>
 );
+
 const StyledLink = styled.a`
   color: rgba(0, 0, 0, 0.8);
   font-size: inherit;
@@ -189,6 +207,7 @@ const StyledLink = styled.a`
     text-decoration: underline;
   }
 `;
+
 const StyledDiv = styled.div`
   display: flex;
   flex-wrap: nowrap;
@@ -212,9 +231,75 @@ const ResponsiveDiv = styled.div`
   }
 `;
 
-const accountId = post.author_id;
+// start of test edits
+const accountId = (props.accountId = post.author_id);
+const link = props.link ?? true;
+const hideAccountId = props.hideAccountId;
+const hideName = props.hideName;
+const hideImage = props.hideImage;
+
+const profile = props.profile ?? Social.getr(`${accountId}/profile`);
+
+const name = profile.name ?? accountId;
+const title = props.title ?? `${name} @${accountId}`;
+const tooltip =
+  props.tooltip && (props.tooltip === true ? title : props.tooltip);
+
+let inner = (
+  <>
+    {!hideName && (
+      <span key="name">
+        {name}
+        <br></br>
+      </span>
+    )}
+    {!hideAccountId && (
+      <span key="accountId" className="text-muted ms-1 d-flex">
+        @{accountId}
+      </span>
+    )}
+  </>
+);
+
+inner = link ? (
+  <a
+    href={
+      link !== true
+        ? link
+        : `#/mob.near/widget/ProfilePage?accountId=${accountId}`
+    }
+    className="link-dark text-truncate d-flex flex-column align-items-start"
+  >
+    {inner}
+  </a>
+) : (
+  <span className="text-truncate d-flex flex-column align-items-start">
+    {inner}
+  </span>
+);
+
+if (props.tooltip === true) {
+  return (
+    <Widget
+      src="mob.near/widget/Profile.OverlayTrigger"
+      props={{ accountId, children: inner }}
+    />
+  );
+}
+if (tooltip) {
+  inner = (
+    <OverlayTrigger placement="auto" overlay={<Tooltip>{tooltip}</Tooltip>}>
+      {inner}
+    </OverlayTrigger>
+  );
+}
+// end of test edits
+
 const header = (
-  <ResponsiveDiv className="py-1 px-3" style={{ fontSize: "1em" }}>
+  <ResponsiveDiv
+    className="py-1 px-3"
+    style={{ fontSize: "1em", alignItems: "center" }}
+  >
     <div className="d-flex align-items-center justify-content-between">
       <div
         className="col-auto d-flex align-items-center"
@@ -239,10 +324,18 @@ const header = (
             }}
           />
         </div>
-        <div style={{ marginLeft: "1em" }}>
-          <span style={{ fontSize: "1.35em", fontWeight: "700" }}>
+
+        <div
+          style={{
+            marginLeft: "1em",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {/* <span style={{ fontSize: "1.35em", fontWeight: "700" }}>
             {post.author_id}
-          </span>
+          </span> */}
           <span
             key="accountId"
             className="text-muted "
@@ -250,10 +343,10 @@ const header = (
               display: "block",
               fontSize: "1.2em",
               fontWeight: "500",
-              marginTop: "-8px",
+              marginTop: "0px",
             }}
           >
-            @{post.author_id}
+            {inner}
           </span>
         </div>
       </div>
@@ -266,6 +359,7 @@ const header = (
     </StyledDiv>
   </ResponsiveDiv>
 );
+
 const emptyIcons = {
   Idea: "bi-lightbulb",
   Comment: "bi-chat",
@@ -276,6 +370,7 @@ const emptyIcons = {
   Like: "bi-heart",
   Reply: "bi-reply",
 };
+
 const fillIcons = {
   Idea: "bi-lightbulb-fill",
   Comment: "bi-chat-fill",
@@ -295,6 +390,7 @@ const borders = {
   Sponsorship: "border-secondary",
   Github: "border-secondary",
 };
+
 const containsLike = props.isPreview
   ? false
   : post.likes.find((l) => l.author_id == context.accountId);
@@ -305,7 +401,7 @@ let grantNotify = Near.view("social.near", "is_write_permission_granted", {
   predecessor_id: nearDevGovGigsContractAccountId,
   key: context.accountId + "/index/notify",
 });
-if (grantNotify === null) {
+if (grantNotify === Loading) {
   return;
 }
 const onLike = () => {
@@ -362,7 +458,7 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
 };
 
 const buttonsFooter = props.isPreview ? null : (
-  <div class="row" key="buttons-footer">
+  <div class="row" key="buttons-footer" style={{ marginLeft: "0.2rem" }}>
     <div class="col-8">
       <div
         class="btn-group text-sm"
@@ -446,6 +542,7 @@ const buttonsFooter = props.isPreview ? null : (
     </div>
   </div>
 );
+
 const CreatorWidget = (postType) => {
   return (
     <div
@@ -461,6 +558,7 @@ const CreatorWidget = (postType) => {
     </div>
   );
 };
+
 const EditorWidget = (postType) => {
   return (
     <div
@@ -484,6 +582,7 @@ const EditorWidget = (postType) => {
     </div>
   );
 };
+
 const editorsFooter = props.isPreview ? null : (
   <div class="row" id={`accordion${postId}`} key="editors-footer">
     {CreatorWidget("Comment")}
@@ -500,11 +599,16 @@ const editorsFooter = props.isPreview ? null : (
     {EditorWidget("Github")}
   </div>
 );
+
 const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
 const postLabels = post.snapshot.labels ? (
-  <div class="card-title" key="post-labels">
+  <div
+    class="card-title"
+    key="post-labels"
+    style={{ marginLeft: "1rem", marginBottom: "0.8rem" }}
+  >
     {post.snapshot.labels.map((label) => {
       return (
         <>
@@ -517,6 +621,7 @@ const postLabels = post.snapshot.labels ? (
                 fontWeight: "normal",
                 padding: "0.2em 0.5em",
                 border: "1px solid rgba(0, 80, 80, 0.2)",
+                marginTop: "1rem",
               }}
             >
               {label}
@@ -529,6 +634,7 @@ const postLabels = post.snapshot.labels ? (
 ) : (
   <div key="post-labels"></div>
 );
+
 const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
@@ -536,7 +642,7 @@ const postTitle =
     <h5 class="card-title" key="post-title">
       <div
         className="row justify-content-between"
-        style={{ fontSize: "1.3em", fontWeight: "600" }}
+        style={{ fontSize: "1.3em", fontWeight: "600", marginLeft: "0.3rem" }}
       >
         <div class="col-12">
           <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
@@ -545,13 +651,30 @@ const postTitle =
       </div>
     </h5>
   );
+
 const postExtra =
   snapshot.post_type == "Sponsorship" ? (
     <div key="post-extra">
-      <h6 class="card-subtitle  text-muted">
+      <h6
+        class="card-subtitle  text-muted"
+        style={{
+          marginLeft: "1rem",
+          marginBottom: "1rem",
+          fontSize: "1.25789em",
+          fontWeight: "600",
+        }}
+      >
         Maximum amount: {snapshot.amount} {snapshot.sponsorship_token}
       </h6>
-      <h6 class="card-subtitle  text-muted">
+      <h6
+        class="card-subtitle  text-muted"
+        style={{
+          marginLeft: "1rem",
+          marginBottom: "1.5rem",
+          fontSize: "1.25789em",
+          fontWeight: "600",
+        }}
+      >
         Supervisor:{" "}
         <Widget
           src={`neardevgov.near/widget/ProfileLine`}
@@ -562,6 +685,7 @@ const postExtra =
   ) : (
     <div></div>
   );
+
 const postsList =
   props.isPreview || childPostIds.length == 0 ? (
     <div key="posts-list"></div>
@@ -624,11 +748,12 @@ const clampMarkdown = styled.div`
     overflow: hidden;
   }
 `;
+
 const descriptionArea = isUnderPost ? (
   <limitedMarkdown
     className="overflow-auto"
     key="description-area"
-    style={{ paddingLeft: "15px", paddingRight: "15px", marginBottom: "-30px" }}
+    style={{ marginLeft: "1rem", paddingRight: "15px", marginBottom: "1rem" }}
   >
     <Markdown
       className="card-text"
@@ -641,7 +766,7 @@ const descriptionArea = isUnderPost ? (
     <div
       className={state.clamp ? "clamp" : ""}
       style={{
-        fontSize: "1.25rem",
+        fontSize: "1rem",
         paddingLeft: "15px",
         paddingRight: "15px",
         marginBottom: "-10px",
@@ -655,10 +780,10 @@ const descriptionArea = isUnderPost ? (
       ></Markdown>
     </div>
     {state.clamp && isContentLong ? (
-      <div className="d-flex justify-content-end">
+      <div className="d-flex justify-content-center">
         <StyledLink>
           <a
-            style={{ fontSize: "1rem", fontWeight: 800 }}
+            style={{ fontSize: "1rem", fontWeight: 700 }}
             className="btn btn-link text-black"
             onClick={() => State.update({ clamp: false })}
           >
@@ -668,10 +793,10 @@ const descriptionArea = isUnderPost ? (
         </StyledLink>
       </div>
     ) : !state.clamp && isContentLong ? (
-      <div className="d-flex justify-content-end">
+      <div className="d-flex justify-content-center">
         <StyledLink>
           <a
-            style={{ fontSize: "1rem", fontWeight: 800 }}
+            style={{ fontSize: "1rem", fontWeight: 700 }}
             className="btn btn-link text-black"
             onClick={() => State.update({ clamp: true })}
           >

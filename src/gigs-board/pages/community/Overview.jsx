@@ -386,7 +386,7 @@ return (
       </div>
     </div>
     <div className="row">
-      <div className="col-xs-12 col-lg-8">{Overview}</div>
+      <div className="col-xs-12 col-lg-12">{Overview}</div>
     </div>
   </div>
 );
