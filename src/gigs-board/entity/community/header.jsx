@@ -148,7 +148,11 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   }
 
   const isSupervisionAllowed =
-    accessControlInfo?.children?.includes?.(context.accountId) ?? false;
+    accessControlInfo.members_list["team:moderators"]?.children?.includes(
+      context.accountId
+    ) ?? false;
+
+  console.log(accessControlInfo, { isSupervisionAllowed });
 
   const tabs = [
     {
@@ -227,8 +231,8 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
 
         <div className="d-flex align-items-end gap-3">
           {isEditingAllowed && (
-            <Link
-              href={`/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.edit-info?handle=${handle}`}
+            <a
+              href={href("community.edit-info", { handle })}
               className={[
                 "d-flex align-items-center gap-2 border border-1 rounded-pill px-3 py-2",
                 "text-decoration-none text-dark text-nowrap font-weight-bold fs-6",
@@ -236,7 +240,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
             >
               <i className="bi bi-gear" />
               <span>Edit information</span>
-            </Link>
+            </a>
           )}
 
           <OverlayTrigger
