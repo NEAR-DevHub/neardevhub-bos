@@ -52,7 +52,27 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
+/* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
+const AutoComplete = styled.div`
+  z-index: 5;
+
+  > div > div {
+    padding: calc(var(--padding) / 2);
+  }
+`;
+
+function textareaInputHandler(value) {
+  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
+  State.update({ text: value, showAccountAutocomplete });
+}
+
+function autoCompleteAccountId(id) {
+  let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
+  description = `${description} @${id}`.trim() + " ";
+  State.update({ description, showAccountAutocomplete: false });
+}
+/* END_INCLUDE: "core/lib/autocomplete" */
 
 const postType = props.postType ?? "Sponsorship";
 const parentId = props.parentId ?? null;
@@ -64,14 +84,6 @@ const labelStrings = (props.labels ?? []).concat(referralLabels);
 const labels = labelStrings.map((s) => {
   return { name: s };
 });
-
-const AutoComplete = styled.div`
-  z-index: 5;
-  
-  > div > div {
-    padding: calc(var(--padding) / 2);
-  }
-`;
 
 initState({
   author_id: context.accountId,
@@ -318,17 +330,6 @@ const nameDiv = fields.includes("name") ? (
     />
   </div>
 ) : null;
-
-function textareaInputHandler(value) {
-  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update({ text: value, showAccountAutocomplete });
-}
-
-function autoCompleteAccountId(id) {
-  let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
-  description = `${description} @${id}`.trim() + " ";
-  State.update({ description, showAccountAutocomplete: false });
-}
 
 const descriptionDiv = fields.includes("description") ? (
   <div className="col-lg-12  mb-2">

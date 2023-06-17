@@ -52,6 +52,28 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
+/* INCLUDE: "core/lib/autocomplete" */
+const autocompleteEnabled = true;
+const AutoComplete = styled.div`
+  z-index: 5;
+
+  > div > div {
+    padding: calc(var(--padding) / 2);
+  }
+`;
+
+function textareaInputHandler(value) {
+  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
+  State.update({ text: value, showAccountAutocomplete });
+}
+
+function autoCompleteAccountId(id) {
+  let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
+  description = `${description} @${id}`.trim() + " ";
+  State.update({ description, showAccountAutocomplete: false });
+}
+/* END_INCLUDE: "core/lib/autocomplete" */
+
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
@@ -295,8 +317,26 @@ const descriptionDiv = (
       type="text"
       rows={6}
       className="form-control"
+      onInput={(event) => textareaInputHandler(event.target.value)}
+      onKeyUp={(event) => {
+        if (event.key === "Escape") {
+          State.update({ showAccountAutocomplete: false });
+        }
+      }}
       onChange={(event) => State.update({ description: event.target.value })}
     />
+    {autocompleteEnabled && state.showAccountAutocomplete && (
+      <AutoComplete>
+        <Widget
+          src="near/widget/AccountAutocomplete"
+          props={{
+            term: state.text.split("@").pop(),
+            onSelect: autoCompleteAccountId,
+            onClose: () => State.update({ showAccountAutocomplete: false }),
+          }}
+        />
+      </AutoComplete>
+    )}
   </div>
 );
 
