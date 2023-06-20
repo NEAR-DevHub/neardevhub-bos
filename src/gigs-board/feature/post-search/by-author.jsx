@@ -88,8 +88,6 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const onAuthorSearch = props.onAuthorSearch;
-
 const selectedAuthors = props.authorQuery?.author
   ? [{ name: props.authorQuery.author }]
   : [];
@@ -100,20 +98,17 @@ if (authors === null) {
   return <div>Loading ...</div>;
 }
 
-const wrappedAuthors = authors.map((author) => ({ name: author }));
-
-const onChangeAuthor = (selectedAuthors) => {
-  onAuthorSearch(selectedAuthors[0]?.name);
-};
+const onChange = (selectedAuthors) =>
+  props.onAuthorSearch(selectedAuthors[0]?.name);
 
 return (
   <Typeahead
     clearButton
     id="basic-typeahead-single"
     labelKey="name"
-    onChange={onChangeAuthor}
-    options={wrappedAuthors}
+    options={authors.map((author) => ({ name: author }))}
     placeholder="Search by author"
     selected={selectedAuthors}
+    {...{ onChange }}
   />
 );

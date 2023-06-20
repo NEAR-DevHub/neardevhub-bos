@@ -88,8 +88,6 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const onTagSearch = props.onTagSearch;
-
 const selectedTags = props.tagQuery?.label
   ? [{ name: props.tagQuery.label }]
   : [];
@@ -100,20 +98,16 @@ if (tags === null) {
   return <div>Loading ...</div>;
 }
 
-const wrappedLabels = tags.map((tag) => ({ name: tag }));
-
-const onChange = (selectedTags) => {
-  onTagSearch(selectedTags[0]?.name);
-};
+const onChange = (selectedTags) => props.onTagSearch?.(selectedTags[0]?.name);
 
 return (
   <Typeahead
     clearButton
     id="basic-typeahead-single"
     labelKey="name"
-    onChange={onChange}
-    options={wrappedLabels}
+    options={tags.map((tag) => ({ name: tag }))}
     placeholder="Search by tag"
     selected={selectedTags}
+    {...{ onChange }}
   />
 );
