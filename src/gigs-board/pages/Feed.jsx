@@ -204,16 +204,14 @@ const FeedPage = ({ author, recency, tag }) => {
     header,
 
     children: widget("feature.post-search.panel", {
-      children: widget("components.layout.Controls"),
-      recency,
-      label: state.tag,
       author: state.author,
-      //
-      tagQuery: { tag: state.tag },
-      onTagSearch,
-      //
       authorQuery: { author: state.author },
+      children: widget("components.layout.Controls"),
       onAuthorSearch,
+      onTagSearch,
+      recency,
+      tag: state.tag,
+      tagQuery: { tag: state.tag },
     }),
   });
 };
