@@ -732,14 +732,14 @@ return (
         </ul>
       </div>
       <div class="dropdown">
-        {widget("components.layout.SearchByAuthor", {
+        {widget("feature.post-search.by-author", {
           authorQuery: props.authorQuery,
           onAuthorSearch: props.onAuthorSearch,
         })}
       </div>
       <div>
-        {widget("components.layout.SearchByLabel", {
-          labelQuery: props.labelQuery,
+        {widget("feature.post-search.by-tag", {
+          tagQuery: props.tagQuery,
           onTagSearch: props.onTagSearch,
         })}
       </div>

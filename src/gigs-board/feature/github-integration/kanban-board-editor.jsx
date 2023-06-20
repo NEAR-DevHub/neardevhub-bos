@@ -125,22 +125,22 @@ const fieldDefaultUpdate = ({
 const useForm = ({ stateKey: formStateKey }) => ({
   formState: state[formStateKey],
 
-  formUpdate: ({ path: fieldPath, via: fieldCustomUpdate, ...params }) => (
-    fieldInput
-  ) =>
-    State.update((lastKnownState) =>
-      traversalUpdate({
-        input: fieldInput?.target?.value ?? fieldInput,
-        target: lastKnownState,
-        path: [formStateKey, ...fieldPath],
-        params,
+  formUpdate:
+    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
+    (fieldInput) =>
+      State.update((lastKnownState) =>
+        traversalUpdate({
+          input: fieldInput?.target?.value ?? fieldInput,
+          target: lastKnownState,
+          path: [formStateKey, ...fieldPath],
+          params,
 
-        via:
-          typeof fieldCustomUpdate === "function"
-            ? fieldCustomUpdate
-            : fieldDefaultUpdate,
-      })
-    ),
+          via:
+            typeof fieldCustomUpdate === "function"
+              ? fieldCustomUpdate
+              : fieldDefaultUpdate,
+        })
+      ),
 });
 /* END_INCLUDE: "core/lib/form" */
 /* INCLUDE: "core/lib/gui/attractable" */
@@ -201,8 +201,13 @@ const DevHub = {
   get_access_control_info: () =>
     Near.view(contractAccountId, "get_access_control_info") ?? null,
 
+  get_all_authors: () =>
+    Near.view(contractAccountId, "get_all_authors") ?? null,
+
   get_all_communities: () =>
     Near.view(contractAccountId, "get_all_communities") ?? null,
+
+  get_all_labels: () => Near.view(contractAccountId, "get_all_labels") ?? null,
 
   get_community: ({ handle }) =>
     Near.view(contractAccountId, "get_community", { handle }) ?? null,
@@ -301,10 +306,12 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         }
       : lastKnownState;
 
-  const columnsDeleteById = (id) => ({ lastKnownState }) =>
-    Object.fromEntries(
-      Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
-    );
+  const columnsDeleteById =
+    (id) =>
+    ({ lastKnownState }) =>
+      Object.fromEntries(
+        Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
+      );
 
   const onSubmit = () =>
     DevHub.edit_community_github({

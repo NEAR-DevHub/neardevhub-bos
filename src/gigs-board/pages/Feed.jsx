@@ -64,8 +64,13 @@ const DevHub = {
   get_access_control_info: () =>
     Near.view(contractAccountId, "get_access_control_info") ?? null,
 
+  get_all_authors: () =>
+    Near.view(contractAccountId, "get_all_authors") ?? null,
+
   get_all_communities: () =>
     Near.view(contractAccountId, "get_all_communities") ?? null,
+
+  get_all_labels: () => Near.view(contractAccountId, "get_all_labels") ?? null,
 
   get_community: ({ handle }) =>
     Near.view(contractAccountId, "get_community", { handle }) ?? null,
@@ -195,13 +200,13 @@ const FeedPage = ({ author, recency, tag }) => {
   return widget("components.layout.Page", {
     header,
 
-    children: widget("entity.post.Search", {
+    children: widget("feature.post-search.panel", {
       children: widget("components.layout.Controls"),
       recency,
       label: state.tag,
       author: state.author,
       //
-      labelQuery: { label: state.tag },
+      tagQuery: { label: state.tag },
       onTagSearch,
       //
       authorQuery: { author: state.author },
