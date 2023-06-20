@@ -78,6 +78,9 @@ const DevHub = {
   get_post: ({ post_id }) =>
     Near.view(contractAccountId, "get_post", { post_id }) ?? null,
 
+  get_posts_by_author: ({ author }) =>
+    Near.view(contractAccountId, "get_posts_by_author", { author }) ?? null,
+
   get_posts_by_label: ({ label }) =>
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
       label,
@@ -206,7 +209,7 @@ const FeedPage = ({ author, recency, tag }) => {
       label: state.tag,
       author: state.author,
       //
-      tagQuery: { label: state.tag },
+      tagQuery: { tag: state.tag },
       onTagSearch,
       //
       authorQuery: { author: state.author },

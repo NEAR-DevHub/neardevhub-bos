@@ -234,8 +234,10 @@ const step3list = {
 };
 
 const gt0 = /^([^aeiou][^aeiouy]*)?([aeiouy][aeiou]*)([^aeiou][^aeiouy]*)/;
-const eq1 = /^([^aeiou][^aeiouy]*)?([aeiouy][aeiou]*)([^aeiou][^aeiouy]*)([aeiouy][aeiou]*)?$/;
-const gt1 = /^([^aeiou][^aeiouy]*)?(([aeiouy][aeiou]*)([^aeiou][^aeiouy]*)){2,}/;
+const eq1 =
+  /^([^aeiou][^aeiouy]*)?([aeiouy][aeiou]*)([^aeiou][^aeiouy]*)([aeiouy][aeiou]*)?$/;
+const gt1 =
+  /^([^aeiou][^aeiouy]*)?(([aeiouy][aeiou]*)([^aeiou][^aeiouy]*)){2,}/;
 const vowelInStem = /^([^aeiou][^aeiouy]*)?[aeiouy]/;
 const consonantLike = /^([^aeiou][^aeiouy]*)[aeiouy][^aeiouwxy]$/;
 
@@ -250,9 +252,11 @@ const sfxEED = /^(.+?)eed$/;
 const sfxS = /^.+?[^s]s$/;
 const sfxSsesOrIes = /^.+?(ss|i)es$/;
 const sfxMultiConsonantLike = /([^aeiouylsz])\1$/;
-const step2 = /^(.+?)(ational|tional|enci|anci|izer|bli|alli|entli|eli|ousli|ization|ation|ator|alism|iveness|fulness|ousness|aliti|iviti|biliti|logi)$/;
+const step2 =
+  /^(.+?)(ational|tional|enci|anci|izer|bli|alli|entli|eli|ousli|ization|ation|ator|alism|iveness|fulness|ousness|aliti|iviti|biliti|logi)$/;
 const step3 = /^(.+?)(icate|ative|alize|iciti|ical|ful|ness)$/;
-const step4 = /^(.+?)(al|ance|ence|er|ic|able|ible|ant|ement|ment|ent|ou|ism|ate|iti|ous|ive|ize)$/;
+const step4 =
+  /^(.+?)(al|ance|ence|er|ic|able|ible|ant|ement|ment|ent|ou|ism|ate|iti|ous|ive|ize)$/;
 
 /**
  * Get the stem from a given value.

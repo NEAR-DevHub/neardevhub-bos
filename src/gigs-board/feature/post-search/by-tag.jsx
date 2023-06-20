@@ -78,6 +78,9 @@ const DevHub = {
   get_post: ({ post_id }) =>
     Near.view(contractAccountId, "get_post", { post_id }) ?? null,
 
+  get_posts_by_author: ({ author }) =>
+    Near.view(contractAccountId, "get_posts_by_author", { author }) ?? null,
+
   get_posts_by_label: ({ label }) =>
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
       label,
@@ -88,9 +91,7 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const selectedTags = props.tagQuery?.label
-  ? [{ name: props.tagQuery.label }]
-  : [];
+const selectedTags = props.tagQuery?.tag ? [{ name: props.tagQuery.tag }] : [];
 
 const tags = DevHub.get_all_labels();
 

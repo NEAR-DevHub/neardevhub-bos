@@ -84,6 +84,9 @@ const DevHub = {
   get_post: ({ post_id }) =>
     Near.view(contractAccountId, "get_post", { post_id }) ?? null,
 
+  get_posts_by_author: ({ author }) =>
+    Near.view(contractAccountId, "get_posts_by_author", { author }) ?? null,
+
   get_posts_by_label: ({ label }) =>
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
       label,
