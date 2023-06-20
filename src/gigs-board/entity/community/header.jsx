@@ -172,7 +172,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "GitHub",
     },
 
-    ...(communityData.telegram_handle !== null
+    ...((value?.length ?? 0) > 0
       ? [
           {
             iconClass: "bi bi-telegram",

@@ -138,7 +138,18 @@ const CommunityEditorFrame = ({ handle }) => {
   const onSubformSubmit = (partial) => {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: { ...lastKnownState.data, ...partial },
+
+      data: {
+        ...lastKnownState.data,
+
+        ...Object.entries(partial).reduce(
+          (update, [key, value]) => ({
+            ...update,
+            [key]: (value?.length ?? 0) > 0 ? value : null,
+          }),
+          {}
+        ),
+      },
     }));
   };
 
