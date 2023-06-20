@@ -198,8 +198,6 @@ const FeedPage = ({ author, recency, tag }) => {
     State.update((lastKnownState) => ({ ...lastKnownState, author }));
   };
 
-  console.log("STATE", state);
-
   return widget("components.layout.Page", {
     header,
 
