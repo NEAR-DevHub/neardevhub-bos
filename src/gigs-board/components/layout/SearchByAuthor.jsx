@@ -52,7 +52,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const onSearchAuthor = props.onSearchAuthor;
+const onAuthorSearch = props.onAuthorSearch;
 const selectedAuthors = props.authorQuery?.author
   ? [{ name: props.authorQuery.author }]
   : [];
@@ -64,19 +64,17 @@ if (!authors) {
 const wrappedAuthors = authors.map((author) => ({ name: author }));
 
 const onChangeAuthor = (selectedAuthors) => {
-  onSearchAuthor(selectedAuthors[0]?.name);
+  onAuthorSearch(selectedAuthors[0]?.name);
 };
 
 return (
-  <>
-    <Typeahead
-      clearButton
-      id="basic-typeahead-single"
-      labelKey="name"
-      onChange={onChangeAuthor}
-      options={wrappedAuthors}
-      placeholder="Search by author"
-      selected={selectedAuthors}
-    />
-  </>
+  <Typeahead
+    clearButton
+    id="basic-typeahead-single"
+    labelKey="name"
+    onChange={onChangeAuthor}
+    options={wrappedAuthors}
+    placeholder="Search by author"
+    selected={selectedAuthors}
+  />
 );

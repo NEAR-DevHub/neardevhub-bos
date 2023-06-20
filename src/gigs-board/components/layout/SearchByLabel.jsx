@@ -52,7 +52,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const onSearchLabel = props.onSearchLabel;
+const onTagSearch = props.onTagSearch;
 const selectedLabels = props.labelQuery?.label
   ? [{ name: props.labelQuery.label }]
   : [];
@@ -64,7 +64,7 @@ if (!labels) {
 const wrappedLabels = labels.map((label) => ({ name: label }));
 
 const onChange = (selectedLabels) => {
-  onSearchLabel(selectedLabels[0]?.name);
+  onTagSearch(selectedLabels[0]?.name);
 };
 
 return (

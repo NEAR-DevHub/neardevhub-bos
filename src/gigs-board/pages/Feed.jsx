@@ -166,23 +166,31 @@ const header = (
 );
 
 const FeedPage = ({ author, recency, tag }) => {
-  State.init({ propsTag: tag, tag, author });
+  State.init({
+    initial: { author, tag },
+    author,
+    tag,
+  });
 
   // When rerendered with different props, State will be preserved, so we need to update the state when we detect that the props have changed.
-  if (tag !== state.propsTag) {
-    State.update({
-      propsTag: tag,
+  if (tag !== state.initial.tag || author !== state.initial.author) {
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      initial: { author, tag },
+      author,
       tag,
-    });
+    }));
   }
 
-  const onSearchLabel = (value) => {
-    State.update({ tag: value });
+  const onTagSearch = (tag) => {
+    State.update((lastKnownState) => ({ ...lastKnownState, tag }));
   };
 
-  const onSearchAuthor = (value) => {
-    State.update({ author: value });
+  const onAuthorSearch = (author) => {
+    State.update((lastKnownState) => ({ ...lastKnownState, author }));
   };
+
+  console.log("STATE", state);
 
   return widget("components.layout.Page", {
     header,
@@ -191,13 +199,13 @@ const FeedPage = ({ author, recency, tag }) => {
       children: widget("components.layout.Controls"),
       recency,
       label: state.tag,
-      author,
+      author: state.author,
       //
       labelQuery: { label: state.tag },
-      onSearchLabel,
+      onTagSearch,
       //
       authorQuery: { author: state.author },
-      onSearchAuthor,
+      onAuthorSearch,
     }),
   });
 };
