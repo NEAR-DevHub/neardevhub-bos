@@ -434,7 +434,7 @@ return (
     ) : (
       <p class="text-secondary">
         No posts {props.searchResult ? "matches search" : ""}
-        {props.recency == "hot"
+        {props.recency === "hot"
           ? " in " + getPeriodText(state.period).toLowerCase()
           : ""}
       </p>

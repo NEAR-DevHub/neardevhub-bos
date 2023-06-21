@@ -102,8 +102,9 @@ const CommunityActivityPage = ({ handle }) => {
 
   const communityData = DevHub.get_community({ handle });
 
-  const communityPostIds =
-    DevHub.get_posts_by_label({ label: communityData?.tag }) ?? [];
+  if (communityData === null) {
+    return <div>Loading...</div>;
+  }
 
   return widget("components.template.community-page", {
     handle,
@@ -129,15 +130,11 @@ const CommunityActivityPage = ({ handle }) => {
             </div>
           </div>
 
-          {widget("components.layout.Controls", {
-            labels: communityData.tag,
-          })}
+          {widget("components.layout.Controls", { labels: communityData.tag })}
 
           <div class="row">
             <div class="col">
-              {communityPostIds.map((postId) =>
-                widget("entity.post.Post", { id: postId }, postId)
-              )}
+              {widget("entity.post.List", { tag: communityData.tag })}
             </div>
           </div>
         </div>
