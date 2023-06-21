@@ -64,14 +64,22 @@ const DevHub = {
   get_access_control_info: () =>
     Near.view(contractAccountId, "get_access_control_info") ?? null,
 
+  get_all_authors: () =>
+    Near.view(contractAccountId, "get_all_authors") ?? null,
+
   get_all_communities: () =>
     Near.view(contractAccountId, "get_all_communities") ?? null,
+
+  get_all_labels: () => Near.view(contractAccountId, "get_all_labels") ?? null,
 
   get_community: ({ handle }) =>
     Near.view(contractAccountId, "get_community", { handle }) ?? null,
 
   get_post: ({ post_id }) =>
     Near.view(contractAccountId, "get_post", { post_id }) ?? null,
+
+  get_posts_by_author: ({ author }) =>
+    Near.view(contractAccountId, "get_posts_by_author", { author }) ?? null,
 
   get_posts_by_label: ({ label }) =>
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
@@ -166,38 +174,42 @@ const header = (
 );
 
 const FeedPage = ({ author, recency, tag }) => {
-  State.init({ propsTag: tag, tag, author });
+  State.init({
+    initial: { author, tag },
+    author,
+    tag,
+  });
 
   // When rerendered with different props, State will be preserved, so we need to update the state when we detect that the props have changed.
-  if (tag !== state.propsTag) {
-    State.update({
-      propsTag: tag,
+  if (tag !== state.initial.tag || author !== state.initial.author) {
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      initial: { author, tag },
+      author,
       tag,
-    });
+    }));
   }
 
-  const onSearchLabel = (value) => {
-    State.update({ tag: value });
+  const onTagSearch = (tag) => {
+    State.update((lastKnownState) => ({ ...lastKnownState, tag }));
   };
 
-  const onSearchAuthor = (value) => {
-    State.update({ author: value });
+  const onAuthorSearch = (author) => {
+    State.update((lastKnownState) => ({ ...lastKnownState, author }));
   };
 
   return widget("components.layout.Page", {
     header,
 
-    children: widget("entity.post.Search", {
-      children: widget("components.layout.Controls"),
-      recency,
-      label: state.tag,
-      author,
-      //
-      labelQuery: { label: state.tag },
-      onSearchLabel,
-      //
+    children: widget("feature.post-search.panel", {
+      author: state.author,
       authorQuery: { author: state.author },
-      onSearchAuthor,
+      children: widget("components.layout.Controls"),
+      onAuthorSearch,
+      onTagSearch,
+      recency,
+      tag: state.tag,
+      tagQuery: { tag: state.tag },
     }),
   });
 };

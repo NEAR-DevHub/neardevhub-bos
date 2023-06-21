@@ -736,15 +736,15 @@ return (
         </ul>
       </div>
       <div class="dropdown">
-        {widget("components.layout.SearchByAuthor", {
+        {widget("feature.post-search.by-author", {
           authorQuery: props.authorQuery,
-          onSearchAuthor: props.onSearchAuthor,
+          onAuthorSearch: props.onAuthorSearch,
         })}
       </div>
       <div>
-        {widget("components.layout.SearchByLabel", {
-          labelQuery: props.labelQuery,
-          onSearchLabel: props.onSearchLabel,
+        {widget("feature.post-search.by-tag", {
+          tagQuery: props.tagQuery,
+          onTagSearch: props.onTagSearch,
         })}
       </div>
       <div className="d-flex flex-row-reverse flex-grow-1">
