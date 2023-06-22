@@ -378,7 +378,7 @@ const CommunityEditorFrame = ({ handle }) => {
 
           {state.isSupervisionAllowed || state.isEditingAllowed ? (
             <div
-              className="d-flex justify-content-center p-4 w-100"
+              className="d-flex justify-content-center gap-4 p-4 w-100"
               style={{ maxWidth: 896 }}
             >
               {state.isSupervisionAllowed && !state.isCommunityNew
