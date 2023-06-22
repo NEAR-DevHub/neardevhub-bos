@@ -153,7 +153,11 @@ const CommunityEditorFrame = ({ handle }) => {
         ...Object.entries(partial).reduce(
           (update, [key, value]) => ({
             ...update,
-            [key]: (value?.length ?? 0) > 0 ? value : null,
+
+            [key]:
+              typeof value !== "string" || (value?.length ?? 0) > 0
+                ? value
+                : null,
           }),
           {}
         ),
