@@ -97,10 +97,10 @@ const DevHub = {
   get_root_members: () =>
     Near.view(contractAccountId, "get_root_members") ?? null,
 
-  subscribe: (functionName, args) =>
+  watch: (functionName, args) =>
     useCache(
       () =>
-        Near.asyncCall(contractAccountId, functionName, args)
+        Near.asyncView(contractAccountId, functionName, args ?? {})
           .then((data) => ({
             ...initialState,
             data,
