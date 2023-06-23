@@ -178,7 +178,11 @@ const CommunityEditorFrame = ({ handle }) => {
         ...Object.entries(partial).reduce(
           (update, [key, value]) => ({
             ...update,
-            [key]: (value?.length ?? 0) > 0 ? value : null,
+
+            [key]:
+              typeof value !== "string" || (value?.length ?? 0) > 0
+                ? value
+                : null,
           }),
           {}
         ),
@@ -403,7 +407,7 @@ const CommunityEditorFrame = ({ handle }) => {
 
           {state.isSupervisionAllowed || state.isEditingAllowed ? (
             <div
-              className="d-flex justify-content-center p-4 w-100"
+              className="d-flex justify-content-center gap-4 p-4 w-100"
               style={{ maxWidth: 896 }}
             >
               {state.isSupervisionAllowed && !state.isCommunityNew
