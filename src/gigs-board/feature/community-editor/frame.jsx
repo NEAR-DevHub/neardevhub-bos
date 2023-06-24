@@ -127,6 +127,8 @@ const communityDefaults = {
   tag: "",
   bio_markdown: "",
   admins: [context.accountId],
+  wiki1: null,
+  wiki2: null,
 };
 
 const CommunityEditorFrame = ({ handle }) => {
@@ -139,7 +141,6 @@ const CommunityEditorFrame = ({ handle }) => {
   }
 
   State.init({
-    activeSection: 0,
     data: null,
     isCommunityNew: true,
     isEditingAllowed: false,
@@ -151,13 +152,14 @@ const CommunityEditorFrame = ({ handle }) => {
   });
 
   if (typeof handle === "string" && state.data === null) {
-    const data = DevHub.get_community({ handle });
-
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data,
+      data: { ...communityState.data },
       isCommunityNew: false,
-      isEditingAllowed: (data?.admins ?? []).includes(context.accountId),
+
+      isEditingAllowed: (communityState.data?.admins ?? []).includes(
+        context.accountId
+      ),
     }));
   } else if (typeof handle !== "string" && state.data === null) {
     State.update((lastKnownState) => ({
@@ -167,6 +169,13 @@ const CommunityEditorFrame = ({ handle }) => {
       isEditingAllowed: true,
     }));
   }
+
+  const hasUncommittedChanges =
+    JSON.stringify(communityState.data) !== JSON.stringify(state.data);
+
+  console.log({ communityData: communityState.data, editorState: state.data });
+
+  console.log(JSON.stringify({ hasUncommittedChanges }));
 
   const onSubformSubmit = (partial) => {
     State.update((lastKnownState) => ({
@@ -416,7 +425,6 @@ const CommunityEditorFrame = ({ handle }) => {
                       root: "btn-lg btn-outline-danger border-none",
                     },
 
-                    disabled: !state.isSupervisionAllowed,
                     label: "Delete community",
                     onClick: onDelete,
                   })
@@ -433,9 +441,11 @@ const CommunityEditorFrame = ({ handle }) => {
                   ].join(" "),
                 },
 
-                disabled: !(state.isCommunityNew
-                  ? true
-                  : state.isSupervisionAllowed || state.isEditingAllowed),
+                disabled:
+                  !hasUncommittedChanges ||
+                  !(state.isCommunityNew
+                    ? true
+                    : state.isSupervisionAllowed || state.isEditingAllowed),
 
                 label: state.isCommunityNew ? "Launch" : "Save",
                 onClick: onSubmit,
