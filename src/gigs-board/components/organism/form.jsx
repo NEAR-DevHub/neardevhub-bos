@@ -263,12 +263,11 @@ const Form = ({
       ? fieldsRenderCustom
       : fieldsRenderDefault;
 
-  const fieldValues =
-    typeof schema === "object" ? pick(data, Object.keys(schema)) : data;
+  const initialState =
+    typeof schema === "object" ? pick(data, Object.keys(schema)) : data ?? {};
 
   State.init({
-    initialState: fieldValues,
-    data: fieldValues,
+    data: initialState,
     isEditorActive: isEditorActive ?? false,
   });
 
@@ -281,16 +280,16 @@ const Form = ({
   const { formState, formUpdate } = useForm({ stateKey: "data" });
 
   const noChanges =
-    JSON.stringify(formState) === JSON.stringify(state.initialState ?? {});
+    JSON.stringify(formState) === JSON.stringify(initialState ?? {});
 
   const onCancelClick = () => {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: lastKnownState.initialState,
+      data: initialState,
       isEditorActive: false,
     }));
 
-    if (typeof onSubmit === "function") onSubmit(lastKnownState.initialState);
+    if (typeof onSubmit === "function") onSubmit(initialState);
     if (typeof onCancel === "function") onCancel();
   };
 
@@ -308,7 +307,7 @@ const Form = ({
       isMutable && !state.isEditorActive
         ? widget("components.atom.button", {
             classNames: {
-              root: "btn-sm btn-primary",
+              root: "btn-sm btn-secondary",
               adornment: "bi bi-pen-fill",
             },
 
@@ -346,7 +345,7 @@ const Form = ({
 
             {widget("components.atom.button", {
               classNames: {
-                root: "btn-success",
+                root: classNames.submit ?? "btn-success",
                 adornment: `bi ${classNames.submitAdornment}`,
               },
 

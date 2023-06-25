@@ -89,25 +89,29 @@ const DevHub = {
   get_root_members: () =>
     Near.view(contractAccountId, "get_root_members") ?? null,
 
-  useQuery: (functionName, args) => {
+  useQuery: ({ name, params, initialData }) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     return useCache(
       () =>
-        Near.asyncView(contractAccountId, functionName, args ?? {})
-          .then((data) => ({
+        Near.asyncView(contractAccountId, name, params ?? {})
+          .then((response) => ({
             ...initialState,
-            data,
+
+            data:
+              (initialData ?? null) !== null
+                ? { ...initialData, ...(response ?? {}) }
+                : response ?? null,
+
             error: null,
             isLoading: false,
           }))
           .catch((error) => ({
-            ...initialState,
+            data: initialData ?? initialState.data,
             error,
             isLoading: false,
           })),
-
-      functionName,
+      name,
       { subscribe: true }
     );
   },
