@@ -199,18 +199,18 @@ const CommunityEditorBrandingSection = ({
     }`,
   };
 
-  const hasUncommittedChanges = !HashMap.isEqual(
+  const isSynced = HashMap.isEqual(
     formValues,
     HashMap.pick(valueSource, Object.keys(formValues))
   );
 
-  if (hasUncommittedChanges) {
+  if (!isSynced) {
     onSubmit(formValues);
   }
 
   console.log({
     section: "branding",
-    hasUncommittedChanges,
+    isSynced,
     formValues,
     valueSource: HashMap.pick(valueSource, Object.keys(formValues)),
   });
