@@ -58,7 +58,7 @@ const DevHub = {
             isLoading: false,
           })),
 
-      name,
+      JSON.stringify({ name, params }),
       { subscribe: true }
     );
   },

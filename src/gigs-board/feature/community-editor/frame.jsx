@@ -131,7 +131,7 @@ const DevHub = {
             isLoading: false,
           })),
 
-      name,
+      JSON.stringify({ name, params }),
       { subscribe: true }
     );
   },
@@ -179,7 +179,7 @@ const CommunityEditorFrame = ({ handle }) => {
   const community = state.isCommunityNew
     ? { data: CommunityDefaults }
     : DevHub.useQuery({
-        name: "get_community",
+        name: `get_community`,
         params: { handle },
         initialData: CommunityDefaults,
       });
