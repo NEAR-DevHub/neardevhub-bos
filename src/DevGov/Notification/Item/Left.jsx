@@ -69,7 +69,7 @@ return props.type ? (
       ? "mentioned you in their"
       : "???"}{" "}
     <a className="fw-bold text-muted" href={href("Post", { id: props.post })}>
-      Developer Governance post
+      DevHub post
     </a>
   </>
 ) : (

@@ -57,7 +57,7 @@ return props.post === undefined ? (
 ) : (
   <>
     <a className="btn btn-outline-dark" href={href("Post", { id: props.post })}>
-      View Developer Governance post
+      View DevHub post
     </a>
   </>
 );
