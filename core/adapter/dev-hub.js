@@ -54,7 +54,7 @@ const DevHub = {
           }))
           .catch((error) => ({
             data: initialData ?? initialState.data,
-            error,
+            error: props?.error ?? error,
             isLoading: false,
           })),
       name,

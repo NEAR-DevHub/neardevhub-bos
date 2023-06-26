@@ -51,6 +51,12 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/record" */
+const pick = (object, subsetKeys) =>
+  Object.fromEntries(
+    Object.entries(object ?? {}).filter(([key, _]) => subsetKeys.includes(key))
+  );
+/* END_INCLUDE: "core/lib/record" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -150,27 +156,29 @@ const communityBrandingDefaults = {
 };
 
 const CommunityEditorBrandingSection = ({
-  data: { description, name, ...data },
+  initialData,
+  description,
   isEditingAllowed,
+  name,
   onSubmit,
 }) => {
-  State.init({
-    data: {
-      banner: {
-        cid:
-          data.banner_url?.split?.("/")?.at?.(-1) ??
-          communityBrandingDefaults.banner_cid,
-      },
-
-      logo: {
-        cid:
-          data.logo_url?.split?.("/")?.at?.(-1) ??
-          communityBrandingDefaults.logo_cid,
-      },
+  const data = {
+    banner: {
+      cid:
+        initialData.banner_url?.split?.("/")?.at?.(-1) ??
+        communityBrandingDefaults.banner_cid,
     },
-  });
 
-  onSubmit({
+    logo: {
+      cid:
+        initialData.logo_url?.split?.("/")?.at?.(-1) ??
+        communityBrandingDefaults.logo_cid,
+    },
+  };
+
+  State.init({ data, hasUncommittedChanges: false });
+
+  const formValues = {
     banner_url: `https://ipfs.near.social/ipfs/${
       state.data.banner.cid ?? communityBrandingDefaults.banner_cid
     }`,
@@ -178,7 +186,24 @@ const CommunityEditorBrandingSection = ({
     logo_url: `https://ipfs.near.social/ipfs/${
       state.data.logo.cid ?? communityBrandingDefaults.logo_cid
     }`,
-  });
+  };
+
+  const isSynced =
+    JSON.stringify(formValues) ===
+    JSON.stringify(pick(initialData, Object.keys(formValues)));
+
+  if (!isSynced) {
+    if (state.hasUncommittedChanges) {
+      onSubmit(formValues);
+    } else
+      State.update((lastKnownState) => ({
+        ...lastKnownState,
+        data,
+        hasUncommittedChanges: false,
+      }));
+  }
+
+  console.log(data);
 
   return (
     <AttractableDiv
@@ -189,7 +214,7 @@ const CommunityEditorBrandingSection = ({
         alt="Community banner preview"
         className="card-img-top d-flex flex-column justify-content-end align-items-end p-4"
         style={{
-          background: `center / cover no-repeat url(${data.banner_url})`,
+          background: `center / cover no-repeat url(${formValues.banner_url})`,
         }}
       >
         {isEditingAllowed ? (
@@ -207,7 +232,7 @@ const CommunityEditorBrandingSection = ({
           marginTop: -64,
           width: 128,
           height: 128,
-          background: `center / cover no-repeat url(${data.logo_url})`,
+          background: `center / cover no-repeat url(${formValues.logo_url})`,
         }}
       >
         {isEditingAllowed ? <IpfsImageUpload image={state.data.logo} /> : null}
@@ -234,4 +259,4 @@ const CommunityEditorBrandingSection = ({
   );
 };
 
-return CommunityEditorBrandingSection(props);
+return <CommunityEditorBrandingSection {...props} />;

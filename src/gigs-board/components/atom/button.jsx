@@ -85,12 +85,24 @@ const ButtonRoot = styled.button`
     --bs-btn-disabled-color: #6c757d8f;
   }
 
+  .adornmentHover {
+    display: none;
+  }
+
   .label {
     display: ${({ isCollapsible }) =>
       isCollapsible ?? false ? "none" : "block"};
   }
 
   &:hover {
+    & .adornment {
+      display: none;
+    }
+
+    & .adornmentHover {
+      display: block;
+    }
+
     & .label {
       display: block;
     }
@@ -109,7 +121,17 @@ const Button = ({ classNames, label, ...restProps }) => (
   >
     {classNames.adornment ? (
       <i
-        className={[classNames.adornment, "adornment"].join(" ")}
+        className={[
+          classNames.adornment,
+          (classNames.adornmentHover ?? null) === null ? "" : "adornment",
+        ].join(" ")}
+        style={{ lineHeight: !restProps.isCollapsible ? 1 : 1.5 }}
+      />
+    ) : null}
+
+    {classNames.adornmentHover ? (
+      <i
+        className={[classNames.adornmentHover, "adornmentHover"].join(" ")}
         style={{ lineHeight: !restProps.isCollapsible ? 1 : 1.5 }}
       />
     ) : null}

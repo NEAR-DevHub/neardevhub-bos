@@ -246,7 +246,7 @@ const Form = ({
   actionsAdditional,
   cancelLabel,
   classNames,
-  data,
+  initialData,
   fieldsRender: fieldsRenderCustom,
   heading,
   isEditorActive,
@@ -263,13 +263,25 @@ const Form = ({
       ? fieldsRenderCustom
       : fieldsRenderDefault;
 
-  const initialState =
-    typeof schema === "object" ? pick(data, Object.keys(schema)) : data ?? {};
+  const initialValues =
+    typeof schema === "object"
+      ? pick(initialData, Object.keys(schema))
+      : initialData ?? {};
 
   State.init({
-    data: initialState,
+    data: initialValues,
     isEditorActive: isEditorActive ?? false,
   });
+
+  if (
+    !state.isEditorActive &&
+    JSON.stringify(initialValues) !== JSON.stringify(state.data)
+  ) {
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      data: initialValues,
+    }));
+  }
 
   const onEditorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -280,16 +292,16 @@ const Form = ({
   const { formState, formUpdate } = useForm({ stateKey: "data" });
 
   const noChanges =
-    JSON.stringify(formState) === JSON.stringify(initialState ?? {});
+    JSON.stringify(formState) === JSON.stringify(initialValues ?? {});
 
   const onCancelClick = () => {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: initialState,
+      data: initialValues,
       isEditorActive: false,
     }));
 
-    if (typeof onSubmit === "function") onSubmit(initialState);
+    if (typeof onSubmit === "function") onSubmit(initialValues);
     if (typeof onCancel === "function") onCancel();
   };
 
@@ -338,7 +350,6 @@ const Form = ({
 
             {widget("components.atom.button", {
               classNames: { root: "btn-outline-danger shadow-none border-0" },
-              disabled: noChanges,
               label: cancelLabel ?? "Cancel",
               onClick: onCancelClick,
             })}

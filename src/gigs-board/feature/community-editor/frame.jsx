@@ -114,7 +114,7 @@ const DevHub = {
           }))
           .catch((error) => ({
             data: initialData ?? initialState.data,
-            error,
+            error: props?.error ?? error,
             isLoading: false,
           })),
       name,
@@ -167,7 +167,7 @@ const CommunityEditorFrame = ({ handle }) => {
     isEditingAllowed: false,
   });
 
-  if (typeof handle === "string" && state.data === null) {
+  if (typeof handle === "string" && (state.data?.handle?.length ?? 0) === 0) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       data: { ...communityState.data },
@@ -185,6 +185,18 @@ const CommunityEditorFrame = ({ handle }) => {
       hasUncommittedChanges: true,
       isCommunityNew: true,
       isEditingAllowed: true,
+    }));
+  }
+
+  if (
+    !state.hasUncommittedChanges &&
+    JSON.stringify(communityState.data) !== JSON.stringify(data)
+  ) {
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      data: { ...communityState.data },
+      hasUncommittedChanges: false,
+      isCommunityNew: false,
     }));
   }
 
@@ -252,23 +264,25 @@ const CommunityEditorFrame = ({ handle }) => {
       {communityState.data.handle !== null || state.isCommunityNew ? (
         <>
           {widget("feature.community-editor.branding-section", {
-            data: state.data,
+            description: state.data?.description,
+            initialData: state.data,
             isEditingAllowed: state.isEditingAllowed,
+            name: state.data?.name,
             onSubmit: onSubformSubmit,
           })}
 
           {widget("components.organism.form", {
             classNames: {
               submit: "btn-primary",
-              submitAdornment: "bi-arrow-down-circle-fill",
+              submitAdornment: "bi-check-circle-fill",
             },
 
-            data: state.data,
+            initialData: state.data,
             heading: "Basic information",
             isEditorActive: state.isCommunityNew,
             isMutable: state.isEditingAllowed,
             onSubmit: onSubformSubmit,
-            submitLabel: state.isCommunityNew ? "Next" : "Continue",
+            submitLabel: "Accept",
 
             schema: {
               name: {
@@ -333,14 +347,14 @@ const CommunityEditorFrame = ({ handle }) => {
           {widget("components.organism.form", {
             classNames: {
               submit: "btn-primary",
-              submitAdornment: "bi-arrow-down-circle-fill",
+              submitAdornment: "bi-check-circle-fill",
             },
 
-            data: state.data,
+            initialData: state.data,
             heading: "About",
             isMutable: state.isEditingAllowed,
             onSubmit: onSubformSubmit,
-            submitLabel: state.isCommunityNew ? "Next" : "Continue",
+            submitLabel: "Accept",
 
             schema: {
               bio_markdown: {
@@ -388,14 +402,14 @@ const CommunityEditorFrame = ({ handle }) => {
           {widget("components.organism.form", {
             classNames: {
               submit: "btn-primary",
-              submitAdornment: "bi-arrow-down-circle-fill",
+              submitAdornment: "bi-check-circle-fill",
             },
 
-            data: state.data,
+            initialData: state.data,
             heading: "Permissions",
             isMutable: state.isEditingAllowed,
             onSubmit: onSubformSubmit,
-            submitLabel: state.isCommunityNew ? "Next" : "Continue",
+            submitLabel: "Accept",
 
             schema: {
               admins: {
@@ -410,14 +424,14 @@ const CommunityEditorFrame = ({ handle }) => {
           {widget("components.organism.form", {
             classNames: {
               submit: "btn-primary",
-              submitAdornment: "bi-arrow-down-circle-fill",
+              submitAdornment: "bi-check-circle-fill",
             },
 
-            data: state.data?.wiki1 ?? {},
+            initialData: state.data?.wiki1 ?? {},
             heading: "Wiki page 1",
             isMutable: state.isEditingAllowed,
             onSubmit: (value) => onSubformSubmit({ wiki1: value }),
-            submitLabel: state.isCommunityNew ? "Next" : "Continue",
+            submitLabel: "Accept",
 
             schema: {
               name: {
@@ -437,14 +451,14 @@ const CommunityEditorFrame = ({ handle }) => {
           {widget("components.organism.form", {
             classNames: {
               submit: "btn-primary",
-              submitAdornment: "bi-arrow-down-circle-fill",
+              submitAdornment: "bi-check-circle-fill",
             },
 
-            data: state.data?.wiki2 ?? {},
+            initialData: state.data?.wiki2 ?? {},
             heading: "Wiki page 2",
             isMutable: state.isEditingAllowed,
             onSubmit: (value) => onSubformSubmit({ wiki2: value }),
-            submitLabel: state.isCommunityNew ? "Next" : "Continue",
+            submitLabel: "Accept",
 
             schema: {
               name: {
@@ -477,9 +491,9 @@ const CommunityEditorFrame = ({ handle }) => {
             </div>
           ) : null}
 
-          {(state.isEditingAllowed || state.isCommunityNew) && (
+          {state.isEditingAllowed && state.hasUncommittedChanges && (
             <div
-              className="position-fixed end-0 bottom-0 bg-transparent p-4"
+              className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
               style={{
                 borderTopLeftRadius: "100%",
               }}
@@ -488,16 +502,19 @@ const CommunityEditorFrame = ({ handle }) => {
                 classNames: {
                   root: "btn-lg btn-success",
 
-                  adornment: [
-                    "bi",
-
+                  adornment: `bi ${
                     state.isCommunityNew
                       ? "bi-rocket-takeoff-fill"
-                      : "bi-cloud-arrow-up-fill",
-                  ].join(" "),
+                      : "bi-exclamation-triangle-fill"
+                  }`,
+
+                  adornmentHover: `bi ${
+                    state.isCommunityNew
+                      ? "bi-rocket-takeoff-fill"
+                      : "bi-sign-merge-right-fill"
+                  }`,
                 },
 
-                disabled: !state.hasUncommittedChanges,
                 isCollapsible: true,
                 label: state.isCommunityNew ? "Launch" : "Save",
                 onClick: onSubmit,
