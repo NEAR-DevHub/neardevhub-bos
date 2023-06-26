@@ -86,6 +86,7 @@ const labels = labelStrings.map((s) => {
   return { name: s };
 });
 
+// TODO: REMOVE INIT STATE // gitblock
 initState({
   seekingFunding: false,
   //
@@ -95,14 +96,14 @@ initState({
   // Should be a list of labels as strings.
   // Both of the label structures should be modified together.
   labelStrings,
-  postType: "Idea",
-  name: props.name ?? "",
-  description: props.description ?? "",
-  amount: props.amount ?? "",
-  token: props.token ?? "NEAR",
+  postType: "Solution",
+  name: props.name ?? "TESTING title",
+  description: props.description ?? "Testing Solution",
+  amount: props.amount ?? "800",
+  token: props.token ?? "USDC",
   supervisor: props.supervisor ?? "neardevgov.near",
   githubLink: props.githubLink ?? "",
-  warning: "",
+  warning: "This is the warning",
 });
 
 // This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.

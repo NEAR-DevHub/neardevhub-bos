@@ -414,7 +414,7 @@ const disclaimer = (
   </p>
 );
 
-const isFundraisingDiv =  fields.includes("fund_raising") && (
+const isFundraisingDiv = fields.includes("fund_raising") && (
   // This is jank with just btns and not radios. But the radios were glitchy af
   <>
     <div class="mb-2">
@@ -460,60 +460,64 @@ const isFundraisingDiv =  fields.includes("fund_raising") && (
   </>
 );
 
-const fundraisingDiv =  state.seekingFunding && fields.includes("fund_raising") && (
-  <div class="d-flex flex-column mb-2">
-    <div className="col-lg-6  mb-2">
-      Currency
-      <select
-        onChange={(event) => State.update({ token: event.target.value })}
-        class="form-select"
-        aria-label="Default select example"
-      >
-        <option selected value="NEAR">
-          NEAR
-        </option>
-        <option value="USDC">USDC</option>
-        <option value="USD">USD</option>
-      </select>
-    </div>
-    <div className="col-lg-6 mb-2">
-      Requested amount <span class="text-muted fw-normal">(Numbers Only)</span>
-      <input
-        type="number"
-        value={parseInt(state.amount) > 0 ? state.amount : ""}
-        min={0}
-        onChange={(event) =>
-          State.update({
-            amount: Number(
-              event.target.value.toString().replace(/e/g, "")
-            ).toString(),
-          })
-        }
-      />
-    </div>
-    <div className="col-lg-6 mb-2">
-      <p class="mb-1">
-        Requested sponsor <span class="text-muted fw-normal">(Optional)</span>
-      </p>
-      <p style={{ fontSize: "13px" }} class="m-0 text-muted fw-light">
-        If you are requesting funding from a specific sponsor, please enter
-        their username.
-      </p>
-      <div class="input-group flex-nowrap">
-        <span class="input-group-text" id="addon-wrapping">
-          @
-        </span>
+const fundraisingDiv = state.seekingFunding &&
+  fields.includes("fund_raising") && (
+    <div class="d-flex flex-column mb-2">
+      <div className="col-lg-6  mb-2">
+        Currency
+        <select
+          onChange={(event) => State.update({ token: event.target.value })}
+          class="form-select"
+          aria-label="Default select example"
+        >
+          <option selected value="NEAR">
+            NEAR
+          </option>
+          <option value="USDC">USDC</option>
+          <option value="USD">USD</option>
+        </select>
+      </div>
+      <div className="col-lg-6 mb-2">
+        Requested amount{" "}
+        <span class="text-muted fw-normal">(Numbers Only)</span>
         <input
-          type="text"
-          class="form-control"
-          placeholder="Enter username"
-          value={state.supervisor}
-          onChange={(event) => State.update({ supervisor: event.target.value })}
+          type="number"
+          value={parseInt(state.amount) > 0 ? state.amount : ""}
+          min={0}
+          onChange={(event) =>
+            State.update({
+              amount: Number(
+                event.target.value.toString().replace(/e/g, "")
+              ).toString(),
+            })
+          }
         />
       </div>
+      <div className="col-lg-6 mb-2">
+        <p class="mb-1">
+          Requested sponsor <span class="text-muted fw-normal">(Optional)</span>
+        </p>
+        <p style={{ fontSize: "13px" }} class="m-0 text-muted fw-light">
+          If you are requesting funding from a specific sponsor, please enter
+          their username.
+        </p>
+        <div class="input-group flex-nowrap">
+          <span class="input-group-text" id="addon-wrapping">
+            @
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter username"
+            value={state.supervisor}
+            onChange={(event) =>
+              State.update({ supervisor: event.target.value })
+            }
+          />
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
 
 function generateDescription(text, amount, token, supervisor) {
   const funding = `###### Requested amount: ${amount} ${token}\n###### Requested sponsor: @${supervisor}\n`;
@@ -546,7 +550,7 @@ return (
           ></button>
         </div>
       )}
-    
+
       <div className="row">
         {githubLinkDiv}
         {labelEditor}
@@ -558,7 +562,7 @@ return (
         {isFundraisingDiv}
         {fundraisingDiv}
       </div>
-     
+
       <a className="btn btn-outline-primary mb-2" onClick={onSubmit}>
         Submit
       </a>
@@ -577,12 +581,13 @@ return (
             labels: state.labelStrings,
             post_type: postType,
             name: state.name,
-            description: generateDescription(
-              state.description,
-              state.amount,
-              state.token,
-              state.supervisor
-            ),
+            description: state.description,
+            // generateDescription(
+            //   state.description,
+            //   state.amount,
+            //   state.token,
+            //   state.supervisor
+            // ),
             amount: state.amount,
             sponsorship_token: state.token,
             supervisor: state.supervisor,
