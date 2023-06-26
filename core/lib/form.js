@@ -69,7 +69,7 @@ const fieldDefaultUpdate = ({
 };
 
 const useForm = ({ stateKey: formStateKey }) => ({
-  formState: state[formStateKey],
+  formValues: state[formStateKey],
 
   formUpdate:
     ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>

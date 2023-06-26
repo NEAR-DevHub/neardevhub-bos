@@ -126,7 +126,7 @@ const DevHub = {
             isLoading: false,
           }))
           .catch((error) => ({
-            data: initialData ?? initialState.data,
+            ...initialState,
             error: props?.error ?? error,
             isLoading: false,
           })),
@@ -137,6 +137,25 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
+
+const CommunityDefaults = {
+  handle: null,
+  admins: [context.accountId],
+  name: "",
+  description: "",
+  bio_markdown: null,
+  logo_url: null,
+  banner_url: null,
+  tag: "",
+  github_handle: null,
+  telegram_handle: null,
+  twitter_handle: null,
+  website_url: null,
+  github: null,
+  sponsorship: null,
+  wiki1: null,
+  wiki2: null,
+};
 
 const CommunityEditorFrame = ({ handle }) => {
   const accessControlInfo = DevHub.get_access_control_info();
@@ -150,49 +169,33 @@ const CommunityEditorFrame = ({ handle }) => {
       context.accountId
     ) ?? false;
 
-  const communityState = DevHub.useQuery({
-    name: "get_community",
-    params: { handle },
-
-    initialData: {
-      handle: null,
-      admins: [context.accountId],
-      name: "",
-      description: "",
-      bio_markdown: null,
-      logo_url: null,
-      banner_url: null,
-      tag: "",
-      github_handle: null,
-      telegram_handle: null,
-      twitter_handle: null,
-      website_url: null,
-      github: null,
-      sponsorship: null,
-      wiki1: null,
-      wiki2: null,
-    },
-  });
-
   State.init({
     data: null,
     hasUncommittedChanges: false,
-    isCommunityNew: true,
+    isCommunityNew: typeof handle !== "string",
     isEditingAllowed: false,
   });
 
-  const isSynced = HashMap.isEqual(communityState.data, state.data ?? {});
+  const community = state.isCommunityNew
+    ? { data: CommunityDefaults }
+    : DevHub.useQuery({
+        name: "get_community",
+        params: { handle },
+        initialData: CommunityDefaults,
+      });
+
+  const isSynced = HashMap.isEqual(community.data, state.data ?? {});
 
   if (state.data === null) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: { ...communityState.data },
+      data: community.data,
       hasUncommittedChanges: false,
       isCommunityNew: typeof handle !== "string",
 
       isEditingAllowed:
         typeof handle !== "string" ||
-        (communityState.data?.admins ?? []).includes(context.accountId) ||
+        (community.data?.admins ?? []).includes(context.accountId) ||
         isSupervisionAllowed,
     }));
   } else if (
@@ -202,13 +205,12 @@ const CommunityEditorFrame = ({ handle }) => {
   ) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: { ...communityState.data },
+      data: community.data,
       hasUncommittedChanges: false,
-      isCommunityNew: false,
     }));
   }
 
-  console.log({ communityData: communityState.data, editorState: state.data });
+  console.log({ communityData: community.data, editorState: state.data });
 
   console.log({
     isSynced,
@@ -240,7 +242,7 @@ const CommunityEditorFrame = ({ handle }) => {
         data,
 
         hasUncommittedChanges:
-          JSON.stringify(HashMap.toOrdered(communityState.data)) !==
+          JSON.stringify(HashMap.toOrdered(community.data)) !==
           JSON.stringify(HashMap.toOrdered(data)),
       };
     });
@@ -252,12 +254,12 @@ const CommunityEditorFrame = ({ handle }) => {
       state.isCommunityNew ? "add_community" : "edit_community",
 
       {
-        handle: state.isCommunityNew ? state.data.handle : handle,
+        handle: state.isCommunityNew ? state.data?.handle : handle,
 
         community: {
-          ...state.data,
+          ...(state.data ?? {}),
 
-          admins: state.data.admins.filter(
+          admins: state.data?.admins?.filter(
             (maybeAccountId) => maybeAccountId.length > 0
           ),
         },
@@ -269,14 +271,12 @@ const CommunityEditorFrame = ({ handle }) => {
 
   return (
     <div className="d-flex flex-column align-items-center gap-4 p-4">
-      {communityState.data.handle !== null || state.isCommunityNew ? (
+      {community.data.handle !== null || state.isCommunityNew ? (
         <>
           {widget("feature.community-editor.branding-section", {
-            description: state.data?.description,
-            initialData: state.data,
             isEditingAllowed: state.isEditingAllowed,
-            name: state.data?.name,
             onSubmit: onSubformSubmit,
+            valueSource: state.data ?? {},
           })}
 
           {widget("components.organism.form", {
@@ -285,12 +285,12 @@ const CommunityEditorFrame = ({ handle }) => {
               submitAdornment: "bi-check-circle-fill",
             },
 
-            initialData: state.data,
             heading: "Basic information",
             isEditorActive: state.isCommunityNew,
             isMutable: state.isEditingAllowed,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
+            valueSource: state.data ?? {},
 
             schema: {
               name: {
@@ -358,11 +358,11 @@ const CommunityEditorFrame = ({ handle }) => {
               submitAdornment: "bi-check-circle-fill",
             },
 
-            initialData: state.data,
             heading: "About",
             isMutable: state.isEditingAllowed,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
+            valueSource: state.data ?? {},
 
             schema: {
               bio_markdown: {
@@ -413,11 +413,11 @@ const CommunityEditorFrame = ({ handle }) => {
               submitAdornment: "bi-check-circle-fill",
             },
 
-            initialData: state.data,
             heading: "Permissions",
             isMutable: state.isEditingAllowed,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
+            valueSource: state.data ?? {},
 
             schema: {
               admins: {
@@ -435,11 +435,11 @@ const CommunityEditorFrame = ({ handle }) => {
               submitAdornment: "bi-check-circle-fill",
             },
 
-            initialData: state.data?.wiki1 ?? {},
             heading: "Wiki page 1",
             isMutable: state.isEditingAllowed,
             onSubmit: (value) => onSubformSubmit({ wiki1: value }),
             submitLabel: "Accept",
+            valueSource: state.data?.wiki1,
 
             schema: {
               name: {
@@ -462,11 +462,11 @@ const CommunityEditorFrame = ({ handle }) => {
               submitAdornment: "bi-check-circle-fill",
             },
 
-            initialData: state.data?.wiki2 ?? {},
             heading: "Wiki page 2",
             isMutable: state.isEditingAllowed,
             onSubmit: (value) => onSubformSubmit({ wiki2: value }),
             submitLabel: "Accept",
+            valueSource: state.data?.wiki2,
 
             schema: {
               name: {

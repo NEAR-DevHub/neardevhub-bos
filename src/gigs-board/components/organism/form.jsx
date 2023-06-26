@@ -123,24 +123,24 @@ const fieldDefaultUpdate = ({
 };
 
 const useForm = ({ stateKey: formStateKey }) => ({
-  formState: state[formStateKey],
+  formValues: state[formStateKey],
 
-  formUpdate: ({ path: fieldPath, via: fieldCustomUpdate, ...params }) => (
-    fieldInput
-  ) =>
-    State.update((lastKnownState) =>
-      traversalUpdate({
-        input: fieldInput?.target?.value ?? fieldInput,
-        target: lastKnownState,
-        path: [formStateKey, ...fieldPath],
-        params,
+  formUpdate:
+    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
+    (fieldInput) =>
+      State.update((lastKnownState) =>
+        traversalUpdate({
+          input: fieldInput?.target?.value ?? fieldInput,
+          target: lastKnownState,
+          path: [formStateKey, ...fieldPath],
+          params,
 
-        via:
-          typeof fieldCustomUpdate === "function"
-            ? fieldCustomUpdate
-            : fieldDefaultUpdate,
-      })
-    ),
+          via:
+            typeof fieldCustomUpdate === "function"
+              ? fieldCustomUpdate
+              : fieldDefaultUpdate,
+        })
+      ),
 });
 /* END_INCLUDE: "core/lib/form" */
 /* INCLUDE: "core/lib/hashmap" */
@@ -179,7 +179,12 @@ const fieldParamsByType = {
   },
 };
 
-const fieldsRenderDefault = ({ schema, formState, formUpdate, isEditable }) => (
+const fieldsRenderDefault = ({
+  schema,
+  formValues,
+  formUpdate,
+  isEditable,
+}) => (
   <>
     {Object.entries(schema).map(
       ([
@@ -187,20 +192,20 @@ const fieldsRenderDefault = ({ schema, formState, formUpdate, isEditable }) => (
         { format, inputProps, label, order, style, ...fieldProps },
       ]) => {
         const contentDisplayClassName = [
-          (formState[fieldKey]?.length ?? 0) > 0 ? "" : "text-muted",
+          (formValues[fieldKey]?.length ?? 0) > 0 ? "" : "text-muted",
           "m-0",
         ].join(" ");
 
-        const fieldType = Array.isArray(formState[fieldKey])
+        const fieldType = Array.isArray(formValues[fieldKey])
           ? "array"
-          : typeof (formState[fieldKey] ?? "");
+          : typeof (formValues[fieldKey] ?? "");
 
         return (
           <>
             {!isEditable && (
               <div
                 className="d-flex gap-3"
-                key={`${formState.handle}-${fieldKey}`}
+                key={`${formValues.handle}-${fieldKey}`}
                 style={{ order }}
               >
                 <label className="fw-bold w-25">{label}</label>
@@ -208,16 +213,16 @@ const fieldsRenderDefault = ({ schema, formState, formUpdate, isEditable }) => (
                 {format !== "markdown" ? (
                   <p className={[contentDisplayClassName, "w-75"].join(" ")}>
                     {(fieldType === "array"
-                      ? formState[fieldKey]
+                      ? formValues[fieldKey]
                           .filter((string) => string.length > 0)
                           .join(", ")
-                      : formState[fieldKey]
+                      : formValues[fieldKey]
                     )?.toString?.() || "none"}
                   </p>
                 ) : (
                   <p className={[contentDisplayClassName, "w-75"].join(" ")}>
-                    {(formState[fieldKey]?.length ?? 0) > 0 ? (
-                      <Markdown text={formState[fieldKey]} />
+                    {(formValues[fieldKey]?.length ?? 0) > 0 ? (
+                      <Markdown text={formValues[fieldKey]} />
                     ) : (
                       "none"
                     )}
@@ -231,20 +236,20 @@ const fieldsRenderDefault = ({ schema, formState, formUpdate, isEditable }) => (
                 ...fieldProps,
                 className: "w-100",
                 format,
-                key: `${formState.handle}-${fieldKey}`,
+                key: `${formValues.handle}-${fieldKey}`,
                 label,
                 onChange: formUpdate({ path: [fieldKey] }),
                 style: { ...style, order },
 
                 value:
                   fieldType === "array"
-                    ? formState[fieldKey].join(", ")
-                    : formState[fieldKey],
+                    ? formValues[fieldKey].join(", ")
+                    : formValues[fieldKey],
 
                 inputProps: {
                   ...(inputProps ?? {}),
 
-                  ...(fieldParamsByType[typeof formState[fieldKey]]
+                  ...(fieldParamsByType[typeof formValues[fieldKey]]
                     .inputProps ?? {}),
                 },
               })}
@@ -259,7 +264,6 @@ const Form = ({
   actionsAdditional,
   cancelLabel,
   classNames,
-  initialData,
   fieldsRender: fieldsRenderCustom,
   heading,
   isEditorActive,
@@ -269,6 +273,7 @@ const Form = ({
   onSubmit,
   schema,
   submitLabel,
+  valueSource,
   ...restProps
 }) => {
   const fieldsRender =
@@ -278,21 +283,21 @@ const Form = ({
 
   const initialValues =
     typeof schema === "object"
-      ? HashMap.pick(initialData, Object.keys(schema))
-      : initialData ?? {};
+      ? HashMap.pick(valueSource ?? {}, Object.keys(schema))
+      : {};
 
   State.init({
-    data: initialValues,
     isEditorActive: isEditorActive ?? false,
+    values: initialValues,
   });
 
   if (
     !state.isEditorActive &&
-    JSON.stringify(initialValues) !== JSON.stringify(state.data)
+    JSON.stringify(initialValues) !== JSON.stringify(state.values)
   ) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: initialValues,
+      values: initialValues,
     }));
   }
 
@@ -302,13 +307,13 @@ const Form = ({
       isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
     }));
 
-  const { formState, formUpdate } = useForm({ stateKey: "data" }),
-    hasUncommittedChanges = !HashMap.isEqual(formState, initialValues ?? {});
+  const { formValues, formUpdate } = useForm({ stateKey: "values" }),
+    hasUncommittedChanges = !HashMap.isEqual(formValues, initialValues);
 
   const onCancelClick = () => {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: initialValues,
+      values: initialValues,
       isEditorActive: false,
     }));
 
@@ -318,7 +323,7 @@ const Form = ({
 
   const onSubmitClick = () => {
     onEditorToggle(false);
-    if (typeof onSubmit === "function") onSubmit(formState);
+    if (typeof onSubmit === "function") onSubmit(formValues);
   };
 
   return widget("components.molecule.tile", {
@@ -345,7 +350,7 @@ const Form = ({
           className={`d-flex flex-column gap-${state.isEditorActive ? 1 : 4}`}
         >
           {fieldsRender({
-            formState,
+            formValues,
             formUpdate,
             isEditable: isMutable && state.isEditorActive,
             onFormSubmit: onSubmit,

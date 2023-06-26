@@ -169,27 +169,25 @@ const communityBrandingDefaults = {
 };
 
 const CommunityEditorBrandingSection = ({
-  initialData,
-  description,
   isEditingAllowed,
-  name,
   onSubmit,
+  valueSource,
 }) => {
-  const data = {
+  const initialData = {
     banner: {
       cid:
-        initialData.banner_url?.split?.("/")?.at?.(-1) ??
+        valueSource.banner_url?.split?.("/")?.at?.(-1) ??
         communityBrandingDefaults.banner_cid,
     },
 
     logo: {
       cid:
-        initialData.logo_url?.split?.("/")?.at?.(-1) ??
+        valueSource.logo_url?.split?.("/")?.at?.(-1) ??
         communityBrandingDefaults.logo_cid,
     },
   };
 
-  State.init({ data, hasUncommittedChanges: false });
+  State.init({ data: initialData });
 
   const formValues = {
     banner_url: `https://ipfs.near.social/ipfs/${
@@ -203,20 +201,18 @@ const CommunityEditorBrandingSection = ({
 
   const hasUncommittedChanges = !HashMap.isEqual(
     formValues,
-    HashMap.pick(initialData, Object.keys(formValues))
+    HashMap.pick(valueSource, Object.keys(formValues))
   );
 
   if (hasUncommittedChanges) {
     onSubmit(formValues);
-  } else {
-    State.update((lastKnownState) => ({ ...lastKnownState, data }));
   }
 
   console.log({
     section: "branding",
     hasUncommittedChanges,
     formValues,
-    initialData: HashMap.pick(initialData, Object.keys(formValues)),
+    valueSource: HashMap.pick(valueSource, Object.keys(formValues)),
   });
 
   return (
@@ -260,13 +256,13 @@ const CommunityEditorBrandingSection = ({
           className="h5 text-nowrap overflow-hidden"
           style={{ textOverflow: "ellipsis" }}
         >
-          {name}
+          {valueSource.name}
         </h5>
         <p
           className="card-text text-nowrap overflow-hidden"
           style={{ textOverflow: "ellipsis" }}
         >
-          {description}
+          {valueSource.description}
         </p>
       </div>
     </AttractableDiv>
