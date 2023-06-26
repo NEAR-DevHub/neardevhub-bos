@@ -51,12 +51,25 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/record" */
-const pick = (object, subsetKeys) =>
-  Object.fromEntries(
-    Object.entries(object ?? {}).filter(([key, _]) => subsetKeys.includes(key))
-  );
-/* END_INCLUDE: "core/lib/record" */
+/* INCLUDE: "core/lib/hashmap" */
+const HashMap = {
+  isEqual: (input1, input2) =>
+    JSON.stringify(HashMap.toOrdered(input1)) ===
+    JSON.stringify(HashMap.toOrdered(input2)),
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+};
+/* END_INCLUDE: "core/lib/hashmap" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const contractAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -117,6 +130,7 @@ const DevHub = {
             error: props?.error ?? error,
             isLoading: false,
           })),
+
       name,
       { subscribe: true }
     );
@@ -125,6 +139,17 @@ const DevHub = {
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
 const CommunityEditorFrame = ({ handle }) => {
+  const accessControlInfo = DevHub.get_access_control_info();
+
+  if (accessControlInfo === null) {
+    return <div>Loading...</div>;
+  }
+
+  const isSupervisionAllowed =
+    accessControlInfo.members_list["team:moderators"]?.children?.includes?.(
+      context.accountId
+    ) ?? false;
+
   const communityState = DevHub.useQuery({
     name: "get_community",
     params: { handle },
@@ -149,17 +174,6 @@ const CommunityEditorFrame = ({ handle }) => {
     },
   });
 
-  const accessControlInfo = DevHub.get_access_control_info();
-
-  if (accessControlInfo === null) {
-    return <div>Loading...</div>;
-  }
-
-  const isSupervisionAllowed =
-    accessControlInfo.members_list["team:moderators"]?.children?.includes?.(
-      context.accountId
-    ) ?? false;
-
   State.init({
     data: null,
     hasUncommittedChanges: false,
@@ -167,30 +181,24 @@ const CommunityEditorFrame = ({ handle }) => {
     isEditingAllowed: false,
   });
 
-  if (typeof handle === "string" && (state.data?.handle?.length ?? 0) === 0) {
+  const isSynced = HashMap.isEqual(communityState.data, state.data ?? {});
+
+  if (state.data === null) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       data: { ...communityState.data },
       hasUncommittedChanges: false,
-      isCommunityNew: false,
+      isCommunityNew: typeof handle !== "string",
 
       isEditingAllowed:
+        typeof handle !== "string" ||
         (communityState.data?.admins ?? []).includes(context.accountId) ||
         isSupervisionAllowed,
     }));
-  } else if (typeof handle !== "string" && state.data === null) {
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      data: { ...communityState.data },
-      hasUncommittedChanges: true,
-      isCommunityNew: true,
-      isEditingAllowed: true,
-    }));
-  }
-
-  if (
+  } else if (
+    typeof handle === "string" &&
     !state.hasUncommittedChanges &&
-    JSON.stringify(communityState.data) !== JSON.stringify(data)
+    !isSynced
   ) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
@@ -202,12 +210,11 @@ const CommunityEditorFrame = ({ handle }) => {
 
   console.log({ communityData: communityState.data, editorState: state.data });
 
-  console.log(
-    JSON.stringify({
-      hasUncommittedChanges: state.hasUncommittedChanges,
-      isCommunityNew: state.isCommunityNew,
-    })
-  );
+  console.log({
+    isSynced,
+    hasUncommittedChanges: state.hasUncommittedChanges,
+    isCommunityNew: state.isCommunityNew,
+  });
 
   const onSubformSubmit = (partial) => {
     State.update((lastKnownState) => {
@@ -233,7 +240,8 @@ const CommunityEditorFrame = ({ handle }) => {
         data,
 
         hasUncommittedChanges:
-          JSON.stringify(communityState.data) !== JSON.stringify(data),
+          JSON.stringify(HashMap.toOrdered(communityState.data)) !==
+          JSON.stringify(HashMap.toOrdered(data)),
       };
     });
   };

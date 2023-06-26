@@ -23,10 +23,10 @@ replaceInFiles(options)
       .toString()}/* END_INCLUDE: "core/lib/gui/attractable" */`,
   })
   .pipe({
-    from: /\/\* INCLUDE: "core\/lib\/record" \*\/.*\/\* END_INCLUDE: "core\/lib\/record" \*\//gms,
-    to: `/* INCLUDE: "core/lib/record" */\n${fs
-      .readFileSync("./core/lib/record.js", "utf8")
-      .toString()}/* END_INCLUDE: "core/lib/record" */`,
+    from: /\/\* INCLUDE: "core\/lib\/hashmap" \*\/.*\/\* END_INCLUDE: "core\/lib\/hashmap" \*\//gms,
+    to: `/* INCLUDE: "core/lib/hashmap" */\n${fs
+      .readFileSync("./core/lib/hashmap.js", "utf8")
+      .toString()}/* END_INCLUDE: "core/lib/hashmap" */`,
   })
   .pipe({
     from: /\/\* INCLUDE: "core\/lib\/uuid" \*\/.*\/\* END_INCLUDE: "core\/lib\/uuid" \*\//gms,

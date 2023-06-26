@@ -111,6 +111,7 @@ const DevHub = {
             error: props?.error ?? error,
             isLoading: false,
           })),
+
       name,
       { subscribe: true }
     );

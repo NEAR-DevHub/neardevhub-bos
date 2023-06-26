@@ -125,30 +125,43 @@ const fieldDefaultUpdate = ({
 const useForm = ({ stateKey: formStateKey }) => ({
   formState: state[formStateKey],
 
-  formUpdate:
-    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
-    (fieldInput) =>
-      State.update((lastKnownState) =>
-        traversalUpdate({
-          input: fieldInput?.target?.value ?? fieldInput,
-          target: lastKnownState,
-          path: [formStateKey, ...fieldPath],
-          params,
+  formUpdate: ({ path: fieldPath, via: fieldCustomUpdate, ...params }) => (
+    fieldInput
+  ) =>
+    State.update((lastKnownState) =>
+      traversalUpdate({
+        input: fieldInput?.target?.value ?? fieldInput,
+        target: lastKnownState,
+        path: [formStateKey, ...fieldPath],
+        params,
 
-          via:
-            typeof fieldCustomUpdate === "function"
-              ? fieldCustomUpdate
-              : fieldDefaultUpdate,
-        })
-      ),
+        via:
+          typeof fieldCustomUpdate === "function"
+            ? fieldCustomUpdate
+            : fieldDefaultUpdate,
+      })
+    ),
 });
 /* END_INCLUDE: "core/lib/form" */
-/* INCLUDE: "core/lib/record" */
-const pick = (object, subsetKeys) =>
-  Object.fromEntries(
-    Object.entries(object ?? {}).filter(([key, _]) => subsetKeys.includes(key))
-  );
-/* END_INCLUDE: "core/lib/record" */
+/* INCLUDE: "core/lib/hashmap" */
+const HashMap = {
+  isEqual: (input1, input2) =>
+    JSON.stringify(HashMap.toOrdered(input1)) ===
+    JSON.stringify(HashMap.toOrdered(input2)),
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+};
+/* END_INCLUDE: "core/lib/hashmap" */
 
 const fieldParamsByType = {
   array: {
@@ -265,7 +278,7 @@ const Form = ({
 
   const initialValues =
     typeof schema === "object"
-      ? pick(initialData, Object.keys(schema))
+      ? HashMap.pick(initialData, Object.keys(schema))
       : initialData ?? {};
 
   State.init({
@@ -289,10 +302,8 @@ const Form = ({
       isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
     }));
 
-  const { formState, formUpdate } = useForm({ stateKey: "data" });
-
-  const noChanges =
-    JSON.stringify(formState) === JSON.stringify(initialValues ?? {});
+  const { formState, formUpdate } = useForm({ stateKey: "data" }),
+    hasUncommittedChanges = !HashMap.isEqual(formState, initialValues ?? {});
 
   const onCancelClick = () => {
     State.update((lastKnownState) => ({
@@ -360,7 +371,7 @@ const Form = ({
                 adornment: `bi ${classNames.submitAdornment}`,
               },
 
-              disabled: noChanges,
+              disabled: !hasUncommittedChanges,
               label: submitLabel ?? "Submit",
               onClick: onSubmitClick,
             })}

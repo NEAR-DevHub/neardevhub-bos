@@ -51,12 +51,25 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/record" */
-const pick = (object, subsetKeys) =>
-  Object.fromEntries(
-    Object.entries(object ?? {}).filter(([key, _]) => subsetKeys.includes(key))
-  );
-/* END_INCLUDE: "core/lib/record" */
+/* INCLUDE: "core/lib/hashmap" */
+const HashMap = {
+  isEqual: (input1, input2) =>
+    JSON.stringify(HashMap.toOrdered(input1)) ===
+    JSON.stringify(HashMap.toOrdered(input2)),
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+};
+/* END_INCLUDE: "core/lib/hashmap" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -188,22 +201,23 @@ const CommunityEditorBrandingSection = ({
     }`,
   };
 
-  const isSynced =
-    JSON.stringify(formValues) ===
-    JSON.stringify(pick(initialData, Object.keys(formValues)));
+  const hasUncommittedChanges = !HashMap.isEqual(
+    formValues,
+    HashMap.pick(initialData, Object.keys(formValues))
+  );
 
-  if (!isSynced) {
-    if (state.hasUncommittedChanges) {
-      onSubmit(formValues);
-    } else
-      State.update((lastKnownState) => ({
-        ...lastKnownState,
-        data,
-        hasUncommittedChanges: false,
-      }));
+  if (hasUncommittedChanges) {
+    onSubmit(formValues);
+  } else {
+    State.update((lastKnownState) => ({ ...lastKnownState, data }));
   }
 
-  console.log(data);
+  console.log({
+    section: "branding",
+    hasUncommittedChanges,
+    formValues,
+    initialData: HashMap.pick(initialData, Object.keys(formValues)),
+  });
 
   return (
     <AttractableDiv
