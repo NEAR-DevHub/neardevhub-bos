@@ -85,6 +85,8 @@ if (props.transactionHashes) {
   return widget("components.layout.Page", {
     children: widget("entity.post.Post", {
       id: props.id,
+    timestamp: props.timestamp,
+    compareTimestamp: props.compareTimestamp,
       onDraftStateChange,
       draftState,
     }),

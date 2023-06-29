@@ -81,17 +81,8 @@ function readableDate(timestamp) {
   ).substring(4);
 }
 
-function historyHref(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-  const linkPropsQuery = Object.entries(linkProps)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-  return `#/markeljan.near/widget/${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
-
 const currentTimestamp = props.timestamp ?? post.snapshot.timestamp;
+console.log(props.timestamp, post.snapshot.timestamp);
 const snapshot = post.snapshot;
 const snapshotHistory = Array.from(post.snapshot_history);
 
@@ -138,7 +129,7 @@ const history = (
             >
               <a
                 class="dropdown-item"
-                href={historyHref("PostWithHistory", {
+                href={href("Post", {
                   id: postId,
                   timestamp: item.timestamp,
                   compareTimestamp: null,
@@ -166,7 +157,7 @@ const history = (
             </div>
             <a
               class="dropdown-item"
-              href={historyHref("PostWithHistory", {
+              href={href("Post", {
                 id: postId,
                 timestamp: currentTimestamp,
                 compareTimestamp: item.timestamp,
@@ -183,5 +174,3 @@ const history = (
 );
 
 return history;
-
-
