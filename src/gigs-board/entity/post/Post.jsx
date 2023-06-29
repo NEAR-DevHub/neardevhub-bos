@@ -46,9 +46,8 @@ function href(widgetName, linkProps) {
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${linkPropsQuery ? "?" : ""
+    }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/gui/attractable" */
@@ -221,7 +220,11 @@ const header = (
           <div class="d-flex justify-content-end">
             {editControl}
             {timestamp}
-            <div class="bi bi-clock-history px-2"></div>
+            {widget("entity.post.History", {
+              post,
+              timestamp: new Date().getTime()
+            })
+            }
             {shareButton}
           </div>
         </div>
@@ -345,10 +348,10 @@ const buttonsFooter = props.isPreview ? null : (
           {post.likes.length == 0
             ? "Like"
             : widget("components.layout.LikeButton.Faces", {
-                likesByUsers: Object.fromEntries(
-                  post.likes.map(({ author_id }) => [author_id, ""])
-                ),
-              })}
+              likesByUsers: Object.fromEntries(
+                post.likes.map(({ author_id }) => [author_id, ""])
+              ),
+            })}
         </button>
         <div class="btn-group" role="group">
           <button
