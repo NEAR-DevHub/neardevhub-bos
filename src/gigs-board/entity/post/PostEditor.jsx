@@ -79,6 +79,8 @@ const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
 
+const isSponsorship = postType === "Sponsorship";
+
 const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
 const labelStrings = (props.labels ?? []).concat(referralLabels);
 const labels = labelStrings.map((s) => {
@@ -363,39 +365,6 @@ const descriptionDiv = (
   </div>
 );
 
-const amountDiv = (
-  <div className="col-lg-6  mb-2">
-    Amount:
-    <input
-      type="text"
-      value={state.amount}
-      onChange={(event) => State.update({ amount: event.target.value })}
-    />
-  </div>
-);
-
-const tokenDiv = (
-  <div className="col-lg-6  mb-2">
-    Tokens:
-    <input
-      type="text"
-      value={state.token}
-      onChange={(event) => State.update({ token: event.target.value })}
-    />
-  </div>
-);
-
-const supervisorDiv = (
-  <div className="col-lg-6 mb-2">
-    Supervisor:
-    <input
-      type="text"
-      value={state.supervisor}
-      onChange={(event) => State.update({ supervisor: event.target.value })}
-    />
-  </div>
-);
-
 const disclaimer = (
   <p>
     <i>
@@ -410,7 +379,9 @@ const isFundraisingDiv = (
   <>
     <div class="mb-2">
       <p class="fs-6 fw-bold mb-1">
-        Are you seeking funding for your solution?
+        {isSponsorship
+          ? "Are you funding their solution?"
+          : "Are you seeking funding for your solution?"}
         <span class="text-muted fw-normal">(Optional)</span>
       </p>
       <div class="form-check form-check-inline">
@@ -468,7 +439,8 @@ const fundraisingDiv = (
       </select>
     </div>
     <div className="col-lg-6 mb-2">
-      Requested amount <span class="text-muted fw-normal">(Numbers Only)</span>
+      {isSponsorship ? "Sponsored" : "Requested"} amount
+      <span class="text-muted fw-normal">(Numbers Only)</span>
       <input
         type="number"
         value={parseInt(state.amount) > 0 ? state.amount : ""}
@@ -484,7 +456,8 @@ const fundraisingDiv = (
     </div>
     <div className="col-lg-6 mb-2">
       <p class="mb-1">
-        Requested sponsor <span class="text-muted fw-normal">(Optional)</span>
+        {isSponsorship ? "Sponsor" : "Requested sponsor"}
+        <span class="text-muted fw-normal">(Optional)</span>
       </p>
       <p style={{ fontSize: "13px" }} class="m-0 text-muted fw-light">
         If you are requesting funding from a specific sponsor, please enter
@@ -507,7 +480,9 @@ const fundraisingDiv = (
 );
 
 function generateDescription(text, amount, token, supervisor) {
-  const funding = `###### Requested amount: ${amount} ${token}\n###### Requested sponsor: @${supervisor}\n`;
+  const funding = isSponsorship
+    ? `###### Sponsored amount: ${amount} ${token}\n###### Sponsor: @${supervisor}\n`
+    : `###### Requested amount: ${amount} ${token}\n###### Requested sponsor: @${supervisor}\n`;
   if (amount > 0 && token && supervisor) return funding + text;
   return text;
 }
@@ -542,9 +517,6 @@ return (
         {fields.includes("githubLink") && githubLinkDiv}
         {labelEditor}
         {fields.includes("name") && nameDiv}
-        {fields.includes("amount") && amountDiv}
-        {fields.includes("sponsorship_token") && tokenDiv}
-        {fields.includes("supervisor") && supervisorDiv}
         {fields.includes("description") && descriptionDiv}
         {fields.includes("fund_raising") && isFundraisingDiv}
         {state.seekingFunding &&
