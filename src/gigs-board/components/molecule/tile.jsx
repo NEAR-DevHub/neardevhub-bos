@@ -35,10 +35,12 @@ const Tile = ({
   headingAdornment,
   noFrame,
   minHeight,
+  noBorder,
 }) => (
   <AttractableDiv
     className={[
-      "d-flex flex-column gap-3 shadow-sm border rounded-4 w-100",
+      "d-flex flex-column gap-3 shadow-sm rounded-4 w-100",
+      !noBorder ? "border" : "",
       !noFrame ? "p-4" : "",
     ].join(" ")}
     style={{ maxWidth: 896, minHeight: minHeight ?? 240 }}

@@ -91,6 +91,10 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
+const whiteSpace = styled.div`
+height: 75px;
+`;
+
 const CommunityActivityPage = ({ handle }) => {
   if (!handle) {
     return (
@@ -101,7 +105,7 @@ const CommunityActivityPage = ({ handle }) => {
   }
 
   const communityData = DevHub.get_community({ handle });
-
+  console.log({ communityData });
   if (communityData === null) {
     return <div>Loading...</div>;
   }
@@ -112,30 +116,41 @@ const CommunityActivityPage = ({ handle }) => {
 
     children:
       communityData !== null ? (
-        <div>
-          <div class="row mb-2">
-            <div class="col text-center">
-              <small class="text-muted">
-                <span>Required tags:</span>
+        <div class="row">
+          <div class="col-md-9">
+            <div class="row mb-2">
+              <div class="col text-center">
+                <small class="text-muted">
+                  <span>Required tags:</span>
 
-                <a
-                  href={href("Feed", { tag: communityData.tag })}
-                  key={communityData.tag}
-                >
-                  <span class="badge text-bg-primary me-1">
-                    {communityData.tag}
-                  </span>
-                </a>
-              </small>
+                  <a
+                    href={href("Feed", { tag: communityData.tag })}
+                    key={communityData.tag}
+                  >
+                    <span class="badge text-bg-primary me-1">
+                      {communityData.tag}
+                    </span>
+                  </a>
+                </small>
+              </div>
+            </div>
+            {widget("components.layout.Controls", {
+              labels: communityData.tag,
+            })}
+            <div class="row">
+              <div class="col">
+                {widget("entity.post.List", { tag: communityData.tag })}
+              </div>
             </div>
           </div>
-
-          {widget("components.layout.Controls", { labels: communityData.tag })}
-
-          <div class="row">
-            <div class="col">
-              {widget("entity.post.List", { tag: communityData.tag })}
-            </div>
+          <div class="col-md-3 container-fluid">
+            <whiteSpace/>
+            <Widget
+              src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.sidebar`}
+              props={{
+                label: communityData.tag,
+              }}
+            />
           </div>
         </div>
       ) : (
