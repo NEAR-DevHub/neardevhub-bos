@@ -116,7 +116,7 @@ const CommunityCard = ({
       >
         <AttractableImage
           alt="Community logo"
-          className="rounded-circle"
+          className="flex-shrink-0 rounded-circle"
           height={70}
           src={logo_url}
           width={70}
