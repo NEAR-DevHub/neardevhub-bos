@@ -54,7 +54,10 @@ function href(widgetName, linkProps) {
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
   isEqual: (input1, input2) =>
-    [typeof input1, typeof input2] === ["object", "object"]
+    input1 !== null &&
+    typeof input1 === "object" &&
+    input2 !== null &&
+    typeof input2 === "object"
       ? JSON.stringify(HashMap.toOrdered(input1)) ===
         JSON.stringify(HashMap.toOrdered(input2))
       : false,

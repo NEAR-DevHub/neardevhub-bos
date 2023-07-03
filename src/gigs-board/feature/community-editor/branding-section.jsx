@@ -54,7 +54,10 @@ function href(widgetName, linkProps) {
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
   isEqual: (input1, input2) =>
-    [typeof input1, typeof input2] === ["object", "object"]
+    input1 !== null &&
+    typeof input1 === "object" &&
+    input2 !== null &&
+    typeof input2 === "object"
       ? JSON.stringify(HashMap.toOrdered(input1)) ===
         JSON.stringify(HashMap.toOrdered(input2))
       : false,
@@ -204,7 +207,7 @@ const CommunityEditorBrandingSection = ({
     logo_url: `https://ipfs.near.social/ipfs/${state.data.logo.cid}`,
   };
 
-  const isSynced = state.input === state.data;
+  const isSynced = HashMap.isEqual(formValues, initialValues);
 
   if (state.data !== initialData) {
     State.update((lastKnownState) => ({
