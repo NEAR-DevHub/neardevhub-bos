@@ -205,6 +205,7 @@ const CommunityEditorFrame = ({ handle }) => {
   } else if (
     typeof handle === "string" &&
     !state.hasUncommittedChanges &&
+    !community.isLoading &&
     !isSynced
   ) {
     State.update((lastKnownState) => ({
@@ -267,7 +268,7 @@ const CommunityEditorFrame = ({ handle }) => {
         community: {
           ...(state.data ?? {}),
 
-          admins: state.data?.admins?.filter(
+          admins: state.data?.admins.filter(
             (maybeAccountId) => maybeAccountId.length > 0
           ),
         },
