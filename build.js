@@ -13,37 +13,37 @@ replaceInFiles(options)
   .pipe({
     from: /\/\* INCLUDE: "core\/lib\/form" \*\/.*\/\* END_INCLUDE: "core\/lib\/form" \*\//gms,
     to: `/* INCLUDE: "core/lib/form" */\n${fs
-      .readFileSync("./modules/core/lib/form.js", "utf8")
+      .readFileSync("./module/core/lib/form.js", "utf8")
       .toString()}/* END_INCLUDE: "core/lib/form" */`,
   })
   .pipe({
     from: /\/\* INCLUDE: "core\/lib\/gui\/attractable" \*\/.*\/\* END_INCLUDE: "core\/lib\/gui\/attractable" \*\//gms,
     to: `/* INCLUDE: "core/lib/gui/attractable" */\n${fs
-      .readFileSync("./modules/core/lib/gui/attractable.js", "utf8")
+      .readFileSync("./module/core/lib/gui/attractable.js", "utf8")
       .toString()}/* END_INCLUDE: "core/lib/gui/attractable" */`,
   })
   .pipe({
     from: /\/\* INCLUDE: "core\/lib\/hashmap" \*\/.*\/\* END_INCLUDE: "core\/lib\/hashmap" \*\//gms,
     to: `/* INCLUDE: "core/lib/hashmap" */\n${fs
-      .readFileSync("./modules/core/lib/hashmap.js", "utf8")
+      .readFileSync("./module/core/lib/hashmap.js", "utf8")
       .toString()}/* END_INCLUDE: "core/lib/hashmap" */`,
   })
   .pipe({
     from: /\/\* INCLUDE: "core\/lib\/uuid" \*\/.*\/\* END_INCLUDE: "core\/lib\/uuid" \*\//gms,
     to: `/* INCLUDE: "core/lib/uuid" */\n${fs
-      .readFileSync("./modules/core/lib/uuid.js", "utf8")
+      .readFileSync("./module/core/lib/uuid.js", "utf8")
       .toString()}/* END_INCLUDE: "core/lib/uuid" */`,
   })
   .pipe({
     from: /\/\* INCLUDE: "core\/adapter\/dev-hub" \*\/.*\/\* END_INCLUDE: "core\/adapter\/dev-hub" \*\//gms,
     to: `/* INCLUDE: "core/adapter/dev-hub" */\n${fs
-      .readFileSync("./modules/core/adapter/dev-hub.js", "utf8")
+      .readFileSync("./module/core/adapter/dev-hub.js", "utf8")
       .toString()}/* END_INCLUDE: "core/adapter/dev-hub" */`,
   })
   .pipe({
     from: /\/\* INCLUDE: "core\/lib\/autocomplete" \*\/.*\/\* END_INCLUDE: "core\/lib\/autocomplete" \*\//gms,
     to: `/* INCLUDE: "core/lib/autocomplete" */\n${fs
-      .readFileSync("./modules/core/lib/autocomplete.js", "utf8")
+      .readFileSync("./module/core/lib/autocomplete.js", "utf8")
       .toString()}/* END_INCLUDE: "core/lib/autocomplete" */`,
   })
   .then(({ changedFiles, countOfMatchesByPaths }) => {
