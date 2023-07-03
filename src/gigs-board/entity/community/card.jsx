@@ -103,8 +103,8 @@ const CommunityCard = ({
           ? `center / cover no-repeat url(${banner_url})`
           : "#ffffff",
 
-        width: 320,
-        height: 100,
+        width: 400,
+        height: 110,
       }}
     >
       <div
