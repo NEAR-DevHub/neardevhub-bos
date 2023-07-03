@@ -169,7 +169,7 @@ const communityBrandingDefaults = {
 };
 
 const CommunityEditorBrandingSection = ({
-  isEditingAllowed,
+  isMutable,
   onSubmit,
   valueSource,
 }) => {
@@ -187,15 +187,18 @@ const CommunityEditorBrandingSection = ({
     },
   };
 
-  State.init({ data: initialData });
+  State.init({
+    input: initialData,
+    data: initialData,
+  });
 
   const formValues = {
     banner_url: `https://ipfs.near.social/ipfs/${
-      state.data.banner.cid ?? communityBrandingDefaults.banner_cid
+      state.input.banner.cid ?? state.data.banner.cid
     }`,
 
     logo_url: `https://ipfs.near.social/ipfs/${
-      state.data.logo.cid ?? communityBrandingDefaults.logo_cid
+      state.input.logo.cid ?? state.data.logo.cid
     }`,
   };
 
@@ -227,9 +230,7 @@ const CommunityEditorBrandingSection = ({
           background: `center / cover no-repeat url(${formValues.banner_url})`,
         }}
       >
-        {isEditingAllowed ? (
-          <IpfsImageUpload image={state.data.banner} />
-        ) : null}
+        {isMutable ? <IpfsImageUpload image={state.input.banner} /> : null}
       </Banner>
 
       <Logo
@@ -245,7 +246,7 @@ const CommunityEditorBrandingSection = ({
           background: `center / cover no-repeat url(${formValues.logo_url})`,
         }}
       >
-        {isEditingAllowed ? <IpfsImageUpload image={state.data.logo} /> : null}
+        {isMutable ? <IpfsImageUpload image={state.input.logo} /> : null}
       </Logo>
 
       <div
@@ -258,6 +259,7 @@ const CommunityEditorBrandingSection = ({
         >
           {valueSource.name}
         </h5>
+
         <p
           className="card-text text-nowrap overflow-hidden"
           style={{ textOverflow: "ellipsis" }}

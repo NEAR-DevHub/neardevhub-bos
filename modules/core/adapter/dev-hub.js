@@ -38,7 +38,7 @@ const DevHub = {
   useQuery: ({ name, params, initialData }) => {
     const initialState = { data: null, error: null, isLoading: true };
 
-    return useCache(
+    const cacheState = useCache(
       () =>
         Near.asyncView(contractAccountId, name, params ?? {})
           .then((response) => ({
@@ -49,7 +49,6 @@ const DevHub = {
                 ? { ...initialData, ...(response ?? {}) }
                 : response ?? null,
 
-            error: null,
             isLoading: false,
           }))
           .catch((error) => ({
@@ -61,5 +60,7 @@ const DevHub = {
       JSON.stringify({ name, params }),
       { subscribe: true }
     );
+
+    return cacheState === null ? initialState : cacheState;
   },
 };

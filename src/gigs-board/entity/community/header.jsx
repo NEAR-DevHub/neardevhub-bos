@@ -92,7 +92,7 @@ const DevHub = {
   useQuery: ({ name, params, initialData }) => {
     const initialState = { data: null, error: null, isLoading: true };
 
-    return useCache(
+    const cacheState = useCache(
       () =>
         Near.asyncView(contractAccountId, name, params ?? {})
           .then((response) => ({
@@ -103,7 +103,6 @@ const DevHub = {
                 ? { ...initialData, ...(response ?? {}) }
                 : response ?? null,
 
-            error: null,
             isLoading: false,
           }))
           .catch((error) => ({
@@ -115,6 +114,8 @@ const DevHub = {
       JSON.stringify({ name, params }),
       { subscribe: true }
     );
+
+    return cacheState === null ? initialState : cacheState;
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
@@ -175,7 +176,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     return <div>Loading...</div>;
   }
 
-  const isSupervisionAllowed =
+  const Viewer_isModerator =
     accessControlInfo.members_list["team:moderators"]?.children?.includes(
       context.accountId
     ) ?? false;
@@ -219,9 +220,8 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       : []),
   ];
 
-  const isEditingAllowed =
-    isSupervisionAllowed ||
-    communityData?.admins?.includes?.(context.accountId);
+  const canEdit =
+    Viewer_isModerator || communityData?.admins?.includes?.(context.accountId);
 
   return (
     <Header className="d-flex flex-column gap-3">
@@ -256,7 +256,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
         </div>
 
         <div className="d-flex align-items-end gap-3">
-          {isEditingAllowed && (
+          {canEdit && (
             <a
               href={href("community.edit-info", { handle })}
               className={[

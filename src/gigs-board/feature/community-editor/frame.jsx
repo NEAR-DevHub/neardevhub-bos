@@ -111,7 +111,7 @@ const DevHub = {
   useQuery: ({ name, params, initialData }) => {
     const initialState = { data: null, error: null, isLoading: true };
 
-    return useCache(
+    const cacheState = useCache(
       () =>
         Near.asyncView(contractAccountId, name, params ?? {})
           .then((response) => ({
@@ -122,7 +122,6 @@ const DevHub = {
                 ? { ...initialData, ...(response ?? {}) }
                 : response ?? null,
 
-            error: null,
             isLoading: false,
           }))
           .catch((error) => ({
@@ -134,6 +133,8 @@ const DevHub = {
       JSON.stringify({ name, params }),
       { subscribe: true }
     );
+
+    return cacheState === null ? initialState : cacheState;
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
@@ -158,33 +159,36 @@ const CommunityDefaults = {
 };
 
 const CommunityEditorFrame = ({ handle }) => {
-  const accessControlInfo = DevHub.get_access_control_info();
-
-  if (accessControlInfo === null) {
-    return <div>Loading...</div>;
-  }
-
-  const isSupervisionAllowed =
-    accessControlInfo.members_list["team:moderators"]?.children?.includes?.(
-      context.accountId
-    ) ?? false;
-
   State.init({
     data: null,
     hasUncommittedChanges: false,
     isCommunityNew: typeof handle !== "string",
-    isEditingAllowed: false,
+    canEdit: false,
+  });
+
+  const access = DevHub.useQuery({
+    name: "get_access_control_info",
+    params: { handle },
+    initialData: CommunityDefaults,
   });
 
   const community = state.isCommunityNew
-    ? { data: CommunityDefaults }
+    ? { data: CommunityDefaults, error: null, isLoading: false }
     : DevHub.useQuery({
-        name: `get_community`,
+        name: "get_community",
         params: { handle },
         initialData: CommunityDefaults,
       });
 
-  const isSynced = HashMap.isEqual(community.data, state.data ?? {});
+  const isLoading = access.isLoading || community.isLoading,
+    isSynced = HashMap.isEqual(community.data, state.data ?? {});
+
+  const Viewer_isModerator =
+    access.data === null
+      ? false
+      : access.data.members_list["team:moderators"]?.children?.includes?.(
+          context.accountId
+        ) ?? false;
 
   if (state.data === null) {
     State.update((lastKnownState) => ({
@@ -193,10 +197,10 @@ const CommunityEditorFrame = ({ handle }) => {
       hasUncommittedChanges: false,
       isCommunityNew: typeof handle !== "string",
 
-      isEditingAllowed:
+      canEdit:
         typeof handle !== "string" ||
         (community.data?.admins ?? []).includes(context.accountId) ||
-        isSupervisionAllowed,
+        Viewer_isModerator,
     }));
   } else if (
     typeof handle === "string" &&
@@ -210,7 +214,11 @@ const CommunityEditorFrame = ({ handle }) => {
     }));
   }
 
-  console.log({ communityData: community.data, editorState: state.data });
+  console.log({
+    data: community.data,
+    isLoading: community.isLoading,
+    editorState: state.data,
+  });
 
   console.log({
     isSynced,
@@ -269,12 +277,14 @@ const CommunityEditorFrame = ({ handle }) => {
   const onDelete = () =>
     Near.call(nearDevGovGigsContractAccountId, "delete_community", { handle });
 
-  return (
+  return isLoading ? (
+    <div>Loading...</div>
+  ) : (
     <div className="d-flex flex-column align-items-center gap-4 p-4">
       {community.data.handle !== null || state.isCommunityNew ? (
         <>
           {widget("feature.community-editor.branding-section", {
-            isEditingAllowed: state.isEditingAllowed,
+            isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
             valueSource: state.data ?? {},
           })}
@@ -287,7 +297,7 @@ const CommunityEditorFrame = ({ handle }) => {
 
             heading: "Basic information",
             isEditorActive: state.isCommunityNew,
-            isMutable: state.isEditingAllowed,
+            isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
             valueSource: state.data ?? {},
@@ -359,7 +369,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
 
             heading: "About",
-            isMutable: state.isEditingAllowed,
+            isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
             valueSource: state.data ?? {},
@@ -414,7 +424,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
 
             heading: "Permissions",
-            isMutable: state.isEditingAllowed,
+            isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
             valueSource: state.data ?? {},
@@ -436,7 +446,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
 
             heading: "Wiki page 1",
-            isMutable: state.isEditingAllowed,
+            isMutable: state.canEdit,
             onSubmit: (value) => onSubformSubmit({ wiki1: value }),
             submitLabel: "Accept",
             valueSource: state.data?.wiki1,
@@ -463,7 +473,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
 
             heading: "Wiki page 2",
-            isMutable: state.isEditingAllowed,
+            isMutable: state.canEdit,
             onSubmit: (value) => onSubformSubmit({ wiki2: value }),
             submitLabel: "Accept",
             valueSource: state.data?.wiki2,
@@ -483,7 +493,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
           })}
 
-          {!state.isCommunityNew && isSupervisionAllowed ? (
+          {!state.isCommunityNew && Viewer_isModerator ? (
             <div
               className="d-flex justify-content-center gap-4 p-4 w-100"
               style={{ maxWidth: 896 }}
@@ -499,7 +509,7 @@ const CommunityEditorFrame = ({ handle }) => {
             </div>
           ) : null}
 
-          {state.isEditingAllowed && state.hasUncommittedChanges && (
+          {state.canEdit && state.hasUncommittedChanges && (
             <div
               className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
               style={{

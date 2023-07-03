@@ -229,7 +229,7 @@ const DevHub = {
   useQuery: ({ name, params, initialData }) => {
     const initialState = { data: null, error: null, isLoading: true };
 
-    return useCache(
+    const cacheState = useCache(
       () =>
         Near.asyncView(contractAccountId, name, params ?? {})
           .then((response) => ({
@@ -240,7 +240,6 @@ const DevHub = {
                 ? { ...initialData, ...(response ?? {}) }
                 : response ?? null,
 
-            error: null,
             isLoading: false,
           }))
           .catch((error) => ({
@@ -252,6 +251,8 @@ const DevHub = {
       JSON.stringify({ name, params }),
       { subscribe: true }
     );
+
+    return cacheState === null ? initialState : cacheState;
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
@@ -289,7 +290,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   State.init({
     boardConfig: null,
     editingMode: "form",
-    isEditingAllowed: true, // According to user permission level
+    canEdit: true, // According to user permission level
     isEditorActive: false,
   });
 
@@ -601,7 +602,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         widget("entity.team-board.github-kanban", {
           ...state.boardConfig,
           editorTrigger: () => onEditorToggle(true),
-          isEditable: state.isEditingAllowed,
+          isEditable: state.canEdit,
           pageURL,
         })
       ) : (
