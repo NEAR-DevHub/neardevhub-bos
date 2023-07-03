@@ -137,9 +137,6 @@ if (communityData === null || root_members === null) {
 const moderators = root_members["team:moderators"].children;
 const admins = communityData.admins;
 
-console.log(admins);
-console.log(moderators);
-
 const UserList = (name, users) => {
   return (
     <div>

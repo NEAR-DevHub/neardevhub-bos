@@ -310,7 +310,7 @@ if (state.jInitialItems !== jInitialItems) {
 }
 
 if (state.fetchFrom) {
-  console.log("TODO: fetchFrom");
+  // TODO: fetchFrom
   // const limit = addDisplayCount;
   // const newItems = Social.index(
   //   index.action,

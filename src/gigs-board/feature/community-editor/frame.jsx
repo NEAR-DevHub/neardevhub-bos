@@ -225,18 +225,6 @@ const CommunityEditorFrame = ({ handle }) => {
     }));
   }
 
-  console.log({
-    data: community.data,
-    isLoading: community.isLoading,
-    editorState: state.data,
-  });
-
-  console.log({
-    isSynced,
-    hasUnsavedChanges: state.hasUnsavedChanges,
-    isCommunityNew: state.isCommunityNew,
-  });
-
   const onSubformSubmit = (partial) => {
     State.update((lastKnownState) => {
       const dataUpdate = Object.entries(partial).reduce(
