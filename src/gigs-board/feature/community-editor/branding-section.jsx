@@ -118,7 +118,12 @@ const Banner = styled.div`
   }
 
   .btn {
+    padding: 0.5rem 0.75rem !important;
+    min-height: 32;
+    line-height: 1;
+
     border: none;
+    border-radius: 50px;
     --bs-btn-color: #ffffff;
     --bs-btn-bg: #087990;
     --bs-btn-border-color: #087990;
@@ -130,7 +135,7 @@ const Banner = styled.div`
     --bs-btn-active-bg: #055160;
     --bs-btn-active-border-color: #055160;
     --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    opacity: 0.7;
+    opacity: 0.8;
 
     &:hover {
       opacity: 1;
@@ -148,7 +153,12 @@ const Logo = styled.div`
   }
 
   .btn {
+    padding: 0.5rem 0.75rem !important;
+    min-height: 32;
+    line-height: 1;
+
     border: none;
+    border-radius: 50px;
     --bs-btn-color: #ffffff;
     --bs-btn-bg: #087990;
     --bs-btn-border-color: #087990;
@@ -160,7 +170,7 @@ const Logo = styled.div`
     --bs-btn-active-bg: #055160;
     --bs-btn-active-border-color: #055160;
     --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    opacity: 0.7;
+    opacity: 0.8;
 
     &:hover {
       opacity: 1;
