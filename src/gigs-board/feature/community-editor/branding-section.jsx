@@ -54,8 +54,10 @@ function href(widgetName, linkProps) {
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
   isEqual: (input1, input2) =>
-    JSON.stringify(HashMap.toOrdered(input1)) ===
-    JSON.stringify(HashMap.toOrdered(input2)),
+    [typeof input1, typeof input2] === ["object", "object"]
+      ? JSON.stringify(HashMap.toOrdered(input1)) ===
+        JSON.stringify(HashMap.toOrdered(input2))
+      : false,
 
   toOrdered: (input) =>
     Object.keys(input)
@@ -193,30 +195,28 @@ const CommunityEditorBrandingSection = ({
   });
 
   const formValues = {
-    banner_url: `https://ipfs.near.social/ipfs/${
-      state.input.banner.cid ?? state.data.banner.cid
-    }`,
-
-    logo_url: `https://ipfs.near.social/ipfs/${
-      state.input.logo.cid ?? state.data.logo.cid
-    }`,
+    banner_url: `https://ipfs.near.social/ipfs/${state.input.banner.cid}`,
+    logo_url: `https://ipfs.near.social/ipfs/${state.input.logo.cid}`,
   };
 
-  const isSynced = HashMap.isEqual(
-    formValues,
-    HashMap.pick(valueSource, Object.keys(formValues))
-  );
+  const initialValues = {
+    banner_url: `https://ipfs.near.social/ipfs/${state.data.banner.cid}`,
+    logo_url: `https://ipfs.near.social/ipfs/${state.data.logo.cid}`,
+  };
 
-  if (!isSynced) {
+  const isSynced = state.input === state.data;
+
+  if (state.data !== initialData) {
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      data: initialData,
+    }));
+  } else if (!isSynced) {
     onSubmit(formValues);
+    console.log("BRANDING SUBMITTED");
   }
 
-  console.log({
-    section: "branding",
-    isSynced,
-    formValues,
-    valueSource: HashMap.pick(valueSource, Object.keys(formValues)),
-  });
+  console.log({ section: "branding", isSynced, formValues, initialValues });
 
   return (
     <AttractableDiv
@@ -227,7 +227,7 @@ const CommunityEditorBrandingSection = ({
         alt="Community banner preview"
         className="card-img-top d-flex flex-column justify-content-end align-items-end p-4"
         style={{
-          background: `center / cover no-repeat url(${formValues.banner_url})`,
+          background: `center / cover no-repeat url(${initialValues.banner_url})`,
         }}
       >
         {isMutable ? <IpfsImageUpload image={state.input.banner} /> : null}
@@ -243,7 +243,7 @@ const CommunityEditorBrandingSection = ({
           marginTop: -64,
           width: 128,
           height: 128,
-          background: `center / cover no-repeat url(${formValues.logo_url})`,
+          background: `center / cover no-repeat url(${initialValues.logo_url})`,
         }}
       >
         {isMutable ? <IpfsImageUpload image={state.input.logo} /> : null}

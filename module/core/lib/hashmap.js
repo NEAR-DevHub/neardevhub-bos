@@ -1,7 +1,9 @@
 const HashMap = {
   isEqual: (input1, input2) =>
-    JSON.stringify(HashMap.toOrdered(input1)) ===
-    JSON.stringify(HashMap.toOrdered(input2)),
+    [typeof input1, typeof input2] === ["object", "object"]
+      ? JSON.stringify(HashMap.toOrdered(input1)) ===
+        JSON.stringify(HashMap.toOrdered(input2))
+      : false,
 
   toOrdered: (input) =>
     Object.keys(input)

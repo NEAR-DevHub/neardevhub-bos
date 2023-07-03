@@ -54,8 +54,10 @@ function href(widgetName, linkProps) {
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
   isEqual: (input1, input2) =>
-    JSON.stringify(HashMap.toOrdered(input1)) ===
-    JSON.stringify(HashMap.toOrdered(input2)),
+    [typeof input1, typeof input2] === ["object", "object"]
+      ? JSON.stringify(HashMap.toOrdered(input1)) ===
+        JSON.stringify(HashMap.toOrdered(input2))
+      : false,
 
   toOrdered: (input) =>
     Object.keys(input)
@@ -187,7 +189,7 @@ const CommunityEditorFrame = ({ handle }) => {
         initialData: CommunityDefaults,
       });
 
-  const isSynced = HashMap.isEqual(community.data, state.data ?? {});
+  const isSynced = HashMap.isEqual(state.data, community.data);
 
   if (state.data === null) {
     State.update((lastKnownState) => ({
@@ -249,10 +251,7 @@ const CommunityEditorFrame = ({ handle }) => {
       return {
         ...lastKnownState,
         data,
-
-        hasUncommittedChanges:
-          JSON.stringify(HashMap.toOrdered(community.data)) !==
-          JSON.stringify(HashMap.toOrdered(data)),
+        hasUncommittedChanges: !HashMap.isEqual(data, community.data),
       };
     });
   };
@@ -287,7 +286,7 @@ const CommunityEditorFrame = ({ handle }) => {
           {widget("feature.community-editor.branding-section", {
             isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
-            valueSource: state.data ?? {},
+            valueSource: state.data,
           })}
 
           {widget("components.organism.form", {
@@ -301,7 +300,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
-            valueSource: state.data ?? {},
+            valueSource: state.data,
 
             schema: {
               name: {
@@ -373,7 +372,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
-            valueSource: state.data ?? {},
+            valueSource: state.data,
 
             schema: {
               bio_markdown: {
@@ -428,7 +427,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
-            valueSource: state.data ?? {},
+            valueSource: state.data,
 
             schema: {
               admins: {
