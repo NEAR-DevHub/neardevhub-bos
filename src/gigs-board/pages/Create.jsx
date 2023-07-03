@@ -103,7 +103,24 @@ initState({
   supervisor: props.supervisor ?? "neardevgov.near",
   githubLink: props.githubLink ?? "",
   warning: "",
+  waitForDraftStateRestore: true
 });
+
+if (state.waitForDraftStateRestore) {
+  const draftstatestring = Storage.privateGet('draftstate');
+  if (draftstatestring != null) {
+    try {      
+      const draftstate = JSON.parse(draftstatestring);
+      State.update(draftstate);
+      console.log('draft state restored', draftstate);
+    } catch(e) {
+      console.log('no draft state');
+    }
+    State.update({waitForDraftStateRestore: false});
+  }
+} else {
+  Storage.privateSet('draftstate', JSON.stringify(state));
+}
 
 // This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onClick, it will give `null` and we cannot tell the result is true or false.
