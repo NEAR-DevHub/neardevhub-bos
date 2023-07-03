@@ -117,8 +117,9 @@ const CommunityCard = ({
         <AttractableImage
           alt="Community logo"
           className="rounded-circle"
+          height={70}
           src={logo_url}
-          style={{ width: 70, height: 70 }}
+          width={70}
         />
 
         <div className="d-flex flex-column justify-content-center gap-1 w-100">
