@@ -168,58 +168,44 @@ const Logo = styled.div`
   }
 `;
 
-const communityBrandingDefaults = {
-  banner_cid: "bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
-  logo_cid: "bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
-};
+const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 
-const CommunityEditorBrandingSection = ({
-  isMutable,
-  onSubmit,
-  valueSource,
-}) => {
-  const initialData = {
-    banner: {
-      cid:
-        valueSource.banner_url?.split?.("/")?.at?.(-1) ??
-        communityBrandingDefaults.banner_cid,
-    },
+const CommunityEditorBrandingSection = ({ isMutable, onSubmit, values }) => {
+  const initialInput = { banner: null, logo: null };
 
-    logo: {
-      cid:
-        valueSource.logo_url?.split?.("/")?.at?.(-1) ??
-        communityBrandingDefaults.logo_cid,
-    },
+  const initialValues = {
+    banner: { cid: values.banner_url.split("/").at(-1) },
+    logo: { cid: values.logo_url.split("/").at(-1) },
   };
 
   State.init({
-    input: initialData,
-    data: initialData,
+    input: initialInput,
+    values: initialValues,
   });
 
-  const formValues = {
-    banner_url: `https://ipfs.near.social/ipfs/${state.input.banner.cid}`,
-    logo_url: `https://ipfs.near.social/ipfs/${state.input.logo.cid}`,
-  };
+  const hasUnsubmittedChanges = Object.values(state.input).some(
+    (value) => value !== null
+  );
 
-  const initialValues = {
-    banner_url: `https://ipfs.near.social/ipfs/${state.data.banner.cid}`,
-    logo_url: `https://ipfs.near.social/ipfs/${state.data.logo.cid}`,
-  };
+  const isOutdated = !HashMap.isEqual(state.values, initialValues),
+    isSynced = HashMap.isEqual(state.input, state.values);
 
-  const isSynced = HashMap.isEqual(formValues, initialValues);
-
-  if (state.data !== initialData) {
+  if (isOutdated) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: initialData,
+      values: initialValues,
     }));
-  } else if (!isSynced) {
-    onSubmit(formValues);
-    console.log("BRANDING SUBMITTED");
-  }
+  } else if (hasUnsubmittedChanges && !isSynced) {
+    onSubmit({
+      banner_url: cidToURL(state.input.banner?.cid ?? state.values.banner.cid),
+      logo_url: cidToURL(state.input.logo?.cid ?? state.values.logo.cid),
+    });
 
-  console.log({ section: "branding", isSynced, formValues, initialValues });
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      input: initialInput,
+    }));
+  }
 
   return (
     <AttractableDiv
@@ -230,7 +216,9 @@ const CommunityEditorBrandingSection = ({
         alt="Community banner preview"
         className="card-img-top d-flex flex-column justify-content-end align-items-end p-4"
         style={{
-          background: `center / cover no-repeat url(${initialValues.banner_url})`,
+          background: `center / cover no-repeat url(${cidToURL(
+            state.values.banner.cid
+          )})`,
         }}
       >
         {isMutable ? <IpfsImageUpload image={state.input.banner} /> : null}
@@ -246,7 +234,10 @@ const CommunityEditorBrandingSection = ({
           marginTop: -64,
           width: 128,
           height: 128,
-          background: `center / cover no-repeat url(${initialValues.logo_url})`,
+
+          background: `center / cover no-repeat url(${cidToURL(
+            state.values.logo.cid
+          )})`,
         }}
       >
         {isMutable ? <IpfsImageUpload image={state.input.logo} /> : null}
@@ -260,14 +251,14 @@ const CommunityEditorBrandingSection = ({
           className="h5 text-nowrap overflow-hidden"
           style={{ textOverflow: "ellipsis" }}
         >
-          {valueSource.name}
+          {values.name}
         </h5>
 
         <p
           className="card-text text-nowrap overflow-hidden"
           style={{ textOverflow: "ellipsis" }}
         >
-          {valueSource.description}
+          {values.description}
         </p>
       </div>
     </AttractableDiv>

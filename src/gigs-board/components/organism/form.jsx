@@ -278,7 +278,7 @@ const Form = ({
   onSubmit,
   schema,
   submitLabel,
-  valueSource,
+  values,
   ...restProps
 }) => {
   const fieldsRender =
@@ -288,7 +288,7 @@ const Form = ({
 
   const initialValues =
     typeof schema === "object"
-      ? HashMap.pick(valueSource ?? {}, Object.keys(schema))
+      ? HashMap.pick(values ?? {}, Object.keys(schema))
       : {};
 
   State.init({
@@ -313,7 +313,7 @@ const Form = ({
     }));
 
   const { formValues, formUpdate } = useForm({ stateKey: "values" }),
-    hasUncommittedChanges = !HashMap.isEqual(formValues, initialValues);
+    hasUnsubmittedChanges = !HashMap.isEqual(formValues, initialValues);
 
   const onCancelClick = () => {
     State.update((lastKnownState) => ({
@@ -381,7 +381,7 @@ const Form = ({
                 adornment: `bi ${classNames.submitAdornment}`,
               },
 
-              disabled: !hasUncommittedChanges,
+              disabled: !hasUnsubmittedChanges,
               label: submitLabel ?? "Submit",
               onClick: onSubmitClick,
             })}

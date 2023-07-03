@@ -163,8 +163,13 @@ const CommunityDefaults = {
   name: "",
   description: "",
   bio_markdown: null,
-  logo_url: null,
-  banner_url: null,
+
+  logo_url:
+    "https://ipfs.near.social/ipfs/bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
+
+  banner_url:
+    "https://ipfs.near.social/ipfs/bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
+
   tag: "",
   github_handle: null,
   telegram_handle: null,
@@ -180,7 +185,7 @@ const CommunityEditorFrame = ({ handle }) => {
   State.init({
     canEdit: false,
     data: null,
-    hasUncommittedChanges: false,
+    hasUnsavedChanges: false,
     isCommunityNew: typeof handle !== "string",
   });
 
@@ -204,19 +209,19 @@ const CommunityEditorFrame = ({ handle }) => {
         Viewer.isDevHubModerator,
 
       data: community.data,
-      hasUncommittedChanges: false,
+      hasUnsavedChanges: false,
       isCommunityNew: typeof handle !== "string",
     }));
   } else if (
     typeof handle === "string" &&
-    !state.hasUncommittedChanges &&
+    !state.hasUnsavedChanges &&
     !community.isLoading &&
     !isSynced
   ) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       data: community.data,
-      hasUncommittedChanges: false,
+      hasUnsavedChanges: false,
     }));
   }
 
@@ -228,7 +233,7 @@ const CommunityEditorFrame = ({ handle }) => {
 
   console.log({
     isSynced,
-    hasUncommittedChanges: state.hasUncommittedChanges,
+    hasUnsavedChanges: state.hasUnsavedChanges,
     isCommunityNew: state.isCommunityNew,
   });
 
@@ -254,7 +259,7 @@ const CommunityEditorFrame = ({ handle }) => {
       return {
         ...lastKnownState,
         data,
-        hasUncommittedChanges: !HashMap.isEqual(data, community.data),
+        hasUnsavedChanges: !HashMap.isEqual(data, community.data),
       };
     });
   };
@@ -289,7 +294,7 @@ const CommunityEditorFrame = ({ handle }) => {
           {widget("feature.community-editor.branding-section", {
             isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
-            valueSource: state.data,
+            values: state.data,
           })}
 
           {widget("components.organism.form", {
@@ -303,7 +308,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
-            valueSource: state.data,
+            values: state.data,
 
             schema: {
               name: {
@@ -375,7 +380,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
-            valueSource: state.data,
+            values: state.data,
 
             schema: {
               bio_markdown: {
@@ -430,7 +435,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: state.canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
-            valueSource: state.data,
+            values: state.data,
 
             schema: {
               admins: {
@@ -452,7 +457,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: state.canEdit,
             onSubmit: (value) => onSubformSubmit({ wiki1: value }),
             submitLabel: "Accept",
-            valueSource: state.data?.wiki1,
+            values: state.data?.wiki1,
 
             schema: {
               name: {
@@ -479,7 +484,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: state.canEdit,
             onSubmit: (value) => onSubformSubmit({ wiki2: value }),
             submitLabel: "Accept",
-            valueSource: state.data?.wiki2,
+            values: state.data?.wiki2,
 
             schema: {
               name: {
@@ -512,7 +517,7 @@ const CommunityEditorFrame = ({ handle }) => {
             </div>
           ) : null}
 
-          {state.canEdit && state.hasUncommittedChanges && (
+          {state.canEdit && state.hasUnsavedChanges && (
             <div
               className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
               style={{
