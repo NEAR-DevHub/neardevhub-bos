@@ -180,25 +180,18 @@ const CommunityEditorBrandingSection = ({ isMutable, onSubmit, values }) => {
 
   State.init({
     input: initialInput,
-    values: initialValues,
   });
 
   const hasUnsubmittedChanges = Object.values(state.input).some(
     (value) => value !== null
   );
 
-  const isOutdated = !HashMap.isEqual(state.values, initialValues),
-    isSynced = HashMap.isEqual(state.input, state.values);
+  const isSynced = HashMap.isEqual(state.input, initialValues);
 
-  if (isOutdated) {
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      values: initialValues,
-    }));
-  } else if (hasUnsubmittedChanges && !isSynced) {
+  if (hasUnsubmittedChanges && !isSynced) {
     onSubmit({
-      banner_url: cidToURL(state.input.banner?.cid ?? state.values.banner.cid),
-      logo_url: cidToURL(state.input.logo?.cid ?? state.values.logo.cid),
+      banner_url: cidToURL(state.input.banner?.cid ?? initialValues.banner.cid),
+      logo_url: cidToURL(state.input.logo?.cid ?? initialValues.logo.cid),
     });
 
     State.update((lastKnownState) => ({
@@ -217,7 +210,7 @@ const CommunityEditorBrandingSection = ({ isMutable, onSubmit, values }) => {
         className="card-img-top d-flex flex-column justify-content-end align-items-end p-4"
         style={{
           background: `center / cover no-repeat url(${cidToURL(
-            state.values.banner.cid
+            initialValues.banner.cid
           )})`,
         }}
       >
@@ -236,7 +229,7 @@ const CommunityEditorBrandingSection = ({ isMutable, onSubmit, values }) => {
           height: 128,
 
           background: `center / cover no-repeat url(${cidToURL(
-            state.values.logo.cid
+            initialValues.logo.cid
           )})`,
         }}
       >
