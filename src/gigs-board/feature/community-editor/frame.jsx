@@ -71,34 +71,33 @@ const HashMap = {
 };
 /* END_INCLUDE: "core/lib/hashmap" */
 /* INCLUDE: "core/adapter/dev-hub" */
-const contractAccountId =
+const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
   edit_community_github: ({ handle, github }) =>
-    Near.call(contractAccountId, "edit_community_github", { handle, github }) ??
+    Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
   get_access_control_info: () =>
-    Near.view(contractAccountId, "get_access_control_info") ?? null,
+    Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
-  get_all_authors: () =>
-    Near.view(contractAccountId, "get_all_authors") ?? null,
+  get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
   get_all_communities: () =>
-    Near.view(contractAccountId, "get_all_communities") ?? null,
+    Near.view(devHubAccountId, "get_all_communities") ?? null,
 
-  get_all_labels: () => Near.view(contractAccountId, "get_all_labels") ?? null,
+  get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
   get_community: ({ handle }) =>
-    Near.view(contractAccountId, "get_community", { handle }) ?? null,
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
   get_post: ({ post_id }) =>
-    Near.view(contractAccountId, "get_post", { post_id }) ?? null,
+    Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
 
   get_posts_by_author: ({ author }) =>
-    Near.view(contractAccountId, "get_posts_by_author", { author }) ?? null,
+    Near.view(devHubAccountId, "get_posts_by_author", { author }) ?? null,
 
   get_posts_by_label: ({ label }) =>
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
@@ -106,14 +105,14 @@ const DevHub = {
     }) ?? null,
 
   get_root_members: () =>
-    Near.view(contractAccountId, "get_root_members") ?? null,
+    Near.view(devHubAccountId, "get_root_members") ?? null,
 
   useQuery: ({ name, params, initialData }) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
       () =>
-        Near.asyncView(contractAccountId, name, params ?? {})
+        Near.asyncView(devHubAccountId, name, params ?? {})
           .then((response) => ({
             ...initialState,
 
@@ -138,6 +137,20 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
+/* INCLUDE: "entity/viewer" */
+const access_control_info = DevHub.useQuery({
+  name: "get_access_control_info",
+});
+
+const Viewer = {
+  isDevHubModerator:
+    access_control_info.data === null || access_control_info.isLoading
+      ? false
+      : access_control_info.data.members_list[
+          "team:moderators"
+        ]?.children?.includes?.(context.accountId) ?? false,
+};
+/* END_INCLUDE: "entity/viewer" */
 
 const CommunityDefaults = {
   handle: null,
@@ -160,16 +173,10 @@ const CommunityDefaults = {
 
 const CommunityEditorFrame = ({ handle }) => {
   State.init({
+    canEdit: false,
     data: null,
     hasUncommittedChanges: false,
     isCommunityNew: typeof handle !== "string",
-    canEdit: false,
-  });
-
-  const access = DevHub.useQuery({
-    name: "get_access_control_info",
-    params: { handle },
-    initialData: CommunityDefaults,
   });
 
   const community = state.isCommunityNew
@@ -180,27 +187,20 @@ const CommunityEditorFrame = ({ handle }) => {
         initialData: CommunityDefaults,
       });
 
-  const isLoading = access.isLoading || community.isLoading,
-    isSynced = HashMap.isEqual(community.data, state.data ?? {});
-
-  const Viewer_isModerator =
-    access.data === null
-      ? false
-      : access.data.members_list["team:moderators"]?.children?.includes?.(
-          context.accountId
-        ) ?? false;
+  const isSynced = HashMap.isEqual(community.data, state.data ?? {});
 
   if (state.data === null) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: community.data,
-      hasUncommittedChanges: false,
-      isCommunityNew: typeof handle !== "string",
 
       canEdit:
         typeof handle !== "string" ||
         (community.data?.admins ?? []).includes(context.accountId) ||
-        Viewer_isModerator,
+        Viewer.isDevHubModerator,
+
+      data: community.data,
+      hasUncommittedChanges: false,
+      isCommunityNew: typeof handle !== "string",
     }));
   } else if (
     typeof handle === "string" &&
@@ -277,7 +277,7 @@ const CommunityEditorFrame = ({ handle }) => {
   const onDelete = () =>
     Near.call(nearDevGovGigsContractAccountId, "delete_community", { handle });
 
-  return isLoading ? (
+  return community.isLoading ? (
     <div>Loading...</div>
   ) : (
     <div className="d-flex flex-column align-items-center gap-4 p-4">
@@ -493,7 +493,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
           })}
 
-          {!state.isCommunityNew && Viewer_isModerator ? (
+          {!state.isCommunityNew && Viewer.isDevHubModerator ? (
             <div
               className="d-flex justify-content-center gap-4 p-4 w-100"
               style={{ maxWidth: 896 }}

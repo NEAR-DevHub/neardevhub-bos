@@ -46,6 +46,12 @@ replaceInFiles(options)
       .readFileSync("./module/core/lib/autocomplete.js", "utf8")
       .toString()}/* END_INCLUDE: "core/lib/autocomplete" */`,
   })
+  .pipe({
+    from: /\/\* INCLUDE: "entity\/viewer" \*\/.*\/\* END_INCLUDE: "entity\/viewer" \*\//gms,
+    to: `/* INCLUDE: "entity/viewer" */\n${fs
+      .readFileSync("./module/entity/viewer.js", "utf8")
+      .toString()}/* END_INCLUDE: "entity/viewer" */`,
+  })
   .then(({ changedFiles, countOfMatchesByPaths }) => {
     console.log("DONE");
   })
