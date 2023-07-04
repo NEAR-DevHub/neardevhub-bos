@@ -107,17 +107,19 @@ initState({
   waitForDraftStateRestore: true
 });
 
-if (props.transactionHashes) {
-  State.update({waitForDraftStateRestore: false});
-  Storage.privateGet(DRAFT_STATE_STORAGE_KEY, undefined);
-}
 if (state.waitForDraftStateRestore) {
   const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
   if (draftstatestring != null) {
-    try {      
-      const draftstate = JSON.parse(draftstatestring);
-      State.update(draftstate);
-    } catch(e) {
+    if (props.transactionHashes) {
+      State.update({waitForDraftStateRestore: false});
+      Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+    } else {      
+      try {      
+        const draftstate = JSON.parse(draftstatestring);
+        State.update(draftstate);
+      } catch(e) {
+        console.error('error restoring draft', draftstatestring);
+      }
     }
     State.update({waitForDraftStateRestore: false});
   }
