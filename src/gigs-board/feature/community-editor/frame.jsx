@@ -197,17 +197,16 @@ const CommunityEditorFrame = ({ handle }) => {
         initialData: CommunityDefaults,
       });
 
+  const canEdit =
+    typeof handle !== "string" ||
+    (community.data?.admins ?? []).includes(context.accountId) ||
+    Viewer.isDevHubModerator;
+
   const isSynced = HashMap.isEqual(state.data, community.data);
 
   if (state.data === null) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-
-      canEdit:
-        typeof handle !== "string" ||
-        (community.data?.admins ?? []).includes(context.accountId) ||
-        Viewer.isDevHubModerator,
-
       data: community.data,
       hasUnsavedChanges: false,
       isCommunityNew: typeof handle !== "string",
@@ -280,7 +279,7 @@ const CommunityEditorFrame = ({ handle }) => {
       {typeof community.data?.handle === "string" || state.isCommunityNew ? (
         <>
           {widget("feature.community-editor.branding-section", {
-            isMutable: state.canEdit,
+            isMutable: canEdit,
             onSubmit: onSubformSubmit,
             values: state.data,
           })}
@@ -293,7 +292,7 @@ const CommunityEditorFrame = ({ handle }) => {
 
             heading: "Basic information",
             isEditorActive: state.isCommunityNew,
-            isMutable: state.canEdit,
+            isMutable: canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
             values: state.data,
@@ -365,7 +364,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
 
             heading: "About",
-            isMutable: state.canEdit,
+            isMutable: canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
             values: state.data,
@@ -420,7 +419,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
 
             heading: "Permissions",
-            isMutable: state.canEdit,
+            isMutable: canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
             values: state.data,
@@ -442,7 +441,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
 
             heading: "Wiki page 1",
-            isMutable: state.canEdit,
+            isMutable: canEdit,
             onSubmit: (value) => onSubformSubmit({ wiki1: value }),
             submitLabel: "Accept",
             values: state.data?.wiki1,
@@ -469,7 +468,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
 
             heading: "Wiki page 2",
-            isMutable: state.canEdit,
+            isMutable: canEdit,
             onSubmit: (value) => onSubformSubmit({ wiki2: value }),
             submitLabel: "Accept",
             values: state.data?.wiki2,
@@ -505,7 +504,7 @@ const CommunityEditorFrame = ({ handle }) => {
             </div>
           ) : null}
 
-          {state.canEdit && state.hasUnsavedChanges && (
+          {canEdit && state.hasUnsavedChanges && (
             <div
               className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
               style={{

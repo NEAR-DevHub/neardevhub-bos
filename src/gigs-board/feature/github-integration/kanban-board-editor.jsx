@@ -292,7 +292,7 @@ const BoardConfigDefaults = {
 
 const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   State.init({
-    boardConfig: null,
+    board: null,
     editingMode: "form",
     canEdit: false,
     isEditorActive: false,
@@ -314,20 +314,25 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       : JSON.parse(community.data.github)
     )?.kanbanBoards ?? {};
 
-  const boardId = Object.keys(boards)[0]?.id ?? null;
+  const boardId = Object.values(boards)[0]?.id ?? null;
+
+  console.log(boards);
 
   const errors = {
-    communityNotFound: typeof community.data?.handle !== "string",
     noBoardId: typeof boardId !== "string",
     noCommunityHandle: typeof communityHandle !== "string",
   };
 
-  const isSynced = HashMap.isEqual(state.boardConfig, Object.values(boards)[0]);
+  const isSynced = HashMap.isEqual(state.board, boards[boardId]);
 
   const onEditorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
+      hasUnsavedChanges: !HashMap.isEqual(
+        lastKnownState.board,
+        boards[boardId]
+      ),
     }));
 
   const onEditingModeChange = ({ target: { value } }) =>
@@ -340,19 +345,25 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     State.update((lastKnownState) => ({ ...lastKnownState, canEdit }));
   }
 
-  if (state.boardConfig === null && Object.keys(boards).length > 0) {
+  if (
+    !errors.noBoardId &&
+    !community.isLoading &&
+    typeof boards[boardId] === "object" &&
+    (state.board === null || (!isSynced && !state.hasUnsavedChanges))
+  ) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      boardConfig: Object.values(boards)[0],
+      board: boards[boardId],
+      hasUnsavedChanges: false,
     }));
   }
 
-  const { formValues, formUpdate } = useForm({ stateKey: "boardConfig" });
+  const { formValues, formUpdate } = useForm({ stateKey: "board" });
 
   const boardsCreateNew = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      boardConfig: BoardConfigDefaults,
+      board: BoardConfigDefaults,
       isEditorActive: true,
     }));
 
@@ -561,12 +572,9 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   return community.data === null || boardId === null ? (
     <div>
       {(community.isLoading && "Loading...") ||
-        (errors.noCommunityHandle || errors.noBoardId
-          ? `Error: ${
-              (errors.noCommunityHandle && "community handle") ||
-              (errors.noBoardId && "board id")
-            } not found in editor props.`
-          : errors.communityNotFound &&
+        (errors.noBoardId
+          ? "Error: board id not found in editor props."
+          : errors.noCommunity &&
             `Community with handle ${community.handle} not found.`)}
     </div>
   ) : (
@@ -638,9 +646,9 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         </AttractableDiv>
       ) : null}
 
-      {state.boardConfig !== null ? (
+      {state.board !== null ? (
         widget("entity.team-board.github-kanban", {
-          ...state.boardConfig,
+          ...state.board,
           editorTrigger: () => onEditorToggle(true),
           isEditable: state.canEdit,
           pageURL,
