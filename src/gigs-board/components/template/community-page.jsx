@@ -52,22 +52,17 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityPageTemplate = ({ children, handle, title }) => {
-  if (!handle) {
-    return (
-      <div class="alert alert-danger" role="alert">
-        Error: community handle not found in URL parameters
-      </div>
-    );
-  }
-
-  return (
+const CommunityPageTemplate = ({ children, handle, title }) =>
+  typeof handle === "string" ? (
     <>
       {widget("components.layout.app-header")}
       {widget("entity.community.header", { activeTabTitle: title, handle })}
       <div style={{ padding: "0 32px" }}>{children}</div>
     </>
+  ) : (
+    <div class="alert alert-danger" role="alert">
+      Error: community handle not found in URL parameters
+    </div>
   );
-};
 
-return CommunityPageTemplate(props);
+return <CommunityPageTemplate {...{ props }} />;

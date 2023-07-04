@@ -133,20 +133,6 @@ const onMention = (accountId) => (
 );
 
 const WikiPage = ({ handle, id }) => {
-  if (!handle) {
-    return (
-      <div class="alert alert-danger" role="alert">
-        Error: community handle not found in URL parameters
-      </div>
-    );
-  } else if (!id) {
-    return (
-      <div class="alert alert-danger" role="alert">
-        Error: wiki page id not found in URL parameters
-      </div>
-    );
-  }
-
   const communityData = DevHub.get_community({ handle });
 
   const { name, content_markdown: text } = communityData?.[`wiki${id}`] ?? {
@@ -164,7 +150,11 @@ const WikiPage = ({ handle, id }) => {
           <Markdown className="card-text" {...{ onMention, text }} />
         </div>
       ) : (
-        <div>Loading ...</div>
+        <div className={typeof id !== "string" ? "alert alert-danger" : ""}>
+          {typeof id === "string"
+            ? "Loading ..."
+            : "Error: wiki page id not found in URL parameters"}
+        </div>
       ),
   });
 };

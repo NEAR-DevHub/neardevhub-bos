@@ -119,14 +119,6 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-if (!props.handle) {
-  return (
-    <div class="alert alert-danger" role="alert">
-      Error: community handle not found in URL parameters
-    </div>
-  );
-}
-
 const communityData = DevHub.get_community({ handle: props.handle });
 
 if (communityData === null) {

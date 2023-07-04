@@ -125,22 +125,22 @@ const fieldDefaultUpdate = ({
 const useForm = ({ stateKey: formStateKey }) => ({
   formValues: state[formStateKey],
 
-  formUpdate:
-    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
-    (fieldInput) =>
-      State.update((lastKnownState) =>
-        traversalUpdate({
-          input: fieldInput?.target?.value ?? fieldInput,
-          target: lastKnownState,
-          path: [formStateKey, ...fieldPath],
-          params,
+  formUpdate: ({ path: fieldPath, via: fieldCustomUpdate, ...params }) => (
+    fieldInput
+  ) =>
+    State.update((lastKnownState) =>
+      traversalUpdate({
+        input: fieldInput?.target?.value ?? fieldInput,
+        target: lastKnownState,
+        path: [formStateKey, ...fieldPath],
+        params,
 
-          via:
-            typeof fieldCustomUpdate === "function"
-              ? fieldCustomUpdate
-              : fieldDefaultUpdate,
-        })
-      ),
+        via:
+          typeof fieldCustomUpdate === "function"
+            ? fieldCustomUpdate
+            : fieldDefaultUpdate,
+      })
+    ),
 });
 /* END_INCLUDE: "core/lib/form" */
 /* INCLUDE: "core/lib/gui/attractable" */
@@ -255,6 +255,20 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
+/* INCLUDE: "entity/viewer" */
+const access_control_info = DevHub.useQuery({
+  name: "get_access_control_info",
+});
+
+const Viewer = {
+  isDevHubModerator:
+    access_control_info.data === null || access_control_info.isLoading
+      ? false
+      : access_control_info.data.members_list[
+          "team:moderators"
+        ]?.children?.includes?.(context.accountId) ?? false,
+};
+/* END_INCLUDE: "entity/viewer" */
 
 const CompactContainer = styled.div`
   width: fit-content !important;
@@ -266,7 +280,7 @@ const dataTypesLocked = {
   PullRequest: true,
 };
 
-const boardConfigDefaults = {
+const BoardConfigDefaults = {
   id: uuid(),
   columns: {},
   dataTypesIncluded: { Issue: false, PullRequest: true },
@@ -277,21 +291,38 @@ const boardConfigDefaults = {
 };
 
 const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
-  const communityData = DevHub.get_community({ handle: communityHandle });
-
-  if (communityData === null) {
-    return <div>Loading...</div>;
-  }
-
-  const communityGitHubKanbanBoards =
-    JSON.parse(communityData.github)?.kanbanBoards ?? {};
-
   State.init({
     boardConfig: null,
     editingMode: "form",
-    canEdit: true, // According to user permission level
+    canEdit: false,
     isEditorActive: false,
   });
+
+  const community = DevHub.useQuery({
+    name: "get_community",
+    params: { handle: communityHandle },
+  });
+
+  const canEdit =
+    typeof communityHandle !== "string" ||
+    (community.data?.admins ?? []).includes(context.accountId) ||
+    Viewer.isDevHubModerator;
+
+  const boards =
+    ((community?.data?.github ?? null) === null
+      ? {}
+      : JSON.parse(community.data.github)
+    )?.kanbanBoards ?? {};
+
+  const boardId = Object.keys(boards)[0]?.id ?? null;
+
+  const errors = {
+    communityNotFound: typeof community.data?.handle !== "string",
+    noBoardId: typeof boardId !== "string",
+    noCommunityHandle: typeof communityHandle !== "string",
+  };
+
+  const isSynced = HashMap.isEqual(state.boardConfig, Object.values(boards)[0]);
 
   const onEditorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -305,13 +336,14 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       editingMode: value,
     }));
 
-  if (
-    state.boardConfig === null &&
-    Object.keys(communityGitHubKanbanBoards).length > 0
-  ) {
+  if (state.canEdit !== canEdit) {
+    State.update((lastKnownState) => ({ ...lastKnownState, canEdit }));
+  }
+
+  if (state.boardConfig === null && Object.keys(boards).length > 0) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      boardConfig: Object.values(communityGitHubKanbanBoards)[0],
+      boardConfig: Object.values(boards)[0],
     }));
   }
 
@@ -320,7 +352,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   const boardsCreateNew = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      boardConfig: boardConfigDefaults,
+      boardConfig: BoardConfigDefaults,
       isEditorActive: true,
     }));
 
@@ -337,12 +369,10 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         }
       : lastKnownState;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownState }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownState }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
+    );
 
   const onSubmit = () =>
     DevHub.edit_community_github({
@@ -350,7 +380,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
 
       github: JSON.stringify({
         kanbanBoards: {
-          ...communityGitHubKanbanBoards,
+          ...boards,
           [formValues.id]: formValues,
         },
       }),
@@ -528,7 +558,18 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       </>
     ) : null;
 
-  return (
+  return community.data === null || boardId === null ? (
+    <div>
+      {(community.isLoading && "Loading...") ||
+        (errors.noCommunityHandle || errors.noBoardId
+          ? `Error: ${
+              (errors.noCommunityHandle && "community handle") ||
+              (errors.noBoardId && "board id")
+            } not found in editor props.`
+          : errors.communityNotFound &&
+            `Community with handle ${community.handle} not found.`)}
+    </div>
+  ) : (
     <div className="d-flex flex-column gap-4">
       {state.isEditorActive && formValues !== null ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">

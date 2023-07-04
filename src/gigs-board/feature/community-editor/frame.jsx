@@ -273,11 +273,11 @@ const CommunityEditorFrame = ({ handle }) => {
   const onDelete = () =>
     Near.call(nearDevGovGigsContractAccountId, "delete_community", { handle });
 
-  return community.isLoading ? (
+  return community.isLoading && !state.isCommunityNew ? (
     <div>Loading...</div>
   ) : (
     <div className="d-flex flex-column align-items-center gap-4 p-4">
-      {community.data.handle !== null || state.isCommunityNew ? (
+      {typeof community.data?.handle === "string" || state.isCommunityNew ? (
         <>
           {widget("feature.community-editor.branding-section", {
             isMutable: state.canEdit,
@@ -541,7 +541,7 @@ const CommunityEditorFrame = ({ handle }) => {
           className="d-flex flex-column justify-content-center align-items-center w-100"
           style={{ height: 384 }}
         >
-          <h2 className="h2">Community doesn't exist.</h2>
+          <h2 className="h2">{`Community with handle ${community.handle} not found.`}</h2>
         </div>
       )}
     </div>
