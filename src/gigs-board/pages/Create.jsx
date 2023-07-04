@@ -74,6 +74,7 @@ function autoCompleteAccountId(id) {
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
+const DRAFT_STATE_STORAGE_KEY = 'DRAFT_STATE';
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
@@ -106,20 +107,20 @@ initState({
   waitForDraftStateRestore: true
 });
 
+if (props.transactionHashes) {
+  State.update({waitForDraftStateRestore: false});
+  Storage.privateGet(DRAFT_STATE_STORAGE_KEY, undefined);
+}
 if (state.waitForDraftStateRestore) {
-  const draftstatestring = Storage.privateGet('draftstate');
+  const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
   if (draftstatestring != null) {
     try {      
       const draftstate = JSON.parse(draftstatestring);
       State.update(draftstate);
-      console.log('draft state restored', draftstate);
     } catch(e) {
-      console.log('no draft state');
     }
     State.update({waitForDraftStateRestore: false});
   }
-} else {
-  Storage.privateSet('draftstate', JSON.stringify(state));
 }
 
 // This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
@@ -133,6 +134,8 @@ if (grantNotify === null) {
 }
 
 const onSubmit = () => {
+  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, JSON.stringify(state));
+  
   let labels = state.labelStrings;
 
   let body = {
