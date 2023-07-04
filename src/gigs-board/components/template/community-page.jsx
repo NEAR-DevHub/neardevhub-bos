@@ -70,4 +70,4 @@ const CommunityPageTemplate = ({ children, handle, path, title }) => (
   </div>
 );
 
-return <CommunityPageTemplate {...{ props }} />;
+return <CommunityPageTemplate {...props} />;
