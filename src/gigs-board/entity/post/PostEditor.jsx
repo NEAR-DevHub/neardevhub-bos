@@ -109,7 +109,6 @@ if (state.waitForDraftStateRestore) {
   const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
 
   if (draftstatestring != null) {
-    console.log("props", props);
     if (props.transactionHashes) {
       console.log("submission complete");
       State.update({ waitForDraftStateRestore: false });
@@ -151,8 +150,6 @@ if (grantNotify === null) {
   return;
 }
 const onSubmit = () => {
-  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, JSON.stringify(state));
-
   let labels = state.labelStrings;
   var body = {
     Comment: { description: state.description, comment_version: "V2" },
@@ -191,7 +188,9 @@ const onSubmit = () => {
     return;
   }
   let txn = [];
-  if (mode == "Create") {
+  if (mode == "Create") {    
+    const storestring = JSON.stringify(Object.assign({}, state, { parent_post_id: parentId }));
+    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, storestring);
     txn.push({
       contractName: nearDevGovGigsContractAccountId,
       methodName: "add_post",
@@ -204,6 +203,8 @@ const onSubmit = () => {
       gas: Big(10).pow(12).mul(100),
     });
   } else if (mode == "Edit") {
+    const storestring = JSON.stringify(Object.assign({}, state, { edit_post_id: parentId }));
+    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, storestring);
     txn.push({
       contractName: nearDevGovGigsContractAccountId,
       methodName: "edit_post",

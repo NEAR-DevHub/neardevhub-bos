@@ -412,10 +412,18 @@ const buttonsFooter = props.isPreview ? null : (
   </div>
 );
 
+const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
+let draftstate;
+
+try {
+  draftstate = JSON.parse(Storage.privateGet(DRAFT_STATE_STORAGE_KEY));
+  console.log(draftstate);
+} catch(e) {}
+
 const CreatorWidget = (postType) => {
   return (
     <div
-      class="collapse"
+      class={draftstate?.parent_post_id == postId && draftstate?.postType == postType ? "" : "collapse"}
       id={`collapse${postType}Creator${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
@@ -431,7 +439,7 @@ const CreatorWidget = (postType) => {
 const EditorWidget = (postType) => {
   return (
     <div
-      class="collapse"
+    class={draftstate?.edit_post_id == postId && draftstate?.postType == postType ? "" : "collapse"}
       id={`collapse${postType}Editor${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
