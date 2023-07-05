@@ -12,6 +12,7 @@ function widget(widgetName, widgetProps, key) {
     ...widgetProps,
     nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+    transactionHashes: props.transactionHashes,
     referral: props.referral,
   };
 
@@ -74,6 +75,7 @@ function autoCompleteAccountId(id) {
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
+const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
 const postType = props.postType ?? "Sponsorship";
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
@@ -100,7 +102,29 @@ initState({
   supervisor: props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
   warning: "",
+  waitForDraftStateRestore: true,
 });
+
+if (state.waitForDraftStateRestore) {
+  const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
+
+  if (draftstatestring != null) {
+    console.log("props", props);
+    if (props.transactionHashes) {
+      console.log("submission complete");
+      State.update({ waitForDraftStateRestore: false });
+      Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+    } else {
+      try {
+        const draftstate = JSON.parse(draftstatestring);
+        State.update(draftstate);
+      } catch (e) {
+        console.error("error restoring draft", draftstatestring);
+      }
+    }
+    State.update({ waitForDraftStateRestore: false });
+  }
+}
 
 let fields = {
   Comment: ["description"],
@@ -127,6 +151,8 @@ if (grantNotify === null) {
   return;
 }
 const onSubmit = () => {
+  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, JSON.stringify(state));
+
   let labels = state.labelStrings;
   var body = {
     Comment: { description: state.description, comment_version: "V2" },

@@ -11,6 +11,7 @@ function widget(widgetName, widgetProps, key) {
     ...widgetProps,
     nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+    transactionHashes: props.transactionHashes,
     referral: props.referral,
   };
 
