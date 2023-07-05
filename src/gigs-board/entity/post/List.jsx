@@ -423,7 +423,20 @@ const Head =
 return (
   <>
     {Head}
-    {state.items.length > 0 ? (
+    {props.transactionHashes ? (
+      <p class="text-secondary">
+        Post created successfully. Back to{" "}
+        <a
+          style={{
+            color: "#3252A6",
+          }}
+          className="fw-bold"
+          href={href("Feed")}
+        >
+          feed
+        </a>
+      </p>
+    ) : state.items.length > 0 ? (
       <InfiniteScroll
         pageStart={0}
         loadMore={makeMoreItems}
