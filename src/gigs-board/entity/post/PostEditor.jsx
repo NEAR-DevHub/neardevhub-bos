@@ -109,11 +109,7 @@ if (state.waitForDraftStateRestore) {
   const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
 
   if (draftstatestring != null) {
-    if (props.transactionHashes) {
-      console.log("submission complete");
-      State.update({ waitForDraftStateRestore: false });
-      Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
-    } else {
+    if (draftstatestring != undefined) {
       try {
         const draftstate = JSON.parse(draftstatestring);
         State.update(draftstate);
@@ -188,8 +184,10 @@ const onSubmit = () => {
     return;
   }
   let txn = [];
-  if (mode == "Create") {    
-    const storestring = JSON.stringify(Object.assign({}, state, { parent_post_id: parentId }));
+  if (mode == "Create") {
+    const storestring = JSON.stringify(
+      Object.assign({}, state, { parent_post_id: parentId })
+    );
     Storage.privateSet(DRAFT_STATE_STORAGE_KEY, storestring);
     txn.push({
       contractName: nearDevGovGigsContractAccountId,
@@ -203,7 +201,9 @@ const onSubmit = () => {
       gas: Big(10).pow(12).mul(100),
     });
   } else if (mode == "Edit") {
-    const storestring = JSON.stringify(Object.assign({}, state, { edit_post_id: parentId }));
+    const storestring = JSON.stringify(
+      Object.assign({}, state, { edit_post_id: parentId })
+    );
     Storage.privateSet(DRAFT_STATE_STORAGE_KEY, storestring);
     txn.push({
       contractName: nearDevGovGigsContractAccountId,
