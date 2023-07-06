@@ -75,7 +75,6 @@ function autoCompleteAccountId(id) {
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
-const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
 const postType = props.postType ?? "Sponsorship";
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
@@ -102,23 +101,11 @@ initState({
   supervisor: props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
   warning: "",
-  waitForDraftStateRestore: true,
+  draftStateApplied: false,
 });
 
-if (state.waitForDraftStateRestore) {
-  const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
-
-  if (draftstatestring != null) {
-    if (draftstatestring != undefined) {
-      try {
-        const draftstate = JSON.parse(draftstatestring);
-        State.update(draftstate);
-      } catch (e) {
-        console.error("error restoring draft", draftstatestring);
-      }
-    }
-    State.update({ waitForDraftStateRestore: false });
-  }
+if (!state.draftStateApplied && props.draftState) {
+  State.update({ ...props.draftState, draftStateApplied: true });
 }
 
 let fields = {
@@ -185,10 +172,9 @@ const onSubmit = () => {
   }
   let txn = [];
   if (mode == "Create") {
-    const storestring = JSON.stringify(
+    props.onDraftStateChange(
       Object.assign({}, state, { parent_post_id: parentId })
     );
-    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, storestring);
     txn.push({
       contractName: nearDevGovGigsContractAccountId,
       methodName: "add_post",
@@ -201,10 +187,9 @@ const onSubmit = () => {
       gas: Big(10).pow(12).mul(100),
     });
   } else if (mode == "Edit") {
-    const storestring = JSON.stringify(
+    props.onDraftStateChange(
       Object.assign({}, state, { edit_post_id: parentId })
     );
-    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, storestring);
     txn.push({
       contractName: nearDevGovGigsContractAccountId,
       methodName: "edit_post",

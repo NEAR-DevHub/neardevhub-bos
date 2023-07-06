@@ -105,6 +105,8 @@ const childPostIds = props.isPreview ? [] : childPostIdsUnordered.reverse();
 const expandable = props.isPreview ? false : props.expandable ?? false;
 const defaultExpanded = expandable ? props.defaultExpanded : true;
 
+const draftState = props.draftState;
+
 function readableDate(timestamp) {
   var a = new Date(timestamp);
   return a.toDateString() + " " + a.toLocaleTimeString();
@@ -412,18 +414,11 @@ const buttonsFooter = props.isPreview ? null : (
   </div>
 );
 
-const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
-let draftstate;
-
-try {
-  draftstate = JSON.parse(Storage.privateGet(DRAFT_STATE_STORAGE_KEY));
-} catch (e) {}
-
 const CreatorWidget = (postType) => {
   return (
     <div
       class={
-        draftstate?.parent_post_id == postId && draftstate?.postType == postType
+        draftState?.parent_post_id == postId && draftState?.postType == postType
           ? ""
           : "collapse"
       }
@@ -432,6 +427,9 @@ const CreatorWidget = (postType) => {
     >
       {widget("entity.post.PostEditor", {
         postType,
+        onDraftStateChange: props.onDraftStateChange,
+        draftState:
+          draftState?.parent_post_id == postId ? draftState : undefined,
         parentId: postId,
         mode: "Create",
       })}
@@ -443,7 +441,7 @@ const EditorWidget = (postType) => {
   return (
     <div
       class={
-        draftstate?.edit_post_id == postId && draftstate?.postType == postType
+        draftState?.edit_post_id == postId && draftState?.postType == postType
           ? ""
           : "collapse"
       }
@@ -462,6 +460,8 @@ const EditorWidget = (postType) => {
         token: post.snapshot.sponsorship_token,
         supervisor: post.snapshot.supervisor,
         githubLink: post.snapshot.github_link,
+        onDraftStateChange: props.onDraftStateChange,
+        draftState: draftState?.edit_post_id == postId ? draftState : undefined,
       })}
     </div>
   );
