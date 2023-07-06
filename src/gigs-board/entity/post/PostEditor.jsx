@@ -188,7 +188,7 @@ const onSubmit = () => {
     });
   } else if (mode == "Edit") {
     props.onDraftStateChange(
-      Object.assign({}, state, { edit_post_id: parentId })
+      Object.assign({}, state, { edit_post_id: postId })
     );
     txn.push({
       contractName: nearDevGovGigsContractAccountId,
