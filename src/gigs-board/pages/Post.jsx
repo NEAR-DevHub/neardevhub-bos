@@ -66,10 +66,27 @@ try {
 } catch (e) {}
 /* END_INCLUDE: "core/lib/draftstate" */
 
-return widget("components.layout.Page", {
-  children: widget("entity.post.Post", {
-    id: props.id,
-    onDraftStateChange,
-    draftState,
-  }),
-});
+if (props.transactionHashes) {
+  return (
+    <p class="text-secondary">
+      Post submitted successfully. Back to{" "}
+      <a
+        style={{
+          color: "#3252A6",
+        }}
+        className="fw-bold"
+        href={href("Post", { id: props.id })}
+      >
+        post
+      </a>
+    </p>
+  );
+} else {
+  return widget("components.layout.Page", {
+    children: widget("entity.post.Post", {
+      id: props.id,
+      onDraftStateChange,
+      draftState,
+    }),
+  });
+}

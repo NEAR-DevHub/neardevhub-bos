@@ -440,7 +440,7 @@ return (
     {Head}
     {props.transactionHashes ? (
       <p class="text-secondary">
-        Post created successfully. Back to{" "}
+        Post submitted successfully. Back to{" "}
         <a
           style={{
             color: "#3252A6",
