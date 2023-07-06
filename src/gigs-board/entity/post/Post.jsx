@@ -544,7 +544,12 @@ const postsList =
         {childPostIds.map((childId) =>
           widget(
             "entity.post.Post",
-            { id: childId, isUnderPost: true },
+            {
+              id: childId,
+              isUnderPost: true,
+              onDraftStateChange: props.onDraftStateChange,
+              draftState,
+            },
             `subpost${childId}of${postId}`
           )
         )}
