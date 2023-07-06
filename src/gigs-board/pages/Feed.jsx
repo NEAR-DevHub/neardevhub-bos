@@ -12,7 +12,6 @@ function widget(widgetName, widgetProps, key) {
     ...widgetProps,
     nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
     nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    transactionHashes: props.transactionHashes,
     referral: props.referral,
   };
 
@@ -211,6 +210,7 @@ const FeedPage = ({ author, recency, tag }) => {
       recency,
       tag: state.tag,
       tagQuery: { tag: state.tag },
+      transactionHashes: props.transactionHashes,
     }),
   });
 };
