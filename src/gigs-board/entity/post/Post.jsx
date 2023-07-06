@@ -416,7 +416,8 @@ const buttonsFooter = props.isPreview ? null : (
 const CreatorWidget = (postType) => {
   return (
     <div
-      class={`collapse ${draftState?.parent_post_id == postId && draftState?.postType == postType
+      class={`collapse ${
+        draftState?.parent_post_id == postId && draftState?.postType == postType
           ? "show"
           : ""
       }`}
@@ -438,10 +439,11 @@ const CreatorWidget = (postType) => {
 const EditorWidget = (postType) => {
   return (
     <div
-      class={`collapse ${draftState?.edit_post_id == postId && draftState?.postType == postType
+      class={`collapse ${
+        draftState?.edit_post_id == postId && draftState?.postType == postType
           ? "show"
           : ""
-        }`}
+      }`}
       id={`collapse${postType}Editor${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
@@ -530,8 +532,14 @@ const postExtra =
     <div></div>
   );
 
-const childPostHasDraft = childPostIds.find(childId => childId == draftState?.edit_post_id || childId == draftState?.parent_post_id);
-if (childPostHasDraft && props.expandParent) {
+const childPostHasDraft = childPostIds.find(
+  (childId) =>
+    childId == draftState?.edit_post_id || childId == draftState?.parent_post_id
+);
+if (
+  (childPostHasDraft || state.childrenOfChildPostsHasDraft) &&
+  props.expandParent
+) {
   props.expandParent();
 }
 
@@ -541,7 +549,13 @@ const postsList =
   ) : (
     <div class="row" key="posts-list">
       <div
-        class={`collapse ${( defaultExpanded || childPostHasDraft || state.childrenOfChildPostsHasDraft) ? "show" : ""}`}
+        class={`collapse ${
+          defaultExpanded ||
+          childPostHasDraft ||
+          state.childrenOfChildPostsHasDraft
+            ? "show"
+            : ""
+        }`}
         id={`collapseChildPosts${postId}`}
       >
         {childPostIds.map((childId) =>
@@ -552,7 +566,8 @@ const postsList =
               isUnderPost: true,
               onDraftStateChange: props.onDraftStateChange,
               draftState,
-              expandParent: () => State.update({ childrenOfChildPostsHasDraft: true })
+              expandParent: () =>
+                State.update({ childrenOfChildPostsHasDraft: true }),
             },
             `subpost${childId}of${postId}`
           )
