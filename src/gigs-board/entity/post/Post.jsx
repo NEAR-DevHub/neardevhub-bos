@@ -416,11 +416,10 @@ const buttonsFooter = props.isPreview ? null : (
 const CreatorWidget = (postType) => {
   return (
     <div
-      class={
-        draftState?.parent_post_id == postId && draftState?.postType == postType
-          ? ""
-          : "collapse"
-      }
+      class={`collapse ${draftState?.parent_post_id == postId && draftState?.postType == postType
+          ? "show"
+          : ""
+      }`}
       id={`collapse${postType}Creator${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
@@ -439,11 +438,10 @@ const CreatorWidget = (postType) => {
 const EditorWidget = (postType) => {
   return (
     <div
-      class={
-        draftState?.edit_post_id == postId && draftState?.postType == postType
-          ? ""
-          : "collapse"
-      }
+      class={`collapse ${draftState?.edit_post_id == postId && draftState?.postType == postType
+          ? "show"
+          : ""
+        }`}
       id={`collapse${postType}Editor${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
@@ -532,13 +530,18 @@ const postExtra =
     <div></div>
   );
 
+const childPostHasDraft = childPostIds.find(childId => childId == draftState?.edit_post_id || childId == draftState?.parent_post_id);
+if (childPostHasDraft && props.expandParent) {
+  props.expandParent();
+}
+
 const postsList =
   props.isPreview || childPostIds.length == 0 ? (
     <div key="posts-list"></div>
   ) : (
     <div class="row" key="posts-list">
       <div
-        class={`collapse ${defaultExpanded ? "show" : ""}`}
+        class={`collapse ${( defaultExpanded || childPostHasDraft || state.childrenOfChildPostsHasDraft) ? "show" : ""}`}
         id={`collapseChildPosts${postId}`}
       >
         {childPostIds.map((childId) =>
@@ -549,6 +552,7 @@ const postsList =
               isUnderPost: true,
               onDraftStateChange: props.onDraftStateChange,
               draftState,
+              expandParent: () => State.update({ childrenOfChildPostsHasDraft: true })
             },
             `subpost${childId}of${postId}`
           )
