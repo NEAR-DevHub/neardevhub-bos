@@ -127,7 +127,7 @@ const ProfileCard = (props) => {
     );
   }
   return (
-    <div className="d-flex flex-row justify-content-center align-items-center">
+    <div className="d-flex flex-row align-items-center">
       {inner}
       <Widget
         src="neardevgov.near/widget/BadgesList"
