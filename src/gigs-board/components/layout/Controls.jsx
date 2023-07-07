@@ -63,7 +63,7 @@ return (
       href={href("Create", { labels: props.labels })}
     >
       <i class="bi bi-plus-circle-fill"></i>
-      Submit Idea / Solution
+      Post
     </a>
   </div>
 );
