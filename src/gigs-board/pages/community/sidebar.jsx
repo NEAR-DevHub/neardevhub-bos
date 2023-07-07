@@ -93,7 +93,6 @@ if (!props.label) {
 }
 
 const CommunitySummary = (community) => {
-
   const socialLinks = [
     ...(community.website_url
       ? [
@@ -160,23 +159,21 @@ const UserList = (users) => {
     <div>
       {users.map((user, i) => (
         <div className={`row ${i < users.length - 1 ? "mb-3" : ""}`}>
-          <div class="col-1">
-            <b>{" #" + (i + 1)}</b>
-          </div>
           <div class="col-9">
             <span
               key={user}
               className="d-inline-flex"
               style={{ fontWeight: 500 }}
             >
-              <Widget
-                src="neardevgov.near/widget/ProfileLine"
-                props={{
-                  accountId: user,
-                  hideAccountId: true,
-                  tooltip: true,
-                }}
-              />
+              {widget("components.molecule.profile-card", {
+                className: "w-100",
+                key: `${formState.id}-repoURL`,
+                label: "GitHub repository URL",
+                // onChange: formUpdate({ path: ["repoURL"] }),
+                placeholder: "https://github.com/example-org/example-repo",
+                value: formState.repoURL,
+                accountId: user,
+              })}
             </span>
           </div>
         </div>
