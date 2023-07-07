@@ -119,18 +119,11 @@ const CommunityActivityPage = ({ handle }) => {
         <div class="row">
           <div class="col-md-9">
             <div class="row mb-2">
-              <div class="col text-center">
+              <div class="col">
                 <small class="text-muted">
                   <span>Required tags:</span>
-
-                  <a
-                    href={href("Feed", { tag: communityData.tag })}
-                    key={communityData.tag}
-                  >
-                    <span class="badge text-bg-primary me-1">
-                      {communityData.tag}
-                    </span>
-                  </a>
+                  {widget('components.atom.tag', { label: communityData.tag })}
+                  
                 </small>
               </div>
             </div>

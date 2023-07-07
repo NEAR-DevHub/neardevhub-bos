@@ -135,9 +135,7 @@ const CommunitySummary = (community) => {
     <div style={{ top: "0", left: "0" }}>
       <Markdown text={community.bio_markdown} />
       <small class="text-muted mb-3">
-        <a href={href("Feed", { tag: community.tag })} key={community.tag}>
-          <span class="badge text-bg-primary me-1">{community.tag}</span>
-        </a>
+        {widget('components.atom.tag', { label: community.tag })}
       </small>
       {socialLinks.map((link, index) => (
         <a
@@ -166,12 +164,6 @@ const UserList = (users) => {
               style={{ fontWeight: 500 }}
             >
               {widget("components.molecule.profile-card", {
-                className: "w-100",
-                key: `${formState.id}-repoURL`,
-                label: "GitHub repository URL",
-                // onChange: formUpdate({ path: ["repoURL"] }),
-                placeholder: "https://github.com/example-org/example-repo",
-                value: formState.repoURL,
                 accountId: user,
               })}
             </span>
@@ -202,7 +194,7 @@ const Sidebar = ({ label }) => {
       })}
       <hr style={{ width: "100%", borderTop: "1px solid #00000033" }} />
       {widget("components.molecule.tile", {
-        heading: "Community Moderators",
+        heading: "Group Moderators",
         minHeight: 0,
         children: UserList(moderators),
         noBorder: true,
