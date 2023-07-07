@@ -122,17 +122,23 @@ const fieldDefaultUpdate = ({
   }
 };
 
-const useForm = ({ stateKey: formStateKey }) => ({
-  formValues: state[formStateKey],
+const useForm = ({ initialValues, stateKey }) => ({
+  values: state[stateKey].values,
 
-  formUpdate:
+  reset: () =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      [stateKey]: { hasUnsubmittedChanges: false, values: initialValues },
+    })),
+
+  update:
     ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
     (fieldInput) =>
       State.update((lastKnownState) =>
         traversalUpdate({
           input: fieldInput?.target?.value ?? fieldInput,
           target: lastKnownState,
-          path: [formStateKey, ...fieldPath],
+          path: [stateKey, "values", ...fieldPath],
           params,
 
           via:
@@ -184,12 +190,7 @@ const fieldParamsByType = {
   },
 };
 
-const fieldsRenderDefault = ({
-  schema,
-  formValues,
-  formUpdate,
-  isEditable,
-}) => (
+const fieldsRenderDefault = ({ schema, form, isEditable }) => (
   <>
     {Object.entries(schema).map(
       ([
@@ -197,20 +198,20 @@ const fieldsRenderDefault = ({
         { format, inputProps, label, order, style, ...fieldProps },
       ]) => {
         const contentDisplayClassName = [
-          (formValues[fieldKey]?.length ?? 0) > 0 ? "" : "text-muted",
+          (form.values[fieldKey]?.length ?? 0) > 0 ? "" : "text-muted",
           "m-0",
         ].join(" ");
 
-        const fieldType = Array.isArray(formValues[fieldKey])
+        const fieldType = Array.isArray(form.values[fieldKey])
           ? "array"
-          : typeof (formValues[fieldKey] ?? "");
+          : typeof (form.values[fieldKey] ?? "");
 
         return (
           <>
             {!isEditable && (
               <div
                 className="d-flex gap-3"
-                key={`${formValues.handle}-${fieldKey}`}
+                key={`${form.values.handle}-${fieldKey}`}
                 style={{ order }}
               >
                 <label className="fw-bold w-25">{label}</label>
@@ -218,16 +219,16 @@ const fieldsRenderDefault = ({
                 {format !== "markdown" ? (
                   <p className={[contentDisplayClassName, "w-75"].join(" ")}>
                     {(fieldType === "array"
-                      ? formValues[fieldKey]
+                      ? form.values[fieldKey]
                           .filter((string) => string.length > 0)
                           .join(", ")
-                      : formValues[fieldKey]
+                      : form.values[fieldKey]
                     )?.toString?.() || "none"}
                   </p>
                 ) : (
                   <p className={[contentDisplayClassName, "w-75"].join(" ")}>
-                    {(formValues[fieldKey]?.length ?? 0) > 0 ? (
-                      <Markdown text={formValues[fieldKey]} />
+                    {(form.values[fieldKey]?.length ?? 0) > 0 ? (
+                      <Markdown text={form.values[fieldKey]} />
                     ) : (
                       "none"
                     )}
@@ -241,20 +242,20 @@ const fieldsRenderDefault = ({
                 ...fieldProps,
                 className: "w-100",
                 format,
-                key: `${formValues.handle}-${fieldKey}`,
+                key: `${form.values.handle}-${fieldKey}`,
                 label,
-                onChange: formUpdate({ path: [fieldKey] }),
+                onChange: form.update({ path: [fieldKey] }),
                 style: { ...style, order },
 
                 value:
                   fieldType === "array"
-                    ? formValues[fieldKey].join(", ")
-                    : formValues[fieldKey],
+                    ? form.values[fieldKey].join(", ")
+                    : form.values[fieldKey],
 
                 inputProps: {
                   ...(inputProps ?? {}),
 
-                  ...(fieldParamsByType[typeof formValues[fieldKey]]
+                  ...(fieldParamsByType[typeof form.values[fieldKey]]
                     .inputProps ?? {}),
                 },
               })}
@@ -269,6 +270,7 @@ const Form = ({
   actionsAdditional,
   cancelLabel,
   classNames,
+  data,
   fieldsRender: fieldsRenderCustom,
   heading,
   isEditorActive,
@@ -278,7 +280,6 @@ const Form = ({
   onSubmit,
   schema,
   submitLabel,
-  values,
   ...restProps
 }) => {
   const fieldsRender =
@@ -288,7 +289,7 @@ const Form = ({
 
   const initialValues =
     typeof schema === "object"
-      ? HashMap.pick(values ?? {}, Object.keys(schema))
+      ? HashMap.pick(data ?? {}, Object.keys(schema))
       : {};
 
   State.init({
@@ -296,14 +297,14 @@ const Form = ({
     values: initialValues,
   });
 
+  const form = useForm({ initialValues, stateKey: "form" }),
+    hasUnsubmittedChanges = !HashMap.isEqual(form.values, initialValues);
+
   if (
     !state.isEditorActive &&
-    JSON.stringify(initialValues) !== JSON.stringify(state.values)
+    JSON.stringify(initialValues) !== JSON.stringify(form.values)
   ) {
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      values: initialValues,
-    }));
+    form.reset();
   }
 
   const onEditorToggle = (forcedState) =>
@@ -312,13 +313,11 @@ const Form = ({
       isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
     }));
 
-  const { formValues, formUpdate } = useForm({ stateKey: "values" }),
-    hasUnsubmittedChanges = !HashMap.isEqual(formValues, initialValues);
-
   const onCancelClick = () => {
+    form.reset();
+
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      values: initialValues,
       isEditorActive: false,
     }));
 
@@ -328,7 +327,7 @@ const Form = ({
 
   const onSubmitClick = () => {
     onEditorToggle(false);
-    if (typeof onSubmit === "function") onSubmit(formValues);
+    if (typeof onSubmit === "function") onSubmit(form.values);
   };
 
   return widget("components.molecule.tile", {
@@ -355,8 +354,7 @@ const Form = ({
           className={`d-flex flex-column gap-${state.isEditorActive ? 1 : 4}`}
         >
           {fieldsRender({
-            formValues,
-            formUpdate,
+            form,
             isEditable: isMutable && state.isEditorActive,
             onFormSubmit: onSubmit,
             schema,

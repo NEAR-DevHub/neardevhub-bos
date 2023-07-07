@@ -60,6 +60,8 @@ const DevHub = {
       { subscribe: true }
     );
 
-    return cacheState === null ? initialState : cacheState;
+    return cacheState === null
+      ? { ...cacheState, ...initialState }
+      : cacheState;
   },
 };

@@ -138,7 +138,9 @@ const DevHub = {
       { subscribe: true }
     );
 
-    return cacheState === null ? initialState : cacheState;
+    return cacheState === null
+      ? { ...cacheState, ...initialState }
+      : cacheState;
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
@@ -295,7 +297,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
-            values: state.data,
+            data: state.data,
 
             schema: {
               name: {
@@ -367,7 +369,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
-            values: state.data,
+            data: state.data,
 
             schema: {
               bio_markdown: {
@@ -422,7 +424,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: canEdit,
             onSubmit: onSubformSubmit,
             submitLabel: "Accept",
-            values: state.data,
+            data: state.data,
 
             schema: {
               admins: {
@@ -444,7 +446,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: canEdit,
             onSubmit: (value) => onSubformSubmit({ wiki1: value }),
             submitLabel: "Accept",
-            values: state.data?.wiki1,
+            data: state.data?.wiki1,
 
             schema: {
               name: {
@@ -471,7 +473,7 @@ const CommunityEditorFrame = ({ handle }) => {
             isMutable: canEdit,
             onSubmit: (value) => onSubformSubmit({ wiki2: value }),
             submitLabel: "Accept",
-            values: state.data?.wiki2,
+            data: state.data?.wiki2,
 
             schema: {
               name: {

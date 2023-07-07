@@ -68,17 +68,23 @@ const fieldDefaultUpdate = ({
   }
 };
 
-const useForm = ({ stateKey: formStateKey }) => ({
-  formValues: state[formStateKey],
+const useForm = ({ initialValues, stateKey }) => ({
+  values: state[stateKey].values,
 
-  formUpdate:
+  reset: () =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      [stateKey]: { hasUnsubmittedChanges: false, values: initialValues },
+    })),
+
+  update:
     ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
     (fieldInput) =>
       State.update((lastKnownState) =>
         traversalUpdate({
           input: fieldInput?.target?.value ?? fieldInput,
           target: lastKnownState,
-          path: [formStateKey, ...fieldPath],
+          path: [stateKey, "values", ...fieldPath],
           params,
 
           via:

@@ -122,17 +122,23 @@ const fieldDefaultUpdate = ({
   }
 };
 
-const useForm = ({ stateKey: formStateKey }) => ({
-  formValues: state[formStateKey],
+const useForm = ({ initialValues, stateKey }) => ({
+  values: state[stateKey].values,
 
-  formUpdate:
+  reset: () =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      [stateKey]: { hasUnsubmittedChanges: false, values: initialValues },
+    })),
+
+  update:
     ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
     (fieldInput) =>
       State.update((lastKnownState) =>
         traversalUpdate({
           input: fieldInput?.target?.value ?? fieldInput,
           target: lastKnownState,
-          path: [formStateKey, ...fieldPath],
+          path: [stateKey, "values", ...fieldPath],
           params,
 
           via:
@@ -182,7 +188,7 @@ const uuid = () =>
     )
     .join("-");
 
-const uuidIndexed = (data) => {
+const withUUID = (data) => {
   const id = uuid();
 
   return Object.fromEntries([[id, { ...data, id }]]);
@@ -275,7 +281,9 @@ const DevHub = {
       { subscribe: true }
     );
 
-    return cacheState === null ? initialState : cacheState;
+    return cacheState === null
+      ? { ...cacheState, ...initialState }
+      : cacheState;
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
@@ -319,8 +327,11 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     board: null,
     editingMode: "form",
     canEdit: false,
+    hasUnsavedChanges: false,
     isEditorActive: false,
   });
+
+  console.log(state.board);
 
   const community = DevHub.useQuery({
     name: "get_community",
@@ -340,8 +351,6 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
 
   const boardId = Object.values(boards)[0]?.id ?? null;
 
-  console.log(boards);
-
   const errors = {
     noBoardId: typeof boardId !== "string",
     noCommunityHandle: typeof communityHandle !== "string",
@@ -353,10 +362,6 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
-      hasUnsavedChanges: !HashMap.isEqual(
-        lastKnownState.board,
-        boards[boardId]
-      ),
     }));
 
   const onEditingModeChange = ({ target: { value } }) =>
@@ -382,7 +387,15 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     }));
   }
 
-  const { formValues, formUpdate } = useForm({ stateKey: "board" });
+  const form = useForm({
+    stateKey: "board",
+
+    onUpdate: () =>
+      State.update((lastKnownState) => ({
+        ...lastKnownState,
+        hasUnsavedChanges: true,
+      })),
+  });
 
   const boardsCreateNew = () =>
     State.update((lastKnownState) => ({
@@ -396,7 +409,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       ? {
           ...lastKnownState,
 
-          ...uuidIndexed({
+          ...withUUID({
             description: "",
             labelSearchTerms: [],
             title: "New column",
@@ -418,35 +431,35 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       github: JSON.stringify({
         kanbanBoards: {
           ...boards,
-          [formValues.id]: formValues,
+          [form.values.id]: form.values,
         },
       }),
     });
 
-  const form =
-    formValues !== null ? (
+  const formElement =
+    form.values !== null ? (
       <>
         <div className="d-flex gap-3 flex-column flex-lg-row">
           {widget(
             "components.molecule.text-input",
             {
               className: "flex-shrink-0",
-              key: `${formValues.id}-title`,
+              key: `${form.values.id}-title`,
               label: "Title",
-              onChange: formUpdate({ path: ["title"] }),
+              onChange: form.update({ path: ["title"] }),
               placeholder: "NEAR Protocol NEPs",
-              value: formValues.title,
+              value: form.values.title,
             },
-            `${formValues.id}-title`
+            `${form.values.id}-title`
           )}
 
           {widget("components.molecule.text-input", {
             className: "w-100",
-            key: `${formValues.id}-repoURL`,
+            key: `${form.values.id}-repoURL`,
             label: "GitHub repository URL",
-            onChange: formUpdate({ path: ["repoURL"] }),
+            onChange: form.update({ path: ["repoURL"] }),
             placeholder: "https://github.com/example-org/example-repo",
-            value: formValues.repoURL,
+            value: form.values.repoURL,
           })}
         </div>
 
@@ -454,13 +467,13 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
             <span
               className="d-inline-flex gap-2"
-              id={`${formValues.id}-dataTypesIncluded`}
+              id={`${form.values.id}-dataTypesIncluded`}
             >
               <i className="bi bi-database-fill" />
               <span>Tracked data</span>
             </span>
 
-            {Object.entries(formValues.dataTypesIncluded).map(
+            {Object.entries(form.values.dataTypesIncluded).map(
               ([typeName, enabled]) =>
                 widget(
                   "components.atom.toggle",
@@ -472,7 +485,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                     key: typeName,
                     label: typeName,
 
-                    onSwitch: formUpdate({
+                    onSwitch: form.update({
                       path: ["dataTypesIncluded", typeName],
                     }),
                   },
@@ -485,16 +498,16 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
             <span
               className="d-inline-flex gap-2"
-              id={`${formValues.id}-dataTypesIncluded`}
+              id={`${form.values.id}-dataTypesIncluded`}
             >
               <i class="bi bi-database-fill" />
               <span>Ticket state</span>
             </span>
 
             {widget("components.molecule.button-switch", {
-              currentValue: formValues.ticketState,
+              currentValue: form.values.ticketState,
               key: "ticketState",
-              onChange: formUpdate({ path: ["ticketState"] }),
+              onChange: form.update({ path: ["ticketState"] }),
 
               options: [
                 { label: "All", value: "all" },
@@ -509,12 +522,12 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           {widget("components.molecule.text-input", {
             className: "w-100",
             inputProps: { className: "h-75" },
-            key: `${formValues.id}-description`,
+            key: `${form.values.id}-description`,
             label: "Description",
             multiline: true,
-            onChange: formUpdate({ path: ["description"] }),
+            onChange: form.update({ path: ["description"] }),
             placeholder: "Latest NEAR Enhancement Proposals by status.",
-            value: formValues.description,
+            value: form.values.description,
           })}
         </div>
 
@@ -526,7 +539,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         </div>
 
         <div className="d-flex flex-column align-items-center gap-3">
-          {Object.values(formValues.columns).map(
+          {Object.values(form.values.columns).map(
             ({ id, description, labelSearchTerms, title }) => (
               <div
                 className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
@@ -535,19 +548,19 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                 <div className="d-flex flex-column gap-1 w-100">
                   {widget("components.molecule.text-input", {
                     className: "flex-grow-1",
-                    key: `${formValues.id}-column-${id}-title`,
+                    key: `${form.values.id}-column-${id}-title`,
                     label: "Title",
-                    onChange: formUpdate({ path: ["columns", id, "title"] }),
+                    onChange: form.update({ path: ["columns", id, "title"] }),
                     placeholder: "👀 Review",
                     value: title,
                   })}
 
                   {widget("components.molecule.text-input", {
                     className: "flex-grow-1",
-                    key: `${formValues.id}-column-${id}-description`,
+                    key: `${form.values.id}-column-${id}-description`,
                     label: "Description",
 
-                    onChange: formUpdate({
+                    onChange: form.update({
                       path: ["columns", id, "description"],
                     }),
 
@@ -559,12 +572,12 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
 
                   {widget("components.molecule.text-input", {
                     format: "comma-separated",
-                    key: `${formValues.id}-column-${title}-labelSearchTerms`,
+                    key: `${form.values.id}-column-${title}-labelSearchTerms`,
 
                     label: `Search terms for all the labels
 											MUST be presented in included tickets`,
 
-                    onChange: formUpdate({
+                    onChange: form.update({
                       path: ["columns", id, "labelSearchTerms"],
                     }),
 
@@ -579,7 +592,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                 >
                   <button
                     className="btn btn-outline-danger shadow"
-                    onClick={formUpdate({
+                    onClick={form.update({
                       path: ["columns"],
                       via: columnsDeleteById(id),
                     })}
@@ -605,7 +618,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     </div>
   ) : (
     <div className="d-flex flex-column gap-4">
-      {state.isEditorActive && formValues !== null ? (
+      {state.isEditorActive && form.values !== null ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
@@ -628,7 +641,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           </div>
 
           {state.editingMode === "form" ? (
-            form
+            formElement
           ) : (
             <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
               <textarea
@@ -636,7 +649,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                 disabled
                 rows="12"
                 type="text"
-                value={JSON.stringify(formValues, null, "\t")}
+                value={JSON.stringify(form.values, null, "\t")}
               />
             </div>
           )}
@@ -644,8 +657,11 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           <div className="d-flex align-items-center justify-content-end gap-3">
             <button
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
-              disabled={Object.keys(formValues.columns).length >= 6}
-              onClick={formUpdate({ path: ["columns"], via: columnsCreateNew })}
+              disabled={Object.keys(form.values.columns).length >= 6}
+              onClick={form.update({
+                path: ["columns"],
+                via: columnsCreateNew,
+              })}
             >
               <i className="bi bi-plus-lg" />
               <span>New column</span>
