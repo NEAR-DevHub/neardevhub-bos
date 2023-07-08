@@ -51,47 +51,36 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/form" */
-/**
- *! TODO: Extract into separate library module
- *! once `useForm` is converted into a form factory widget
- */
-const traversalUpdate = ({
-  input,
-  target: treeOrBranch,
-  path: [currentBranchKey, ...remainingBranch],
-  params,
-  via: nodeUpdate,
-}) => ({
-  ...treeOrBranch,
+/* INCLUDE: "core/lib/gui/form" */
+const withUpdatedField = (
+  node,
+  { input, params, path: [nextNodeKey, ...remainingPath], via: updater }
+) => ({
+  ...node,
 
-  [currentBranchKey]:
-    remainingBranch.length > 0
-      ? traversalUpdate({
+  [nextNodeKey]:
+    remainingPath.length > 0
+      ? withUpdatedField(
+          typeof node[nextNodeKey] === "object"
+            ? node[nextNodeKey]
+            : {
+                ...((node[nextNodeKey] ?? null) !== null
+                  ? { __archivedLeaf__: node[nextNodeKey] }
+                  : {}),
+              },
+
+          { input, path: remainingPath, via: updater }
+        )
+      : updater({
           input,
-
-          target:
-            typeof treeOrBranch[currentBranchKey] === "object"
-              ? treeOrBranch[currentBranchKey]
-              : {
-                  ...((treeOrBranch[currentBranchKey] ?? null) !== null
-                    ? { __archivedLeaf__: treeOrBranch[currentBranchKey] }
-                    : {}),
-                },
-
-          path: remainingBranch,
-          via: nodeUpdate,
-        })
-      : nodeUpdate({
-          input,
-          lastKnownState: treeOrBranch[currentBranchKey],
+          lastKnownValue: node[nextNodeKey],
           params,
         }),
 });
 
-const fieldDefaultUpdate = ({
+const defaultFieldUpdate = ({
   input,
-  lastKnownState,
+  lastKnownValue,
   params: { arrayDelimiter },
 }) => {
   switch (typeof input) {
@@ -99,56 +88,95 @@ const fieldDefaultUpdate = ({
       return input;
 
     case "object":
-      return Array.isArray(input) && typeof lastKnownState === "string"
+      return Array.isArray(input) && typeof lastKnownValue === "string"
         ? input.join(arrayDelimiter ?? ",")
         : input;
 
     case "string":
-      return Array.isArray(lastKnownState)
+      return Array.isArray(lastKnownValue)
         ? input.split(arrayDelimiter ?? ",").map((string) => string.trim())
         : input;
 
     default: {
       if ((input ?? null) === null) {
-        switch (typeof lastKnownState) {
+        switch (typeof lastKnownValue) {
           case "boolean":
-            return !lastKnownState;
+            return !lastKnownValue;
 
           default:
-            return lastKnownState;
+            return lastKnownValue;
         }
       } else return input;
     }
   }
 };
 
-const useForm = ({ initialValues, stateKey }) => ({
-  values: state[stateKey].values,
+const useForm = ({
+  initialValues: initialFormValues,
+  stateKey: formStateKey,
+}) => {
+  const formInitialState = {
+    hasUnsubmittedChanges: false,
+    values: initialFormValues ?? {},
+  };
 
-  reset: () =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      [stateKey]: { hasUnsubmittedChanges: false, values: initialValues },
-    })),
+  const { hasUnsubmittedChanges, values } =
+    state[formStateKey] ?? formInitialState;
 
-  update:
-    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
-    (fieldInput) =>
-      State.update((lastKnownState) =>
-        traversalUpdate({
-          input: fieldInput?.target?.value ?? fieldInput,
-          target: lastKnownState,
-          path: [stateKey, "values", ...fieldPath],
-          params,
+  if ((state[formStateKey] ?? null) === null) {
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
+      [formStateKey]: formInitialState,
+    }));
+  }
 
-          via:
-            typeof fieldCustomUpdate === "function"
-              ? fieldCustomUpdate
-              : fieldDefaultUpdate,
-        })
-      ),
-});
-/* END_INCLUDE: "core/lib/form" */
+  return {
+    hasUnsubmittedChanges,
+
+    reset: () =>
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+        [formStateKey]: formInitialState,
+        hasUnsubmittedChanges: false,
+      })),
+
+    update:
+      ({ path, via: customFieldUpdate, ...params }) =>
+      (fieldInput) => {
+        const updatedFormValues = withUpdatedField(
+          lastKnownComponentState[formStateKey].values,
+
+          {
+            input: fieldInput?.target?.value ?? fieldInput,
+            path,
+
+            via:
+              typeof customFieldUpdate === "function"
+                ? customFieldUpdate
+                : defaultFieldUpdate,
+
+            params,
+          }
+        );
+
+        State.update((lastKnownComponentState) => ({
+          ...lastKnownComponentState,
+
+          [formStateKey]: {
+            hasUnsubmittedChanges: !HashMap.isEqual(
+              updatedFormValues,
+              initialFormValues
+            ),
+
+            values: updatedFormValues,
+          },
+        }));
+      },
+
+    values,
+  };
+};
+/* END_INCLUDE: "core/lib/gui/form" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -324,24 +352,16 @@ const BoardConfigDefaults = {
 
 const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   State.init({
-    board: null,
+    board: { hasUnsubmittedChanges: false, values: null },
     editingMode: "form",
     canEdit: false,
-    hasUnsavedChanges: false,
     isEditorActive: false,
   });
-
-  console.log(state.board);
 
   const community = DevHub.useQuery({
     name: "get_community",
     params: { handle: communityHandle },
   });
-
-  const canEdit =
-    typeof communityHandle !== "string" ||
-    (community.data?.admins ?? []).includes(context.accountId) ||
-    Viewer.isDevHubModerator;
 
   const boards =
     ((community?.data?.github ?? null) === null
@@ -350,6 +370,15 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     )?.kanbanBoards ?? {};
 
   const boardId = Object.values(boards)[0]?.id ?? null;
+
+  const form = useForm({ stateKey: "board" });
+
+  console.log(form);
+
+  const canEdit =
+    typeof communityHandle !== "string" ||
+    (community.data?.admins ?? []).includes(context.accountId) ||
+    Viewer.isDevHubModerator;
 
   const errors = {
     noBoardId: typeof boardId !== "string",
@@ -378,24 +407,10 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     !errors.noBoardId &&
     !community.isLoading &&
     typeof boards[boardId] === "object" &&
-    (state.board === null || (!isSynced && !state.hasUnsavedChanges))
+    (state.board === null || (!isSynced && !form.hasUnsubmittedChanges))
   ) {
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      board: boards[boardId],
-      hasUnsavedChanges: false,
-    }));
+    form.reset();
   }
-
-  const form = useForm({
-    stateKey: "board",
-
-    onUpdate: () =>
-      State.update((lastKnownState) => ({
-        ...lastKnownState,
-        hasUnsavedChanges: true,
-      })),
-  });
 
   const boardsCreateNew = () =>
     State.update((lastKnownState) => ({
@@ -404,10 +419,10 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       isEditorActive: true,
     }));
 
-  const columnsCreateNew = ({ lastKnownState }) =>
-    Object.keys(lastKnownState).length < 6
+  const columnsCreateNew = ({ lastKnownValue }) =>
+    Object.keys(lastKnownValue).length < 6
       ? {
-          ...lastKnownState,
+          ...lastKnownValue,
 
           ...withUUID({
             description: "",
@@ -415,13 +430,13 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
             title: "New column",
           }),
         }
-      : lastKnownState;
+      : lastKnownValue;
 
   const columnsDeleteById =
     (id) =>
-    ({ lastKnownState }) =>
+    ({ lastKnownValue }) =>
       Object.fromEntries(
-        Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
+        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
       );
 
   const onSubmit = () =>

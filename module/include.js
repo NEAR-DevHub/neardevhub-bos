@@ -11,10 +11,10 @@ const options = {
 
 replaceInFiles(options)
   .pipe({
-    from: /\/\* INCLUDE: "core\/lib\/form" \*\/.*\/\* END_INCLUDE: "core\/lib\/form" \*\//gms,
-    to: `/* INCLUDE: "core/lib/form" */\n${fs
-      .readFileSync("./module/core/lib/form.js", "utf8")
-      .toString()}/* END_INCLUDE: "core/lib/form" */`,
+    from: /\/\* INCLUDE: "core\/lib\/gui\/form" \*\/.*\/\* END_INCLUDE: "core\/lib\/gui\/form" \*\//gms,
+    to: `/* INCLUDE: "core/lib/gui/form" */\n${fs
+      .readFileSync("./module/core/lib/gui/form.js", "utf8")
+      .toString()}/* END_INCLUDE: "core/lib/gui/form" */`,
   })
   .pipe({
     from: /\/\* INCLUDE: "core\/lib\/gui\/attractable" \*\/.*\/\* END_INCLUDE: "core\/lib\/gui\/attractable" \*\//gms,

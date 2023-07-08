@@ -51,104 +51,6 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/form" */
-/**
- *! TODO: Extract into separate library module
- *! once `useForm` is converted into a form factory widget
- */
-const traversalUpdate = ({
-  input,
-  target: treeOrBranch,
-  path: [currentBranchKey, ...remainingBranch],
-  params,
-  via: nodeUpdate,
-}) => ({
-  ...treeOrBranch,
-
-  [currentBranchKey]:
-    remainingBranch.length > 0
-      ? traversalUpdate({
-          input,
-
-          target:
-            typeof treeOrBranch[currentBranchKey] === "object"
-              ? treeOrBranch[currentBranchKey]
-              : {
-                  ...((treeOrBranch[currentBranchKey] ?? null) !== null
-                    ? { __archivedLeaf__: treeOrBranch[currentBranchKey] }
-                    : {}),
-                },
-
-          path: remainingBranch,
-          via: nodeUpdate,
-        })
-      : nodeUpdate({
-          input,
-          lastKnownState: treeOrBranch[currentBranchKey],
-          params,
-        }),
-});
-
-const fieldDefaultUpdate = ({
-  input,
-  lastKnownState,
-  params: { arrayDelimiter },
-}) => {
-  switch (typeof input) {
-    case "boolean":
-      return input;
-
-    case "object":
-      return Array.isArray(input) && typeof lastKnownState === "string"
-        ? input.join(arrayDelimiter ?? ",")
-        : input;
-
-    case "string":
-      return Array.isArray(lastKnownState)
-        ? input.split(arrayDelimiter ?? ",").map((string) => string.trim())
-        : input;
-
-    default: {
-      if ((input ?? null) === null) {
-        switch (typeof lastKnownState) {
-          case "boolean":
-            return !lastKnownState;
-
-          default:
-            return lastKnownState;
-        }
-      } else return input;
-    }
-  }
-};
-
-const useForm = ({ initialValues, stateKey }) => ({
-  values: state[stateKey].values,
-
-  reset: () =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      [stateKey]: { hasUnsubmittedChanges: false, values: initialValues },
-    })),
-
-  update:
-    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
-    (fieldInput) =>
-      State.update((lastKnownState) =>
-        traversalUpdate({
-          input: fieldInput?.target?.value ?? fieldInput,
-          target: lastKnownState,
-          path: [stateKey, "values", ...fieldPath],
-          params,
-
-          via:
-            typeof fieldCustomUpdate === "function"
-              ? fieldCustomUpdate
-              : fieldDefaultUpdate,
-        })
-      ),
-});
-/* END_INCLUDE: "core/lib/form" */
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
   isEqual: (input1, input2) =>
@@ -173,6 +75,130 @@ const HashMap = {
     ),
 };
 /* END_INCLUDE: "core/lib/hashmap" */
+/* INCLUDE: "core/lib/gui/form" */
+const withUpdatedField = (
+  node,
+  { input, params, path: [nextNodeKey, ...remainingPath], via: updater }
+) => ({
+  ...node,
+
+  [nextNodeKey]:
+    remainingPath.length > 0
+      ? withUpdatedField(
+          typeof node[nextNodeKey] === "object"
+            ? node[nextNodeKey]
+            : {
+                ...((node[nextNodeKey] ?? null) !== null
+                  ? { __archivedLeaf__: node[nextNodeKey] }
+                  : {}),
+              },
+
+          { input, path: remainingPath, via: updater }
+        )
+      : updater({
+          input,
+          lastKnownValue: node[nextNodeKey],
+          params,
+        }),
+});
+
+const defaultFieldUpdate = ({
+  input,
+  lastKnownValue,
+  params: { arrayDelimiter },
+}) => {
+  switch (typeof input) {
+    case "boolean":
+      return input;
+
+    case "object":
+      return Array.isArray(input) && typeof lastKnownValue === "string"
+        ? input.join(arrayDelimiter ?? ",")
+        : input;
+
+    case "string":
+      return Array.isArray(lastKnownValue)
+        ? input.split(arrayDelimiter ?? ",").map((string) => string.trim())
+        : input;
+
+    default: {
+      if ((input ?? null) === null) {
+        switch (typeof lastKnownValue) {
+          case "boolean":
+            return !lastKnownValue;
+
+          default:
+            return lastKnownValue;
+        }
+      } else return input;
+    }
+  }
+};
+
+const useForm = ({
+  initialValues: initialFormValues,
+  stateKey: formStateKey,
+}) => {
+  const formInitialState = {
+    hasUnsubmittedChanges: false,
+    values: initialFormValues ?? {},
+  };
+
+  const { hasUnsubmittedChanges, values } =
+    state[formStateKey] ?? formInitialState;
+
+  if ((state[formStateKey] ?? null) === null) {
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
+      [formStateKey]: formInitialState,
+    }));
+  }
+
+  return {
+    hasUnsubmittedChanges,
+
+    reset: () =>
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+        [formStateKey]: formInitialState,
+        hasUnsubmittedChanges: false,
+      })),
+
+    update: ({ path, via: customFieldUpdate, ...params }) => (fieldInput) => {
+      const updatedFormValues = withUpdatedField(
+        lastKnownComponentState[formStateKey].values,
+
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          path,
+
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+
+          params,
+        }
+      );
+
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+
+        [formStateKey]: {
+          hasUnsubmittedChanges: !HashMap.isEqual(
+            updatedFormValues,
+            initialFormValues
+          ),
+
+          values: updatedFormValues,
+        },
+      }));
+    },
+
+    values,
+  };
+};
+/* END_INCLUDE: "core/lib/gui/form" */
 
 const fieldParamsByType = {
   array: {
@@ -190,13 +216,13 @@ const fieldParamsByType = {
   },
 };
 
-const fieldsRenderDefault = ({ schema, form, isEditable }) => (
+const defaultFieldsRender = ({ schema, form, isEditable }) => (
   <>
     {Object.entries(schema).map(
-      ([
-        fieldKey,
-        { format, inputProps, label, order, style, ...fieldProps },
-      ]) => {
+      (
+        [fieldKey, { format, inputProps, label, order, style, ...fieldProps }],
+        idx
+      ) => {
         const contentDisplayClassName = [
           (form.values[fieldKey]?.length ?? 0) > 0 ? "" : "text-muted",
           "m-0",
@@ -208,10 +234,10 @@ const fieldsRenderDefault = ({ schema, form, isEditable }) => (
 
         return (
           <>
-            {!isEditable && (
+            {!isEditable ? (
               <div
                 className="d-flex gap-3"
-                key={`${form.values.handle}-${fieldKey}`}
+                key={`${idx}-${fieldKey}`}
                 style={{ order }}
               >
                 <label className="fw-bold w-25">{label}</label>
@@ -235,14 +261,12 @@ const fieldsRenderDefault = ({ schema, form, isEditable }) => (
                   </p>
                 )}
               </div>
-            )}
-
-            {isEditable &&
+            ) : (
               widget(fieldParamsByType[fieldType].name, {
                 ...fieldProps,
                 className: "w-100",
                 format,
-                key: `${form.values.handle}-${fieldKey}`,
+                key: `${idx}-${fieldKey}--editable`,
                 label,
                 onChange: form.update({ path: [fieldKey] }),
                 style: { ...style, order },
@@ -258,7 +282,8 @@ const fieldsRenderDefault = ({ schema, form, isEditable }) => (
                   ...(fieldParamsByType[typeof form.values[fieldKey]]
                     .inputProps ?? {}),
                 },
-              })}
+              })
+            )}
           </>
         );
       }
@@ -266,12 +291,12 @@ const fieldsRenderDefault = ({ schema, form, isEditable }) => (
   </>
 );
 
-const Form = ({
+const Editor = ({
   actionsAdditional,
   cancelLabel,
   classNames,
   data,
-  fieldsRender: fieldsRenderCustom,
+  fieldsRender: customFieldsRender,
   heading,
   isEditorActive,
   isMutable,
@@ -283,9 +308,9 @@ const Form = ({
   ...restProps
 }) => {
   const fieldsRender =
-    typeof fieldsRenderCustom === "function"
-      ? fieldsRenderCustom
-      : fieldsRenderDefault;
+    typeof customFieldsRender === "function"
+      ? customFieldsRender
+      : defaultFieldsRender;
 
   const initialValues =
     typeof schema === "object"
@@ -294,20 +319,14 @@ const Form = ({
 
   State.init({
     isEditorActive: isEditorActive ?? false,
-    values: initialValues,
   });
 
   const form = useForm({ initialValues, stateKey: "form" }),
-    hasUnsubmittedChanges = !HashMap.isEqual(form.values, initialValues);
+    isSynced = HashMap.isEqual(initialValues, form.values);
 
-  if (
-    !state.isEditorActive &&
-    JSON.stringify(initialValues) !== JSON.stringify(form.values)
-  ) {
-    form.reset();
-  }
+  if (!state.isEditorActive && !isSynced) form.reset();
 
-  const onEditorToggle = (forcedState) =>
+  const editorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
@@ -315,18 +334,13 @@ const Form = ({
 
   const onCancelClick = () => {
     form.reset();
-
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      isEditorActive: false,
-    }));
-
+    editorToggle(false);
     if (typeof onSubmit === "function") onSubmit(initialValues);
     if (typeof onCancel === "function") onCancel();
   };
 
   const onSubmitClick = () => {
-    onEditorToggle(false);
+    editorToggle(false);
     if (typeof onSubmit === "function") onSubmit(form.values);
   };
 
@@ -344,7 +358,7 @@ const Form = ({
             },
 
             label: "Edit",
-            onClick: () => onEditorToggle(true),
+            onClick: () => editorToggle(true),
           })
         : null,
 
@@ -379,7 +393,7 @@ const Form = ({
                 adornment: `bi ${classNames.submitAdornment}`,
               },
 
-              disabled: !hasUnsubmittedChanges,
+              disabled: !form.hasUnsubmittedChanges,
               label: submitLabel ?? "Submit",
               onClick: onSubmitClick,
             })}
@@ -392,4 +406,4 @@ const Form = ({
   });
 };
 
-return Form(props);
+return Editor(props);

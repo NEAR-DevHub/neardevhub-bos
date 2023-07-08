@@ -183,88 +183,91 @@ const CommunityDefaults = {
   wiki2: null,
 };
 
-const CommunityEditorFrame = ({ handle }) => {
+const CommunityEditorUI = ({ handle: communityHandle }) => {
   State.init({
     canEdit: false,
-    data: null,
+    communityData: null,
     hasUnsavedChanges: false,
-    isCommunityNew: typeof handle !== "string",
+    isCommunityNew: typeof communityHandle !== "string",
   });
 
   const community = state.isCommunityNew
     ? { data: CommunityDefaults, error: null, isLoading: false }
     : DevHub.useQuery({
         name: "get_community",
-        params: { handle },
+        params: { handle: communityHandle },
         initialData: CommunityDefaults,
       });
 
   const canEdit =
-    typeof handle !== "string" ||
+    typeof communityHandle !== "string" ||
     (community.data?.admins ?? []).includes(context.accountId) ||
     Viewer.isDevHubModerator;
 
-  const isSynced = HashMap.isEqual(state.data, community.data);
+  const isSynced = HashMap.isEqual(state.communityData, community.data);
 
-  if (state.data === null) {
+  if (state.communityData === null) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: community.data,
+      communityData: community.data,
       hasUnsavedChanges: false,
-      isCommunityNew: typeof handle !== "string",
+      isCommunityNew: typeof communityHandle !== "string",
     }));
   } else if (
-    typeof handle === "string" &&
+    typeof communityHandle === "string" &&
     !state.hasUnsavedChanges &&
     !community.isLoading &&
     !isSynced
   ) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      data: community.data,
+      communityData: community.data,
       hasUnsavedChanges: false,
     }));
   }
 
-  const onSubformSubmit = (partial) => {
+  const onSectionSubmit = (sectionData) => {
     State.update((lastKnownState) => {
-      const dataUpdate = Object.entries(partial).reduce(
-        (update, [key, value]) => ({
+      const communityDataUpdate = Object.entries(sectionData).reduce(
+        (update, [propertyKey, propertyValue]) => ({
           ...update,
 
-          [key]:
-            typeof value !== "string" || (value?.length ?? 0) > 0
-              ? value ?? null
+          [propertyKey]:
+            typeof propertyValue !== "string" ||
+            (propertyValue?.length ?? 0) > 0
+              ? propertyValue ?? null
               : null,
         }),
-        {}
-      );
 
-      const data = {
-        ...lastKnownState.data,
-        ...dataUpdate,
-      };
+        lastKnownState.communityData
+      );
 
       return {
         ...lastKnownState,
-        data,
-        hasUnsavedChanges: !HashMap.isEqual(data, community.data),
+        communityData: communityDataUpdate,
+
+        hasUnsavedChanges: !HashMap.isEqual(
+          communityDataUpdate,
+          community.data
+        ),
       };
     });
   };
 
-  const onSubmit = () =>
+  const changesSave = () =>
     Near.call(
       nearDevGovGigsContractAccountId,
       state.isCommunityNew ? "add_community" : "edit_community",
 
       {
-        handle: state.isCommunityNew ? state.data?.handle : handle,
+        handle: state.isCommunityNew
+          ? state.communityData?.handle
+          : communityHandle,
 
         community: {
-          ...(state.data ?? {}),
+          ...(state.communityData ?? {}),
 
-          admins: state.data?.admins.filter(
+          admins: state.communityData?.admins.filter(
             (maybeAccountId) => maybeAccountId.length > 0
           ),
         },
@@ -272,7 +275,9 @@ const CommunityEditorFrame = ({ handle }) => {
     );
 
   const onDelete = () =>
-    Near.call(nearDevGovGigsContractAccountId, "delete_community", { handle });
+    Near.call(nearDevGovGigsContractAccountId, "delete_community", {
+      handle: communityHandle,
+    });
 
   return community.isLoading && !state.isCommunityNew ? (
     <div>Loading...</div>
@@ -282,11 +287,11 @@ const CommunityEditorFrame = ({ handle }) => {
         <>
           {widget("feature.community-editor.branding-section", {
             isMutable: canEdit,
-            onSubmit: onSubformSubmit,
-            values: state.data,
+            onSubmit: onSectionSubmit,
+            values: state.communityData,
           })}
 
-          {widget("components.organism.form", {
+          {widget("components.organism.editor", {
             classNames: {
               submit: "btn-primary",
               submitAdornment: "bi-check-circle-fill",
@@ -295,9 +300,9 @@ const CommunityEditorFrame = ({ handle }) => {
             heading: "Basic information",
             isEditorActive: state.isCommunityNew,
             isMutable: canEdit,
-            onSubmit: onSubformSubmit,
+            onSubmit: onSectionSubmit,
             submitLabel: "Accept",
-            data: state.data,
+            data: state.communityData,
 
             schema: {
               name: {
@@ -359,7 +364,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
           })}
 
-          {widget("components.organism.form", {
+          {widget("components.organism.editor", {
             classNames: {
               submit: "btn-primary",
               submitAdornment: "bi-check-circle-fill",
@@ -367,9 +372,9 @@ const CommunityEditorFrame = ({ handle }) => {
 
             heading: "About",
             isMutable: canEdit,
-            onSubmit: onSubformSubmit,
+            onSubmit: onSectionSubmit,
             submitLabel: "Accept",
-            data: state.data,
+            data: state.communityData,
 
             schema: {
               bio_markdown: {
@@ -414,7 +419,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
           })}
 
-          {widget("components.organism.form", {
+          {widget("components.organism.editor", {
             classNames: {
               submit: "btn-primary",
               submitAdornment: "bi-check-circle-fill",
@@ -422,9 +427,9 @@ const CommunityEditorFrame = ({ handle }) => {
 
             heading: "Permissions",
             isMutable: canEdit,
-            onSubmit: onSubformSubmit,
+            onSubmit: onSectionSubmit,
             submitLabel: "Accept",
-            data: state.data,
+            data: state.communityData,
 
             schema: {
               admins: {
@@ -436,7 +441,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
           })}
 
-          {widget("components.organism.form", {
+          {widget("components.organism.editor", {
             classNames: {
               submit: "btn-primary",
               submitAdornment: "bi-check-circle-fill",
@@ -444,9 +449,9 @@ const CommunityEditorFrame = ({ handle }) => {
 
             heading: "Wiki page 1",
             isMutable: canEdit,
-            onSubmit: (value) => onSubformSubmit({ wiki1: value }),
+            onSubmit: (value) => onSectionSubmit({ wiki1: value }),
             submitLabel: "Accept",
-            data: state.data?.wiki1,
+            data: state.communityData?.wiki1,
 
             schema: {
               name: {
@@ -463,7 +468,7 @@ const CommunityEditorFrame = ({ handle }) => {
             },
           })}
 
-          {widget("components.organism.form", {
+          {widget("components.organism.editor", {
             classNames: {
               submit: "btn-primary",
               submitAdornment: "bi-check-circle-fill",
@@ -471,9 +476,9 @@ const CommunityEditorFrame = ({ handle }) => {
 
             heading: "Wiki page 2",
             isMutable: canEdit,
-            onSubmit: (value) => onSubformSubmit({ wiki2: value }),
+            onSubmit: (value) => onSectionSubmit({ wiki2: value }),
             submitLabel: "Accept",
-            data: state.data?.wiki2,
+            data: state.communityData?.wiki2,
 
             schema: {
               name: {
@@ -532,7 +537,7 @@ const CommunityEditorFrame = ({ handle }) => {
 
                 isCollapsible: true,
                 label: state.isCommunityNew ? "Launch" : "Save",
-                onClick: onSubmit,
+                onClick: changesSave,
               })}
             </div>
           )}
@@ -549,4 +554,4 @@ const CommunityEditorFrame = ({ handle }) => {
   );
 };
 
-return <CommunityEditorFrame {...props} />;
+return CommunityEditorUI(props);
