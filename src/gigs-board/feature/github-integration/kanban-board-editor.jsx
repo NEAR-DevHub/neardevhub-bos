@@ -111,69 +111,73 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({
-  initialValues: initialFormValues,
-  stateKey: formStateKey,
-}) => {
-  const formInitialState = {
+const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
+  const initialFormState = {
     hasUnsubmittedChanges: false,
-    values: initialFormValues ?? {},
+    values: initialValues ?? {},
   };
 
-  const { hasUnsubmittedChanges, values } =
-    state[formStateKey] ?? formInitialState;
+  const formState = state[formStateKey] ?? null,
+    isSynced = HashMap.isEqual(
+      formState?.values ?? {},
+      initialFormState.values
+    );
 
-  if ((state[formStateKey] ?? null) === null) {
+  const formReset = () =>
     State.update((lastKnownComponentState) => ({
       ...lastKnownComponentState,
-      [formStateKey]: formInitialState,
+      [formStateKey]: initialFormState,
+      hasUnsubmittedChanges: false,
     }));
+
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedFormValues = withUpdatedField(
+        lastKnownComponentState[formStateKey].values,
+
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          path,
+
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+
+          params,
+        }
+      );
+
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+
+        [formStateKey]: {
+          hasUnsubmittedChanges: !HashMap.isEqual(
+            updatedFormValues,
+            initialFormState.values
+          ),
+
+          values: updatedFormValues,
+        },
+      }));
+    };
+
+  if (
+    !uninitialized &&
+    (formState === null ||
+      (Object.keys(formState?.values ?? {}).length > 0 &&
+        !formState.hasUnsubmittedChanges &&
+        !isSynced))
+  ) {
+    formReset();
   }
 
   return {
-    hasUnsubmittedChanges,
-
-    reset: () =>
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
-        [formStateKey]: formInitialState,
-        hasUnsubmittedChanges: false,
-      })),
-
-    update:
-      ({ path, via: customFieldUpdate, ...params }) =>
-      (fieldInput) => {
-        const updatedFormValues = withUpdatedField(
-          lastKnownComponentState[formStateKey].values,
-
-          {
-            input: fieldInput?.target?.value ?? fieldInput,
-            path,
-
-            via:
-              typeof customFieldUpdate === "function"
-                ? customFieldUpdate
-                : defaultFieldUpdate,
-
-            params,
-          }
-        );
-
-        State.update((lastKnownComponentState) => ({
-          ...lastKnownComponentState,
-
-          [formStateKey]: {
-            hasUnsubmittedChanges: !HashMap.isEqual(
-              updatedFormValues,
-              initialFormValues
-            ),
-
-            values: updatedFormValues,
-          },
-        }));
-      },
-
-    values,
+    ...(formState ?? initialFormState),
+    isSynced,
+    reset: formReset,
+    update: formUpdate,
   };
 };
 /* END_INCLUDE: "core/lib/gui/form" */
@@ -224,11 +228,11 @@ const withUUID = (data) => {
 /* END_INCLUDE: "core/lib/uuid" */
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
+  isDefined: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+
   isEqual: (input1, input2) =>
-    input1 !== null &&
-    typeof input1 === "object" &&
-    input2 !== null &&
-    typeof input2 === "object"
+    HashMap.isDefined(input1) && HashMap.isDefined(input2)
       ? JSON.stringify(HashMap.toOrdered(input1)) ===
         JSON.stringify(HashMap.toOrdered(input2))
       : false,
@@ -352,7 +356,6 @@ const BoardConfigDefaults = {
 
 const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   State.init({
-    board: { hasUnsubmittedChanges: false, values: null },
     editingMode: "form",
     canEdit: false,
     isEditorActive: false,
@@ -369,9 +372,22 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       : JSON.parse(community.data.github)
     )?.kanbanBoards ?? {};
 
-  const boardId = Object.values(boards)[0]?.id ?? null;
+  const boardId = Object.keys(boards)[0] ?? null;
 
-  const form = useForm({ stateKey: "board" });
+  const errors = {
+    noBoard: !HashMap.isDefined(boards[boardId]),
+    noBoards: !community.isLoading && Object.keys(boards).length === 0,
+    noBoardId: typeof boardId !== "string",
+    noCommunity: !community.isLoading && community.data === null,
+  };
+
+  console.log(boardId);
+
+  const form = useForm({
+    initialValues: boards[boardId],
+    stateKey: "board",
+    uninitialized: errors.noBoards || errors.noBoardId,
+  });
 
   console.log(form);
 
@@ -379,13 +395,6 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     typeof communityHandle !== "string" ||
     (community.data?.admins ?? []).includes(context.accountId) ||
     Viewer.isDevHubModerator;
-
-  const errors = {
-    noBoardId: typeof boardId !== "string",
-    noCommunityHandle: typeof communityHandle !== "string",
-  };
-
-  const isSynced = HashMap.isEqual(state.board, boards[boardId]);
 
   const onEditorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -399,30 +408,17 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       editingMode: value,
     }));
 
-  if (state.canEdit !== canEdit) {
-    State.update((lastKnownState) => ({ ...lastKnownState, canEdit }));
-  }
-
-  if (
-    !errors.noBoardId &&
-    !community.isLoading &&
-    typeof boards[boardId] === "object" &&
-    (state.board === null || (!isSynced && !form.hasUnsubmittedChanges))
-  ) {
-    form.reset();
-  }
-
   const boardsCreateNew = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      board: BoardConfigDefaults,
+      board: { hasUnsubmittedChanges: false, values: BoardConfigDefaults },
       isEditorActive: true,
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
     Object.keys(lastKnownValue).length < 6
       ? {
-          ...lastKnownValue,
+          ...(lastKnownValue ?? {}),
 
           ...withUUID({
             description: "",
@@ -452,7 +448,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     });
 
   const formElement =
-    form.values !== null ? (
+    Object.keys(form.values).length > 0 ? (
       <>
         <div className="d-flex gap-3 flex-column flex-lg-row">
           {widget(
@@ -623,17 +619,17 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       </>
     ) : null;
 
-  return community.data === null || boardId === null ? (
+  return community.data === null || (!errors.noBoards && errors.noBoardId) ? (
     <div>
       {(community.isLoading && "Loading...") ||
-        (errors.noBoardId
+        (!errors.noBoards && errors.noBoardId
           ? "Error: board id not found in editor props."
           : errors.noCommunity &&
-            `Community with handle ${community.handle} not found.`)}
+            `Community with handle ${communityHandle} not found.`)}
     </div>
   ) : (
     <div className="d-flex flex-column gap-4">
-      {state.isEditorActive && form.values !== null ? (
+      {state.isEditorActive && Object.keys(form.values).length > 0 ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
@@ -664,7 +660,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                 disabled
                 rows="12"
                 type="text"
-                value={JSON.stringify(form.values, null, "\t")}
+                value={JSON.stringify(form.values ?? {}, null, "\t")}
               />
             </div>
           )}
@@ -703,11 +699,11 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         </AttractableDiv>
       ) : null}
 
-      {state.board !== null ? (
+      {Object.keys(form.values).length > 0 ? (
         widget("entity.team-board.github-kanban", {
-          ...state.board,
+          ...form.values,
           editorTrigger: () => onEditorToggle(true),
-          isEditable: state.canEdit,
+          isEditable: canEdit,
           pageURL,
         })
       ) : (

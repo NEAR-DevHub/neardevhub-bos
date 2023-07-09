@@ -53,11 +53,11 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
+  isDefined: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+
   isEqual: (input1, input2) =>
-    input1 !== null &&
-    typeof input1 === "object" &&
-    input2 !== null &&
-    typeof input2 === "object"
+    HashMap.isDefined(input1) && HashMap.isDefined(input2)
       ? JSON.stringify(HashMap.toOrdered(input1)) ===
         JSON.stringify(HashMap.toOrdered(input2))
       : false,
@@ -135,36 +135,28 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({
-  initialValues: initialFormValues,
-  stateKey: formStateKey,
-}) => {
-  const formInitialState = {
+const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
+  const initialFormState = {
     hasUnsubmittedChanges: false,
-    values: initialFormValues ?? {},
+    values: initialValues ?? {},
   };
 
-  const { hasUnsubmittedChanges, values } =
-    state[formStateKey] ?? formInitialState;
+  const formState = state[formStateKey] ?? null,
+    isSynced = HashMap.isEqual(
+      formState?.values ?? {},
+      initialFormState.values
+    );
 
-  if ((state[formStateKey] ?? null) === null) {
+  const formReset = () =>
     State.update((lastKnownComponentState) => ({
       ...lastKnownComponentState,
-      [formStateKey]: formInitialState,
+      [formStateKey]: initialFormState,
+      hasUnsubmittedChanges: false,
     }));
-  }
 
-  return {
-    hasUnsubmittedChanges,
-
-    reset: () =>
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
-        [formStateKey]: formInitialState,
-        hasUnsubmittedChanges: false,
-      })),
-
-    update: ({ path, via: customFieldUpdate, ...params }) => (fieldInput) => {
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
       const updatedFormValues = withUpdatedField(
         lastKnownComponentState[formStateKey].values,
 
@@ -187,15 +179,29 @@ const useForm = ({
         [formStateKey]: {
           hasUnsubmittedChanges: !HashMap.isEqual(
             updatedFormValues,
-            initialFormValues
+            initialFormState.values
           ),
 
           values: updatedFormValues,
         },
       }));
-    },
+    };
 
-    values,
+  if (
+    !uninitialized &&
+    (formState === null ||
+      (Object.keys(formState?.values ?? {}).length > 0 &&
+        !formState.hasUnsubmittedChanges &&
+        !isSynced))
+  ) {
+    formReset();
+  }
+
+  return {
+    ...(formState ?? initialFormState),
+    isSynced,
+    reset: formReset,
+    update: formUpdate,
   };
 };
 /* END_INCLUDE: "core/lib/gui/form" */
@@ -313,7 +319,7 @@ const Editor = ({
       : defaultFieldsRender;
 
   const initialValues =
-    typeof schema === "object"
+    schema !== null && typeof schema === "object"
       ? HashMap.pick(data ?? {}, Object.keys(schema))
       : {};
 
@@ -321,10 +327,7 @@ const Editor = ({
     isEditorActive: isEditorActive ?? false,
   });
 
-  const form = useForm({ initialValues, stateKey: "form" }),
-    isSynced = HashMap.isEqual(initialValues, form.values);
-
-  if (!state.isEditorActive && !isSynced) form.reset();
+  const form = useForm({ initialValues, stateKey: "form" });
 
   const editorToggle = (forcedState) =>
     State.update((lastKnownState) => ({

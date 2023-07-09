@@ -1,9 +1,9 @@
 const HashMap = {
+  isDefined: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+
   isEqual: (input1, input2) =>
-    input1 !== null &&
-    typeof input1 === "object" &&
-    input2 !== null &&
-    typeof input2 === "object"
+    HashMap.isDefined(input1) && HashMap.isDefined(input2)
       ? JSON.stringify(HashMap.toOrdered(input1)) ===
         JSON.stringify(HashMap.toOrdered(input2))
       : false,

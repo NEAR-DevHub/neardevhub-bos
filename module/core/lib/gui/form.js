@@ -57,68 +57,72 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({
-  initialValues: initialFormValues,
-  stateKey: formStateKey,
-}) => {
-  const formInitialState = {
+const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
+  const initialFormState = {
     hasUnsubmittedChanges: false,
-    values: initialFormValues ?? {},
+    values: initialValues ?? {},
   };
 
-  const { hasUnsubmittedChanges, values } =
-    state[formStateKey] ?? formInitialState;
+  const formState = state[formStateKey] ?? null,
+    isSynced = HashMap.isEqual(
+      formState?.values ?? {},
+      initialFormState.values
+    );
 
-  if ((state[formStateKey] ?? null) === null) {
+  const formReset = () =>
     State.update((lastKnownComponentState) => ({
       ...lastKnownComponentState,
-      [formStateKey]: formInitialState,
+      [formStateKey]: initialFormState,
+      hasUnsubmittedChanges: false,
     }));
+
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedFormValues = withUpdatedField(
+        lastKnownComponentState[formStateKey].values,
+
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          path,
+
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+
+          params,
+        }
+      );
+
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+
+        [formStateKey]: {
+          hasUnsubmittedChanges: !HashMap.isEqual(
+            updatedFormValues,
+            initialFormState.values
+          ),
+
+          values: updatedFormValues,
+        },
+      }));
+    };
+
+  if (
+    !uninitialized &&
+    (formState === null ||
+      (Object.keys(formState?.values ?? {}).length > 0 &&
+        !formState.hasUnsubmittedChanges &&
+        !isSynced))
+  ) {
+    formReset();
   }
 
   return {
-    hasUnsubmittedChanges,
-
-    reset: () =>
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
-        [formStateKey]: formInitialState,
-        hasUnsubmittedChanges: false,
-      })),
-
-    update:
-      ({ path, via: customFieldUpdate, ...params }) =>
-      (fieldInput) => {
-        const updatedFormValues = withUpdatedField(
-          lastKnownComponentState[formStateKey].values,
-
-          {
-            input: fieldInput?.target?.value ?? fieldInput,
-            path,
-
-            via:
-              typeof customFieldUpdate === "function"
-                ? customFieldUpdate
-                : defaultFieldUpdate,
-
-            params,
-          }
-        );
-
-        State.update((lastKnownComponentState) => ({
-          ...lastKnownComponentState,
-
-          [formStateKey]: {
-            hasUnsubmittedChanges: !HashMap.isEqual(
-              updatedFormValues,
-              initialFormValues
-            ),
-
-            values: updatedFormValues,
-          },
-        }));
-      },
-
-    values,
+    ...(formState ?? initialFormState),
+    isSynced,
+    reset: formReset,
+    update: formUpdate,
   };
 };
