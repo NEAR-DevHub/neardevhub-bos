@@ -100,7 +100,12 @@ initState({
   supervisor: props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
   warning: "",
+  draftStateApplied: false,
 });
+
+if (!state.draftStateApplied && props.draftState) {
+  State.update({ ...props.draftState, draftStateApplied: true });
+}
 
 let fields = {
   Comment: ["description"],
@@ -166,6 +171,9 @@ const onSubmit = () => {
   }
   let txn = [];
   if (mode == "Create") {
+    props.onDraftStateChange(
+      Object.assign({}, state, { parent_post_id: parentId })
+    );
     txn.push({
       contractName: nearDevGovGigsContractAccountId,
       methodName: "add_post",
@@ -178,6 +186,9 @@ const onSubmit = () => {
       gas: Big(10).pow(12).mul(100),
     });
   } else if (mode == "Edit") {
+    props.onDraftStateChange(
+      Object.assign({}, state, { edit_post_id: postId })
+    );
     txn.push({
       contractName: nearDevGovGigsContractAccountId,
       methodName: "edit_post",

@@ -104,6 +104,8 @@ const childPostIds = props.isPreview ? [] : childPostIdsUnordered.reverse();
 const expandable = props.isPreview ? false : props.expandable ?? false;
 const defaultExpanded = expandable ? props.defaultExpanded : true;
 
+const draftState = props.draftState;
+
 function readableDate(timestamp) {
   var a = new Date(timestamp);
   return a.toDateString() + " " + a.toLocaleTimeString();
@@ -414,12 +416,19 @@ const buttonsFooter = props.isPreview ? null : (
 const CreatorWidget = (postType) => {
   return (
     <div
-      class="collapse"
+      class={`collapse ${
+        draftState?.parent_post_id == postId && draftState?.postType == postType
+          ? "show"
+          : ""
+      }`}
       id={`collapse${postType}Creator${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
       {widget("entity.post.PostEditor", {
         postType,
+        onDraftStateChange: props.onDraftStateChange,
+        draftState:
+          draftState?.parent_post_id == postId ? draftState : undefined,
         parentId: postId,
         mode: "Create",
       })}
@@ -430,7 +439,11 @@ const CreatorWidget = (postType) => {
 const EditorWidget = (postType) => {
   return (
     <div
-      class="collapse"
+      class={`collapse ${
+        draftState?.edit_post_id == postId && draftState?.postType == postType
+          ? "show"
+          : ""
+      }`}
       id={`collapse${postType}Editor${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
@@ -446,6 +459,8 @@ const EditorWidget = (postType) => {
         token: post.snapshot.sponsorship_token,
         supervisor: post.snapshot.supervisor,
         githubLink: post.snapshot.github_link,
+        onDraftStateChange: props.onDraftStateChange,
+        draftState: draftState?.edit_post_id == postId ? draftState : undefined,
       })}
     </div>
   );
@@ -517,19 +532,43 @@ const postExtra =
     <div></div>
   );
 
+const childPostHasDraft = childPostIds.find(
+  (childId) =>
+    childId == draftState?.edit_post_id || childId == draftState?.parent_post_id
+);
+if (
+  (childPostHasDraft || state.childrenOfChildPostsHasDraft) &&
+  props.expandParent
+) {
+  props.expandParent();
+}
+
 const postsList =
   props.isPreview || childPostIds.length == 0 ? (
     <div key="posts-list"></div>
   ) : (
     <div class="row" key="posts-list">
       <div
-        class={`collapse ${defaultExpanded ? "show" : ""}`}
+        class={`collapse ${
+          defaultExpanded ||
+          childPostHasDraft ||
+          state.childrenOfChildPostsHasDraft
+            ? "show"
+            : ""
+        }`}
         id={`collapseChildPosts${postId}`}
       >
         {childPostIds.map((childId) =>
           widget(
             "entity.post.Post",
-            { id: childId, isUnderPost: true },
+            {
+              id: childId,
+              isUnderPost: true,
+              onDraftStateChange: props.onDraftStateChange,
+              draftState,
+              expandParent: () =>
+                State.update({ childrenOfChildPostsHasDraft: true }),
+            },
             `subpost${childId}of${postId}`
           )
         )}
