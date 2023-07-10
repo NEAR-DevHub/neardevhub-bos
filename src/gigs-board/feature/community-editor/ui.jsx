@@ -225,8 +225,6 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
     isCommunityNew: typeof communityHandle !== "string",
   });
 
-  console.log(state.communityData);
-
   const community = state.isCommunityNew
     ? { data: CommunityDefaults, error: null, isLoading: false }
     : DevHub.useQuery({
