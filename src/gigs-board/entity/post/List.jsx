@@ -439,7 +439,7 @@ return (
   <>
     {Head}
     {props.transactionHashes ? (
-      <p class="text-secondary">
+      <p class="text-secondary mt-4">
         Post submitted successfully. Back to{" "}
         <a
           style={{
