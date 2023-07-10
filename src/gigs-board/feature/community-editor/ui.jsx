@@ -570,7 +570,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
           className="d-flex flex-column justify-content-center align-items-center w-100"
           style={{ height: 384 }}
         >
-          <h2 className="h2">{`Community with handle ${community.handle} not found.`}</h2>
+          <h2 className="h2">{`Community with handle "${communityHandle}" not found.`}</h2>
         </div>
       )}
     </div>
