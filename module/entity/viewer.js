@@ -1,5 +1,5 @@
 const access_control_info = DevHub.useQuery({
-  name: "get_access_control_info",
+  name: "access_control_info",
 });
 
 const Viewer = {

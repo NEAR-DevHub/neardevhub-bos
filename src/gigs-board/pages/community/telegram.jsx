@@ -88,20 +88,15 @@ const DevHub = {
   get_root_members: () =>
     Near.view(devHubAccountId, "get_root_members") ?? null,
 
-  useQuery: ({ name, params, initialData }) => {
+  useQuery: ({ name, params }) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
       () =>
-        Near.asyncView(devHubAccountId, name, params ?? {})
+        Near.asyncView(devHubAccountId, ["get", name].join("_"), params ?? {})
           .then((response) => ({
             ...initialState,
-
-            data:
-              (initialData ?? null) !== null
-                ? { ...initialData, ...(response ?? {}) }
-                : response ?? null,
-
+            data: response ?? null,
             isLoading: false,
           }))
           .catch((error) => ({
