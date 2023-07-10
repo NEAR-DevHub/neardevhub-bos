@@ -52,6 +52,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/record" */
+// @ts-ignore-next-line
 const Record = {
   deepFieldUpdate: (
     node,

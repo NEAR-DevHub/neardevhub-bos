@@ -197,6 +197,7 @@ const withUUIDIndex = (data) => {
 };
 /* END_INCLUDE: "core/lib/uuid" */
 /* INCLUDE: "core/lib/record" */
+// @ts-ignore-next-line
 const Record = {
   deepFieldUpdate: (
     node,

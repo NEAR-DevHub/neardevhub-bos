@@ -1,3 +1,4 @@
+// @ts-ignore-next-line
 const Record = {
   deepFieldUpdate: (
     node,
