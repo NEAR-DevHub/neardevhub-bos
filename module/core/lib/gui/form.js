@@ -38,10 +38,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   };
 
   const formState = state[formStateKey] ?? null,
-    isSynced = HashMap.isEqual(
-      formState?.values ?? {},
-      initialFormState.values
-    );
+    isSynced = Record.isEqual(formState?.values ?? {}, initialFormState.values);
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
@@ -53,7 +50,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   const formUpdate =
     ({ path, via: customFieldUpdate, ...params }) =>
     (fieldInput) => {
-      const updatedValues = HashMap.deepFieldUpdate(
+      const updatedValues = Record.deepFieldUpdate(
         formState?.values ?? {},
 
         {
@@ -72,7 +69,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
         ...lastKnownComponentState,
 
         [formStateKey]: {
-          hasUnsubmittedChanges: !HashMap.isEqual(
+          hasUnsubmittedChanges: !Record.isEqual(
             updatedValues,
             initialFormState.values
           ),

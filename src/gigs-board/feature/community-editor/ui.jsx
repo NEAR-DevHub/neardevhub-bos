@@ -51,8 +51,8 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/hashmap" */
-const HashMap = {
+/* INCLUDE: "core/lib/record" */
+const Record = {
   deepFieldUpdate: (
     node,
     { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
@@ -61,8 +61,8 @@ const HashMap = {
 
     [nextNodeKey]:
       remainingPath.length > 0
-        ? HashMap.deepFieldUpdate(
-            HashMap.typeMatch(node[nextNodeKey]) ||
+        ? Record.deepFieldUpdate(
+            Record.typeMatch(node[nextNodeKey]) ||
               Array.isArray(node[nextNodeKey])
               ? node[nextNodeKey]
               : {
@@ -81,9 +81,9 @@ const HashMap = {
   }),
 
   isEqual: (input1, input2) =>
-    HashMap.typeMatch(input1) && HashMap.typeMatch(input2)
-      ? JSON.stringify(HashMap.toOrdered(input1)) ===
-        JSON.stringify(HashMap.toOrdered(input2))
+    Record.typeMatch(input1) && Record.typeMatch(input2)
+      ? JSON.stringify(Record.toOrdered(input1)) ===
+        JSON.stringify(Record.toOrdered(input2))
       : false,
 
   toOrdered: (input) =>
@@ -101,7 +101,7 @@ const HashMap = {
   typeMatch: (input) =>
     input !== null && typeof input === "object" && !Array.isArray(input),
 };
-/* END_INCLUDE: "core/lib/hashmap" */
+/* END_INCLUDE: "core/lib/record" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -238,7 +238,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
     (community.data?.admins ?? []).includes(context.accountId) ||
     Viewer.isDevHubModerator;
 
-  const isSynced = HashMap.isEqual(state.communityData, community.data);
+  const isSynced = Record.isEqual(state.communityData, community.data);
 
   if (state.communityData === null) {
     State.update((lastKnownState) => ({
@@ -283,10 +283,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
         ...lastKnownState,
         communityData: communityDataUpdate,
 
-        hasUnsavedChanges: !HashMap.isEqual(
-          communityDataUpdate,
-          community.data
-        ),
+        hasUnsavedChanges: !Record.isEqual(communityDataUpdate, community.data),
       };
     });
   };

@@ -92,10 +92,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   };
 
   const formState = state[formStateKey] ?? null,
-    isSynced = HashMap.isEqual(
-      formState?.values ?? {},
-      initialFormState.values
-    );
+    isSynced = Record.isEqual(formState?.values ?? {}, initialFormState.values);
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
@@ -104,37 +101,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
-    fieldInput
-  ) => {
-    const updatedValues = HashMap.deepFieldUpdate(
-      formState?.values ?? {},
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedValues = Record.deepFieldUpdate(
+        formState?.values ?? {},
 
-      {
-        input: fieldInput?.target?.value ?? fieldInput,
-        params,
-        path,
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          params,
+          path,
 
-        via:
-          typeof customFieldUpdate === "function"
-            ? customFieldUpdate
-            : defaultFieldUpdate,
-      }
-    );
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
+      );
 
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
 
-      [formStateKey]: {
-        hasUnsubmittedChanges: !HashMap.isEqual(
-          updatedValues,
-          initialFormState.values
-        ),
+        [formStateKey]: {
+          hasUnsubmittedChanges: !Record.isEqual(
+            updatedValues,
+            initialFormState.values
+          ),
 
-        values: updatedValues,
-      },
-    }));
-  };
+          values: updatedValues,
+        },
+      }));
+    };
 
   if (
     !uninitialized &&
@@ -199,8 +196,8 @@ const withUUIDIndex = (data) => {
   return Object.fromEntries([[id, { ...data, id }]]);
 };
 /* END_INCLUDE: "core/lib/uuid" */
-/* INCLUDE: "core/lib/hashmap" */
-const HashMap = {
+/* INCLUDE: "core/lib/record" */
+const Record = {
   deepFieldUpdate: (
     node,
     { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
@@ -209,8 +206,8 @@ const HashMap = {
 
     [nextNodeKey]:
       remainingPath.length > 0
-        ? HashMap.deepFieldUpdate(
-            HashMap.typeMatch(node[nextNodeKey]) ||
+        ? Record.deepFieldUpdate(
+            Record.typeMatch(node[nextNodeKey]) ||
               Array.isArray(node[nextNodeKey])
               ? node[nextNodeKey]
               : {
@@ -229,9 +226,9 @@ const HashMap = {
   }),
 
   isEqual: (input1, input2) =>
-    HashMap.typeMatch(input1) && HashMap.typeMatch(input2)
-      ? JSON.stringify(HashMap.toOrdered(input1)) ===
-        JSON.stringify(HashMap.toOrdered(input2))
+    Record.typeMatch(input1) && Record.typeMatch(input2)
+      ? JSON.stringify(Record.toOrdered(input1)) ===
+        JSON.stringify(Record.toOrdered(input2))
       : false,
 
   toOrdered: (input) =>
@@ -249,7 +246,7 @@ const HashMap = {
   typeMatch: (input) =>
     input !== null && typeof input === "object" && !Array.isArray(input),
 };
-/* END_INCLUDE: "core/lib/hashmap" */
+/* END_INCLUDE: "core/lib/record" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -375,7 +372,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   const boardId = Object.keys(boards)[0] ?? null;
 
   const errors = {
-    noBoard: !HashMap.typeMatch(boards[boardId]),
+    noBoard: !Record.typeMatch(boards[boardId]),
     noBoards: !community.isLoading && Object.keys(boards).length === 0,
     noBoardId: typeof boardId !== "string",
     noCommunity: !community.isLoading && community.data === null,
@@ -424,10 +421,12 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
-    Object.fromEntries(
-      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-    );
+  const columnsDeleteById =
+    (id) =>
+    ({ lastKnownValue }) =>
+      Object.fromEntries(
+        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+      );
 
   const onSubmit = () =>
     DevHub.edit_community_github({

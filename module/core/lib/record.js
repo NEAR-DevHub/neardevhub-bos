@@ -1,4 +1,4 @@
-const HashMap = {
+const Record = {
   deepFieldUpdate: (
     node,
     { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
@@ -7,8 +7,8 @@ const HashMap = {
 
     [nextNodeKey]:
       remainingPath.length > 0
-        ? HashMap.deepFieldUpdate(
-            HashMap.typeMatch(node[nextNodeKey]) ||
+        ? Record.deepFieldUpdate(
+            Record.typeMatch(node[nextNodeKey]) ||
               Array.isArray(node[nextNodeKey])
               ? node[nextNodeKey]
               : {
@@ -27,9 +27,9 @@ const HashMap = {
   }),
 
   isEqual: (input1, input2) =>
-    HashMap.typeMatch(input1) && HashMap.typeMatch(input2)
-      ? JSON.stringify(HashMap.toOrdered(input1)) ===
-        JSON.stringify(HashMap.toOrdered(input2))
+    Record.typeMatch(input1) && Record.typeMatch(input2)
+      ? JSON.stringify(Record.toOrdered(input1)) ===
+        JSON.stringify(Record.toOrdered(input2))
       : false,
 
   toOrdered: (input) =>

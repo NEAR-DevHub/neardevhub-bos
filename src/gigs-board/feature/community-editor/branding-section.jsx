@@ -51,8 +51,8 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/hashmap" */
-const HashMap = {
+/* INCLUDE: "core/lib/record" */
+const Record = {
   deepFieldUpdate: (
     node,
     { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
@@ -61,8 +61,8 @@ const HashMap = {
 
     [nextNodeKey]:
       remainingPath.length > 0
-        ? HashMap.deepFieldUpdate(
-            HashMap.typeMatch(node[nextNodeKey]) ||
+        ? Record.deepFieldUpdate(
+            Record.typeMatch(node[nextNodeKey]) ||
               Array.isArray(node[nextNodeKey])
               ? node[nextNodeKey]
               : {
@@ -81,9 +81,9 @@ const HashMap = {
   }),
 
   isEqual: (input1, input2) =>
-    HashMap.typeMatch(input1) && HashMap.typeMatch(input2)
-      ? JSON.stringify(HashMap.toOrdered(input1)) ===
-        JSON.stringify(HashMap.toOrdered(input2))
+    Record.typeMatch(input1) && Record.typeMatch(input2)
+      ? JSON.stringify(Record.toOrdered(input1)) ===
+        JSON.stringify(Record.toOrdered(input2))
       : false,
 
   toOrdered: (input) =>
@@ -101,7 +101,7 @@ const HashMap = {
   typeMatch: (input) =>
     input !== null && typeof input === "object" && !Array.isArray(input),
 };
-/* END_INCLUDE: "core/lib/hashmap" */
+/* END_INCLUDE: "core/lib/record" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -227,7 +227,7 @@ const CommunityEditorBrandingSection = ({
     (value) => value !== null
   );
 
-  const isSynced = HashMap.isEqual(state.input, initialValues);
+  const isSynced = Record.isEqual(state.input, initialValues);
 
   if (hasUnsubmittedChanges && !isSynced) {
     onChangesSubmit({

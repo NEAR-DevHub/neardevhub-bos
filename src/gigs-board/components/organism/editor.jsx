@@ -51,8 +51,8 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/hashmap" */
-const HashMap = {
+/* INCLUDE: "core/lib/record" */
+const Record = {
   deepFieldUpdate: (
     node,
     { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
@@ -61,8 +61,8 @@ const HashMap = {
 
     [nextNodeKey]:
       remainingPath.length > 0
-        ? HashMap.deepFieldUpdate(
-            HashMap.typeMatch(node[nextNodeKey]) ||
+        ? Record.deepFieldUpdate(
+            Record.typeMatch(node[nextNodeKey]) ||
               Array.isArray(node[nextNodeKey])
               ? node[nextNodeKey]
               : {
@@ -81,9 +81,9 @@ const HashMap = {
   }),
 
   isEqual: (input1, input2) =>
-    HashMap.typeMatch(input1) && HashMap.typeMatch(input2)
-      ? JSON.stringify(HashMap.toOrdered(input1)) ===
-        JSON.stringify(HashMap.toOrdered(input2))
+    Record.typeMatch(input1) && Record.typeMatch(input2)
+      ? JSON.stringify(Record.toOrdered(input1)) ===
+        JSON.stringify(Record.toOrdered(input2))
       : false,
 
   toOrdered: (input) =>
@@ -101,7 +101,7 @@ const HashMap = {
   typeMatch: (input) =>
     input !== null && typeof input === "object" && !Array.isArray(input),
 };
-/* END_INCLUDE: "core/lib/hashmap" */
+/* END_INCLUDE: "core/lib/record" */
 /* INCLUDE: "core/lib/gui/form" */
 const defaultFieldUpdate = ({
   input,
@@ -143,10 +143,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   };
 
   const formState = state[formStateKey] ?? null,
-    isSynced = HashMap.isEqual(
-      formState?.values ?? {},
-      initialFormState.values
-    );
+    isSynced = Record.isEqual(formState?.values ?? {}, initialFormState.values);
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
@@ -158,7 +155,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   const formUpdate =
     ({ path, via: customFieldUpdate, ...params }) =>
     (fieldInput) => {
-      const updatedValues = HashMap.deepFieldUpdate(
+      const updatedValues = Record.deepFieldUpdate(
         formState?.values ?? {},
 
         {
@@ -177,7 +174,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
         ...lastKnownComponentState,
 
         [formStateKey]: {
-          hasUnsubmittedChanges: !HashMap.isEqual(
+          hasUnsubmittedChanges: !Record.isEqual(
             updatedValues,
             initialFormState.values
           ),
@@ -321,8 +318,8 @@ const Editor = ({
     isEditorActive: isEditorActive ?? false,
   });
 
-  const initialValues = HashMap.typeMatch(schema)
-    ? HashMap.pick(data ?? {}, Object.keys(schema))
+  const initialValues = Record.typeMatch(schema)
+    ? Record.pick(data ?? {}, Object.keys(schema))
     : {};
 
   const form = useForm({ initialValues, stateKey: "form" });
