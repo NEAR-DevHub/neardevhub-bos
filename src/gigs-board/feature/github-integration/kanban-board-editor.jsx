@@ -92,7 +92,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   };
 
   const formState = state[formStateKey] ?? null,
-    isSynced = Record.isEqual(formState?.values ?? {}, initialFormState.values);
+    isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
@@ -104,7 +104,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   const formUpdate =
     ({ path, via: customFieldUpdate, ...params }) =>
     (fieldInput) => {
-      const updatedValues = Record.deepFieldUpdate(
+      const updatedValues = Struct.deepFieldUpdate(
         formState?.values ?? {},
 
         {
@@ -123,7 +123,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
         ...lastKnownComponentState,
 
         [formStateKey]: {
-          hasUnsubmittedChanges: !Record.isEqual(
+          hasUnsubmittedChanges: !Struct.isEqual(
             updatedValues,
             initialFormState.values
           ),
@@ -196,9 +196,8 @@ const withUUIDIndex = (data) => {
   return Object.fromEntries([[id, { ...data, id }]]);
 };
 /* END_INCLUDE: "core/lib/uuid" */
-/* INCLUDE: "core/lib/record" */
-// @ts-ignore-next-line
-const Record = {
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
   deepFieldUpdate: (
     node,
     { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
@@ -207,8 +206,8 @@ const Record = {
 
     [nextNodeKey]:
       remainingPath.length > 0
-        ? Record.deepFieldUpdate(
-            Record.typeMatch(node[nextNodeKey]) ||
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
               Array.isArray(node[nextNodeKey])
               ? node[nextNodeKey]
               : {
@@ -227,9 +226,9 @@ const Record = {
   }),
 
   isEqual: (input1, input2) =>
-    Record.typeMatch(input1) && Record.typeMatch(input2)
-      ? JSON.stringify(Record.toOrdered(input1)) ===
-        JSON.stringify(Record.toOrdered(input2))
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
       : false,
 
   toOrdered: (input) =>
@@ -247,7 +246,7 @@ const Record = {
   typeMatch: (input) =>
     input !== null && typeof input === "object" && !Array.isArray(input),
 };
-/* END_INCLUDE: "core/lib/record" */
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -368,7 +367,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   const boardId = Object.keys(boards)[0] ?? null;
 
   const errors = {
-    noBoard: !Record.typeMatch(boards[boardId]),
+    noBoard: !Struct.typeMatch(boards[boardId]),
     noBoards: !community.isLoading && Object.keys(boards).length === 0,
     noBoardId: typeof boardId !== "string",
     noCommunity: !community.isLoading && community.data === null,

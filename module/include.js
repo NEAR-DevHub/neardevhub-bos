@@ -23,10 +23,10 @@ replaceInFiles(options)
       .toString()}/* END_INCLUDE: "core/lib/gui/attractable" */`,
   })
   .pipe({
-    from: /\/\* INCLUDE: "core\/lib\/record" \*\/.*\/\* END_INCLUDE: "core\/lib\/record" \*\//gms,
-    to: `/* INCLUDE: "core/lib/record" */\n${fs
-      .readFileSync("./module/core/lib/record.js", "utf8")
-      .toString()}/* END_INCLUDE: "core/lib/record" */`,
+    from: /\/\* INCLUDE: "core\/lib\/struct" \*\/.*\/\* END_INCLUDE: "core\/lib\/struct" \*\//gms,
+    to: `/* INCLUDE: "core/lib/struct" */\n${fs
+      .readFileSync("./module/core/lib/struct.js", "utf8")
+      .toString()}/* END_INCLUDE: "core/lib/struct" */`,
   })
   .pipe({
     from: /\/\* INCLUDE: "core\/lib\/uuid" \*\/.*\/\* END_INCLUDE: "core\/lib\/uuid" \*\//gms,

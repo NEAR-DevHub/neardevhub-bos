@@ -51,9 +51,8 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/record" */
-// @ts-ignore-next-line
-const Record = {
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
   deepFieldUpdate: (
     node,
     { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
@@ -62,8 +61,8 @@ const Record = {
 
     [nextNodeKey]:
       remainingPath.length > 0
-        ? Record.deepFieldUpdate(
-            Record.typeMatch(node[nextNodeKey]) ||
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
               Array.isArray(node[nextNodeKey])
               ? node[nextNodeKey]
               : {
@@ -82,9 +81,9 @@ const Record = {
   }),
 
   isEqual: (input1, input2) =>
-    Record.typeMatch(input1) && Record.typeMatch(input2)
-      ? JSON.stringify(Record.toOrdered(input1)) ===
-        JSON.stringify(Record.toOrdered(input2))
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
       : false,
 
   toOrdered: (input) =>
@@ -102,7 +101,7 @@ const Record = {
   typeMatch: (input) =>
     input !== null && typeof input === "object" && !Array.isArray(input),
 };
-/* END_INCLUDE: "core/lib/record" */
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -228,7 +227,7 @@ const CommunityEditorBrandingSection = ({
     (value) => value !== null
   );
 
-  const isSynced = Record.isEqual(state.input, initialValues);
+  const isSynced = Struct.isEqual(state.input, initialValues);
 
   if (hasUnsubmittedChanges && !isSynced) {
     onChangesSubmit({

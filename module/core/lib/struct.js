@@ -1,5 +1,4 @@
-// @ts-ignore-next-line
-const Record = {
+const Struct = {
   deepFieldUpdate: (
     node,
     { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
@@ -8,8 +7,8 @@ const Record = {
 
     [nextNodeKey]:
       remainingPath.length > 0
-        ? Record.deepFieldUpdate(
-            Record.typeMatch(node[nextNodeKey]) ||
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
               Array.isArray(node[nextNodeKey])
               ? node[nextNodeKey]
               : {
@@ -28,9 +27,9 @@ const Record = {
   }),
 
   isEqual: (input1, input2) =>
-    Record.typeMatch(input1) && Record.typeMatch(input2)
-      ? JSON.stringify(Record.toOrdered(input1)) ===
-        JSON.stringify(Record.toOrdered(input2))
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
       : false,
 
   toOrdered: (input) =>

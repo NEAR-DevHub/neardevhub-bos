@@ -38,7 +38,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   };
 
   const formState = state[formStateKey] ?? null,
-    isSynced = Record.isEqual(formState?.values ?? {}, initialFormState.values);
+    isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
@@ -50,7 +50,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   const formUpdate =
     ({ path, via: customFieldUpdate, ...params }) =>
     (fieldInput) => {
-      const updatedValues = Record.deepFieldUpdate(
+      const updatedValues = Struct.deepFieldUpdate(
         formState?.values ?? {},
 
         {
@@ -69,7 +69,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
         ...lastKnownComponentState,
 
         [formStateKey]: {
-          hasUnsubmittedChanges: !Record.isEqual(
+          hasUnsubmittedChanges: !Struct.isEqual(
             updatedValues,
             initialFormState.values
           ),
