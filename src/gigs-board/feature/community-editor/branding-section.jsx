@@ -53,11 +53,35 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
-  isDefined: (input) =>
-    input !== null && typeof input === "object" && !Array.isArray(input),
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? HashMap.deepFieldUpdate(
+            HashMap.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
 
   isEqual: (input1, input2) =>
-    HashMap.isDefined(input1) && HashMap.isDefined(input2)
+    HashMap.typeMatch(input1) && HashMap.typeMatch(input2)
       ? JSON.stringify(HashMap.toOrdered(input1)) ===
         JSON.stringify(HashMap.toOrdered(input2))
       : false,
@@ -73,6 +97,9 @@ const HashMap = {
         subsetKeys.includes(key)
       )
     ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
 };
 /* END_INCLUDE: "core/lib/hashmap" */
 /* INCLUDE: "core/lib/gui/attractable" */
@@ -180,7 +207,11 @@ const Logo = styled.div`
 
 const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 
-const CommunityEditorBrandingSection = ({ isMutable, onSubmit, values }) => {
+const CommunityEditorBrandingSection = ({
+  isMutable,
+  onChangesSubmit,
+  values,
+}) => {
   const initialInput = { banner: null, logo: null };
 
   const initialValues = {
@@ -199,7 +230,7 @@ const CommunityEditorBrandingSection = ({ isMutable, onSubmit, values }) => {
   const isSynced = HashMap.isEqual(state.input, initialValues);
 
   if (hasUnsubmittedChanges && !isSynced) {
-    onSubmit({
+    onChangesSubmit({
       banner_url: cidToURL(state.input.banner?.cid ?? initialValues.banner.cid),
       logo_url: cidToURL(state.input.logo?.cid ?? initialValues.logo.cid),
     });

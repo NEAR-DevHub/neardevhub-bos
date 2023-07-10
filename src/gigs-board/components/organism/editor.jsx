@@ -53,11 +53,35 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
-  isDefined: (input) =>
-    input !== null && typeof input === "object" && !Array.isArray(input),
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? HashMap.deepFieldUpdate(
+            HashMap.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
 
   isEqual: (input1, input2) =>
-    HashMap.isDefined(input1) && HashMap.isDefined(input2)
+    HashMap.typeMatch(input1) && HashMap.typeMatch(input2)
       ? JSON.stringify(HashMap.toOrdered(input1)) ===
         JSON.stringify(HashMap.toOrdered(input2))
       : false,
@@ -73,35 +97,12 @@ const HashMap = {
         subsetKeys.includes(key)
       )
     ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
 };
 /* END_INCLUDE: "core/lib/hashmap" */
 /* INCLUDE: "core/lib/gui/form" */
-const withUpdatedField = (
-  node,
-  { input, params, path: [nextNodeKey, ...remainingPath], via: updater }
-) => ({
-  ...node,
-
-  [nextNodeKey]:
-    remainingPath.length > 0
-      ? withUpdatedField(
-          typeof node[nextNodeKey] === "object"
-            ? node[nextNodeKey]
-            : {
-                ...((node[nextNodeKey] ?? null) !== null
-                  ? { __archivedLeaf__: node[nextNodeKey] }
-                  : {}),
-              },
-
-          { input, path: remainingPath, via: updater }
-        )
-      : updater({
-          input,
-          lastKnownValue: node[nextNodeKey],
-          params,
-        }),
-});
-
 const defaultFieldUpdate = ({
   input,
   lastKnownValue,
@@ -157,19 +158,18 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   const formUpdate =
     ({ path, via: customFieldUpdate, ...params }) =>
     (fieldInput) => {
-      const updatedFormValues = withUpdatedField(
-        lastKnownComponentState[formStateKey].values,
+      const updatedValues = HashMap.deepFieldUpdate(
+        formState?.values ?? {},
 
         {
           input: fieldInput?.target?.value ?? fieldInput,
+          params,
           path,
 
           via:
             typeof customFieldUpdate === "function"
               ? customFieldUpdate
               : defaultFieldUpdate,
-
-          params,
         }
       );
 
@@ -178,11 +178,11 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
 
         [formStateKey]: {
           hasUnsubmittedChanges: !HashMap.isEqual(
-            updatedFormValues,
+            updatedValues,
             initialFormState.values
           ),
 
-          values: updatedFormValues,
+          values: updatedValues,
         },
       }));
     };
@@ -250,7 +250,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
 
                 {format !== "markdown" ? (
                   <p className={[contentDisplayClassName, "w-75"].join(" ")}>
-                    {(fieldType === "array"
+                    {(fieldType === "array" && format === "comma-separated"
                       ? form.values[fieldKey]
                           .filter((string) => string.length > 0)
                           .join(", ")
@@ -278,15 +278,13 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                 style: { ...style, order },
 
                 value:
-                  fieldType === "array"
+                  fieldType === "array" && format === "comma-separated"
                     ? form.values[fieldKey].join(", ")
                     : form.values[fieldKey],
 
                 inputProps: {
                   ...(inputProps ?? {}),
-
-                  ...(fieldParamsByType[typeof form.values[fieldKey]]
-                    .inputProps ?? {}),
+                  ...(fieldParamsByType[fieldType].inputProps ?? {}),
                 },
               })
             )}
@@ -303,12 +301,13 @@ const Editor = ({
   classNames,
   data,
   fieldsRender: customFieldsRender,
+  formatter: toFormatted,
   heading,
   isEditorActive,
   isMutable,
   noEditorFrame,
   onCancel,
-  onSubmit,
+  onChangesSubmit,
   schema,
   submitLabel,
   ...restProps
@@ -318,14 +317,13 @@ const Editor = ({
       ? customFieldsRender
       : defaultFieldsRender;
 
-  const initialValues =
-    schema !== null && typeof schema === "object"
-      ? HashMap.pick(data ?? {}, Object.keys(schema))
-      : {};
-
   State.init({
     isEditorActive: isEditorActive ?? false,
   });
+
+  const initialValues = HashMap.typeMatch(schema)
+    ? HashMap.pick(data ?? {}, Object.keys(schema))
+    : {};
 
   const form = useForm({ initialValues, stateKey: "form" });
 
@@ -336,15 +334,22 @@ const Editor = ({
     }));
 
   const onCancelClick = () => {
-    form.reset();
     editorToggle(false);
-    if (typeof onSubmit === "function") onSubmit(initialValues);
+    form.reset();
+    if (typeof onChangesSubmit === "function") onChangesSubmit(initialValues);
     if (typeof onCancel === "function") onCancel();
   };
 
   const onSubmitClick = () => {
+    if (typeof onChangesSubmit === "function") {
+      onChangesSubmit(
+        typeof toFormatted === "function"
+          ? toFormatted(form.values)
+          : form.values
+      );
+    }
+
     editorToggle(false);
-    if (typeof onSubmit === "function") onSubmit(form.values);
   };
 
   return widget("components.molecule.tile", {
@@ -373,7 +378,6 @@ const Editor = ({
           {fieldsRender({
             form,
             isEditable: isMutable && state.isEditorActive,
-            onFormSubmit: onSubmit,
             schema,
           })}
         </div>

@@ -53,11 +53,35 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
-  isDefined: (input) =>
-    input !== null && typeof input === "object" && !Array.isArray(input),
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? HashMap.deepFieldUpdate(
+            HashMap.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
 
   isEqual: (input1, input2) =>
-    HashMap.isDefined(input1) && HashMap.isDefined(input2)
+    HashMap.typeMatch(input1) && HashMap.typeMatch(input2)
       ? JSON.stringify(HashMap.toOrdered(input1)) ===
         JSON.stringify(HashMap.toOrdered(input2))
       : false,
@@ -73,6 +97,9 @@ const HashMap = {
         subsetKeys.includes(key)
       )
     ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
 };
 /* END_INCLUDE: "core/lib/hashmap" */
 /* INCLUDE: "core/adapter/dev-hub" */
@@ -159,6 +186,13 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
+const withoutEmptyStrings = (array) =>
+  array.filter((string) => string.length > 0);
+
+const accessControlSectionFormatter = ({ admins }) => ({
+  admins: withoutEmptyStrings(admins),
+});
+
 const CommunityDefaults = {
   handle: null,
   admins: [context.accountId],
@@ -191,6 +225,8 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
     isCommunityNew: typeof communityHandle !== "string",
   });
 
+  console.log(state.communityData);
+
   const community = state.isCommunityNew
     ? { data: CommunityDefaults, error: null, isLoading: false }
     : DevHub.useQuery({
@@ -214,6 +250,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
       isCommunityNew: typeof communityHandle !== "string",
     }));
   } else if (
+    // TODO: Remove or fix this probably redundant branch
     typeof communityHandle === "string" &&
     !state.hasUnsavedChanges &&
     !community.isLoading &&
@@ -226,21 +263,23 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
     }));
   }
 
-  const onSectionSubmit = (sectionData) => {
+  const sectionSubmit = (sectionData) => {
     State.update((lastKnownState) => {
-      const communityDataUpdate = Object.entries(sectionData).reduce(
-        (update, [propertyKey, propertyValue]) => ({
-          ...update,
+      const communityDataUpdate = {
+        ...Object.entries(sectionData).reduce(
+          (update, [propertyKey, propertyValue]) => ({
+            ...update,
 
-          [propertyKey]:
-            typeof propertyValue !== "string" ||
-            (propertyValue?.length ?? 0) > 0
-              ? propertyValue ?? null
-              : null,
-        }),
+            [propertyKey]:
+              typeof propertyValue !== "string" ||
+              (propertyValue?.length ?? 0) > 0
+                ? propertyValue ?? null
+                : null,
+          }),
 
-        lastKnownState.communityData
-      );
+          lastKnownState.communityData
+        ),
+      };
 
       return {
         ...lastKnownState,
@@ -264,13 +303,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
           ? state.communityData?.handle
           : communityHandle,
 
-        community: {
-          ...(state.communityData ?? {}),
-
-          admins: state.communityData?.admins.filter(
-            (maybeAccountId) => maybeAccountId.length > 0
-          ),
-        },
+        community: state.communityData,
       }
     );
 
@@ -287,7 +320,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
         <>
           {widget("feature.community-editor.branding-section", {
             isMutable: canEdit,
-            onSubmit: onSectionSubmit,
+            onChangesSubmit: sectionSubmit,
             values: state.communityData,
           })}
 
@@ -300,7 +333,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
             heading: "Basic information",
             isEditorActive: state.isCommunityNew,
             isMutable: canEdit,
-            onSubmit: onSectionSubmit,
+            onChangesSubmit: sectionSubmit,
             submitLabel: "Accept",
             data: state.communityData,
 
@@ -372,7 +405,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
 
             heading: "About",
             isMutable: canEdit,
-            onSubmit: onSectionSubmit,
+            onChangesSubmit: sectionSubmit,
             submitLabel: "Accept",
             data: state.communityData,
 
@@ -425,9 +458,10 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
               submitAdornment: "bi-check-circle-fill",
             },
 
-            heading: "Permissions",
+            formatter: accessControlSectionFormatter,
+            heading: "Access control",
             isMutable: canEdit,
-            onSubmit: onSectionSubmit,
+            onChangesSubmit: sectionSubmit,
             submitLabel: "Accept",
             data: state.communityData,
 
@@ -449,7 +483,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
 
             heading: "Wiki page 1",
             isMutable: canEdit,
-            onSubmit: (value) => onSectionSubmit({ wiki1: value }),
+            onChangesSubmit: (value) => sectionSubmit({ wiki1: value }),
             submitLabel: "Accept",
             data: state.communityData?.wiki1,
 
@@ -476,7 +510,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
 
             heading: "Wiki page 2",
             isMutable: canEdit,
-            onSubmit: (value) => onSectionSubmit({ wiki2: value }),
+            onChangesSubmit: (value) => sectionSubmit({ wiki2: value }),
             submitLabel: "Accept",
             data: state.communityData?.wiki2,
 

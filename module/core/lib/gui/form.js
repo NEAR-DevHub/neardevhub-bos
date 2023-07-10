@@ -1,29 +1,3 @@
-const withUpdatedField = (
-  node,
-  { input, params, path: [nextNodeKey, ...remainingPath], via: updater }
-) => ({
-  ...node,
-
-  [nextNodeKey]:
-    remainingPath.length > 0
-      ? withUpdatedField(
-          typeof node[nextNodeKey] === "object"
-            ? node[nextNodeKey]
-            : {
-                ...((node[nextNodeKey] ?? null) !== null
-                  ? { __archivedLeaf__: node[nextNodeKey] }
-                  : {}),
-              },
-
-          { input, path: remainingPath, via: updater }
-        )
-      : updater({
-          input,
-          lastKnownValue: node[nextNodeKey],
-          params,
-        }),
-});
-
 const defaultFieldUpdate = ({
   input,
   lastKnownValue,
@@ -79,19 +53,18 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   const formUpdate =
     ({ path, via: customFieldUpdate, ...params }) =>
     (fieldInput) => {
-      const updatedFormValues = withUpdatedField(
-        lastKnownComponentState[formStateKey].values,
+      const updatedValues = HashMap.deepFieldUpdate(
+        formState?.values ?? {},
 
         {
           input: fieldInput?.target?.value ?? fieldInput,
+          params,
           path,
 
           via:
             typeof customFieldUpdate === "function"
               ? customFieldUpdate
               : defaultFieldUpdate,
-
-          params,
         }
       );
 
@@ -100,11 +73,11 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
 
         [formStateKey]: {
           hasUnsubmittedChanges: !HashMap.isEqual(
-            updatedFormValues,
+            updatedValues,
             initialFormState.values
           ),
 
-          values: updatedFormValues,
+          values: updatedValues,
         },
       }));
     };

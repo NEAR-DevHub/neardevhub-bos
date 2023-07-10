@@ -52,32 +52,6 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/gui/form" */
-const withUpdatedField = (
-  node,
-  { input, params, path: [nextNodeKey, ...remainingPath], via: updater }
-) => ({
-  ...node,
-
-  [nextNodeKey]:
-    remainingPath.length > 0
-      ? withUpdatedField(
-          typeof node[nextNodeKey] === "object"
-            ? node[nextNodeKey]
-            : {
-                ...((node[nextNodeKey] ?? null) !== null
-                  ? { __archivedLeaf__: node[nextNodeKey] }
-                  : {}),
-              },
-
-          { input, path: remainingPath, via: updater }
-        )
-      : updater({
-          input,
-          lastKnownValue: node[nextNodeKey],
-          params,
-        }),
-});
-
 const defaultFieldUpdate = ({
   input,
   lastKnownValue,
@@ -133,19 +107,18 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   const formUpdate =
     ({ path, via: customFieldUpdate, ...params }) =>
     (fieldInput) => {
-      const updatedFormValues = withUpdatedField(
-        lastKnownComponentState[formStateKey].values,
+      const updatedValues = HashMap.deepFieldUpdate(
+        formState?.values ?? {},
 
         {
           input: fieldInput?.target?.value ?? fieldInput,
+          params,
           path,
 
           via:
             typeof customFieldUpdate === "function"
               ? customFieldUpdate
               : defaultFieldUpdate,
-
-          params,
         }
       );
 
@@ -154,11 +127,11 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
 
         [formStateKey]: {
           hasUnsubmittedChanges: !HashMap.isEqual(
-            updatedFormValues,
+            updatedValues,
             initialFormState.values
           ),
 
-          values: updatedFormValues,
+          values: updatedValues,
         },
       }));
     };
@@ -220,7 +193,7 @@ const uuid = () =>
     )
     .join("-");
 
-const withUUID = (data) => {
+const withUUIDIndex = (data) => {
   const id = uuid();
 
   return Object.fromEntries([[id, { ...data, id }]]);
@@ -228,11 +201,35 @@ const withUUID = (data) => {
 /* END_INCLUDE: "core/lib/uuid" */
 /* INCLUDE: "core/lib/hashmap" */
 const HashMap = {
-  isDefined: (input) =>
-    input !== null && typeof input === "object" && !Array.isArray(input),
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? HashMap.deepFieldUpdate(
+            HashMap.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
 
   isEqual: (input1, input2) =>
-    HashMap.isDefined(input1) && HashMap.isDefined(input2)
+    HashMap.typeMatch(input1) && HashMap.typeMatch(input2)
       ? JSON.stringify(HashMap.toOrdered(input1)) ===
         JSON.stringify(HashMap.toOrdered(input2))
       : false,
@@ -248,6 +245,9 @@ const HashMap = {
         subsetKeys.includes(key)
       )
     ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
 };
 /* END_INCLUDE: "core/lib/hashmap" */
 /* INCLUDE: "core/adapter/dev-hub" */
@@ -375,7 +375,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   const boardId = Object.keys(boards)[0] ?? null;
 
   const errors = {
-    noBoard: !HashMap.isDefined(boards[boardId]),
+    noBoard: !HashMap.typeMatch(boards[boardId]),
     noBoards: !community.isLoading && Object.keys(boards).length === 0,
     noBoardId: typeof boardId !== "string",
     noCommunity: !community.isLoading && community.data === null,
@@ -420,7 +420,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       ? {
           ...(lastKnownValue ?? {}),
 
-          ...withUUID({
+          ...withUUIDIndex({
             description: "",
             labelSearchTerms: [],
             title: "New column",
