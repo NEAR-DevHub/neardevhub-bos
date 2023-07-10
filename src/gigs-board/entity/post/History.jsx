@@ -67,7 +67,7 @@ const post =
   Near.view(nearDevGovGigsContractAccountId, "get_post", {
     post_id: postId,
   });
-if (!post || post.snapshot_history.length === 0) {
+if (!post || !post.snapshot_history) {
   return <div class="bi bi-clock-history px-2"></div>;
 }
 const referral = props.referral;
@@ -83,7 +83,9 @@ function readableDate(timestamp) {
 
 const currentTimestamp = props.timestamp ?? post.snapshot.timestamp;
 const snapshot = post.snapshot;
-const snapshotHistory = Array.from(post.snapshot_history);
+const snapshotHistory = post.snapshot_history
+  ? Array.from(post.snapshot_history)
+  : [];
 
 snapshotHistory.push(snapshot);
 snapshotHistory.reverse();
