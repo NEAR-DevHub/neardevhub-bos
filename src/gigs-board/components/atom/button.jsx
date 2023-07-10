@@ -109,7 +109,7 @@ const ButtonRoot = styled.button`
   }
 `;
 
-const Button = ({ classNames, label, ...restProps }) => (
+const Button = ({ adornment, classNames, label, ...restProps }) => (
   <ButtonRoot
     className={[
       "btn d-inline-flex align-items-center gap-2 rounded-pill",
@@ -119,7 +119,9 @@ const Button = ({ classNames, label, ...restProps }) => (
     style={{ width: "fit-content" }}
     {...restProps}
   >
-    {classNames.adornment ? (
+    {(adornment ?? null) !== null ? adornment : null}
+
+    {(adornment ?? null) === null && classNames.adornment ? (
       <i
         className={[
           classNames.adornment,
@@ -129,7 +131,7 @@ const Button = ({ classNames, label, ...restProps }) => (
       />
     ) : null}
 
-    {classNames.adornmentHover ? (
+    {(adornment ?? null) === null && classNames.adornmentHover ? (
       <i
         className={[classNames.adornmentHover, "adornmentHover"].join(" ")}
         style={{ lineHeight: !restProps.isCollapsible ? 1 : 1.5 }}

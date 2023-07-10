@@ -51,9 +51,8 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/record" */
-// @ts-ignore-next-line
-const Record = {
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
   deepFieldUpdate: (
     node,
     { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
@@ -62,8 +61,8 @@ const Record = {
 
     [nextNodeKey]:
       remainingPath.length > 0
-        ? Record.deepFieldUpdate(
-            Record.typeMatch(node[nextNodeKey]) ||
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
               Array.isArray(node[nextNodeKey])
               ? node[nextNodeKey]
               : {
@@ -82,9 +81,9 @@ const Record = {
   }),
 
   isEqual: (input1, input2) =>
-    Record.typeMatch(input1) && Record.typeMatch(input2)
-      ? JSON.stringify(Record.toOrdered(input1)) ===
-        JSON.stringify(Record.toOrdered(input2))
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
       : false,
 
   toOrdered: (input) =>
@@ -102,7 +101,7 @@ const Record = {
   typeMatch: (input) =>
     input !== null && typeof input === "object" && !Array.isArray(input),
 };
-/* END_INCLUDE: "core/lib/record" */
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -233,7 +232,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
     (community.data?.admins ?? []).includes(context.accountId) ||
     Viewer.isDevHubModerator;
 
-  const isSynced = Record.isEqual(state.communityData, community.data);
+  const isSynced = Struct.isEqual(state.communityData, community.data);
 
   if (state.communityData === null) {
     State.update((lastKnownState) => ({
@@ -278,7 +277,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
         ...lastKnownState,
         communityData: communityDataUpdate,
 
-        hasUnsavedChanges: !Record.isEqual(communityDataUpdate, community.data),
+        hasUnsavedChanges: !Struct.isEqual(communityDataUpdate, community.data),
       };
     });
   };
@@ -543,23 +542,34 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
               }}
             >
               {widget("components.atom.button", {
+                adornment: !state.isCommunityNew ? (
+                  <svg
+                    fill="#ffffff"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16px"
+                    height="16px"
+                    viewBox="0 0 353.073 353.073"
+                  >
+                    <g>
+                      <path
+                        d="M340.969,0H12.105C5.423,0,0,5.423,0,12.105v328.863c0,6.68,5.423,12.105,12.105,12.105h328.864
+										c6.679,0,12.104-5.426,12.104-12.105V12.105C353.073,5.423,347.647,0,340.969,0z M67.589,18.164h217.895v101.884H67.589V18.164z
+										 M296.082,327.35H57.003V176.537h239.079V327.35z M223.953,33.295h30.269v72.638h-30.269V33.295z M274.135,213.863H78.938v-12.105
+										h195.197V213.863z M274.135,256.231H78.938v-12.105h195.197V256.231z M274.135,297.087H78.938v-12.105h195.197V297.087z"
+                      />
+                    </g>
+                  </svg>
+                ) : null,
+
                 classNames: {
                   root: "btn-lg btn-success",
 
                   adornment: `bi ${
-                    state.isCommunityNew
-                      ? "bi-rocket-takeoff-fill"
-                      : "bi-exclamation-triangle-fill"
-                  }`,
-
-                  adornmentHover: `bi ${
-                    state.isCommunityNew
-                      ? "bi-rocket-takeoff-fill"
-                      : "bi-sign-merge-right-fill"
+                    state.isCommunityNew ? "bi-rocket-takeoff-fill" : null
                   }`,
                 },
 
-                isCollapsible: true,
                 label: state.isCommunityNew ? "Launch" : "Save",
                 onClick: changesSave,
               })}
