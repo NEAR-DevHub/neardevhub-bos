@@ -240,6 +240,7 @@ const FeedPage = ({ author, recency, tag }) => {
       recency,
       tag: state.tag,
       tagQuery: { tag: state.tag },
+      transactionHashes: props.transactionHashes,
     }),
   });
 };

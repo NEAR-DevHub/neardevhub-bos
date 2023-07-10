@@ -52,6 +52,12 @@ replaceInFiles(options)
       .readFileSync("./module/entity/viewer.js", "utf8")
       .toString()}/* END_INCLUDE: "entity/viewer" */`,
   })
+  .pipe({
+    from: /\/\* INCLUDE: "core\/lib\/draftstate" \*\/.*\/\* END_INCLUDE: "core\/lib\/draftstate" \*\//gms,
+    to: `/* INCLUDE: "core/lib/draftstate" */\n${fs
+      .readFileSync("./module/core/lib/draftstate.js", "utf8")
+      .toString()}/* END_INCLUDE: "core/lib/draftstate" */`,
+  })
   .then(({ changedFiles, countOfMatchesByPaths }) => {
     console.log("DONE");
   })
