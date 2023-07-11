@@ -51,6 +51,57 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
+
+  isEqual: (input1, input2) =>
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
+      : false,
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+};
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -121,12 +172,21 @@ const access_control_info = DevHub.useQuery({
 });
 
 const Viewer = {
-  isDevHubModerator:
-    access_control_info.data === null || access_control_info.isLoading
-      ? false
-      : access_control_info.data.members_list[
-          "team:moderators"
-        ]?.children?.includes?.(context.accountId) ?? false,
+  can: {
+    editCommunity: (communityData) =>
+      Struct.typeMatch(communityData) &&
+      (communityData.admins.includes(context.accountId) ||
+        Viewer.role.isDevHubModerator),
+  },
+
+  role: {
+    isDevHubModerator:
+      access_control_info.data === null || access_control_info.isLoading
+        ? false
+        : access_control_info.data.members_list[
+            "team:moderators"
+          ]?.children?.includes?.(context.accountId) ?? false,
+  },
 };
 /* END_INCLUDE: "entity/viewer" */
 
@@ -178,9 +238,12 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     copiedShareUrl: false,
   });
 
-  const communityData = DevHub.get_community({ handle });
+  const community = DevHub.useQuery({
+    name: "community",
+    params: { handle },
+  });
 
-  if (communityData === null) {
+  if (community.data === null) {
     return <div>Loading...</div>;
   }
 
@@ -192,7 +255,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Activity",
     },
 
-    ...[communityData.wiki1, communityData.wiki2]
+    ...[community.data?.wiki1, community.data?.wiki2]
       .filter((maybeWikiPage) => maybeWikiPage ?? false)
       .map(({ name }, idx) => ({
         params: { id: idx + 1 },
@@ -218,7 +281,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "GitHub",
     },
 
-    ...((communityData?.telegram_handle?.length ?? 0) > 0
+    ...((community.data?.telegram_handle?.length ?? 0) > 0
       ? [
           {
             iconClass: "bi bi-telegram",
@@ -229,16 +292,12 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       : []),
   ];
 
-  const canEdit =
-    Viewer.isDevHubModerator ||
-    communityData?.admins?.includes?.(context.accountId);
-
   return (
     <Header className="d-flex flex-column gap-3">
       <Banner
         className="object-fit-cover"
         style={{
-          background: `center / cover no-repeat url(${communityData.banner_url})`,
+          background: `center / cover no-repeat url(${community.data.banner_url})`,
         }}
       />
 
@@ -247,7 +306,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           <div className="position-relative">
             <SizedDiv>
               <LogoImage
-                src={communityData.logo_url}
+                src={community.data.logo_url}
                 alt="Community logo"
                 width="150"
                 height="150"
@@ -257,16 +316,18 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           </div>
 
           <div>
-            <div className="h1 pt-3 ps-3 text-nowrap">{communityData.name}</div>
+            <div className="h1 pt-3 ps-3 text-nowrap">
+              {community.data.name}
+            </div>
 
             <div className="ps-3 pb-2 text-secondary">
-              {communityData.description}
+              {community.data.description}
             </div>
           </div>
         </div>
 
         <div className="d-flex align-items-end gap-3">
-          {canEdit && (
+          {Viewer.can.editCommunity(community.data) ? (
             <a
               href={href("community.edit-info", { handle })}
               className={[
@@ -277,7 +338,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
               <i className="bi bi-gear" />
               <span>Edit information</span>
             </a>
-          )}
+          ) : null}
 
           <OverlayTrigger
             placement="top"

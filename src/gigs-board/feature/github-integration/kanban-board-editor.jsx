@@ -317,12 +317,21 @@ const access_control_info = DevHub.useQuery({
 });
 
 const Viewer = {
-  isDevHubModerator:
-    access_control_info.data === null || access_control_info.isLoading
-      ? false
-      : access_control_info.data.members_list[
-          "team:moderators"
-        ]?.children?.includes?.(context.accountId) ?? false,
+  can: {
+    editCommunity: (communityData) =>
+      Struct.typeMatch(communityData) &&
+      (communityData.admins.includes(context.accountId) ||
+        Viewer.role.isDevHubModerator),
+  },
+
+  role: {
+    isDevHubModerator:
+      access_control_info.data === null || access_control_info.isLoading
+        ? false
+        : access_control_info.data.members_list[
+            "team:moderators"
+          ]?.children?.includes?.(context.accountId) ?? false,
+  },
 };
 /* END_INCLUDE: "entity/viewer" */
 
@@ -349,7 +358,6 @@ const BoardConfigDefaults = {
 const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   State.init({
     editingMode: "form",
-    canEdit: false,
     isEditorActive: false,
   });
 
@@ -364,6 +372,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       : JSON.parse(community.data.github)
     )?.kanbanBoards ?? {};
 
+  // TODO: Should be taken from props once support for multiple boards is introduced
   const boardId = Object.keys(boards)[0] ?? null;
 
   const errors = {
@@ -379,12 +388,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     uninitialized: errors.noBoards || errors.noBoardId,
   });
 
-  const canEdit =
-    typeof communityHandle !== "string" ||
-    (community.data?.admins ?? []).includes(context.accountId) ||
-    Viewer.isDevHubModerator;
-
-  const onEditorToggle = (forcedState) =>
+  const editorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
@@ -668,7 +672,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
 
             <button
               className="btn btn-outline-danger border-0 d-inline-flex gap-2 align-items-center"
-              onClick={() => onEditorToggle(false)}
+              onClick={() => editorToggle(false)}
               style={{ width: "fit-content" }}
             >
               <span>Cancel</span>
@@ -690,8 +694,8 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       {Object.keys(form.values).length > 0 ? (
         widget("entity.team-board.github-kanban", {
           ...form.values,
-          editorTrigger: () => onEditorToggle(true),
-          isEditable: canEdit,
+          editorTrigger: () => editorToggle(true),
+          isEditable: Viewer.can.editCommunity(community.data),
           pageURL,
         })
       ) : (
@@ -703,13 +707,15 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
             This community doesn't have GitHub integrations
           </h5>
 
-          <button
-            className="btn shadow btn-primary d-inline-flex gap-2"
-            onClick={boardsCreateNew}
-          >
-            <i className="bi bi-kanban-fill" />
-            <span>Create board</span>
-          </button>
+          {Viewer.can.editCommunity(community.data) ? (
+            <button
+              className="btn shadow btn-primary d-inline-flex gap-2"
+              onClick={boardsCreateNew}
+            >
+              <i className="bi bi-kanban-fill" />
+              <span>Create board</span>
+            </button>
+          ) : null}
         </div>
       )}
     </div>

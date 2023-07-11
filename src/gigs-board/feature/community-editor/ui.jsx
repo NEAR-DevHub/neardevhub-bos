@@ -172,12 +172,21 @@ const access_control_info = DevHub.useQuery({
 });
 
 const Viewer = {
-  isDevHubModerator:
-    access_control_info.data === null || access_control_info.isLoading
-      ? false
-      : access_control_info.data.members_list[
-          "team:moderators"
-        ]?.children?.includes?.(context.accountId) ?? false,
+  can: {
+    editCommunity: (communityData) =>
+      Struct.typeMatch(communityData) &&
+      (communityData.admins.includes(context.accountId) ||
+        Viewer.role.isDevHubModerator),
+  },
+
+  role: {
+    isDevHubModerator:
+      access_control_info.data === null || access_control_info.isLoading
+        ? false
+        : access_control_info.data.members_list[
+            "team:moderators"
+          ]?.children?.includes?.(context.accountId) ?? false,
+  },
 };
 /* END_INCLUDE: "entity/viewer" */
 
@@ -214,23 +223,18 @@ const CommunityDefaults = {
 
 const CommunityEditorUI = ({ handle: communityHandle }) => {
   State.init({
-    canEdit: false,
     communityData: null,
     hasUnsavedChanges: false,
-    isCommunityNew: typeof communityHandle !== "string",
   });
 
-  const community = state.isCommunityNew
+  const isCommunityNew = typeof communityHandle !== "string";
+
+  const community = isCommunityNew
     ? { data: CommunityDefaults, error: null, isLoading: false }
     : DevHub.useQuery({
         name: "community",
         params: { handle: communityHandle },
       });
-
-  const canEdit =
-    typeof communityHandle !== "string" ||
-    (community.data?.admins ?? []).includes(context.accountId) ||
-    Viewer.isDevHubModerator;
 
   const isSynced = Struct.isEqual(state.communityData, community.data);
 
@@ -239,7 +243,6 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
       ...lastKnownState,
       communityData: community.data,
       hasUnsavedChanges: false,
-      isCommunityNew: typeof communityHandle !== "string",
     }));
   } else if (
     // TODO: Remove or fix this probably redundant branch
@@ -276,7 +279,6 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
       return {
         ...lastKnownState,
         communityData: communityDataUpdate,
-
         hasUnsavedChanges: !Struct.isEqual(communityDataUpdate, community.data),
       };
     });
@@ -285,13 +287,10 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
   const changesSave = () =>
     Near.call(
       nearDevGovGigsContractAccountId,
-      state.isCommunityNew ? "add_community" : "edit_community",
+      isCommunityNew ? "add_community" : "edit_community",
 
       {
-        handle: state.isCommunityNew
-          ? state.communityData?.handle
-          : communityHandle,
-
+        handle: isCommunityNew ? state.communityData?.handle : communityHandle,
         community: state.communityData,
       }
     );
@@ -301,14 +300,16 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
       handle: communityHandle,
     });
 
-  return community.isLoading && !state.isCommunityNew ? (
+  return !isCommunityNew && community.isLoading ? (
     <div>Loading...</div>
   ) : (
     <div className="d-flex flex-column align-items-center gap-4 p-4">
-      {typeof community.data?.handle === "string" || state.isCommunityNew ? (
+      {typeof community.data?.handle === "string" || isCommunityNew ? (
         <>
           {widget("feature.community-editor.branding-section", {
-            isMutable: canEdit,
+            isEditingAllowed:
+              isCommunityNew || Viewer.can.editCommunity(community.data),
+
             onChangesSubmit: sectionSubmit,
             values: state.communityData,
           })}
@@ -320,8 +321,11 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
             },
 
             heading: "Basic information",
-            isEditorActive: state.isCommunityNew,
-            isMutable: canEdit,
+            isEditorActive: isCommunityNew,
+
+            isEditingAllowed:
+              isCommunityNew || Viewer.can.editCommunity(community.data),
+
             onChangesSubmit: sectionSubmit,
             submitLabel: "Accept",
             data: state.communityData,
@@ -393,7 +397,10 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
             },
 
             heading: "About",
-            isMutable: canEdit,
+
+            isEditingAllowed:
+              isCommunityNew || Viewer.can.editCommunity(community.data),
+
             onChangesSubmit: sectionSubmit,
             submitLabel: "Accept",
             data: state.communityData,
@@ -449,7 +456,10 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
 
             formatter: accessControlSectionFormatter,
             heading: "Access control",
-            isMutable: canEdit,
+
+            isEditingAllowed:
+              isCommunityNew || Viewer.can.editCommunity(community.data),
+
             onChangesSubmit: sectionSubmit,
             submitLabel: "Accept",
             data: state.communityData,
@@ -471,7 +481,10 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
             },
 
             heading: "Wiki page 1",
-            isMutable: canEdit,
+
+            isEditingAllowed:
+              isCommunityNew || Viewer.can.editCommunity(community.data),
+
             onChangesSubmit: (value) => sectionSubmit({ wiki1: value }),
             submitLabel: "Accept",
             data: state.communityData?.wiki1,
@@ -498,7 +511,10 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
             },
 
             heading: "Wiki page 2",
-            isMutable: canEdit,
+
+            isEditingAllowed:
+              isCommunityNew || Viewer.can.editCommunity(community.data),
+
             onChangesSubmit: (value) => sectionSubmit({ wiki2: value }),
             submitLabel: "Accept",
             data: state.communityData?.wiki2,
@@ -518,7 +534,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
             },
           })}
 
-          {!state.isCommunityNew && Viewer.isDevHubModerator ? (
+          {!isCommunityNew && Viewer.role.isDevHubModerator ? (
             <div
               className="d-flex justify-content-center gap-4 p-4 w-100"
               style={{ maxWidth: 896 }}
@@ -534,47 +550,48 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
             </div>
           ) : null}
 
-          {canEdit && state.hasUnsavedChanges && (
-            <div
-              className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
-              style={{
-                borderTopLeftRadius: "100%",
-              }}
-            >
-              {widget("components.atom.button", {
-                adornment: !state.isCommunityNew ? (
-                  <svg
-                    fill="#ffffff"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16px"
-                    height="16px"
-                    viewBox="0 0 353.073 353.073"
-                  >
-                    <g>
-                      <path
-                        d="M340.969,0H12.105C5.423,0,0,5.423,0,12.105v328.863c0,6.68,5.423,12.105,12.105,12.105h328.864
+          {(isCommunityNew || Viewer.can.editCommunity(community.data)) &&
+            state.hasUnsavedChanges && (
+              <div
+                className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
+                style={{
+                  borderTopLeftRadius: "100%",
+                }}
+              >
+                {widget("components.atom.button", {
+                  adornment: !isCommunityNew ? (
+                    <svg
+                      fill="#ffffff"
+                      version="1.1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16px"
+                      height="16px"
+                      viewBox="0 0 353.073 353.073"
+                    >
+                      <g>
+                        <path
+                          d="M340.969,0H12.105C5.423,0,0,5.423,0,12.105v328.863c0,6.68,5.423,12.105,12.105,12.105h328.864
 										c6.679,0,12.104-5.426,12.104-12.105V12.105C353.073,5.423,347.647,0,340.969,0z M67.589,18.164h217.895v101.884H67.589V18.164z
 										 M296.082,327.35H57.003V176.537h239.079V327.35z M223.953,33.295h30.269v72.638h-30.269V33.295z M274.135,213.863H78.938v-12.105
 										h195.197V213.863z M274.135,256.231H78.938v-12.105h195.197V256.231z M274.135,297.087H78.938v-12.105h195.197V297.087z"
-                      />
-                    </g>
-                  </svg>
-                ) : null,
+                        />
+                      </g>
+                    </svg>
+                  ) : null,
 
-                classNames: {
-                  root: "btn-lg btn-success",
+                  classNames: {
+                    root: "btn-lg btn-success",
 
-                  adornment: `bi ${
-                    state.isCommunityNew ? "bi-rocket-takeoff-fill" : null
-                  }`,
-                },
+                    adornment: `bi ${
+                      isCommunityNew ? "bi-rocket-takeoff-fill" : null
+                    }`,
+                  },
 
-                label: state.isCommunityNew ? "Launch" : "Save",
-                onClick: changesSave,
-              })}
-            </div>
-          )}
+                  label: isCommunityNew ? "Launch" : "Save",
+                  onClick: changesSave,
+                })}
+              </div>
+            )}
         </>
       ) : (
         <div

@@ -301,7 +301,7 @@ const Editor = ({
   formatter: toFormatted,
   heading,
   isEditorActive,
-  isMutable,
+  isEditingAllowed,
   noEditorFrame,
   onCancel,
   onChangesSubmit,
@@ -355,7 +355,7 @@ const Editor = ({
     noFrame: noEditorFrame,
 
     headerSlotRight:
-      isMutable && !state.isEditorActive
+      isEditingAllowed && !state.isEditorActive
         ? widget("components.atom.button", {
             classNames: {
               root: "btn-sm btn-secondary",
@@ -374,12 +374,12 @@ const Editor = ({
         >
           {fieldsRender({
             form,
-            isEditable: isMutable && state.isEditorActive,
+            isEditable: isEditingAllowed && state.isEditorActive,
             schema,
           })}
         </div>
 
-        {!noEditorFrame && isMutable && state.isEditorActive ? (
+        {!noEditorFrame && isEditingAllowed && state.isEditorActive ? (
           <div className="d-flex align-items-center justify-content-end gap-3 mt-auto">
             {actionsAdditional ? (
               <div className="me-auto">{actionsAdditional}</div>
