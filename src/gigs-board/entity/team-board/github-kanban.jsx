@@ -95,7 +95,7 @@ const dataToColumns = (data, columns) =>
               ? ticket.labels.some((label) =>
                   label.name.toLowerCase().includes(searchTerm.toLowerCase())
                 )
-              : true
+              : false
           )
         ),
       ],
@@ -151,9 +151,10 @@ const GithubKanbanTeamBoard = ({
         ).map(withType("Issue"))
       : [];
 
-    State.update({
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
       ticketsByColumn: dataToColumns([...issues, ...pullRequests], columns),
-    });
+    }));
   }
 
   return (
