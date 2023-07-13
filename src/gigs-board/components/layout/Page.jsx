@@ -53,9 +53,9 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 return (
-  <>
+  <div className="h-100" style={{ minHeight: "86vh" }}>
     {widget("components.layout.app-header", {})}
     {props.header}
     {props.children}
-  </>
+  </div>
 );
