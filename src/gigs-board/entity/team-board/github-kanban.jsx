@@ -117,7 +117,7 @@ const GithubKanbanTeamBoard = ({
   ticketState,
   title,
 }) => {
-  const ticketStateForSure =
+  const ticketStateFilter =
     ticketState === "open" || ticketState === "closed" || ticketState === "all"
       ? ticketState
       : "all";
@@ -134,7 +134,7 @@ const GithubKanbanTeamBoard = ({
               .split("/")
               .slice(-2)
               .concat(["pulls"])
-              .join("/")}?state=${ticketStateForSure}`
+              .join("/")}?state=${ticketStateFilter}&per_page=100`
           ).body ?? []
         ).map(withType("PullRequest"))
       : [];
@@ -146,7 +146,7 @@ const GithubKanbanTeamBoard = ({
               .split("/")
               .slice(-2)
               .concat(["issues"])
-              .join("/")}state=${ticketStateForSure}`
+              .join("/")}?state=${ticketStateFilter}&per_page=100`
           ).body ?? []
         ).map(withType("Issue"))
       : [];
