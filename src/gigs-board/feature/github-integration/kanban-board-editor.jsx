@@ -335,15 +335,14 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
+const EditorSettings = {
+  maxColumnsNumber: 20,
+};
+
 const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
 `;
-
-const dataTypesLocked = {
-  Issue: false,
-  PullRequest: false,
-};
 
 const BoardConfigDefaults = {
   id: uuid(),
@@ -400,7 +399,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       editingMode: value,
     }));
 
-  const boardsCreateNew = () =>
+  const boardCreate = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       board: { hasUnsubmittedChanges: false, values: BoardConfigDefaults },
@@ -408,7 +407,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
-    Object.keys(lastKnownValue).length < 6
+    Object.keys(lastKnownValue).length < EditorSettings.maxColumnsNumber
       ? {
           ...(lastKnownValue ?? {}),
 
@@ -484,7 +483,6 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                   {
                     active: enabled,
                     className: "w-100",
-                    disabled: dataTypesLocked[typeName],
                     key: typeName,
                     label: typeName,
 
@@ -660,7 +658,10 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           <div className="d-flex align-items-center justify-content-end gap-3">
             <button
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
-              disabled={Object.keys(form.values.columns).length >= 6}
+              disabled={
+                Object.keys(form.values.columns).length >=
+                EditorSettings.maxColumnsNumber
+              }
               onClick={form.update({
                 path: ["columns"],
                 via: columnsCreateNew,
@@ -710,7 +711,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           {Viewer.can.editCommunity(community.data) ? (
             <button
               className="btn shadow btn-primary d-inline-flex gap-2"
-              onClick={boardsCreateNew}
+              onClick={boardCreate}
             >
               <i className="bi bi-kanban-fill" />
               <span>Create board</span>

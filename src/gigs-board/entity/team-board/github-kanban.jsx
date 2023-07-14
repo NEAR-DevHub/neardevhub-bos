@@ -51,6 +51,57 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
+
+  isEqual: (input1, input2) =>
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
+      : false,
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+};
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/lib/data-request" */
 const DataRequest = {
   /**
@@ -120,19 +171,24 @@ const dataToColumns = (data, columns) =>
     (registry, column) => ({
       ...registry,
 
-      [column.id]: [
-        ...(registry[column.id] ?? []),
+      [column.id]:
+        column.labelSearchTerms.length > 0
+          ? [
+              ...(registry[column.id] ?? []),
 
-        ...data.filter((ticket) =>
-          column?.labelSearchTerms.every((searchTerm) =>
-            searchTerm.length > 0
-              ? ticket.labels.some((label) =>
-                  label.name.toLowerCase().includes(searchTerm.toLowerCase())
+              ...data.filter((ticket) =>
+                column.labelSearchTerms.every((searchTerm) =>
+                  searchTerm.length > 0
+                    ? ticket.labels.some((label) =>
+                        label.name
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
+                      )
+                    : false
                 )
-              : false
-          )
-        ),
-      ],
+              ),
+            ]
+          : [],
     }),
 
     {}
@@ -172,7 +228,7 @@ const GithubKanbanTeamBoard = ({
                 .join(
                   "/"
                 )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-            ).body,
+            )?.body,
 
           { startWith: 1 }
         ).map(withType("PullRequest"))
@@ -189,7 +245,7 @@ const GithubKanbanTeamBoard = ({
                 .join(
                   "/"
                 )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-            ).body,
+            )?.body,
 
           { startWith: 1 }
         ).map(withType("Issue"))
