@@ -8,7 +8,7 @@ const uuid = () =>
     )
     .join("-");
 
-const uuidIndexed = (data) => {
+const withUUIDIndex = (data) => {
   const id = uuid();
 
   return Object.fromEntries([[id, { ...data, id }]]);

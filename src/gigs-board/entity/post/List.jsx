@@ -57,6 +57,20 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
+/* INCLUDE: "core/lib/draftstate" */
+const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
+if (props.transactionHashes) {
+  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+}
+
+const onDraftStateChange = (draftState) =>
+  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, JSON.stringify(draftState));
+let draftState;
+try {
+  draftState = JSON.parse(Storage.privateGet(DRAFT_STATE_STORAGE_KEY));
+} catch (e) {}
+/* END_INCLUDE: "core/lib/draftstate" */
+
 initState({
   period: "week",
 });
@@ -75,6 +89,8 @@ function defaultRenderItem(postId, additionalProps) {
           expandable: true,
           defaultExpanded: false,
           isInList: true,
+          draftState,
+          onDraftStateChange,
           ...additionalProps,
         },
         postId
@@ -310,7 +326,7 @@ if (state.jInitialItems !== jInitialItems) {
 }
 
 if (state.fetchFrom) {
-  console.log("TODO: fetchFrom");
+  // TODO: fetchFrom
   // const limit = addDisplayCount;
   // const newItems = Social.index(
   //   index.action,
@@ -422,7 +438,20 @@ const Head =
 return (
   <>
     {Head}
-    {state.items.length > 0 ? (
+    {props.transactionHashes ? (
+      <p class="text-secondary">
+        Post submitted successfully. Back to{" "}
+        <a
+          style={{
+            color: "#3252A6",
+          }}
+          className="fw-bold"
+          href={href("Feed")}
+        >
+          feed
+        </a>
+      </p>
+    ) : state.items.length > 0 ? (
       <InfiniteScroll
         pageStart={0}
         loadMore={makeMoreItems}

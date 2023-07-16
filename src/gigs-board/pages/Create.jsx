@@ -74,6 +74,7 @@ function autoCompleteAccountId(id) {
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
+const DRAFT_STATE_STORAGE_KEY = "DRAFT_STATE";
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
@@ -86,25 +87,43 @@ const labels = labelStrings.map((s) => {
   return { name: s };
 });
 
-// TODO: REMOVE INIT STATE // gitblock
 initState({
   seekingFunding: false,
-  //
+
   author_id: context.accountId,
   // Should be a list of objects with field "name".
   labels,
   // Should be a list of labels as strings.
   // Both of the label structures should be modified together.
   labelStrings,
-  postType: "Solution",
-  name: props.name ?? "TESTING title",
-  description: props.description ?? "Testing Solution",
-  amount: props.amount ?? "800",
-  token: props.token ?? "USDC",
+  postType: "",
+  name: props.name ?? "",
+  description: props.description ?? "",
+  amount: props.amount ?? "",
+  token: props.token ?? "",
   supervisor: props.supervisor ?? "neardevgov.near",
   githubLink: props.githubLink ?? "",
-  warning: "This is the warning",
+  warning: "",
+  waitForDraftStateRestore: true,
 });
+
+if (state.waitForDraftStateRestore) {
+  const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
+  if (draftstatestring != null) {
+    if (props.transactionHashes) {
+      State.update({ waitForDraftStateRestore: false });
+      Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+    } else {
+      try {
+        const draftstate = JSON.parse(draftstatestring);
+        State.update(draftstate);
+      } catch (e) {
+        console.error("error restoring draft", draftstatestring);
+      }
+    }
+    State.update({ waitForDraftStateRestore: false });
+  }
+}
 
 // This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onClick, it will give `null` and we cannot tell the result is true or false.
@@ -117,6 +136,8 @@ if (grantNotify === null) {
 }
 
 const onSubmit = () => {
+  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, JSON.stringify(state));
+
   let labels = state.labelStrings;
 
   let body = {
@@ -470,112 +491,129 @@ return (
           </li>
         </ol>
       </div>
-      <h4>Create a new post</h4>
-      <p>{state.seekingFunding}</p>
-      <div class="card border-light">
-        <div class="card-body">
-          <p class="card-title fw-bold fs-6">What do you want to create?</p>
-          <div class="d-flex flex-row gap-2">
-            <button
-              onClick={onIdeaClick}
-              type="button"
-              class={`btn btn-outline-secondary`}
-              style={
-                state.postType === "Idea"
-                  ? {
-                      backgroundColor: "#0C7283",
-                      color: "#f3f3f3",
-                    }
-                  : {}
-              }
-            >
-              <i class="bi bi-lightbulb"></i>
-              Idea
-            </button>
-            <button
-              onClick={onSolutionClick}
-              type="button"
-              class={`btn btn-outline-secondary`}
-              style={
-                state.postType !== "Idea"
-                  ? {
-                      backgroundColor: "#0C7283",
-                      color: "#f3f3f3",
-                    }
-                  : {}
-              }
-            >
-              <i class="bi bi-rocket"></i>
-              Solution
-            </button>
-          </div>
-          <p class="text-muted w-75 my-1">
-            {state.postType === "Idea"
-              ? "Get feedback from the community about a problem, opportunity, or need."
-              : "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution."}
-          </p>
-          {state.warning && (
-            <div
-              class="alert alert-warning alert-dismissible fade show"
-              role="alert"
-            >
-              {state.warning}
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-                aria-label="Close"
-                onClick={() => State.update({ warning: "" })}
-              ></button>
-            </div>
-          )}
-          <div className="row">
-            {nameDiv}
-            {descriptionDiv}
-            {labelEditor}
-            {state.postType === "Solution" && isFundraisingDiv}
-            {state.seekingFunding && fundraisingDiv}
-          </div>
-          <button
+      {props.transactionHashes ? (
+        <>
+          Post created successfully. Back to{" "}
+          <a
             style={{
-              width: "7rem",
-              backgroundColor: "#0C7283",
-              color: "#f3f3f3",
+              color: "#3252A6",
             }}
-            className="btn btn-light mb-2 p-3"
-            onClick={onSubmit}
+            className="fw-bold"
+            href={href("Feed")}
           >
-            Submit
-          </button>
-        </div>
-        <div class="bg-light d-flex flex-row p-1 border-bottom"></div>
-        <div class="card-body">
-          <p class="text-muted m-0">Preview</p>
-          <div>
-            {widget("entity.post.Post", {
-              isPreview: true,
-              id: 0, // irrelevant
-              post: {
-                author_id: state.author_id,
-                likes: [],
-                snapshot: {
-                  editor_id: state.editor_id,
-                  labels: state.labelStrings,
-                  post_type: state.postType,
-                  name: state.name,
-                  description: generateDescription(
-                    state.description,
-                    state.amount,
-                    state.token,
-                    state.supervisor
-                  ),
-                  github_link: state.githubLink,
-                },
-              },
-            })}
+            feed
+          </a>
+        </>
+      ) : (
+        <>
+          <h4>Create a new post</h4>
+          <p>{state.seekingFunding}</p>
+          <div class="card border-light">
+            <div class="card-body">
+              <p class="card-title fw-bold fs-6">What do you want to create?</p>
+              <div class="d-flex flex-row gap-2">
+                <button
+                  onClick={onIdeaClick}
+                  type="button"
+                  class={`btn btn-outline-secondary`}
+                  style={
+                    state.postType === "Idea"
+                      ? {
+                          backgroundColor: "#0C7283",
+                          color: "#f3f3f3",
+                        }
+                      : {}
+                  }
+                >
+                  <i class="bi bi-lightbulb"></i>
+                  Idea
+                </button>
+                <button
+                  onClick={onSolutionClick}
+                  type="button"
+                  class={`btn btn-outline-secondary`}
+                  style={
+                    state.postType !== "Idea"
+                      ? {
+                          backgroundColor: "#0C7283",
+                          color: "#f3f3f3",
+                        }
+                      : {}
+                  }
+                >
+                  <i class="bi bi-rocket"></i>
+                  Solution
+                </button>
+              </div>
+              <p class="text-muted w-75 my-1">
+                {state.postType === "Idea"
+                  ? "Get feedback from the community about a problem, opportunity, or need."
+                  : "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution."}
+              </p>
+              {state.warning && (
+                <div
+                  class="alert alert-warning alert-dismissible fade show"
+                  role="alert"
+                >
+                  {state.warning}
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                    onClick={() => State.update({ warning: "" })}
+                  ></button>
+                </div>
+              )}
+              <div className="row">
+                {nameDiv}
+                {descriptionDiv}
+                {labelEditor}
+                {state.postType === "Solution" && isFundraisingDiv}
+                {state.seekingFunding && fundraisingDiv}
+              </div>
+              <button
+                style={{
+                  width: "7rem",
+                  backgroundColor: "#0C7283",
+                  color: "#f3f3f3",
+                }}
+                className="btn btn-light mb-2 p-3"
+                onClick={onSubmit}
+              >
+                Submit
+              </button>
+            </div>
+            <div class="bg-light d-flex flex-row p-1 border-bottom"></div>
+            <div class="card-body">
+              <p class="text-muted m-0">Preview</p>
+              <div>
+                {widget("entity.post.Post", {
+                  isPreview: true,
+                  id: 0, // irrelevant
+                  post: {
+                    author_id: state.author_id,
+                    likes: [],
+                    snapshot: {
+                      editor_id: state.editor_id,
+                      labels: state.labelStrings,
+                      post_type: state.postType,
+                      name: state.name,
+                      description: generateDescription(
+                        state.description,
+                        state.amount,
+                        state.token,
+                        state.supervisor
+                      ),
+                      github_link: state.githubLink,
+                    },
+                  },
+                })}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   </div>
 );
