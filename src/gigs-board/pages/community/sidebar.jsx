@@ -137,9 +137,10 @@ const CommunitySummary = (community) => {
       <small class="text-muted mb-3">
         {widget('components.atom.tag', { label: community.tag })}
       </small>
+      <div className="mt-3">
       {socialLinks.map((link, index) => (
         <a
-          className={`btn btn-outline-light text-reset border-0 d-flex align-items-center`}
+          className={`mt-1 btn-outline-light text-reset border-0 d-flex align-items-center`}
           href={link.href}
           style={{ marginLeft: index !== 0 ? "0px" : "0px" }}
           key={link.href}
@@ -148,6 +149,7 @@ const CommunitySummary = (community) => {
           <span className="ms-1">{link.name}</span>
         </a>
       ))}
+      </div>
     </div>
   );
 };
@@ -191,6 +193,7 @@ const Sidebar = ({ label }) => {
         minHeight: 0,
         children: CommunitySummary(community),
         noBorder: true,
+        borderRadius: 'rounded'
       })}
       <hr style={{ width: "100%", borderTop: "1px solid #00000033" }} />
       {widget("components.molecule.tile", {
@@ -198,6 +201,7 @@ const Sidebar = ({ label }) => {
         minHeight: 0,
         children: UserList(moderators),
         noBorder: true,
+        borderRadius: 'rounded'
       })}
     </div>
   );

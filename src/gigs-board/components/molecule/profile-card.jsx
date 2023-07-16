@@ -88,7 +88,7 @@ const ProfileCard = (props) => {
           </span>
         )}
         {!hideAccountId && (
-          <span key="accountId" className="text-muted ms-1">
+          <span key="accountId" className="text-muted">
             @{accountId}
           </span>
         )}

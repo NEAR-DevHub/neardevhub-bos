@@ -91,10 +91,6 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const whiteSpace = styled.div`
-  height: 75px;
-`;
-
 const CommunityActivityPage = ({ handle }) => {
   if (!handle) {
     return (
@@ -137,7 +133,6 @@ const CommunityActivityPage = ({ handle }) => {
             </div>
           </div>
           <div class="col-md-3 container-fluid">
-            <whiteSpace />
             <Widget
               src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.sidebar`}
               props={{
