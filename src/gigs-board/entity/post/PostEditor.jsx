@@ -512,17 +512,30 @@ return (
           ></button>
         </div>
       )}
-
-      <div className="row">
-        {fields.includes("githubLink") && githubLinkDiv}
-        {labelEditor}
-        {fields.includes("name") && nameDiv}
-        {fields.includes("description") && descriptionDiv}
-        {fields.includes("fund_raising") && isFundraisingDiv}
-        {state.seekingFunding &&
-          fields.includes("fund_raising") &&
-          fundraisingDiv}
-      </div>
+      {/* This statement around the githubLinkDiv creates a weird render bug 
+      where the title renders extra on state change. */}
+      {fields.includes("githubLink") ? (
+        <div className="row">
+          {githubLinkDiv}
+          {labelEditor}
+          {fields.includes("name") && nameDiv}
+          {fields.includes("description") && descriptionDiv}
+          {fields.includes("fund_raising") && isFundraisingDiv}
+          {state.seekingFunding &&
+            fields.includes("fund_raising") &&
+            fundraisingDiv}
+        </div>
+      ) : (
+        <div className="row">
+          {labelEditor}
+          {fields.includes("name") && nameDiv}
+          {fields.includes("description") && descriptionDiv}
+          {fields.includes("fund_raising") && isFundraisingDiv}
+          {state.seekingFunding &&
+            fields.includes("fund_raising") &&
+            fundraisingDiv}
+        </div>
+      )}
 
       <a className="btn btn-outline-primary mb-2" onClick={onSubmit}>
         Submit

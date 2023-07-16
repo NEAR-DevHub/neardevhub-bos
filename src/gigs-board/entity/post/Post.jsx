@@ -143,7 +143,8 @@ const linkToParent =
     </div>
   );
 
-const allowedToEdit = !props.isPreview &&
+const allowedToEdit =
+  !props.isPreview &&
   Near.view(nearDevGovGigsContractAccountId, "is_allowed_to_edit", {
     post_id: postId,
     editor: context.accountId,
