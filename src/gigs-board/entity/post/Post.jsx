@@ -143,9 +143,7 @@ const linkToParent =
     </div>
   );
 
-// TODO test with this as true
-const allowedToEdit = //true;
-  !props.isPreview &&
+const allowedToEdit = !props.isPreview &&
   Near.view(nearDevGovGigsContractAccountId, "is_allowed_to_edit", {
     post_id: postId,
     editor: context.accountId,
@@ -357,7 +355,6 @@ const buttonsFooter = props.isPreview ? null : (
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            {/* TODO: reply on this post */}
             <i class={`bi ${emptyIcons.Reply}`}> </i> Reply
           </button>
           <ul class="dropdown-menu">
@@ -413,7 +410,6 @@ const buttonsFooter = props.isPreview ? null : (
   </div>
 );
 
-// TODO EDIT THIS
 const CreatorWidget = (postType) => {
   return (
     <div
@@ -430,7 +426,6 @@ const CreatorWidget = (postType) => {
   );
 };
 
-// TODO Editor Widget
 const EditorWidget = (postType) => {
   return (
     <div
