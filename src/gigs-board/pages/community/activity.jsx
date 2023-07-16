@@ -118,8 +118,7 @@ const CommunityActivityPage = ({ handle }) => {
               <div class="col">
                 <small class="text-muted">
                   <span>Required tags:</span>
-                  {widget('components.atom.tag', { label: communityData.tag })}
-                  
+                  {widget("components.atom.tag", { label: communityData.tag })}
                 </small>
               </div>
             </div>

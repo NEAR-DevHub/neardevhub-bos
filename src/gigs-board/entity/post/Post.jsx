@@ -54,7 +54,7 @@ function href(widgetName, linkProps) {
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   // box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-  border: 2px solid #ECEEF0;
+  border: 2px solid #eceef0;
   transition: box-shadow 0.6s;
 
   &:hover {
@@ -485,9 +485,7 @@ const renamedPostType =
 const postLabels = post.snapshot.labels ? (
   <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
     {post.snapshot.labels.map((label) => {
-      return (
-        widget('components.atom.tag', { label })
-      );
+      return widget("components.atom.tag", { label });
     })}
   </div>
 ) : (

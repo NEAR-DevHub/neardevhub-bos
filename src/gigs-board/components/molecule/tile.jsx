@@ -36,12 +36,12 @@ const Tile = ({
   noFrame,
   minHeight,
   noBorder,
-  borderRadius
+  borderRadius,
 }) => (
   <AttractableDiv
     className={[
       "d-flex flex-column gap-3 shadow-sm w-100",
-      !borderRadius ? "rounded-4": borderRadius,
+      !borderRadius ? "rounded-4" : borderRadius,
       !noBorder ? "border" : "",
       !noFrame ? "p-4" : "",
     ].join(" ")}
