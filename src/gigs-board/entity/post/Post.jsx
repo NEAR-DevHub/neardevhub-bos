@@ -88,7 +88,25 @@ if (!post) {
   return <div>Loading ...</div>;
 }
 
-const snapshot = post.snapshot;
+const referral = props.referral;
+const currentTimestamp = props.timestamp ?? post.snapshot.timestamp;
+const compareTimestamp = props.compareTimestamp ?? "";
+const swapTimestamps = currentTimestamp < compareTimestamp;
+
+const snapshotHistory = post.snapshot_history;
+const snapshot =
+  currentTimestamp === post.snapshot.timestamp
+    ? post.snapshot
+    : (snapshotHistory &&
+        snapshotHistory.find((s) => s.timestamp === currentTimestamp)) ??
+      null;
+const compareSnapshot =
+  compareTimestamp === post.snapshot.timestamp
+    ? post.snapshot
+    : (snapshotHistory &&
+        snapshotHistory.find((s) => s.timestamp === compareTimestamp)) ??
+      null;
+
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
 const parentId = Near.view(nearDevGovGigsContractAccountId, "get_parent_id", {
@@ -221,7 +239,10 @@ const header = (
           <div class="d-flex justify-content-end">
             {editControl}
             {timestamp}
-            <div class="bi bi-clock-history px-2"></div>
+            {widget("entity.post.History", {
+              post,
+              timestamp: currentTimestamp,
+            })}
             {shareButton}
           </div>
         </div>
@@ -651,6 +672,48 @@ const descriptionArea = isUnderPost ? (
   </clampMarkdown>
 );
 
+const timestampElement = (_snapshot) => {
+  return (
+    <a
+      class="text-muted"
+      href={href("Post", {
+        id: postId,
+        timestamp: _snapshot.timestamp,
+        compareTimestamp: null,
+        referral,
+      })}
+    >
+      {readableDate(_snapshot.timestamp / 1000000).substring(4)}
+
+      <Widget
+        src="mob.near/widget/ProfileImage"
+        props={{
+          accountId: _snapshot.editor_id,
+          style: {
+            width: "1.25em",
+            height: "1.25em",
+          },
+          imageStyle: {
+            transform: "translateY(-12.5%)",
+          },
+        }}
+      />
+      {_snapshot.editor_id.substring(0, 8)}
+    </a>
+  );
+};
+
+function combineText(_snapshot) {
+  return (
+    "## " +
+    _snapshot.post_type +
+    ": " +
+    _snapshot.name +
+    "\n" +
+    _snapshot.description
+  );
+}
+
 return (
   <AttractableDiv className={`card my-2 ${borders[snapshot.post_type]}`}>
     {linkToParent}
@@ -658,9 +721,46 @@ return (
     <div className="card-body">
       {searchKeywords}
       {postLabels}
-      {postTitle}
-      {postExtra}
-      {descriptionArea}
+      {compareSnapshot ? (
+        <div
+          class="border rounded"
+          style={{ marginTop: "16px", marginBottom: "16px" }}
+        >
+          <div class="d-flex justify-content-end" style={{ fontSize: "12px" }}>
+            <div class="d-flex w-50 justify-content-end mt-1 me-2">
+              {timestampElement(snapshot)}
+              {snapshot !== compareSnapshot && (
+                <>
+                  <div class="mx-1 align-self-center">
+                    <i class="bi bi-file-earmark-diff" />
+                  </div>
+                  {timestampElement(compareSnapshot)}
+                </>
+              )}
+            </div>
+          </div>
+
+          <Widget
+            src="markeljan.near/widget/MarkdownDiff"
+            props={{
+              post: post,
+              currentCode: combineText(
+                swapTimestamps ? compareSnapshot : snapshot
+              ),
+              prevCode: combineText(
+                swapTimestamps ? snapshot : compareSnapshot
+              ),
+              showLineNumber: true,
+            }}
+          />
+        </div>
+      ) : (
+        <>
+          {postTitle}
+          {postExtra}
+          {descriptionArea}
+        </>
+      )}
       {buttonsFooter}
       {editorsFooter}
       {postsList}
