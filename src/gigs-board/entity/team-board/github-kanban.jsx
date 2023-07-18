@@ -51,7 +51,41 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/data-request" */
+const DataRequest = {
+  /**
+   * Requests all the data from non-empty pages of the paginated API.
+   *
+   * **Notice: currently expected to work only with array responses.**
+   *
+   * @param {object} parameters
+   * 	Request parameters including the number of page to start with,
+   * 	and an accumulated response buffer, if it exists.
+   *
+   * @param {array | null | undefined} parameters.buffer
+   * @param {number} parameters.startWith
+   *
+   * @param {(pageNumber: number) => array} requestByNumber
+   *
+   * @returns {array} The final accumulated response.
+   */
+  paginated: (requestByNumber, { buffer, startWith }) => {
+    const startPageNumber = startWith ?? 1,
+      accumulatedResponse = buffer ?? [];
 
+    const latestResponse = requestByNumber(startPageNumber) ?? [];
+
+    if (latestResponse.length === 0) {
+      return accumulatedResponse;
+    } else {
+      return DataRequest.paginated(requestByNumber, {
+        buffer: [...accumulatedResponse, ...latestResponse],
+        startWith: startPageNumber + 1,
+      });
+    }
+  },
+};
+/* END_INCLUDE: "core/lib/data-request" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -86,19 +120,24 @@ const dataToColumns = (data, columns) =>
     (registry, column) => ({
       ...registry,
 
-      [column.id]: [
-        ...(registry[column.id] ?? []),
+      [column.id]:
+        column.labelSearchTerms.length > 0
+          ? [
+              ...(registry[column.id] ?? []),
 
-        ...data.filter((ticket) =>
-          column?.labelSearchTerms.every((searchTerm) =>
-            searchTerm.length > 0
-              ? ticket.labels.some((label) =>
-                  label.name.toLowerCase().includes(searchTerm.toLowerCase())
+              ...data.filter((ticket) =>
+                column.labelSearchTerms.every((searchTerm) =>
+                  searchTerm.length > 0
+                    ? ticket.labels.some((label) =>
+                        label.name
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
+                      )
+                    : false
                 )
-              : true
-          )
-        ),
-      ],
+              ),
+            ]
+          : [],
     }),
 
     {}
@@ -117,7 +156,7 @@ const GithubKanbanTeamBoard = ({
   ticketState,
   title,
 }) => {
-  const ticketStateForSure =
+  const ticketStateFilter =
     ticketState === "open" || ticketState === "closed" || ticketState === "all"
       ? ticketState
       : "all";
@@ -128,32 +167,43 @@ const GithubKanbanTeamBoard = ({
 
   if (repoURL) {
     const pullRequests = dataTypesIncluded.PullRequest
-      ? (
-          fetch(
-            `https://api.github.com/repos/${repoURL
-              .split("/")
-              .slice(-2)
-              .concat(["pulls"])
-              .join("/")}?state=${ticketStateForSure}`
-          ).body ?? []
+      ? DataRequest.paginated(
+          (pageNumber) =>
+            fetch(
+              `https://api.github.com/repos/${repoURL
+                .split("/")
+                .slice(-2)
+                .concat(["pulls"])
+                .join(
+                  "/"
+                )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
+            )?.body,
+
+          { startWith: 1 }
         ).map(withType("PullRequest"))
       : [];
 
     const issues = dataTypesIncluded.Issue
-      ? (
-          fetch(
-            `https://api.github.com/repos/${repoURL
-              .split("/")
-              .slice(-2)
-              .concat(["issues"])
-              .join("/")}state=${ticketStateForSure}`
-          ).body ?? []
+      ? DataRequest.paginated(
+          (pageNumber) =>
+            fetch(
+              `https://api.github.com/repos/${repoURL
+                .split("/")
+                .slice(-2)
+                .concat(["issues"])
+                .join(
+                  "/"
+                )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
+            )?.body,
+
+          { startWith: 1 }
         ).map(withType("Issue"))
       : [];
 
-    State.update({
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
       ticketsByColumn: dataToColumns([...issues, ...pullRequests], columns),
-    });
+    }));
   }
 
   return (
