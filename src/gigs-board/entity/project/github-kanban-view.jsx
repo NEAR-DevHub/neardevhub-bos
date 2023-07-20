@@ -278,11 +278,7 @@ const GithubKanbanTeamBoard = ({
 
                   <div class="d-flex flex-column gap-3">
                     {(state.ticketsByColumn[column.id] ?? []).map((data) =>
-                      widget(
-                        "entity.team-board.github-ticket",
-                        { data },
-                        data.id
-                      )
+                      widget("entity.project.github-ticket", { data }, data.id)
                     )}
                   </div>
                 </div>
