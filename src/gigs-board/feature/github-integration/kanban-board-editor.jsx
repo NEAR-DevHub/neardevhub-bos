@@ -101,37 +101,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -333,15 +333,14 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
+const EditorSettings = {
+  maxColumnsNumber: 20,
+};
+
 const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
 `;
-
-const dataTypesLocked = {
-  Issue: true,
-  PullRequest: true,
-};
 
 const BoardConfigDefaults = {
   id: uuid(),
@@ -398,7 +397,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       editingMode: value,
     }));
 
-  const boardsCreateNew = () =>
+  const boardCreate = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       board: { hasUnsubmittedChanges: false, values: BoardConfigDefaults },
@@ -406,7 +405,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
-    Object.keys(lastKnownValue).length < 6
+    Object.keys(lastKnownValue).length < EditorSettings.maxColumnsNumber
       ? {
           ...(lastKnownValue ?? {}),
 
@@ -418,12 +417,10 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownValue }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+    );
 
   const onSubmit = () =>
     DevHub.edit_community_github({
@@ -470,8 +467,8 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
               className="d-inline-flex gap-2"
               id={`${form.values.id}-dataTypesIncluded`}
             >
-              <i className="bi bi-database-fill" />
-              <span>Tracked data</span>
+              <i className="bi bi-ticket-fill" />
+              <span>Ticket type</span>
             </span>
 
             {Object.entries(form.values.dataTypesIncluded).map(
@@ -482,7 +479,6 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                   {
                     active: enabled,
                     className: "w-100",
-                    disabled: dataTypesLocked[typeName],
                     key: typeName,
                     label: typeName,
 
@@ -501,7 +497,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
               className="d-inline-flex gap-2"
               id={`${form.values.id}-dataTypesIncluded`}
             >
-              <i class="bi bi-database-fill" />
+              <i class="bi bi-cone-striped" />
               <span>Ticket state</span>
             </span>
 
@@ -658,7 +654,10 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           <div className="d-flex align-items-center justify-content-end gap-3">
             <button
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
-              disabled={Object.keys(form.values.columns).length >= 6}
+              disabled={
+                Object.keys(form.values.columns).length >=
+                EditorSettings.maxColumnsNumber
+              }
               onClick={form.update({
                 path: ["columns"],
                 via: columnsCreateNew,
@@ -708,7 +707,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           {Viewer.can.editCommunity(community.data) ? (
             <button
               className="btn shadow btn-primary d-inline-flex gap-2"
-              onClick={boardsCreateNew}
+              onClick={boardCreate}
             >
               <i className="bi bi-kanban-fill" />
               <span>Create board</span>
