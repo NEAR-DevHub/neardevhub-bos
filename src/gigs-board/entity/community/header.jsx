@@ -160,9 +160,7 @@ const DevHub = {
       { subscribe: true }
     );
 
-    return cacheState === null
-      ? { ...cacheState, ...initialState }
-      : cacheState;
+    return cacheState === null ? initialState : cacheState;
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
@@ -243,7 +241,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     params: { handle },
   });
 
-  if (community.data === null) {
+  if (community.data === null && community.isLoading) {
     return <div>Loading...</div>;
   }
 
