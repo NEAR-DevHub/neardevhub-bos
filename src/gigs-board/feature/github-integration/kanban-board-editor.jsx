@@ -51,47 +51,10 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/form" */
-/**
- *! TODO: Extract into separate library module
- *! once `useForm` is converted into a form factory widget
- */
-const traversalUpdate = ({
+/* INCLUDE: "core/lib/gui/form" */
+const defaultFieldUpdate = ({
   input,
-  target: treeOrBranch,
-  path: [currentBranchKey, ...remainingBranch],
-  params,
-  via: nodeUpdate,
-}) => ({
-  ...treeOrBranch,
-
-  [currentBranchKey]:
-    remainingBranch.length > 0
-      ? traversalUpdate({
-          input,
-
-          target:
-            typeof treeOrBranch[currentBranchKey] === "object"
-              ? treeOrBranch[currentBranchKey]
-              : {
-                  ...((treeOrBranch[currentBranchKey] ?? null) !== null
-                    ? { __archivedLeaf__: treeOrBranch[currentBranchKey] }
-                    : {}),
-                },
-
-          path: remainingBranch,
-          via: nodeUpdate,
-        })
-      : nodeUpdate({
-          input,
-          lastKnownState: treeOrBranch[currentBranchKey],
-          params,
-        }),
-});
-
-const fieldDefaultUpdate = ({
-  input,
-  lastKnownState,
+  lastKnownValue,
   params: { arrayDelimiter },
 }) => {
   switch (typeof input) {
@@ -99,50 +62,95 @@ const fieldDefaultUpdate = ({
       return input;
 
     case "object":
-      return Array.isArray(input) && typeof lastKnownState === "string"
+      return Array.isArray(input) && typeof lastKnownValue === "string"
         ? input.join(arrayDelimiter ?? ",")
         : input;
 
     case "string":
-      return Array.isArray(lastKnownState)
+      return Array.isArray(lastKnownValue)
         ? input.split(arrayDelimiter ?? ",").map((string) => string.trim())
         : input;
 
     default: {
       if ((input ?? null) === null) {
-        switch (typeof lastKnownState) {
+        switch (typeof lastKnownValue) {
           case "boolean":
-            return !lastKnownState;
+            return !lastKnownValue;
 
           default:
-            return lastKnownState;
+            return lastKnownValue;
         }
       } else return input;
     }
   }
 };
 
-const useForm = ({ stateKey: formStateKey }) => ({
-  formState: state[formStateKey],
+const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
+  const initialFormState = {
+    hasUnsubmittedChanges: false,
+    values: initialValues ?? {},
+  };
 
-  formUpdate:
-    ({ path: fieldPath, via: fieldCustomUpdate, ...params }) =>
-    (fieldInput) =>
-      State.update((lastKnownState) =>
-        traversalUpdate({
+  const formState = state[formStateKey] ?? null,
+    isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
+
+  const formReset = () =>
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
+      [formStateKey]: initialFormState,
+      hasUnsubmittedChanges: false,
+    }));
+
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedValues = Struct.deepFieldUpdate(
+        formState?.values ?? {},
+
+        {
           input: fieldInput?.target?.value ?? fieldInput,
-          target: lastKnownState,
-          path: [formStateKey, ...fieldPath],
           params,
+          path,
 
           via:
-            typeof fieldCustomUpdate === "function"
-              ? fieldCustomUpdate
-              : fieldDefaultUpdate,
-        })
-      ),
-});
-/* END_INCLUDE: "core/lib/form" */
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
+      );
+
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+
+        [formStateKey]: {
+          hasUnsubmittedChanges: !Struct.isEqual(
+            updatedValues,
+            initialFormState.values
+          ),
+
+          values: updatedValues,
+        },
+      }));
+    };
+
+  if (
+    !uninitialized &&
+    (formState === null ||
+      (Object.keys(formState?.values ?? {}).length > 0 &&
+        !formState.hasUnsubmittedChanges &&
+        !isSynced))
+  ) {
+    formReset();
+  }
+
+  return {
+    ...(formState ?? initialFormState),
+    isSynced,
+    reset: formReset,
+    update: formUpdate,
+  };
+};
+/* END_INCLUDE: "core/lib/gui/form" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -182,41 +190,91 @@ const uuid = () =>
     )
     .join("-");
 
-const uuidIndexed = (data) => {
+const withUUIDIndex = (data) => {
   const id = uuid();
 
   return Object.fromEntries([[id, { ...data, id }]]);
 };
 /* END_INCLUDE: "core/lib/uuid" */
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
+
+  isEqual: (input1, input2) =>
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
+      : false,
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+};
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/adapter/dev-hub" */
-const contractAccountId =
+const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
   edit_community_github: ({ handle, github }) =>
-    Near.call(contractAccountId, "edit_community_github", { handle, github }) ??
+    Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
   get_access_control_info: () =>
-    Near.view(contractAccountId, "get_access_control_info") ?? null,
+    Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
-  get_all_authors: () =>
-    Near.view(contractAccountId, "get_all_authors") ?? null,
+  get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
   get_all_communities: () =>
-    Near.view(contractAccountId, "get_all_communities") ?? null,
+    Near.view(devHubAccountId, "get_all_communities") ?? null,
 
-  get_all_labels: () => Near.view(contractAccountId, "get_all_labels") ?? null,
+  get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
   get_community: ({ handle }) =>
-    Near.view(contractAccountId, "get_community", { handle }) ?? null,
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
   get_post: ({ post_id }) =>
-    Near.view(contractAccountId, "get_post", { post_id }) ?? null,
+    Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
 
   get_posts_by_author: ({ author }) =>
-    Near.view(contractAccountId, "get_posts_by_author", { author }) ?? null,
+    Near.view(devHubAccountId, "get_posts_by_author", { author }) ?? null,
 
   get_posts_by_label: ({ label }) =>
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
@@ -224,21 +282,67 @@ const DevHub = {
     }) ?? null,
 
   get_root_members: () =>
-    Near.view(contractAccountId, "get_root_members") ?? null,
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
+  useQuery: ({ name, params }) => {
+    const initialState = { data: null, error: null, isLoading: true };
+
+    const cacheState = useCache(
+      () =>
+        Near.asyncView(devHubAccountId, ["get", name].join("_"), params ?? {})
+          .then((response) => ({
+            ...initialState,
+            data: response ?? null,
+            isLoading: false,
+          }))
+          .catch((error) => ({
+            ...initialState,
+            error: props?.error ?? error,
+            isLoading: false,
+          })),
+
+      JSON.stringify({ name, params }),
+      { subscribe: true }
+    );
+
+    return cacheState === null ? initialState : cacheState;
+  },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
+/* INCLUDE: "entity/viewer" */
+const access_control_info = DevHub.useQuery({
+  name: "access_control_info",
+});
+
+const Viewer = {
+  can: {
+    editCommunity: (communityData) =>
+      Struct.typeMatch(communityData) &&
+      (communityData.admins.includes(context.accountId) ||
+        Viewer.role.isDevHubModerator),
+  },
+
+  role: {
+    isDevHubModerator:
+      access_control_info.data === null || access_control_info.isLoading
+        ? false
+        : access_control_info.data.members_list[
+            "team:moderators"
+          ]?.children?.includes?.(context.accountId) ?? false,
+  },
+};
+/* END_INCLUDE: "entity/viewer" */
+
+const EditorSettings = {
+  maxColumnsNumber: 20,
+};
 
 const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
 `;
 
-const dataTypesLocked = {
-  Issue: true,
-  PullRequest: true,
-};
-
-const boardConfigDefaults = {
+const BoardConfigDefaults = {
   id: uuid(),
   columns: {},
   dataTypesIncluded: { Issue: false, PullRequest: true },
@@ -249,23 +353,39 @@ const boardConfigDefaults = {
 };
 
 const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
-  const communityData = DevHub.get_community({ handle: communityHandle });
-
-  if (communityData === null) {
-    return <div>Loading...</div>;
-  }
-
-  const communityGitHubKanbanBoards =
-    JSON.parse(communityData.github)?.kanbanBoards ?? {};
-
   State.init({
-    boardConfig: null,
     editingMode: "form",
-    isEditingAllowed: true, // According to user permission level
     isEditorActive: false,
   });
 
-  const onEditorToggle = (forcedState) =>
+  const community = DevHub.useQuery({
+    name: "community",
+    params: { handle: communityHandle },
+  });
+
+  const boards =
+    ((community?.data?.github ?? null) === null
+      ? {}
+      : JSON.parse(community.data.github)
+    )?.kanbanBoards ?? {};
+
+  // TODO: Should be taken from props once support for multiple boards is introduced
+  const boardId = Object.keys(boards)[0] ?? null;
+
+  const errors = {
+    noBoard: !Struct.typeMatch(boards[boardId]),
+    noBoards: !community.isLoading && Object.keys(boards).length === 0,
+    noBoardId: typeof boardId !== "string",
+    noCommunity: !community.isLoading && community.data === null,
+  };
+
+  const form = useForm({
+    initialValues: boards[boardId],
+    stateKey: "board",
+    uninitialized: errors.noBoards || errors.noBoardId,
+  });
+
+  const editorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
@@ -277,43 +397,31 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       editingMode: value,
     }));
 
-  if (
-    state.boardConfig === null &&
-    Object.keys(communityGitHubKanbanBoards).length > 0
-  ) {
+  const boardCreate = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      boardConfig: Object.values(communityGitHubKanbanBoards)[0],
-    }));
-  }
-
-  const { formState, formUpdate } = useForm({ stateKey: "boardConfig" });
-
-  const boardsCreateNew = () =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      boardConfig: boardConfigDefaults,
+      board: { hasUnsubmittedChanges: false, values: BoardConfigDefaults },
       isEditorActive: true,
     }));
 
-  const columnsCreateNew = ({ lastKnownState }) =>
-    Object.keys(lastKnownState).length < 6
+  const columnsCreateNew = ({ lastKnownValue }) =>
+    Object.keys(lastKnownValue).length < EditorSettings.maxColumnsNumber
       ? {
-          ...lastKnownState,
+          ...(lastKnownValue ?? {}),
 
-          ...uuidIndexed({
+          ...withUUIDIndex({
             description: "",
             labelSearchTerms: [],
             title: "New column",
           }),
         }
-      : lastKnownState;
+      : lastKnownValue;
 
   const columnsDeleteById =
     (id) =>
-    ({ lastKnownState }) =>
+    ({ lastKnownValue }) =>
       Object.fromEntries(
-        Object.entries(lastKnownState).filter(([columnId]) => columnId !== id)
+        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
       );
 
   const onSubmit = () =>
@@ -322,36 +430,36 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
 
       github: JSON.stringify({
         kanbanBoards: {
-          ...communityGitHubKanbanBoards,
-          [formState.id]: formState,
+          ...boards,
+          [form.values.id]: form.values,
         },
       }),
     });
 
-  const form =
-    formState !== null ? (
+  const formElement =
+    Object.keys(form.values).length > 0 ? (
       <>
         <div className="d-flex gap-3 flex-column flex-lg-row">
           {widget(
             "components.molecule.text-input",
             {
               className: "flex-shrink-0",
-              key: `${formState.id}-title`,
+              key: `${form.values.id}-title`,
               label: "Title",
-              onChange: formUpdate({ path: ["title"] }),
+              onChange: form.update({ path: ["title"] }),
               placeholder: "NEAR Protocol NEPs",
-              value: formState.title,
+              value: form.values.title,
             },
-            `${formState.id}-title`
+            `${form.values.id}-title`
           )}
 
           {widget("components.molecule.text-input", {
             className: "w-100",
-            key: `${formState.id}-repoURL`,
+            key: `${form.values.id}-repoURL`,
             label: "GitHub repository URL",
-            onChange: formUpdate({ path: ["repoURL"] }),
+            onChange: form.update({ path: ["repoURL"] }),
             placeholder: "https://github.com/example-org/example-repo",
-            value: formState.repoURL,
+            value: form.values.repoURL,
           })}
         </div>
 
@@ -359,13 +467,13 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
             <span
               className="d-inline-flex gap-2"
-              id={`${formState.id}-dataTypesIncluded`}
+              id={`${form.values.id}-dataTypesIncluded`}
             >
-              <i className="bi bi-database-fill" />
-              <span>Tracked data</span>
+              <i className="bi bi-ticket-fill" />
+              <span>Ticket type</span>
             </span>
 
-            {Object.entries(formState.dataTypesIncluded).map(
+            {Object.entries(form.values.dataTypesIncluded).map(
               ([typeName, enabled]) =>
                 widget(
                   "components.atom.toggle",
@@ -373,11 +481,10 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                   {
                     active: enabled,
                     className: "w-100",
-                    disabled: dataTypesLocked[typeName],
                     key: typeName,
                     label: typeName,
 
-                    onSwitch: formUpdate({
+                    onSwitch: form.update({
                       path: ["dataTypesIncluded", typeName],
                     }),
                   },
@@ -390,16 +497,16 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
             <span
               className="d-inline-flex gap-2"
-              id={`${formState.id}-dataTypesIncluded`}
+              id={`${form.values.id}-dataTypesIncluded`}
             >
-              <i class="bi bi-database-fill" />
+              <i class="bi bi-cone-striped" />
               <span>Ticket state</span>
             </span>
 
             {widget("components.molecule.button-switch", {
-              currentValue: formState.ticketState,
+              currentValue: form.values.ticketState,
               key: "ticketState",
-              onChange: formUpdate({ path: ["ticketState"] }),
+              onChange: form.update({ path: ["ticketState"] }),
 
               options: [
                 { label: "All", value: "all" },
@@ -414,12 +521,12 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           {widget("components.molecule.text-input", {
             className: "w-100",
             inputProps: { className: "h-75" },
-            key: `${formState.id}-description`,
+            key: `${form.values.id}-description`,
             label: "Description",
             multiline: true,
-            onChange: formUpdate({ path: ["description"] }),
+            onChange: form.update({ path: ["description"] }),
             placeholder: "Latest NEAR Enhancement Proposals by status.",
-            value: formState.description,
+            value: form.values.description,
           })}
         </div>
 
@@ -431,7 +538,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         </div>
 
         <div className="d-flex flex-column align-items-center gap-3">
-          {Object.values(formState.columns).map(
+          {Object.values(form.values.columns).map(
             ({ id, description, labelSearchTerms, title }) => (
               <div
                 className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
@@ -440,19 +547,19 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                 <div className="d-flex flex-column gap-1 w-100">
                   {widget("components.molecule.text-input", {
                     className: "flex-grow-1",
-                    key: `${formState.id}-column-${id}-title`,
+                    key: `${form.values.id}-column-${id}-title`,
                     label: "Title",
-                    onChange: formUpdate({ path: ["columns", id, "title"] }),
+                    onChange: form.update({ path: ["columns", id, "title"] }),
                     placeholder: "👀 Review",
                     value: title,
                   })}
 
                   {widget("components.molecule.text-input", {
                     className: "flex-grow-1",
-                    key: `${formState.id}-column-${id}-description`,
+                    key: `${form.values.id}-column-${id}-description`,
                     label: "Description",
 
-                    onChange: formUpdate({
+                    onChange: form.update({
                       path: ["columns", id, "description"],
                     }),
 
@@ -464,12 +571,12 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
 
                   {widget("components.molecule.text-input", {
                     format: "comma-separated",
-                    key: `${formState.id}-column-${title}-labelSearchTerms`,
+                    key: `${form.values.id}-column-${title}-labelSearchTerms`,
 
                     label: `Search terms for all the labels
 											MUST be presented in included tickets`,
 
-                    onChange: formUpdate({
+                    onChange: form.update({
                       path: ["columns", id, "labelSearchTerms"],
                     }),
 
@@ -484,7 +591,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                 >
                   <button
                     className="btn btn-outline-danger shadow"
-                    onClick={formUpdate({
+                    onClick={form.update({
                       path: ["columns"],
                       via: columnsDeleteById(id),
                     })}
@@ -500,9 +607,17 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       </>
     ) : null;
 
-  return (
+  return community.data === null || (!errors.noBoards && errors.noBoardId) ? (
+    <div>
+      {(community.isLoading && "Loading...") ||
+        (!errors.noBoards && errors.noBoardId
+          ? "Error: board id not found in editor props."
+          : errors.noCommunity &&
+            `Community with handle ${communityHandle} not found.`)}
+    </div>
+  ) : (
     <div className="d-flex flex-column gap-4">
-      {state.isEditorActive && formState !== null ? (
+      {state.isEditorActive && Object.keys(form.values).length > 0 ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
@@ -525,7 +640,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           </div>
 
           {state.editingMode === "form" ? (
-            form
+            formElement
           ) : (
             <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
               <textarea
@@ -533,7 +648,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
                 disabled
                 rows="12"
                 type="text"
-                value={JSON.stringify(formState, null, "\t")}
+                value={JSON.stringify(form.values ?? {}, null, "\t")}
               />
             </div>
           )}
@@ -541,8 +656,14 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           <div className="d-flex align-items-center justify-content-end gap-3">
             <button
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
-              disabled={Object.keys(formState.columns).length >= 6}
-              onClick={formUpdate({ path: ["columns"], via: columnsCreateNew })}
+              disabled={
+                Object.keys(form.values.columns).length >=
+                EditorSettings.maxColumnsNumber
+              }
+              onClick={form.update({
+                path: ["columns"],
+                via: columnsCreateNew,
+              })}
             >
               <i className="bi bi-plus-lg" />
               <span>New column</span>
@@ -550,7 +671,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
 
             <button
               className="btn btn-outline-danger border-0 d-inline-flex gap-2 align-items-center"
-              onClick={() => onEditorToggle(false)}
+              onClick={() => editorToggle(false)}
               style={{ width: "fit-content" }}
             >
               <span>Cancel</span>
@@ -569,11 +690,11 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         </AttractableDiv>
       ) : null}
 
-      {state.boardConfig !== null ? (
+      {Object.keys(form.values).length > 0 ? (
         widget("entity.team-board.github-kanban", {
-          ...state.boardConfig,
-          editorTrigger: () => onEditorToggle(true),
-          isEditable: state.isEditingAllowed,
+          ...form.values,
+          editorTrigger: () => editorToggle(true),
+          isEditable: Viewer.can.editCommunity(community.data),
           pageURL,
         })
       ) : (
@@ -585,13 +706,15 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
             This community doesn't have GitHub integrations
           </h5>
 
-          <button
-            className="btn shadow btn-primary d-inline-flex gap-2"
-            onClick={boardsCreateNew}
-          >
-            <i className="bi bi-kanban-fill" />
-            <span>Create board</span>
-          </button>
+          {Viewer.can.editCommunity(community.data) ? (
+            <button
+              className="btn shadow btn-primary d-inline-flex gap-2"
+              onClick={boardCreate}
+            >
+              <i className="bi bi-kanban-fill" />
+              <span>Create board</span>
+            </button>
+          ) : null}
         </div>
       )}
     </div>

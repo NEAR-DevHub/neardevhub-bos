@@ -52,8 +52,43 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-return widget("components.layout.Page", {
-  children: widget("entity.post.Post", {
-    id: props.id,
-  }),
-});
+/* INCLUDE: "core/lib/draftstate" */
+const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
+if (props.transactionHashes) {
+  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+}
+
+const onDraftStateChange = (draftState) =>
+  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, JSON.stringify(draftState));
+let draftState;
+try {
+  draftState = JSON.parse(Storage.privateGet(DRAFT_STATE_STORAGE_KEY));
+} catch (e) {}
+/* END_INCLUDE: "core/lib/draftstate" */
+
+if (props.transactionHashes) {
+  return (
+    <p class="text-secondary">
+      Post submitted successfully. Back to{" "}
+      <a
+        style={{
+          color: "#3252A6",
+        }}
+        className="fw-bold"
+        href={href("Post", { id: props.id })}
+      >
+        post
+      </a>
+    </p>
+  );
+} else {
+  return widget("components.layout.Page", {
+    children: widget("entity.post.Post", {
+      id: props.id,
+      timestamp: props.timestamp,
+      compareTimestamp: props.compareTimestamp,
+      onDraftStateChange,
+      draftState,
+    }),
+  });
+}

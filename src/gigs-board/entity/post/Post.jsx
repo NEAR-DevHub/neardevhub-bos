@@ -92,7 +92,25 @@ if (!post) {
   return <div>Loading ...</div>;
 }
 
-const snapshot = post.snapshot;
+const referral = props.referral;
+const currentTimestamp = props.timestamp ?? post.snapshot.timestamp;
+const compareTimestamp = props.compareTimestamp ?? "";
+const swapTimestamps = currentTimestamp < compareTimestamp;
+
+const snapshotHistory = post.snapshot_history;
+const snapshot =
+  currentTimestamp === post.snapshot.timestamp
+    ? post.snapshot
+    : (snapshotHistory &&
+        snapshotHistory.find((s) => s.timestamp === currentTimestamp)) ??
+      null;
+const compareSnapshot =
+  compareTimestamp === post.snapshot.timestamp
+    ? post.snapshot
+    : (snapshotHistory &&
+        snapshotHistory.find((s) => s.timestamp === compareTimestamp)) ??
+      null;
+
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
 const parentId = Near.view(nearDevGovGigsContractAccountId, "get_parent_id", {
@@ -108,6 +126,8 @@ const childPostIds = props.isPreview ? [] : childPostIdsUnordered.reverse();
 const expandable = props.isPreview ? false : props.expandable ?? false;
 const defaultExpanded = expandable ? props.defaultExpanded : true;
 
+const draftState = props.draftState;
+
 function readableDate(timestamp) {
   var a = new Date(timestamp);
   return a.toDateString() + " " + a.toLocaleTimeString();
@@ -121,7 +141,7 @@ const postSearchKeywords = props.searchKeywords ? (
   <div style={{ "font-family": "monospace" }} key="post-search-keywords">
     <span>Found keywords: </span>
     {props.searchKeywords.map((label) => {
-      return <span class="badge text-bg-info me-1">{label}</span>;
+      return widget("components.atom.tag", { label })
     })}
   </div>
 ) : (
@@ -129,7 +149,7 @@ const postSearchKeywords = props.searchKeywords ? (
 );
 
 const searchKeywords = props.searchKeywords ? (
-  <div class="mb-1" key="search-keywords">
+  <div class="mb-4" key="search-keywords">
     <small class="text-muted">{postSearchKeywords}</small>
   </div>
 ) : (
@@ -212,7 +232,10 @@ const header = (
           <div class="d-flex justify-content-end">
             {editControl}
             {timestamp}
-            <div class="bi bi-clock-history px-2"></div>
+            {widget("entity.post.History", {
+              post,
+              timestamp: currentTimestamp,
+            })}
             {shareButton}
           </div>
         </div>
@@ -425,12 +448,19 @@ const buttonsFooter = props.isPreview ? null : (
 const CreatorWidget = (postType) => {
   return (
     <div
-      class="collapse"
+      class={`collapse ${
+        draftState?.parent_post_id == postId && draftState?.postType == postType
+          ? "show"
+          : ""
+      }`}
       id={`collapse${postType}Creator${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
       {widget("entity.post.PostEditor", {
         postType,
+        onDraftStateChange: props.onDraftStateChange,
+        draftState:
+          draftState?.parent_post_id == postId ? draftState : undefined,
         parentId: postId,
         mode: "Create",
       })}
@@ -441,7 +471,11 @@ const CreatorWidget = (postType) => {
 const EditorWidget = (postType) => {
   return (
     <div
-      class="collapse"
+      class={`collapse ${
+        draftState?.edit_post_id == postId && draftState?.postType == postType
+          ? "show"
+          : ""
+      }`}
       id={`collapse${postType}Editor${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
@@ -457,6 +491,8 @@ const EditorWidget = (postType) => {
         token: post.snapshot.sponsorship_token,
         supervisor: post.snapshot.supervisor,
         githubLink: post.snapshot.github_link,
+        onDraftStateChange: props.onDraftStateChange,
+        draftState: draftState?.edit_post_id == postId ? draftState : undefined,
       })}
     </div>
   );
@@ -524,19 +560,43 @@ const postExtra =
     <div></div>
   );
 
+const childPostHasDraft = childPostIds.find(
+  (childId) =>
+    childId == draftState?.edit_post_id || childId == draftState?.parent_post_id
+);
+if (
+  (childPostHasDraft || state.childrenOfChildPostsHasDraft) &&
+  props.expandParent
+) {
+  props.expandParent();
+}
+
 const postsList =
   props.isPreview || childPostIds.length == 0 ? (
     <div key="posts-list"></div>
   ) : (
     <div class="row" key="posts-list">
       <div
-        class={`collapse ${defaultExpanded ? "show" : ""}`}
+        class={`collapse ${
+          defaultExpanded ||
+          childPostHasDraft ||
+          state.childrenOfChildPostsHasDraft
+            ? "show"
+            : ""
+        }`}
         id={`collapseChildPosts${postId}`}
       >
         {childPostIds.map((childId) =>
           widget(
             "entity.post.Post",
-            { id: childId, isUnderPost: true },
+            {
+              id: childId,
+              isUnderPost: true,
+              onDraftStateChange: props.onDraftStateChange,
+              draftState,
+              expandParent: () =>
+                State.update({ childrenOfChildPostsHasDraft: true }),
+            },
             `subpost${childId}of${postId}`
           )
         )}
@@ -608,14 +668,93 @@ const descriptionArea = isUnderPost ? (
   </div>
 );
 
+const timestampElement = (_snapshot) => {
+  return (
+    <a
+      class="text-muted"
+      href={href("Post", {
+        id: postId,
+        timestamp: _snapshot.timestamp,
+        compareTimestamp: null,
+        referral,
+      })}
+    >
+      {readableDate(_snapshot.timestamp / 1000000).substring(4)}
+
+      <Widget
+        src="mob.near/widget/ProfileImage"
+        props={{
+          accountId: _snapshot.editor_id,
+          style: {
+            width: "1.25em",
+            height: "1.25em",
+          },
+          imageStyle: {
+            transform: "translateY(-12.5%)",
+          },
+        }}
+      />
+      {_snapshot.editor_id.substring(0, 8)}
+    </a>
+  );
+};
+
+function combineText(_snapshot) {
+  return (
+    "## " +
+    _snapshot.post_type +
+    ": " +
+    _snapshot.name +
+    "\n" +
+    _snapshot.description
+  );
+}
+
 return (
   <AttractableDiv className={`card ${borders[snapshot.post_type]}`}>
     {header}
     <div className="card-body">
       {searchKeywords}
-      {postTitle}
-      {postExtra}
-      {descriptionArea}
+      {compareSnapshot ? (
+        <div
+          class="border rounded"
+          style={{ marginTop: "16px", marginBottom: "16px" }}
+        >
+          <div class="d-flex justify-content-end" style={{ fontSize: "12px" }}>
+            <div class="d-flex w-50 justify-content-end mt-1 me-2">
+              {timestampElement(snapshot)}
+              {snapshot !== compareSnapshot && (
+                <>
+                  <div class="mx-1 align-self-center">
+                    <i class="bi bi-file-earmark-diff" />
+                  </div>
+                  {timestampElement(compareSnapshot)}
+                </>
+              )}
+            </div>
+          </div>
+
+          <Widget
+            src="markeljan.near/widget/MarkdownDiff"
+            props={{
+              post: post,
+              currentCode: combineText(
+                swapTimestamps ? compareSnapshot : snapshot
+              ),
+              prevCode: combineText(
+                swapTimestamps ? snapshot : compareSnapshot
+              ),
+              showLineNumber: true,
+            }}
+          />
+        </div>
+      ) : (
+        <>
+          {postTitle}
+          {postExtra}
+          {descriptionArea}
+        </>
+      )}
       {postLabels}
       {buttonsFooter}
       {editorsFooter}

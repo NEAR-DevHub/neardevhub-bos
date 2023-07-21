@@ -777,6 +777,7 @@ return (
           recency: props.recency,
           tag: props.tag,
           author: props.author,
+          transactionHashes: props.transactionHashes,
         })}
   </>
 );
