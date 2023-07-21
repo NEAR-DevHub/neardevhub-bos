@@ -141,7 +141,7 @@ const postSearchKeywords = props.searchKeywords ? (
   <div style={{ "font-family": "monospace" }} key="post-search-keywords">
     <span>Found keywords: </span>
     {props.searchKeywords.map((label) => {
-      return widget("components.atom.tag", { label })
+      return widget("components.atom.tag", { label });
     })}
   </div>
 ) : (
