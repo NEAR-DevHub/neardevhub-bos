@@ -185,7 +185,7 @@ const Sponsorship = (
   </div>
 );
 
-return widget("components.template.community-page", {
+return widget("entity.community.layout", {
   handle: props.handle,
   title: "Sponsorship",
   children: Sponsorship,

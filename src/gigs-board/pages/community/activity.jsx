@@ -121,7 +121,7 @@ const CommunityActivityPage = ({ handle }) => {
     return <div>Loading...</div>;
   }
 
-  return widget("components.template.community-page", {
+  return widget("entity.community.layout", {
     handle,
     title: "Activity",
 

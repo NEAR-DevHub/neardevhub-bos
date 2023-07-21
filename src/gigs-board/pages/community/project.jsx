@@ -109,49 +109,35 @@ const DevHub = {
       { subscribe: true }
     );
 
-    return cacheState === null ? initialState : cacheState;
+    return cacheState === null
+      ? { ...cacheState, ...initialState }
+      : cacheState;
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const onMention = (accountId) => (
-  <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
-    <Widget
-      src="neardevgov.near/widget/ProfileLine"
-      props={{
-        accountId: accountId.toLowerCase(),
-        hideAccountId: true,
-        tooltip: true,
-      }}
-    />
-  </span>
-);
+const CommunityProjectPage = ({ handle, id }) => {
+  const community = DevHub.useQuery({ name: "community", params: { handle } });
 
-const WikiPage = ({ handle, id }) => {
-  const communityData = DevHub.get_community({ handle });
+  const projects =
+    (community.data?.projects ?? null) === null
+      ? {}
+      : JSON.parse(community.data.projects);
 
-  const { name, content_markdown: text } = communityData?.[`wiki${id}`] ?? {
-    name: "",
-    content_markdown: "This page doesn't exist.",
-  };
+  return community.data === null && community.isLoading ? (
+    <div>Loading...</div>
+  ) : (
+    widget("entity.project.layout", {
+      community,
+      name,
 
-  return widget("entity.community.layout", {
-    handle,
-    title: name,
-
-    children:
-      communityData !== null ? (
-        <div>
-          <Markdown className="card-text" {...{ onMention, text }} />
-        </div>
-      ) : (
-        <div className={typeof id !== "string" ? "alert alert-danger" : ""}>
-          {typeof id === "string"
-            ? "Loading ..."
-            : "Error: wiki page id not found in URL parameters"}
+      children: (
+        <div className="d-flex flex-wrap gap-4">
+          {"Tabbed project views should appear here"}
         </div>
       ),
-  });
+    })
+  );
 };
 
-return WikiPage(props);
+return CommunityProjectPage(props);

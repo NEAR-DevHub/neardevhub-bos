@@ -1,4 +1,4 @@
-/* INCLUDE: "common.jsx" */
+d; /* INCLUDE: "common.jsx" */
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -52,19 +52,22 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityGithubPage = ({ handle }) =>
-  widget("entity.community.layout", {
-    handle,
-    title: "GitHub",
+const CommunityPageTemplate = ({ children, handle, path, title }) => (
+  <div className="w-100 h-100">
+    {widget("components.layout.app-header")}
+    {/* TODO: Add breadcrumbs rendered from path prop */}
 
-    children: (
-      <div className="d-flex flex-column">
-        {widget("feature.github-integration.kanban-board-editor", {
-          communityHandle: handle,
-          pageURL: "near.org" + href("community.github", { handle }),
-        })}
+    {typeof handle === "string" ? (
+      <>
+        {widget("entity.community.header", { activeTabTitle: title, handle })}
+        <div style={{ padding: "0 32px" }}>{children}</div>
+      </>
+    ) : (
+      <div class="alert alert-danger" role="alert">
+        Error: community handle not found in URL parameters
       </div>
-    ),
-  });
+    )}
+  </div>
+);
 
-return CommunityGithubPage(props);
+return <CommunityPageTemplate {...props} />;

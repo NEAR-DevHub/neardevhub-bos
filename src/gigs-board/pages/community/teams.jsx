@@ -169,7 +169,7 @@ const Teams = (
   </div>
 );
 
-return widget("components.template.community-page", {
+return widget("entity.community.layout", {
   handle: props.handle,
   title: "Teams",
   children: Teams,
