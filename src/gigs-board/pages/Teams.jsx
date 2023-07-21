@@ -109,9 +109,7 @@ const DevHub = {
       { subscribe: true }
     );
 
-    return cacheState === null
-      ? { ...cacheState, ...initialState }
-      : cacheState;
+    return cacheState === null ? initialState : cacheState;
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
