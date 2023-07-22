@@ -136,8 +136,8 @@ const permissionExplainer = (permission) => {
 };
 
 return (
-  <div className="card border-secondary" key="labelpermissions">
-    <div className="card-header">
+  <div className="card" key="labelpermissions">
+    <div className="card-body">
       <i class="bi-lock-fill"> </i>
       <small class="text-muted">Restricted Labels</small>
     </div>
@@ -146,7 +146,7 @@ return (
         <li class="list-group-item" key={pattern}>
           <span class="badge text-bg-primary" key={`${pattern}-permission`}>
             {permissionExplainer(pattern)}
-          </span>{" "}
+          </span>
           {metadata.description}
         </li>
       ))}

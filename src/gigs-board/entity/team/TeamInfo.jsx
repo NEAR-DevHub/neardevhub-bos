@@ -142,8 +142,8 @@ const permissionsRenderer = (permissionType) => {
 };
 
 return (
-  <AttractableDiv className="card my-2 border-secondary">
-    <div className="card-header">
+  <AttractableDiv className="card my-2">
+    <div className="card-body">
       <small class="text-muted">{header}</small>
     </div>
     <div className="card-body">
