@@ -145,7 +145,10 @@ const CommunityActivityPage = ({ handle }) => {
             </div>
           </div>
 
-          {widget("components.layout.Controls", { labels: communityData.tag })}
+          {widget("components.layout.Controls", {
+            title: "Post",
+            href: href("Create", { labels: communityData.tag }),
+          })}
 
           <div class="row">
             <div class="col">
