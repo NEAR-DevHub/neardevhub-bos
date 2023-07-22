@@ -352,7 +352,7 @@ const BoardConfigDefaults = {
   title: "",
 };
 
-const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
+const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
   State.init({
     editingMode: "form",
     isEditorActive: false,
@@ -721,4 +721,4 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
   );
 };
 
-return GithubKanbanBoardEditor(props);
+return GithubKanbanViewConfigurator(props);

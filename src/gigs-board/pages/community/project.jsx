@@ -116,20 +116,22 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
+const ProjectDefaults = {};
+
 const CommunityProjectPage = ({ handle, id }) => {
   const community = DevHub.useQuery({ name: "community", params: { handle } });
 
-  const projects =
+  const project =
     (community.data?.projects ?? null) === null
-      ? {}
-      : JSON.parse(community.data.projects);
+      ? null
+      : JSON.parse(community.data.projects)[id] ?? null;
 
   return community.data === null && community.isLoading ? (
     <div>Loading...</div>
   ) : (
     widget("entity.project.layout", {
       community,
-      name,
+      project,
 
       children: (
         <div className="d-flex flex-wrap gap-4">
