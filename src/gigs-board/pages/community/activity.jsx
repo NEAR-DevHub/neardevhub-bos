@@ -130,14 +130,16 @@ const CommunityActivityPage = ({ handle }) => {
           <div class="col-md-9">
             <div class="row mb-2">
               <div class="col">
-                <div class='d-flex align-items-center justify-content-between'>
-                <small class="text-muted">
-                  <span>Required tags:</span>
-                  {widget("components.atom.tag", { label: communityData.tag })}
-                </small>
-                {widget("components.layout.Controls", {
-                  labels: communityData.tag,
-                })}
+                <div class="d-flex align-items-center justify-content-between">
+                  <small class="text-muted">
+                    <span>Required tags:</span>
+                    {widget("components.atom.tag", {
+                      label: communityData.tag,
+                    })}
+                  </small>
+                  {widget("components.layout.Controls", {
+                    labels: communityData.tag,
+                  })}
                 </div>
               </div>
             </div>
