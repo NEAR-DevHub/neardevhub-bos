@@ -89,18 +89,18 @@ const labels = labelStrings.map((s) => {
 
 initState({
   seekingFunding: false,
-  //
+
   author_id: context.accountId,
   // Should be a list of objects with field "name".
   labels,
   // Should be a list of labels as strings.
   // Both of the label structures should be modified together.
   labelStrings,
-  postType: "Idea",
+  postType: "",
   name: props.name ?? "",
   description: props.description ?? "",
   amount: props.amount ?? "",
-  token: props.token ?? "NEAR",
+  token: props.token ?? "",
   supervisor: props.supervisor ?? "neardevgov.near",
   githubLink: props.githubLink ?? "",
   warning: "",

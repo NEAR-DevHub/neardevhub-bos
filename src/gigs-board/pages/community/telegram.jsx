@@ -135,6 +135,16 @@ const Telegram = (
         minWidth: "100%",
       }}
     ></iframe>
+
+    <a href={"https://t.me/" + communityData.telegram_handle} target="_blank">
+      {widget("components.atom.button", {
+        classNames: {
+          root: "btn-primary",
+        },
+
+        label: "View More",
+      })}
+    </a>
   </div>
 );
 
