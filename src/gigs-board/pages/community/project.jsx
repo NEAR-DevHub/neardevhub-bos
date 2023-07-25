@@ -51,6 +51,23 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/uuid" */
+const uuid = () =>
+  [Date.now().toString(16)]
+    .concat(
+      Array.from(
+        { length: 4 },
+        () => Math.floor(Math.random() * 0xffffffff) & 0xffffffff
+      ).map((value) => value.toString(16))
+    )
+    .join("-");
+
+const withUUIDIndex = (data) => {
+  const id = uuid();
+
+  return Object.fromEntries([[id, { ...data, id }]]);
+};
+/* END_INCLUDE: "core/lib/uuid" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -109,14 +126,14 @@ const DevHub = {
       { subscribe: true }
     );
 
-    return cacheState === null
-      ? { ...cacheState, ...initialState }
-      : cacheState;
+    return cacheState === null ? initialState : cacheState;
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const ProjectDefaults = {};
+const ProjectDefaults = {
+  id: uuid(),
+};
 
 const CommunityProjectPage = ({ handle, id }) => {
   const community = DevHub.useQuery({ name: "community", params: { handle } });
@@ -135,7 +152,9 @@ const CommunityProjectPage = ({ handle, id }) => {
 
       children: (
         <div className="d-flex flex-wrap gap-4">
-          {"Tabbed project views should appear here"}
+          {project.views.map((view) => (
+            <div>{view.title}</div>
+          ))}
         </div>
       ),
     })
