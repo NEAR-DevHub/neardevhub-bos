@@ -131,10 +131,11 @@ const Telegram = (
             tg
           }
           frameborder="0"
-          // Required by iframeResizer
+          // width and minWidth required by iframeResizer
           style={{
             width: "1px",
             minWidth: "100%",
+            marginTop: "20px",
           }}
         ></iframe>
 
