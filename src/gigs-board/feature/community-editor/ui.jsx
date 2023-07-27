@@ -433,7 +433,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
               },
 
               telegram_handle: {
-                inputProps: { min: 2, max: 60 },
+                format: "comma-separated",
                 label: "Telegram handle",
                 order: 4,
               },
