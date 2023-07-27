@@ -119,7 +119,7 @@ const CommunityProjectsPage = ({ handle }) => {
 
   const projects =
     (community.data?.projects ?? null) === null
-      ? {}
+      ? []
       : JSON.parse(community.data.projects);
 
   return community.data === null && community.isLoading ? (
@@ -131,7 +131,7 @@ const CommunityProjectsPage = ({ handle }) => {
 
       children: (
         <div className="d-flex flex-wrap gap-4">
-          {Object.values(projects).map(({ id, ...project }) =>
+          {projects.map(({ id, ...project }) =>
             widget(
               "entity.project.card",
               { ...project, link: href("community.project", { handle, id }) },
