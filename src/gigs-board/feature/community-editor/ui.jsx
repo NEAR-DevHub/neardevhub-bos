@@ -210,7 +210,7 @@ const CommunityDefaults = {
 
   tag: "",
   github_handle: null,
-  telegram_handle: null,
+  telegram_handle: [],
   twitter_handle: null,
   website_url: null,
   github: null,
@@ -434,7 +434,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
 
               telegram_handle: {
                 format: "comma-separated",
-                label: "Telegram handle",
+                label: "Telegram handles",
                 order: 4,
               },
 
