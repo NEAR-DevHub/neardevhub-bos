@@ -598,14 +598,15 @@ return (
             labels: state.labelStrings,
             post_type: postType,
             name: state.name,
-            description: 
-            postType == 'Submission' ?
-            generateDescription(
-              state.description,
-              state.amount,
-              state.token,
-              state.supervisor
-            ): state.description,
+            description:
+              postType == "Submission"
+                ? generateDescription(
+                    state.description,
+                    state.amount,
+                    state.token,
+                    state.supervisor
+                  )
+                : state.description,
             amount: state.amount,
             sponsorship_token: state.token,
             supervisor: state.supervisor,
