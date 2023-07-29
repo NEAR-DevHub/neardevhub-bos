@@ -55,6 +55,8 @@ function href(widgetName, linkProps) {
 /* INCLUDE: "core/lib/draftstate" */
 const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
 let is_edit_or_add_post_transaction = false;
+let transaction_method_name;
+
 if (props.transactionHashes) {
   const transaction = fetch("https://rpc.mainnet.near.org", {
     method: "POST",
@@ -68,11 +70,12 @@ if (props.transactionHashes) {
       params: [props.transactionHashes, context.accountId],
     }),
   });
-  const method_name =
+  transaction_method_name =
     transaction?.body?.result?.transaction?.actions[0].FunctionCall.method_name;
 
   is_edit_or_add_post_transaction =
-    method_name == "add_post" || method_name == "edit_post";
+    transaction_method_name == "add_post" ||
+    transaction_method_name == "edit_post";
 
   if (is_edit_or_add_post_transaction) {
     Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
@@ -87,10 +90,11 @@ try {
 } catch (e) {}
 /* END_INCLUDE: "core/lib/draftstate" */
 
-if (props.transactionHashes) {
+if (is_edit_or_add_post_transaction) {
   return (
     <p class="text-secondary">
-      Post submitted successfully. Back to{" "}
+      Post {transaction_method_name == "edit_post" ? "edited" : "added"}{" "}
+      successfully. Back to{" "}
       <a
         style={{
           color: "#3252A6",
