@@ -79,8 +79,6 @@ const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
 
-const isSponsorship = postType === "Sponsorship";
-
 const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
 const labelStrings = (props.labels ?? []).concat(referralLabels);
 const labels = labelStrings.map((s) => {
@@ -88,7 +86,6 @@ const labels = labelStrings.map((s) => {
 });
 
 initState({
-  seekingFunding: false,
   author_id: context.accountId,
   // Should be a list of objects with field "name".
   labels,
@@ -98,9 +95,9 @@ initState({
   postType,
   name: props.name ?? "",
   description: props.description ?? "",
-  amount: props.amount ?? "",
+  amount: props.amount ?? "0",
   token: props.token ?? "Near",
-  supervisor: props.supervisor ?? "neardevgov.near",
+  supervisor: props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
   warning: "",
   draftStateApplied: false,
@@ -113,9 +110,15 @@ if (!state.draftStateApplied && props.draftState) {
 let fields = {
   Comment: ["description"],
   Idea: ["name", "description"],
-  Submission: ["name", "description", "fund_raising"],
+  Submission: ["name", "description"],
   Attestation: ["name", "description"],
-  Sponsorship: ["name", "description", "fund_raising"],
+  Sponsorship: [
+    "name",
+    "description",
+    "amount",
+    "sponsorship_token",
+    "supervisor",
+  ],
   Github: ["githubLink", "name", "description"],
 }[postType];
 
@@ -139,12 +142,7 @@ const onSubmit = () => {
     },
     Submission: {
       name: state.name,
-      description: generateDescription(
-        state.description,
-        state.amount,
-        state.token,
-        state.supervisor
-      ),
+      description: state.description,
       submission_version: "V1",
     },
     Attestation: {
@@ -322,7 +320,7 @@ const labelEditor = (
   </div>
 );
 
-const githubLinkDiv = (
+const githubLinkDiv = fields.includes("githubLink") ? (
   <div className="col-lg-12  mb-2">
     Github Issue URL:
     <input
@@ -331,9 +329,9 @@ const githubLinkDiv = (
       onChange={(event) => State.update({ githubLink: event.target.value })}
     />
   </div>
-);
+) : null;
 
-const nameDiv = (
+const nameDiv = fields.includes("name") ? (
   <div className="col-lg-6  mb-2">
     Title:
     <input
@@ -342,9 +340,9 @@ const nameDiv = (
       onChange={(event) => State.update({ name: event.target.value })}
     />
   </div>
-);
+) : null;
 
-const descriptionDiv = (
+const descriptionDiv = fields.includes("description") ? (
   <div className="col-lg-12  mb-2">
     Description:
     <br />
@@ -374,7 +372,40 @@ const descriptionDiv = (
       </AutoComplete>
     )}
   </div>
-);
+) : null;
+
+const amountDiv = fields.includes("amount") ? (
+  <div className="col-lg-6  mb-2">
+    Amount:
+    <input
+      type="text"
+      value={state.amount}
+      onChange={(event) => State.update({ amount: event.target.value })}
+    />
+  </div>
+) : null;
+
+const tokenDiv = fields.includes("sponsorship_token") ? (
+  <div className="col-lg-6  mb-2">
+    Tokens:
+    <input
+      type="text"
+      value={state.token}
+      onChange={(event) => State.update({ token: event.target.value })}
+    />
+  </div>
+) : null;
+
+const supervisorDiv = fields.includes("supervisor") ? (
+  <div className="col-lg-6 mb-2">
+    Supervisor:
+    <input
+      type="text"
+      value={state.supervisor}
+      onChange={(event) => State.update({ supervisor: event.target.value })}
+    />
+  </div>
+) : null;
 
 const disclaimer = (
   <p>
@@ -384,119 +415,6 @@ const disclaimer = (
     </i>
   </p>
 );
-
-const isFundraisingDiv = (
-  // This is jank with just btns and not radios. But the radios were glitchy af
-  <>
-    <div class="mb-2">
-      <p class="fs-6 fw-bold mb-1">
-        {isSponsorship
-          ? "Are you funding their solution?"
-          : "Are you seeking funding for your solution?"}
-        <span class="text-muted fw-normal">(Optional)</span>
-      </p>
-      <div class="form-check form-check-inline">
-        <label class="form-check-label">
-          <button
-            className="btn btn-light p-0"
-            style={{
-              backgroundColor: state.seekingFunding ? "#0C7283" : "inherit",
-              color: "#f3f3f3",
-              border: "solid #D9D9D9",
-              borderRadius: "100%",
-              height: "20px",
-              width: "20px",
-            }}
-            onClick={() => State.update({ seekingFunding: true })}
-          />
-          Yes
-        </label>
-      </div>
-      <div class="form-check form-check-inline">
-        <label class="form-check-label">
-          <button
-            className="btn btn-light p-0"
-            style={{
-              backgroundColor: !state.seekingFunding ? "#0C7283" : "inherit",
-              color: "#f3f3f3",
-              border: "solid #D9D9D9",
-              borderRadius: "100%",
-              height: "20px",
-              width: "20px",
-            }}
-            onClick={() => State.update({ seekingFunding: false })}
-          />
-          No
-        </label>
-      </div>
-    </div>
-  </>
-);
-
-const fundraisingDiv = (
-  <div class="d-flex flex-column mb-2">
-    <div className="col-lg-6  mb-2">
-      Currency
-      <select
-        onChange={(event) => State.update({ token: event.target.value })}
-        class="form-select"
-        aria-label="Default select example"
-      >
-        <option selected value="NEAR">
-          NEAR
-        </option>
-        <option value="USDC">USDC</option>
-        <option value="USD">USD</option>
-      </select>
-    </div>
-    <div className="col-lg-6 mb-2">
-      {isSponsorship ? "Sponsored" : "Requested"} amount
-      <span class="text-muted fw-normal">(Numbers Only)</span>
-      <input
-        type="number"
-        value={parseInt(state.amount) > 0 ? state.amount : ""}
-        min={0}
-        onChange={(event) =>
-          State.update({
-            amount: Number(
-              event.target.value.toString().replace(/e/g, "")
-            ).toString(),
-          })
-        }
-      />
-    </div>
-    <div className="col-lg-6 mb-2">
-      <p class="mb-1">
-        {isSponsorship ? "Sponsor" : "Requested sponsor"}
-        <span class="text-muted fw-normal">(Optional)</span>
-      </p>
-      <p style={{ fontSize: "13px" }} class="m-0 text-muted fw-light">
-        If you are requesting funding from a specific sponsor, please enter
-        their username.
-      </p>
-      <div class="input-group flex-nowrap">
-        <span class="input-group-text" id="addon-wrapping">
-          @
-        </span>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Enter username"
-          value={state.supervisor}
-          onChange={(event) => State.update({ supervisor: event.target.value })}
-        />
-      </div>
-    </div>
-  </div>
-);
-
-function generateDescription(text, amount, token, supervisor) {
-  const funding = isSponsorship
-    ? `###### Sponsored amount: ${amount} ${token}\n###### Sponsor: @${supervisor}\n`
-    : `###### Requested amount: ${amount} ${token}\n###### Requested sponsor: @${supervisor}\n`;
-  if (amount > 0 && token && supervisor) return funding + text;
-  return text;
-}
 
 const renamedPostType = postType == "Submission" ? "Solution" : postType;
 // Below there is a weird code with fields.includes("githubLink") ternary operator.
@@ -508,7 +426,7 @@ return (
     </div>
 
     <div class="card-body">
-      {state.warning && (
+      {state.warning ? (
         <div
           class="alert alert-warning alert-dismissible fade show"
           role="alert"
@@ -522,29 +440,24 @@ return (
             onClick={() => State.update({ warning: "" })}
           ></button>
         </div>
+      ) : (
+        <></>
       )}
-      {/* This statement around the githubLinkDiv creates a weird render bug 
-      where the title renders extra on state change. */}
       {fields.includes("githubLink") ? (
         <div className="row">
           {githubLinkDiv}
           {labelEditor}
-          {fields.includes("name") && nameDiv}
-          {fields.includes("description") && descriptionDiv}
-          {fields.includes("fund_raising") && isFundraisingDiv}
-          {state.seekingFunding &&
-            fields.includes("fund_raising") &&
-            fundraisingDiv}
+          {nameDiv}
+          {descriptionDiv}
         </div>
       ) : (
         <div className="row">
           {labelEditor}
-          {fields.includes("name") && nameDiv}
-          {fields.includes("description") && descriptionDiv}
-          {fields.includes("fund_raising") && isFundraisingDiv}
-          {state.seekingFunding &&
-            fields.includes("fund_raising") &&
-            fundraisingDiv}
+          {nameDiv}
+          {amountDiv}
+          {tokenDiv}
+          {supervisorDiv}
+          {descriptionDiv}
         </div>
       )}
 
@@ -566,12 +479,7 @@ return (
             labels: state.labelStrings,
             post_type: postType,
             name: state.name,
-            description: generateDescription(
-              state.description,
-              state.amount,
-              state.token,
-              state.supervisor
-            ),
+            description: state.description,
             amount: state.amount,
             sponsorship_token: state.token,
             supervisor: state.supervisor,
