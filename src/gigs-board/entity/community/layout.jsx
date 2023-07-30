@@ -52,7 +52,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityPageTemplate = ({ children, handle, path, title }) => (
+const CommunityLayout = ({ children, handle, path, title }) => (
   <div className="w-100 h-100">
     {widget("components.layout.app-header")}
     {/* TODO: Add breadcrumbs rendered from path prop */}
@@ -70,4 +70,4 @@ const CommunityPageTemplate = ({ children, handle, path, title }) => (
   </div>
 );
 
-return <CommunityPageTemplate {...props} />;
+return CommunityLayout(props);

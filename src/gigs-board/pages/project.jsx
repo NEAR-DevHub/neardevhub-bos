@@ -115,6 +115,7 @@ const pageContent = (
         </li>
       ))}
     </ul>
+
     <div class="tab-content">
       {boards.map((board) => (
         <div

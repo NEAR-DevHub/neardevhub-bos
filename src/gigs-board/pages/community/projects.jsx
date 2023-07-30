@@ -51,6 +51,57 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
+
+  isEqual: (input1, input2) =>
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
+      : false,
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+};
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -111,35 +162,107 @@ const DevHub = {
 
     return cacheState === null ? initialState : cacheState;
   },
+
+  useMutation:
+    ({ name, params }) =>
+    () =>
+      Near.asyncView(devHubAccountId, params ?? {}),
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
+/* INCLUDE: "entity/viewer" */
+const access_control_info = DevHub.useQuery({
+  name: "access_control_info",
+});
+
+const Viewer = {
+  can: {
+    editCommunity: (communityData) =>
+      Struct.typeMatch(communityData) &&
+      (communityData.admins.includes(context.accountId) ||
+        Viewer.role.isDevHubModerator),
+  },
+
+  role: {
+    isDevHubModerator:
+      access_control_info.data === null || access_control_info.isLoading
+        ? false
+        : access_control_info.data.members_list[
+            "team:moderators"
+          ]?.children?.includes?.(context.accountId) ?? false,
+  },
+};
+/* END_INCLUDE: "entity/viewer" */
+
+const mock = {
+  community_projects_metadata: [mock.project.metadata],
+
+  project: {
+    metadata: {
+      id: "q8iwnucr98wa3n593ry",
+      tag: "test-project",
+      name: "Test Project",
+      description: "Test project please ignore",
+      owner_community_handles: ["devhub-test"],
+    },
+
+    view_configs: JSON.stringify({
+      uwaht8hw48twruht: {
+        id: "uwaht8hw48twruht",
+      },
+    }),
+  },
+};
 
 const CommunityProjectsPage = ({ handle }) => {
   const community = DevHub.useQuery({ name: "community", params: { handle } });
 
-  const projects =
-    (community.data?.projects ?? null) === null
-      ? []
-      : JSON.parse(community.data.projects);
+  const community_projects_metadata = DevHub.useQuery({
+    name: "community_projects_metadata",
+    params: { community_handle: handle },
+  });
 
-  return community.data === null && community.isLoading ? (
+  return community_projects_metadata.data === null &&
+    community_projects_metadata.isLoading ? (
     <div>Loading...</div>
   ) : (
     widget("entity.community.layout", {
       handle,
       title: "Projects",
 
-      children: (
-        <div className="d-flex flex-wrap gap-4">
-          {projects.map(({ id, ...project }) =>
-            widget(
-              "entity.project.card",
-              { ...project, link: href("community.project", { handle, id }) },
-              id
-            )
-          )}
-        </div>
-      ),
+      children:
+        community_projects_metadata.data === null ? (
+          <div
+            className="d-flex flex-column align-items-center justify-content-center gap-4"
+            style={{ height: 384 }}
+          >
+            <h5 className="h5 d-inline-flex gap-2 m-0">
+              This community doesn't own any projects
+            </h5>
+
+            {Viewer.can.editCommunity(community.data) ? (
+              <button
+                className="btn shadow btn-primary d-inline-flex gap-2"
+                disabled={true}
+                onClick={null}
+              >
+                <i className="bi bi-tools" />
+                <span>Create project</span>
+              </button>
+            ) : null}
+          </div>
+        ) : (
+          <div className="d-flex flex-wrap gap-4">
+            {community_projects_metadata.data.concat[
+              mock.community_projects_metadata
+            ].map(({ id, ...metadata }) =>
+              widget(
+                "entity.project.card",
+                { id, link: href("project", { id }), ...metadata },
+                id
+              )
+            )}
+          </div>
+        ),
     })
   );
 };

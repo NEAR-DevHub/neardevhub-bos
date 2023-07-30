@@ -128,37 +128,60 @@ const DevHub = {
 
     return cacheState === null ? initialState : cacheState;
   },
+
+  useMutation:
+    ({ name, params }) =>
+    () =>
+      Near.asyncView(devHubAccountId, params ?? {}),
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const ProjectDefaults = {
-  id: uuid(),
+const mock = {
+  community_projects_metadata: [mock.project.metadata],
+
+  project: {
+    metadata: {
+      id: "q8iwnucr98wa3n593ry",
+      tag: "test-project",
+      name: "Test Project",
+      description: "Test project please ignore",
+      owner_community_handles: ["devhub-test"],
+    },
+
+    view_configs: JSON.stringify({
+      uwaht8hw48twruht: {
+        id: "uwaht8hw48twruht",
+      },
+    }),
+  },
 };
 
-const CommunityProjectPage = ({ handle, id }) => {
-  const community = DevHub.useQuery({ name: "community", params: { handle } });
-
-  const project =
-    (community.data?.projects ?? null) === null
-      ? null
-      : JSON.parse(community.data.projects)[id] ?? null;
+const ProjectPage = ({ id }) => {
+  const project = DevHub.useQuery({ name: "project", params: { id } }) ?? {
+      data: mock.project,
+    },
+    views = JSON.parse(project.view_configs);
 
   return community.data === null && community.isLoading ? (
     <div>Loading...</div>
   ) : (
     widget("entity.project.layout", {
-      community,
       project,
 
-      children: (
-        <div className="d-flex flex-wrap gap-4">
-          {project.views.map((view) => (
-            <div>{view.title}</div>
-          ))}
-        </div>
-      ),
+      children:
+        project.data === null ? (
+          <div class="alert alert-danger" role="alert">
+            {`Project with id ${id} doesn't exist`}
+          </div>
+        ) : (
+          <div className="d-flex flex-wrap gap-4">
+            {Object.values(views).map((view) => (
+              <div>{view.title}</div>
+            ))}
+          </div>
+        ),
     })
   );
 };
 
-return CommunityProjectPage(props);
+return ProjectPage(props);

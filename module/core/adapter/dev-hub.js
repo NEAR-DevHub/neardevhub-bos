@@ -58,6 +58,8 @@ const DevHub = {
     return cacheState === null ? initialState : cacheState;
   },
 
-  useMutation: ({ name, params }) => () =>
-    Near.asyncView(devHubAccountId, params ?? {}),
+  useMutation:
+    ({ name, params }) =>
+    () =>
+      Near.asyncView(devHubAccountId, params ?? {}),
 };
