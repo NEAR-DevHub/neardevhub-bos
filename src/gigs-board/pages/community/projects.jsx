@@ -193,7 +193,7 @@ const Viewer = {
 
 const project_mock = {
   metadata: {
-    id: 3456345,
+    id: "3456345",
     tag: "test-project",
     name: "Test Project",
     description: "Test project please ignore",
@@ -230,14 +230,13 @@ const CommunityProjectsPage = ({ handle }) => {
             </h5>
 
             {Viewer.can.editCommunity(community.data) ? (
-              <button
+              <a
                 className="btn shadow btn-primary d-inline-flex gap-2"
-                disabled={true}
-                onClick={null}
+                href={href("project.new")}
               >
                 <i className="bi bi-tools" />
                 <span>Create project</span>
-              </button>
+              </a>
             ) : null}
           </div>
         ) : (

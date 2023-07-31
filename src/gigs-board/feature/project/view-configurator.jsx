@@ -101,37 +101,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -308,10 +308,8 @@ const DevHub = {
     return cacheState === null ? initialState : cacheState;
   },
 
-  useMutation:
-    ({ name, params }) =>
-    () =>
-      Near.asyncView(devHubAccountId, params ?? {}),
+  useMutation: ({ name, params }) => () =>
+    Near.asyncView(devHubAccountId, params ?? {}),
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 /* INCLUDE: "entity/viewer" */
@@ -422,12 +420,10 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownValue }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+    );
 
   const onSubmit = () =>
     DevHub.edit_community_github({
@@ -457,72 +453,9 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
             },
             `${form.values.id}-title`
           )}
-
-          {widget("components.molecule.text-input", {
-            className: "w-100",
-            key: `${form.values.id}-repoURL`,
-            label: "GitHub repository URL",
-            onChange: form.update({ path: ["repoURL"] }),
-            placeholder: "https://github.com/example-org/example-repo",
-            value: form.values.repoURL,
-          })}
         </div>
 
         <div className="d-flex gap-3 flex-column flex-lg-row">
-          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
-            <span
-              className="d-inline-flex gap-2"
-              id={`${form.values.id}-dataTypesIncluded`}
-            >
-              <i className="bi bi-ticket-fill" />
-              <span>Ticket type</span>
-            </span>
-
-            {Object.entries(form.values.dataTypesIncluded).map(
-              ([typeName, enabled]) =>
-                widget(
-                  "components.atom.toggle",
-
-                  {
-                    active: enabled,
-                    className: "w-100",
-                    key: typeName,
-                    label: typeName,
-
-                    onSwitch: form.update({
-                      path: ["dataTypesIncluded", typeName],
-                    }),
-                  },
-
-                  typeName
-                )
-            )}
-          </CompactContainer>
-
-          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
-            <span
-              className="d-inline-flex gap-2"
-              id={`${form.values.id}-dataTypesIncluded`}
-            >
-              <i class="bi bi-cone-striped" />
-              <span>Ticket state</span>
-            </span>
-
-            {widget("components.molecule.button-switch", {
-              currentValue: form.values.ticketState,
-              key: "ticketState",
-              onChange: form.update({ path: ["ticketState"] }),
-
-              options: [
-                { label: "All", value: "all" },
-                { label: "Open", value: "open" },
-                { label: "Closed", value: "closed" },
-              ],
-
-              title: "Editing mode selection",
-            })}
-          </CompactContainer>
-
           {widget("components.molecule.text-input", {
             className: "w-100",
             inputProps: { className: "h-75" },
@@ -538,7 +471,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
         <div className="d-flex align-items-center justify-content-between">
           <span className="d-inline-flex gap-2 m-0">
             <i className="bi bi-list-task" />
-            <span>Columns ( max. 6 )</span>
+            <span>Columns ( max. {EditorSettings.maxColumnsNumber} )</span>
           </span>
         </div>
 
@@ -695,33 +628,12 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
         </AttractableDiv>
       ) : null}
 
-      {Object.keys(form.values).length > 0 ? (
-        widget("entity.project.github-kanban-view", {
-          ...form.values,
-          editorTrigger: () => editorToggle(true),
-          isEditable: Viewer.can.editCommunity(community.data),
-          pageURL,
-        })
-      ) : (
-        <div
-          className="d-flex flex-column align-items-center justify-content-center gap-4"
-          style={{ height: 384 }}
-        >
-          <h5 className="h5 d-inline-flex gap-2 m-0">
-            This community doesn't have GitHub integrations
-          </h5>
-
-          {Viewer.can.editCommunity(community.data) ? (
-            <button
-              className="btn shadow btn-primary d-inline-flex gap-2"
-              onClick={boardCreate}
-            >
-              <i className="bi bi-kanban-fill" />
-              <span>Create board</span>
-            </button>
-          ) : null}
-        </div>
-      )}
+      {widget("entity.project.github-kanban-view", {
+        ...form.values,
+        editorTrigger: () => editorToggle(true),
+        isEditable: Viewer.can.editCommunity(community.data),
+        pageURL,
+      })}
     </div>
   );
 };

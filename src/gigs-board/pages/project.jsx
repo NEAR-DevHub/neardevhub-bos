@@ -68,6 +68,57 @@ const withUUIDIndex = (data) => {
   return Object.fromEntries([[id, { ...data, id }]]);
 };
 /* END_INCLUDE: "core/lib/uuid" */
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
+
+  isEqual: (input1, input2) =>
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
+      : false,
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+};
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -136,7 +187,7 @@ const DevHub = {
 
 const project_mock = {
   metadata: {
-    id: 3456345,
+    id: "3456345",
     tag: "test-project",
     name: "Test Project",
     description: "Test project please ignore",
@@ -217,7 +268,7 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
     <div>Loading...</div>
   ) : (
     widget("entity.project.layout", {
-      id,
+      ...(project.data?.metadata ?? {}),
 
       children:
         project.data === null ? (
@@ -225,8 +276,8 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
             {`Project with id ${id} doesn't exist`}
           </div>
         ) : (
-          <div>
-            <ul class="nav nav-tabs my-3">
+          <div className="d-flex flex-column">
+            <ul class="nav nav-tabs">
               {viewConfigs.map((view) => (
                 <li class="nav-item" key={view.id}>
                   <a
@@ -239,6 +290,16 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
                   </a>
                 </li>
               ))}
+
+              <li class="nav-item" key={view.id}>
+                <a
+                  href={href("project", { id, view: "new" })}
+                  class={`nav-link ${selectedViewId === "new" ? "active" : ""}`}
+                >
+                  <i class="bi bi-plus"></i>
+                  <span>New view</span>
+                </a>
+              </li>
             </ul>
 
             <div class="tab-content">
@@ -259,6 +320,10 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
                   })}
                 </div>
               ))}
+
+              {selectedViewId === "new" ? (
+                <div>{widget("feature.project.view-configurator")}</div>
+              ) : null}
             </div>
           </div>
         ),

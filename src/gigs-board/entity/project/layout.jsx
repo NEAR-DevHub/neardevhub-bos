@@ -52,19 +52,39 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const ProjectLayout = ({ children, id, path }) => (
-  <div className="w-100 h-100">
+const ProjectLayout = ({ id, children, description, name, path, tag }) => (
+  <>
     {widget("components.layout.app-header")}
-    {/* TODO: Add breadcrumbs rendered from path prop */}
 
-    {typeof id === "string" ? (
-      <div style={{ padding: "0" }}>{children}</div>
-    ) : (
-      <div class="alert alert-danger" role="alert">
-        Error: project id not found in URL parameters
+    <div className="d-flex flex-column gap-4 w-100 h-100">
+      {/* TODO: Add breadcrumbs rendered from path prop */}
+
+      <div
+        className="d-flex justify-content-between gap-3 p-4 text-white"
+        style={{ backgroundColor: "#181818" }}
+      >
+        <div className="d-flex flex-column gap-2">
+          <h1 className="m-0">{name}</h1>
+          <p className="m-0">{description}</p>
+        </div>
+
+        <div className="d-flex flex-column gap-3 justify-content-end">
+          {widget("components.atom.button", {
+            href: href("project.configure", { id }),
+            label: "Configure project",
+          })}
+        </div>
       </div>
-    )}
-  </div>
+
+      {typeof id === "string" ? (
+        <div className="px-4">{children}</div>
+      ) : (
+        <div class="alert alert-danger" role="alert">
+          Error: project id not found in URL parameters
+        </div>
+      )}
+    </div>
+  </>
 );
 
 return ProjectLayout(props);
