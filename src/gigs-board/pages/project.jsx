@@ -144,9 +144,10 @@ const project_mock = {
   },
 
   view_configs: JSON.stringify({
-    4363462346: {
+    "near-social-kanban": {
+      type: "kanban-view",
       name: "near.social",
-      id: 4363462346,
+      id: "near-social-kanban",
 
       tags: {
         excluded: [],
@@ -160,13 +161,14 @@ const project_mock = {
       ],
     },
 
-    25254325: {
+    "gigs-board-kanban": {
+      type: "kanban-view",
       name: "Gigs Board",
-      id: 25254325,
+      id: "gigs-board-kanban",
 
       tags: {
         excluded: [],
-        required: ["gigs-view"],
+        required: ["gigs-board"],
       },
 
       columns: [
@@ -176,9 +178,10 @@ const project_mock = {
       ],
     },
 
-    34634623462: {
+    "funding-kanban": {
+      type: "kanban-view",
       name: "Funding",
-      id: 34634623462,
+      id: "funding-kanban",
 
       tags: {
         excluded: [],
@@ -198,7 +201,7 @@ const project_mock = {
   }),
 };
 
-const ProjectPage = ({ id, viewId: selectedViewId }) => {
+const ProjectPage = ({ id, view: selectedViewId }) => {
   const project =
     {
       data: project_mock,
@@ -207,6 +210,8 @@ const ProjectPage = ({ id, viewId: selectedViewId }) => {
   const viewConfigs = Object.values(
     JSON.parse(project.data?.view_configs ?? "{}")
   );
+
+  console.log(viewConfigs);
 
   return community.data === null && community.isLoading ? (
     <div>Loading...</div>
@@ -222,35 +227,35 @@ const ProjectPage = ({ id, viewId: selectedViewId }) => {
         ) : (
           <div>
             <ul class="nav nav-tabs my-3">
-              {viewConfigs.map((config) => (
-                <li class="nav-item" key={config.id}>
+              {viewConfigs.map((view) => (
+                <li class="nav-item" key={view.id}>
                   <a
-                    href={href("project", { id, viewId: config.id })}
+                    href={href("project", { id, view: view.id })}
                     class={`nav-link ${
-                      config.id === selectedViewId ? "active" : ""
+                      view.id === selectedViewId ? "active" : ""
                     }`}
                   >
-                    {config.name}
+                    {view.name}
                   </a>
                 </li>
               ))}
             </ul>
 
             <div class="tab-content">
-              {viewConfigs.map((config) => (
+              {viewConfigs.map((view) => (
                 <div
                   class={`tab-pane fade ${
-                    config.id === selectedViewId ? "show active" : ""
+                    view.id === selectedViewId ? "show active" : ""
                   }`}
-                  id={`view${config.id}`}
+                  id={`view${view.id}`}
                   role="tabpanel"
-                  aria-labelledby={`${config.id}-tab`}
+                  aria-labelledby={`${view.id}-tab`}
                   tabindex="0"
-                  key={config.id}
+                  key={view.id}
                 >
-                  {widget("entity.project.kanban-view", {
-                    ...config,
-                    link: href("project", { viewId: config.id }),
+                  {widget(["entity.project", view.type].join("."), {
+                    ...view,
+                    link: href("project", { id, view: view.id }),
                   })}
                 </div>
               ))}

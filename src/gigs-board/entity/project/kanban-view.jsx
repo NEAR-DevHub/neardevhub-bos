@@ -65,6 +65,8 @@ const postTagsToIdSet = (tags) =>
   );
 
 const ProjectKanbanView = ({ id, columns, link, tags }) => {
+  console.log("ProjectKanbanView", { id, columns, tags });
+
   const postIdsByColumn = columns.map((column) => {
     const postIds = (
       Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
@@ -76,14 +78,14 @@ const ProjectKanbanView = ({ id, columns, link, tags }) => {
       return {
         ...column,
 
-        posts: postIds.filter(
+        postIds: postIds.filter(
           (postId) =>
             postTagsToIdSet(tags.required).has(postId) &&
             !postTagsToIdSet(tags.excluded).has(postId)
         ),
       };
     } else {
-      return { ...column, posts: postIds };
+      return { ...column, postIds };
     }
   });
 
@@ -105,34 +107,6 @@ const ProjectKanbanView = ({ id, columns, link, tags }) => {
                   <div>Link to this view</div>
                 </div>
               </a>
-            </small>
-          </div>
-        ) : null}
-
-        {tags.required.length > 0 ? (
-          <div class="col">
-            <small class="text-muted">
-              <span>Required tags:</span>
-
-              {tags.required.map((tag) => (
-                <a href={href("Feed", { tag })} key={tag}>
-                  <span class="badge text-bg-primary me-1">{tag}</span>
-                </a>
-              ))}
-            </small>
-          </div>
-        ) : null}
-
-        {tags.excluded.length > 0 ? (
-          <div class="col">
-            <small class="text-muted">
-              <span>Excluded tags:</span>
-
-              {tags.excluded.map((tag) => (
-                <a href={href("Feed", { tag })} key={tag}>
-                  <span class="badge text-bg-primary me-1">{tag}</span>
-                </a>
-              ))}
             </small>
           </div>
         ) : null}
