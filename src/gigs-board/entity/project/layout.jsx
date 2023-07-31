@@ -57,10 +57,8 @@ const ProjectLayout = ({ children, id, path }) => (
     {widget("components.layout.app-header")}
     {/* TODO: Add breadcrumbs rendered from path prop */}
 
-    {typeof id === "number" ? (
-      <>
-        <div style={{ padding: "0 32px" }}>{children}</div>
-      </>
+    {typeof id === "string" ? (
+      <div style={{ padding: "0" }}>{children}</div>
     ) : (
       <div class="alert alert-danger" role="alert">
         Error: project id not found in URL parameters

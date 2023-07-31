@@ -51,95 +51,214 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/uuid" */
+const uuid = () =>
+  [Date.now().toString(16)]
+    .concat(
+      Array.from(
+        { length: 4 },
+        () => Math.floor(Math.random() * 0xffffffff) & 0xffffffff
+      ).map((value) => value.toString(16))
+    )
+    .join("-");
 
-const selectedBoardId = props.selectedBoardId ?? "mnwtransition";
+const withUUIDIndex = (data) => {
+  const id = uuid();
 
-const boards = props.boards ?? [
-  {
-    name: "near.social",
-    id: "nearsocial",
-    config: {
-      requiredLabels: ["near-social"],
-      columns: [
-        { label: "widget", title: "Widget" },
-        { label: "integration", title: "Integration" },
-        { label: "feature-request", title: "Feature Request" },
-      ],
-      excludedLabels: [],
-    },
+  return Object.fromEntries([[id, { ...data, id }]]);
+};
+/* END_INCLUDE: "core/lib/uuid" */
+/* INCLUDE: "core/adapter/dev-hub" */
+const devHubAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+const DevHub = {
+  edit_community_github: ({ handle, github }) =>
+    Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
+    null,
+
+  get_access_control_info: () =>
+    Near.view(devHubAccountId, "get_access_control_info") ?? null,
+
+  get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
+
+  get_all_communities: () =>
+    Near.view(devHubAccountId, "get_all_communities") ?? null,
+
+  get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
+
+  get_post: ({ post_id }) =>
+    Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
+
+  get_posts_by_author: ({ author }) =>
+    Near.view(devHubAccountId, "get_posts_by_author", { author }) ?? null,
+
+  get_posts_by_label: ({ label }) =>
+    Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+      label,
+    }) ?? null,
+
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
+  useQuery: ({ name, params }) => {
+    const initialState = { data: null, error: null, isLoading: true };
+
+    const cacheState = useCache(
+      () =>
+        Near.asyncView(devHubAccountId, ["get", name].join("_"), params ?? {})
+          .then((response) => ({
+            ...initialState,
+            data: response ?? null,
+            isLoading: false,
+          }))
+          .catch((error) => ({
+            ...initialState,
+            error: props?.error ?? error,
+            isLoading: false,
+          })),
+
+      JSON.stringify({ name, params }),
+      { subscribe: true }
+    );
+
+    return cacheState === null ? initialState : cacheState;
   },
-  {
-    name: "Gigs Board",
-    id: "gigsboard",
-    config: {
-      requiredLabels: ["gigs-board"],
-      columns: [
-        { label: "nep", title: "NEP" },
-        { label: "badges", title: "Badges" },
-        { label: "feature-request", title: "Feature Request" },
-      ],
-      excludedLabels: [],
-    },
+
+  useMutation: ({ name, params }) => () =>
+    Near.asyncView(devHubAccountId, params ?? {}),
+};
+/* END_INCLUDE: "core/adapter/dev-hub" */
+
+const project_mock = {
+  metadata: {
+    id: 3456345,
+    tag: "test-project",
+    name: "Test Project",
+    description: "Test project please ignore",
+    owner_community_handles: ["devhub-test"],
   },
-  {
-    name: "Funding",
-    id: "funding",
-    config: {
-      requiredLabels: ["funding"],
+
+  view_configs: JSON.stringify({
+    4363462346: {
+      name: "near.social",
+      id: 4363462346,
+
+      tags: {
+        excluded: [],
+        required: ["near-social"],
+      },
+
       columns: [
-        { label: "funding-new-request", title: "New Request" },
+        { tag: "widget", title: "Widget" },
+        { tag: "integration", title: "Integration" },
+        { tag: "feature-request", title: "Feature Request" },
+      ],
+    },
+
+    25254325: {
+      name: "Gigs Board",
+      id: 25254325,
+
+      tags: {
+        excluded: [],
+        required: ["gigs-view"],
+      },
+
+      columns: [
+        { tag: "nep", title: "NEP" },
+        { tag: "badges", title: "Badges" },
+        { tag: "feature-request", title: "Feature Request" },
+      ],
+    },
+
+    34634623462: {
+      name: "Funding",
+      id: 34634623462,
+
+      tags: {
+        excluded: [],
+        required: ["funding"],
+      },
+
+      columns: [
+        { tag: "funding-new-request", title: "New Request" },
         {
-          label: "funding-information-collection",
+          tag: "funding-information-collection",
           title: "Information Collection",
         },
-        { label: "funding-processing", title: "Processing" },
-        { label: "funding-funded", title: "Funded" },
+        { tag: "funding-processing", title: "Processing" },
+        { tag: "funding-funded", title: "Funded" },
       ],
-      excludedLabels: [],
     },
-  },
-];
+  }),
+};
 
-// Bootstrap tabs documentation: https://getbootstrap.com/docs/5.2/components/navs-tabs
-const pageContent = (
-  <div>
-    <ul class="nav nav-tabs my-3">
-      {boards.map((board) => (
-        <li class="nav-item" key={board.id}>
-          <a
-            href={href("Boards", { selectedBoardId: board.id })}
-            class={`nav-link ${board.id == selectedBoardId ? "active" : ""}`}
-          >
-            {board.name}
-          </a>
-        </li>
-      ))}
-    </ul>
+const ProjectPage = ({ id, viewId: selectedViewId }) => {
+  const project =
+    {
+      data: project_mock,
+    } ?? DevHub.useQuery({ name: "project", params: { id } });
 
-    <div class="tab-content">
-      {boards.map((board) => (
-        <div
-          class={`tab-pane fade ${
-            board.id == selectedBoardId ? "show active" : ""
-          }`}
-          id={`board${board.id}`}
-          role="tabpanel"
-          aria-labelledby={`${board.id}-tab`}
-          tabindex="0"
-          key={board.id}
-        >
-          {widget("entity.project.kanban-view", {
-            requiredLabels: board.config.requiredLabels,
-            excludedLabels: board.config.excludedLabels,
-            columns: board.config.columns,
-            boardId: board.id,
-          })}
-        </div>
-      ))}
-    </div>
-  </div>
-);
+  const viewConfigs = Object.values(
+    JSON.parse(project.data?.view_configs ?? "{}")
+  );
 
-return widget("components.layout.Page", {
-  children: pageContent,
-});
+  return community.data === null && community.isLoading ? (
+    <div>Loading...</div>
+  ) : (
+    widget("entity.project.layout", {
+      id,
+
+      children:
+        project.data === null ? (
+          <div class="alert alert-danger" role="alert">
+            {`Project with id ${id} doesn't exist`}
+          </div>
+        ) : (
+          <div>
+            <ul class="nav nav-tabs my-3">
+              {viewConfigs.map((config) => (
+                <li class="nav-item" key={config.id}>
+                  <a
+                    href={href("project", { id, viewId: config.id })}
+                    class={`nav-link ${
+                      config.id === selectedViewId ? "active" : ""
+                    }`}
+                  >
+                    {config.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="tab-content">
+              {viewConfigs.map((config) => (
+                <div
+                  class={`tab-pane fade ${
+                    config.id === selectedViewId ? "show active" : ""
+                  }`}
+                  id={`view${config.id}`}
+                  role="tabpanel"
+                  aria-labelledby={`${config.id}-tab`}
+                  tabindex="0"
+                  key={config.id}
+                >
+                  {widget("entity.project.kanban-view", {
+                    ...config,
+                    link: href("project", { viewId: config.id }),
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+        ),
+    })
+  );
+};
+
+return ProjectPage(props);

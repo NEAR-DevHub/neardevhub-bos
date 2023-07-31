@@ -193,33 +193,27 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const mock = {
-  community_projects_metadata: [mock.project.metadata],
-
-  project: {
-    metadata: {
-      id: "q8iwnucr98wa3n593ry",
-      tag: "test-project",
-      name: "Test Project",
-      description: "Test project please ignore",
-      owner_community_handles: ["devhub-test"],
-    },
-
-    view_configs: JSON.stringify({
-      uwaht8hw48twruht: {
-        id: "uwaht8hw48twruht",
-      },
-    }),
+const project_mock = {
+  metadata: {
+    id: 3456345,
+    tag: "test-project",
+    name: "Test Project",
+    description: "Test project please ignore",
+    owner_community_handles: ["devhub-test"],
   },
 };
 
 const CommunityProjectsPage = ({ handle }) => {
   const community = DevHub.useQuery({ name: "community", params: { handle } });
 
-  const community_projects_metadata = DevHub.useQuery({
-    name: "community_projects_metadata",
-    params: { community_handle: handle },
-  });
+  const community_projects_metadata =
+    { data: [project_mock.metadata] } ??
+    DevHub.useQuery({
+      name: "community_projects_metadata",
+      params: { community_handle: handle },
+    });
+
+  console.log(community_projects_metadata.data);
 
   return community_projects_metadata.data === null &&
     community_projects_metadata.isLoading ? (
@@ -251,10 +245,8 @@ const CommunityProjectsPage = ({ handle }) => {
             ) : null}
           </div>
         ) : (
-          <div className="d-flex flex-wrap gap-4">
-            {community_projects_metadata.data.concat[
-              mock.community_projects_metadata
-            ].map(({ id, ...metadata }) =>
+          <div className="d-flex flex-wrap gap-4" style={{ minHeight: 384 }}>
+            {community_projects_metadata.data.map(({ id, ...metadata }) =>
               widget(
                 "entity.project.card",
                 { id, link: href("project", { id }), ...metadata },

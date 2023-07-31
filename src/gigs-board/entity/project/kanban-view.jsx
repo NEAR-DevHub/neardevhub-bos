@@ -52,109 +52,111 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const requiredLabels = props.requiredLabels ?? ["near-social"];
-const excludedLabels = props.excludedLabels ?? ["nft"];
-const columns = props.columns ?? [
-  { label: "widget", title: "Widget" },
-  { label: "integration", title: "Integration" },
-  { label: "feature-request", title: "Feature Request" },
-];
-
-const labelsToIdSet = (labels) => {
-  const ids = labels.map(
-    (label) =>
-      Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-        label,
-      }) ?? []
+const postTagsToIdSet = (tags) =>
+  new Set(
+    tags
+      .map(
+        (tag) =>
+          Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+            label: tag,
+          }) ?? []
+      )
+      .flat(1)
   );
-  const idsFlat = ids.flat(1);
-  return new Set(idsFlat);
-};
 
-const requiredPostsSet = labelsToIdSet(requiredLabels);
-const excludedPostsSet = labelsToIdSet(excludedLabels);
+const ProjectKanbanView = ({ id, columns, link, tags }) => {
+  const postIdsByColumn = columns.map((column) => {
+    const postIds = (
+      Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+        label: column.tag,
+      }) ?? []
+    ).reverse();
 
-const postsPerLabel = columns.map((column) => {
-  let allIds = (
-    Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-      label: column.label,
-    }) ?? []
-  ).reverse();
-  if (requiredLabels.length > 0) {
-    return {
-      ...column,
-      posts: allIds.filter(
-        (i) => requiredPostsSet.has(i) && !excludedPostsSet.has(i)
-      ),
-    };
-  } else {
-    // No extra filtering is required.
-    return { ...column, posts: allIds };
-  }
-});
+    if (tags.required.length > 0) {
+      return {
+        ...column,
 
-return (
-  <div>
-    <div class="row mb-2">
-      {props.boardId ? (
-        <div class="col">
-          <small class="text-muted">
-            <a
-              class="card-link"
-              href={href("Boards", { selectedBoardId: props.boardId })}
-              role="button"
-              target="_blank"
-              title="Link to this board"
-            >
-              <div class="hstack gap-3">
-                <div class="bi bi-share"></div>
-                <div>Link to this board</div>
+        posts: postIds.filter(
+          (postId) =>
+            postTagsToIdSet(tags.required).has(postId) &&
+            !postTagsToIdSet(tags.excluded).has(postId)
+        ),
+      };
+    } else {
+      return { ...column, posts: postIds };
+    }
+  });
+
+  return (
+    <div>
+      <div class="row mb-2">
+        {id ? (
+          <div class="col">
+            <small class="text-muted">
+              <a
+                class="card-link"
+                href={link}
+                role="button"
+                target="_blank"
+                title="Link to this view"
+              >
+                <div class="hstack gap-3">
+                  <div class="bi bi-share"></div>
+                  <div>Link to this view</div>
+                </div>
+              </a>
+            </small>
+          </div>
+        ) : null}
+
+        {tags.required.length > 0 ? (
+          <div class="col">
+            <small class="text-muted">
+              <span>Required tags:</span>
+
+              {tags.required.map((tag) => (
+                <a href={href("Feed", { tag })} key={tag}>
+                  <span class="badge text-bg-primary me-1">{tag}</span>
+                </a>
+              ))}
+            </small>
+          </div>
+        ) : null}
+
+        {tags.excluded.length > 0 ? (
+          <div class="col">
+            <small class="text-muted">
+              <span>Excluded tags:</span>
+
+              {tags.excluded.map((tag) => (
+                <a href={href("Feed", { tag })} key={tag}>
+                  <span class="badge text-bg-primary me-1">{tag}</span>
+                </a>
+              ))}
+            </small>
+          </div>
+        ) : null}
+      </div>
+
+      <div class="row">
+        {postIdsByColumn.map((column) => (
+          <div class="col-3" key={column.tag}>
+            <div class="card">
+              <div class="card-body border-secondary">
+                <h6 class="card-title">
+                  {column.title}({column.postIds.length})
+                </h6>
+
+                {column.postIds.map((postId) =>
+                  widget("entity.post.CompactPost", { id: postId }, postId)
+                )}
               </div>
-            </a>
-          </small>
-        </div>
-      ) : null}
-
-      {requiredLabels.length > 0 ? (
-        <div class="col">
-          <small class="text-muted">
-            Required labels:
-            {requiredLabels.map((label) => (
-              <a href={href("Feed", { label })} key={label}>
-                <span class="badge text-bg-primary me-1">{label}</span>
-              </a>
-            ))}
-          </small>
-        </div>
-      ) : null}
-      {excludedLabels.length > 0 ? (
-        <div class="col">
-          <small class="text-muted">
-            Excluded labels:
-            {excludedLabels.map((label) => (
-              <a href={href("Feed", { label })} key={label}>
-                <span class="badge text-bg-primary me-1">{label}</span>
-              </a>
-            ))}
-          </small>
-        </div>
-      ) : null}
-    </div>
-    <div class="row">
-      {postsPerLabel.map((column) => (
-        <div class="col-3" key={column.label}>
-          <div class="card">
-            <div class="card-body border-secondary">
-              <h6 class="card-title">
-                {column.title}({column.posts.length})
-              </h6>
-              {column.posts.map((postId) =>
-                widget("entity.post.CompactPost", { id: postId }, postId)
-              )}
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
+return ProjectKanbanView(props);
