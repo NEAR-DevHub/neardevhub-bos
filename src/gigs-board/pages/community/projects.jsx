@@ -163,8 +163,10 @@ const DevHub = {
     return cacheState === null ? initialState : cacheState;
   },
 
-  useMutation: ({ name, params }) => () =>
-    Near.asyncView(devHubAccountId, params ?? {}),
+  useMutation:
+    ({ name, params }) =>
+    () =>
+      Near.asyncCall(devHubAccountId, params ?? {}),
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 /* INCLUDE: "entity/viewer" */

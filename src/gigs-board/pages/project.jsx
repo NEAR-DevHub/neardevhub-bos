@@ -180,8 +180,10 @@ const DevHub = {
     return cacheState === null ? initialState : cacheState;
   },
 
-  useMutation: ({ name, params }) => () =>
-    Near.asyncView(devHubAccountId, params ?? {}),
+  useMutation:
+    ({ name, params }) =>
+    () =>
+      Near.asyncCall(devHubAccountId, params ?? {}),
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
@@ -205,11 +207,16 @@ const project_mock = {
         required: ["near-social"],
       },
 
-      columns: [
-        { tag: "widget", title: "Widget" },
-        { tag: "integration", title: "Integration" },
-        { tag: "feature-request", title: "Feature Request" },
-      ],
+      columns: {
+        hr839hf2: { id: "hr839hf2", tag: "widget", title: "Widget" },
+        iu495g95: { id: "iu495g95", tag: "integration", title: "Integration" },
+
+        i5hy2iu3: {
+          id: "i5hy2iu3",
+          tag: "feature-request",
+          title: "Feature Request",
+        },
+      },
     },
 
     "gigs-board-kanban": {
@@ -222,11 +229,16 @@ const project_mock = {
         required: ["gigs-board"],
       },
 
-      columns: [
-        { tag: "nep", title: "NEP" },
-        { tag: "badges", title: "Badges" },
-        { tag: "feature-request", title: "Feature Request" },
-      ],
+      columns: {
+        l23r34t4: { id: "l23r34t4", tag: "nep", title: "NEP" },
+        f5rn09i4: { id: "f5rn09i4", tag: "badges", title: "Badges" },
+
+        v33xj3u8: {
+          id: "v33xj3u8",
+          tag: "feature-request",
+          title: "Feature Request",
+        },
+      },
     },
 
     "funding-kanban": {
@@ -239,15 +251,27 @@ const project_mock = {
         required: ["funding"],
       },
 
-      columns: [
-        { tag: "funding-new-request", title: "New Request" },
-        {
+      columns: {
+        gf39lk82: {
+          id: "gf39lk82",
+          tag: "funding-new-request",
+          title: "New Request",
+        },
+
+        dg39i49b: {
+          id: "dg39i49b",
           tag: "funding-information-collection",
           title: "Information Collection",
         },
-        { tag: "funding-processing", title: "Processing" },
-        { tag: "funding-funded", title: "Funded" },
-      ],
+
+        e3if93ew: {
+          id: "e3if93ew",
+          tag: "funding-processing",
+          title: "Processing",
+        },
+
+        u8t3gu9f: { id: "u8t3gu9f", tag: "funding-funded", title: "Funded" },
+      },
     },
   }),
 };

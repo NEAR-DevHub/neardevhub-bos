@@ -61,5 +61,5 @@ const DevHub = {
   useMutation:
     ({ name, params }) =>
     () =>
-      Near.asyncView(devHubAccountId, params ?? {}),
+      Near.asyncCall(devHubAccountId, params ?? {}),
 };

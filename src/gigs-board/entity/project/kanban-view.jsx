@@ -51,6 +51,23 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/uuid" */
+const uuid = () =>
+  [Date.now().toString(16)]
+    .concat(
+      Array.from(
+        { length: 4 },
+        () => Math.floor(Math.random() * 0xffffffff) & 0xffffffff
+      ).map((value) => value.toString(16))
+    )
+    .join("-");
+
+const withUUIDIndex = (data) => {
+  const id = uuid();
+
+  return Object.fromEntries([[id, { ...data, id }]]);
+};
+/* END_INCLUDE: "core/lib/uuid" */
 
 const postTagsToIdSet = (tags) =>
   new Set(
@@ -67,27 +84,30 @@ const postTagsToIdSet = (tags) =>
 const ProjectKanbanView = ({ id, columns, link, tags }) => {
   console.log("ProjectKanbanView", { id, columns, tags });
 
-  const postIdsByColumn = columns.map((column) => {
+  const postIdsByColumn = Object.values(columns).reduce((registry, column) => {
     const postIds = (
       Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
         label: column.tag,
       }) ?? []
     ).reverse();
 
-    if (tags.required.length > 0) {
-      return {
+    return {
+      ...registry,
+
+      ...withUUIDIndex({
         ...column,
 
-        postIds: postIds.filter(
-          (postId) =>
-            postTagsToIdSet(tags.required).has(postId) &&
-            !postTagsToIdSet(tags.excluded).has(postId)
-        ),
-      };
-    } else {
-      return { ...column, postIds };
-    }
-  });
+        postIds:
+          tags.required.length > 0
+            ? postIds.filter(
+                (postId) =>
+                  postTagsToIdSet(tags.required).has(postId) &&
+                  !postTagsToIdSet(tags.excluded).has(postId)
+              )
+            : postIds,
+      }),
+    };
+  }, {});
 
   return (
     <div>
@@ -113,7 +133,7 @@ const ProjectKanbanView = ({ id, columns, link, tags }) => {
       </div>
 
       <div class="row">
-        {postIdsByColumn.map((column) => (
+        {Object.values(postIdsByColumn).map((column) => (
           <div class="col-3" key={column.tag}>
             <div class="card">
               <div class="card-body border-secondary">

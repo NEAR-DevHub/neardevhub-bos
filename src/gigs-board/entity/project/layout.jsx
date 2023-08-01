@@ -70,6 +70,8 @@ const ProjectLayout = ({ id, children, description, name, path, tag }) => (
 
         <div className="d-flex flex-column gap-3 justify-content-end">
           {widget("components.atom.button", {
+            classNames: { adornment: "bi bi-gear-fill" },
+            disabled: true,
             href: href("project.configure", { id }),
             label: "Configure project",
           })}
