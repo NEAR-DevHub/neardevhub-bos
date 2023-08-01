@@ -257,6 +257,9 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
+  create_project_view: ({ config }) =>
+    Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
+
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
@@ -346,36 +349,30 @@ const CompactContainer = styled.div`
 `;
 
 const ViewConfigDefaults = {
-  id: uuid(),
-  columns: {},
-  description: "",
-  title: "",
+  id: null,
+  type: "kanban-view",
+  name: "Untitled view",
+
+  tags: {
+    excluded: [],
+    required: [],
+  },
+
+  columns: [],
 };
 
-const ProjectViewConfigurator = ({ project_id, view_id }) => {
+const ProjectViewConfigurator = ({ config, permissions, projectId }) => {
   State.init({
     editingMode: "form",
     isEditorActive: false,
   });
 
-  const { can_edit: isEditingAllowed } = Viewer.projectPermissions(project_id);
-
-  const project = DevHub.useQuery({
-    name: "project",
-    params: { id: project_id },
-  });
-
-  const errors = {
-    noBoard: !Struct.typeMatch(boards[boardId]),
-    noBoardId: typeof boardId !== "string",
-    noCommunity: !community.isLoading && community.data === null,
-  };
-
   const form = useForm({
-    initialValues: boards[boardId],
+    initialValues: config ?? ViewConfigDefaults,
     stateKey: "board",
-    uninitialized: errors.noBoards || errors.noBoardId,
   });
+
+  const isNewView = form.values.id === null;
 
   const editorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -383,38 +380,21 @@ const ProjectViewConfigurator = ({ project_id, view_id }) => {
       isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
     }));
 
-  const onEditingModeChange = ({ target: { value } }) =>
+  const editingModeSwitch = ({ target: { value } }) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       editingMode: value,
     }));
 
-  const boardCreate = () =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      board: { hasUnsubmittedChanges: false, values: ViewConfigDefaults },
-      isEditorActive: true,
-    }));
-
   const columnsCreateNew = ({ lastKnownValue }) =>
     Object.keys(lastKnownValue).length < EditorSettings.maxColumnsNumber
-      ? {
-          ...(lastKnownValue ?? {}),
-
-          ...withUUIDIndex({
-            description: "",
-            labelSearchTerms: [],
-            title: "New column",
-          }),
-        }
+      ? [...lastKnownValue, { id: uuid(), tag: "", title: "New column" }]
       : lastKnownValue;
 
   const columnsDeleteById =
-    (id) =>
+    (targetId) =>
     ({ lastKnownValue }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-      );
+      lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onSubmit = () =>
     DevHub.edit_community_github({
@@ -437,8 +417,8 @@ const ProjectViewConfigurator = ({ project_id, view_id }) => {
             {
               className: "flex-shrink-0",
               key: `${form.values.id}-title`,
-              label: "Title",
-              onChange: form.update({ path: ["title"] }),
+              label: "Name",
+              onChange: form.update({ path: ["name"] }),
               placeholder: "NEAR Protocol NEPs",
               value: form.values.title,
             },
@@ -447,16 +427,18 @@ const ProjectViewConfigurator = ({ project_id, view_id }) => {
         </div>
 
         <div className="d-flex gap-3 flex-column flex-lg-row">
-          {widget("components.molecule.text-input", {
-            className: "w-100",
-            inputProps: { className: "h-75" },
-            key: `${form.values.id}-description`,
-            label: "Description",
-            multiline: true,
-            onChange: form.update({ path: ["description"] }),
-            placeholder: "Latest NEAR Enhancement Proposals by status.",
-            value: form.values.description,
-          })}
+          {widget(
+            "components.molecule.text-input",
+            {
+              className: "flex-shrink-0",
+              key: `${form.values.id}-title`,
+              label: "Tag",
+              onChange: form.update({ path: ["tag"] }),
+              placeholder: "near-protocol-neps",
+              value: form.values.title,
+            },
+            `${form.values.id}-title`
+          )}
         </div>
 
         <div className="d-flex align-items-center justify-content-between">
@@ -467,7 +449,7 @@ const ProjectViewConfigurator = ({ project_id, view_id }) => {
         </div>
 
         <div className="d-flex flex-column align-items-center gap-3">
-          {Object.values(form.values.columns).map(
+          {form.values.columns.map(
             ({ id, description, labelSearchTerms, title }) => (
               <div
                 className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
@@ -476,7 +458,7 @@ const ProjectViewConfigurator = ({ project_id, view_id }) => {
                 <div className="d-flex flex-column gap-1 w-100">
                   {widget("components.molecule.text-input", {
                     className: "flex-grow-1",
-                    key: `${form.values.id}-column-${id}-title`,
+                    key: `column-${id}-title`,
                     label: "Title",
                     onChange: form.update({ path: ["columns", id, "title"] }),
                     placeholder: "👀 Review",
@@ -485,7 +467,7 @@ const ProjectViewConfigurator = ({ project_id, view_id }) => {
 
                   {widget("components.molecule.text-input", {
                     className: "flex-grow-1",
-                    key: `${form.values.id}-column-${id}-description`,
+                    key: `column-${id}-description`,
                     label: "Description",
 
                     onChange: form.update({
@@ -551,13 +533,13 @@ const ProjectViewConfigurator = ({ project_id, view_id }) => {
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-wrench-adjustable-circle-fill" />
-              <span>Board configuration</span>
+              <span>View configuration</span>
             </h5>
 
             {widget("components.molecule.button-switch", {
               currentValue: state.editingMode,
               key: "editingMode",
-              onChange: onEditingModeChange,
+              onChange: editingModeSwitch,
 
               options: [
                 { label: "Form", value: "form" },

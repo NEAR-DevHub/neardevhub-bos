@@ -84,7 +84,7 @@ const postTagsToIdSet = (tags) =>
 const ProjectKanbanView = ({ id, columns, link, tags }) => {
   console.log("ProjectKanbanView", { id, columns, tags });
 
-  const postIdsByColumn = Object.values(columns).reduce((registry, column) => {
+  const postIdsByColumn = columns.map((column) => {
     const postIds = (
       Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
         label: column.tag,
@@ -92,27 +92,23 @@ const ProjectKanbanView = ({ id, columns, link, tags }) => {
     ).reverse();
 
     return {
-      ...registry,
+      ...column,
 
-      ...withUUIDIndex({
-        ...column,
-
-        postIds:
-          tags.required.length > 0
-            ? postIds.filter(
-                (postId) =>
-                  postTagsToIdSet(tags.required).has(postId) &&
-                  !postTagsToIdSet(tags.excluded).has(postId)
-              )
-            : postIds,
-      }),
+      postIds:
+        tags.required.length > 0
+          ? postIds.filter(
+              (postId) =>
+                postTagsToIdSet(tags.required).has(postId) &&
+                !postTagsToIdSet(tags.excluded).has(postId)
+            )
+          : postIds,
     };
-  }, {});
+  });
 
   return (
     <div>
       <div class="row mb-2">
-        {id ? (
+        {(link ?? null) !== null ? (
           <div class="col">
             <small class="text-muted">
               <a
@@ -134,7 +130,7 @@ const ProjectKanbanView = ({ id, columns, link, tags }) => {
 
       <div class="row">
         {Object.values(postIdsByColumn).map((column) => (
-          <div class="col-3" key={column.tag}>
+          <div class="col-3" key={column.id}>
             <div class="card">
               <div class="card-body border-secondary">
                 <h6 class="card-title">

@@ -129,6 +129,9 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
+  create_project_view: ({ config }) =>
+    Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
+
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
@@ -202,16 +205,11 @@ const project_mock = {
         required: ["near-social"],
       },
 
-      columns: {
-        hr839hf2: { id: "hr839hf2", tag: "widget", title: "Widget" },
-        iu495g95: { id: "iu495g95", tag: "integration", title: "Integration" },
-
-        i5hy2iu3: {
-          id: "i5hy2iu3",
-          tag: "feature-request",
-          title: "Feature Request",
-        },
-      },
+      columns: [
+        { id: "hr839hf2", tag: "widget", title: "Widget" },
+        { id: "iu495g95", tag: "integration", title: "Integration" },
+        { id: "i5hy2iu3", tag: "feature-request", title: "Feature Request" },
+      ],
     },
 
     "gigs-board-kanban": {
@@ -224,16 +222,11 @@ const project_mock = {
         required: ["gigs-board"],
       },
 
-      columns: {
-        l23r34t4: { id: "l23r34t4", tag: "nep", title: "NEP" },
-        f5rn09i4: { id: "f5rn09i4", tag: "badges", title: "Badges" },
-
-        v33xj3u8: {
-          id: "v33xj3u8",
-          tag: "feature-request",
-          title: "Feature Request",
-        },
-      },
+      columns: [
+        { id: "l23r34t4", tag: "nep", title: "NEP" },
+        { id: "f5rn09i4", tag: "badges", title: "Badges" },
+        { id: "v33xj3u8", tag: "feature-request", title: "Feature Request" },
+      ],
     },
 
     "funding-kanban": {
@@ -246,27 +239,18 @@ const project_mock = {
         required: ["funding"],
       },
 
-      columns: {
-        gf39lk82: {
-          id: "gf39lk82",
-          tag: "funding-new-request",
-          title: "New Request",
-        },
+      columns: [
+        { id: "gf39lk82", tag: "funding-new-request", title: "New Request" },
 
-        dg39i49b: {
+        {
           id: "dg39i49b",
           tag: "funding-information-collection",
           title: "Information Collection",
         },
 
-        e3if93ew: {
-          id: "e3if93ew",
-          tag: "funding-processing",
-          title: "Processing",
-        },
-
-        u8t3gu9f: { id: "u8t3gu9f", tag: "funding-funded", title: "Funded" },
-      },
+        { id: "e3if93ew", tag: "funding-processing", title: "Processing" },
+        { id: "u8t3gu9f", tag: "funding-funded", title: "Funded" },
+      ],
     },
   }),
 };
@@ -276,6 +260,8 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
     {
       data: project_mock,
     } ?? DevHub.useQuery({ name: "project", params: { id } });
+
+  const permissions = Viewer.projectPermissions(project_id);
 
   const viewConfigs = Object.values(
     JSON.parse(project.data?.view_configs ?? "{}")
@@ -325,15 +311,15 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
                   class={`tab-pane fade ${
                     view.id === selectedViewId ? "show active" : ""
                   }`}
-                  id={`view${view.id}`}
                   role="tabpanel"
-                  aria-labelledby={`${view.id}-tab`}
                   tabindex="0"
                   key={view.id}
                 >
                   {widget("feature.project.view-configurator", {
-                    ...view,
+                    config: view,
                     link: href("project", { id, view: view.id }),
+                    permissions,
+                    projectId: id,
                   })}
                 </div>
               ))}
@@ -342,16 +328,11 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
                 class={`tab-pane fade ${
                   selectedViewId === "new" ? "show active" : ""
                 }`}
-                id={`project-${id}-view-new`}
                 role="tabpanel"
-                aria-labelledby={`${view.id}-tab`}
                 tabindex="0"
                 key={view.id}
               >
-                {widget("feature.project.view-configurator", {
-                  ...view,
-                  link: href("project", { id, view: view.id }),
-                })}
+                {widget("feature.project.view-configurator", { projectId: id })}
               </div>
             </div>
           </div>
