@@ -307,11 +307,6 @@ const DevHub = {
 
     return cacheState === null ? initialState : cacheState;
   },
-
-  useMutation:
-    ({ name, params }) =>
-    () =>
-      Near.asyncCall(devHubAccountId, params ?? {}),
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 /* INCLUDE: "entity/viewer" */
@@ -326,6 +321,9 @@ const Viewer = {
       (communityData.admins.includes(context.accountId) ||
         Viewer.role.isDevHubModerator),
   },
+
+  projectPermissions: (projectId) =>
+    Near.view(devHubAccountId, "check_project_permissions", { id: projectId }),
 
   role: {
     isDevHubModerator:

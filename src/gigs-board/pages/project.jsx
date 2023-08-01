@@ -179,11 +179,6 @@ const DevHub = {
 
     return cacheState === null ? initialState : cacheState;
   },
-
-  useMutation:
-    ({ name, params }) =>
-    () =>
-      Near.asyncCall(devHubAccountId, params ?? {}),
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
@@ -286,8 +281,6 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
     JSON.parse(project.data?.view_configs ?? "{}")
   );
 
-  console.log(viewConfigs);
-
   return community.data === null && community.isLoading ? (
     <div>Loading...</div>
   ) : (
@@ -338,16 +331,28 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
                   tabindex="0"
                   key={view.id}
                 >
-                  {widget(["entity.project", view.type].join("."), {
+                  {widget("feature.project.view-configurator", {
                     ...view,
                     link: href("project", { id, view: view.id }),
                   })}
                 </div>
               ))}
 
-              {selectedViewId === "new" ? (
-                <div>{widget("feature.project.view-configurator")}</div>
-              ) : null}
+              <div
+                class={`tab-pane fade ${
+                  selectedViewId === "new" ? "show active" : ""
+                }`}
+                id={`project-${id}-view-new`}
+                role="tabpanel"
+                aria-labelledby={`${view.id}-tab`}
+                tabindex="0"
+                key={view.id}
+              >
+                {widget("feature.project.view-configurator", {
+                  ...view,
+                  link: href("project", { id, view: view.id }),
+                })}
+              </div>
             </div>
           </div>
         ),

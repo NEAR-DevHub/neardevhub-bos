@@ -307,11 +307,6 @@ const DevHub = {
 
     return cacheState === null ? initialState : cacheState;
   },
-
-  useMutation:
-    ({ name, params }) =>
-    () =>
-      Near.asyncCall(devHubAccountId, params ?? {}),
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 /* INCLUDE: "entity/viewer" */
@@ -326,6 +321,9 @@ const Viewer = {
       (communityData.admins.includes(context.accountId) ||
         Viewer.role.isDevHubModerator),
   },
+
+  projectPermissions: (projectId) =>
+    Near.view(devHubAccountId, "check_project_permissions", { id: projectId }),
 
   role: {
     isDevHubModerator:
@@ -347,39 +345,28 @@ const CompactContainer = styled.div`
   max-width: 100%;
 `;
 
-const BoardConfigDefaults = {
+const ViewConfigDefaults = {
   id: uuid(),
   columns: {},
-  dataTypesIncluded: { Issue: false, PullRequest: true },
   description: "",
-  repoURL: "",
-  ticketState: "all",
   title: "",
 };
 
-const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
+const ProjectViewConfigurator = ({ project_id, view_id }) => {
   State.init({
     editingMode: "form",
     isEditorActive: false,
   });
 
-  const community = DevHub.useQuery({
-    name: "community",
-    params: { handle: communityHandle },
+  const { can_edit: isEditingAllowed } = Viewer.projectPermissions(project_id);
+
+  const project = DevHub.useQuery({
+    name: "project",
+    params: { id: project_id },
   });
-
-  const boards =
-    ((community?.data?.github ?? null) === null
-      ? {}
-      : JSON.parse(community.data.github)
-    )?.kanbanBoards ?? {};
-
-  // TODO: Should be taken from props once support for multiple boards is introduced
-  const boardId = Object.keys(boards)[0] ?? null;
 
   const errors = {
     noBoard: !Struct.typeMatch(boards[boardId]),
-    noBoards: !community.isLoading && Object.keys(boards).length === 0,
     noBoardId: typeof boardId !== "string",
     noCommunity: !community.isLoading && community.data === null,
   };
@@ -405,7 +392,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
   const boardCreate = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      board: { hasUnsubmittedChanges: false, values: BoardConfigDefaults },
+      board: { hasUnsubmittedChanges: false, values: ViewConfigDefaults },
       isEditorActive: true,
     }));
 
@@ -632,7 +619,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
         </AttractableDiv>
       ) : null}
 
-      {widget("entity.project.github-kanban-view", {
+      {widget(["entity.project", form.values.type].join("."), {
         ...form.values,
         editorTrigger: () => editorToggle(true),
         isEditable: Viewer.can.editCommunity(community.data),
@@ -642,4 +629,4 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
   );
 };
 
-return GithubKanbanViewConfigurator(props);
+return ProjectViewConfigurator(props);

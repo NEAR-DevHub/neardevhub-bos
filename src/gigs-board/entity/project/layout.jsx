@@ -72,7 +72,6 @@ const ProjectLayout = ({ id, children, description, name, path, tag }) => (
           {widget("components.atom.button", {
             classNames: { adornment: "bi bi-gear-fill" },
             disabled: true,
-            href: href("project.configure", { id }),
             label: "Configure project",
           })}
         </div>

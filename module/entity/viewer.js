@@ -10,6 +10,9 @@ const Viewer = {
         Viewer.role.isDevHubModerator),
   },
 
+  projectPermissions: (projectId) =>
+    Near.view(devHubAccountId, "check_project_permissions", { id: projectId }),
+
   role: {
     isDevHubModerator:
       access_control_info.data === null || access_control_info.isLoading

@@ -57,9 +57,4 @@ const DevHub = {
 
     return cacheState === null ? initialState : cacheState;
   },
-
-  useMutation:
-    ({ name, params }) =>
-    () =>
-      Near.asyncCall(devHubAccountId, params ?? {}),
 };
