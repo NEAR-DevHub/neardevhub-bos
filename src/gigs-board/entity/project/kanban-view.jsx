@@ -81,7 +81,7 @@ const postTagsToIdSet = (tags) =>
       .flat(1)
   );
 
-const ProjectKanbanView = ({ id, columns, link, tags }) => {
+const ProjectKanbanView = ({ id, columns, link, tags, permissions }) => {
   console.log("ProjectKanbanView", { id, columns, tags });
 
   const postIdsByColumn = columns.map((column) => {

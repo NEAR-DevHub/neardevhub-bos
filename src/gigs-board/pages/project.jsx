@@ -194,7 +194,7 @@ const project_mock = {
     owner_community_handles: ["devhub-test"],
   },
 
-  view_configs: JSON.stringify({
+  view_configs: {
     "near-social-kanban": {
       type: "kanban-view",
       name: "near.social",
@@ -252,7 +252,7 @@ const project_mock = {
         { id: "u8t3gu9f", tag: "funding-funded", title: "Funded" },
       ],
     },
-  }),
+  },
 };
 
 const ProjectPage = ({ id, view: selectedViewId }) => {
@@ -263,11 +263,7 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
 
   const permissions = Viewer.projectPermissions(project_id);
 
-  const viewConfigs = Object.values(
-    JSON.parse(project.data?.view_configs ?? "{}")
-  );
-
-  return community.data === null && community.isLoading ? (
+  return project.data === null && project.isLoading ? (
     <div>Loading...</div>
   ) : (
     widget("entity.project.layout", {
@@ -281,10 +277,13 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
         ) : (
           <div className="d-flex flex-column">
             <ul class="nav nav-tabs">
-              {viewConfigs.map((view) => (
+              {project.data.view_configs.map((view) => (
                 <li class="nav-item" key={view.id}>
                   <a
-                    href={href("project", { id, view: view.id })}
+                    href={href("project", {
+                      id: project.data.metadata.id,
+                      view: view.id,
+                    })}
                     class={`nav-link ${
                       view.id === selectedViewId ? "active" : ""
                     }`}
