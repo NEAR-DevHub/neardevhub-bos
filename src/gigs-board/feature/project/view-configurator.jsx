@@ -352,12 +352,7 @@ const ViewConfigDefaults = {
   id: null,
   type: "kanban-view",
   name: "Untitled view",
-
-  tags: {
-    excluded: [],
-    required: [],
-  },
-
+  tags: { excluded: [], required: [] },
   columns: [],
 };
 
