@@ -84,18 +84,11 @@ const AttractableImage = styled.img`
 `;
 /* END_INCLUDE: "core/lib/gui/attractable" */
 
-const HoverAbleButton = styled.button`
+const ButtonWithHover = styled.button`
   background-color: #fff;
   &:hover {
-    background-color: #000;
-    color: #fff;
-  }
-`;
-
-const hoverableLink = styled.a`
-  &:hover {
-    background-color: #000;
-    color: #fff;
+    background-color: #e9ecef;
+    color: #000;
   }
 `;
 
@@ -364,7 +357,7 @@ const buttonsFooter = props.isPreview ? null : (
   <div class="row" key="buttons-footer">
     <div class="col-8">
       <div class="btn-group" role="group" aria-label="Basic outlined example">
-        <HoverAbleButton
+        <ButtonWithHover
           type="button"
           class="btn"
           style={{ border: "0px" }}
@@ -378,9 +371,9 @@ const buttonsFooter = props.isPreview ? null : (
                   post.likes.map(({ author_id }) => [author_id, ""])
                 ),
               })}
-        </HoverAbleButton>
+        </ButtonWithHover>
         <div class="btn-group" role="group">
-          <HoverAbleButton
+          <ButtonWithHover
             type="button"
             class="btn"
             style={{ border: "0px" }}
@@ -388,7 +381,7 @@ const buttonsFooter = props.isPreview ? null : (
             aria-expanded="false"
           >
             <i class={`bi ${emptyIcons.Reply}`}> </i> Reply
-          </HoverAbleButton>
+          </ButtonWithHover>
           <ul class="dropdown-menu">
             {btnCreatorWidget(
               "Idea",
@@ -425,7 +418,7 @@ const buttonsFooter = props.isPreview ? null : (
             )}
           </ul>
         </div>
-        <HoverAbleButton
+        <ButtonWithHover
           type="button"
           class="btn"
           style={{ border: "0px" }}
@@ -436,21 +429,20 @@ const buttonsFooter = props.isPreview ? null : (
         >
           <i class="bi bi-arrows-expand"> </i>{" "}
           {`Expand Replies (${childPostIds.length})`}
-        </HoverAbleButton>
+        </ButtonWithHover>
 
         {isUnderPost || !parentId ? (
           <div key="link-to-parent"></div>
         ) : (
-          <button
+          <ButtonWithHover
             type="button"
             style={{ border: "0px" }}
             className="btn"
             key="link-to-parent"
+            href={href("Post", { id: parentId })}
           >
-            <a href={href("Post", { id: parentId })} className="text-dark">
-              <i class="bi bi-arrow-90deg-up"></i>Go to parent
-            </a>
-          </button>
+            <i class="bi bi-arrow-90deg-up"></i>Go to parent
+          </ButtonWithHover>
         )}
       </div>
     </div>
