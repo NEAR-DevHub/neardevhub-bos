@@ -434,15 +434,16 @@ const buttonsFooter = props.isPreview ? null : (
         {isUnderPost || !parentId ? (
           <div key="link-to-parent"></div>
         ) : (
-          <ButtonWithHover
-            type="button"
-            style={{ border: "0px" }}
-            className="btn"
-            key="link-to-parent"
-            href={href("Post", { id: parentId })}
-          >
-            <i class="bi bi-arrow-90deg-up"></i>Go to parent
-          </ButtonWithHover>
+          <a href={href("Post", { id: parentId })}>
+            <ButtonWithHover
+              type="button"
+              style={{ border: "0px" }}
+              className="btn"
+              key="link-to-parent"
+            >
+              <i class="bi bi-arrow-90deg-up"></i>Go to parent
+            </ButtonWithHover>
+          </a>
         )}
       </div>
     </div>
