@@ -58,7 +58,7 @@ const AttractableDiv = styled.div`
   transition: box-shadow 0.6s;
 
   &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    box-shadow: rgba(48, 48, 48, 0.15) 0px 0.1rem 0.1rem !important;
   }
 
   margin-bottom: 35px;
