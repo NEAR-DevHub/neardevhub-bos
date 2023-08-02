@@ -5,7 +5,6 @@ const AttractableDiv = styled.div`
 
   &:hover {
     box-shadow: rgba(48, 48, 48, 0.15) 0px 0.1rem 0.1rem !important;
-
   }
 `;
 

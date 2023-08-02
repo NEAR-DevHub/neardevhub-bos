@@ -84,6 +84,21 @@ const AttractableImage = styled.img`
 `;
 /* END_INCLUDE: "core/lib/gui/attractable" */
 
+const HoverAbleButton = styled.button`
+  background-color: #fff;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+`;
+
+const hoverableLink = styled.a`
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
+`;
+
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
 const post =
   props.post ??
@@ -349,7 +364,7 @@ const buttonsFooter = props.isPreview ? null : (
   <div class="row" key="buttons-footer">
     <div class="col-8">
       <div class="btn-group" role="group" aria-label="Basic outlined example">
-        <button
+        <HoverAbleButton
           type="button"
           class="btn"
           style={{ border: "0px" }}
@@ -363,9 +378,9 @@ const buttonsFooter = props.isPreview ? null : (
                   post.likes.map(({ author_id }) => [author_id, ""])
                 ),
               })}
-        </button>
+        </HoverAbleButton>
         <div class="btn-group" role="group">
-          <button
+          <HoverAbleButton
             type="button"
             class="btn"
             style={{ border: "0px" }}
@@ -373,7 +388,7 @@ const buttonsFooter = props.isPreview ? null : (
             aria-expanded="false"
           >
             <i class={`bi ${emptyIcons.Reply}`}> </i> Reply
-          </button>
+          </HoverAbleButton>
           <ul class="dropdown-menu">
             {btnCreatorWidget(
               "Idea",
@@ -410,7 +425,7 @@ const buttonsFooter = props.isPreview ? null : (
             )}
           </ul>
         </div>
-        <button
+        <HoverAbleButton
           type="button"
           class="btn"
           style={{ border: "0px" }}
@@ -421,7 +436,7 @@ const buttonsFooter = props.isPreview ? null : (
         >
           <i class="bi bi-arrows-expand"> </i>{" "}
           {`Expand Replies (${childPostIds.length})`}
-        </button>
+        </HoverAbleButton>
 
         {isUnderPost || !parentId ? (
           <div key="link-to-parent"></div>
@@ -432,10 +447,7 @@ const buttonsFooter = props.isPreview ? null : (
             className="btn"
             key="link-to-parent"
           >
-            <a
-              href={href("Post", { id: parentId })}
-              className="text-dark text-decoration-none"
-            >
+            <a href={href("Post", { id: parentId })} className="text-dark">
               <i class="bi bi-arrow-90deg-up"></i>Go to parent
             </a>
           </button>
@@ -532,7 +544,7 @@ const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
   ) : (
-    <h5 class="card-title" key="post-title">
+    <h5 class="card-title mb-4" key="post-title">
       <div className="row justify-content-between">
         <div class="col-9">
           <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
