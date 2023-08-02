@@ -184,6 +184,32 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
+/* INCLUDE: "entity/viewer" */
+const access_control_info = DevHub.useQuery({
+  name: "access_control_info",
+});
+
+const Viewer = {
+  can: {
+    editCommunity: (communityData) =>
+      Struct.typeMatch(communityData) &&
+      (communityData.admins.includes(context.accountId) ||
+        Viewer.role.isDevHubModerator),
+  },
+
+  projectPermissions: (projectId) =>
+    Near.view(devHubAccountId, "check_project_permissions", { id: projectId }),
+
+  role: {
+    isDevHubModerator:
+      access_control_info.data === null || access_control_info.isLoading
+        ? false
+        : access_control_info.data.members_list[
+            "team:moderators"
+          ]?.children?.includes?.(context.accountId) ?? false,
+  },
+};
+/* END_INCLUDE: "entity/viewer" */
 
 const project_mock = {
   metadata: {
@@ -277,7 +303,7 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
         ) : (
           <div className="d-flex flex-column">
             <ul class="nav nav-tabs">
-              {project.data.view_configs.map((view) => (
+              {Object.values(project.data.view_configs).map((view) => (
                 <li class="nav-item" key={view.id}>
                   <a
                     href={href("project", {
@@ -305,7 +331,7 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
             </ul>
 
             <div class="tab-content">
-              {viewConfigs.map((view) => (
+              {Object.values(project.data.view_configs).map((view) => (
                 <div
                   class={`tab-pane fade ${
                     view.id === selectedViewId ? "show active" : ""
