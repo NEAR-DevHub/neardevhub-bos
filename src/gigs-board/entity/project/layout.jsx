@@ -84,11 +84,21 @@ const ProjectLayout = ({ children, metadata, path }) =>
               {metadata.tag}
             </span>
 
-            {widget("components.atom.button", {
-              classNames: { adornment: "bi bi-gear-fill" },
-              disabled: true,
-              label: "Configure project",
-            })}
+            <div className="d-flex gap-3">
+              {false &&
+                widget("components.atom.button", {
+                  classNames: {
+                    root: ["btn-danger", "hidden"].join(" "),
+                  },
+                  label: "Cancel",
+                })}
+
+              {widget("components.atom.button", {
+                classNames: { adornment: "bi bi-gear-fill" },
+                disabled: true, // TODO: Editing mode toggle!
+                label: "Configure project",
+              })}
+            </div>
           </div>
         </div>
       ) : (

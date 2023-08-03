@@ -335,7 +335,7 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
           </div>
         ) : (
           <div className="d-flex flex-column">
-            <ul class="nav nav-tabs">
+            <NavUnderline className="nav">
               {Object.values(project.data.view_configs).map((view) => (
                 <li className="nav-item" key={view.id}>
                   <a
@@ -347,6 +347,7 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
                     href={href("project", {
                       id: project.data.metadata.id,
                       view: view.id,
+                      dir,
                     })}
                   >
                     <span>{view.name}</span>
@@ -363,7 +364,7 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
                   <span>New view</span>
                 </a>
               </li>
-            </ul>
+            </NavUnderline>
 
             <div class="tab-content">
               {Object.values(project.data.view_configs).map((view) => (
