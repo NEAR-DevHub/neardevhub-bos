@@ -208,6 +208,16 @@ const project_mock = {
   },
 };
 
+initState({
+  createProject: false,
+  isEditorActive: true,
+});
+
+function createProject({ tag, name, description }) {
+  if (tag && name && description)
+    DevHub.create_project({ tag, name, description });
+}
+
 const CommunityProjectsPage = ({ handle }) => {
   const community = DevHub.useQuery({ name: "community", params: { handle } });
 
@@ -236,9 +246,64 @@ const CommunityProjectsPage = ({ handle }) => {
                     adornment: "bi bi-tools",
                   },
                   label: "Create project",
-                  onClick: () => {},
+                  onClick: () => {
+                    State.update({
+                      createProject: !state.createProject,
+                    });
+                  },
                 })
               : null}
+          </div>
+          <div className="d-flex align-items-center justify-content-center">
+            {state.createProject &&
+              widget("components.organism.editor", {
+                classNames: {
+                  submit: "btn-primary",
+                  submitAdornment: "bi-check-circle-fill",
+                },
+
+                heading: "Create project",
+                isEditorActive: state.isEditorActive,
+                isEditingAllowed: Viewer.can.editCommunity,
+                onCancel: () => State.update({ createProject: false }),
+                onChangesSubmit: createProject,
+                submitLabel: "Accept",
+                data: state.teamData,
+                schema: {
+                  name: {
+                    inputProps: {
+                      min: 2,
+                      max: 60,
+                      placeholder: "Project name",
+                      required: true,
+                    },
+
+                    label: "Name",
+                    order: 1,
+                  },
+                  description: {
+                    label: "Description",
+                    order: 2,
+                    inputProps: {
+                      min: 2,
+                      max: 60,
+                      placeholder:
+                        "Describe your project in one short sentence that will appear below the tile of the project on this page.",
+                      required: true,
+                    },
+                  },
+                  tag: {
+                    inputProps: {
+                      min: 2,
+                      max: 30,
+                      placeholder: "tag",
+                      required: true,
+                    },
+                    label: "Tag",
+                    order: 3,
+                  },
+                },
+              })}
           </div>
 
           {community_projects_metadata.data === null ? (
