@@ -273,7 +273,7 @@ const CommunityProjectsPage = ({ handle }) => {
                   name: {
                     inputProps: {
                       min: 2,
-                      max: 60,
+                      max: 30,
                       placeholder: "Project name",
                       required: true,
                     },
