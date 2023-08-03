@@ -139,8 +139,6 @@ const Viewer = {
 /* END_INCLUDE: "entity/viewer" */
 
 const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
-console.log("nearDevGovGigsContractAccountId", nearDevGovGigsContractAccountId);
-console.log("nearDevGovGigsWidgetsAccountId", nearDevGovGigsWidgetsAccountId);
 
 State.init({
   labelData: null,
@@ -157,16 +155,6 @@ if (!access_info || !root_members) {
   return <div>Loading...</div>;
 }
 
-console.log({ access_info });
-console.log("is moderator", Viewer.role.isDevHubModerator);
-console.log(
-  "should be moderator",
-  access_control_info.data.members_list[
-    "team:moderators"
-  ]?.children?.includes?.(context.accountId)
-);
-console.log(access_control_info.data.members_list["team:moderators"]);
-console.log("context.accountId", context.accountId);
 
 function addLabel(labelData) {
   let txn = [];

@@ -291,16 +291,11 @@ function addMemberToTeam(memberData) {
 }
 
 function addLabelToTeam(labelData) {
-  console.log(labelData);
   let txn = [];
-  console.log({ rules_list: props.rules_list });
   const possibleLabels = Object.keys(props.rules_list);
-  console.log({ possibleLabels });
   const team = props.member;
   let permissions = props.root_members[team].permissions || {};
-  console.log({ label: labelData.label, permissions });
-  permissions[labelData.label] = ["edit-post", "use-labels"]; // TODO check if this is flexibel
-  console.log({ permissions });
+  permissions[labelData.label] = ["edit-post", "use-labels"];
   if (possibleLabels.includes(labelData.label)) {
     txn.push({
       contractName: nearDevGovGigsContractAccountId,
