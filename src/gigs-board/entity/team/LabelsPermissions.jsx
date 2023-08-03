@@ -116,6 +116,8 @@ const DevHub = {
 
 const access_info = DevHub.get_access_control_info() ?? null;
 
+const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
+
 if (!access_info) {
   return <div>Loading...</div>;
 }
@@ -135,6 +137,20 @@ const permissionExplainer = (permission) => {
   }
 };
 
+function unsetRestrictedRules(name) {
+  let txn = [];
+  txn.push({
+    contractName: nearDevGovGigsContractAccountId,
+    methodName: "unset_restricted_rules",
+    args: {
+      rules: [name],
+    },
+    deposit: Big(0).pow(21), // .mul(2), // 10 -> 0
+    gas: Big(10).pow(12).mul(100),
+  });
+  Near.call(txn);
+}
+
 return (
   <div className="card" key="labelpermissions">
     <div className="card-body">
@@ -144,10 +160,22 @@ return (
     <ul class="list-group list-group-flush">
       {Object.entries(rules_list).map(([pattern, metadata]) => (
         <li class="list-group-item" key={pattern}>
-          <span class="badge text-bg-primary" key={`${pattern}-permission`}>
-            {permissionExplainer(pattern)}
-          </span>
-          {metadata.description}
+          <div class="d-flex justify-content-between">
+            <div>
+              <span class="badge text-bg-primary" key={`${pattern}-permission`}>
+                {permissionExplainer(pattern)}
+              </span>
+              {metadata.description}
+            </div>
+            {isContractOwner ? (
+              <button
+                className="btn btn-sm btn-light"
+                onClick={() => unsetRestrictedRules(pattern)}
+              >
+                Remove label
+              </button>
+            ) : null}
+          </div>
         </li>
       ))}
     </ul>
