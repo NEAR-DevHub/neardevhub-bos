@@ -122,19 +122,34 @@ if (communityData === null) {
 
 const Telegram = (
   <div>
-    <iframe
-      iframeResizer
-      src={
-        "https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups-ui/" +
-        communityData.telegram_handle
-      }
-      frameborder="0"
-      // Required by iframeResizer
-      style={{
-        width: "1px",
-        minWidth: "100%",
-      }}
-    ></iframe>
+    {communityData.telegram_handle.map((tg) => (
+      <>
+        <iframe
+          iframeResizer
+          src={
+            "https://j96g3uepe0.execute-api.us-east-1.amazonaws.com/groups-ui/" +
+            tg
+          }
+          frameborder="0"
+          // width and minWidth required by iframeResizer
+          style={{
+            width: "1px",
+            minWidth: "100%",
+            marginTop: "20px",
+          }}
+        ></iframe>
+
+        <a href={"https://t.me/" + tg} target="_blank">
+          {widget("components.atom.button", {
+            classNames: {
+              root: "btn-primary",
+            },
+
+            label: "View More",
+          })}
+        </a>
+      </>
+    ))}
   </div>
 );
 
