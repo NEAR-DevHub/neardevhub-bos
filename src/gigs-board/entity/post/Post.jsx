@@ -623,7 +623,7 @@ initState({
 });
 
 const clampedContent = needClamp
-  ? contentArray.slice(0, 5).join("\n")
+  ? contentArray.slice(0, 3).join("\n")
   : snapshot.description;
 
 const onMention = (accountId) => (
