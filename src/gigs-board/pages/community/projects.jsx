@@ -252,8 +252,9 @@ const project_mock = {
 };
 
 const onNewProjectSubmit = ({ tag, name, description }) =>
-  [typeof tag, typeof name, typeof description] ===
-  ["string", "string", "string"]
+  typeof tag === "string" &&
+  typeof name === "string" &&
+  typeof description === "string"
     ? DevHub.create_project({ tag, name, description })
     : null;
 
@@ -328,7 +329,7 @@ const CommunityProjectsPage = ({ handle }) => {
                   "entity.project.card",
 
                   {
-                    link: href("project", { id, communityHandle: handle }),
+                    link: href("project", { id: metadata.id, dir: handle }),
                     metadata,
                   },
 

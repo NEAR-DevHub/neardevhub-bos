@@ -29,6 +29,12 @@ replaceInFiles(options)
       .toString()}/* END_INCLUDE: "core/lib/gui/attractable" */`,
   })
   .pipe({
+    from: /\/\* INCLUDE: "core\/lib\/gui\/navigation" \*\/.*\/\* END_INCLUDE: "core\/lib\/gui\/navigation" \*\//gms,
+    to: `/* INCLUDE: "core/lib/gui/navigation" */\n${fs
+      .readFileSync("./module/core/lib/gui/navigation.js", "utf8")
+      .toString()}/* END_INCLUDE: "core/lib/gui/navigation" */`,
+  })
+  .pipe({
     from: /\/\* INCLUDE: "core\/lib\/struct" \*\/.*\/\* END_INCLUDE: "core\/lib\/struct" \*\//gms,
     to: `/* INCLUDE: "core/lib/struct" */\n${fs
       .readFileSync("./module/core/lib/struct.js", "utf8")

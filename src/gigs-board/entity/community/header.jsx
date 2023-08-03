@@ -51,6 +51,22 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/gui/navigation" */
+const NavUnderline = styled.ul`
+  border-bottom: 1px #eceef0 solid;
+
+  a {
+    color: #687076;
+    text-decoration: none;
+  }
+
+  a.active {
+    font-weight: bold;
+    color: #0c7283;
+    border-bottom: 4px solid #0c7283;
+  }
+`;
+/* END_INCLUDE: "core/lib/gui/navigation" */
 /* INCLUDE: "core/lib/struct" */
 const Struct = {
   deepFieldUpdate: (
@@ -203,26 +219,6 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const Header = styled.div`
-  overflow: hidden;
-  background: #fff;
-`;
-
-const NavUnderline = styled.ul`
-  border-bottom: 1px #eceef0 solid;
-
-  a {
-    color: #687076;
-    text-decoration: none;
-  }
-
-  a.active {
-    font-weight: bold;
-    color: #0c7283;
-    border-bottom: 4px solid #0c7283;
-  }
-`;
-
 const Button = styled.button`
   height: 40px;
   font-size: 14px;
@@ -234,15 +230,6 @@ const Banner = styled.div`
   max-width: 100%;
   width: 1320px;
   height: 240px;
-`;
-
-const LogoImage = styled.img`
-  top: -50px;
-`;
-
-const SizedDiv = styled.div`
-  width: 150px;
-  height: 100px;
 `;
 
 const CommunityHeader = ({ activeTabTitle, handle }) => {
@@ -311,7 +298,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   ];
 
   return (
-    <Header className="d-flex flex-column gap-3">
+    <div className="d-flex flex-column gap-3 overflow-hidden bg-white">
       <Banner
         className="object-fit-cover"
         style={{
@@ -322,15 +309,16 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       <div className="d-md-flex d-block justify-content-between container">
         <div className="d-md-flex d-block align-items-end">
           <div className="position-relative">
-            <SizedDiv>
-              <LogoImage
-                src={community.data.logo_url}
+            <div style={{ width: 150, height: 100 }}>
+              <img
                 alt="Community logo"
+                className="border border-3 border-white rounded-circle shadow position-absolute"
                 width="150"
                 height="150"
-                className="border border-3 border-white rounded-circle shadow position-absolute"
+                src={community.data.logo_url}
+                style={{ top: -50 }}
               />
-            </SizedDiv>
+            </div>
           </div>
 
           <div>
@@ -411,7 +399,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           ) : null
         )}
       </NavUnderline>
-    </Header>
+    </div>
   );
 };
 

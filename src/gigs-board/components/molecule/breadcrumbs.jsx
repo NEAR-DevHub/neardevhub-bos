@@ -58,19 +58,22 @@ const Breadcrumbs = ({ classNames, path }) =>
   ) : (
     <div
       aria-label="breadcrumb"
-      className={["d-flex align-items-end", classNames?.root ?? ""].join(" ")}
+      className={["d-flex", classNames?.root ?? ""].join(" ")}
       style={{ backgroundColor: "#181818" }}
     >
-      <ol className="breadcrumb m-0">
+      <ol className="breadcrumb d-flex align-items-end m-0 h-100">
         {path.map(({ isActive, label, pageId, params }) => (
           <li
             aria-current="page"
-            className={["breadcrumb-item", isActive ? "active" : ""].join(" ")}
+            className={[
+              "breadcrumb-item d-flex",
+              isActive ? "active" : "",
+            ].join(" ")}
           >
             <a
-              className={["m-0 text-white", classNames?.link ?? ""].join(" ")}
+              className={["text-white", classNames?.link ?? ""].join(" ")}
               href={href(pageId, params ?? {})}
-              style={{ fontWeight: "normal" }}
+              style={{ paddingBottom: 3, lineHeight: 1, fontWeight: 420 }}
             >
               {label}
             </a>

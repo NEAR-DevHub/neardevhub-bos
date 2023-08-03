@@ -124,34 +124,38 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const CommunitiesPage = () => (
-  <div className="d-flex flex-column">
-    {widget("components.organism.app-header", { style: { marginBottom: 0 } })}
+const CommunitiesPage = () =>
+  widget("components.template.app-layout", {
+    banner: (
+      <div
+        className="d-flex justify-content-between p-4"
+        style={{ backgroundColor: "#181818" }}
+      >
+        <div className="d-flex flex-column gap-3">
+          <h1 className="m-0 fs-4 text-white">Communities</h1>
 
-    <div className="d-flex flex-column gap-4 p-4">
-      <div className="d-flex justify-content-between">
-        <div className="d-flex flex-column gap-2">
-          <h1 className="m-0 fs-4">Communities</h1>
-
-          <p className="m-0 text-secondary fs-6">
-            Discover developer communities on NEAR
+          <p className="m-0 text-muted fs-6">
+            Discover developer communities on BOS
           </p>
         </div>
 
         <div className="d-flex flex-column justify-content-center">
-          <a className="btn btn-primary" href={href("community.new")}>
-            Create community
-          </a>
+          {widget("components.atom.button", {
+            href: href("community.new"),
+            label: "Create community",
+            type: "link",
+          })}
         </div>
       </div>
+    ),
 
-      <div className="d-flex flex-wrap gap-4">
+    children: (
+      <div className="d-flex flex-wrap gap-4 p-4">
         {(DevHub.get_all_communities() ?? []).map((community) =>
           widget("entity.community.card", community, community.handle)
         )}
       </div>
-    </div>
-  </div>
-);
+    ),
+  });
 
 return CommunitiesPage(props);

@@ -71,7 +71,7 @@ const AppHeader = ({ path }) => (
       </a>
 
       {widget("components.molecule.breadcrumbs", {
-        classNames: { link: "h5" },
+        classNames: { link: "fs-5" },
         path,
       })}
     </div>

@@ -51,6 +51,22 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/gui/navigation" */
+const NavUnderline = styled.ul`
+  border-bottom: 1px #eceef0 solid;
+
+  a {
+    color: #687076;
+    text-decoration: none;
+  }
+
+  a.active {
+    font-weight: bold;
+    color: #0c7283;
+    border-bottom: 4px solid #0c7283;
+  }
+`;
+/* END_INCLUDE: "core/lib/gui/navigation" */
 /* INCLUDE: "core/lib/uuid" */
 const uuid = () =>
   [Date.now().toString(16)]
@@ -290,7 +306,7 @@ const project_mock = {
   },
 };
 
-const ProjectPage = ({ communityHandle, id, view: selectedViewId }) => {
+const ProjectPage = ({ dir, id, view: selectedViewId }) => {
   const project =
     {
       data: project_mock,
@@ -307,16 +323,8 @@ const ProjectPage = ({ communityHandle, id, view: selectedViewId }) => {
       path: [
         {
           label: "Projects",
-
-          pageId:
-            typeof communityHandle === "string"
-              ? "community.projects"
-              : "projects",
-
-          params:
-            typeof communityHandle === "string"
-              ? { handle: communityHandle }
-              : null,
+          pageId: typeof dir === "string" ? "community.projects" : "projects",
+          params: typeof dir === "string" ? { handle: dir } : null,
         },
       ],
 
@@ -329,17 +337,19 @@ const ProjectPage = ({ communityHandle, id, view: selectedViewId }) => {
           <div className="d-flex flex-column">
             <ul class="nav nav-tabs">
               {Object.values(project.data.view_configs).map((view) => (
-                <li class="nav-item" key={view.id}>
+                <li className="nav-item" key={view.id}>
                   <a
+                    aria-current={defaultActive && "page"}
+                    className={[
+                      "nav-link d-inline-flex gap-2",
+                      view.id === selectedViewId ? "active" : "",
+                    ].join(" ")}
                     href={href("project", {
                       id: project.data.metadata.id,
                       view: view.id,
                     })}
-                    class={`nav-link ${
-                      view.id === selectedViewId ? "active" : ""
-                    }`}
                   >
-                    {view.name}
+                    <span>{view.name}</span>
                   </a>
                 </li>
               ))}
@@ -349,7 +359,7 @@ const ProjectPage = ({ communityHandle, id, view: selectedViewId }) => {
                   href={href("project", { id, view: "new" })}
                   class={`nav-link ${selectedViewId === "new" ? "active" : ""}`}
                 >
-                  <i class="bi bi-plus"></i>
+                  <i class="bi bi-plus" />
                   <span>New view</span>
                 </a>
               </li>
