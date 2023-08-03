@@ -301,4 +301,4 @@ const CommunityEditorBrandingSection = ({
   );
 };
 
-return <CommunityEditorBrandingSection {...props} />;
+return CommunityEditorBrandingSection(props);

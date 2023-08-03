@@ -134,7 +134,7 @@ const CommunitiesPage = () => (
           <h1 className="m-0 fs-4">Communities</h1>
 
           <p className="m-0 text-secondary fs-6">
-            Discover NEAR developer communities
+            Discover developer communities on NEAR
           </p>
         </div>
 

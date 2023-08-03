@@ -252,7 +252,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                           .filter((string) => string.length > 0)
                           .join(", ")
                       : form.values[fieldKey]
-                    )?.toString?.() || "none"}
+                    )?.toString?.() ?? "none"}
                   </p>
                 ) : (
                   <p className={[contentDisplayClassName, "w-75"].join(" ")}>
@@ -299,6 +299,7 @@ const Editor = ({
   data,
   fieldsRender: customFieldsRender,
   formatter: toFormatted,
+  fullWidth,
   heading,
   isEditorActive,
   isEditingAllowed,
@@ -351,6 +352,7 @@ const Editor = ({
 
   return widget("components.molecule.tile", {
     className: classNames.root,
+    fullWidth,
     heading,
     noFrame: noEditorFrame,
 

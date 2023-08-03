@@ -301,6 +301,7 @@ const CommunityProjectsPage = ({ handle }) => {
 
           {state.isProjectFormDisplayed &&
             widget("components.organism.editor", {
+              fullWidth: true,
               heading: "New project",
               isEditorActive: state.isEditorActive,
               isEditingAllowed: Viewer.can.editCommunity(community.data),
