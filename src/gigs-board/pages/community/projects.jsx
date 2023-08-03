@@ -222,37 +222,43 @@ const CommunityProjectsPage = ({ handle }) => {
       handle,
       title: "Projects",
 
-      children:
-        community_projects_metadata.data === null ? (
-          <div
-            className="d-flex flex-column align-items-center justify-content-center gap-4"
-            style={{ height: 384 }}
-          >
-            <h5 className="h5 d-inline-flex gap-2 m-0">
-              This community doesn't own any projects
-            </h5>
+      children: (
+        <div className="d-flex flex-column gap-4">
+          <div className="d-flex justify-content-end gap-3">
+            {Viewer.can.editCommunity(community.data)
+              ? widget("components.atom.button", {
+                  classNames: {
+                    root: "btn-primary",
+                    adornment: "bi bi-tools",
+                  },
+                  label: "Create project",
+                  onClick: () => {},
+                })
+              : null}
+          </div>
 
-            {Viewer.can.editCommunity(community.data) ? (
-              <a
-                className="btn shadow btn-primary d-inline-flex gap-2"
-                href={href("project.new")}
-              >
-                <i className="bi bi-tools" />
-                <span>Create project</span>
-              </a>
-            ) : null}
-          </div>
-        ) : (
-          <div className="d-flex flex-wrap gap-4" style={{ minHeight: 384 }}>
-            {community_projects_metadata.data.map(({ id, ...metadata }) =>
-              widget(
-                "entity.project.card",
-                { id, link: href("project", { id }), ...metadata },
-                id
-              )
-            )}
-          </div>
-        ),
+          {community_projects_metadata.data === null ? (
+            <div
+              className="d-flex flex-column align-items-center justify-content-center gap-4"
+              style={{ height: 384 }}
+            >
+              <h5 className="h5 d-inline-flex gap-2 m-0">
+                This community doesn't own any projects
+              </h5>
+            </div>
+          ) : (
+            <div className="d-flex flex-wrap gap-4" style={{ minHeight: 384 }}>
+              {community_projects_metadata.data.map(({ id, ...metadata }) =>
+                widget(
+                  "entity.project.card",
+                  { id, link: href("project", { id }), ...metadata },
+                  id
+                )
+              )}
+            </div>
+          )}
+        </div>
+      ),
     })
   );
 };

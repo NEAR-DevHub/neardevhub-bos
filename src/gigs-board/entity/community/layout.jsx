@@ -60,7 +60,7 @@ const CommunityLayout = ({ children, handle, path, title }) => (
     {typeof handle === "string" ? (
       <>
         {widget("entity.community.header", { activeTabTitle: title, handle })}
-        <div style={{ padding: "0 32px" }}>{children}</div>
+        <div className="p-4">{children}</div>
       </>
     ) : (
       <div class="alert alert-danger" role="alert">

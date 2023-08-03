@@ -197,7 +197,6 @@ const Viewer = {
 const Header = styled.div`
   overflow: hidden;
   background: #fff;
-  margin-bottom: 25px;
 `;
 
 const NavUnderline = styled.ul`
