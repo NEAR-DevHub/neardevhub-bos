@@ -155,7 +155,6 @@ if (!access_info || !root_members) {
   return <div>Loading...</div>;
 }
 
-
 function addLabel(labelData) {
   let txn = [];
   txn.push({
