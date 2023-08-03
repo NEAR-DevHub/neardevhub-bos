@@ -61,6 +61,10 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
+  create_project: ({ tag, name, description }) =>
+    Near.call(devHubAccountId, "create_project", { tag, name, description }) ??
+    null,
+
   create_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
