@@ -1,4 +1,4 @@
-d; /* INCLUDE: "common.jsx" */
+/* INCLUDE: "common.jsx" */
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -52,23 +52,37 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const ProjectLayout = ({ id, children, description, name, path, tag }) => (
-  <>
-    {widget("components.layout.app-header")}
+const layoutConfig = {
+  bannerHeight: "142px",
+};
 
-    <div className="d-flex flex-column gap-4 w-100 h-100">
-      {/* TODO: Add breadcrumbs rendered from path prop */}
+const ProjectLayout = ({ children, metadata, path }) =>
+  widget("components.template.app-layout", {
+    path,
 
+    banner: (
       <div
         className="d-flex justify-content-between gap-3 p-4 text-white"
-        style={{ backgroundColor: "#181818" }}
+        style={{
+          backgroundColor: "#181818",
+          height: layoutConfig.bannerHeight,
+          maxHeight: layoutConfig.bannerHeight,
+        }}
       >
         <div className="d-flex flex-column gap-2">
-          <h1 className="m-0">{name}</h1>
-          <p className="m-0">{description}</p>
+          <h1 className="m-0">{metadata.name}</h1>
+          <p className="m-0">{metadata.description}</p>
         </div>
 
-        <div className="d-flex flex-column gap-3 justify-content-end">
+        <div className="d-flex flex-column gap-3 justify-content-between align-items-end h-100">
+          <span
+            class="badge bg-primary rounded-4 text-decoration-none"
+            style={{ cursor: "default" }}
+            title="DevHub tag"
+          >
+            {metadata.tag}
+          </span>
+
           {widget("components.atom.button", {
             classNames: { adornment: "bi bi-gear-fill" },
             disabled: true,
@@ -76,16 +90,19 @@ const ProjectLayout = ({ id, children, description, name, path, tag }) => (
           })}
         </div>
       </div>
+    ),
 
-      {typeof id === "string" ? (
-        <div className="px-4">{children}</div>
-      ) : (
-        <div class="alert alert-danger" role="alert">
-          Error: project id not found in URL parameters
-        </div>
-      )}
-    </div>
-  </>
-);
+    children: (
+      <div className="d-flex flex-column gap-4 w-100 h-100">
+        {typeof metadata.id === "string" ? (
+          <div className="px-4">{children}</div>
+        ) : (
+          <div class="alert alert-danger" role="alert">
+            Error: project id not found in URL parameters
+          </div>
+        )}
+      </div>
+    ),
+  });
 
 return ProjectLayout(props);

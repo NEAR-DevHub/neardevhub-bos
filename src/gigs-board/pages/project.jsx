@@ -205,7 +205,9 @@ const Viewer = {
   },
 
   projectPermissions: (projectId) =>
-    Near.view(devHubAccountId, "check_project_permissions", { id: projectId }),
+    Near.view(devHubAccountId, "check_project_permissions", {
+      id: projectId,
+    }) ?? { can_configure: false },
 
   role: {
     isDevHubModerator:
@@ -300,7 +302,12 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
     <div>Loading...</div>
   ) : (
     widget("entity.project.layout", {
-      ...(project.data?.metadata ?? {}),
+      metadata: project.data?.metadata ?? {},
+
+      path: [
+        { label: "Projects", link: href("projects") },
+        { label: project.data?.metadata?.name ?? "Loading..." },
+      ],
 
       children:
         project.data === null ? (

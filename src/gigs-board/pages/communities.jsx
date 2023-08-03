@@ -126,7 +126,7 @@ const DevHub = {
 
 const CommunitiesPage = () => (
   <div className="d-flex flex-column">
-    {widget("components.layout.app-header", { style: { marginBottom: 0 } })}
+    {widget("components.organism.app-header", { style: { marginBottom: 0 } })}
 
     <div className="d-flex flex-column gap-4 p-4">
       <div className="d-flex justify-content-between">

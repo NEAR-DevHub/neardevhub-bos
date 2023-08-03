@@ -165,7 +165,7 @@ const UserList = (name, users) => {
 };
 
 const Teams = (
-  <div class="d-flex flex-column align-items-center gap-4 p-4">
+  <div class="d-flex flex-column align-items-center gap-4">
     {widget("components.molecule.tile", {
       heading: "Admins",
       minHeight: 0,

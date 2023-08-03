@@ -161,7 +161,7 @@ const Gradient = styled.div`
   }
 `;
 
-const header = (
+const banner = (
   <div className="d-flex flex-column">
     <Gradient className="d-flex flex-column justify-content-center">
       <div className="subtitle-above text-white opacity-75 mb-2">
@@ -231,8 +231,8 @@ const FeedPage = ({ author, recency, tag }) => {
     State.update((lastKnownState) => ({ ...lastKnownState, author }));
   };
 
-  return widget("components.layout.Page", {
-    header,
+  return widget("components.template.app-layout", {
+    banner,
 
     children: widget("feature.post-search.panel", {
       author: state.author,

@@ -52,10 +52,13 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-return (
-  <div className="h-100" style={{ minHeight: "86vh" }}>
-    {widget("components.layout.app-header", {})}
-    {props.header}
-    {props.children}
+const AppLayout = ({ banner, children, path }) => (
+  <div className="d-flex flex-column w-100 h-100" style={{ minHeight: "86vh" }}>
+    {widget("components.organism.app-header")}
+    {widget("components.molecule.breadcrumbs", { path })}
+    {banner}
+    <div>{children}</div>
   </div>
 );
+
+return AppLayout(props);

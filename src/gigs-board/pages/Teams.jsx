@@ -146,6 +146,6 @@ const pageContent = (
   </div>
 );
 
-return widget("components.layout.Page", {
+return widget("components.template.app-layout", {
   children: pageContent,
 });

@@ -333,7 +333,9 @@ const Viewer = {
   },
 
   projectPermissions: (projectId) =>
-    Near.view(devHubAccountId, "check_project_permissions", { id: projectId }),
+    Near.view(devHubAccountId, "check_project_permissions", {
+      id: projectId,
+    }) ?? { can_configure: false },
 
   role: {
     isDevHubModerator:
@@ -403,7 +405,7 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
       lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onSubmit = () =>
-    DevHub.edit_community_github({
+    DevHub.edit_project_view({
       handle: communityHandle,
 
       github: JSON.stringify({
