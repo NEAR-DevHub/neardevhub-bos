@@ -358,7 +358,10 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
               <li class="nav-item" key={view.id}>
                 <a
                   href={href("project", { id, view: "new" })}
-                  class={`nav-link ${selectedViewId === "new" ? "active" : ""}`}
+                  className={[
+                    "nav-link",
+                    selectedViewId === "new" ? "active" : "",
+                  ].join(" ")}
                 >
                   <i class="bi bi-plus" />
                   <span>New view</span>
