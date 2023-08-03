@@ -288,7 +288,7 @@ const CommunityProjectsPage = ({ handle }) => {
                       min: 2,
                       max: 60,
                       placeholder:
-                        "Describe your project in one short sentence that will appear below the tile of the project on this page.",
+                        "Describe your project in one short sentence.",
                       required: true,
                     },
                   },
