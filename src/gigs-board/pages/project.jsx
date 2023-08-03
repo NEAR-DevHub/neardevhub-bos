@@ -239,7 +239,7 @@ const Viewer = {
 const project_mock = {
   metadata: {
     id: "3456345",
-    tag: "test-project",
+    tag: "i-am-a-project-tag",
     name: "Test Project",
     description: "Test project please ignore",
     owner_community_handles: ["devhub-test"],
@@ -248,7 +248,7 @@ const project_mock = {
   view_configs: {
     "near-social-kanban": {
       type: "kanban-view",
-      name: "near.social",
+      name: "Lorem",
       id: "near-social-kanban",
 
       tags: {
@@ -265,7 +265,7 @@ const project_mock = {
 
     "gigs-board-kanban": {
       type: "kanban-view",
-      name: "Gigs Board",
+      name: "Ipsum",
       id: "gigs-board-kanban",
 
       tags: {
@@ -282,7 +282,7 @@ const project_mock = {
 
     "funding-kanban": {
       type: "kanban-view",
-      name: "Funding",
+      name: "Yet another kanban",
       id: "funding-kanban",
 
       tags: {
@@ -357,13 +357,13 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
 
               <li class="nav-item" key={view.id}>
                 <a
-                  href={href("project", { id, view: "new" })}
+                  href={href("project", { id, view: "new", dir })}
                   className={[
-                    "nav-link",
+                    "nav-link d-flex gap-2",
                     selectedViewId === "new" ? "active" : "",
                   ].join(" ")}
                 >
-                  <i class="bi bi-plus" />
+                  <i class="bi bi-plus-lg" />
                   <span>New view</span>
                 </a>
               </li>

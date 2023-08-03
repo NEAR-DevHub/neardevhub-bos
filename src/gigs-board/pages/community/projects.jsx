@@ -244,7 +244,7 @@ const projectSchema = {
 const project_mock = {
   metadata: {
     id: "3456345",
-    tag: "test-project",
+    tag: "i-am-a-project-tag",
     name: "Test Project",
     description: "Test project please ignore",
     owner_community_handles: ["devhub-test"],
