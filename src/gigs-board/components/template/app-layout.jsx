@@ -54,10 +54,9 @@ function href(widgetName, linkProps) {
 
 const AppLayout = ({ banner, children, path }) => (
   <div className="d-flex flex-column w-100 h-100" style={{ minHeight: "86vh" }}>
-    {widget("components.organism.app-header")}
-    {widget("components.molecule.breadcrumbs", { path })}
+    {widget("components.organism.app-header", { path })}
     {banner}
-    <div>{children}</div>
+    <div className="w-100 h-100">{children}</div>
   </div>
 );
 

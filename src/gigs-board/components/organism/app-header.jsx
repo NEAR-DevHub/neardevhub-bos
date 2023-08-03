@@ -63,16 +63,25 @@ const Header = styled.div`
   }
 `;
 
-return (
-  <Header className="d-flex justify-content-between">
-    <a href={href("Feed")}>
-      <img src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"></img>
-    </a>
+const AppHeader = ({ path }) => (
+  <Header className="d-flex justify-content-between align-items-center">
+    <div className="d-flex gap-2">
+      <a href={href("Feed")}>
+        <img src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"></img>
+      </a>
+
+      {widget("components.molecule.breadcrumbs", {
+        classNames: { link: "h5" },
+        path,
+      })}
+    </div>
 
     <div className="d-flex align-items-center gap-3">
-      <a href={href("communities")} class="text-white me-2">
-        Communities
-      </a>
+      {!(path ?? []).some(({ pageId }) => pageId === "communities") ? (
+        <a href={href("communities")} class="text-white me-2">
+          Communities
+        </a>
+      ) : null}
 
       <a
         className="text-white"
@@ -85,12 +94,12 @@ return (
       <div className="btn-group" role="group">
         <button
           type="button"
-          className="btn btn-outline-light rounded-circle"
+          className="btn btn-outline-light border-opacity-75 rounded-circle"
           style={{
             width: "30px",
             height: "30px",
             padding: "6px 0px",
-            borderWidth: "0.5px",
+            borderWidth: "2px",
             lineHeight: "0px",
           }}
           data-bs-toggle="dropdown"
@@ -124,3 +133,5 @@ return (
     </div>
   </Header>
 );
+
+return AppHeader(props);

@@ -52,21 +52,21 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityLayout = ({ children, handle, title }) => (
-  <div className="w-100 h-100">
-    {widget("components.organism.app-header")}
+const CommunityLayout = ({ children, handle, path, title }) =>
+  widget("components.template.app-layout", {
+    path,
 
-    {typeof handle === "string" ? (
-      <>
-        {widget("entity.community.header", { activeTabTitle: title, handle })}
-        <div className="p-4">{children}</div>
-      </>
-    ) : (
-      <div class="alert alert-danger" role="alert">
-        Error: community handle not found in URL parameters
-      </div>
-    )}
-  </div>
-);
+    banner:
+      typeof handle === "string" ? (
+        widget("entity.community.header", { activeTabTitle: title, handle })
+      ) : (
+        <div class="alert alert-danger" role="alert">
+          Error: community handle not found in URL parameters
+        </div>
+      ),
+
+    children:
+      typeof handle === "string" ? <div className="p-4">{children}</div> : null,
+  });
 
 return CommunityLayout(props);

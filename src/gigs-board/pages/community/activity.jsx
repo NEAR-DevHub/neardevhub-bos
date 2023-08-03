@@ -133,6 +133,14 @@ const CommunityActivityPage = ({ handle }) => {
 
   return widget("entity.community.layout", {
     handle,
+
+    path: [
+      {
+        label: "Communities",
+        pageId: "communities",
+      },
+    ],
+
     title: "Activity",
 
     children:

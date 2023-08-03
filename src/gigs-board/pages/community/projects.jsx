@@ -203,6 +203,44 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
+const projectSchema = {
+  name: {
+    inputProps: {
+      min: 2,
+      max: 30,
+      placeholder: "Project name",
+      required: true,
+    },
+
+    label: "Name",
+    order: 1,
+  },
+
+  description: {
+    label: "Description",
+    order: 2,
+
+    inputProps: {
+      min: 2,
+      max: 60,
+      placeholder: "Describe your project in one short sentence.",
+      required: true,
+    },
+  },
+
+  tag: {
+    inputProps: {
+      min: 2,
+      max: 30,
+      placeholder: "awesome-app",
+      required: true,
+    },
+
+    label: "Tag",
+    order: 3,
+  },
+};
+
 const project_mock = {
   metadata: {
     id: "3456345",
@@ -213,17 +251,18 @@ const project_mock = {
   },
 };
 
-initState({
-  createProject: false,
-  isEditorActive: true,
-});
-
-function createProject({ tag, name, description }) {
-  if (tag && name && description)
-    DevHub.create_project({ tag, name, description });
-}
+const onNewProjectSubmit = ({ tag, name, description }) =>
+  [typeof tag, typeof name, typeof description] ===
+  ["string", "string", "string"]
+    ? DevHub.create_project({ tag, name, description })
+    : null;
 
 const CommunityProjectsPage = ({ handle }) => {
+  State.init({
+    isEditorActive: true,
+    isProjectFormDisplayed: false,
+  });
+
   const community = DevHub.useQuery({ name: "community", params: { handle } });
 
   const community_projects_metadata =
@@ -233,83 +272,44 @@ const CommunityProjectsPage = ({ handle }) => {
       params: { community_handle: handle },
     });
 
+  const isToolbarHidden = state.isProjectFormDisplayed;
+
   return community_projects_metadata.data === null &&
     community_projects_metadata.isLoading ? (
     <div>Loading...</div>
   ) : (
     widget("entity.community.layout", {
       handle,
+      path: [{ label: "Communities", pageId: "communities" }],
       title: "Projects",
 
       children: (
         <div className="d-flex flex-column gap-4">
-          <div className="d-flex justify-content-end gap-3">
-            {Viewer.can.editCommunity(community.data)
-              ? widget("components.atom.button", {
-                  classNames: {
-                    root: "btn-primary",
-                    adornment: "bi bi-tools",
-                  },
-                  label: "Create project",
-                  onClick: () => {
-                    State.update({
-                      createProject: !state.createProject,
-                    });
-                  },
-                })
-              : null}
-          </div>
-          <div className="d-flex align-items-center justify-content-center">
-            {state.createProject &&
-              widget("components.organism.editor", {
-                classNames: {
-                  submit: "btn-primary",
-                  submitAdornment: "bi-check-circle-fill",
-                },
+          {!isToolbarHidden ? (
+            <div className="d-flex justify-content-end gap-3">
+              {Viewer.can.editCommunity(community.data)
+                ? widget("components.atom.button", {
+                    classNames: { adornment: "bi bi-tools" },
+                    label: "New project",
 
-                heading: "Create project",
-                isEditorActive: state.isEditorActive,
-                isEditingAllowed: Viewer.can.editCommunity,
-                onCancel: () => State.update({ createProject: false }),
-                onChangesSubmit: createProject,
-                submitLabel: "Accept",
-                data: state.teamData,
-                schema: {
-                  name: {
-                    inputProps: {
-                      min: 2,
-                      max: 30,
-                      placeholder: "Project name",
-                      required: true,
-                    },
+                    onClick: () =>
+                      State.update({ isProjectFormDisplayed: true }),
+                  })
+                : null}
+            </div>
+          ) : null}
 
-                    label: "Name",
-                    order: 1,
-                  },
-                  description: {
-                    label: "Description",
-                    order: 2,
-                    inputProps: {
-                      min: 2,
-                      max: 60,
-                      placeholder:
-                        "Describe your project in one short sentence.",
-                      required: true,
-                    },
-                  },
-                  tag: {
-                    inputProps: {
-                      min: 2,
-                      max: 30,
-                      placeholder: "tag",
-                      required: true,
-                    },
-                    label: "Tag",
-                    order: 3,
-                  },
-                },
-              })}
-          </div>
+          {state.isProjectFormDisplayed &&
+            widget("components.organism.editor", {
+              heading: "New project",
+              isEditorActive: state.isEditorActive,
+              isEditingAllowed: Viewer.can.editCommunity(community.data),
+              onCancel: () => State.update({ isProjectFormDisplayed: false }),
+              onChangesSubmit: onNewProjectSubmit,
+              submitLabel: "Create",
+              data: state.teamData,
+              schema: projectSchema,
+            })}
 
           {community_projects_metadata.data === null ? (
             <div
@@ -322,11 +322,16 @@ const CommunityProjectsPage = ({ handle }) => {
             </div>
           ) : (
             <div className="d-flex flex-wrap gap-4" style={{ minHeight: 384 }}>
-              {community_projects_metadata.data.map(({ id, ...metadata }) =>
+              {community_projects_metadata.data.map((metadata) =>
                 widget(
                   "entity.project.card",
-                  { id, link: href("project", { id }), ...metadata },
-                  id
+
+                  {
+                    link: href("project", { id, communityHandle: handle }),
+                    metadata,
+                  },
+
+                  metadata.id
                 )
               )}
             </div>

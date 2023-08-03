@@ -290,7 +290,7 @@ const project_mock = {
   },
 };
 
-const ProjectPage = ({ id, view: selectedViewId }) => {
+const ProjectPage = ({ communityHandle, id, view: selectedViewId }) => {
   const project =
     {
       data: project_mock,
@@ -305,8 +305,19 @@ const ProjectPage = ({ id, view: selectedViewId }) => {
       metadata: project.data?.metadata ?? {},
 
       path: [
-        { label: "Projects", link: href("projects") },
-        { label: project.data?.metadata?.name ?? "Loading..." },
+        {
+          label: "Projects",
+
+          pageId:
+            typeof communityHandle === "string"
+              ? "community.projects"
+              : "projects",
+
+          params:
+            typeof communityHandle === "string"
+              ? { handle: communityHandle }
+              : null,
+        },
       ],
 
       children:

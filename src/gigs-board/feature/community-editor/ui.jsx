@@ -328,11 +328,6 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
           })}
 
           {widget("components.organism.editor", {
-            classNames: {
-              submit: "btn-primary",
-              submitAdornment: "bi-check-circle-fill",
-            },
-
             heading: "Basic information",
             isEditorActive: isCommunityNew,
 
@@ -404,11 +399,6 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
           })}
 
           {widget("components.organism.editor", {
-            classNames: {
-              submit: "btn-primary",
-              submitAdornment: "bi-check-circle-fill",
-            },
-
             heading: "About",
 
             isEditingAllowed:
@@ -462,11 +452,6 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
           })}
 
           {widget("components.organism.editor", {
-            classNames: {
-              submit: "btn-primary",
-              submitAdornment: "bi-check-circle-fill",
-            },
-
             formatter: accessControlSectionFormatter,
             heading: "Access control",
 
@@ -488,11 +473,6 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
           })}
 
           {widget("components.organism.editor", {
-            classNames: {
-              submit: "btn-primary",
-              submitAdornment: "bi-check-circle-fill",
-            },
-
             heading: "Wiki page 1",
 
             isEditingAllowed:
@@ -518,11 +498,6 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
           })}
 
           {widget("components.organism.editor", {
-            classNames: {
-              submit: "btn-primary",
-              submitAdornment: "bi-check-circle-fill",
-            },
-
             heading: "Wiki page 2",
 
             isEditingAllowed:

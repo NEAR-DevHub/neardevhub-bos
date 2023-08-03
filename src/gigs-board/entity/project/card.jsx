@@ -80,7 +80,7 @@ const AttractableImage = styled.img`
 `;
 /* END_INCLUDE: "core/lib/gui/attractable" */
 
-const ProjectCard = ({ description, link, name }) => (
+const ProjectCard = ({ link, metadata }) => (
   <AttractableLink
     href={link}
     className="d-flex flex-shrink-0 rounded-4 border border-2 p-3 text-black text-decoration-none"
@@ -102,14 +102,14 @@ const ProjectCard = ({ description, link, name }) => (
           className="h5 m-0 text-nowrap overflow-hidden"
           style={{ textOverflow: "ellipsis" }}
         >
-          {name}
+          {metadata.name}
         </h5>
 
         <p
           className="card-text text-secondary overflow-hidden"
           style={{ fontSize: 12, textOverflow: "ellipsis" }}
         >
-          {description}
+          {metadata.description}
         </p>
       </div>
     </div>
