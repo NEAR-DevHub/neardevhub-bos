@@ -264,6 +264,9 @@ const DevHub = {
   create_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
+  edit_project_view: ({ config }) =>
+    Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
+
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
@@ -371,6 +374,10 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
     stateKey: "board",
   });
 
+  const errors = {
+    noProjectId: typeof projectId !== "string",
+  };
+
   const isNewView = form.values.id === null;
 
   const editorToggle = (forcedState) =>
@@ -449,7 +456,7 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
 
         <div className="d-flex flex-column align-items-center gap-3">
           {form.values.columns.map(
-            ({ id, description, labelSearchTerms, title }) => (
+            ({ id, description, tag, title }, columnIdx) => (
               <div
                 className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
                 key={id}
@@ -459,7 +466,9 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
                     className: "flex-grow-1",
                     key: `column-${id}-title`,
                     label: "Title",
-                    onChange: form.update({ path: ["columns", id, "title"] }),
+                    onChange: form.update({
+                      path: ["columns", columnIdx, "title"],
+                    }),
                     placeholder: "👀 Review",
                     value: title,
                   })}
@@ -470,7 +479,7 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
                     label: "Description",
 
                     onChange: form.update({
-                      path: ["columns", id, "description"],
+                      path: ["columns", columnIdx, "description"],
                     }),
 
                     placeholder:
@@ -481,17 +490,17 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
 
                   {widget("components.molecule.text-input", {
                     format: "comma-separated",
-                    key: `${form.values.id}-column-${title}-labelSearchTerms`,
+                    key: `${form.values.id}-column-${title}-tag`,
 
                     label: `Search terms for all the labels
 											MUST be presented in included tickets`,
 
                     onChange: form.update({
-                      path: ["columns", id, "labelSearchTerms"],
+                      path: ["columns", columnIdx, "tag"],
                     }),
 
                     placeholder: "WG-, draft, review, proposal, ...",
-                    value: labelSearchTerms.join(", "),
+                    value: tag.join(", "),
                   })}
                 </div>
 
@@ -517,13 +526,9 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
       </>
     ) : null;
 
-  return community.data === null || (!errors.noBoards && errors.noBoardId) ? (
-    <div>
-      {(community.isLoading && "Loading...") ||
-        (!errors.noBoards && errors.noBoardId
-          ? "Error: board id not found in editor props."
-          : errors.noCommunity &&
-            `Community with handle ${communityHandle} not found.`)}
+  return errors.noProjectId ? (
+    <div class="alert alert-danger" role="alert">
+      Error: project id not found in editor props.
     </div>
   ) : (
     <div className="d-flex flex-column gap-4">
