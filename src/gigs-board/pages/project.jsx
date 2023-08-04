@@ -255,8 +255,6 @@ const project_mock = {
     description: "Test project please ignore",
     owner_community_handles: ["devhub-test"],
   },
-
-  view_ids: ["fj3938fh", "f34tf3ea45", "y45iwt4e"],
 };
 
 const views_metadata_mock = [
@@ -304,21 +302,21 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
         ) : (
           <div className="d-flex flex-column">
             <NavUnderline className="nav">
-              {viewsMetadata.map((viewMetadata) => (
-                <li className="nav-item" key={viewMetadata.id}>
+              {viewsMetadata.map((metadata) => (
+                <li className="nav-item" key={metadata.id}>
                   <a
                     aria-current={defaultActive && "page"}
                     className={[
                       "nav-link d-inline-flex gap-2",
-                      viewMetadata.id === selectedViewId ? "active" : "",
+                      metadata.id === selectedViewId ? "active" : "",
                     ].join(" ")}
                     href={href("project", {
                       id: project.data.metadata.id,
-                      view: viewMetadata.id,
+                      view: metadata.id,
                       dir,
                     })}
                   >
-                    <span>{viewMetadata.name}</span>
+                    <span>{metadata.title}</span>
                   </a>
                 </li>
               ))}
@@ -338,18 +336,18 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
             </NavUnderline>
 
             <div class="tab-content">
-              {viewsMetadata.map((viewMetadata) => (
+              {viewsMetadata.map((metadata) => (
                 <div
                   class={`tab-pane fade ${
-                    viewMetadata.id === selectedViewId ? "show active" : ""
+                    metadata.id === selectedViewId ? "show active" : ""
                   }`}
                   role="tabpanel"
                   tabindex="0"
-                  key={viewMetadata.id}
+                  key={metadata.id}
                 >
                   {widget("feature.project.view-configurator", {
-                    config: view,
-                    link: href("project", { id, view: viewMetadata.id }),
+                    link: href("project", { id, view: metadata.id }),
+                    metadata,
                     permissions,
                     projectId: id,
                   })}
@@ -364,7 +362,10 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
                 tabindex="0"
                 key={view.id}
               >
-                {widget("feature.project.view-configurator", { projectId: id })}
+                {widget("feature.project.view-configurator", {
+                  permissions,
+                  projectId: id,
+                })}
               </div>
             </div>
           </div>

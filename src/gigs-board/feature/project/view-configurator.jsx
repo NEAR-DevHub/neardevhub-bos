@@ -101,37 +101,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -444,10 +444,11 @@ const ProjectViewConfigurator = ({
   const config = isNewView
     ? { data: ProjectViewConfigDefaults }
     : JSON.parse(
-        DevHub.useQuery({
-          name: "project_view_config",
-          params: { project_id: projectId, view_id: metadata.id },
-        })
+        view_configs_mock[metadata.id] ?? // !TODO: delete this line before release
+          DevHub.useQuery({
+            name: "project_view_config",
+            params: { project_id: projectId, view_id: metadata.id },
+          })
       );
 
   const form = useForm({
@@ -481,16 +482,18 @@ const ProjectViewConfigurator = ({
       ? [...lastKnownValue, { id: uuid(), tag: "", title: "New column" }]
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (targetId) =>
-    ({ lastKnownValue }) =>
-      lastKnownValue.filter(({ id }) => targetId !== id);
+  const columnsDeleteById = (targetId) => ({ lastKnownValue }) =>
+    lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onSubmit = () =>
     DevHub.update_project_view({
       project_id: projectId,
-      metadata: form.values.metadata,
-      config: JSON.stringify(form.values.config),
+      metadata: { ...ProjectViewMetadataDefaults, ...form.values.metadata },
+
+      config: JSON.stringify({
+        ...ProjectViewConfigDefaults,
+        ...form.values.config,
+      }),
     });
 
   const formElement =
@@ -522,9 +525,9 @@ const ProjectViewConfigurator = ({
           {widget("components.molecule.text-input", {
             className: "flex-shrink-0",
             format: "comma-separated",
-            key: `${form.values.metadata.id ?? "new-view"}-tags-included`,
+            key: `${form.values.metadata.id ?? "new-view"}-tags-required`,
             label: "Search terms for all the tags MUST be presented in posts",
-            onChange: form.update({ path: ["config", "tags", "included"] }),
+            onChange: form.update({ path: ["config", "tags", "required"] }),
             placeholder: "near-protocol-neps, ",
             value: form.values.config.tags.join(", "),
           })}
@@ -548,6 +551,7 @@ const ProjectViewConfigurator = ({
         <div className="d-flex align-items-center justify-content-between">
           <span className="d-inline-flex gap-2 m-0">
             <i className="bi bi-list-task" />
+
             <span>
               {`Columns ( max. ${ProjectViewConfiguratorSettings.maxColumnsNumber} )`}
             </span>
@@ -698,7 +702,7 @@ const ProjectViewConfigurator = ({
             </button>
 
             <button
-              disabled={false}
+              disabled={!form.hasUnsubmittedChanges}
               className="btn shadow btn-success d-inline-flex gap-2 align-items-center"
               onClick={onSubmit}
               style={{ width: "fit-content" }}
@@ -710,7 +714,7 @@ const ProjectViewConfigurator = ({
         </AttractableDiv>
       ) : null}
 
-      {widget(["entity.project", form.values.type].join("."), {
+      {widget(["entity.project", form.values.metadata.kind].join("."), {
         ...form.values,
         editorTrigger: () => editorToggle(true),
         link,
