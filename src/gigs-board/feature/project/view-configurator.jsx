@@ -101,37 +101,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -261,6 +261,13 @@ const DevHub = {
     Near.call(devHubAccountId, "create_project", { tag, name, description }) ??
     null,
 
+  update_project_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
+
+  get_project_views_metadata: ({ project_id }) =>
+    Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
+    null,
+
   create_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
@@ -348,7 +355,55 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const EditorSettings = {
+const view_configs_mock = {
+  fj3938fh: JSON.stringify({
+    tags: {
+      excluded: [],
+      required: ["near-social"],
+    },
+
+    columns: [
+      { id: "hr839hf2", tag: "widget", title: "Widget" },
+      { id: "iu495g95", tag: "integration", title: "Integration" },
+      { id: "i5hy2iu3", tag: "feature-request", title: "Feature Request" },
+    ],
+  }),
+
+  f34tf3ea45: JSON.stringify({
+    tags: {
+      excluded: [],
+      required: ["gigs-board"],
+    },
+
+    columns: [
+      { id: "l23r34t4", tag: "nep", title: "NEP" },
+      { id: "f5rn09i4", tag: "badges", title: "Badges" },
+      { id: "v33xj3u8", tag: "feature-request", title: "Feature Request" },
+    ],
+  }),
+
+  y45iwt4e: JSON.stringify({
+    tags: {
+      excluded: [],
+      required: ["funding"],
+    },
+
+    columns: [
+      { id: "gf39lk82", tag: "funding-new-request", title: "New Request" },
+
+      {
+        id: "dg39i49b",
+        tag: "funding-information-collection",
+        title: "Information Collection",
+      },
+
+      { id: "e3if93ew", tag: "funding-processing", title: "Processing" },
+      { id: "u8t3gu9f", tag: "funding-funded", title: "Funded" },
+    ],
+  }),
+};
+
+const ProjectViewConfiguratorSettings = {
   maxColumnsNumber: 20,
 };
 
@@ -357,30 +412,52 @@ const CompactContainer = styled.div`
   max-width: 100%;
 `;
 
-const ViewConfigDefaults = {
+const ProjectViewMetadataDefaults = {
   id: null,
-  type: "kanban-view",
-  name: "Untitled view",
+  kind: "kanban-view",
+  title: "Untitled project view",
+  description: "",
+};
+
+const ProjectViewConfigDefaults = {
   tags: { excluded: [], required: [] },
   columns: [],
 };
 
-const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
+const ProjectViewConfigurator = ({
+  link,
+  metadata,
+  permissions,
+  projectId,
+}) => {
   State.init({
     editingMode: "form",
     isEditorActive: false,
   });
 
+  const isNewView = (metadata ?? null) === null;
+
+  const config = isNewView
+    ? { data: ProjectViewConfigDefaults }
+    : JSON.parse(
+        DevHub.useQuery({
+          name: "project_view_config",
+          params: { project_id: projectId, view_id: metadata.id },
+        })
+      );
+
   const form = useForm({
-    initialValues: config ?? ViewConfigDefaults,
-    stateKey: "config",
+    initialValues: {
+      metadata: metadata ?? ProjectViewMetadataDefaults,
+      config,
+    },
+
+    stateKey: "form",
   });
 
   const errors = {
     noProjectId: typeof projectId !== "string",
   };
-
-  const isNewView = form.values.id === null;
 
   const editorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -395,69 +472,84 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
-    Object.keys(lastKnownValue).length < EditorSettings.maxColumnsNumber
+    Object.keys(lastKnownValue).length <
+    ProjectViewConfiguratorSettings.maxColumnsNumber
       ? [...lastKnownValue, { id: uuid(), tag: "", title: "New column" }]
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (targetId) =>
-    ({ lastKnownValue }) =>
-      lastKnownValue.filter(({ id }) => targetId !== id);
+  const columnsDeleteById = (targetId) => ({ lastKnownValue }) =>
+    lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onSubmit = () =>
     DevHub.update_project_view({
-      handle: communityHandle,
-
-      github: JSON.stringify({
-        kanbanBoards: {
-          ...boards,
-          [form.values.id]: form.values,
-        },
-      }),
+      project_id: projectId,
+      metadata: form.values.metadata,
+      config: JSON.stringify(form.values.config),
     });
 
   const formElement =
     Object.keys(form.values).length > 0 ? (
       <>
         <div className="d-flex gap-3 flex-column flex-lg-row">
-          {widget(
-            "components.molecule.text-input",
-            {
-              className: "flex-shrink-0",
-              key: `${form.values.id}-title`,
-              label: "Name",
-              onChange: form.update({ path: ["name"] }),
-              placeholder: "NEAR Protocol NEPs",
-              value: form.values.title,
-            },
-            `${form.values.id}-title`
-          )}
+          {widget("components.molecule.text-input", {
+            className: "flex-shrink-0",
+            key: `${form.values.metadata.id ?? "new-view"}-title`,
+            label: "Name",
+            onChange: form.update({ path: ["metadata", "title"] }),
+            placeholder: "NEAR Protocol NEPs",
+            value: form.values.metadata.title,
+          })}
+        </div>
+
+        {widget("components.molecule.text-input", {
+          className: "w-100",
+          inputProps: { className: "h-75" },
+          key: `${form.values.metadata.id ?? "new-view"}-description`,
+          label: "Description",
+          multiline: true,
+          onChange: form.update({ path: ["metadata", "description"] }),
+          placeholder: "Latest NEAR Enhancement Proposals by status.",
+          value: form.values.metadata.description,
+        })}
+
+        <div className="d-flex gap-3 flex-column flex-lg-row">
+          {widget("components.molecule.text-input", {
+            className: "flex-shrink-0",
+            format: "comma-separated",
+            key: `${form.values.metadata.id ?? "new-view"}-tags-included`,
+            label: "Search terms for all the tags MUST be presented in posts",
+            onChange: form.update({ path: ["config", "tags", "included"] }),
+            placeholder: "near-protocol-neps, ",
+            value: form.values.config.tags.join(", "),
+          })}
         </div>
 
         <div className="d-flex gap-3 flex-column flex-lg-row">
-          {widget(
-            "components.molecule.text-input",
-            {
-              className: "flex-shrink-0",
-              key: `${form.values.id}-title`,
-              label: "Tag",
-              onChange: form.update({ path: ["tag"] }),
-              placeholder: "near-protocol-neps",
-              value: form.values.title,
-            },
-            `${form.values.id}-title`
-          )}
+          {widget("components.molecule.text-input", {
+            className: "flex-shrink-0",
+            format: "comma-separated",
+            key: `${form.values.metadata.id ?? "new-view"}-tags-excluded`,
+
+            label:
+              "Search terms for all the tags MUST NOT be presented in posts",
+
+            onChange: form.update({ path: ["config", "tags", "excluded"] }),
+            placeholder: "near-protocol-neps, ",
+            value: form.values.config.tags.join(", "),
+          })}
         </div>
 
         <div className="d-flex align-items-center justify-content-between">
           <span className="d-inline-flex gap-2 m-0">
             <i className="bi bi-list-task" />
-            <span>Columns ( max. {EditorSettings.maxColumnsNumber} )</span>
+            <span>
+              {`Columns ( max. ${ProjectViewConfiguratorSettings.maxColumnsNumber} )`}
+            </span>
           </span>
         </div>
 
         <div className="d-flex flex-column align-items-center gap-3">
-          {form.values.columns.map(
+          {form.values.config.columns.map(
             ({ id, description, tag, title }, columnIdx) => (
               <div
                 className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
@@ -468,9 +560,11 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
                     className: "flex-grow-1",
                     key: `column-${id}-title`,
                     label: "Title",
+
                     onChange: form.update({
                       path: ["columns", columnIdx, "title"],
                     }),
+
                     placeholder: "👀 Review",
                     value: title,
                   })}
@@ -492,17 +586,20 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
 
                   {widget("components.molecule.text-input", {
                     format: "comma-separated",
-                    key: `${form.values.id}-column-${title}-tag`,
 
-                    label: `Search terms for all the labels
-											MUST be presented in included tickets`,
+                    key: `${
+                      form.values.metadata.id ?? "new-view"
+                    }-column-${id}-tag`,
+
+                    label: `Search terms for all the tags
+											MUST be presented in included posts`,
 
                     onChange: form.update({
                       path: ["columns", columnIdx, "tag"],
                     }),
 
-                    placeholder: "WG-, draft, review, proposal, ...",
-                    value: tag.join(", "),
+                    placeholder: "",
+                    value: tag,
                   })}
                 </div>
 
@@ -575,7 +672,7 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
               disabled={
                 Object.keys(form.values.columns).length >=
-                EditorSettings.maxColumnsNumber
+                ProjectViewConfiguratorSettings.maxColumnsNumber
               }
               onClick={form.update({
                 path: ["columns"],

@@ -261,6 +261,13 @@ const DevHub = {
     Near.call(devHubAccountId, "create_project", { tag, name, description }) ??
     null,
 
+  update_project_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
+
+  get_project_views_metadata: ({ project_id }) =>
+    Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
+    null,
+
   create_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 

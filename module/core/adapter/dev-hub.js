@@ -11,11 +11,22 @@ const DevHub = {
     Near.call(devHubAccountId, "create_project", { tag, name, description }) ??
     null,
 
+  update_project_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
+
+  get_project_views_metadata: ({ project_id }) =>
+    Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
+    null,
+
   create_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
-  update_project_view: ({ config }) =>
-    Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
+  update_project_view: ({ project_id, metadata, config }) =>
+    Near.call(devHubAccountId, "create_project_view", {
+      project_id,
+      metadata,
+      config,
+    }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,

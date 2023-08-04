@@ -149,6 +149,13 @@ const DevHub = {
     Near.call(devHubAccountId, "create_project", { tag, name, description }) ??
     null,
 
+  update_project_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
+
+  get_project_views_metadata: ({ project_id }) =>
+    Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
+    null,
+
   create_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
@@ -245,74 +252,26 @@ const project_mock = {
     owner_community_handles: ["devhub-test"],
   },
 
-  view_configs: {
-    "near-social-kanban": {
-      type: "kanban-view",
-      name: "Lorem",
-      id: "near-social-kanban",
-
-      tags: {
-        excluded: [],
-        required: ["near-social"],
-      },
-
-      columns: [
-        { id: "hr839hf2", tag: "widget", title: "Widget" },
-        { id: "iu495g95", tag: "integration", title: "Integration" },
-        { id: "i5hy2iu3", tag: "feature-request", title: "Feature Request" },
-      ],
-    },
-
-    "gigs-board-kanban": {
-      type: "kanban-view",
-      name: "Ipsum",
-      id: "gigs-board-kanban",
-
-      tags: {
-        excluded: [],
-        required: ["gigs-board"],
-      },
-
-      columns: [
-        { id: "l23r34t4", tag: "nep", title: "NEP" },
-        { id: "f5rn09i4", tag: "badges", title: "Badges" },
-        { id: "v33xj3u8", tag: "feature-request", title: "Feature Request" },
-      ],
-    },
-
-    "funding-kanban": {
-      type: "kanban-view",
-      name: "Yet another kanban",
-      id: "funding-kanban",
-
-      tags: {
-        excluded: [],
-        required: ["funding"],
-      },
-
-      columns: [
-        { id: "gf39lk82", tag: "funding-new-request", title: "New Request" },
-
-        {
-          id: "dg39i49b",
-          tag: "funding-information-collection",
-          title: "Information Collection",
-        },
-
-        { id: "e3if93ew", tag: "funding-processing", title: "Processing" },
-        { id: "u8t3gu9f", tag: "funding-funded", title: "Funded" },
-      ],
-    },
-  },
+  view_ids: ["fj3938fh", "f34tf3ea45", "y45iwt4e"],
 };
 
+const views_metadata_mock = [
+  { kind: "kanban-view", title: "Lorem", id: "fj3938fh" },
+  { kind: "kanban-view", title: "Ipsum", id: "f34tf3ea45" },
+  { kind: "kanban-view", title: "Yet another kanban", id: "y45iwt4e" },
+];
+
 const ProjectPage = ({ dir, id, view: selectedViewId }) => {
+  const permissions = Viewer.projectPermissions(id);
+
   const project =
     {
       data: project_mock,
     } ?? DevHub.useQuery({ name: "project", params: { id } });
 
-  const permissions = Viewer.projectPermissions(id);
+  const viewsMetadata =
+    views_metadata_mock ??
+    DevHub.get_project_views_metadata({ project_id: id });
 
   return project.data === null && project.isLoading ? (
     <div>Loading...</div>
@@ -341,26 +300,26 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
         ) : (
           <div className="d-flex flex-column">
             <NavUnderline className="nav">
-              {Object.values(project.data.view_configs).map((view) => (
-                <li className="nav-item" key={view.id}>
+              {viewsMetadata.map((viewMetadata) => (
+                <li className="nav-item" key={viewMetadata.id}>
                   <a
                     aria-current={defaultActive && "page"}
                     className={[
                       "nav-link d-inline-flex gap-2",
-                      view.id === selectedViewId ? "active" : "",
+                      viewMetadata.id === selectedViewId ? "active" : "",
                     ].join(" ")}
                     href={href("project", {
                       id: project.data.metadata.id,
-                      view: view.id,
+                      view: viewMetadata.id,
                       dir,
                     })}
                   >
-                    <span>{view.name}</span>
+                    <span>{viewMetadata.name}</span>
                   </a>
                 </li>
               ))}
 
-              <li class="nav-item" key={view.id}>
+              <li class="nav-item">
                 <a
                   href={href("project", { id, view: "new", dir })}
                   className={[
@@ -375,18 +334,18 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
             </NavUnderline>
 
             <div class="tab-content">
-              {Object.values(project.data.view_configs).map((view) => (
+              {viewsMetadata.map((viewMetadata) => (
                 <div
                   class={`tab-pane fade ${
-                    view.id === selectedViewId ? "show active" : ""
+                    viewMetadata.id === selectedViewId ? "show active" : ""
                   }`}
                   role="tabpanel"
                   tabindex="0"
-                  key={view.id}
+                  key={viewMetadata.id}
                 >
                   {widget("feature.project.view-configurator", {
                     config: view,
-                    link: href("project", { id, view: view.id }),
+                    link: href("project", { id, view: viewMetadata.id }),
                     permissions,
                     projectId: id,
                   })}

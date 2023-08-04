@@ -51,6 +51,57 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
+
+  isEqual: (input1, input2) =>
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
+      : false,
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+};
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/lib/gui/form" */
 const defaultFieldUpdate = ({
   input,
@@ -151,6 +202,85 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
   };
 };
 /* END_INCLUDE: "core/lib/gui/form" */
+/* INCLUDE: "core/adapter/dev-hub" */
+const devHubAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+const DevHub = {
+  edit_community_github: ({ handle, github }) =>
+    Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
+    null,
+
+  create_project: ({ tag, name, description }) =>
+    Near.call(devHubAccountId, "create_project", { tag, name, description }) ??
+    null,
+
+  update_project_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
+
+  get_project_views_metadata: ({ project_id }) =>
+    Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
+    null,
+
+  create_project_view: ({ config }) =>
+    Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
+
+  update_project_view: ({ config }) =>
+    Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
+
+  get_access_control_info: () =>
+    Near.view(devHubAccountId, "get_access_control_info") ?? null,
+
+  get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
+
+  get_all_communities: () =>
+    Near.view(devHubAccountId, "get_all_communities") ?? null,
+
+  get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
+
+  get_post: ({ post_id }) =>
+    Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
+
+  get_posts_by_author: ({ author }) =>
+    Near.view(devHubAccountId, "get_posts_by_author", { author }) ?? null,
+
+  get_posts_by_label: ({ label }) =>
+    Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+      label,
+    }) ?? null,
+
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
+  useQuery: ({ name, params }) => {
+    const initialState = { data: null, error: null, isLoading: true };
+
+    const cacheState = useCache(
+      () =>
+        Near.asyncView(devHubAccountId, ["get", name].join("_"), params ?? {})
+          .then((response) => ({
+            ...initialState,
+            data: response ?? null,
+            isLoading: false,
+          }))
+          .catch((error) => ({
+            ...initialState,
+            error: props?.error ?? error,
+            isLoading: false,
+          })),
+
+      JSON.stringify({ name, params }),
+      { subscribe: true }
+    );
+
+    return cacheState === null ? initialState : cacheState;
+  },
+};
+/* END_INCLUDE: "core/adapter/dev-hub" */
 
 const ProjectConfigurator = ({ metadata, permissions }) => {
   State.init({
@@ -162,6 +292,15 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
       ...lastKnownState,
       isConfiguratorActive: forcedState ?? !lastKnownState.isConfiguratorActive,
     }));
+
+  const form = useForm({ initialValues: metadata, stateKey: "metadata" });
+
+  const onCancel = () => {
+    form.reset();
+    configuratorToggle(false);
+  };
+
+  const onSubmit = () => DevHub.update_project_metadata(form.values);
 
   return (
     <div className="d-flex justify-content-between gap-3 w-100">
@@ -192,7 +331,19 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
                 ].join(" "),
               },
               label: "Cancel",
-              onClick: () => configuratorToggle(false),
+              onClick: onCancel,
+            })}
+
+            {widget("components.atom.button", {
+              classNames: {
+                root: [
+                  "btn-success",
+                  !state.isConfiguratorActive ? "d-none" : "",
+                ].join(" "),
+                adornment: "bi-check-circle-fill",
+              },
+              label: "Save",
+              onClick: onSubmit,
             })}
 
             {widget("components.atom.button", {
