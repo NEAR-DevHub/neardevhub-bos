@@ -1,3 +1,57 @@
+/* INCLUDE: "common.jsx" */
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+function widget(widgetName, widgetProps, key) {
+  widgetProps = {
+    ...widgetProps,
+    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
+    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+    referral: props.referral,
+  };
+
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
+}
+
+function href(widgetName, linkProps) {
+  linkProps = { ...linkProps };
+
+  if (props.nearDevGovGigsContractAccountId) {
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
+  }
+
+  if (props.nearDevGovGigsWidgetsAccountId) {
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
+  }
+
+  if (props.referral) {
+    linkProps.referral = props.referral;
+  }
+
+  const linkPropsQuery = Object.entries(linkProps)
+    .filter(([_key, nullable]) => (nullable ?? null) !== null)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
+}
+/* END_INCLUDE: "common.jsx" */
+
 const ProjectConfigurator = ({ metadata, permissions }) => {
   State.init({
     isConfiguratorActive: false,
@@ -25,27 +79,22 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
           {metadata.tag}
         </span>
 
-        {permissions.can_configure ? (
+        {true ||
+        /**
+         * TODO!: REMOVE `true ||` BEFORE RELEASE
+         */ permissions.can_configure ? (
           <div className="d-flex gap-3">
             {widget("components.atom.button", {
-              classNames: {
-                root: [
-                  "btn-danger",
-                  !state.isConfiguratorActive ? "hidden" : "",
-                ].join(" "),
-              },
-
+              classNames: { root: "btn-danger" },
               label: "Cancel",
+              style: { display: !state.isConfiguratorActive ? "none" : null },
             })}
 
             {widget("components.atom.button", {
-              classNames: {
-                root: state.isConfiguratorActive ? "hidden" : "",
-                adornment: "bi bi-gear-fill",
-              },
-
+              classNames: { adornment: "bi bi-gear-fill" },
               label: "Configure project",
               onClick: () => configuratorToggle(true),
+              style: { display: state.isConfiguratorActive ? "none" : null },
             })}
           </div>
         ) : null}
