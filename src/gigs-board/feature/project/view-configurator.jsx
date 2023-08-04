@@ -101,37 +101,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
-    fieldInput
-  ) => {
-    const updatedValues = Struct.deepFieldUpdate(
-      formState?.values ?? {},
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedValues = Struct.deepFieldUpdate(
+        formState?.values ?? {},
 
-      {
-        input: fieldInput?.target?.value ?? fieldInput,
-        params,
-        path,
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          params,
+          path,
 
-        via:
-          typeof customFieldUpdate === "function"
-            ? customFieldUpdate
-            : defaultFieldUpdate,
-      }
-    );
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
+      );
 
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
 
-      [formStateKey]: {
-        hasUnsubmittedChanges: !Struct.isEqual(
-          updatedValues,
-          initialFormState.values
-        ),
+        [formStateKey]: {
+          hasUnsubmittedChanges: !Struct.isEqual(
+            updatedValues,
+            initialFormState.values
+          ),
 
-        values: updatedValues,
-      },
-    }));
-  };
+          values: updatedValues,
+        },
+      }));
+    };
 
   if (
     !uninitialized &&
@@ -271,8 +271,12 @@ const DevHub = {
   create_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
-  update_project_view: ({ config }) =>
-    Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
+  update_project_view: ({ project_id, metadata, config }) =>
+    Near.call(devHubAccountId, "create_project_view", {
+      project_id,
+      metadata,
+      config,
+    }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -477,8 +481,10 @@ const ProjectViewConfigurator = ({
       ? [...lastKnownValue, { id: uuid(), tag: "", title: "New column" }]
       : lastKnownValue;
 
-  const columnsDeleteById = (targetId) => ({ lastKnownValue }) =>
-    lastKnownValue.filter(({ id }) => targetId !== id);
+  const columnsDeleteById =
+    (targetId) =>
+    ({ lastKnownValue }) =>
+      lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onSubmit = () =>
     DevHub.update_project_view({
