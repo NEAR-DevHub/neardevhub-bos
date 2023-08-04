@@ -152,7 +152,7 @@ const DevHub = {
   create_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
-  edit_project_view: ({ config }) =>
+  update_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
   get_access_control_info: () =>
@@ -312,7 +312,7 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
       data: project_mock,
     } ?? DevHub.useQuery({ name: "project", params: { id } });
 
-  const permissions = Viewer.projectPermissions(project_id);
+  const permissions = Viewer.projectPermissions(id);
 
   return project.data === null && project.isLoading ? (
     <div>Loading...</div>

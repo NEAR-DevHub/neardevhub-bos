@@ -68,7 +68,7 @@ const DevHub = {
   create_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
-  edit_project_view: ({ config }) =>
+  update_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
   get_access_control_info: () =>

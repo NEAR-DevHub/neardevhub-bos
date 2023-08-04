@@ -85,16 +85,23 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
          */ permissions.can_configure ? (
           <div className="d-flex gap-3">
             {widget("components.atom.button", {
-              classNames: { root: "btn-danger" },
+              classNames: {
+                root: [
+                  "btn-danger",
+                  !state.isConfiguratorActive ? "d-none" : "",
+                ].join(" "),
+              },
               label: "Cancel",
-              style: { display: !state.isConfiguratorActive ? "none" : null },
+              onClick: () => configuratorToggle(false),
             })}
 
             {widget("components.atom.button", {
-              classNames: { adornment: "bi bi-gear-fill" },
+              classNames: {
+                root: state.isConfiguratorActive ? "d-none" : "",
+                adornment: "bi bi-gear-fill",
+              },
               label: "Configure project",
               onClick: () => configuratorToggle(true),
-              style: { display: state.isConfiguratorActive ? "none" : null },
             })}
           </div>
         ) : null}

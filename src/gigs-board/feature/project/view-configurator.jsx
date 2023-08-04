@@ -264,7 +264,7 @@ const DevHub = {
   create_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
-  edit_project_view: ({ config }) =>
+  update_project_view: ({ config }) =>
     Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
 
   get_access_control_info: () =>
@@ -373,7 +373,7 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
 
   const form = useForm({
     initialValues: config ?? ViewConfigDefaults,
-    stateKey: "board",
+    stateKey: "config",
   });
 
   const errors = {
@@ -405,7 +405,7 @@ const ProjectViewConfigurator = ({ config, permissions, link, projectId }) => {
       lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onSubmit = () =>
-    DevHub.edit_project_view({
+    DevHub.update_project_view({
       handle: communityHandle,
 
       github: JSON.stringify({
