@@ -51,6 +51,57 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
+
+  isEqual: (input1, input2) =>
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
+      : false,
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+};
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/lib/gui/form" */
 const defaultFieldUpdate = ({
   input,
@@ -196,57 +247,6 @@ const withUUIDIndex = (data) => {
   return Object.fromEntries([[id, { ...data, id }]]);
 };
 /* END_INCLUDE: "core/lib/uuid" */
-/* INCLUDE: "core/lib/struct" */
-const Struct = {
-  deepFieldUpdate: (
-    node,
-    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
-  ) => ({
-    ...node,
-
-    [nextNodeKey]:
-      remainingPath.length > 0
-        ? Struct.deepFieldUpdate(
-            Struct.typeMatch(node[nextNodeKey]) ||
-              Array.isArray(node[nextNodeKey])
-              ? node[nextNodeKey]
-              : {
-                  ...((node[nextNodeKey] ?? null) !== null
-                    ? { __archivedLeaf__: node[nextNodeKey] }
-                    : {}),
-                },
-
-            { input, path: remainingPath, via: toFieldValue }
-          )
-        : toFieldValue({
-            input,
-            lastKnownValue: node[nextNodeKey],
-            params,
-          }),
-  }),
-
-  isEqual: (input1, input2) =>
-    Struct.typeMatch(input1) && Struct.typeMatch(input2)
-      ? JSON.stringify(Struct.toOrdered(input1)) ===
-        JSON.stringify(Struct.toOrdered(input2))
-      : false,
-
-  toOrdered: (input) =>
-    Object.keys(input)
-      .sort()
-      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
-
-  pick: (object, subsetKeys) =>
-    Object.fromEntries(
-      Object.entries(object ?? {}).filter(([key, _]) =>
-        subsetKeys.includes(key)
-      )
-    ),
-
-  typeMatch: (input) =>
-    input !== null && typeof input === "object" && !Array.isArray(input),
-};
-/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -344,7 +344,7 @@ const Viewer = {
   },
 
   projectPermissions: (projectId) =>
-    Near.view(devHubAccountId, "check_project_permissions", {
+    Near.view(devHubAccountId, "get_project_permissions", {
       id: projectId,
     }) ?? { can_configure: false },
 
@@ -441,20 +441,17 @@ const ProjectViewConfigurator = ({
 
   const isNewView = (metadata ?? null) === null;
 
-  const config = isNewView
-    ? { data: ProjectViewConfigDefaults }
-    : JSON.parse(
-        view_configs_mock[metadata.id] ?? // !TODO: delete this line before release
-          DevHub.useQuery({
-            name: "project_view_config",
-            params: { project_id: projectId, view_id: metadata.id },
-          })
-      );
+  const config =
+    { data: view_configs_mock[metadata.id] } ?? // !TODO: delete this line before release
+    DevHub.useQuery({
+      name: "project_view_config",
+      params: { project_id: projectId, view_id: metadata.id },
+    });
 
   const form = useForm({
     initialValues: {
       metadata: metadata ?? ProjectViewMetadataDefaults,
-      config,
+      config: isNewView ? ProjectViewConfigDefaults : JSON.parse(config.data),
     },
 
     stateKey: "form",
@@ -477,13 +474,17 @@ const ProjectViewConfigurator = ({
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
-    Object.keys(lastKnownValue).length <
-    ProjectViewConfiguratorSettings.maxColumnsNumber
+    lastKnownValue.length < ProjectViewConfiguratorSettings.maxColumnsNumber
       ? [...lastKnownValue, { id: uuid(), tag: "", title: "New column" }]
       : lastKnownValue;
 
   const columnsDeleteById = (targetId) => ({ lastKnownValue }) =>
     lastKnownValue.filter(({ id }) => targetId !== id);
+
+  const onCancel = () => {
+    form.reset();
+    editorToggle(false);
+  };
 
   const onSubmit = () =>
     DevHub.update_project_view({
@@ -529,7 +530,7 @@ const ProjectViewConfigurator = ({
             label: "Search terms for all the tags MUST be presented in posts",
             onChange: form.update({ path: ["config", "tags", "required"] }),
             placeholder: "near-protocol-neps, ",
-            value: form.values.config.tags.join(", "),
+            value: form.values.config.tags.required.join(", "),
           })}
         </div>
 
@@ -544,7 +545,7 @@ const ProjectViewConfigurator = ({
 
             onChange: form.update({ path: ["config", "tags", "excluded"] }),
             placeholder: "near-protocol-neps, ",
-            value: form.values.config.tags.join(", "),
+            value: form.values.config.tags.excluded.join(", "),
           })}
         </div>
 
@@ -620,7 +621,7 @@ const ProjectViewConfigurator = ({
                   <button
                     className="btn btn-outline-danger shadow"
                     onClick={form.update({
-                      path: ["columns"],
+                      path: ["config", "columns"],
                       via: columnsDeleteById(id),
                     })}
                     title="Delete column"
@@ -635,13 +636,11 @@ const ProjectViewConfigurator = ({
       </>
     ) : null;
 
-  return errors.noProjectId ? (
-    <div class="alert alert-danger" role="alert">
-      Error: project id not found in editor props.
-    </div>
+  return config.data === null ? (
+    <div>Loading...</div>
   ) : (
     <div className="d-flex flex-column gap-4">
-      {state.isEditorActive && Object.keys(form.values).length > 0 ? (
+      {state.isEditorActive && form.values.length > 0 ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
@@ -681,11 +680,11 @@ const ProjectViewConfigurator = ({
             <button
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
               disabled={
-                Object.keys(form.values.columns).length >=
+                form.values.columns.length >=
                 ProjectViewConfiguratorSettings.maxColumnsNumber
               }
               onClick={form.update({
-                path: ["columns"],
+                path: ["config", "columns"],
                 via: columnsCreateNew,
               })}
             >
@@ -695,7 +694,7 @@ const ProjectViewConfigurator = ({
 
             <button
               className="btn btn-outline-danger border-0 d-inline-flex gap-2 align-items-center"
-              onClick={() => editorToggle(false)}
+              onClick={onCancel}
               style={{ width: "fit-content" }}
             >
               <span>Cancel</span>
