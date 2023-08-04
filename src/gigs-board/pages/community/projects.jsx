@@ -260,8 +260,7 @@ const onNewProjectSubmit = ({ tag, name, description }) =>
 
 const CommunityProjectsPage = ({ handle }) => {
   State.init({
-    isEditorActive: true,
-    isProjectFormDisplayed: false,
+    isNewProjectFormDisplayed: false,
   });
 
   const community = DevHub.useQuery({ name: "community", params: { handle } });
@@ -273,7 +272,7 @@ const CommunityProjectsPage = ({ handle }) => {
       params: { community_handle: handle },
     });
 
-  const isToolbarHidden = state.isProjectFormDisplayed;
+  const isToolbarHidden = state.isNewProjectFormDisplayed;
 
   return community_projects_metadata.data === null &&
     community_projects_metadata.isLoading ? (
@@ -294,19 +293,20 @@ const CommunityProjectsPage = ({ handle }) => {
                     label: "New project",
 
                     onClick: () =>
-                      State.update({ isProjectFormDisplayed: true }),
+                      State.update({ isNewProjectFormDisplayed: true }),
                   })
                 : null}
             </div>
           ) : null}
 
-          {state.isProjectFormDisplayed &&
+          {state.isNewProjectFormDisplayed &&
             widget("components.organism.editor", {
               fullWidth: true,
               heading: "New project",
-              isEditorActive: state.isEditorActive,
+              isEditorActive: true,
               isEditingAllowed: Viewer.can.editCommunity(community.data),
-              onCancel: () => State.update({ isProjectFormDisplayed: false }),
+              onCancel: () =>
+                State.update({ isNewProjectFormDisplayed: false }),
               onChangesSubmit: onNewProjectSubmit,
               submitLabel: "Create",
               data: state.teamData,

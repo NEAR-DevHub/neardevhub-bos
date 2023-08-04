@@ -318,7 +318,7 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
     <div>Loading...</div>
   ) : (
     widget("entity.project.layout", {
-      metadata: project.data?.metadata ?? {},
+      id,
 
       path: [
         {
@@ -327,6 +327,11 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
           params: typeof dir === "string" ? { handle: dir } : null,
         },
       ],
+
+      configurator: widget("feature.project.configurator", {
+        metadata: project.data?.metadata,
+        permissions,
+      }),
 
       children:
         project.data === null ? (

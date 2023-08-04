@@ -56,57 +56,30 @@ const layoutConfig = {
   bannerHeight: "142px",
 };
 
-const ProjectLayout = ({ children, metadata, path }) =>
+const ProjectLayout = ({ children, configurator, path }) =>
   widget("components.template.app-layout", {
     path,
 
     banner:
-      typeof metadata.id === "string" ? (
+      typeof id !== "string" ? (
         <div
-          className="d-flex justify-content-between gap-3 p-4 text-white"
+          className="d-flex justify-content-between p-4 text-white"
           style={{
             backgroundColor: "#181818",
             height: layoutConfig.bannerHeight,
             maxHeight: layoutConfig.bannerHeight,
           }}
         >
-          <div className="d-flex flex-column gap-2">
-            <h1 className="m-0">{metadata.name}</h1>
-            <p className="m-0">{metadata.description}</p>
-          </div>
-
-          <div className="d-flex flex-column gap-3 justify-content-between align-items-end h-100">
-            <span
-              class="badge bg-primary rounded-4 text-decoration-none"
-              style={{ cursor: "default" }}
-              title="DevHub tag"
-            >
-              {metadata.tag}
-            </span>
-
-            <div className="d-flex gap-3">
-              {false &&
-                widget("components.atom.button", {
-                  classNames: {
-                    root: ["btn-danger", "hidden"].join(" "),
-                  },
-                  label: "Cancel",
-                })}
-
-              {widget("components.atom.button", {
-                classNames: { adornment: "bi bi-gear-fill" },
-                disabled: true, // TODO: Editing mode toggle!
-                label: "Configure project",
-              })}
-            </div>
-          </div>
+          {configurator}
         </div>
       ) : (
-        <></>
+        <div class="alert alert-danger" role="alert">
+          Error: project id not found in URL parameters
+        </div>
       ),
 
     children:
-      typeof metadata.id === "string" ? (
+      typeof id === "string" ? (
         <div className="d-flex flex-column gap-4 py-4 w-100 h-100">
           {children}
         </div>
