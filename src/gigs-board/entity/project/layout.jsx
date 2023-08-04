@@ -56,12 +56,12 @@ const layoutConfig = {
   bannerHeight: "142px",
 };
 
-const ProjectLayout = ({ children, configurator, path }) =>
+const ProjectLayout = ({ children, configurator, id, path }) =>
   widget("components.template.app-layout", {
     path,
 
     banner:
-      typeof id !== "string" ? (
+      typeof id === "string" ? (
         <div
           className="d-flex justify-content-between p-4 text-white"
           style={{
