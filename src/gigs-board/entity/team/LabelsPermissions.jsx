@@ -145,7 +145,7 @@ function unsetRestrictedRules(name) {
     args: {
       rules: [name],
     },
-    deposit: Big(0).pow(21), // .mul(2), // 10 -> 0
+    deposit: Big(0).pow(21),
     gas: Big(10).pow(12).mul(100),
   });
   Near.call(txn);

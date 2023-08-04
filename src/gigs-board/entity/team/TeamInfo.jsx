@@ -179,7 +179,7 @@ const header = isTeam ? (
     <i class="bi bi-people-fill me-1"></i>
     {props.member}
   </div>
-  //  TODO voeg terug
+  // TODO put back in
   // <Widget
   //   src={`neardevgov.near/widget/ProfileLine`}
   //   props={{ accountId: props.member }}
@@ -188,7 +188,7 @@ const header = isTeam ? (
 
 const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
 
-const slimButton = styled.button`
+const SlimButton = styled.button`
   height: 24px;
   line-height: 12px;
 `;
@@ -241,12 +241,6 @@ const permissionsRenderer = (permissionType) => {
             </span>
           ))}
         </p>
-        {/* <slimButton
-          className="btn btn-sm btn-light"
-          onClick={() => removeLabelFromTeam(permissionType)}
-        >
-          remove label
-        </slimButton> */}
       </div>
     );
   } else {
@@ -254,13 +248,36 @@ const permissionsRenderer = (permissionType) => {
   }
 };
 
-function removeMember(member) {
+// To delete a team
+function removeTeam(team) {
   let txn = [];
   txn.push({
     contractName: nearDevGovGigsContractAccountId,
     methodName: "remove_member",
-    args: { member },
-    deposit: Big(0).pow(21), // .mul(2), // 10 -> 0
+    args: { member: team },
+    deposit: Big(0).pow(21),
+    gas: Big(10).pow(12).mul(100),
+  });
+  Near.call(txn);
+}
+
+function removeMemberFromTeam(member) {
+  let txn = [];
+  const team = props.team;
+  let metadata = props.root_members[team] || {};
+  let newParents =
+    props.root_members[team].parents?.filter((item) => item !== team) || [];
+  txn.push({
+    contractName: nearDevGovGigsContractAccountId,
+    methodName: "edit_member",
+    args: {
+      member: member,
+      metadata: {
+        ...metadata,
+        parents: [...newParents],
+      },
+    },
+    deposit: Big(0).pow(21),
     gas: Big(10).pow(12).mul(100),
   });
   Near.call(txn);
@@ -284,7 +301,7 @@ function addMemberToTeam(memberData) {
         parents: [team],
       },
     },
-    deposit: Big(0).pow(21), // .mul(2), // 10 -> 0
+    deposit: Big(0).pow(21),
     gas: Big(10).pow(12).mul(100),
   });
   Near.call(txn);
@@ -307,7 +324,7 @@ function addLabelToTeam(labelData) {
           permissions: permissions,
         },
       },
-      deposit: Big(0).pow(21), // .mul(2), // 10 -> 0
+      deposit: Big(0).pow(21),
       gas: Big(10).pow(12).mul(100),
     });
     Near.call(txn);
@@ -319,8 +336,11 @@ function addLabelToTeam(labelData) {
   }
 }
 
+/**
+ * TODO
+ */
 function removeLabelFromTeam(rule) {
-  let team = props.member;
+  let team = props.team;
   // Copy
   let permissions = { ...metadata.permissions };
   delete permissions[rule];
@@ -372,12 +392,22 @@ return (
                   },
                 })
               : null}
-            <button
-              class="btn btn-light"
-              onClick={() => removeMember(props.member)}
-            >
-              Remove
-            </button>
+            {!props.teamLevel && Viewer.role.isDevHubModerator ? (
+              <button
+                class="btn btn-light"
+                onClick={() => removeMemberFromTeam(props.member)}
+              >
+                Remove
+              </button>
+            ) : null}
+            {props.teamLevel && isContractOwner ? (
+              <button
+                class="btn btn-light"
+                onClick={() => removeTeam(props.member)}
+              >
+                Delete team
+              </button>
+            ) : null}
           </div>
         </div>
       </div>
@@ -385,6 +415,90 @@ return (
         <p class="card-text" key="description">
           <Markdown class="card-text" text={metadata.description}></Markdown>
         </p>
+        <div className="d-flex align-items-center justify-content-center">
+          {state.addMember &&
+            widget("components.organism.editor", {
+              classNames: {
+                submit: "btn-primary",
+                submitAdornment: "bi-check-circle-fill",
+              },
+
+              heading: "Adding member",
+              isEditorActive: state.isEditorActive,
+
+              isEditingAllowed: Viewer.role.isDevHubModerator,
+
+              onChangesSubmit: addMemberToTeam,
+              submitLabel: "Accept",
+              data: state.teamData,
+              schema: {
+                member: {
+                  inputProps: {
+                    min: 2,
+                    max: 60,
+                    placeholder: "member.near",
+                    required: true,
+                  },
+                  label: "Members name",
+                  order: 2,
+                },
+                description: {
+                  inputProps: {
+                    min: 2,
+                    max: 60,
+                    placeholder: "Description",
+                    required: true,
+                  },
+                  label: "Role description",
+                  order: 3,
+                },
+              },
+            })}
+          {state.addLabel && state.labelError ? (
+            <div
+              class="alert alert-warning alert-dismissible fade show"
+              role="alert"
+            >
+              {state.labelError}
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+                onClick={() => State.update({ labelError: "" })}
+              ></button>
+            </div>
+          ) : null}
+          {state.addLabel &&
+            widget("components.organism.editor", {
+              classNames: {
+                submit: "btn-primary",
+                submitAdornment: "bi-check-circle-fill",
+              },
+
+              heading: "Adding label",
+              isEditorActive: state.isEditorActive,
+
+              isEditingAllowed: Viewer.role.isDevHubModerator,
+
+              onChangesSubmit: addLabelToTeam,
+              submitLabel: "Accept",
+              data: state.teamData,
+              schema: {
+                label: {
+                  inputProps: {
+                    min: 2,
+                    max: 60,
+                    placeholder: "One of the restricted labels above",
+                    required: true,
+                  },
+                  label: "Label",
+                  order: 2,
+                },
+                // TODO possibly add buttons for edit-post and assign
+              },
+            })}
+        </div>
         {permissionsRenderer("edit-post")}
         {permissionsRenderer("use-labels")}
         {metadata.children ? (
@@ -397,6 +511,7 @@ return (
                   members_list: props.members_list,
                   ableToAddMembers: false,
                   ableToAddLabels: false,
+                  teamLevel: false,
                 },
                 child
               )
@@ -405,84 +520,5 @@ return (
         ) : null}
       </div>
     </AttractableDiv>
-    {state.addMember &&
-      widget("components.organism.editor", {
-        classNames: {
-          submit: "btn-primary",
-          submitAdornment: "bi-check-circle-fill",
-        },
-
-        heading: "Adding member",
-        isEditorActive: state.isEditorActive,
-
-        isEditingAllowed: Viewer.role.isDevHubModerator,
-
-        onChangesSubmit: addMemberToTeam,
-        submitLabel: "Accept",
-        data: state.teamData,
-        schema: {
-          member: {
-            inputProps: {
-              min: 2,
-              max: 60,
-              placeholder: "member.near",
-              required: true,
-            },
-            label: "Members name",
-            order: 2,
-          },
-          description: {
-            inputProps: {
-              min: 2,
-              max: 60,
-              placeholder: "Description",
-              required: true,
-            },
-            label: "Role description",
-            order: 3,
-          },
-        },
-      })}
-    {state.addLabel && state.labelError ? (
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        {state.labelError}
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-          onClick={() => State.update({ labelError: "" })}
-        ></button>
-      </div>
-    ) : null}
-    {state.addLabel &&
-      widget("components.organism.editor", {
-        classNames: {
-          submit: "btn-primary",
-          submitAdornment: "bi-check-circle-fill",
-        },
-
-        heading: "Adding label",
-        isEditorActive: state.isEditorActive,
-
-        isEditingAllowed: Viewer.role.isDevHubModerator,
-
-        onChangesSubmit: addLabelToTeam,
-        submitLabel: "Accept",
-        data: state.teamData,
-        schema: {
-          label: {
-            inputProps: {
-              min: 2,
-              max: 60,
-              placeholder: "One of the restricted labels above",
-              required: true,
-            },
-            label: "Label",
-            order: 2,
-          },
-          // TODO possibly add buttons for edit-post and assign
-        },
-      })}
   </>
 );

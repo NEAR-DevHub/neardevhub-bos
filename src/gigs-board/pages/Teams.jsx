@@ -168,13 +168,14 @@ function addLabel(labelData) {
         },
       },
     },
-    deposit: Big(0).pow(21), // .mul(2), // 10 -> 0
+    deposit: Big(0).pow(21),
     gas: Big(10).pow(12).mul(100),
   });
   Near.call(txn);
 }
 
-function addMember(teamData) {
+// To add a team
+function addTeam(teamData) {
   let txn = [];
   let permissions = {};
   let labels = teamData.label.split(",");
@@ -195,7 +196,7 @@ function addMember(teamData) {
         parents: [],
       },
     },
-    deposit: Big(0).pow(21), // .mul(2), // 10 -> 0
+    deposit: Big(0).pow(21),
     gas: Big(10).pow(12).mul(100),
   });
   Near.call(txn);
@@ -262,7 +263,7 @@ const pageContent = (
           },
         },
       })}
-    {Viewer.role.isDevHubModerator && isEditorActive ? (
+    {isContractOwner ? (
       <div class="pt-3">
         {widget("components.layout.Controls", {
           title: "Create Team",
@@ -286,7 +287,7 @@ const pageContent = (
 
         isEditingAllowed: Viewer.role.isDevHubModerator,
 
-        onChangesSubmit: addMember,
+        onChangesSubmit: addTeam,
         submitLabel: "Accept",
         data: state.teamData,
         schema: {
@@ -335,6 +336,7 @@ const pageContent = (
               rules_list: access_info.rules_list,
               ableToAddMembers: true,
               ableToAddLabels: true,
+              teamLevel: true,
               root_members,
             },
             member
