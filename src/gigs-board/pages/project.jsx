@@ -156,15 +156,17 @@ const DevHub = {
     Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
     null,
 
-  create_project_view: ({ config }) =>
-    Near.call(devHubAccountId, "create_project_view", { config }) ?? null,
+  create_project_view: ({ project_id, view }) =>
+    Near.call(devHubAccountId, "create_project_view", { project_id, view }) ??
+    null,
 
-  update_project_view: ({ project_id, metadata, config }) =>
-    Near.call(devHubAccountId, "create_project_view", {
-      project_id,
-      metadata,
-      config,
-    }) ?? null,
+  get_project_view: ({ project_id, view_id }) =>
+    Near.view(devHubAccountId, "get_project_view", { project_id, view_id }) ??
+    null,
+
+  update_project_view: ({ project_id, view }) =>
+    Near.call(devHubAccountId, "create_project_view", { project_id, view }) ??
+    null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
