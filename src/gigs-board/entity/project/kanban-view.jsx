@@ -51,41 +51,6 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/data-request" */
-const DataRequest = {
-  /**
-   * Requests all the data from non-empty pages of the paginated API.
-   *
-   * **Notice: currently expected to work only with array responses.**
-   *
-   * @param {object} parameters
-   * 	Request parameters including the number of page to start with,
-   * 	and an accumulated response buffer, if it exists.
-   *
-   * @param {array | null | undefined} parameters.buffer
-   * @param {number} parameters.startWith
-   *
-   * @param {(pageNumber: number) => array} requestByNumber
-   *
-   * @returns {array} The final accumulated response.
-   */
-  paginated: (requestByNumber, { buffer, startWith }) => {
-    const startPageNumber = startWith ?? 1,
-      accumulatedResponse = buffer ?? [];
-
-    const latestResponse = requestByNumber(startPageNumber) ?? [];
-
-    if (latestResponse.length === 0) {
-      return accumulatedResponse;
-    } else {
-      return DataRequest.paginated(requestByNumber, {
-        buffer: [...accumulatedResponse, ...latestResponse],
-        startWith: startPageNumber + 1,
-      });
-    }
-  },
-};
-/* END_INCLUDE: "core/lib/data-request" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -200,6 +165,60 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
+const view_configs_mock = {
+  fj3938fh: JSON.stringify({
+    ticket_kind: "post-ticket",
+
+    tags: {
+      excluded: [],
+      required: ["near-social"],
+    },
+
+    columns: [
+      { id: "hr839hf2", tag: "widget", title: "Widget" },
+      { id: "iu495g95", tag: "integration", title: "Integration" },
+      { id: "i5hy2iu3", tag: "feature-request", title: "Feature Request" },
+    ],
+  }),
+
+  f34tf3ea45: JSON.stringify({
+    ticket_kind: "post-ticket",
+
+    tags: {
+      excluded: [],
+      required: ["gigs-board"],
+    },
+
+    columns: [
+      { id: "l23r34t4", tag: "nep", title: "NEP" },
+      { id: "f5rn09i4", tag: "badges", title: "Badges" },
+      { id: "v33xj3u8", tag: "feature-request", title: "Feature Request" },
+    ],
+  }),
+
+  y45iwt4e: JSON.stringify({
+    ticket_kind: "post-ticket",
+
+    tags: {
+      excluded: [],
+      required: ["funding"],
+    },
+
+    columns: [
+      { id: "gf39lk82", tag: "funding-new-request", title: "New Request" },
+
+      {
+        id: "dg39i49b",
+        tag: "funding-information-collection",
+        title: "Information Collection",
+      },
+
+      { id: "e3if93ew", tag: "funding-processing", title: "Processing" },
+      { id: "u8t3gu9f", tag: "funding-funded", title: "Funded" },
+    ],
+  }),
+};
+
 const configToColumns = (config) =>
   config.columns.map((column) => {
     const postIds = (
@@ -222,8 +241,6 @@ const configToColumns = (config) =>
     };
   });
 
-const withType = (type) => (data) => ({ ...data, type });
-
 const ProjectKanbanView = ({
   config,
   metadata,
@@ -233,13 +250,19 @@ const ProjectKanbanView = ({
 }) => {
   const configuration =
     (config ?? null) !== null
-      ? { data: config }
-      : DevHub.useQuery({
-          name: "project_view_config",
-          params: { id: metadata.id },
-        });
+      ? config
+      : JSON.parse(
+          view_configs_mock[metadata.id] ?? // !TODO: Remove entire line before release
+            DevHub.useQuery({
+              name: "project_view_config",
+              params: { id: metadata.id },
+            }).data ??
+            JSON.stringify({})
+        );
 
-  const columns = configToColumns(configuration.data);
+  console.log({ configuration });
+
+  const columns = configToColumns(configuration);
 
   return (
     <div className="d-flex flex-column gap-4 py-4">
@@ -288,7 +311,7 @@ const ProjectKanbanView = ({
           </>
         ) : null}
 
-        {permissions.can_configure ? (
+        {permissions.can_configure && typeof editorTrigger === "function" ? (
           <button
             className="btn shadow btn-sm btn-primary d-inline-flex gap-2"
             onClick={editorTrigger}

@@ -323,18 +323,20 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
                 </li>
               ))}
 
-              <li class="nav-item">
-                <a
-                  href={href("project", { id, view: "new", dir })}
-                  className={[
-                    "nav-link d-flex gap-2",
-                    selectedViewId === "new" ? "active" : "",
-                  ].join(" ")}
-                >
-                  <i class="bi bi-plus-lg" />
-                  <span>New view</span>
-                </a>
-              </li>
+              {permissions.can_configure ? (
+                <li class="nav-item">
+                  <a
+                    href={href("project", { id, view: "new", dir })}
+                    className={[
+                      "nav-link d-flex gap-2",
+                      selectedViewId === "new" ? "active" : "",
+                    ].join(" ")}
+                  >
+                    <i class="bi bi-plus-lg" />
+                    <span>New view</span>
+                  </a>
+                </li>
+              ) : null}
             </NavUnderline>
 
             <div class="tab-content">
@@ -361,19 +363,21 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
                 </div>
               ))}
 
-              <div
-                class={`tab-pane fade ${
-                  selectedViewId === "new" ? "show active" : ""
-                }`}
-                role="tabpanel"
-                tabindex="0"
-                key={view.id}
-              >
-                {widget("feature.project.view-configurator", {
-                  permissions,
-                  projectId: id,
-                })}
-              </div>
+              {permissions.can_configure ? (
+                <div
+                  class={`tab-pane fade ${
+                    selectedViewId === "new" ? "show active" : ""
+                  }`}
+                  role="tabpanel"
+                  tabindex="0"
+                  key={view.id}
+                >
+                  {widget("feature.project.view-configurator", {
+                    permissions,
+                    projectId: id,
+                  })}
+                </div>
+              ) : null}
             </div>
           </div>
         ),

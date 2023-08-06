@@ -152,37 +152,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -425,7 +425,6 @@ const CompactContainer = styled.div`
 `;
 
 const ProjectViewMetadataDefaults = {
-  id: null,
   kind: "kanban-view",
   title: "",
   description: "",
@@ -483,10 +482,8 @@ const ProjectViewConfigurator = ({
       ? [...lastKnownValue, { id: uuid(), tag: "", title: "New column" }]
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (targetId) =>
-    ({ lastKnownValue }) =>
-      lastKnownValue.filter(({ id }) => targetId !== id);
+  const columnsDeleteById = (targetId) => ({ lastKnownValue }) =>
+    lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onCancel = () => {
     form.reset();
@@ -494,7 +491,7 @@ const ProjectViewConfigurator = ({
   };
 
   const onSubmit = () =>
-    DevHub.update_project_view({
+    DevHub[isNewView ? "create_project_view" : "update_project_view"]({
       project_id: projectId,
 
       view: {
