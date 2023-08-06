@@ -252,7 +252,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                           .filter((string) => string.length > 0)
                           .join(", ")
                       : form.values[fieldKey]
-                    )?.toString?.() ?? "none"}
+                    )?.toString?.() || "none"}
                   </p>
                 ) : (
                   <p className={[contentDisplayClassName, "w-75"].join(" ")}>
