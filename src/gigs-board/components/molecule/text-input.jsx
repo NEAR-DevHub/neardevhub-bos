@@ -14,6 +14,35 @@ const TextInput = ({
   const typeAttribute =
     type === "text" || type === "password" || type === "number" ? type : "text";
 
+  const renderedLabels = [
+    (label?.length ?? 0) > 0 ? (
+      <span className="d-inline-flex gap-1 text-wrap">
+        <span>{label}</span>
+
+        {inputProps.required ? <span className="text-danger">*</span> : null}
+      </span>
+    ) : null,
+
+    format === "markdown" ? (
+      <i class="bi bi-markdown text-muted" title="Markdown" />
+    ) : null,
+
+    format === "comma-separated" ? (
+      <span
+        className="d-inline-flex align-items-center text-muted"
+        style={{ fontSize: 12 }}
+      >
+        {format}
+      </span>
+    ) : null,
+
+    (inputProps.max ?? null) !== null ? (
+      <span className="d-inline-flex text-muted" style={{ fontSize: 12 }}>{`${
+        value?.length ?? 0
+      } / ${inputProps.max}`}</span>
+    ) : null,
+  ].filter((label) => label !== null);
+
   return (
     <div
       className={[
@@ -22,41 +51,23 @@ const TextInput = ({
         className ?? "",
       ].join(" ")}
     >
-      <span
-        className="d-flex justify-content-between align-items-center gap-3 w-100"
-        id={key}
-      >
-        <span className="d-inline-flex gap-1 text-wrap">
-          <span>{label}</span>
-          {inputProps.required ? <span className="text-danger">*</span> : null}
+      {renderedLabels.length > 0 ? (
+        <span
+          className="d-flex justify-content-between align-items-center gap-3 w-100"
+          id={key}
+        >
+          {renderedLabels.map((label) => label)}
         </span>
-
-        {format === "markdown" ? (
-          <i class="bi bi-markdown text-muted" title="Markdown" />
-        ) : null}
-
-        {format === "comma-separated" ? (
-          <span
-            className="d-inline-flex align-items-center text-muted"
-            style={{ fontSize: 12 }}
-          >
-            {format}
-          </span>
-        ) : null}
-
-        {(inputProps.max ?? null) !== null ? (
-          <span
-            className="d-inline-flex text-muted"
-            style={{ fontSize: 12 }}
-          >{`${value?.length ?? 0} / ${inputProps.max}`}</span>
-        ) : null}
-      </span>
+      ) : null}
 
       {!multiline ? (
         <input
           aria-describedby={key}
           aria-label={label}
           className={["form-control border border-2", inputClassName].join(" ")}
+          placeholder={
+            placeholder + (inputProps.required ? " ( required )" : "")
+          }
           type={typeAttribute}
           {...{ onChange, placeholder, value, ...inputProps }}
         />
@@ -65,6 +76,9 @@ const TextInput = ({
           aria-describedby={key}
           aria-label={label}
           className={["form-control border border-2", inputClassName].join(" ")}
+          placeholder={
+            placeholder + (inputProps.required ? " ( required )" : "")
+          }
           type={typeAttribute}
           {...{ onChange, placeholder, value, ...inputProps }}
         />

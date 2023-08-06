@@ -152,37 +152,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -308,7 +308,7 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
 
   return (
     <div className="d-flex justify-content-between gap-3 w-100">
-      <div className="d-flex flex-column gap-2">
+      <div className="d-flex flex-column gap-2 justify-content-end">
         {state.isConfiguratorActive ? (
           widget("components.molecule.text-input", {
             className: "w-100 p-0 gap-0",
@@ -321,8 +321,9 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
             skipPaddingGap: true,
           })
         ) : (
-          <h1 className="m-0">{metadata.name}</h1>
+          <h1 className="m-0 px-2 py-2">{metadata.name}</h1>
         )}
+
         {state.isConfiguratorActive ? (
           widget("components.molecule.text-input", {
             className: "w-100 border-none",
@@ -335,7 +336,7 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
             skipPaddingGap: true,
           })
         ) : (
-          <p className="m-0">{metadata.description}</p>
+          <p className="m-0 px-2 py-2">{metadata.description}</p>
         )}
       </div>
 
@@ -343,7 +344,9 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
         {state.isConfiguratorActive ? (
           widget("components.molecule.text-input", {
             className: "w-100",
-            inputProps: { className: "h-75 border-0 bg-dark text-white" },
+            inputProps: {
+              className: "h-75 text-end border-0 bg-dark text-white",
+            },
             key: `${form.values.id}-tag`,
             multiline: false,
             onChange: form.update({ path: ["tag"] }),

@@ -53,7 +53,7 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 const layoutConfig = {
-  bannerHeight: "142px",
+  bannerHeight: "162px",
 };
 
 const ProjectLayout = ({ children, configurator, id, path }) =>
