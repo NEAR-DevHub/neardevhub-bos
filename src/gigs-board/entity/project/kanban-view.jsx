@@ -81,10 +81,10 @@ const postTagsToIdSet = (tags) =>
       .flat(1)
   );
 
-const ProjectKanbanView = ({ id, columns, link, tags, permissions }) => {
-  console.log("ProjectKanbanView", { id, columns, tags });
+const ProjectKanbanView = ({ metadata, config, link, permissions }) => {
+  console.log("ProjectKanbanView", { metadata, config, link, permissions });
 
-  const postIdsByColumn = columns.map((column) => {
+  const postIdsByColumn = config.columns.map((column) => {
     const postIds = (
       Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
         label: column.tag,
@@ -129,7 +129,7 @@ const ProjectKanbanView = ({ id, columns, link, tags, permissions }) => {
       </div>
 
       <div class="row">
-        {Object.values(postIdsByColumn).map((column) => (
+        {postIdsByColumn.map((column) => (
           <div class="col-3" key={column.id}>
             <div class="card">
               <div class="card-body border-secondary">
