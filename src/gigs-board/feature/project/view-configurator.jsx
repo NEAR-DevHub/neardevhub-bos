@@ -363,6 +363,8 @@ const Viewer = {
 
 const view_configs_mock = {
   fj3938fh: JSON.stringify({
+    ticket_kind: "post-ticket",
+
     tags: {
       excluded: [],
       required: ["near-social"],
@@ -376,6 +378,8 @@ const view_configs_mock = {
   }),
 
   f34tf3ea45: JSON.stringify({
+    ticket_kind: "post-ticket",
+
     tags: {
       excluded: [],
       required: ["gigs-board"],
@@ -389,6 +393,8 @@ const view_configs_mock = {
   }),
 
   y45iwt4e: JSON.stringify({
+    ticket_kind: "post-ticket",
+
     tags: {
       excluded: [],
       required: ["funding"],
@@ -426,6 +432,7 @@ const ProjectViewMetadataDefaults = {
 };
 
 const ProjectViewConfigDefaults = {
+  ticket_kind: "post-ticket",
   tags: { excluded: [], required: [] },
   columns: [],
 };
@@ -458,10 +465,6 @@ const ProjectViewConfigurator = ({
 
     stateKey: "form",
   });
-
-  const errors = {
-    noProjectId: typeof projectId !== "string",
-  };
 
   const editorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -645,7 +648,7 @@ const ProjectViewConfigurator = ({
     <div>Loading...</div>
   ) : (
     <div className="d-flex flex-column gap-4 py-4">
-      {state.isEditorActive && form.values.length > 0 ? (
+      {state.isEditorActive && Object.keys(form.values).length > 0 ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">

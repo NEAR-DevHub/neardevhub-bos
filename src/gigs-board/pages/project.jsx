@@ -236,7 +236,7 @@ const Viewer = {
   projectPermissions: (projectId) =>
     Near.view(devHubAccountId, "get_project_permissions", {
       id: projectId,
-    }) ?? { can_configure: false },
+    }) ?? { can_configure: true },
 
   role: {
     isDevHubModerator:
@@ -348,7 +348,7 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
                   key={metadata.id}
                 >
                   {widget("feature.project.view-configurator", {
-                    link: href("project", { id, view: metadata.id }),
+                    link: href("project", { id, view: metadata.id, dir }),
                     metadata,
                     permissions,
                     projectId: id,

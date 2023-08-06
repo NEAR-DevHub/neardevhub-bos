@@ -229,7 +229,11 @@ const ProjectKanbanView = ({
 
                   <div class="d-flex flex-column gap-3">
                     {column.postIds.map((postId) =>
-                      widget("entity.post.CompactPost", { id: postId }, postId)
+                      widget(
+                        ["entity.project", config.ticket_kind].join("."),
+                        { id: postId },
+                        postId
+                      )
                     )}
                   </div>
                 </div>
