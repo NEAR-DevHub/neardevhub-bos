@@ -309,18 +309,57 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
   return (
     <div className="d-flex justify-content-between gap-3 w-100">
       <div className="d-flex flex-column gap-2">
-        <h1 className="m-0">{metadata.name}</h1>
-        <p className="m-0">{metadata.description}</p>
+        {state.isConfiguratorActive ? (
+          widget("components.molecule.text-input", {
+            className: "w-100 p-0 gap-0",
+            inputProps: { className: "h-75 border-0 bg-dark text-white fs-1" },
+            key: `${form.values.id}-name`,
+            multiline: false,
+            onChange: form.update({ path: ["name"] }),
+            placeholder: "Project name",
+            value: form.values.name,
+            skipPaddingGap: true,
+          })
+        ) : (
+          <h1 className="m-0">{metadata.name}</h1>
+        )}
+        {state.isConfiguratorActive ? (
+          widget("components.molecule.text-input", {
+            className: "w-100 border-none",
+            inputProps: { className: "h-75 border-0 bg-dark text-white" },
+            key: `${form.values.id}-description`,
+            multiline: false,
+            onChange: form.update({ path: ["description"] }),
+            placeholder: "Project description",
+            value: form.values.description,
+            skipPaddingGap: true,
+          })
+        ) : (
+          <p className="m-0">{metadata.description}</p>
+        )}
       </div>
 
       <div className="d-flex flex-column gap-3 justify-content-between align-items-end h-100">
-        <span
-          class="badge bg-primary rounded-4 text-decoration-none"
-          style={{ cursor: "default" }}
-          title="DevHub tag"
-        >
-          {metadata.tag}
-        </span>
+        {state.isConfiguratorActive ? (
+          widget("components.molecule.text-input", {
+            className: "w-100",
+            inputProps: { className: "h-75 border-0 bg-dark text-white" },
+            key: `${form.values.id}-tag`,
+            multiline: false,
+            onChange: form.update({ path: ["tag"] }),
+            placeholder: "project-tag",
+            value: form.values.tag,
+            skipPaddingGap: true,
+          })
+        ) : (
+          <span
+            class="badge bg-primary rounded-4 text-decoration-none"
+            style={{ cursor: "default" }}
+            title="DevHub tag"
+          >
+            {metadata.tag}
+          </span>
+        )}
 
         {true ||
         /**
