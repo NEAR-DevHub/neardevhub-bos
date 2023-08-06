@@ -398,7 +398,6 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
       : JSON.parse(community.data.github)
     )?.kanbanBoards ?? {};
 
-  // TODO: Should be taken from props once support for multiple boards is introduced
   const boardId = Object.keys(boards)[0] ?? null;
 
   const errors = {

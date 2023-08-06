@@ -247,7 +247,7 @@ const CommunityDefaults = {
   wiki2: null,
 };
 
-const CommunityEditorUI = ({ handle: communityHandle }) => {
+const CommunityEditor = ({ handle: communityHandle }) => {
   State.init({
     communityData: null,
     hasUnsavedChanges: false,
@@ -332,7 +332,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
     <div className="d-flex flex-column align-items-center gap-4 p-4">
       {typeof community.data?.handle === "string" || isCommunityNew ? (
         <>
-          {widget("feature.community-editor.branding-section", {
+          {widget("feature.community.branding-editor", {
             isEditingAllowed:
               isCommunityNew || Viewer.can.editCommunity(community.data),
 
@@ -606,4 +606,4 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
   );
 };
 
-return CommunityEditorUI(props);
+return CommunityEditor(props);

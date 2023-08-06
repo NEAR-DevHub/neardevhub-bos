@@ -606,14 +606,11 @@ const ProjectViewConfigurator = ({
                   })}
 
                   {widget("components.molecule.text-input", {
-                    format: "comma-separated",
-
                     key: `${
                       form.values.metadata.id ?? "new-view"
                     }-column-${id}-tag`,
 
-                    label: `Search terms for all the tags
-											MUST be presented in included posts`,
+                    label: "Tag",
 
                     onChange: form.update({
                       path: ["columns", columnIdx, "tag"],

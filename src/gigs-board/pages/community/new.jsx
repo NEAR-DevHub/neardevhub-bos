@@ -55,7 +55,7 @@ function href(widgetName, linkProps) {
 const CommunityNewPage = () =>
   widget("components.template.app-layout", {
     path: [{ label: "Communities", pageId: "communities" }],
-    children: widget("feature.community-editor.ui"),
+    children: widget("feature.community.editor"),
   });
 
 return CommunityNewPage(props);

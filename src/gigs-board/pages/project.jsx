@@ -347,12 +347,17 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
                   tabindex="0"
                   key={metadata.id}
                 >
-                  {widget("feature.project.view-configurator", {
-                    link: href("project", { id, view: metadata.id, dir }),
-                    metadata,
-                    permissions,
-                    projectId: id,
-                  })}
+                  {widget(
+                    permissions.can_configure
+                      ? "feature.project.view-configurator"
+                      : ["entity.project", metadata.kind].join("."),
+                    {
+                      link: href("project", { id, view: metadata.id, dir }),
+                      metadata,
+                      permissions,
+                      projectId: id,
+                    }
+                  )}
                 </div>
               ))}
 
