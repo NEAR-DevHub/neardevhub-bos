@@ -207,14 +207,18 @@ const GithubKanbanTeamBoard = ({
   }
 
   return (
-    <div className="d-flex flex-column gap-4 pb-4">
+    <div className="d-flex flex-column gap-4 py-4">
       <div className="d-flex flex-column align-items-center gap-2">
         <h5 className="h5 d-inline-flex gap-2 m-0">
           <i className="bi bi-kanban-fill" />
           <span>{(title?.length ?? 0) > 0 ? title : "Untitled board"}</span>
         </h5>
 
-        <p className="m-0 py-1 text-secondary text-center">{description}</p>
+        <p className="m-0 py-1 text-secondary text-center">
+          {(description?.length ?? 0) > 0
+            ? description
+            : "No description provided"}
+        </p>
       </div>
 
       <div className="d-flex justify-content-end gap-3">

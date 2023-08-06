@@ -149,10 +149,11 @@ const ProjectKanbanView = ({
   const columns = configToColumns(config);
 
   return (
-    <div className="d-flex flex-column gap-4 pb-4">
+    <div className="d-flex flex-column gap-4 py-4">
       <div className="d-flex flex-column align-items-center gap-2">
         <h5 className="h5 d-inline-flex gap-2 m-0">
           <i className="bi bi-kanban-fill" />
+
           <span>
             {(metadata.title?.length ?? 0) > 0
               ? metadata.title
@@ -161,7 +162,9 @@ const ProjectKanbanView = ({
         </h5>
 
         <p className="m-0 py-1 text-secondary text-center">
-          {metadata.description}
+          {(metadata.description?.length ?? 0) > 0
+            ? metadata.description
+            : "No description provided"}
         </p>
       </div>
 
