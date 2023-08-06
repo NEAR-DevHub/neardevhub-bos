@@ -9,6 +9,7 @@ const TextInput = ({
   placeholder,
   type,
   value,
+  skipPaddingGap,
 }) => {
   const typeAttribute =
     type === "text" || type === "password" || type === "number" ? type : "text";
@@ -16,7 +17,8 @@ const TextInput = ({
   return (
     <div
       className={[
-        "d-flex flex-column flex-1 gap-1 align-items-start justify-content-evenly p-2",
+        "d-flex flex-column flex-1 align-items-start justify-content-evenly",
+        skipPaddingGap ? "" : "gap-1 p-2",
         className ?? "",
       ].join(" ")}
     >
