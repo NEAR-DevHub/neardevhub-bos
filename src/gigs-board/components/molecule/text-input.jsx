@@ -66,7 +66,9 @@ const TextInput = ({
           aria-label={label}
           className={["form-control border border-2", inputClassName].join(" ")}
           placeholder={
-            placeholder + (inputProps.required ? " ( required )" : "")
+            (placeholder ?? null) === null
+              ? null
+              : placeholder + (inputProps.required ? " ( required )" : "")
           }
           type={typeAttribute}
           {...{ onChange, placeholder, value, ...inputProps }}
