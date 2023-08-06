@@ -297,7 +297,7 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
       isConfiguratorActive: forcedState ?? !lastKnownState.isConfiguratorActive,
     }));
 
-  const form = useForm({ initialValues: metadata, stateKey: "metadata" });
+  const form = useForm({ initialValues: { metadata }, stateKey: "project" });
 
   const onCancel = () => {
     form.reset();
@@ -313,11 +313,11 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
           widget("components.molecule.text-input", {
             className: "w-100 p-0 gap-0",
             inputProps: { className: "h-75 border-0 bg-dark text-white fs-1" },
-            key: `${form.values.id}-name`,
+            key: `project-${form.values.metadata.id}-name`,
             multiline: false,
-            onChange: form.update({ path: ["name"] }),
+            onChange: form.update({ path: ["metadata", "name"] }),
             placeholder: "Project name",
-            value: form.values.name,
+            value: form.values.metadata.name,
             skipPaddingGap: true,
           })
         ) : (
@@ -328,11 +328,11 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
           widget("components.molecule.text-input", {
             className: "w-100 border-none",
             inputProps: { className: "h-75 border-0 bg-dark text-white" },
-            key: `${form.values.id}-description`,
+            key: `project-${form.values.metadata.id}-description`,
             multiline: false,
-            onChange: form.update({ path: ["description"] }),
+            onChange: form.update({ path: ["metadata", "description"] }),
             placeholder: "Project description",
-            value: form.values.description,
+            value: form.values.metadata.description,
             skipPaddingGap: true,
           })
         ) : (
@@ -347,11 +347,11 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
             inputProps: {
               className: "h-75 text-end border-0 bg-dark text-white",
             },
-            key: `${form.values.id}-tag`,
+            key: `project-${form.values.metadata.id}-tag`,
             multiline: false,
-            onChange: form.update({ path: ["tag"] }),
+            onChange: form.update({ path: ["metadata", "tag"] }),
             placeholder: "project-tag",
-            value: form.values.tag,
+            value: form.values.metadata.tag,
             skipPaddingGap: true,
           })
         ) : (
@@ -364,10 +364,7 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
           </span>
         )}
 
-        {true ||
-        /**
-         * TODO!: REMOVE `true ||` BEFORE RELEASE
-         */ permissions.can_configure ? (
+        {permissions.can_configure ? (
           <div className="d-flex gap-3">
             {widget("components.atom.button", {
               classNames: {
@@ -388,6 +385,7 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
                 ].join(" "),
                 adornment: "bi-check-circle-fill",
               },
+              disabled: !form.hasUnsubmittedChanges,
               label: "Save",
               onClick: onSubmit,
             })}
