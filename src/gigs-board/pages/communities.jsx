@@ -139,13 +139,19 @@ const DevHub = {
 
 const CommunitiesPage = () =>
   widget("components.template.app-layout", {
+    path: [{ label: "Communities", pageId: "communities", isHidden: true }],
+
     banner: (
       <div
         className="d-flex justify-content-between p-4"
         style={{ backgroundColor: "#181818" }}
       >
         <div className="d-flex flex-column gap-3">
-          <h1 className="m-0 fs-4 text-white">Communities</h1>
+          <h1 className="m-0 fs-4">
+            <a className="text-white" href={href("communities")}>
+              Communities
+            </a>
+          </h1>
 
           <p className="m-0 text-muted fs-6">
             Discover developer communities on BOS

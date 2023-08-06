@@ -62,12 +62,13 @@ const Breadcrumbs = ({ classNames, path }) =>
       style={{ backgroundColor: "#181818" }}
     >
       <ol className="breadcrumb d-flex align-items-end m-0 h-100">
-        {path.map(({ isActive, label, pageId, params }) => (
+        {path.map(({ isActive, isHidden, label, pageId, params }) => (
           <li
             aria-current="page"
             className={[
               "breadcrumb-item d-flex",
               isActive ? "active" : "",
+              isHidden ? "d-none" : "",
             ].join(" ")}
           >
             <a
