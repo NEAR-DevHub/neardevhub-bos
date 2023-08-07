@@ -85,17 +85,6 @@ const labels = labelStrings.map((s) => {
   return { name: s };
 });
 
-const tokenMapping = {
-  NEAR: "NEAR",
-  USDT: {
-    NEP141: {
-      address: "usdt.tether-token.near",
-    },
-  },
-  // Add more tokens here as needed
-};
-
-
 initState({
   author_id: context.accountId,
   // Should be a list of objects with field "name".
@@ -107,7 +96,11 @@ initState({
   name: props.name ?? "",
   description: props.description ?? "",
   amount: props.amount ?? "0",
-  token: props.token ?? "USDT",
+  token: props.token ?? {
+    NEP141: {
+      address: "usdt.tether-token.near",
+    },
+  },
   supervisor: props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
   warning: "",
@@ -165,7 +158,7 @@ const onSubmit = () => {
       name: state.name,
       description: state.description,
       amount: state.amount,
-      sponsorship_token: tokenMapping[state.token],
+      sponsorship_token: state.token,
       supervisor: state.supervisor,
       sponsorship_version: "V1",
     },
@@ -406,7 +399,11 @@ const tokenDiv = fields.includes("sponsorship_token") ? (
     >
       <option
         selected
-        value={"USDT"}
+        value={{
+          NEP141: {
+            address: "usdt.tether-token.near",
+          },
+        }}
       >
         USDT
       </option>
