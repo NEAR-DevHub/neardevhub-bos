@@ -331,7 +331,7 @@ const CommunityProjectsPage = ({ handle }) => {
               </h5>
             </div>
           ) : (
-            <div className="d-flex flex-wrap gap-4" style={{ minHeight: 384 }}>
+            <div className="d-flex flex-wrap gap-4 w-100 h-100">
               {community_projects_metadata.data.map((metadata) =>
                 widget(
                   "entity.project.card",
