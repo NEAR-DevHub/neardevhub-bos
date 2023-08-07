@@ -152,37 +152,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -462,7 +462,7 @@ const ProjectViewConfigurator = ({
       config: isNewView ? ProjectViewConfigDefaults : JSON.parse(config.data),
     },
 
-    stateKey: "form",
+    stateKey: "view",
   });
 
   const editorToggle = (forcedState) =>
@@ -479,13 +479,14 @@ const ProjectViewConfigurator = ({
 
   const columnsCreateNew = ({ lastKnownValue }) =>
     lastKnownValue.length < ProjectViewConfiguratorSettings.maxColumnsNumber
-      ? [...lastKnownValue, { id: uuid(), tag: "", title: "New column" }]
+      ? [
+          ...lastKnownValue,
+          { id: uuid(), tag: "", title: "New column", description: "" },
+        ]
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (targetId) =>
-    ({ lastKnownValue }) =>
-      lastKnownValue.filter(({ id }) => targetId !== id);
+  const columnsDeleteById = (targetId) => ({ lastKnownValue }) =>
+    lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onCancel = () => {
     form.reset();
@@ -497,12 +498,8 @@ const ProjectViewConfigurator = ({
       project_id: projectId,
 
       view: {
-        metadata: { ...ProjectViewMetadataDefaults, ...form.values.metadata },
-
-        config: JSON.stringify({
-          ...ProjectViewConfigDefaults,
-          ...form.values.config,
-        }),
+        metadata: form.values.metadata,
+        config: JSON.stringify(form.values.config),
       },
     });
 
@@ -582,7 +579,7 @@ const ProjectViewConfigurator = ({
                     label: "Title",
 
                     onChange: form.update({
-                      path: ["columns", columnIdx, "title"],
+                      path: ["config", "columns", columnIdx, "title"],
                     }),
 
                     placeholder: "👀 Review",
@@ -595,7 +592,7 @@ const ProjectViewConfigurator = ({
                     label: "Description",
 
                     onChange: form.update({
-                      path: ["columns", columnIdx, "description"],
+                      path: ["config", "columns", columnIdx, "description"],
                     }),
 
                     placeholder:
@@ -612,7 +609,7 @@ const ProjectViewConfigurator = ({
                     label: "Tag",
 
                     onChange: form.update({
-                      path: ["columns", columnIdx, "tag"],
+                      path: ["config", "columns", columnIdx, "tag"],
                     }),
 
                     placeholder: "",

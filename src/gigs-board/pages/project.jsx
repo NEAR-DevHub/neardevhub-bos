@@ -236,7 +236,7 @@ const Viewer = {
   projectPermissions: (projectId) =>
     Near.view(devHubAccountId, "get_project_permissions", {
       id: projectId,
-    }) ?? { can_configure: false },
+    }) ?? { can_configure: true },
 
   role: {
     isDevHubModerator:

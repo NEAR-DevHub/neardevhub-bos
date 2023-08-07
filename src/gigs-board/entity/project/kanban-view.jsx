@@ -260,9 +260,9 @@ const ProjectKanbanView = ({
             JSON.stringify({})
         );
 
-  console.log({ configuration });
-
   const columns = configToColumns(configuration);
+
+  console.log(columns[0]);
 
   return (
     <div className="d-flex flex-column gap-4 py-4">
