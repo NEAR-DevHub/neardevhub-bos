@@ -62,9 +62,11 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
-  create_project: ({ tag, name, description }) =>
-    Near.call(devHubAccountId, "create_project", { tag, name, description }) ??
-    null,
+  create_project: ({ author_community_handle, metadata }) =>
+    Near.call(devHubAccountId, "create_project", {
+      author_community_handle,
+      metadata,
+    }) ?? null,
 
   update_project_metadata: ({ metadata }) =>
     Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
@@ -77,12 +79,12 @@ const DevHub = {
     Near.call(devHubAccountId, "create_project_view", { project_id, view }) ??
     null,
 
-  get_project_view: ({ project_id, view_id }) =>
-    Near.view(devHubAccountId, "get_project_view", { project_id, view_id }) ??
-    null,
-
   update_project_view: ({ project_id, view }) =>
     Near.call(devHubAccountId, "create_project_view", { project_id, view }) ??
+    null,
+
+  delete_project_view: ({ project_id, view_id }) =>
+    Near.call(devHubAccountId, "get_project_view", { project_id, view_id }) ??
     null,
 
   get_access_control_info: () =>

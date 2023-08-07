@@ -257,9 +257,11 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
-  create_project: ({ tag, name, description }) =>
-    Near.call(devHubAccountId, "create_project", { tag, name, description }) ??
-    null,
+  create_project: ({ author_community_handle, metadata }) =>
+    Near.call(devHubAccountId, "create_project", {
+      author_community_handle,
+      metadata,
+    }) ?? null,
 
   update_project_metadata: ({ metadata }) =>
     Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
@@ -272,12 +274,12 @@ const DevHub = {
     Near.call(devHubAccountId, "create_project_view", { project_id, view }) ??
     null,
 
-  get_project_view: ({ project_id, view_id }) =>
-    Near.view(devHubAccountId, "get_project_view", { project_id, view_id }) ??
-    null,
-
   update_project_view: ({ project_id, view }) =>
     Near.call(devHubAccountId, "create_project_view", { project_id, view }) ??
+    null,
+
+  delete_project_view: ({ project_id, view_id }) =>
+    Near.call(devHubAccountId, "get_project_view", { project_id, view_id }) ??
     null,
 
   get_access_control_info: () =>
@@ -361,60 +363,6 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const view_configs_mock = {
-  fj3938fh: JSON.stringify({
-    ticket_kind: "post-ticket",
-
-    tags: {
-      excluded: [],
-      required: ["near-social"],
-    },
-
-    columns: [
-      { id: "hr839hf2", tag: "widget", title: "Widget" },
-      { id: "iu495g95", tag: "integration", title: "Integration" },
-      { id: "i5hy2iu3", tag: "feature-request", title: "Feature Request" },
-    ],
-  }),
-
-  f34tf3ea45: JSON.stringify({
-    ticket_kind: "post-ticket",
-
-    tags: {
-      excluded: [],
-      required: ["gigs-board"],
-    },
-
-    columns: [
-      { id: "l23r34t4", tag: "nep", title: "NEP" },
-      { id: "f5rn09i4", tag: "badges", title: "Badges" },
-      { id: "v33xj3u8", tag: "feature-request", title: "Feature Request" },
-    ],
-  }),
-
-  y45iwt4e: JSON.stringify({
-    ticket_kind: "post-ticket",
-
-    tags: {
-      excluded: [],
-      required: ["funding"],
-    },
-
-    columns: [
-      { id: "gf39lk82", tag: "funding-new-request", title: "New Request" },
-
-      {
-        id: "dg39i49b",
-        tag: "funding-information-collection",
-        title: "Information Collection",
-      },
-
-      { id: "e3if93ew", tag: "funding-processing", title: "Processing" },
-      { id: "u8t3gu9f", tag: "funding-funded", title: "Funded" },
-    ],
-  }),
-};
-
 const ProjectViewConfiguratorSettings = {
   maxColumnsNumber: 20,
 };
@@ -449,12 +397,10 @@ const ProjectViewConfigurator = ({
     isEditorActive: isNewView,
   });
 
-  const config =
-    { data: view_configs_mock[metadata.id] } ?? // !TODO: delete this line before release
-    DevHub.useQuery({
-      name: "project_view_config",
-      params: { project_id: projectId, view_id: metadata.id },
-    });
+  const config = DevHub.useQuery({
+    name: "project_view_config",
+    params: { id: metadata.id },
+  });
 
   const form = useForm({
     initialValues: {
