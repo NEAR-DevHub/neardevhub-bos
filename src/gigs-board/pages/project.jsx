@@ -237,7 +237,7 @@ const Viewer = {
 
   projectPermissions: (projectId) =>
     Near.view(devHubAccountId, "get_project_permissions", {
-      id: projectId,
+      id: parseInt(projectId, 10),
     }) ?? { can_configure: false },
 
   role: {
@@ -254,7 +254,10 @@ const Viewer = {
 const ProjectPage = ({ dir, id, view: selectedViewId }) => {
   const permissions = Viewer.projectPermissions(id);
 
-  const project = DevHub.useQuery({ name: "project", params: { id } });
+  const project = DevHub.useQuery({
+    name: "project",
+    params: { id: parseInt(id, 10) },
+  });
 
   const viewsMetadata = DevHub.get_project_views_metadata({
     project_id: parseInt(id, 10),
