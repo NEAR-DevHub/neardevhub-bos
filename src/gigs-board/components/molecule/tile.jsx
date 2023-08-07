@@ -4,7 +4,7 @@ const AttractableDiv = styled.div`
   transition: box-shadow 0.6s;
 
   &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    box-shadow: rgba(48, 48, 48, 0.15) 0px 0.1rem 0.1rem !important;
   }
 `;
 
@@ -35,10 +35,14 @@ const Tile = ({
   headingAdornment,
   noFrame,
   minHeight,
+  noBorder,
+  borderRadius,
 }) => (
   <AttractableDiv
     className={[
-      "d-flex flex-column gap-3 shadow-sm border rounded-4 w-100",
+      "d-flex flex-column gap-3 shadow-sm w-100",
+      !borderRadius ? "rounded-4" : borderRadius,
+      !noBorder ? "border" : "",
       !noFrame ? "p-4" : "",
     ].join(" ")}
     style={{ maxWidth: 896, minHeight: minHeight ?? 240 }}

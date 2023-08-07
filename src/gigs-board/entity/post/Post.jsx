@@ -53,12 +53,16 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+  // box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+  border: 2px solid #eceef0;
   transition: box-shadow 0.6s;
 
   &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    box-shadow: rgba(48, 48, 48, 0.15) 0px 0.1rem 0.1rem !important;
   }
+
+  margin-bottom: 16px;
+  margin-top: 1em;
 `;
 
 const AttractableLink = styled.a`
@@ -79,6 +83,14 @@ const AttractableImage = styled.img`
   }
 `;
 /* END_INCLUDE: "core/lib/gui/attractable" */
+
+const ButtonWithHover = styled.button`
+  background-color: #fff;
+  &:hover {
+    background-color: #e9ecef;
+    color: #000;
+  }
+`;
 
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
 const post =
@@ -137,7 +149,7 @@ const postSearchKeywords = props.searchKeywords ? (
   <div style={{ "font-family": "monospace" }} key="post-search-keywords">
     <span>Found keywords: </span>
     {props.searchKeywords.map((label) => {
-      return <span class="badge text-bg-info me-1">{label}</span>;
+      return widget("components.atom.tag", { label });
     })}
   </div>
 ) : (
@@ -145,23 +157,12 @@ const postSearchKeywords = props.searchKeywords ? (
 );
 
 const searchKeywords = props.searchKeywords ? (
-  <div class="mb-1" key="search-keywords">
+  <div class="mb-4" key="search-keywords">
     <small class="text-muted">{postSearchKeywords}</small>
   </div>
 ) : (
   <div key="search-keywords"></div>
 );
-
-const linkToParent =
-  isUnderPost || !parentId ? (
-    <div key="link-to-parent"></div>
-  ) : (
-    <div className="card-header" key="link-to-parent">
-      <a href={href("Post", { id: parentId })}>
-        <i class="bi bi-arrow-90deg-up"></i>Go to parent{" "}
-      </a>
-    </div>
-  );
 
 const allowedToEdit =
   !props.isPreview &&
@@ -215,7 +216,7 @@ const shareButton = props.isPreview ? (
   <div></div>
 ) : (
   <a
-    class="card-link"
+    class="card-link text-dark"
     href={href("Post", { id: postId })}
     role="button"
     target="_blank"
@@ -225,15 +226,15 @@ const shareButton = props.isPreview ? (
   </a>
 );
 
+// card-header
 const header = (
-  <div className="card-header" key="header">
+  <div className="p-3 pt-4" key="header">
     <small class="text-muted">
       <div class="row justify-content-between">
         <div class="col-4">
-          <Widget
-            src={`neardevgov.near/widget/ProfileLine`}
-            props={{ accountId: post.author_id }}
-          />
+          {widget("components.molecule.profile-card", {
+            accountId: post.author_id,
+          })}
         </div>
         <div class="col-5">
           <div class="d-flex justify-content-end">
@@ -276,12 +277,12 @@ const fillIcons = {
 // Trigger saving this widget.
 
 const borders = {
-  Idea: "border-secondary",
-  Comment: "border-secondary",
-  Submission: "border-secondary",
-  Attestation: "border-secondary",
-  Sponsorship: "border-secondary",
-  Github: "border-secondary",
+  Idea: "border-light",
+  Comment: "border-light",
+  Submission: "border-light",
+  Attestation: "border-light",
+  Sponsorship: "border-light",
+  Github: "border-light",
 };
 
 const containsLike = props.isPreview
@@ -356,9 +357,9 @@ const buttonsFooter = props.isPreview ? null : (
   <div class="row" key="buttons-footer">
     <div class="col-8">
       <div class="btn-group" role="group" aria-label="Basic outlined example">
-        <button
+        <ButtonWithHover
           type="button"
-          class="btn btn-outline-primary"
+          class="btn"
           style={{ border: "0px" }}
           onClick={onLike}
         >
@@ -370,17 +371,17 @@ const buttonsFooter = props.isPreview ? null : (
                   post.likes.map(({ author_id }) => [author_id, ""])
                 ),
               })}
-        </button>
+        </ButtonWithHover>
         <div class="btn-group" role="group">
-          <button
+          <ButtonWithHover
             type="button"
-            class="btn btn-outline-primary"
+            class="btn"
             style={{ border: "0px" }}
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
             <i class={`bi ${emptyIcons.Reply}`}> </i> Reply
-          </button>
+          </ButtonWithHover>
           <ul class="dropdown-menu">
             {btnCreatorWidget(
               "Idea",
@@ -417,9 +418,9 @@ const buttonsFooter = props.isPreview ? null : (
             )}
           </ul>
         </div>
-        <button
+        <ButtonWithHover
           type="button"
-          class="btn btn-outline-primary"
+          class="btn"
           style={{ border: "0px" }}
           data-bs-toggle="collapse"
           href={`#collapseChildPosts${postId}`}
@@ -428,7 +429,22 @@ const buttonsFooter = props.isPreview ? null : (
         >
           <i class="bi bi-arrows-expand"> </i>{" "}
           {`Expand Replies (${childPostIds.length})`}
-        </button>
+        </ButtonWithHover>
+
+        {isUnderPost || !parentId ? (
+          <div key="link-to-parent"></div>
+        ) : (
+          <a href={href("Post", { id: parentId })}>
+            <ButtonWithHover
+              type="button"
+              style={{ border: "0px" }}
+              className="btn"
+              key="link-to-parent"
+            >
+              <i class="bi bi-arrow-90deg-up"></i>Go to parent
+            </ButtonWithHover>
+          </a>
+        )}
       </div>
     </div>
   </div>
@@ -508,13 +524,9 @@ const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
 const postLabels = post.snapshot.labels ? (
-  <div class="card-title" key="post-labels">
+  <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
     {post.snapshot.labels.map((label) => {
-      return (
-        <a href={href("Feed", { label }, label)}>
-          <span class="badge text-bg-primary me-1">{label}</span>
-        </a>
-      );
+      return widget("components.atom.tag", { label });
     })}
   </div>
 ) : (
@@ -525,7 +537,7 @@ const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
   ) : (
-    <h5 class="card-title" key="post-title">
+    <h5 class="card-title mb-4" key="post-title">
       <div className="row justify-content-between">
         <div class="col-9">
           <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
@@ -601,17 +613,6 @@ const limitedMarkdown = styled.div`
   max-height: 20em;
 `;
 
-const clampMarkdown = styled.div`
-  .clamp {
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 1),
-      rgba(0, 0, 0, 0)
-    );
-    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
-  }
-`;
-
 // Determine if located in the post page.
 const isInList = props.isInList;
 const contentArray = snapshot.description.split("\n");
@@ -622,7 +623,7 @@ initState({
 });
 
 const clampedContent = needClamp
-  ? contentArray.slice(0, 5).join("\n")
+  ? contentArray.slice(0, 3).join("\n")
   : snapshot.description;
 
 const onMention = (accountId) => (
@@ -648,7 +649,7 @@ const descriptionArea = isUnderPost ? (
     />
   </limitedMarkdown>
 ) : (
-  <clampMarkdown>
+  <div>
     <div class={state.clamp ? "clamp" : ""}>
       <Markdown
         class="card-text"
@@ -658,18 +659,18 @@ const descriptionArea = isUnderPost ? (
       ></Markdown>
     </div>
     {state.clamp ? (
-      <div class="d-flex justify-content-center">
+      <div class="d-flex justify-content-start">
         <a
-          class="btn btn-link text-secondary"
+          class="btn-link text-dark fw-bold text-decoration-none"
           onClick={() => State.update({ clamp: false })}
         >
-          Read More
+          See more
         </a>
       </div>
     ) : (
       <></>
     )}
-  </clampMarkdown>
+  </div>
 );
 
 const timestampElement = (_snapshot) => {
@@ -715,12 +716,10 @@ function combineText(_snapshot) {
 }
 
 return (
-  <AttractableDiv className={`card my-2 ${borders[snapshot.post_type]}`}>
-    {linkToParent}
+  <AttractableDiv className={`card ${borders[snapshot.post_type]}`}>
     {header}
     <div className="card-body">
       {searchKeywords}
-      {postLabels}
       {compareSnapshot ? (
         <div
           class="border rounded"
@@ -761,6 +760,7 @@ return (
           {descriptionArea}
         </>
       )}
+      {postLabels}
       {buttonsFooter}
       {editorsFooter}
       {postsList}
