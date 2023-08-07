@@ -158,17 +158,14 @@ const DevHub = {
     Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
     null,
 
-  create_project_view: ({ project_id, view }) =>
-    Near.call(devHubAccountId, "create_project_view", { project_id, view }) ??
-    null,
+  create_project_view: ({ view }) =>
+    Near.call(devHubAccountId, "create_project_view", { view }) ?? null,
 
-  update_project_view: ({ project_id, view }) =>
-    Near.call(devHubAccountId, "create_project_view", { project_id, view }) ??
-    null,
+  update_project_view: ({ view }) =>
+    Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
 
-  delete_project_view: ({ project_id, view_id }) =>
-    Near.call(devHubAccountId, "get_project_view", { project_id, view_id }) ??
-    null,
+  delete_project_view: ({ id }) =>
+    Near.call(devHubAccountId, "get_project_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -238,7 +235,7 @@ const Viewer = {
   projectPermissions: (projectId) =>
     Near.view(devHubAccountId, "get_account_project_permissions", {
       account_id: context.accountId,
-      project_id: parseInt(projectId, 10),
+      project_id: parseInt(projectId),
     }) ?? { can_configure: false },
 
   role: {
@@ -257,11 +254,11 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
 
   const project = DevHub.useQuery({
     name: "project",
-    params: { id: parseInt(id, 10) },
+    params: { id: parseInt(id) },
   });
 
   const viewsMetadata = DevHub.get_project_views_metadata({
-    project_id: parseInt(id, 10),
+    project_id: parseInt(id),
   });
 
   return project.data === null && project.isLoading ? (

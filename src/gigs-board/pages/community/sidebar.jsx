@@ -75,17 +75,14 @@ const DevHub = {
     Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
     null,
 
-  create_project_view: ({ project_id, view }) =>
-    Near.call(devHubAccountId, "create_project_view", { project_id, view }) ??
-    null,
+  create_project_view: ({ view }) =>
+    Near.call(devHubAccountId, "create_project_view", { view }) ?? null,
 
-  update_project_view: ({ project_id, view }) =>
-    Near.call(devHubAccountId, "create_project_view", { project_id, view }) ??
-    null,
+  update_project_view: ({ view }) =>
+    Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
 
-  delete_project_view: ({ project_id, view_id }) =>
-    Near.call(devHubAccountId, "get_project_view", { project_id, view_id }) ??
-    null,
+  delete_project_view: ({ id }) =>
+    Near.call(devHubAccountId, "get_project_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
