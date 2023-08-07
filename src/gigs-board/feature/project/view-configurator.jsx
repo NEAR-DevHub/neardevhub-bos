@@ -152,37 +152,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -348,8 +348,9 @@ const Viewer = {
   },
 
   projectPermissions: (projectId) =>
-    Near.view(devHubAccountId, "get_project_permissions", {
-      id: parseInt(projectId, 10),
+    Near.view(devHubAccountId, "get_account_project_permissions", {
+      account_id: context.accountId,
+      project_id: parseInt(projectId, 10),
     }) ?? { can_configure: false },
 
   role: {
@@ -431,10 +432,8 @@ const ProjectViewConfigurator = ({
         ]
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (targetId) =>
-    ({ lastKnownValue }) =>
-      lastKnownValue.filter(({ id }) => targetId !== id);
+  const columnsDeleteById = (targetId) => ({ lastKnownValue }) =>
+    lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onCancel = () => {
     form.reset();
@@ -589,7 +588,7 @@ const ProjectViewConfigurator = ({
       </>
     ) : null;
 
-  return config.data === null ? (
+  return !isNewView && config.data === null ? (
     <div>Loading...</div>
   ) : (
     <div className="d-flex flex-column gap-4 py-4">

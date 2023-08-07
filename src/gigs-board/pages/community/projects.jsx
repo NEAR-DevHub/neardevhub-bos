@@ -203,8 +203,9 @@ const Viewer = {
   },
 
   projectPermissions: (projectId) =>
-    Near.view(devHubAccountId, "get_project_permissions", {
-      id: parseInt(projectId, 10),
+    Near.view(devHubAccountId, "get_account_project_permissions", {
+      account_id: context.accountId,
+      project_id: parseInt(projectId, 10),
     }) ?? { can_configure: false },
 
   role: {
