@@ -316,7 +316,13 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
         {state.isConfiguratorActive ? (
           widget("components.molecule.text-input", {
             className: "w-100 p-0 gap-0",
-            inputProps: { className: "h-75 border-0 bg-dark text-white fs-1" },
+
+            inputProps: {
+              className: "h-75 border-0 bg-dark text-white fs-1",
+              min: 3,
+              max: 30,
+            },
+
             key: `project-${form.values.metadata.id}-name`,
             multiline: false,
             onChange: form.update({ path: ["metadata", "name"] }),
@@ -331,7 +337,13 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
         {state.isConfiguratorActive ? (
           widget("components.molecule.text-input", {
             className: "w-100 border-none",
-            inputProps: { className: "h-75 border-0 bg-dark text-white" },
+
+            inputProps: {
+              className: "h-75 border-0 bg-dark text-white",
+              min: 6,
+              max: 60,
+            },
+
             key: `project-${form.values.metadata.id}-description`,
             multiline: false,
             onChange: form.update({ path: ["metadata", "description"] }),
@@ -348,9 +360,13 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
         {state.isConfiguratorActive ? (
           widget("components.molecule.text-input", {
             className: "w-100",
+
             inputProps: {
               className: "h-75 text-end border-0 bg-dark text-white",
+              min: 2,
+              max: 30,
             },
+
             key: `project-${form.values.metadata.id}-tag`,
             multiline: false,
             onChange: form.update({ path: ["metadata", "tag"] }),
