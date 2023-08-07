@@ -342,7 +342,7 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
             <div class="tab-content">
               {viewsMetadata.map((metadata) => (
                 <div
-                  class={`tab-pane fade ${
+                  class={`tab-pane pt-4 fade ${
                     metadata.id === selectedViewId ? "show active" : ""
                   }`}
                   role="tabpanel"
