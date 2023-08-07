@@ -52,18 +52,15 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-return (
-  <div class="d-flex flex-row-reverse">
-    <a
-      class="btn btn-light"
-      style={{
-        backgroundColor: "#0C7283",
-        color: "#f3f3f3",
-      }}
-      href={href("Create", { labels: props.labels })}
+const Tag = ({ label }) => (
+  <a href={href("Feed", { label }, label)}>
+    <span
+      class="badge me-1 text-dark fw-normal"
+      style={{ border: "1px solid #D0D5DD" }}
     >
-      <i class="bi bi-plus-circle-fill"></i>
-      Post
-    </a>
-  </div>
+      {label}
+    </span>
+  </a>
 );
+
+return Tag(props);
