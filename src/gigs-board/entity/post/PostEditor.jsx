@@ -85,6 +85,17 @@ const labels = labelStrings.map((s) => {
   return { name: s };
 });
 
+const tokenMapping = {
+  NEAR: "NEAR",
+  USDT: {
+    NEP141: {
+      address: "usdt.tether-token.near",
+    },
+  },
+  // Add more tokens here as needed
+};
+
+
 initState({
   author_id: context.accountId,
   // Should be a list of objects with field "name".
@@ -154,7 +165,7 @@ const onSubmit = () => {
       name: state.name,
       description: state.description,
       amount: state.amount,
-      sponsorship_token: state.token,
+      sponsorship_token: tokenMapping[state.token],
       supervisor: state.supervisor,
       sponsorship_version: "V1",
     },
@@ -377,18 +388,21 @@ const amountDiv = fields.includes("amount") ? (
 
 const tokenDiv = fields.includes("sponsorship_token") ? (
   <div className="col-lg-6  mb-2">
-      Currency
-      <select
-        onChange={(event) => State.update({ token: event.target.value })}
-        class="form-select"
-        aria-label="Default select"
+    Currency
+    <select
+      onChange={(event) => State.update({ token: event.target.value })}
+      class="form-select"
+      aria-label="Default select"
+    >
+      <option
+        selected
+        value={"USDT"}
       >
-        <option selected value="USDT">
-          USDT
-        </option>
-        <option value="NEAR">NEAR</option>
-      </select>
-    </div>
+        USDT
+      </option>
+      <option value="NEAR">NEAR</option>
+    </select>
+  </div>
 ) : null;
 
 const supervisorDiv = fields.includes("supervisor") ? (
