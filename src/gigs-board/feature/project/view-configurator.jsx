@@ -152,37 +152,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -442,12 +442,12 @@ const ProjectViewConfigurator = ({
   permissions,
   projectId,
 }) => {
+  const isNewView = (metadata ?? null) === null;
+
   State.init({
     editingMode: "form",
-    isEditorActive: false,
+    isEditorActive: isNewView,
   });
-
-  const isNewView = (metadata ?? null) === null;
 
   const config =
     { data: view_configs_mock[metadata.id] } ?? // !TODO: delete this line before release
@@ -485,10 +485,8 @@ const ProjectViewConfigurator = ({
         ]
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (targetId) =>
-    ({ lastKnownValue }) =>
-      lastKnownValue.filter(({ id }) => targetId !== id);
+  const columnsDeleteById = (targetId) => ({ lastKnownValue }) =>
+    lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onCancel = () => {
     form.reset();
@@ -519,6 +517,35 @@ const ProjectViewConfigurator = ({
           })}
         </div>
 
+        <CompactContainer>
+          <div className="d-flex gap-3 flex-column flex-lg-row">
+            {widget("components.molecule.text-input", {
+              className: "flex-shrink-0",
+              format: "comma-separated",
+              key: `${form.values.metadata.id ?? "new-view"}-tags-required`,
+              label: "Search terms for all the tags MUST be presented in posts",
+              onChange: form.update({ path: ["config", "tags", "required"] }),
+              placeholder: "near-protocol-neps, ",
+              value: form.values.config.tags.required.join(", "),
+            })}
+          </div>
+
+          <div className="d-flex gap-3 flex-column flex-lg-row">
+            {widget("components.molecule.text-input", {
+              className: "flex-shrink-0",
+              format: "comma-separated",
+              key: `${form.values.metadata.id ?? "new-view"}-tags-excluded`,
+
+              label:
+                "Search terms for all the tags MUST NOT be presented in posts",
+
+              onChange: form.update({ path: ["config", "tags", "excluded"] }),
+              placeholder: "near-protocol-neps, ",
+              value: form.values.config.tags.excluded.join(", "),
+            })}
+          </div>
+        </CompactContainer>
+
         {widget("components.molecule.text-input", {
           className: "w-100",
           inputProps: { className: "h-75" },
@@ -529,33 +556,6 @@ const ProjectViewConfigurator = ({
           placeholder: "Latest NEAR Enhancement Proposals by status.",
           value: form.values.metadata.description,
         })}
-
-        <div className="d-flex gap-3 flex-column flex-lg-row">
-          {widget("components.molecule.text-input", {
-            className: "flex-shrink-0",
-            format: "comma-separated",
-            key: `${form.values.metadata.id ?? "new-view"}-tags-required`,
-            label: "Search terms for all the tags MUST be presented in posts",
-            onChange: form.update({ path: ["config", "tags", "required"] }),
-            placeholder: "near-protocol-neps, ",
-            value: form.values.config.tags.required.join(", "),
-          })}
-        </div>
-
-        <div className="d-flex gap-3 flex-column flex-lg-row">
-          {widget("components.molecule.text-input", {
-            className: "flex-shrink-0",
-            format: "comma-separated",
-            key: `${form.values.metadata.id ?? "new-view"}-tags-excluded`,
-
-            label:
-              "Search terms for all the tags MUST NOT be presented in posts",
-
-            onChange: form.update({ path: ["config", "tags", "excluded"] }),
-            placeholder: "near-protocol-neps, ",
-            value: form.values.config.tags.excluded.join(", "),
-          })}
-        </div>
 
         <div className="d-flex align-items-center justify-content-between">
           <span className="d-inline-flex gap-2 m-0">
