@@ -158,8 +158,7 @@ const Viewer = {
     isDevHubModerator:
       access_control_info.data === null || access_control_info.isLoading
         ? true
-        : // TODO true,
-          access_control_info.data.members_list[
+        : access_control_info.data.members_list[
             "team:moderators"
           ]?.children?.includes?.(context.accountId) ?? false,
   },

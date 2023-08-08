@@ -129,16 +129,25 @@ const Viewer = {
   role: {
     isDevHubModerator:
       access_control_info.data === null || access_control_info.isLoading
-        ? true
-        : // TODO true,
-          access_control_info.data.members_list[
+        ? false
+        : access_control_info.data.members_list[
             "team:moderators"
           ]?.children?.includes?.(context.accountId) ?? false,
   },
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
+
+console.log({ membersList: access_control_info.data.members_list });
+console.log("accountid", context.accountId);
+console.log(
+  "isDevhubModerator",
+  access_control_info.data.members_list[
+    "team:moderators"
+  ]?.children?.includes?.(context.accountId),
+  Viewer.role.isDevHubModerator
+);
+
 
 State.init({
   labelData: null,
@@ -204,7 +213,7 @@ function addTeam(teamData) {
 
 const pageContent = (
   <div className="pt-3">
-    {isContractOwner
+    {Viewer.role.isDevHubModerator
       ? widget("components.layout.Controls", {
           title: "Create Restricted labels",
           // href: href("Create", { labels: communityData.tag }),
@@ -263,7 +272,7 @@ const pageContent = (
           },
         },
       })}
-    {isContractOwner ? (
+    {Viewer.role.isDevHubModerator ? (
       <div class="pt-3">
         {widget("components.layout.Controls", {
           title: "Create Team",
