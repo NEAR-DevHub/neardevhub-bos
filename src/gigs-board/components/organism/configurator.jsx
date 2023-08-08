@@ -235,9 +235,12 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
           "m-0",
         ].join(" ");
 
-        const fieldType = Array.isArray(form.values[fieldKey])
-          ? "array"
-          : typeof (form.values[fieldKey] ?? "");
+        let fieldType;
+        if (Array.isArray(form.values[fieldKey])) {
+          fieldType = "array";
+        } else {
+          fieldType = typeof (form.values[fieldKey] ?? "");
+        }
 
         return (
           <>
