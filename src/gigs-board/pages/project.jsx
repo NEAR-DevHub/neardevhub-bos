@@ -338,7 +338,11 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
                       ? "feature.project.view-configurator"
                       : ["entity.project", metadata.kind].join("."),
                     {
-                      link: href("project", { id, view: metadata.id, dir }),
+                      link: [
+                        "https://near.social",
+                        href("project", { id, view: metadata.id, dir }),
+                      ].join(""),
+
                       metadata,
                       permissions,
                       projectId: id,
