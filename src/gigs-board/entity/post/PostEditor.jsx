@@ -346,19 +346,27 @@ const descriptionDiv = fields.includes("description") ? (
   <div className="col-lg-12  mb-2">
     Description:
     <br />
-    <textarea
-      value={state.description}
-      type="text"
-      rows={6}
-      className="form-control"
-      onInput={(event) => textareaInputHandler(event.target.value)}
-      onKeyUp={(event) => {
-        if (event.key === "Escape") {
-          State.update({ showAccountAutocomplete: false });
-        }
-      }}
-      onChange={(event) => State.update({ description: event.target.value })}
-    />
+    <Widget
+        src="efiz.near/widget/SimpleMDE"
+        props={{
+          data: { content: state.description },
+          onChange: (content) => textareaInputHandler(content),
+          toolbar: [
+            "heading",
+            "bold",
+            "italic",
+            "quote",
+            "code",
+            "link",
+            "unordered-list",
+            "ordered-list",
+            "checklist",
+            "mention",
+            "reference",
+          ],
+          statusConfig: []
+        }}
+      />
     {autocompleteEnabled && state.showAccountAutocomplete && (
       <AutoComplete>
         <Widget
