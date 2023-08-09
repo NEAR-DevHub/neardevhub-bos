@@ -409,6 +409,8 @@ const ProjectViewConfigurator = ({
     stateKey: "view",
   });
 
+  const viewDelete = () => DevHub.delete_project_view({ id: metadata.id });
+
   const editorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
@@ -420,8 +422,6 @@ const ProjectViewConfigurator = ({
       ...lastKnownState,
       editingMode: value,
     }));
-
-  if (isNewView) console.log("form.values", form.values);
 
   const columnsCreateNew = ({ lastKnownValue }) =>
     Object.keys(lastKnownValue).length <
@@ -515,7 +515,7 @@ const ProjectViewConfigurator = ({
         </div>
 
         <div className="d-flex flex-column align-items-center gap-3">
-          {Object.values(form.values.config.columns).map(
+          {Object.values(form.values.config?.columns ?? {}).map(
             ({ id, description, tag, title }) => (
               <div
                 className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
@@ -668,7 +668,7 @@ const ProjectViewConfigurator = ({
       {widget(["entity.project", form.values.metadata.kind].join("."), {
         ...form.values,
         onConfigureClick: () => editorToggle(true),
-        onDeleteClick: () => {},
+        onDeleteClick: isNewView ? null : viewDelete,
         link,
         permissions,
       })}

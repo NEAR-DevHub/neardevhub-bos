@@ -263,7 +263,7 @@ const ProjectKanbanView = ({
             {typeof onDeleteClick === "function"
               ? widget("components.atom.button", {
                   classNames: {
-                    root: "btn-sm btn-outline-danger",
+                    root: "btn-sm btn-outline-danger shadow-none border-0",
                     adornment: "bi-recycle",
                   },
 
