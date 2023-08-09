@@ -231,10 +231,10 @@ const ProjectKanbanView = ({
       >
         {(link ?? null) !== null ? (
           <>
-            {false && // Temporarily disabled
+            {false && // TODO: Temporarily disabled
               widget("components.atom.button", {
                 classNames: {
-                  root: "btn-sm btn-outline-secondary d-inline-flex gap-2",
+                  root: "btn-sm btn-outline-secondary",
                   adornment: "bi-box-arrow-up-right",
                 },
 
@@ -248,8 +248,7 @@ const ProjectKanbanView = ({
 
             {widget("components.atom.button", {
               classNames: {
-                root: "btn-sm btn-outline-secondary d-inline-flex gap-2 me-auto text-white",
-
+                root: "btn-sm btn-outline-secondary me-auto text-white",
                 adornment: "bi-clipboard-fill",
               },
 
