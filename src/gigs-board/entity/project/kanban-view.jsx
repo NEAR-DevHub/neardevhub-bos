@@ -164,8 +164,21 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const configToColumns = (config) =>
-  Object.entries(config.columns).reduce((registry, [columnId, column]) => {
+const postTagsToIdSet = (tags) => {
+  return new Set(
+    tags
+      .map(
+        (tag) =>
+          Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+            label: tag,
+          }) ?? []
+      )
+      .flat(1)
+  );
+};
+
+const configToColumns = ({ columns, tags }) =>
+  Object.entries(columns).reduce((registry, [columnId, column]) => {
     const postIds = (
       Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
         label: column.tag,
