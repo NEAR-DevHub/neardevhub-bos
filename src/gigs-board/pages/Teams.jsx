@@ -137,18 +137,6 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-
-console.log({ membersList: access_control_info.data.members_list });
-console.log("accountid", context.accountId);
-console.log(
-  "isDevhubModerator",
-  access_control_info.data.members_list[
-    "team:moderators"
-  ]?.children?.includes?.(context.accountId),
-  Viewer.role.isDevHubModerator
-);
-
-
 State.init({
   labelData: null,
   teamData: null,
@@ -189,7 +177,6 @@ function addTeam(teamData) {
   let permissions = {};
   let labels = teamData.label.split(",");
   labels.forEach((element) => {
-    // TODO per rule you have to set the permissions per team
     permissions[element] = ["edit-post", "use-labels"];
   });
   txn.push({
@@ -200,7 +187,7 @@ function addTeam(teamData) {
       metadata: {
         member_metadata_version: "V0",
         description: teamData.description,
-        permissions, // TODO list rules and make them selectable
+        permissions,
         children: [],
         parents: [],
       },
@@ -216,7 +203,6 @@ const pageContent = (
     {Viewer.role.isDevHubModerator
       ? widget("components.layout.Controls", {
           title: "Create Restricted labels",
-          // href: href("Create", { labels: communityData.tag }),
           onClick: () => {
             State.update({
               createLabel: !state.createLabel,
@@ -235,12 +221,9 @@ const pageContent = (
           submit: "btn-primary",
           submitAdornment: "bi-check-circle-fill",
         },
-
         heading: "Restricted labels",
         isEditorActive: state.isEditorActive,
-
         isEditingAllowed: Viewer.role.isDevHubModerator,
-
         onChangesSubmit: addLabel,
         submitLabel: "Accept",
         data: state.labelData,
@@ -252,21 +235,16 @@ const pageContent = (
               placeholder: "Label name (starts-with:<label>  or <label>)",
               required: true,
             },
-
             label: "Name",
             order: 1,
           },
-
           description: {
             inputProps: {
               min: 2,
               max: 60,
-
               placeholder: "Label description",
-
               required: true,
             },
-
             label: "Description",
             order: 2,
           },
@@ -290,12 +268,9 @@ const pageContent = (
           submit: "btn-primary",
           submitAdornment: "bi-check-circle-fill",
         },
-
         heading: "Team info",
         isEditorActive: state.isEditorActive,
-
         isEditingAllowed: Viewer.role.isDevHubModerator,
-
         onChangesSubmit: addTeam,
         submitLabel: "Accept",
         data: state.teamData,
@@ -307,7 +282,6 @@ const pageContent = (
               placeholder: "Team name",
               required: true,
             },
-
             label: "Name",
             order: 1,
           },
@@ -318,7 +292,6 @@ const pageContent = (
               placeholder: "Team description",
               required: true,
             },
-
             label: "Description",
             order: 2,
           },
