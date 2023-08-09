@@ -249,6 +249,7 @@ const Button = styled.button`
 const Banner = styled.div`
   max-width: 100%;
   width: 1320px;
+  min-height: 240px;
   height: 240px;
 `;
 
@@ -318,7 +319,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   ];
 
   return (
-    <div className="d-flex flex-column gap-3 overflow-hidden bg-white">
+    <div className="d-flex flex-column gap-3 bg-white">
       <Banner
         className="object-fit-cover"
         style={{
