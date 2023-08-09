@@ -289,11 +289,15 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Teams",
     },
 
-    {
-      iconClass: "bi bi-view-list",
-      route: "community.projects",
-      title: "Projects",
-    },
+    ...(community.data?.feature_flags.projects
+      ? [
+          {
+            iconClass: "bi bi-view-list",
+            route: "community.projects",
+            title: "Projects",
+          },
+        ]
+      : []),
 
     {
       iconClass: "bi bi-coin",
