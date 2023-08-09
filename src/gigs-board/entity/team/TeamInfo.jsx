@@ -157,7 +157,7 @@ const Viewer = {
   role: {
     isDevHubModerator:
       access_control_info.data === null || access_control_info.isLoading
-        ? true
+        ? false
         : access_control_info.data.members_list[
             "team:moderators"
           ]?.children?.includes?.(context.accountId) ?? false,
@@ -168,22 +168,18 @@ const Viewer = {
 const metadata = props.members_list[props.member];
 const isTeam = props.member.startsWith("team:");
 const memberBadge = isTeam ? "bi-people-fill" : "person-fill";
-const header = isTeam ? (
-  <div class="d-flex">
-    <i class="bi bi-people-fill me-1"></i>
-    {props.member}
-  </div>
-) : (
-  <div class="d-flex">
-    <i class="bi bi-people-fill me-1"></i>
-    {props.member}
-  </div>
-  // TODO put back in
-  // <Widget
-  //   src={`neardevgov.near/widget/ProfileLine`}
-  //   props={{ accountId: props.member }}
-  // />
-);
+const header =
+  isTeam || window.location.href.includes(".testnet") ? (
+    <div class="d-flex">
+      <i class="bi bi-people-fill me-1"></i>
+      {props.member}
+    </div>
+  ) : (
+    <Widget
+      src={`neardevgov.near/widget/ProfileLine`}
+      props={{ accountId: props.member }}
+    />
+  );
 
 const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
 
@@ -192,11 +188,21 @@ const SlimButton = styled.button`
   line-height: 12px;
 `;
 
+const TeamDataDefaults = {
+  member: null,
+  description: null,
+  labels: Object.entries(metadata.permissions)
+    .map((entry) => entry[0])
+    .join(","),
+};
+
 State.init({
   addMember: false,
   addLabel: false,
   labelError: "",
   memberError: "",
+  editLabels: false,
+  teamData: isTeam ? TeamDataDefaults : null,
 });
 
 const permissionDesc = {
@@ -247,97 +253,98 @@ const permissionsRenderer = (permissionType) => {
   }
 };
 
-// To delete a team
 function removeTeam(team) {
-  let txn = [];
-  txn.push({
-    contractName: nearDevGovGigsContractAccountId,
-    methodName: "remove_member",
-    args: { member: team },
-    deposit: Big(0).pow(21),
-    gas: Big(10).pow(12).mul(100),
-  });
-  Near.call(txn);
+  Near.call([
+    {
+      contractName: nearDevGovGigsContractAccountId,
+      methodName: "remove_member",
+      args: { member: team },
+      deposit: Big(0).pow(21),
+      gas: Big(10).pow(12).mul(100),
+    },
+  ]);
 }
 
 function removeMemberFromTeam(member) {
-  let txn = [];
   const team = props.team;
   let metadata = props.root_members[team] || {};
   let newParents =
     props.root_members[team].parents?.filter((item) => item !== team) || [];
-  txn.push({
-    contractName: nearDevGovGigsContractAccountId,
-    methodName: "edit_member",
-    args: {
-      member: member,
-      metadata: {
-        ...metadata,
-        parents: [...newParents],
-      },
-    },
-    deposit: Big(0).pow(21),
-    gas: Big(10).pow(12).mul(100),
-  });
-  Near.call(txn);
-}
-
-function addMemberToTeam(memberData) {
-  let memberExists = !!props.members_list[memberData.member];
-  let txn = [];
-  let team = props.member;
-  let permissions = props.root_members[team].permissions || {};
-  txn.push({
-    contractName: nearDevGovGigsContractAccountId,
-    methodName: memberExists ? "edit_member" : "add_member",
-    args: {
-      member: memberData.member,
-      metadata: {
-        member_metadata_version: "V0",
-        description: memberData.description,
-        permissions: permissions,
-        children: [],
-        parents: [team],
-      },
-    },
-    deposit: Big(0).pow(21),
-    gas: Big(10).pow(12).mul(100),
-  });
-  Near.call(txn);
-}
-
-function addLabelToTeam(labelData) {
-  let txn = [];
-  const possibleLabels = Object.keys(props.rules_list);
-  const team = props.member;
-  let permissions = props.root_members[team].permissions || {};
-  permissions[labelData.label] = ["edit-post", "use-labels"];
-  if (possibleLabels.includes(labelData.label)) {
-    txn.push({
+  Near.call([
+    {
       contractName: nearDevGovGigsContractAccountId,
       methodName: "edit_member",
       args: {
-        member: team,
+        member: member,
         metadata: {
-          ...props.root_members[team],
-          permissions: permissions,
+          ...metadata,
+          parents: [...newParents],
         },
       },
       deposit: Big(0).pow(21),
       gas: Big(10).pow(12).mul(100),
-    });
-    Near.call(txn);
+    },
+  ]);
+}
+
+function addMemberToTeam(memberData) {
+  let memberExists = !!props.members_list[memberData.member];
+  let team = props.member;
+  let permissions = props.root_members[team].permissions || {};
+  Near.call([
+    {
+      contractName: nearDevGovGigsContractAccountId,
+      methodName: memberExists ? "edit_member" : "add_member",
+      args: {
+        member: memberData.member,
+        metadata: {
+          member_metadata_version: "V0",
+          description: memberData.description,
+          permissions: permissions,
+          children: [],
+          parents: [team],
+        },
+      },
+      deposit: Big(0).pow(21),
+      gas: Big(10).pow(12).mul(100),
+    },
+  ]);
+}
+
+function editLabelsFromTeam(labelData) {
+  // Labels need to exist in order to add them to a team.
+  const possibleLabels = Object.keys(props.rules_list);
+  const team = props.member;
+  let newPermissions = {};
+  let allLabels = labelData.labels.split(",");
+  let legitLabels = allLabels.filter((label) => possibleLabels.includes(label));
+  legitLabels.forEach((label) => {
+    newPermissions[label] = ["edit-post", "use-labels"];
+  });
+  if (legitLabels.length) {
+    Near.call([
+      {
+        contractName: nearDevGovGigsContractAccountId,
+        methodName: "edit_member",
+        args: {
+          member: team,
+          metadata: {
+            ...props.root_members[team],
+            permissions: newPermissions,
+          },
+        },
+        deposit: Big(0).pow(21),
+        gas: Big(10).pow(12).mul(100),
+      },
+    ]);
   } else {
     State.update({
       labelError:
-        "Error label does not exist yet add it above, or use starts-with:<label>",
+        "Error labels do not exist yet, first add it in the restricted labels section or use starts-with:<label>",
     });
   }
 }
 
-/**
- * TODO
- */
 function removeLabelFromTeam(rule) {
   let team = props.team;
   // Copy
@@ -367,39 +374,44 @@ return (
         <div class="d-flex justify-content-between">
           <small class="text-muted">{header}</small>
           <div class="d-flex">
-            {/* Only add labels to team layer not to members */}
-            {isContractOwner && props.ableToAddLabels
-              ? widget("components.layout.Controls", {
-                  title: "Add label",
-                  onClick: () => {
-                    State.update({
-                      addLabel: !state.addLabel,
-                      addMember: false,
-                    });
-                  },
-                })
-              : null}
-            {/* Only add members to team layer not to other members  */}
-            {Viewer.role.isDevHubModerator && props.ableToAddMembers
-              ? widget("components.layout.Controls", {
-                  title: "Add member",
-                  onClick: () => {
-                    State.update({
-                      addMember: !state.addMember,
-                      addLabel: false,
-                    });
-                  },
-                })
-              : null}
-            {!props.teamLevel && Viewer.role.isDevHubModerator ? (
+            {props.teamLevel &&
+              Viewer.role.isDevHubModerator &&
+              widget("components.layout.Controls", {
+                title: "Add member",
+                onClick: () => {
+                  State.update({
+                    addMember: !state.addMember,
+                    addLabel: false,
+                  });
+                },
+              })}
+            {!props.teamLevel && Viewer.role.isDevHubModerator && (
               <button
                 class="btn btn-light"
                 onClick={() => removeMemberFromTeam(props.member)}
               >
                 Remove
               </button>
-            ) : null}
-            {props.teamLevel && isContractOwner ? (
+            )}
+            {props.teamLevel &&
+              Viewer.role.isDevHubModerator &&
+              widget("components.layout.Controls", {
+                title: !state.editLabels ? "Edit Labels" : "Stop Editing",
+                icon: !state.editLabels
+                  ? "bi-pencil-square"
+                  : "bi-stop-circle-fill",
+                onClick: () => {
+                  if (!state.editLabels) {
+                    // Submit new labels
+                  }
+                  State.update({
+                    editLabels: !state.editLabels,
+                  });
+                },
+              })}
+            {props.teamLevel &&
+            Viewer.role.isDevHubModerator &&
+            isContractOwner ? (
               <button
                 class="btn btn-light"
                 onClick={() => removeTeam(props.member)}
@@ -421,12 +433,9 @@ return (
                 submit: "btn-primary",
                 submitAdornment: "bi-check-circle-fill",
               },
-
               heading: "Adding member",
               isEditorActive: state.isEditorActive,
-
               isEditingAllowed: Viewer.role.isDevHubModerator,
-
               onChangesSubmit: addMemberToTeam,
               submitLabel: "Accept",
               data: state.teamData,
@@ -468,39 +477,36 @@ return (
               ></button>
             </div>
           ) : null}
-          {state.addLabel &&
+          {state.editLabels &&
             widget("components.organism.editor", {
               classNames: {
                 submit: "btn-primary",
                 submitAdornment: "bi-check-circle-fill",
               },
-
-              heading: "Adding label",
+              heading: "Labels",
               isEditorActive: state.isEditorActive,
-
               isEditingAllowed: Viewer.role.isDevHubModerator,
-
-              onChangesSubmit: addLabelToTeam,
+              onChangesSubmit: editLabelsFromTeam,
               submitLabel: "Accept",
               data: state.teamData,
               schema: {
-                label: {
+                labels: {
                   inputProps: {
                     min: 2,
                     max: 60,
-                    placeholder: "One of the restricted labels above",
+                    format: "comma-separated",
+                    placeholder: "label1,label2,starts-with:label3",
                     required: true,
                   },
-                  label: "Label",
+                  label: "Labels",
                   order: 2,
                 },
-                // TODO possibly add buttons for edit-post and assign
               },
             })}
         </div>
         {permissionsRenderer("edit-post")}
         {permissionsRenderer("use-labels")}
-        {metadata.children ? (
+        {metadata.children && (
           <div class="vstack">
             {metadata.children.map((child) =>
               widget(
@@ -508,15 +514,13 @@ return (
                 {
                   member: child,
                   members_list: props.members_list,
-                  ableToAddMembers: false,
-                  ableToAddLabels: false,
                   teamLevel: false,
                 },
                 child
               )
             )}
           </div>
-        ) : null}
+        )}
       </div>
     </AttractableDiv>
   </>
