@@ -229,7 +229,7 @@ const ProjectKanbanView = ({
         className={"d-flex justify-content-end gap-3 p-3 rounded-4"}
         style={{ backgroundColor: "#181818" }}
       >
-        {(link ?? null) !== null ? (
+        {typeof link === "string" ? (
           <>
             {false && // TODO: Temporarily disabled
               widget("components.atom.button", {
