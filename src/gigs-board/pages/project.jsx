@@ -283,7 +283,7 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
       ],
 
       configurator: widget("feature.project.configurator", {
-        metadata: project.data?.metadata,
+        metadata: project.data?.metadata ?? null,
         permissions,
       }),
 
@@ -301,7 +301,10 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
                     aria-current={defaultActive && "page"}
                     className={[
                       "nav-link d-inline-flex gap-2",
-                      metadata.id === selectedViewId ? "active" : "",
+                      metadata.id === selectedViewId ||
+                      viewsMetadata.length === 1
+                        ? "active"
+                        : "",
                     ].join(" ")}
                     href={href("project", {
                       id: project.data.metadata.id,
@@ -320,7 +323,9 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
                     href={href("project", { id, view: "new", dir })}
                     className={[
                       "nav-link d-flex gap-2",
-                      selectedViewId === "new" ? "active" : "",
+                      selectedViewId === "new" || viewsMetadata.length === 0
+                        ? "active"
+                        : "",
                     ].join(" ")}
                   >
                     <i class="bi bi-plus-lg" />
@@ -334,7 +339,9 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
               {viewsMetadata.map((metadata) => (
                 <div
                   class={`tab-pane pt-4 fade ${
-                    metadata.id === selectedViewId ? "show active" : ""
+                    metadata.id === selectedViewId || viewsMetadata.length === 1
+                      ? "show active"
+                      : ""
                   }`}
                   role="tabpanel"
                   tabindex="0"
@@ -361,7 +368,9 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
               {permissions.can_configure ? (
                 <div
                   class={`tab-pane pt-4 fade ${
-                    selectedViewId === "new" ? "show active" : ""
+                    selectedViewId === "new" || viewsMetadata.length === 0
+                      ? "show active"
+                      : ""
                   }`}
                   role="tabpanel"
                   tabindex="0"

@@ -299,7 +299,11 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
     }));
 
   const form = useForm({
-    initialValues: { metadata: { ...metadata, id: parseInt(metadata.id) } },
+    initialValues: {
+      metadata:
+        metadata === null ? {} : { ...metadata, id: parseInt(metadata.id) },
+    },
+
     stateKey: "project",
   });
 
@@ -331,58 +335,60 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
             skipPaddingGap: true,
           })
         ) : (
-          <h1 className="m-0 px-2 py-2">{metadata.name}</h1>
+          <h1 className="m-0 px-2 py-2">
+            {metadata === null ? "Loading..." : metadata.name}
+          </h1>
         )}
 
-        {state.isConfiguratorActive ? (
-          widget("components.molecule.text-input", {
-            className: "w-100 border-none",
+        {state.isConfiguratorActive
+          ? widget("components.molecule.text-input", {
+              className: "w-100 border-none",
 
-            inputProps: {
-              className: "h-75 border-0 bg-dark text-white",
-              min: 6,
-              max: 60,
-            },
+              inputProps: {
+                className: "h-75 border-0 bg-dark text-white",
+                min: 6,
+                max: 60,
+              },
 
-            key: `project-${form.values.metadata.id}-description`,
-            multiline: false,
-            onChange: form.update({ path: ["metadata", "description"] }),
-            placeholder: "Project description",
-            value: form.values.metadata.description,
-            skipPaddingGap: true,
-          })
-        ) : (
-          <p className="m-0 px-2 py-2">{metadata.description}</p>
-        )}
+              key: `project-${form.values.metadata.id}-description`,
+              multiline: false,
+              onChange: form.update({ path: ["metadata", "description"] }),
+              placeholder: "Project description",
+              value: form.values.metadata.description,
+              skipPaddingGap: true,
+            })
+          : metadata !== null && (
+              <p className="m-0 px-2 py-2">{metadata.description}</p>
+            )}
       </div>
 
       <div className="d-flex flex-column gap-3 justify-content-between align-items-end h-100">
-        {state.isConfiguratorActive ? (
-          widget("components.molecule.text-input", {
-            className: "w-100",
+        {state.isConfiguratorActive
+          ? widget("components.molecule.text-input", {
+              className: "w-100",
 
-            inputProps: {
-              className: "h-75 text-end border-0 bg-dark text-white",
-              min: 2,
-              max: 30,
-            },
+              inputProps: {
+                className: "h-75 text-end border-0 bg-dark text-white",
+                min: 2,
+                max: 30,
+              },
 
-            key: `project-${form.values.metadata.id}-tag`,
-            multiline: false,
-            onChange: form.update({ path: ["metadata", "tag"] }),
-            placeholder: "project-tag",
-            value: form.values.metadata.tag,
-            skipPaddingGap: true,
-          })
-        ) : (
-          <span
-            class="badge bg-primary rounded-4 text-decoration-none"
-            style={{ cursor: "default" }}
-            title="DevHub tag"
-          >
-            {metadata.tag}
-          </span>
-        )}
+              key: `project-${form.values.metadata.id}-tag`,
+              multiline: false,
+              onChange: form.update({ path: ["metadata", "tag"] }),
+              placeholder: "project-tag",
+              value: form.values.metadata.tag,
+              skipPaddingGap: true,
+            })
+          : metadata !== null && (
+              <span
+                class="badge bg-primary rounded-4 text-decoration-none"
+                style={{ cursor: "default" }}
+                title="DevHub tag"
+              >
+                {metadata.tag}
+              </span>
+            )}
 
         {permissions.can_configure ? (
           <div className="d-flex gap-3">
