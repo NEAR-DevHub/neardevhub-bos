@@ -205,7 +205,7 @@ const ProjectKanbanView = ({
           DevHub.useQuery({
             name: "project_view_config",
             params: { id: metadata.id },
-          }).data ?? JSON.stringify({})
+          }).data ?? "{}"
         );
 
   const columns = configToColumns(configuration);

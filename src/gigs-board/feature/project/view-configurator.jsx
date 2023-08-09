@@ -403,7 +403,10 @@ const ProjectViewConfigurator = ({
   const form = useForm({
     initialValues: {
       metadata: metadata ?? ProjectViewMetadataDefaults,
-      config: isNewView ? ProjectViewConfigDefaults : JSON.parse(config.data),
+
+      config: isNewView
+        ? ProjectViewConfigDefaults
+        : JSON.parse(config.data ?? "{}"),
     },
 
     stateKey: "view",
