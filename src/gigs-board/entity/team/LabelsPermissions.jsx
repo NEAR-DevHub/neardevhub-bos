@@ -114,9 +114,31 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const access_info = DevHub.get_access_control_info() ?? null;
+/* INCLUDE: "entity/viewer" */
+const access_control_info = DevHub.useQuery({
+  name: "access_control_info",
+});
 
-const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
+const Viewer = {
+  can: {
+    editCommunity: (communityData) =>
+      Struct.typeMatch(communityData) &&
+      (communityData.admins.includes(context.accountId) ||
+        Viewer.role.isDevHubModerator),
+  },
+
+  role: {
+    isDevHubModerator:
+      access_control_info.data === null || access_control_info.isLoading
+        ? false
+        : access_control_info.data.members_list[
+            "team:moderators"
+          ]?.children?.includes?.(context.accountId) ?? false,
+  },
+};
+/* END_INCLUDE: "entity/viewer" */
+
+const access_info = DevHub.get_access_control_info() ?? null;
 
 if (!access_info) {
   return <div>Loading...</div>;
@@ -167,14 +189,14 @@ return (
               </span>
               {metadata.description}
             </div>
-            {isContractOwner ? (
+            {Viewer.role.isDevHubModerator && (
               <button
                 className="btn btn-sm btn-light"
                 onClick={() => unsetRestrictedRules(pattern)}
               >
                 Remove label
               </button>
-            ) : null}
+            )}
           </div>
         </li>
       ))}
