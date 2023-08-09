@@ -168,18 +168,17 @@ const Viewer = {
 const metadata = props.members_list[props.member];
 const isTeam = props.member.startsWith("team:");
 const memberBadge = isTeam ? "bi-people-fill" : "person-fill";
-const header =
-  isTeam || window.location.href.includes(".testnet") ? (
-    <div class="d-flex">
-      <i class="bi bi-people-fill me-1"></i>
-      {props.member}
-    </div>
-  ) : (
-    <Widget
-      src={`neardevgov.near/widget/ProfileLine`}
-      props={{ accountId: props.member }}
-    />
-  );
+const header = isTeam ? (
+  <div class="d-flex">
+    <i class="bi bi-people-fill me-1"></i>
+    {props.member}
+  </div>
+) : (
+  <Widget
+    src={`neardevgov.near/widget/ProfileLine`}
+    props={{ accountId: props.member }}
+  />
+);
 
 const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
 
