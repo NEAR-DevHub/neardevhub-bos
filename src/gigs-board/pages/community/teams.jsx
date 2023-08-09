@@ -136,7 +136,7 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const communityData = DevHub.get_community({ handle: props.handle });
+const communityData = DevHub.get_community({ handle: props.handle }) ?? null;
 const root_members = DevHub.get_root_members() ?? null;
 
 if (communityData === null || root_members === null) {
