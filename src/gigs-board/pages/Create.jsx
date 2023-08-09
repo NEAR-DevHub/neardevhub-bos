@@ -334,27 +334,10 @@ const nameDiv = (
 const descriptionDiv = (
   <div className="col-lg-12 mb-2">
     <p className="fs-6 fw-bold mb-1">Description</p>
-    <Widget
-      src="devhub.efiz.near/widget/SimpleMDE"
-      props={{
-        data: { content: state.description },
-        onChange: (content) => textareaInputHandler(content),
-        toolbar: [
-          "heading",
-          "bold",
-          "italic",
-          "quote",
-          "code",
-          "link",
-          "unordered-list",
-          "ordered-list",
-          "checklist",
-          "mention",
-          "reference",
-        ],
-        statusConfig: [],
-      }}
-    />
+    {widget("components.molecule.markdown-editor", {
+      content: state.description,
+      onChange: (content) => textareaInputHandler(content),
+    })}
     {autocompleteEnabled && state.showAccountAutocomplete && (
       <AutoComplete>
         <Widget

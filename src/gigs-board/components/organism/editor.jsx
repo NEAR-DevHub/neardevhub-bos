@@ -217,6 +217,11 @@ const fieldParamsByType = {
     name: "components.molecule.text-input",
     inputProps: { type: "text" },
   },
+
+  markdown: {
+    name: "components.molecule.markdown-editor",
+    className: "px-2"
+  },
 };
 
 const defaultFieldsRender = ({ schema, form, isEditable }) => (
@@ -231,9 +236,14 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
           "m-0",
         ].join(" ");
 
-        const fieldType = Array.isArray(form.values[fieldKey])
-          ? "array"
-          : typeof (form.values[fieldKey] ?? "");
+        let fieldType;
+        if (Array.isArray(form.values[fieldKey])) {
+          fieldType = "array";
+        } else if (format === "markdown") {
+          fieldType = "markdown";
+        } else {
+          fieldType = typeof (form.values[fieldKey] ?? "");
+        }
 
         return (
           <>
@@ -267,7 +277,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
             ) : (
               widget(fieldParamsByType[fieldType].name, {
                 ...fieldProps,
-                className: "w-100",
+                className: fieldParamsByType[fieldType].className + " w-100",
                 format,
                 key: `${idx}-${fieldKey}--editable`,
                 label,

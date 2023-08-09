@@ -59,27 +59,12 @@ const TextInput = ({
           {...{ onChange, placeholder, value, ...inputProps }}
         />
       ) : (
-        <Widget
-          src="devhub.efiz.near/widget/SimpleMDE"
-          props={{
-            onChange,
-            data: { content: value },
-            placeholder,
-            toolbar: [
-              "heading",
-              "bold",
-              "italic",
-              "quote",
-              "code",
-              "link",
-              "unordered-list",
-              "ordered-list",
-              "checklist",
-              "mention",
-              "reference",
-            ],
-            statusConfig: [],
-          }}
+        <textarea
+          aria-describedby={key}
+          aria-label={label}
+          className={["form-control border border-2", inputClassName].join(" ")}
+          type={typeAttribute}
+          {...{ onChange, placeholder, value, ...inputProps }}
         />
       )}
     </div>
