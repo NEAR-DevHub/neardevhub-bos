@@ -347,7 +347,7 @@ const descriptionDiv = fields.includes("description") ? (
     Description:
     <br />
     <Widget
-        src="efiz.near/widget/SimpleMDE"
+        src="devhub.efiz.near/widget/SimpleMDE"
         props={{
           data: { content: state.description },
           onChange: (content) => textareaInputHandler(content),

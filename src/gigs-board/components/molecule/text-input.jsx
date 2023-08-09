@@ -60,7 +60,7 @@ const TextInput = ({
         />
       ) : (
         <Widget
-          src="efiz.near/widget/SimpleMDE"
+          src="devhub.efiz.near/widget/SimpleMDE"
           props={{
             onChange,
             data: { content: value },
