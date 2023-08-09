@@ -209,6 +209,7 @@ const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 
 const CommunityBrandingEditor = ({
   isEditingAllowed,
+  link,
   onChangesSubmit,
   values,
 }) => {
@@ -287,7 +288,11 @@ const CommunityBrandingEditor = ({
           className="h5 text-nowrap overflow-hidden"
           style={{ textOverflow: "ellipsis" }}
         >
-          {values.name}
+          {typeof link === "string" && link.length > 0 ? (
+            <a href={link}>{values.name}</a>
+          ) : (
+            values.name
+          )}
         </h5>
 
         <p

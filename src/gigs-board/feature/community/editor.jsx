@@ -254,7 +254,7 @@ const CommunityDefaults = {
   wiki2: null,
 };
 
-const CommunityEditor = ({ handle: communityHandle }) => {
+const CommunityEditor = ({ handle: communityHandle, link }) => {
   State.init({
     communityData: null,
     hasUnsavedChanges: false,
@@ -343,6 +343,7 @@ const CommunityEditor = ({ handle: communityHandle }) => {
             isEditingAllowed:
               isCommunityNew || Viewer.can.editCommunity(community.data),
 
+            link,
             onChangesSubmit: sectionSubmit,
             values: state.communityData,
           })}

@@ -341,14 +341,9 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
             </div>
           </div>
 
-          <div>
-            <div className="h1 pt-3 ps-3 text-nowrap">
-              {community.data.name}
-            </div>
-
-            <div className="ps-3 pb-2 text-secondary">
-              {community.data.description}
-            </div>
+          <div className="d-flex flex-column ps-3 pt-3 pb-2">
+            <span className="h1 text-nowrap">{community.data.name}</span>
+            <span className="text-secondary">{community.data.description}</span>
           </div>
         </div>
 

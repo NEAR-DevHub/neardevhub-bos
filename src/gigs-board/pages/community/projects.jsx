@@ -270,7 +270,7 @@ const CommunityProjectsPage = ({ handle }) => {
 
   const community = DevHub.useQuery({ name: "community", params: { handle } });
 
-  const community_projects_metadata = DevHub.useQuery({
+  const projectsMetadata = DevHub.useQuery({
     name: "community_projects_metadata",
     params: { community_handle: handle },
   });
@@ -285,8 +285,7 @@ const CommunityProjectsPage = ({ handle }) => {
         })
       : null;
 
-  return community_projects_metadata.data === null &&
-    community_projects_metadata.isLoading ? (
+  return projectsMetadata.data === null && projectsMetadata.isLoading ? (
     <div>Loading...</div>
   ) : (
     widget("entity.community.layout", {
@@ -325,7 +324,7 @@ const CommunityProjectsPage = ({ handle }) => {
               schema: projectSchema,
             })}
 
-          {community_projects_metadata.data === null ? (
+          {projectsMetadata.data === null ? (
             <div
               className="d-flex flex-column align-items-center justify-content-center gap-4"
               style={{ height: 384 }}
@@ -336,7 +335,7 @@ const CommunityProjectsPage = ({ handle }) => {
             </div>
           ) : (
             <div className="d-flex flex-wrap gap-4 w-100 h-100">
-              {community_projects_metadata.data.map((metadata) =>
+              {projectsMetadata.data.map((metadata) =>
                 widget(
                   "entity.project.card",
 
