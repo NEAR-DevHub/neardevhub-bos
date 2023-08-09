@@ -5,7 +5,7 @@ return (
   <Widget
     src="devhub.efiz.near/widget/SimpleMDE"
     props={{
-      data: { content: state.description },
+      data: { content },
       onChange,
       toolbar: [
         "heading",
