@@ -138,6 +138,8 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
+const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
+
 const access_info = DevHub.get_access_control_info() ?? null;
 
 if (!access_info) {
@@ -189,7 +191,7 @@ return (
               </span>
               {metadata.description}
             </div>
-            {Viewer.role.isDevHubModerator && (
+            {(Viewer.role.isDevHubModerator || isContractOwner) && (
               <button
                 className="btn btn-sm btn-light"
                 onClick={() => unsetRestrictedRules(pattern)}

@@ -289,7 +289,7 @@ function removeMemberFromTeam(member) {
 function addMemberToTeam(memberData) {
   let memberExists = !!props.members_list[memberData.member];
   let team = props.member;
-  let permissions = props.root_members[team].permissions || {};
+  let metadata = props.root_members[team] || {};
   Near.call([
     {
       contractName: nearDevGovGigsContractAccountId,
@@ -297,10 +297,8 @@ function addMemberToTeam(memberData) {
       args: {
         member: memberData.member,
         metadata: {
-          member_metadata_version: "V0",
+          ...metadata,
           description: memberData.description,
-          permissions: permissions,
-          children: [],
           parents: [team],
         },
       },
@@ -349,21 +347,21 @@ function removeLabelFromTeam(rule) {
   // Copy
   let permissions = { ...metadata.permissions };
   delete permissions[rule];
-  let txn = [];
-  txn.push({
-    contractName: nearDevGovGigsContractAccountId,
-    methodName: "edit_member",
-    args: {
-      member: team,
-      metadata: {
-        ...metadata,
-        permissions: permissions,
+  Near.call([
+    {
+      contractName: nearDevGovGigsContractAccountId,
+      methodName: "edit_member",
+      args: {
+        member: team,
+        metadata: {
+          ...metadata,
+          permissions: permissions,
+        },
       },
+      deposit: Big(0).pow(21),
+      gas: Big(10).pow(12).mul(100),
     },
-    deposit: Big(0).pow(21),
-    gas: Big(10).pow(12).mul(100),
-  });
-  Near.call(txn);
+  ]);
 }
 
 return (
@@ -374,7 +372,7 @@ return (
           <small class="text-muted">{header}</small>
           <div class="d-flex">
             {props.teamLevel &&
-              Viewer.role.isDevHubModerator &&
+              (Viewer.role.isDevHubModerator || isContractOwner) &&
               widget("components.layout.Controls", {
                 title: "Add member",
                 onClick: () => {
@@ -384,16 +382,17 @@ return (
                   });
                 },
               })}
-            {!props.teamLevel && Viewer.role.isDevHubModerator && (
-              <button
-                class="btn btn-light"
-                onClick={() => removeMemberFromTeam(props.member)}
-              >
-                Remove
-              </button>
-            )}
+            {!props.teamLevel &&
+              (Viewer.role.isDevHubModerator || isContractOwner) && (
+                <button
+                  class="btn btn-light"
+                  onClick={() => removeMemberFromTeam(props.member)}
+                >
+                  Remove
+                </button>
+              )}
             {props.teamLevel &&
-              Viewer.role.isDevHubModerator &&
+              (Viewer.role.isDevHubModerator || isContractOwner) &&
               widget("components.layout.Controls", {
                 title: !state.editLabels ? "Edit Labels" : "Stop Editing",
                 icon: !state.editLabels
@@ -408,9 +407,10 @@ return (
                   });
                 },
               })}
-            {props.teamLevel &&
-            Viewer.role.isDevHubModerator &&
-            isContractOwner ? (
+            {(props.teamLevel &&
+              Viewer.role.isDevHubModerator &&
+              props.member !== "team:moderators") ||
+            (props.member === "team:moderators" && isContractOwner) ? (
               <button
                 class="btn btn-light"
                 onClick={() => removeTeam(props.member)}
@@ -434,7 +434,8 @@ return (
               },
               heading: "Adding member",
               isEditorActive: state.isEditorActive,
-              isEditingAllowed: Viewer.role.isDevHubModerator,
+              isEditingAllowed:
+                Viewer.role.isDevHubModerator || isContractOwner,
               onChangesSubmit: addMemberToTeam,
               submitLabel: "Accept",
               data: state.teamData,
@@ -484,7 +485,8 @@ return (
               },
               heading: "Labels",
               isEditorActive: state.isEditorActive,
-              isEditingAllowed: Viewer.role.isDevHubModerator,
+              isEditingAllowed:
+                Viewer.role.isDevHubModerator || isContractOwner,
               onChangesSubmit: editLabelsFromTeam,
               submitLabel: "Accept",
               data: state.teamData,
