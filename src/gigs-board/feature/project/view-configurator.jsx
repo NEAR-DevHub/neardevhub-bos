@@ -588,7 +588,7 @@ const ProjectViewConfigurator = ({
       </>
     ) : null;
 
-  return !isNewView && config.data === null ? (
+  return !isNewView && config.isLoading ? (
     <div>Loading...</div>
   ) : (
     <div className="d-flex flex-column gap-4">

@@ -281,7 +281,7 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
       }),
 
       children:
-        project.data === null ? (
+        project.data === null && !project.isLoading ? (
           <div class="alert alert-danger" role="alert">
             {`Project with id ${id} doesn't exist`}
           </div>
@@ -353,7 +353,7 @@ const ProjectPage = ({ dir, id, view: selectedViewId }) => {
 
               {permissions.can_configure ? (
                 <div
-                  class={`tab-pane fade ${
+                  class={`tab-pane pt-4 fade ${
                     selectedViewId === "new" ? "show active" : ""
                   }`}
                   role="tabpanel"
