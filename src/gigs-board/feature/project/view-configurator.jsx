@@ -152,37 +152,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -429,10 +429,8 @@ const ProjectViewConfigurator = ({
         ]
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (targetId) =>
-    ({ lastKnownValue }) =>
-      lastKnownValue.filter(({ id }) => targetId !== id);
+  const columnsDeleteById = (targetId) => ({ lastKnownValue }) =>
+    lastKnownValue.filter(({ id }) => targetId !== id);
 
   const onCancel = () => {
     form.reset();
@@ -467,7 +465,7 @@ const ProjectViewConfigurator = ({
               className: "flex-shrink-0",
               format: "comma-separated",
               key: `${form.values.metadata.id ?? "new-view"}-tags-required`,
-              label: "Search terms for all the tags MUST be presented in posts",
+              label: "All the tags MUST be presented in posts",
               onChange: form.update({ path: ["config", "tags", "required"] }),
               placeholder: "near-protocol-neps, ",
               value: form.values.config.tags.required.join(", "),
@@ -479,10 +477,7 @@ const ProjectViewConfigurator = ({
               className: "flex-shrink-0",
               format: "comma-separated",
               key: `${form.values.metadata.id ?? "new-view"}-tags-excluded`,
-
-              label:
-                "Search terms for all the tags MUST NOT be presented in posts",
-
+              label: "All the tags MUST NOT be presented in posts",
               onChange: form.update({ path: ["config", "tags", "excluded"] }),
               placeholder: "near-protocol-neps, ",
               value: form.values.config.tags.excluded.join(", "),
