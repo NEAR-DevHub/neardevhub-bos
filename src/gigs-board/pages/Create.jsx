@@ -64,7 +64,7 @@ const AutoComplete = styled.div`
 
 function textareaInputHandler(value) {
   const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update({ text: value, showAccountAutocomplete });
+  State.update({ text: value, showAccountAutocomplete, description: value });
 }
 
 function autoCompleteAccountId(id) {
