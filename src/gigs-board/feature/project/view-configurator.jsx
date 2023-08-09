@@ -152,37 +152,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
-    fieldInput
-  ) => {
-    const updatedValues = Struct.deepFieldUpdate(
-      formState?.values ?? {},
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedValues = Struct.deepFieldUpdate(
+        formState?.values ?? {},
 
-      {
-        input: fieldInput?.target?.value ?? fieldInput,
-        params,
-        path,
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          params,
+          path,
 
-        via:
-          typeof customFieldUpdate === "function"
-            ? customFieldUpdate
-            : defaultFieldUpdate,
-      }
-    );
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
+      );
 
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
 
-      [formStateKey]: {
-        hasUnsubmittedChanges: !Struct.isEqual(
-          updatedValues,
-          initialFormState.values
-        ),
+        [formStateKey]: {
+          hasUnsubmittedChanges: !Struct.isEqual(
+            updatedValues,
+            initialFormState.values
+          ),
 
-        values: updatedValues,
-      },
-    }));
-  };
+          values: updatedValues,
+        },
+      }));
+    };
 
   if (
     !uninitialized &&
@@ -277,7 +277,7 @@ const DevHub = {
     Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
 
   delete_project_view: ({ id }) =>
-    Near.call(devHubAccountId, "get_project_view", { id }) ?? null,
+    Near.call(devHubAccountId, "delete_project_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -379,7 +379,7 @@ const ProjectViewMetadataDefaults = {
 const ProjectViewConfigDefaults = {
   ticket_kind: "post-ticket",
   tags: { excluded: [], required: [] },
-  columns: [],
+  columns: {},
 };
 
 const ProjectViewConfigurator = ({
@@ -421,16 +421,23 @@ const ProjectViewConfigurator = ({
       editingMode: value,
     }));
 
+  if (isNewView) console.log("form.values", form.values);
+
   const columnsCreateNew = ({ lastKnownValue }) =>
-    lastKnownValue.length < ProjectViewConfiguratorSettings.maxColumnsNumber
-      ? [
-          ...lastKnownValue,
-          { id: uuid(), tag: "", title: "New column", description: "" },
-        ]
+    Object.keys(lastKnownValue).length <
+    ProjectViewConfiguratorSettings.maxColumnsNumber
+      ? {
+          ...(lastKnownValue ?? {}),
+          ...withUUIDIndex({ tag: "", title: "New column", description: "" }),
+        }
       : lastKnownValue;
 
-  const columnsDeleteById = (targetId) => ({ lastKnownValue }) =>
-    lastKnownValue.filter(({ id }) => targetId !== id);
+  const columnsDeleteById =
+    (id) =>
+    ({ lastKnownValue }) =>
+      Object.fromEntries(
+        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+      );
 
   const onCancel = () => {
     form.reset();
@@ -446,7 +453,8 @@ const ProjectViewConfigurator = ({
     });
 
   const formElement =
-    Object.keys(form.values).length > 0 ? (
+    Object.keys(form.values.metadata).length > 0 &&
+    Object.keys(form.values.config).length > 0 ? (
       <>
         <div className="d-flex gap-3 flex-column flex-lg-row">
           {widget("components.molecule.text-input", {
@@ -507,8 +515,8 @@ const ProjectViewConfigurator = ({
         </div>
 
         <div className="d-flex flex-column align-items-center gap-3">
-          {form.values.config.columns.map(
-            ({ id, description, tag, title }, columnIdx) => (
+          {Object.values(form.values.config.columns).map(
+            ({ id, description, tag, title }) => (
               <div
                 className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
                 key={id}
@@ -520,7 +528,7 @@ const ProjectViewConfigurator = ({
                     label: "Title",
 
                     onChange: form.update({
-                      path: ["config", "columns", columnIdx, "title"],
+                      path: ["config", "columns", id, "title"],
                     }),
 
                     placeholder: "👀 Review",
@@ -533,7 +541,7 @@ const ProjectViewConfigurator = ({
                     label: "Description",
 
                     onChange: form.update({
-                      path: ["config", "columns", columnIdx, "description"],
+                      path: ["config", "columns", id, "description"],
                     }),
 
                     placeholder:
@@ -550,7 +558,7 @@ const ProjectViewConfigurator = ({
                     label: "Tag",
 
                     onChange: form.update({
-                      path: ["config", "columns", columnIdx, "tag"],
+                      path: ["config", "columns", id, "tag"],
                     }),
 
                     placeholder: "",
@@ -583,12 +591,12 @@ const ProjectViewConfigurator = ({
   return !isNewView && config.data === null ? (
     <div>Loading...</div>
   ) : (
-    <div className="d-flex flex-column gap-4 py-4">
+    <div className="d-flex flex-column gap-4">
       {state.isEditorActive && Object.keys(form.values).length > 0 ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
-              <i className="bi bi-wrench-adjustable-circle-fill" />
+              <i className="bi bi-gear-wide-connected" />
               <span>View configuration</span>
             </h5>
 
@@ -659,7 +667,8 @@ const ProjectViewConfigurator = ({
 
       {widget(["entity.project", form.values.metadata.kind].join("."), {
         ...form.values,
-        editorTrigger: () => editorToggle(true),
+        onConfigureClick: () => editorToggle(true),
+        onDeleteClick: () => {},
         link,
         permissions,
       })}

@@ -253,7 +253,7 @@ const GithubKanbanTeamBoard = ({
             className="btn shadow btn-sm btn-primary d-inline-flex gap-2"
             onClick={editorTrigger}
           >
-            <i className="bi bi-wrench-adjustable-circle-fill" />
+            <i className="bi bi-gear-wide-connected" />
             <span>Configure</span>
           </button>
         ) : null}

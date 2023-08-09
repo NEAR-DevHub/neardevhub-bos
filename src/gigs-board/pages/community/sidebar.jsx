@@ -82,7 +82,7 @@ const DevHub = {
     Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
 
   delete_project_view: ({ id }) =>
-    Near.call(devHubAccountId, "get_project_view", { id }) ?? null,
+    Near.call(devHubAccountId, "delete_project_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,

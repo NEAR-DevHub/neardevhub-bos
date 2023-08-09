@@ -277,7 +277,7 @@ const DevHub = {
     Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
 
   delete_project_view: ({ id }) =>
-    Near.call(devHubAccountId, "get_project_view", { id }) ?? null,
+    Near.call(devHubAccountId, "delete_project_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -649,7 +649,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
-              <i className="bi bi-wrench-adjustable-circle-fill" />
+              <i className="bi bi-gear-wide-connected" />
               <span>Board configuration</span>
             </h5>
 

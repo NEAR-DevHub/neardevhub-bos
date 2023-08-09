@@ -109,7 +109,7 @@ const DevHub = {
     Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
 
   delete_project_view: ({ id }) =>
-    Near.call(devHubAccountId, "get_project_view", { id }) ?? null,
+    Near.call(devHubAccountId, "delete_project_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -165,7 +165,7 @@ const DevHub = {
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
 const configToColumns = (config) =>
-  config.columns.map((column) => {
+  Object.entries(config.columns).reduce((registry, [columnId, column]) => {
     const postIds = (
       Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
         label: column.tag,
@@ -173,24 +173,29 @@ const configToColumns = (config) =>
     ).reverse();
 
     return {
-      ...column,
+      ...registry,
 
-      postIds:
-        tags.required.length > 0
-          ? postIds.filter(
-              (postId) =>
-                postTagsToIdSet(tags.required).has(postId) &&
-                !postTagsToIdSet(tags.excluded).has(postId)
-            )
-          : postIds,
+      [columnId]: {
+        ...column,
+
+        postIds:
+          tags.required.length > 0
+            ? postIds.filter(
+                (postId) =>
+                  postTagsToIdSet(tags.required).has(postId) &&
+                  !postTagsToIdSet(tags.excluded).has(postId)
+              )
+            : postIds,
+      },
     };
-  });
+  }, {});
 
 const ProjectKanbanView = ({
   config,
   metadata,
-  editorTrigger,
   link,
+  onConfigureClick,
+  onDeleteClick,
   permissions,
 }) => {
   const configuration =
@@ -206,8 +211,71 @@ const ProjectKanbanView = ({
   const columns = configToColumns(configuration);
 
   return (
-    <div className="d-flex flex-column gap-4 py-4">
-      <div className="d-flex flex-column align-items-center gap-2">
+    <div className="d-flex flex-column gap-4">
+      <div
+        className={"d-flex justify-content-end gap-3 p-3 rounded-4"}
+        style={{ backgroundColor: "#181818" }}
+      >
+        {(link ?? null) !== null ? (
+          <>
+            {false && // Temporarily disabled
+              widget("components.atom.button", {
+                classNames: {
+                  root: "btn-sm btn-outline-secondary d-inline-flex gap-2",
+                  adornment: "bi-box-arrow-up-right",
+                },
+
+                href: link,
+                label: "Open in new tab",
+                rel: "noreferrer",
+                role: "button",
+                target: "_blank",
+                type: "link",
+              })}
+
+            {widget("components.atom.button", {
+              classNames: {
+                root: "btn-sm btn-outline-secondary d-inline-flex gap-2 me-auto text-white",
+
+                adornment: "bi-clipboard-fill",
+              },
+
+              label: "Copy link",
+              onClick: () => clipboard.writeText(link),
+            })}
+          </>
+        ) : null}
+
+        {permissions.can_configure && (
+          <>
+            {typeof onConfigureClick === "function"
+              ? widget("components.atom.button", {
+                  classNames: {
+                    root: "btn-sm btn-primary",
+                    adornment: "bi-gear-wide-connected",
+                  },
+
+                  label: "Configure view",
+                  onClick: onConfigureClick,
+                })
+              : null}
+
+            {typeof onDeleteClick === "function"
+              ? widget("components.atom.button", {
+                  classNames: {
+                    root: "btn-sm btn-outline-danger",
+                    adornment: "bi-recycle",
+                  },
+
+                  label: "Delete",
+                  onClick: onDeleteClick,
+                })
+              : null}
+          </>
+        )}
+      </div>
+
+      <div className="d-flex flex-column align-items-center gap-2 pt-4">
         <h5 className="h5 d-inline-flex gap-2 m-0">
           <i className="bi bi-kanban-fill" />
 
@@ -225,47 +293,9 @@ const ProjectKanbanView = ({
         </p>
       </div>
 
-      <div className="d-flex justify-content-end gap-3">
-        {(link ?? null) !== null ? (
-          <>
-            <a
-              className="card-link d-inline-flex me-auto"
-              href={link}
-              rel="noreferrer"
-              role="button"
-              target="_blank"
-              title="Link to this view"
-            >
-              <span className="hstack gap-2">
-                <i className="bi bi-share" />
-                <span>Open in new tab</span>
-              </span>
-            </a>
-
-            <button
-              className="btn shadow btn-sm btn-outline-secondary d-inline-flex gap-2"
-              onClick={() => clipboard.writeText(link)}
-            >
-              <i className="bi bi-clipboard-fill" />
-              <span>Copy link</span>
-            </button>
-          </>
-        ) : null}
-
-        {permissions.can_configure && typeof editorTrigger === "function" ? (
-          <button
-            className="btn shadow btn-sm btn-primary d-inline-flex gap-2"
-            onClick={editorTrigger}
-          >
-            <i className="bi bi-wrench-adjustable-circle-fill" />
-            <span>Configure</span>
-          </button>
-        ) : null}
-      </div>
-
       <div className="d-flex gap-3" style={{ overflowX: "auto" }}>
-        {columns.length > 0 ? (
-          columns.map((column) => (
+        {Object.keys(columns).length > 0 ? (
+          Object.values(columns).map((column) => (
             <div className="col-3" key={column.id}>
               <div className="card rounded-4">
                 <div

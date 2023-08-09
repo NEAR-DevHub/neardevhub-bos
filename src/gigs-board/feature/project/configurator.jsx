@@ -232,7 +232,7 @@ const DevHub = {
     Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
 
   delete_project_view: ({ id }) =>
-    Near.call(devHubAccountId, "get_project_view", { id }) ?? null,
+    Near.call(devHubAccountId, "delete_project_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -413,10 +413,10 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
             {widget("components.atom.button", {
               classNames: {
                 root: [
-                  "btn-primary",
+                  "btn-sm btn-primary",
                   state.isConfiguratorActive ? "d-none" : "",
                 ].join(" "),
-                adornment: "bi bi-gear-fill",
+                adornment: "bi bi-gear-wide-connected",
               },
               label: "Configure project",
               onClick: () => configuratorToggle(true),
