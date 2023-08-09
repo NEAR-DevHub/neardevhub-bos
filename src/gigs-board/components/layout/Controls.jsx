@@ -61,12 +61,18 @@ return (
   <div class="d-flex flex-row-reverse">
     {props.href ? (
       <a class="btn btn-light" style={buttonStyle} href={props.href}>
-        <i class="bi bi-plus-circle-fill"></i>
+        <i
+          class="bi"
+          className={props.icon ? props.icon : "bi-plus-circle-fill"}
+        ></i>
         {props.title}
       </a>
     ) : (
       <button class="btn btn-light" style={buttonStyle} onClick={props.onClick}>
-        <i class="bi bi-plus-circle-fill"></i>
+        <i
+          class="bi"
+          className={props.icon ? props.icon : "bi-plus-circle-fill"}
+        ></i>
         {props.title}
       </button>
     )}
