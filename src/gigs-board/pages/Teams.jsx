@@ -316,10 +316,9 @@ const pageContent = (
               member,
               members_list: access_info.members_list,
               rules_list: access_info.rules_list,
-              ableToAddMembers: true,
-              ableToAddLabels: true,
               teamLevel: true,
               root_members,
+              teamId: member,
             },
             member
           )

@@ -264,20 +264,18 @@ function removeTeam(team) {
   ]);
 }
 
-function removeMemberFromTeam(member) {
-  const team = props.team;
-  let metadata = props.root_members[team] || {};
-  let newParents =
-    props.root_members[team].parents?.filter((item) => item !== team) || [];
+function removeMemberFromTeam(memberId) {
+  let metadata = props.root_members[props.teamId] || {};
+  let newChildren = metadata.children?.filter((item) => item !== memberId) || [];
   Near.call([
     {
       contractName: nearDevGovGigsContractAccountId,
       methodName: "edit_member",
       args: {
-        member: member,
+        member: props.teamId,
         metadata: {
           ...metadata,
-          parents: [...newParents],
+          children: [...newChildren],
         },
       },
       deposit: Big(0).pow(21),
@@ -308,6 +306,7 @@ function addMemberToTeam(memberData) {
   ]);
 }
 
+// TODO edit labels from members as well as top level
 function editLabelsFromTeam(labelData) {
   // Labels need to exist in order to add them to a team.
   const possibleLabels = Object.keys(props.rules_list);
@@ -343,7 +342,6 @@ function editLabelsFromTeam(labelData) {
 }
 
 function removeLabelFromTeam(rule) {
-  let team = props.team;
   // Copy
   let permissions = { ...metadata.permissions };
   delete permissions[rule];
@@ -352,7 +350,7 @@ function removeLabelFromTeam(rule) {
       contractName: nearDevGovGigsContractAccountId,
       methodName: "edit_member",
       args: {
-        member: team,
+        member: props.teamId,
         metadata: {
           ...metadata,
           permissions: permissions,
@@ -516,6 +514,8 @@ return (
                   member: child,
                   members_list: props.members_list,
                   teamLevel: false,
+                  root_members: props.root_members,
+                  teamId: props.teamId,
                 },
                 child
               )
