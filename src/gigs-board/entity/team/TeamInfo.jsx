@@ -174,10 +174,14 @@ const header = isTeam ? (
     {props.member}
   </div>
 ) : (
-  <Widget
-    src={`neardevgov.near/widget/ProfileLine`}
-    props={{ accountId: props.member }}
-  />
+  // <Widget
+  //   src={`neardevgov.near/widget/ProfileLine`}
+  //   props={{ accountId: props.member }}
+  // />
+  <div class="d-flex">
+    <i class="bi bi-people-fill me-1"></i>
+    {props.member}
+  </div>
 );
 
 const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
@@ -265,29 +269,47 @@ function removeTeam(team) {
 }
 
 function removeMemberFromTeam(memberId) {
-  let metadata = props.root_members[props.teamId] || {};
-  let newChildren = metadata.children?.filter((item) => item !== memberId) || [];
-  Near.call([
-    {
-      contractName: nearDevGovGigsContractAccountId,
-      methodName: "edit_member",
-      args: {
-        member: props.teamId,
-        metadata: {
-          ...metadata,
-          children: [...newChildren],
+  let isMemberInMultipleTeams =
+    Object.values(props.root_members).filter((metadata) =>
+      metadata.children.includes(memberId)
+    ).length > 1;
+  if (isMemberInMultipleTeams) {
+    // edit_member
+    let metadata = props.root_members[props.teamId] || {};
+    let newChildren =
+      metadata.children?.filter((item) => item !== memberId) || [];
+    Near.call([
+      {
+        contractName: nearDevGovGigsContractAccountId,
+        methodName: "edit_member",
+        args: {
+          member: props.teamId,
+          metadata: {
+            ...metadata,
+            children: [...newChildren],
+          },
         },
+        deposit: Big(0).pow(21),
+        gas: Big(10).pow(12).mul(100),
       },
-      deposit: Big(0).pow(21),
-      gas: Big(10).pow(12).mul(100),
-    },
-  ]);
+    ]);
+  } else {
+    // remove_member
+    Near.call([
+      {
+        contractName: nearDevGovGigsContractAccountId,
+        methodName: "remove_member",
+        args: { member: memberId },
+        deposit: Big(0).pow(21),
+        gas: Big(10).pow(12).mul(100),
+      },
+    ]);
+  }
 }
 
 function addMemberToTeam(memberData) {
   let memberExists = !!props.members_list[memberData.member];
-  let team = props.member;
-  let metadata = props.root_members[team] || {};
+  let metadata = props.members_list[memberData.member] || {};
   Near.call([
     {
       contractName: nearDevGovGigsContractAccountId,
@@ -297,7 +319,7 @@ function addMemberToTeam(memberData) {
         metadata: {
           ...metadata,
           description: memberData.description,
-          parents: [team],
+          parents: [...metadata.parents, props.teamId],
         },
       },
       deposit: Big(0).pow(21),
@@ -405,10 +427,10 @@ return (
                   });
                 },
               })}
-            {(props.teamLevel &&
-              Viewer.role.isDevHubModerator &&
+            {props.teamLevel &&
+            ((Viewer.role.isDevHubModerator &&
               props.member !== "team:moderators") ||
-            (props.member === "team:moderators" && isContractOwner) ? (
+              isContractOwner) ? (
               <button
                 class="btn btn-light"
                 onClick={() => removeTeam(props.member)}
