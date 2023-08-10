@@ -219,8 +219,7 @@ const fieldParamsByType = {
   },
 
   markdown: {
-    name: "components.molecule.markdown-editor",
-    className: "px-2"
+    name: "components.molecule.markdown-editor"
   },
 };
 
@@ -277,7 +276,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
             ) : (
               widget(fieldParamsByType[fieldType].name, {
                 ...fieldProps,
-                className: fieldParamsByType[fieldType].className + " w-100",
+                className: "w-100",
                 format,
                 key: `${idx}-${fieldKey}--editable`,
                 label,
