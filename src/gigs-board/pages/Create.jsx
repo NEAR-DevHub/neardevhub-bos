@@ -333,10 +333,11 @@ const nameDiv = (
 
 const descriptionDiv = (
   <div className="col-lg-12 mb-2">
-    <p className="fs-6 fw-bold mb-1">Description</p>
-    {widget("components.molecule.markdown-editor", {
+    {/* <p className="fs-6 fw-bold mb-1">Description</p> */}
+    {widget("components.molecule.markdown-field", {
       content: state.description,
       onChange: (content) => textareaInputHandler(content),
+      label: "Description",
     })}
     {autocompleteEnabled && state.showAccountAutocomplete && (
       <AutoComplete>

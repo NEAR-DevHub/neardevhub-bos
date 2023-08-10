@@ -29,10 +29,6 @@ const TextInput = ({
           {inputProps.required ? <span className="text-danger">*</span> : null}
         </span>
 
-        {format === "markdown" ? (
-          <i class="bi bi-markdown text-muted" title="Markdown" />
-        ) : null}
-
         {format === "comma-separated" ? (
           <span
             className="d-inline-flex align-items-center text-muted"
