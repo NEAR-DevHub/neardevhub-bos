@@ -217,10 +217,6 @@ const fieldParamsByType = {
     name: "components.molecule.text-input",
     inputProps: { type: "text" },
   },
-
-  markdown: {
-    name: "components.molecule.markdown-editor"
-  },
 };
 
 const defaultFieldsRender = ({ schema, form, isEditable }) => (
@@ -238,8 +234,6 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
         let fieldType;
         if (Array.isArray(form.values[fieldKey])) {
           fieldType = "array";
-        } else if (format === "markdown") {
-          fieldType = "markdown";
         } else {
           fieldType = typeof (form.values[fieldKey] ?? "");
         }
