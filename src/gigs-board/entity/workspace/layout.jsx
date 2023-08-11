@@ -56,7 +56,7 @@ const layoutConfig = {
   bannerHeight: "162px",
 };
 
-const ProjectLayout = ({ children, configurator, id, path }) =>
+const WorkspaceLayout = ({ children, configurator, id, path }) =>
   widget("components.template.app-layout", {
     path,
 
@@ -74,7 +74,7 @@ const ProjectLayout = ({ children, configurator, id, path }) =>
         </div>
       ) : (
         <div class="alert alert-danger" role="alert">
-          Error: project id not found in URL parameters
+          Error: workspace id not found in URL parameters
         </div>
       ),
 
@@ -86,4 +86,4 @@ const ProjectLayout = ({ children, configurator, id, path }) =>
       ) : null,
   });
 
-return ProjectLayout(props);
+return WorkspaceLayout(props);

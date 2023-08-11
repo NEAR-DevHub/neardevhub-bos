@@ -80,7 +80,7 @@ const AttractableImage = styled.img`
 `;
 /* END_INCLUDE: "core/lib/gui/attractable" */
 
-const ProjectCard = ({ link, metadata }) => (
+const WorkspaceCard = ({ link, metadata }) => (
   <AttractableLink
     href={link}
     className="d-flex flex-shrink-0 rounded-4 border border-2 p-3 text-black text-decoration-none"
@@ -116,4 +116,4 @@ const ProjectCard = ({ link, metadata }) => (
   </AttractableLink>
 );
 
-return ProjectCard(props);
+return WorkspaceCard(props);

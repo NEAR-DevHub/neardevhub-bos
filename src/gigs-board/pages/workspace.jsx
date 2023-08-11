@@ -67,6 +67,23 @@ const NavUnderline = styled.ul`
   }
 `;
 /* END_INCLUDE: "core/lib/gui/navigation" */
+/* INCLUDE: "core/lib/uuid" */
+const uuid = () =>
+  [Date.now().toString(16)]
+    .concat(
+      Array.from(
+        { length: 4 },
+        () => Math.floor(Math.random() * 0xffffffff) & 0xffffffff
+      ).map((value) => value.toString(16))
+    )
+    .join("-");
+
+const withUUIDIndex = (data) => {
+  const id = uuid();
+
+  return Object.fromEntries([[id, { ...data, id }]]);
+};
+/* END_INCLUDE: "core/lib/uuid" */
 /* INCLUDE: "core/lib/struct" */
 const Struct = {
   deepFieldUpdate: (
@@ -244,188 +261,138 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const Button = styled.button`
-  height: 40px;
-  font-size: 14px;
-  border-color: #e3e3e0;
-  background-color: #ffffff;
-`;
+const WorkspacePage = ({ dir, id, view: selectedViewId }) => {
+  const permissions = Viewer.workspacePermissions(id);
 
-const Banner = styled.div`
-  max-width: 100%;
-  width: 1320px;
-  min-height: 240px;
-  height: 240px;
-`;
-
-const CommunityHeader = ({ activeTabTitle, handle }) => {
-  State.init({
-    copiedShareUrl: false,
+  const workspace = DevHub.useQuery({
+    name: "workspace",
+    params: { id: parseInt(id) },
   });
 
-  const community = DevHub.useQuery({
-    name: "community",
-    params: { handle },
+  const viewsMetadata = DevHub.get_workspace_views_metadata({
+    workspace_id: parseInt(id),
   });
 
-  if (community.data === null && community.isLoading) {
-    return <div>Loading...</div>;
-  }
+  return workspace.data === null && workspace.isLoading ? (
+    <div>Loading...</div>
+  ) : (
+    widget("entity.workspace.layout", {
+      id,
 
-  const tabs = [
-    {
-      defaultActive: true,
-      iconClass: "bi bi-house-door",
-      route: "community.activity",
-      title: "Activity",
-    },
+      path: [
+        {
+          label: "Workspaces",
+          pageId:
+            typeof dir === "string" ? "community.workspaces" : "workspaces",
+          params: typeof dir === "string" ? { handle: dir } : null,
+        },
+      ],
 
-    ...[community.data?.wiki1, community.data?.wiki2]
-      .filter((maybeWikiPage) => maybeWikiPage ?? false)
-      .map(({ name }, idx) => ({
-        params: { id: idx + 1 },
-        route: "community.wiki",
-        title: name,
-      })),
+      configurator: widget("feature.workspace.configurator", {
+        metadata: workspace.data?.metadata ?? null,
+        permissions,
+      }),
 
-    {
-      iconClass: "bi bi-people-fill",
-      route: "community.teams",
-      title: "Teams",
-    },
+      children:
+        workspace.data === null && !workspace.isLoading ? (
+          <div class="alert alert-danger" role="alert">
+            {`Workspace with id ${id} doesn't exist`}
+          </div>
+        ) : (
+          <div className="d-flex flex-column">
+            <NavUnderline className="nav">
+              {viewsMetadata.map((metadata) => (
+                <li className="nav-item" key={metadata.id}>
+                  <a
+                    aria-current={defaultActive && "page"}
+                    className={[
+                      "nav-link d-inline-flex gap-2",
+                      metadata.id === selectedViewId ||
+                      viewsMetadata.length === 1
+                        ? "active"
+                        : "",
+                    ].join(" ")}
+                    href={href("workspace", {
+                      id: workspace.data.metadata.id,
+                      view: metadata.id,
+                      dir,
+                    })}
+                  >
+                    <span>{metadata.title}</span>
+                  </a>
+                </li>
+              ))}
 
-    ...(community.data?.feature_flags.workspaces
-      ? [
-          {
-            iconClass: "bi bi-view-list",
-            route: "community.workspaces",
-            title: "Workspaces",
-          },
-        ]
-      : []),
+              {permissions.can_configure ? (
+                <li class="nav-item">
+                  <a
+                    href={href("workspace", { id, view: "new", dir })}
+                    className={[
+                      "nav-link d-flex gap-2",
+                      selectedViewId === "new" || viewsMetadata.length === 0
+                        ? "active"
+                        : "",
+                    ].join(" ")}
+                  >
+                    <i class="bi bi-plus-lg" />
+                    <span>New view</span>
+                  </a>
+                </li>
+              ) : null}
+            </NavUnderline>
 
-    {
-      iconClass: "bi bi-coin",
-      route: "community.sponsorship",
-      title: "Sponsorship",
-    },
+            <div class="tab-content">
+              {viewsMetadata.map((metadata) => (
+                <div
+                  class={`tab-pane pt-4 fade ${
+                    metadata.id === selectedViewId || viewsMetadata.length === 1
+                      ? "show active"
+                      : ""
+                  }`}
+                  role="tabpanel"
+                  tabindex="0"
+                  key={metadata.id}
+                >
+                  {widget(
+                    permissions.can_configure
+                      ? "feature.workspace.view-configurator"
+                      : ["entity.workspace", metadata.kind].join("."),
+                    {
+                      link: [
+                        "https://near.social",
+                        href("workspace", { id, view: metadata.id, dir }),
+                      ].join(""),
 
-    {
-      iconClass: "bi bi-github",
-      route: "community.github",
-      title: "GitHub",
-    },
+                      metadata,
+                      permissions,
+                      workspaceId: id,
+                    }
+                  )}
+                </div>
+              ))}
 
-    ...((community.data?.telegram_handle?.length ?? 0) > 0
-      ? [
-          {
-            iconClass: "bi bi-telegram",
-            route: "community.telegram",
-            title: "Telegram",
-          },
-        ]
-      : []),
-  ];
-
-  return (
-    <div className="d-flex flex-column gap-3 bg-white">
-      <Banner
-        className="object-fit-cover"
-        style={{
-          background: `center / cover no-repeat url(${community.data.banner_url})`,
-        }}
-      />
-
-      <div className="d-md-flex d-block justify-content-between container">
-        <div className="d-md-flex d-block align-items-end">
-          <div className="position-relative">
-            <div style={{ width: 150, height: 100 }}>
-              <img
-                alt="Community logo"
-                className="border border-3 border-white rounded-circle shadow position-absolute"
-                width="150"
-                height="150"
-                src={community.data.logo_url}
-                style={{ top: -50 }}
-              />
+              {permissions.can_configure ? (
+                <div
+                  class={`tab-pane pt-4 fade ${
+                    selectedViewId === "new" || viewsMetadata.length === 0
+                      ? "show active"
+                      : ""
+                  }`}
+                  role="tabpanel"
+                  tabindex="0"
+                  key={view.id}
+                >
+                  {widget("feature.workspace.view-configurator", {
+                    permissions,
+                    workspaceId: id,
+                  })}
+                </div>
+              ) : null}
             </div>
           </div>
-
-          <div className="d-flex flex-column ps-3 pt-3 pb-2">
-            <span className="h1 text-nowrap">{community.data.name}</span>
-            <span className="text-secondary">{community.data.description}</span>
-          </div>
-        </div>
-
-        <div className="d-flex align-items-end gap-3">
-          {Viewer.can.editCommunity(community.data) ? (
-            <a
-              href={href("community.edit-info", { handle })}
-              className={[
-                "d-flex align-items-center gap-2 border border-1 rounded-pill px-3 py-2",
-                "text-decoration-none text-dark text-nowrap font-weight-bold fs-6",
-              ].join(" ")}
-            >
-              <i className="bi bi-gear" />
-              <span>Edit information</span>
-            </a>
-          ) : null}
-
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip>Copy URL to clipboard</Tooltip>}
-          >
-            <Button
-              type="button"
-              className={[
-                "d-flex align-items-center gap-2 border border-1 rounded-pill px-3 py-2",
-                "text-dark text-nowrap font-weight-bold fs-6",
-              ].join(" ")}
-              onMouseLeave={() => {
-                State.update({ copiedShareUrl: false });
-              }}
-              onClick={() => {
-                clipboard
-                  .writeText(
-                    "https://near.org" + href("community.activity", { handle })
-                  )
-                  .then(() => {
-                    State.update({ copiedShareUrl: true });
-                  });
-              }}
-            >
-              {state.copiedShareUrl ? (
-                <i className="bi bi-16 bi-check"></i>
-              ) : (
-                <i className="bi bi-16 bi-link-45deg"></i>
-              )}
-
-              <span>Share</span>
-            </Button>
-          </OverlayTrigger>
-        </div>
-      </div>
-
-      <NavUnderline className="nav">
-        {tabs.map(({ defaultActive, params, route, title }) =>
-          title ? (
-            <li className="nav-item" key={title}>
-              <a
-                aria-current={defaultActive && "page"}
-                className={[
-                  "d-inline-flex gap-2",
-                  activeTabTitle === title ? "nav-link active" : "nav-link",
-                ].join(" ")}
-                href={href(route, { handle, ...(params ?? {}) })}
-              >
-                <span>{title}</span>
-              </a>
-            </li>
-          ) : null
-        )}
-      </NavUnderline>
-    </div>
+        ),
+    })
   );
 };
 
-return CommunityHeader(props);
+return WorkspacePage(props);

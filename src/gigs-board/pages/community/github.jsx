@@ -59,7 +59,7 @@ const CommunityGithubPage = ({ handle }) =>
 
     children: (
       <div className="d-flex flex-column">
-        {widget("feature.project.github-view-configurator", {
+        {widget("feature.workspace.github-view-configurator", {
           communityHandle: handle,
           pageURL: "near.org" + href("community.github", { handle }),
         })}

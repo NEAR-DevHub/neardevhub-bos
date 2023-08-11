@@ -257,27 +257,32 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
-  create_project: ({ author_community_handle, metadata }) =>
-    Near.call(devHubAccountId, "create_project", {
+  create_workspace: ({ author_community_handle, metadata }) =>
+    Near.call(devHubAccountId, "create_workspace", {
       author_community_handle,
       metadata,
     }) ?? null,
 
-  update_project_metadata: ({ metadata }) =>
-    Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
+  delete_workspace: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace", { id }) ?? null,
 
-  get_project_views_metadata: ({ project_id }) =>
-    Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
+  update_workspace_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_workspace_metadata", { metadata }) ??
     null,
 
-  create_project_view: ({ view }) =>
-    Near.call(devHubAccountId, "create_project_view", { view }) ?? null,
+  get_workspace_views_metadata: ({ workspace_id }) =>
+    Near.view(devHubAccountId, "get_workspace_views_metadata", {
+      workspace_id,
+    }) ?? null,
 
-  update_project_view: ({ view }) =>
-    Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
+  create_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "create_workspace_view", { view }) ?? null,
 
-  delete_project_view: ({ id }) =>
-    Near.call(devHubAccountId, "delete_project_view", { id }) ?? null,
+  update_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "update_workspace_view", { view }) ?? null,
+
+  delete_workspace_view: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -344,15 +349,15 @@ const Viewer = {
         Viewer.role.isDevHubModerator),
   },
 
-  projectPermissions: (projectId) => {
-    const project_id = parseInt(projectId);
+  workspacePermissions: (workspaceId) => {
+    const workspace_id = parseInt(workspaceId);
 
     const defaultPermissions = { can_configure: false };
 
-    return !isNaN(project_id)
-      ? Near.view(devHubAccountId, "get_account_project_permissions", {
+    return !isNaN(workspace_id)
+      ? Near.view(devHubAccountId, "get_account_workspace_permissions", {
           account_id: context.accountId,
-          project_id: project_id,
+          workspace_id: workspace_id,
         }) ?? defaultPermissions
       : defaultPermissions;
   },
@@ -368,7 +373,7 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const ProjectViewConfiguratorSettings = {
+const WorkspaceViewConfiguratorSettings = {
   maxColumnsNumber: 20,
 };
 
@@ -377,23 +382,23 @@ const CompactContainer = styled.div`
   max-width: 100%;
 `;
 
-const ProjectViewMetadataDefaults = {
+const WorkspaceViewMetadataDefaults = {
   kind: "kanban-view",
   title: "",
   description: "",
 };
 
-const ProjectViewConfigDefaults = {
+const WorkspaceViewConfigDefaults = {
   ticket_kind: "post-ticket",
   tags: { excluded: [], required: [] },
   columns: {},
 };
 
-const ProjectViewConfigurator = ({
+const WorkspaceViewConfigurator = ({
   link,
   metadata,
   permissions,
-  projectId,
+  workspaceId,
 }) => {
   const isNewView = (metadata ?? null) === null;
 
@@ -403,23 +408,23 @@ const ProjectViewConfigurator = ({
   });
 
   const config = DevHub.useQuery({
-    name: "project_view_config",
+    name: "workspace_view_config",
     params: { id: metadata.id },
   });
 
   const form = useForm({
     initialValues: {
-      metadata: metadata ?? ProjectViewMetadataDefaults,
+      metadata: metadata ?? WorkspaceViewMetadataDefaults,
 
       config: isNewView
-        ? ProjectViewConfigDefaults
+        ? WorkspaceViewConfigDefaults
         : JSON.parse(config.data ?? "{}"),
     },
 
     stateKey: "view",
   });
 
-  const viewDelete = () => DevHub.delete_project_view({ id: metadata.id });
+  const viewDelete = () => DevHub.delete_workspace_view({ id: metadata.id });
 
   const editorToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -435,7 +440,7 @@ const ProjectViewConfigurator = ({
 
   const columnsCreateNew = ({ lastKnownValue }) =>
     Object.keys(lastKnownValue).length <
-    ProjectViewConfiguratorSettings.maxColumnsNumber
+    WorkspaceViewConfiguratorSettings.maxColumnsNumber
       ? {
           ...(lastKnownValue ?? {}),
           ...withUUIDIndex({ tag: "", title: "New column", description: "" }),
@@ -455,9 +460,12 @@ const ProjectViewConfigurator = ({
   };
 
   const onSubmit = () =>
-    DevHub[isNewView ? "create_project_view" : "update_project_view"]({
+    DevHub[isNewView ? "create_workspace_view" : "update_workspace_view"]({
       view: {
-        metadata: { ...form.values.metadata, project_id: parseInt(projectId) },
+        metadata: {
+          ...form.values.metadata,
+          workspace_id: parseInt(workspaceId),
+        },
         config: JSON.stringify(form.values.config),
       },
     });
@@ -519,7 +527,7 @@ const ProjectViewConfigurator = ({
             <i className="bi bi-list-task" />
 
             <span>
-              {`Columns ( max. ${ProjectViewConfiguratorSettings.maxColumnsNumber} )`}
+              {`Columns ( max. ${WorkspaceViewConfiguratorSettings.maxColumnsNumber} )`}
             </span>
           </span>
         </div>
@@ -643,7 +651,7 @@ const ProjectViewConfigurator = ({
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
               disabled={
                 form.values.columns.length >=
-                ProjectViewConfiguratorSettings.maxColumnsNumber
+                WorkspaceViewConfiguratorSettings.maxColumnsNumber
               }
               onClick={form.update({
                 path: ["config", "columns"],
@@ -675,7 +683,7 @@ const ProjectViewConfigurator = ({
         </AttractableDiv>
       ) : null}
 
-      {widget(["entity.project", form.values.metadata.kind].join("."), {
+      {widget(["entity.workspace", form.values.metadata.kind].join("."), {
         ...form.values,
         onConfigureClick: () => editorToggle(true),
         onDeleteClick: isNewView ? null : viewDelete,
@@ -686,4 +694,4 @@ const ProjectViewConfigurator = ({
   );
 };
 
-return ProjectViewConfigurator(props);
+return WorkspaceViewConfigurator(props);

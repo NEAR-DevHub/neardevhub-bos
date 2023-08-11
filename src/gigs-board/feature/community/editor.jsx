@@ -112,27 +112,32 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
-  create_project: ({ author_community_handle, metadata }) =>
-    Near.call(devHubAccountId, "create_project", {
+  create_workspace: ({ author_community_handle, metadata }) =>
+    Near.call(devHubAccountId, "create_workspace", {
       author_community_handle,
       metadata,
     }) ?? null,
 
-  update_project_metadata: ({ metadata }) =>
-    Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
+  delete_workspace: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace", { id }) ?? null,
 
-  get_project_views_metadata: ({ project_id }) =>
-    Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
+  update_workspace_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_workspace_metadata", { metadata }) ??
     null,
 
-  create_project_view: ({ view }) =>
-    Near.call(devHubAccountId, "create_project_view", { view }) ?? null,
+  get_workspace_views_metadata: ({ workspace_id }) =>
+    Near.view(devHubAccountId, "get_workspace_views_metadata", {
+      workspace_id,
+    }) ?? null,
 
-  update_project_view: ({ view }) =>
-    Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
+  create_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "create_workspace_view", { view }) ?? null,
 
-  delete_project_view: ({ id }) =>
-    Near.call(devHubAccountId, "delete_project_view", { id }) ?? null,
+  update_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "update_workspace_view", { view }) ?? null,
+
+  delete_workspace_view: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -199,15 +204,15 @@ const Viewer = {
         Viewer.role.isDevHubModerator),
   },
 
-  projectPermissions: (projectId) => {
-    const project_id = parseInt(projectId);
+  workspacePermissions: (workspaceId) => {
+    const workspace_id = parseInt(workspaceId);
 
     const defaultPermissions = { can_configure: false };
 
-    return !isNaN(project_id)
-      ? Near.view(devHubAccountId, "get_account_project_permissions", {
+    return !isNaN(workspace_id)
+      ? Near.view(devHubAccountId, "get_account_workspace_permissions", {
           account_id: context.accountId,
-          project_id: project_id,
+          workspace_id: workspace_id,
         }) ?? defaultPermissions
       : defaultPermissions;
   },

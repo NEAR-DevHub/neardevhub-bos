@@ -51,39 +51,6 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/gui/navigation" */
-const NavUnderline = styled.ul`
-  border-bottom: 1px #eceef0 solid;
-
-  a {
-    color: #687076;
-    text-decoration: none;
-  }
-
-  a.active {
-    font-weight: bold;
-    color: #0c7283;
-    border-bottom: 4px solid #0c7283;
-  }
-`;
-/* END_INCLUDE: "core/lib/gui/navigation" */
-/* INCLUDE: "core/lib/uuid" */
-const uuid = () =>
-  [Date.now().toString(16)]
-    .concat(
-      Array.from(
-        { length: 4 },
-        () => Math.floor(Math.random() * 0xffffffff) & 0xffffffff
-      ).map((value) => value.toString(16))
-    )
-    .join("-");
-
-const withUUIDIndex = (data) => {
-  const id = uuid();
-
-  return Object.fromEntries([[id, { ...data, id }]]);
-};
-/* END_INCLUDE: "core/lib/uuid" */
 /* INCLUDE: "core/lib/struct" */
 const Struct = {
   deepFieldUpdate: (
@@ -145,27 +112,32 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
-  create_project: ({ author_community_handle, metadata }) =>
-    Near.call(devHubAccountId, "create_project", {
+  create_workspace: ({ author_community_handle, metadata }) =>
+    Near.call(devHubAccountId, "create_workspace", {
       author_community_handle,
       metadata,
     }) ?? null,
 
-  update_project_metadata: ({ metadata }) =>
-    Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
+  delete_workspace: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace", { id }) ?? null,
 
-  get_project_views_metadata: ({ project_id }) =>
-    Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
+  update_workspace_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_workspace_metadata", { metadata }) ??
     null,
 
-  create_project_view: ({ view }) =>
-    Near.call(devHubAccountId, "create_project_view", { view }) ?? null,
+  get_workspace_views_metadata: ({ workspace_id }) =>
+    Near.view(devHubAccountId, "get_workspace_views_metadata", {
+      workspace_id,
+    }) ?? null,
 
-  update_project_view: ({ view }) =>
-    Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
+  create_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "create_workspace_view", { view }) ?? null,
 
-  delete_project_view: ({ id }) =>
-    Near.call(devHubAccountId, "delete_project_view", { id }) ?? null,
+  update_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "update_workspace_view", { view }) ?? null,
+
+  delete_workspace_view: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -232,15 +204,15 @@ const Viewer = {
         Viewer.role.isDevHubModerator),
   },
 
-  projectPermissions: (projectId) => {
-    const project_id = parseInt(projectId);
+  workspacePermissions: (workspaceId) => {
+    const workspace_id = parseInt(workspaceId);
 
     const defaultPermissions = { can_configure: false };
 
-    return !isNaN(project_id)
-      ? Near.view(devHubAccountId, "get_account_project_permissions", {
+    return !isNaN(workspace_id)
+      ? Near.view(devHubAccountId, "get_account_workspace_permissions", {
           account_id: context.accountId,
-          project_id: project_id,
+          workspace_id: workspace_id,
         }) ?? defaultPermissions
       : defaultPermissions;
   },
@@ -256,137 +228,122 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const ProjectPage = ({ dir, id, view: selectedViewId }) => {
-  const permissions = Viewer.projectPermissions(id);
+const workspaceSchema = {
+  name: {
+    inputProps: {
+      min: 2,
+      max: 30,
+      placeholder: "Workspace name",
+      required: true,
+    },
 
-  const project = DevHub.useQuery({
-    name: "project",
-    params: { id: parseInt(id) },
+    label: "Name",
+    order: 1,
+  },
+
+  description: {
+    label: "Description",
+    order: 2,
+
+    inputProps: {
+      min: 2,
+      max: 60,
+      placeholder: "A short sentence describing the purpose of this workspace",
+      required: true,
+    },
+  },
+};
+
+const CommunityWorkspacesPage = ({ handle }) => {
+  State.init({
+    isNewWorkspaceFormDisplayed: false,
   });
 
-  const viewsMetadata = DevHub.get_project_views_metadata({
-    project_id: parseInt(id),
+  const isToolbarHidden = state.isNewWorkspaceFormDisplayed;
+
+  const community = DevHub.useQuery({ name: "community", params: { handle } });
+
+  const workspacesMetadata = DevHub.useQuery({
+    name: "community_workspaces_metadata",
+    params: { community_handle: handle },
   });
 
-  return project.data === null && project.isLoading ? (
+  const onNewWorkspaceSubmit = ({ name, description }) =>
+    typeof name === "string" && typeof description === "string"
+      ? DevHub.create_workspace({
+          author_community_handle: handle,
+          metadata: { name, description },
+        })
+      : null;
+
+  return workspacesMetadata.data === null && workspacesMetadata.isLoading ? (
     <div>Loading...</div>
   ) : (
-    widget("entity.project.layout", {
-      id,
+    widget("entity.community.layout", {
+      handle,
+      path: [{ label: "Communities", pageId: "communities" }],
+      title: "Workspaces",
 
-      path: [
-        {
-          label: "Projects",
-          pageId: typeof dir === "string" ? "community.projects" : "projects",
-          params: typeof dir === "string" ? { handle: dir } : null,
-        },
-      ],
+      children: (
+        <div className="d-flex flex-column gap-4">
+          {!isToolbarHidden ? (
+            <div className="d-flex justify-content-end gap-3">
+              {Viewer.can.editCommunity(community.data)
+                ? widget("components.atom.button", {
+                    classNames: { adornment: "bi bi-tools" },
+                    label: "New workspace",
 
-      configurator: widget("feature.project.configurator", {
-        metadata: project.data?.metadata ?? null,
-        permissions,
-      }),
-
-      children:
-        project.data === null && !project.isLoading ? (
-          <div class="alert alert-danger" role="alert">
-            {`Project with id ${id} doesn't exist`}
-          </div>
-        ) : (
-          <div className="d-flex flex-column">
-            <NavUnderline className="nav">
-              {viewsMetadata.map((metadata) => (
-                <li className="nav-item" key={metadata.id}>
-                  <a
-                    aria-current={defaultActive && "page"}
-                    className={[
-                      "nav-link d-inline-flex gap-2",
-                      metadata.id === selectedViewId ||
-                      viewsMetadata.length === 1
-                        ? "active"
-                        : "",
-                    ].join(" ")}
-                    href={href("project", {
-                      id: project.data.metadata.id,
-                      view: metadata.id,
-                      dir,
-                    })}
-                  >
-                    <span>{metadata.title}</span>
-                  </a>
-                </li>
-              ))}
-
-              {permissions.can_configure ? (
-                <li class="nav-item">
-                  <a
-                    href={href("project", { id, view: "new", dir })}
-                    className={[
-                      "nav-link d-flex gap-2",
-                      selectedViewId === "new" || viewsMetadata.length === 0
-                        ? "active"
-                        : "",
-                    ].join(" ")}
-                  >
-                    <i class="bi bi-plus-lg" />
-                    <span>New view</span>
-                  </a>
-                </li>
-              ) : null}
-            </NavUnderline>
-
-            <div class="tab-content">
-              {viewsMetadata.map((metadata) => (
-                <div
-                  class={`tab-pane pt-4 fade ${
-                    metadata.id === selectedViewId || viewsMetadata.length === 1
-                      ? "show active"
-                      : ""
-                  }`}
-                  role="tabpanel"
-                  tabindex="0"
-                  key={metadata.id}
-                >
-                  {widget(
-                    permissions.can_configure
-                      ? "feature.project.view-configurator"
-                      : ["entity.project", metadata.kind].join("."),
-                    {
-                      link: [
-                        "https://near.social",
-                        href("project", { id, view: metadata.id, dir }),
-                      ].join(""),
-
-                      metadata,
-                      permissions,
-                      projectId: id,
-                    }
-                  )}
-                </div>
-              ))}
-
-              {permissions.can_configure ? (
-                <div
-                  class={`tab-pane pt-4 fade ${
-                    selectedViewId === "new" || viewsMetadata.length === 0
-                      ? "show active"
-                      : ""
-                  }`}
-                  role="tabpanel"
-                  tabindex="0"
-                  key={view.id}
-                >
-                  {widget("feature.project.view-configurator", {
-                    permissions,
-                    projectId: id,
-                  })}
-                </div>
-              ) : null}
+                    onClick: () =>
+                      State.update({ isNewWorkspaceFormDisplayed: true }),
+                  })
+                : null}
             </div>
-          </div>
-        ),
+          ) : null}
+
+          {state.isNewWorkspaceFormDisplayed &&
+            widget("components.organism.editor", {
+              fullWidth: true,
+              heading: "New workspace",
+              isEditorActive: true,
+              isEditingAllowed: Viewer.can.editCommunity(community.data),
+
+              onCancel: () =>
+                State.update({ isNewWorkspaceFormDisplayed: false }),
+
+              onChangesSubmit: onNewWorkspaceSubmit,
+              submitLabel: "Create",
+              schema: workspaceSchema,
+            })}
+
+          {workspacesMetadata.data === null ? (
+            <div
+              className="d-flex flex-column align-items-center justify-content-center gap-4"
+              style={{ height: 384 }}
+            >
+              <h5 className="h5 d-inline-flex gap-2 m-0">
+                This community doesn't own any workspaces
+              </h5>
+            </div>
+          ) : (
+            <div className="d-flex flex-wrap gap-4 w-100 h-100">
+              {workspacesMetadata.data.map((metadata) =>
+                widget(
+                  "entity.workspace.card",
+
+                  {
+                    link: href("workspace", { id: metadata.id, dir: handle }),
+                    metadata,
+                  },
+
+                  metadata.id
+                )
+              )}
+            </div>
+          )}
+        </div>
+      ),
     })
   );
 };
 
-return ProjectPage(props);
+return CommunityWorkspacesPage(props);

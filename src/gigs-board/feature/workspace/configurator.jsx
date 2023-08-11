@@ -212,27 +212,32 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
-  create_project: ({ author_community_handle, metadata }) =>
-    Near.call(devHubAccountId, "create_project", {
+  create_workspace: ({ author_community_handle, metadata }) =>
+    Near.call(devHubAccountId, "create_workspace", {
       author_community_handle,
       metadata,
     }) ?? null,
 
-  update_project_metadata: ({ metadata }) =>
-    Near.call(devHubAccountId, "update_project_metadata", { metadata }) ?? null,
+  delete_workspace: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace", { id }) ?? null,
 
-  get_project_views_metadata: ({ project_id }) =>
-    Near.view(devHubAccountId, "get_project_views_metadata", { project_id }) ??
+  update_workspace_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_workspace_metadata", { metadata }) ??
     null,
 
-  create_project_view: ({ view }) =>
-    Near.call(devHubAccountId, "create_project_view", { view }) ?? null,
+  get_workspace_views_metadata: ({ workspace_id }) =>
+    Near.view(devHubAccountId, "get_workspace_views_metadata", {
+      workspace_id,
+    }) ?? null,
 
-  update_project_view: ({ view }) =>
-    Near.call(devHubAccountId, "update_project_view", { view }) ?? null,
+  create_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "create_workspace_view", { view }) ?? null,
 
-  delete_project_view: ({ id }) =>
-    Near.call(devHubAccountId, "delete_project_view", { id }) ?? null,
+  update_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "update_workspace_view", { view }) ?? null,
+
+  delete_workspace_view: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -287,7 +292,7 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const ProjectConfigurator = ({ metadata, permissions }) => {
+const WorkspaceConfigurator = ({ metadata, permissions }) => {
   State.init({
     isConfiguratorActive: false,
   });
@@ -304,7 +309,7 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
         metadata === null ? {} : { ...metadata, id: parseInt(metadata.id) },
     },
 
-    stateKey: "project",
+    stateKey: "workspace",
   });
 
   const onCancel = () => {
@@ -312,7 +317,7 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
     configuratorToggle(false);
   };
 
-  const onSubmit = () => DevHub.update_project_metadata(form.values);
+  const onSubmit = () => DevHub.update_workspace_metadata(form.values);
 
   return (
     <div className="d-flex justify-content-between gap-3 w-100">
@@ -327,10 +332,10 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
               max: 30,
             },
 
-            key: `project-${form.values.metadata.id}-name`,
+            key: `workspace-${form.values.metadata.id}-name`,
             multiline: false,
             onChange: form.update({ path: ["metadata", "name"] }),
-            placeholder: "Project name",
+            placeholder: "Workspace name",
             value: form.values.metadata.name,
             skipPaddingGap: true,
           })
@@ -350,10 +355,10 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
                 max: 60,
               },
 
-              key: `project-${form.values.metadata.id}-description`,
+              key: `workspace-${form.values.metadata.id}-description`,
               multiline: false,
               onChange: form.update({ path: ["metadata", "description"] }),
-              placeholder: "Project description",
+              placeholder: "Workspace description",
               value: form.values.metadata.description,
               skipPaddingGap: true,
             })
@@ -362,34 +367,7 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
             )}
       </div>
 
-      <div className="d-flex flex-column gap-3 justify-content-between align-items-end h-100">
-        {state.isConfiguratorActive
-          ? widget("components.molecule.text-input", {
-              className: "w-100",
-
-              inputProps: {
-                className: "h-75 text-end border-0 bg-dark text-white",
-                min: 2,
-                max: 30,
-              },
-
-              key: `project-${form.values.metadata.id}-tag`,
-              multiline: false,
-              onChange: form.update({ path: ["metadata", "tag"] }),
-              placeholder: "project-tag",
-              value: form.values.metadata.tag,
-              skipPaddingGap: true,
-            })
-          : metadata !== null && (
-              <span
-                class="badge bg-primary rounded-4 text-decoration-none"
-                style={{ cursor: "default" }}
-                title="DevHub tag"
-              >
-                {metadata.tag}
-              </span>
-            )}
-
+      <div className="d-flex flex-column gap-3 justify-content-end align-items-end h-100">
         {permissions.can_configure ? (
           <div className="d-flex gap-3">
             {widget("components.atom.button", {
@@ -424,7 +402,7 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
                 ].join(" "),
                 adornment: "bi bi-gear-wide-connected",
               },
-              label: "Configure project",
+              label: "Configure workspace",
               onClick: () => configuratorToggle(true),
             })}
           </div>
@@ -434,4 +412,4 @@ const ProjectConfigurator = ({ metadata, permissions }) => {
   );
 };
 
-return ProjectConfigurator(props);
+return WorkspaceConfigurator(props);
