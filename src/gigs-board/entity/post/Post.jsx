@@ -53,16 +53,12 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
-  // box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-  border: 2px solid #eceef0;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
   transition: box-shadow 0.6s;
 
   &:hover {
-    box-shadow: rgba(48, 48, 48, 0.15) 0px 0.1rem 0.1rem !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   }
-
-  margin-bottom: 16px;
-  margin-top: 1em;
 `;
 
 const AttractableLink = styled.a`

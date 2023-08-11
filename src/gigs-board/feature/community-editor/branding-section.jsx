@@ -207,8 +207,9 @@ const Logo = styled.div`
 
 const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 
-const CommunityEditorBrandingSection = ({
+const CommunityBrandingEditor = ({
   isEditingAllowed,
+  link,
   onChangesSubmit,
   values,
 }) => {
@@ -287,7 +288,11 @@ const CommunityEditorBrandingSection = ({
           className="h5 text-nowrap overflow-hidden"
           style={{ textOverflow: "ellipsis" }}
         >
-          {values.name}
+          {typeof link === "string" && link.length > 0 ? (
+            <a href={link}>{values.name}</a>
+          ) : (
+            values.name
+          )}
         </h5>
 
         <p
@@ -301,4 +306,4 @@ const CommunityEditorBrandingSection = ({
   );
 };
 
-return <CommunityEditorBrandingSection {...props} />;
+return CommunityBrandingEditor(props);
