@@ -543,11 +543,44 @@ const postTitle =
     </h5>
   );
 
+const tokenMapping = {
+  NEAR: "NEAR",
+  USDT: {
+    NEP141: {
+      address: "usdt.tether-token.near",
+    },
+  },
+  // Add more tokens here as needed
+};
+
+const reverseTokenMapping = Object.keys(tokenMapping).reduce(
+  (reverseMap, key) => {
+    const value = tokenMapping[key];
+    if (typeof value === "object") {
+      reverseMap[JSON.stringify(value)] = key;
+    }
+    return reverseMap;
+  },
+  {}
+);
+
+function tokenResolver(token) {
+  if (typeof token === "string") {
+    return token;
+  } else if (typeof token === "object") {
+    const tokenString = reverseTokenMapping[JSON.stringify(token)];
+    return tokenString || null;
+  } else {
+    return null; // Invalid input
+  }
+}
+
 const postExtra =
   snapshot.post_type == "Sponsorship" ? (
     <div key="post-extra">
       <h6 class="card-subtitle mb-2 text-muted">
-        Maximum amount: {snapshot.amount} {snapshot.sponsorship_token}
+        Maximum amount: {snapshot.amount}{" "}
+        {tokenResolver(snapshot.sponsorship_token)}
       </h6>
       <h6 class="card-subtitle mb-2 text-muted">
         Supervisor:{" "}
