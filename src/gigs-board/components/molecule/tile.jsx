@@ -29,10 +29,11 @@ const AttractableImage = styled.img`
 
 const Tile = ({
   children,
-  id,
+  fullWidth,
   headerSlotRight,
   heading,
   headingAdornment,
+  id,
   noFrame,
   minHeight,
   noBorder,
@@ -45,7 +46,10 @@ const Tile = ({
       !noBorder ? "border" : "",
       !noFrame ? "p-4" : "",
     ].join(" ")}
-    style={{ maxWidth: 896, minHeight: minHeight ?? 240 }}
+    style={{
+      maxWidth: !(fullWidth ?? false) ? 896 : null,
+      minHeight: minHeight ?? 240,
+    }}
     {...{ id }}
   >
     {!noFrame && (
