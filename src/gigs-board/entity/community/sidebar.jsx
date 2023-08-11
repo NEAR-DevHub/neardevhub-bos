@@ -132,7 +132,7 @@ const CommunitySummary = (community) => {
       <Markdown text={community.bio_markdown} />
 
       <small class="text-muted mb-3">
-        {widget("components.atom.tag", { label: community.tag })}
+        {widget("components.atom.tag", { linkTo: "Feed", ...community })}
       </small>
 
       <div className="mt-3">

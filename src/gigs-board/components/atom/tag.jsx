@@ -52,13 +52,13 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const Tag = ({ label }) => (
-  <a href={href("Feed", { label }, label)}>
+const Tag = ({ linkTo, tag }) => (
+  <a href={href(linkTo, { tag })}>
     <span
       class="badge me-1 text-dark fw-normal"
       style={{ border: "1px solid #D0D5DD" }}
     >
-      {label}
+      {tag}
     </span>
   </a>
 );
