@@ -10,15 +10,15 @@ const Viewer = {
         Viewer.role.isDevHubModerator),
   },
 
-  projectPermissions: (projectId) => {
-    const project_id = parseInt(projectId);
+  workspacePermissions: (workspaceId) => {
+    const workspace_id = parseInt(workspaceId);
 
     const defaultPermissions = { can_configure: false };
 
-    return !isNaN(project_id)
-      ? Near.view(devHubAccountId, "get_account_project_permissions", {
+    return !isNaN(workspace_id)
+      ? Near.view(devHubAccountId, "get_account_workspace_permissions", {
           account_id: context.accountId,
-          project_id: project_id,
+          workspace_id: workspace_id,
         }) ?? defaultPermissions
       : defaultPermissions;
   },
