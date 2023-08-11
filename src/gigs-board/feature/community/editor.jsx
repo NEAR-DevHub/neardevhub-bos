@@ -333,6 +333,9 @@ const CommunityEditor = ({ handle: communityHandle, link }) => {
       }
     );
 
+  // TODO: if isNew then sectionSubmit, otherwise DevHub.edit_community_wiki1
+  const onWiki1Submit = (value) => sectionSubmit({ wiki1: value });
+
   const onDelete = () =>
     Near.call(nearDevGovGigsContractAccountId, "delete_community", {
       handle: communityHandle,
@@ -504,7 +507,7 @@ const CommunityEditor = ({ handle: communityHandle, link }) => {
             isEditingAllowed:
               isCommunityNew || Viewer.can.editCommunity(community.data),
 
-            onChangesSubmit: (value) => sectionSubmit({ wiki1: value }),
+            onChangesSubmit: onWiki1Submit,
             submitLabel: "Accept",
             data: state.communityData?.wiki1,
 
