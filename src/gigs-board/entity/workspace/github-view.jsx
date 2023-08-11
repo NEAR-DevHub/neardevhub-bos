@@ -223,22 +223,6 @@ const GithubKanbanTeamBoard = ({
 
       <div className="d-flex justify-content-end gap-3">
         {pageURL ? (
-          <a
-            className="card-link d-inline-flex me-auto"
-            href={pageURL}
-            rel="noreferrer"
-            role="button"
-            target="_blank"
-            title="Link to this board"
-          >
-            <span className="hstack gap-2">
-              <i className="bi bi-share" />
-              <span>Open in new tab</span>
-            </span>
-          </a>
-        ) : null}
-
-        {pageURL ? (
           <button
             className="btn shadow btn-sm btn-outline-secondary d-inline-flex gap-2"
             onClick={() => clipboard.writeText(pageURL)}
