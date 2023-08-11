@@ -142,17 +142,9 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-if (!props.label) {
-  return (
-    <div class="alert alert-danger" role="alert">
-      Error: handle is required
-    </div>
-  );
-}
-
 const CommunitySummary = (community) => {
   const socialLinks = [
-    ...(community.website_url
+    ...((community.website_url?.length ?? 0) > 0
       ? [
           {
             href: community.website_url,
@@ -161,7 +153,8 @@ const CommunitySummary = (community) => {
           },
         ]
       : []),
-    ...(community.github_handle
+
+    ...((community.github_handle?.length ?? 0) > 0
       ? [
           {
             href: `https://github.com/${github_handle}`,
@@ -170,16 +163,18 @@ const CommunitySummary = (community) => {
           },
         ]
       : []),
-    ...(community.twitter_handle
+
+    ...((community.twitter_handle?.length ?? 0) > 0
       ? [
           {
-            href: `https://twitter.com/NearSocial_`,
+            href: `https://twitter.com/${community.twitter_handle}`,
             iconClass: "bi bi-twitter",
             name: community.twitter_handle,
           },
         ]
       : []),
-    ...(community.telegram_handle
+
+    ...((community.telegram_handle?.length ?? 0) > 0
       ? [
           {
             href: `https://t.me/${community.telegram_handle}`,
@@ -189,12 +184,15 @@ const CommunitySummary = (community) => {
         ]
       : []),
   ];
+
   return (
     <div style={{ top: "0", left: "0" }}>
       <Markdown text={community.bio_markdown} />
+
       <small class="text-muted mb-3">
         {widget("components.atom.tag", { label: community.tag })}
       </small>
+
       <div className="mt-3">
         {socialLinks.map((link, index) => (
           <a
@@ -234,17 +232,21 @@ const UserList = (users) => {
   );
 };
 
-const Sidebar = ({ label }) => {
-  const community = DevHub.get_community({ handle: label });
-  const root_members = DevHub.get_root_members() ?? null;
+const Sidebar = ({ handle }) => {
+  const community = DevHub.get_community({ handle }) ?? null,
+    root_members = DevHub.get_root_members() ?? null;
 
-  if (root_members === null || community == null) {
-    return <div>Loading...</div>;
+  if ((handle ?? null) === null) {
+    return (
+      <div class="alert alert-danger" role="alert">
+        Error: community handle is required in sidebar
+      </div>
+    );
   }
 
-  const moderators = root_members["team:moderators"].children;
-
-  return (
+  return community === null ? (
+    <div>Loading...</div>
+  ) : (
     <div class="col-md-12 d-flex flex-column align-items-end">
       {widget("components.molecule.tile", {
         heading: community.tag[0].toUpperCase() + community.tag.slice(1),
@@ -253,11 +255,13 @@ const Sidebar = ({ label }) => {
         noBorder: true,
         borderRadius: "rounded",
       })}
+
       <hr style={{ width: "100%", borderTop: "1px solid #00000033" }} />
+
       {widget("components.molecule.tile", {
         heading: "Group Moderators",
         minHeight: 0,
-        children: UserList(moderators),
+        children: UserList(root_members?.["team:moderators"]?.children ?? []),
         noBorder: true,
         borderRadius: "rounded",
       })}
