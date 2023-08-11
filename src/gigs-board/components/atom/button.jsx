@@ -1,5 +1,5 @@
 const styles = `
-padding: 0.5rem 0.75rem !important;
+padding: 0.5rem 1.2rem !important;
 min-height: 42;
 line-height: 1.5;
 text-decoration: none !important;
@@ -39,6 +39,10 @@ text-decoration: none !important;
 	--bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 	--bs-btn-disabled-color: #ffffff;
 	--bs-btn-disabled-bg: #0551604a;
+}
+
+&[class*="btn-outline-"] {
+	border-width: 2px;
 }
 
 &.btn-outline-primary {
