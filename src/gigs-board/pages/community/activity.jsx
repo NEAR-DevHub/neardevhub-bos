@@ -150,12 +150,9 @@ const CommunityActivityPage = ({ handle }) => {
             </div>
           </div>
           <div class="col-md-3 container-fluid">
-            <Widget
-              src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.sidebar`}
-              props={{
-                label: communityData.tag,
-              }}
-            />
+            {widget("entity.community.sidebar", {
+              handle: communityData.handle,
+            })}
           </div>
         </div>
       ) : (
