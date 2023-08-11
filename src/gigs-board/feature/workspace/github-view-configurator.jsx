@@ -474,175 +474,176 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
       }),
     });
 
-  const formElement = !errors.noBoards ? (
-    <>
-      <div className="d-flex gap-3 flex-column flex-lg-row">
-        {widget(
-          "components.molecule.text-input",
-          {
-            className: "flex-shrink-0",
-            key: `${form.values.id}-title`,
-            label: "Title",
-            onChange: form.update({ path: ["title"] }),
-            placeholder: "NEAR Protocol NEPs",
-            value: form.values.title,
-          },
-          `${form.values.id}-title`
-        )}
-
-        {widget("components.molecule.text-input", {
-          className: "w-100",
-          key: `${form.values.id}-repoURL`,
-          label: "GitHub repository URL",
-          onChange: form.update({ path: ["repoURL"] }),
-          placeholder: "https://github.com/example-org/example-repo",
-          value: form.values.repoURL,
-        })}
-      </div>
-
-      <div className="d-flex gap-3 flex-column flex-lg-row">
-        <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
-          <span
-            className="d-inline-flex gap-2"
-            id={`${form.values.id}-dataTypesIncluded`}
-          >
-            <i className="bi bi-ticket-fill" />
-            <span>Ticket type</span>
-          </span>
-
-          {Object.entries(form.values.dataTypesIncluded ?? {}).map(
-            ([typeName, enabled]) =>
-              widget(
-                "components.atom.toggle",
-
-                {
-                  active: enabled,
-                  className: "w-100",
-                  key: typeName,
-                  label: typeName,
-
-                  onSwitch: form.update({
-                    path: ["dataTypesIncluded", typeName],
-                  }),
-                },
-
-                typeName
-              )
+  const formElement =
+    Object.keys(form.values).length > 0 ? (
+      <>
+        <div className="d-flex gap-3 flex-column flex-lg-row">
+          {widget(
+            "components.molecule.text-input",
+            {
+              className: "flex-shrink-0",
+              key: `${form.values.id}-title`,
+              label: "Title",
+              onChange: form.update({ path: ["title"] }),
+              placeholder: "NEAR Protocol NEPs",
+              value: form.values.title,
+            },
+            `${form.values.id}-title`
           )}
-        </CompactContainer>
 
-        <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
-          <span
-            className="d-inline-flex gap-2"
-            id={`${form.values.id}-dataTypesIncluded`}
-          >
-            <i class="bi bi-cone-striped" />
-            <span>Ticket state</span>
-          </span>
-
-          {widget("components.molecule.button-switch", {
-            currentValue: form.values.ticketState,
-            key: "ticketState",
-            onChange: form.update({ path: ["ticketState"] }),
-
-            options: [
-              { label: "All", value: "all" },
-              { label: "Open", value: "open" },
-              { label: "Closed", value: "closed" },
-            ],
-
-            title: "Editing mode selection",
+          {widget("components.molecule.text-input", {
+            className: "w-100",
+            key: `${form.values.id}-repoURL`,
+            label: "GitHub repository URL",
+            onChange: form.update({ path: ["repoURL"] }),
+            placeholder: "https://github.com/example-org/example-repo",
+            value: form.values.repoURL,
           })}
-        </CompactContainer>
+        </div>
 
-        {widget("components.molecule.text-input", {
-          className: "w-100",
-          inputProps: { className: "h-75" },
-          key: `${form.values.id}-description`,
-          label: "Description",
-          multiline: true,
-          onChange: form.update({ path: ["description"] }),
-          placeholder: "Latest NEAR Enhancement Proposals by status.",
-          value: form.values.description,
-        })}
-      </div>
-
-      <div className="d-flex align-items-center justify-content-between">
-        <span className="d-inline-flex gap-2 m-0">
-          <i className="bi bi-list-task" />
-          <span>Columns ( max. {EditorSettings.maxColumnsNumber} )</span>
-        </span>
-      </div>
-
-      <div className="d-flex flex-column align-items-center gap-3">
-        {Object.values(form.values.columns ?? {}).map(
-          ({ id, description, labelSearchTerms, title }) => (
-            <div
-              className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
-              key={id}
+        <div className="d-flex gap-3 flex-column flex-lg-row">
+          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
+            <span
+              className="d-inline-flex gap-2"
+              id={`${form.values.id}-dataTypesIncluded`}
             >
-              <div className="d-flex flex-column gap-1 w-100">
-                {widget("components.molecule.text-input", {
-                  className: "flex-grow-1",
-                  key: `${form.values.id}-column-${id}-title`,
-                  label: "Title",
-                  onChange: form.update({ path: ["columns", id, "title"] }),
-                  placeholder: "👀 Review",
-                  value: title,
-                })}
+              <i className="bi bi-ticket-fill" />
+              <span>Ticket type</span>
+            </span>
 
-                {widget("components.molecule.text-input", {
-                  className: "flex-grow-1",
-                  key: `${form.values.id}-column-${id}-description`,
-                  label: "Description",
+            {Object.entries(form.values.dataTypesIncluded ?? {}).map(
+              ([typeName, enabled]) =>
+                widget(
+                  "components.atom.toggle",
 
-                  onChange: form.update({
-                    path: ["columns", id, "description"],
-                  }),
+                  {
+                    active: enabled,
+                    className: "w-100",
+                    key: typeName,
+                    label: typeName,
 
-                  placeholder:
-                    "NEPs that need a review by Subject Matter Experts.",
+                    onSwitch: form.update({
+                      path: ["dataTypesIncluded", typeName],
+                    }),
+                  },
 
-                  value: description,
-                })}
+                  typeName
+                )
+            )}
+          </CompactContainer>
 
-                {widget("components.molecule.text-input", {
-                  format: "comma-separated",
-                  key: `${form.values.id}-column-${title}-labelSearchTerms`,
+          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
+            <span
+              className="d-inline-flex gap-2"
+              id={`${form.values.id}-dataTypesIncluded`}
+            >
+              <i class="bi bi-cone-striped" />
+              <span>Ticket state</span>
+            </span>
 
-                  label: `Search terms for all the labels
+            {widget("components.molecule.button-switch", {
+              currentValue: form.values.ticketState,
+              key: "ticketState",
+              onChange: form.update({ path: ["ticketState"] }),
+
+              options: [
+                { label: "All", value: "all" },
+                { label: "Open", value: "open" },
+                { label: "Closed", value: "closed" },
+              ],
+
+              title: "Editing mode selection",
+            })}
+          </CompactContainer>
+
+          {widget("components.molecule.text-input", {
+            className: "w-100",
+            inputProps: { className: "h-75" },
+            key: `${form.values.id}-description`,
+            label: "Description",
+            multiline: true,
+            onChange: form.update({ path: ["description"] }),
+            placeholder: "Latest NEAR Enhancement Proposals by status.",
+            value: form.values.description,
+          })}
+        </div>
+
+        <div className="d-flex align-items-center justify-content-between">
+          <span className="d-inline-flex gap-2 m-0">
+            <i className="bi bi-list-task" />
+            <span>Columns ( max. {EditorSettings.maxColumnsNumber} )</span>
+          </span>
+        </div>
+
+        <div className="d-flex flex-column align-items-center gap-3">
+          {Object.values(form.values.columns ?? {}).map(
+            ({ id, description, labelSearchTerms, title }) => (
+              <div
+                className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
+                key={id}
+              >
+                <div className="d-flex flex-column gap-1 w-100">
+                  {widget("components.molecule.text-input", {
+                    className: "flex-grow-1",
+                    key: `${form.values.id}-column-${id}-title`,
+                    label: "Title",
+                    onChange: form.update({ path: ["columns", id, "title"] }),
+                    placeholder: "👀 Review",
+                    value: title,
+                  })}
+
+                  {widget("components.molecule.text-input", {
+                    className: "flex-grow-1",
+                    key: `${form.values.id}-column-${id}-description`,
+                    label: "Description",
+
+                    onChange: form.update({
+                      path: ["columns", id, "description"],
+                    }),
+
+                    placeholder:
+                      "NEPs that need a review by Subject Matter Experts.",
+
+                    value: description,
+                  })}
+
+                  {widget("components.molecule.text-input", {
+                    format: "comma-separated",
+                    key: `${form.values.id}-column-${title}-labelSearchTerms`,
+
+                    label: `Search terms for all the labels
 											MUST be presented in included tickets`,
 
-                  onChange: form.update({
-                    path: ["columns", id, "labelSearchTerms"],
-                  }),
+                    onChange: form.update({
+                      path: ["columns", id, "labelSearchTerms"],
+                    }),
 
-                  placeholder: "WG-, draft, review, proposal, ...",
-                  value: labelSearchTerms.join(", "),
-                })}
-              </div>
-
-              <div
-                className="d-flex flex-column gap-3 border-start p-3 pe-0"
-                style={{ marginTop: -16, marginBottom: -16 }}
-              >
-                <button
-                  className="btn btn-outline-danger shadow"
-                  onClick={form.update({
-                    path: ["columns"],
-                    via: columnsDeleteById(id),
+                    placeholder: "WG-, draft, review, proposal, ...",
+                    value: labelSearchTerms.join(", "),
                   })}
-                  title="Delete column"
+                </div>
+
+                <div
+                  className="d-flex flex-column gap-3 border-start p-3 pe-0"
+                  style={{ marginTop: -16, marginBottom: -16 }}
                 >
-                  <i className="bi bi-trash-fill" />
-                </button>
+                  <button
+                    className="btn btn-outline-danger shadow"
+                    onClick={form.update({
+                      path: ["columns"],
+                      via: columnsDeleteById(id),
+                    })}
+                    title="Delete column"
+                  >
+                    <i className="bi bi-trash-fill" />
+                  </button>
+                </div>
               </div>
-            </div>
-          )
-        )}
-      </div>
-    </>
-  ) : null;
+            )
+          )}
+        </div>
+      </>
+    ) : null;
 
   return community.data === null ? (
     <div>
