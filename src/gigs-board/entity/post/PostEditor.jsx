@@ -96,7 +96,11 @@ initState({
   name: props.name ?? "",
   description: props.description ?? "",
   amount: props.amount ?? "0",
-  token: props.token ?? "Near",
+  token: props.token ?? {
+    NEP141: {
+      address: "usdt.tether-token.near",
+    },
+  },
   supervisor: props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
   warning: "",
@@ -387,12 +391,24 @@ const amountDiv = fields.includes("amount") ? (
 
 const tokenDiv = fields.includes("sponsorship_token") ? (
   <div className="col-lg-6  mb-2">
-    Tokens:
-    <input
-      type="text"
-      value={state.token}
+    Currency
+    <select
       onChange={(event) => State.update({ token: event.target.value })}
-    />
+      class="form-select"
+      aria-label="Default select"
+    >
+      <option
+        selected
+        value={{
+          NEP141: {
+            address: "usdt.tether-token.near",
+          },
+        }}
+      >
+        USDT
+      </option>
+      <option value="NEAR">NEAR</option>
+    </select>
   </div>
 ) : null;
 
