@@ -141,20 +141,20 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const communityData = DevHub.get_community({ handle: props.handle });
+const communityData = DevHub.get_community({ handle: props.handle }) ?? null;
 const root_members = DevHub.get_root_members() ?? null;
 
 if (communityData === null || root_members === null) {
   return <div>Loading...</div>;
 }
 
-const moderators = root_members["team:moderators"].children;
+const moderators = (root_members ?? {})?.["team:moderators"]?.children;
 const admins = communityData.admins;
 
 const UserList = (name, users) => {
   return (
     <div>
-      {users.map((user, i) => (
+      {(users ?? []).map((user, i) => (
         <div className={`row ${i < users.length - 1 ? "mb-3" : ""}`}>
           <div class="col-3">
             <b>{name + " #" + (i + 1)}</b>
