@@ -57,36 +57,22 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  has_moderator: ({ account_id }) =>
+    Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
+
+  edit_community: ({ handle, community }) =>
+    Near.call(devHubAccountId, "edit_community", { handle, community }),
+
+  delete_community: ({ handle }) =>
+    Near.call(devHubAccountId, "delete_community", { handle }),
+
   edit_community_github: ({ handle, github }) =>
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
-  create_workspace: ({ author_community_handle, metadata }) =>
-    Near.call(devHubAccountId, "create_workspace", {
-      author_community_handle,
-      metadata,
-    }) ?? null,
-
-  delete_workspace: ({ id }) =>
-    Near.call(devHubAccountId, "delete_workspace", { id }) ?? null,
-
-  update_workspace_metadata: ({ metadata }) =>
-    Near.call(devHubAccountId, "update_workspace_metadata", { metadata }) ??
+  edit_community_board: ({ handle, board }) =>
+    Near.call(devHubAccountId, "edit_community_board", { handle, board }) ??
     null,
-
-  get_workspace_views_metadata: ({ workspace_id }) =>
-    Near.view(devHubAccountId, "get_workspace_views_metadata", {
-      workspace_id,
-    }) ?? null,
-
-  create_workspace_view: ({ view }) =>
-    Near.call(devHubAccountId, "create_workspace_view", { view }) ?? null,
-
-  update_workspace_view: ({ view }) =>
-    Near.call(devHubAccountId, "update_workspace_view", { view }) ?? null,
-
-  delete_workspace_view: ({ id }) =>
-    Near.call(devHubAccountId, "delete_workspace_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,

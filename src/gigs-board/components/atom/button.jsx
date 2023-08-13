@@ -122,7 +122,14 @@ const rootElementByType = (type) =>
         ${styles}
       `;
 
-const Button = ({ adornment, classNames, label, type, ...restProps }) => {
+const Button = ({
+  adornment,
+  classNames,
+  isHidden,
+  label,
+  type,
+  ...restProps
+}) => {
   const ButtonRoot = rootElementByType(type);
 
   return (
@@ -131,6 +138,7 @@ const Button = ({ adornment, classNames, label, type, ...restProps }) => {
         "btn d-inline-flex align-items-center gap-2 rounded-pill",
         restProps.isCollapsible ? "collapsible" : "",
         classNames.root ?? "btn-primary",
+        isHidden ? "d-none" : "",
       ].join(" ")}
       style={{ width: "fit-content" }}
       {...restProps}

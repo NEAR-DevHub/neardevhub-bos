@@ -1,9 +1,5 @@
-const iconsByKind = {
-  "bootstrap-icon": ({ className, variant, ...props }) => (
-    <i className={`bi ${variant} ${className}`} {...props} />
-  ),
-
-  "floppy-drive": (props) => (
+const svgIconsByVariant = {
+  "floppy-drive": (elementProps) => (
     <svg
       fill="#ffffff"
       version="1.1"
@@ -11,7 +7,7 @@ const iconsByKind = {
       width="16px"
       height="16px"
       viewBox="0 0 353.073 353.073"
-      {...props}
+      {...elementProps}
     >
       <g>
         <path
@@ -32,7 +28,16 @@ const iconsByKind = {
   ),
 };
 
-const Icon = ({ kind, ...props }) =>
-  typeof iconsByKind[kind] !== undefined ? iconsByKind[kind](props) : null;
+const iconsByKind = {
+  "bootstrap-icon": ({ className, variant, ...otherProps }) => (
+    <i className={`bi ${variant} ${className}`} {...otherProps} />
+  ),
+
+  svg: ({ variant, ...elementProps }) =>
+    svgIconsByVariant[variant](elementProps),
+};
+
+const Icon = ({ kind, ...otherProps }) =>
+  typeof iconsByKind[kind] !== undefined ? iconsByKind[kind](otherProps) : null;
 
 return Icon(props);

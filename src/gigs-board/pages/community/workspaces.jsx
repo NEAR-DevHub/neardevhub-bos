@@ -108,36 +108,22 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  has_moderator: ({ account_id }) =>
+    Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
+
+  edit_community: ({ handle, community }) =>
+    Near.call(devHubAccountId, "edit_community", { handle, community }),
+
+  delete_community: ({ handle }) =>
+    Near.call(devHubAccountId, "delete_community", { handle }),
+
   edit_community_github: ({ handle, github }) =>
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
-  create_workspace: ({ author_community_handle, metadata }) =>
-    Near.call(devHubAccountId, "create_workspace", {
-      author_community_handle,
-      metadata,
-    }) ?? null,
-
-  delete_workspace: ({ id }) =>
-    Near.call(devHubAccountId, "delete_workspace", { id }) ?? null,
-
-  update_workspace_metadata: ({ metadata }) =>
-    Near.call(devHubAccountId, "update_workspace_metadata", { metadata }) ??
+  edit_community_board: ({ handle, board }) =>
+    Near.call(devHubAccountId, "edit_community_board", { handle, board }) ??
     null,
-
-  get_workspace_views_metadata: ({ workspace_id }) =>
-    Near.view(devHubAccountId, "get_workspace_views_metadata", {
-      workspace_id,
-    }) ?? null,
-
-  create_workspace_view: ({ view }) =>
-    Near.call(devHubAccountId, "create_workspace_view", { view }) ?? null,
-
-  update_workspace_view: ({ view }) =>
-    Near.call(devHubAccountId, "update_workspace_view", { view }) ?? null,
-
-  delete_workspace_view: ({ id }) =>
-    Near.call(devHubAccountId, "delete_workspace_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -192,10 +178,6 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 /* INCLUDE: "entity/viewer" */
-const access_control_info = DevHub.useQuery({
-  name: "access_control_info",
-});
-
 const Viewer = {
   can: {
     editCommunity: (communityData) =>
@@ -204,26 +186,18 @@ const Viewer = {
         Viewer.role.isDevHubModerator),
   },
 
-  workspacePermissions: (workspaceId) => {
-    const workspace_id = parseInt(workspaceId);
-
-    const defaultPermissions = { can_configure: false };
-
-    return !isNaN(workspace_id)
-      ? Near.view(devHubAccountId, "get_account_workspace_permissions", {
-          account_id: context.accountId,
-          workspace_id: workspace_id,
-        }) ?? defaultPermissions
-      : defaultPermissions;
-  },
+  communityPermissions: ({ handle }) =>
+    DevHub.useQuery("account_community_permissions", {
+      account_id: context.account_id,
+      community_handle: handle,
+    }).data ?? {
+      can_configure: false,
+      can_delete: false,
+    },
 
   role: {
     isDevHubModerator:
-      access_control_info.data === null || access_control_info.isLoading
-        ? false
-        : access_control_info.data.members_list[
-            "team:moderators"
-          ]?.children?.includes?.(context.accountId) ?? false,
+      DevHub.has_moderator({ account_id: context.accountId }) ?? false,
   },
 };
 /* END_INCLUDE: "entity/viewer" */
@@ -288,7 +262,7 @@ const CommunityWorkspacesPage = ({ handle }) => {
         <div className="d-flex flex-column gap-4">
           {!isToolbarHidden ? (
             <div className="d-flex justify-content-end gap-3">
-              {Viewer.can.editCommunity(community.data)
+              {Viewer.communityPermissions({ handle }).can_configure
                 ? widget("components.atom.button", {
                     classNames: { adornment: "bi bi-tools" },
                     label: "New workspace",
@@ -301,11 +275,12 @@ const CommunityWorkspacesPage = ({ handle }) => {
           ) : null}
 
           {state.isNewWorkspaceFormDisplayed &&
-            widget("components.organism.editor", {
+            widget("components.organism.configurator", {
               fullWidth: true,
               heading: "New workspace",
-              isEditorActive: true,
-              isEditingAllowed: Viewer.can.editCommunity(community.data),
+              isActive: true,
+
+              isUnlocked: Viewer.communityPermissions({ handle }).can_configure,
 
               onCancel: () =>
                 State.update({ isNewWorkspaceFormDisplayed: false }),

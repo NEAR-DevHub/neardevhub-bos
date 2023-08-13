@@ -152,37 +152,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -292,7 +292,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
   </>
 );
 
-const Editor = ({
+const Configurator = ({
   actionsAdditional,
   cancelLabel,
   classNames,
@@ -301,9 +301,9 @@ const Editor = ({
   formatter: toFormatted,
   fullWidth,
   heading,
-  isEditorActive,
-  isEditingAllowed,
-  noEditorFrame,
+  isActive,
+  isUnlocked,
+  noFrame,
   onCancel,
   onChangesSubmit,
   schema,
@@ -316,7 +316,7 @@ const Editor = ({
       : defaultFieldsRender;
 
   State.init({
-    isEditorActive: isEditorActive ?? false,
+    isActive: isActive ?? false,
   });
 
   const initialValues = Struct.typeMatch(schema)
@@ -325,14 +325,14 @@ const Editor = ({
 
   const form = useForm({ initialValues, stateKey: "form" });
 
-  const editorToggle = (forcedState) =>
+  const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
+      isActive: forcedState ?? !lastKnownState.isActive,
     }));
 
   const onCancelClick = () => {
-    editorToggle(false);
+    formToggle(false);
     form.reset();
     if (typeof onChangesSubmit === "function") onChangesSubmit(initialValues);
     if (typeof onCancel === "function") onCancel();
@@ -347,17 +347,17 @@ const Editor = ({
       );
     }
 
-    editorToggle(false);
+    formToggle(false);
   };
 
   return widget("components.molecule.tile", {
     className: classNames.root,
     fullWidth,
     heading,
-    noFrame: noEditorFrame,
+    noFrame,
 
     headerSlotRight:
-      isEditingAllowed && !state.isEditorActive
+      isUnlocked && !state.isActive
         ? widget("components.atom.button", {
             classNames: {
               root: "btn-sm btn-secondary",
@@ -365,23 +365,21 @@ const Editor = ({
             },
 
             label: "Edit",
-            onClick: () => editorToggle(true),
+            onClick: () => formToggle(true),
           })
         : null,
 
     children: (
       <div className="flex-grow-1 d-flex flex-column gap-3">
-        <div
-          className={`d-flex flex-column gap-${state.isEditorActive ? 1 : 4}`}
-        >
+        <div className={`d-flex flex-column gap-${state.isActive ? 1 : 4}`}>
           {fieldsRender({
             form,
-            isEditable: isEditingAllowed && state.isEditorActive,
+            isEditable: isUnlocked && state.isActive,
             schema,
           })}
         </div>
 
-        {!noEditorFrame && isEditingAllowed && state.isEditorActive ? (
+        {!noFrame && isUnlocked && state.isActive ? (
           <div className="d-flex align-items-center justify-content-end gap-3 mt-auto">
             {actionsAdditional ? (
               <div className="me-auto">{actionsAdditional}</div>
@@ -415,4 +413,4 @@ const Editor = ({
   });
 };
 
-return Editor(props);
+return Configurator(props);

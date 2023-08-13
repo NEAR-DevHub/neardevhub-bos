@@ -101,37 +101,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [formStateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [formStateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -253,36 +253,22 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  has_moderator: ({ account_id }) =>
+    Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
+
+  edit_community: ({ handle, community }) =>
+    Near.call(devHubAccountId, "edit_community", { handle, community }),
+
+  delete_community: ({ handle }) =>
+    Near.call(devHubAccountId, "delete_community", { handle }),
+
   edit_community_github: ({ handle, github }) =>
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
-  create_workspace: ({ author_community_handle, metadata }) =>
-    Near.call(devHubAccountId, "create_workspace", {
-      author_community_handle,
-      metadata,
-    }) ?? null,
-
-  delete_workspace: ({ id }) =>
-    Near.call(devHubAccountId, "delete_workspace", { id }) ?? null,
-
-  update_workspace_metadata: ({ metadata }) =>
-    Near.call(devHubAccountId, "update_workspace_metadata", { metadata }) ??
+  edit_community_board: ({ handle, board }) =>
+    Near.call(devHubAccountId, "edit_community_board", { handle, board }) ??
     null,
-
-  get_workspace_views_metadata: ({ workspace_id }) =>
-    Near.view(devHubAccountId, "get_workspace_views_metadata", {
-      workspace_id,
-    }) ?? null,
-
-  create_workspace_view: ({ view }) =>
-    Near.call(devHubAccountId, "create_workspace_view", { view }) ?? null,
-
-  update_workspace_view: ({ view }) =>
-    Near.call(devHubAccountId, "update_workspace_view", { view }) ?? null,
-
-  delete_workspace_view: ({ id }) =>
-    Near.call(devHubAccountId, "delete_workspace_view", { id }) ?? null,
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -337,10 +323,6 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 /* INCLUDE: "entity/viewer" */
-const access_control_info = DevHub.useQuery({
-  name: "access_control_info",
-});
-
 const Viewer = {
   can: {
     editCommunity: (communityData) =>
@@ -349,26 +331,18 @@ const Viewer = {
         Viewer.role.isDevHubModerator),
   },
 
-  workspacePermissions: (workspaceId) => {
-    const workspace_id = parseInt(workspaceId);
-
-    const defaultPermissions = { can_configure: false };
-
-    return !isNaN(workspace_id)
-      ? Near.view(devHubAccountId, "get_account_workspace_permissions", {
-          account_id: context.accountId,
-          workspace_id: workspace_id,
-        }) ?? defaultPermissions
-      : defaultPermissions;
-  },
+  communityPermissions: ({ handle }) =>
+    DevHub.useQuery("account_community_permissions", {
+      account_id: context.account_id,
+      community_handle: handle,
+    }).data ?? {
+      can_configure: false,
+      can_delete: false,
+    },
 
   role: {
     isDevHubModerator:
-      access_control_info.data === null || access_control_info.isLoading
-        ? false
-        : access_control_info.data.members_list[
-            "team:moderators"
-          ]?.children?.includes?.(context.accountId) ?? false,
+      DevHub.has_moderator({ account_id: context.accountId }) ?? false,
   },
 };
 /* END_INCLUDE: "entity/viewer" */
@@ -396,7 +370,7 @@ const BoardConfigDefaults = {
 const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
   State.init({
     editingMode: "form",
-    isEditorActive: false,
+    isActive: false,
   });
 
   const community = DevHub.useQuery({
@@ -423,10 +397,10 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
     uninitialized: errors.noBoards,
   });
 
-  const editorToggle = (forcedState) =>
+  const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
+      isActive: forcedState ?? !lastKnownState.isActive,
     }));
 
   const onEditingModeChange = ({ target: { value } }) =>
@@ -439,7 +413,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       board: { hasUnsubmittedChanges: false, values: BoardConfigDefaults },
-      isEditorActive: true,
+      isActive: true,
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
@@ -455,12 +429,10 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownValue }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+    );
 
   const onSubmit = () =>
     DevHub.edit_community_github({
@@ -653,7 +625,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
     </div>
   ) : (
     <div className="d-flex flex-column gap-4">
-      {state.isEditorActive && Object.keys(form.values).length > 0 ? (
+      {state.isActive && Object.keys(form.values).length > 0 ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
@@ -707,7 +679,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
 
             <button
               className="btn btn-outline-danger border-0 d-inline-flex gap-2 align-items-center"
-              onClick={() => editorToggle(false)}
+              onClick={() => formToggle(false)}
               style={{ width: "fit-content" }}
             >
               <span>Cancel</span>
@@ -729,8 +701,8 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
       {Object.keys(form.values).length > 0 ? (
         widget("entity.workspace.github-view", {
           ...form.values,
-          editorTrigger: () => editorToggle(true),
-          isEditable: Viewer.can.editCommunity(community.data),
+          editorTrigger: () => formToggle(true),
+          isEditable: Viewer.communityPermissions({ handle }).can_configure,
           pageURL,
         })
       ) : (
@@ -742,7 +714,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
             This community doesn't have GitHub integrations
           </h5>
 
-          {Viewer.can.editCommunity(community.data) ? (
+          {Viewer.communityPermissions({ handle }).can_configure ? (
             <button
               className="btn shadow btn-primary d-inline-flex gap-2"
               onClick={boardCreate}

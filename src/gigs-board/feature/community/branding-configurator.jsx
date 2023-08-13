@@ -208,7 +208,7 @@ const Logo = styled.div`
 const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 
 const CommunityBrandingEditor = ({
-  isEditingAllowed,
+  isUnlocked,
   link,
   onChangesSubmit,
   values,
@@ -256,9 +256,7 @@ const CommunityBrandingEditor = ({
           )})`,
         }}
       >
-        {isEditingAllowed ? (
-          <IpfsImageUpload image={state.input.banner} />
-        ) : null}
+        {isUnlocked ? <IpfsImageUpload image={state.input.banner} /> : null}
       </Banner>
 
       <Logo
@@ -277,7 +275,7 @@ const CommunityBrandingEditor = ({
           )})`,
         }}
       >
-        {isEditingAllowed ? <IpfsImageUpload image={state.input.logo} /> : null}
+        {isUnlocked ? <IpfsImageUpload image={state.input.logo} /> : null}
       </Logo>
 
       <div

@@ -52,12 +52,13 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityLayout = ({ children, handle, path, title }) =>
+const CommunityLayout = ({ children, handle, noHeader, path, title }) =>
   widget("components.template.app-layout", {
     path,
 
     banner:
       typeof handle === "string" ? (
+        !noHeader &&
         widget("entity.community.header", { activeTabTitle: title, handle })
       ) : (
         <div class="alert alert-danger" role="alert">

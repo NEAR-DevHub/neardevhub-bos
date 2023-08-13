@@ -52,14 +52,17 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityEditInfoPage = ({ handle }) =>
-  widget("components.template.app-layout", {
+const CommunityConfigurePage = ({ handle }) =>
+  widget("entity.community.layout", {
     path: [{ label: "Communities", pageId: "communities" }],
 
-    children: widget("feature.community.editor", {
+    children: widget("feature.community.configurator", {
       handle,
       link: href("community.activity", { handle }),
     }),
+
+    handle,
+    noHeader: true,
   });
 
-return CommunityEditInfoPage(props);
+return CommunityConfigurePage(props);
