@@ -80,8 +80,8 @@ const DevHub = {
 
   get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
-  get_all_communities: () =>
-    Near.view(devHubAccountId, "get_all_communities") ?? null,
+  get_all_communities_metadata: () =>
+    Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
@@ -187,7 +187,7 @@ const banner = (
       </div>
 
       <div className="d-flex gap-4 justify-content-between">
-        {(DevHub.get_all_communities() ?? [])
+        {(DevHub.get_all_communities_metadata() ?? [])
           .filter(({ handle }) =>
             [
               "zero-knowledge",

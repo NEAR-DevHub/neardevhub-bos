@@ -1,11 +1,4 @@
 const Viewer = {
-  can: {
-    editCommunity: (communityData) =>
-      Struct.typeMatch(communityData) &&
-      (communityData.admins.includes(context.accountId) ||
-        Viewer.role.isDevHubModerator),
-  },
-
   communityPermissions: ({ handle }) =>
     DevHub.useQuery("account_community_permissions", {
       account_id: context.account_id,

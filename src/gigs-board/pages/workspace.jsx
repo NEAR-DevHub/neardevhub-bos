@@ -164,8 +164,8 @@ const DevHub = {
 
   get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
-  get_all_communities: () =>
-    Near.view(devHubAccountId, "get_all_communities") ?? null,
+  get_all_communities_metadata: () =>
+    Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
@@ -213,13 +213,6 @@ const DevHub = {
 /* END_INCLUDE: "core/adapter/dev-hub" */
 /* INCLUDE: "entity/viewer" */
 const Viewer = {
-  can: {
-    editCommunity: (communityData) =>
-      Struct.typeMatch(communityData) &&
-      (communityData.admins.includes(context.accountId) ||
-        Viewer.role.isDevHubModerator),
-  },
-
   communityPermissions: ({ handle }) =>
     DevHub.useQuery("account_community_permissions", {
       account_id: context.account_id,

@@ -80,8 +80,8 @@ const DevHub = {
 
   get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
-  get_all_communities: () =>
-    Near.view(devHubAccountId, "get_all_communities") ?? null,
+  get_all_communities_metadata: () =>
+    Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
@@ -161,8 +161,13 @@ const CommunitiesPage = () =>
 
     children: (
       <div className="d-flex flex-wrap gap-4 p-4">
-        {(DevHub.get_all_communities() ?? []).map((community) =>
-          widget("entity.community.card", community, community.handle)
+        {(DevHub.get_all_communities_metadata() ?? []).map(
+          (communityMetadata) =>
+            widget(
+              "entity.community.card",
+              communityMetadata,
+              communityMetadata.handle
+            )
         )}
       </div>
     ),
