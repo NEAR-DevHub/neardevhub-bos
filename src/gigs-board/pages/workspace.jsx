@@ -186,7 +186,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -230,12 +230,8 @@ const Viewer = {
 /* END_INCLUDE: "entity/viewer" */
 
 const WorkspacePage = ({ dir, id, view: selectedViewId }) => {
-  const permissions = Viewer.workspacePermissions(id);
-
-  const workspace = DevHub.useQuery({
-    name: "workspace",
-    params: { id: parseInt(id) },
-  });
+  const permissions = Viewer.workspacePermissions(id),
+    workspace = DevHub.useQuery("workspace", { id: parseInt(id) });
 
   const viewsMetadata = DevHub.get_workspace_views_metadata({
     workspace_id: parseInt(id),

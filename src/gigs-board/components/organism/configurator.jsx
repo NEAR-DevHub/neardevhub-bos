@@ -308,8 +308,9 @@ const Configurator = ({
   onCancel,
   onSubmit,
   schema,
+  submitIcon,
   submitLabel,
-  ...restProps
+  ...otherProps
 }) => {
   const fieldsRender =
     typeof customFieldsRender === "function"
@@ -357,6 +358,7 @@ const Configurator = ({
     heading,
     isHidden,
     noFrame,
+    ...otherProps,
 
     headerSlotRight:
       isUnlocked && !state.isActive
@@ -406,8 +408,6 @@ const Configurator = ({
         ) : null}
       </div>
     ),
-
-    ...restProps,
   });
 };
 

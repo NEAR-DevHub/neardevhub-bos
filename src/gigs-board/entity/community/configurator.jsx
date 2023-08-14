@@ -153,7 +153,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -313,7 +313,7 @@ const CommunityConfigurator = ({ handle, link }) => {
     hasUnsavedChanges: false,
   });
 
-  const community = DevHub.useQuery({ name: "community", params: { handle } }),
+  const community = DevHub.useQuery("community", { handle }),
     permissions = Viewer.communityPermissions({ handle }),
     isSynced = Struct.isEqual(state.communityData, community.data);
 

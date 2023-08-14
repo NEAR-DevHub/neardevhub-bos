@@ -298,7 +298,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -367,10 +367,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
     isActive: false,
   });
 
-  const community = DevHub.useQuery({
-    name: "community",
-    params: { handle: communityHandle },
-  });
+  const community = DevHub.useQuery("community", { handle: communityHandle });
 
   const boards =
     ((community?.data?.github ?? null) === null

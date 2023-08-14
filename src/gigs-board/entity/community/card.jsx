@@ -88,6 +88,7 @@ const CommunityCard = ({
   isBannerEnabled,
   logo_url,
   name,
+  ...otherProps
 }) => {
   const renderFormat =
     format === "small" || format === "medium" ? format : "small";
@@ -96,12 +97,14 @@ const CommunityCard = ({
 
   const formatSmall = (
     <AttractableLink
+      {...otherProps}
       href={link}
       className="d-flex flex-shrink-0 rounded-4 border border-2 p-3 text-black text-decoration-none"
       style={{
-        background: isBannerEnabled
-          ? `center / cover no-repeat url(${banner_url})`
-          : "#ffffff",
+        background:
+          isBannerEnabled ?? false
+            ? `center / cover no-repeat url(${banner_url})`
+            : "#ffffff",
 
         width: 400,
         height: 110,

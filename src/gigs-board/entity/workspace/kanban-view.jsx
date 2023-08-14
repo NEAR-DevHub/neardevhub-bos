@@ -130,7 +130,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -207,10 +207,8 @@ const WorkspaceKanbanView = ({
     (config ?? null) !== null
       ? config
       : JSON.parse(
-          DevHub.useQuery({
-            name: "workspace_view_config",
-            params: { id: metadata.id },
-          }).data ?? "{}"
+          DevHub.useQuery("workspace_view_config", { id: metadata.id }).data ??
+            "{}"
         );
 
   const columns = configToColumns(configuration);

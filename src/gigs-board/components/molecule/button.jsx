@@ -219,15 +219,15 @@ const Button = ({
     <ButtonRoot
       className={[
         "btn d-inline-flex align-items-center gap-2 rounded-pill",
-        classNames.root ?? "btn-primary",
-        isHidden ? "d-none" : "",
+        classNames?.root ?? "btn-primary",
+        isHidden ?? false ? "d-none" : "",
       ].join(" ")}
       style={{ width: "fit-content" }}
       {...restProps}
     >
       {Struct.typeMatch(iconProps) && widget("components.atom.icon", iconProps)}
 
-      <span className={classNames.label} style={{ lineHeight: "inherit" }}>
+      <span className={classNames?.label} style={{ lineHeight: "inherit" }}>
         {label}
       </span>
     </ButtonRoot>

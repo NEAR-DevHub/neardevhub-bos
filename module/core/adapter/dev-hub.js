@@ -48,7 +48,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(

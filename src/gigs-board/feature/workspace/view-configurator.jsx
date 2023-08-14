@@ -298,7 +298,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -375,10 +375,7 @@ const WorkspaceViewConfigurator = ({
     isActive: isNewView,
   });
 
-  const config = DevHub.useQuery({
-    name: "workspace_view_config",
-    params: { id: metadata.id },
-  });
+  const config = DevHub.useQuery("workspace_view_config", { id: metadata.id });
 
   const form = useForm({
     initialValues: {

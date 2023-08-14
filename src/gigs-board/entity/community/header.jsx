@@ -169,7 +169,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -231,10 +231,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     copiedShareUrl: false,
   });
 
-  const community = DevHub.useQuery({
-    name: "community",
-    params: { handle },
-  });
+  const community = DevHub.useQuery("community", { handle });
 
   if (community.data === null && community.isLoading) {
     return <div>Loading...</div>;

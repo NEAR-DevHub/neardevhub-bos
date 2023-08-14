@@ -102,7 +102,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -221,7 +221,7 @@ const CommunityInputsSchema = {
 };
 
 const onCommunitySubmit = (inputs) =>
-  typeof name === "string" && typeof description === "string"
+  typeof inputs.name === "string" && typeof inputs.description === "string"
     ? DevHub.create_community({ inputs })
     : null;
 

@@ -102,7 +102,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -131,10 +131,10 @@ const DevHub = {
 const CommunitiesPage = () => {
   State.init({ isSpawnerHidden: true });
 
-  const spawnerToggle = () =>
+  const spawnerToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      isSpawnerHidden: !lastKnownState.isSpawnerHidden,
+      isSpawnerHidden: !(forcedState ?? lastKnownState.isSpawnerHidden),
     }));
 
   const communitiesMetadata = DevHub.useQuery("all_communities_metadata");
@@ -174,6 +174,7 @@ const CommunitiesPage = () => {
 
         {widget("entity.community.spawner", {
           isHidden: state.isSpawnerHidden,
+          onCancel: () => spawnerToggle(false),
         })}
 
         {(communitiesMetadata.data ?? []).map((communityMetadata) =>
@@ -187,5 +188,7 @@ const CommunitiesPage = () => {
     ),
   });
 };
+
+console.log("all good");
 
 return CommunitiesPage(props);
