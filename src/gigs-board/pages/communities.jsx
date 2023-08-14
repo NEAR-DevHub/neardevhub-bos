@@ -169,7 +169,8 @@ const CommunitiesPage = () => {
     children: (
       <div className="d-flex flex-wrap gap-4 p-4 w-100 h-100">
         {widget("components.atom.spinner", {
-          isHidden: !communitiesMetadata.isLoading,
+          isHidden:
+            communitiesMetadata.data === null && !communitiesMetadata.isLoading,
         })}
 
         {widget("entity.community.spawner", {

@@ -334,7 +334,7 @@ const Configurator = ({
     }));
 
   const onCancelClick = () => {
-    formToggle(false);
+    if (!isActive) formToggle(false);
     form.reset();
     if (typeof onSubmit === "function") onSubmit(initialValues);
     if (typeof onCancel === "function") onCancel();

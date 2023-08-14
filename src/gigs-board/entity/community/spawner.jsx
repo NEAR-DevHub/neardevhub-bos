@@ -210,9 +210,11 @@ const onCommunitySubmit = (inputs) =>
 
 const CommunitySpawner = ({ isHidden, ...otherProps }) => {
   return widget("components.organism.configurator", {
-    heading: "Basic information and settings",
+    heading: "Community information",
     data: CommunityInputsDefaults,
+    isActive: true,
     isHidden,
+    isUnlocked: true,
     onSubmit: onCommunitySubmit,
     schema: CommunityInputsSchema,
     submitIcon: { kind: "bootstrap-icon", variant: "bi-rocket-takeoff-fill" },
