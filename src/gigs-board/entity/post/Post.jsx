@@ -519,7 +519,7 @@ const editorsFooter = props.isPreview ? null : (
 const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
-const postLabels = post.snapshot.labels ? (
+const tags = post.snapshot.labels ? (
   <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
     {post.snapshot.labels.map((tag) => {
       return widget("components.atom.tag", { linkTo: "Feed", tag });
@@ -789,7 +789,7 @@ return (
           {descriptionArea}
         </>
       )}
-      {postLabels}
+      {tags}
       {buttonsFooter}
       {editorsFooter}
       {postsList}
