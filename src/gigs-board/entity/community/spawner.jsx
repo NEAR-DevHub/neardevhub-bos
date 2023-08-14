@@ -51,6 +51,57 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
+
+  isEqual: (input1, input2) =>
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
+      : false,
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+};
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -129,22 +180,13 @@ const DevHub = {
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
 const CommunityInputsDefaults = {
-  handle: null,
+  handle: "",
   name: "",
   tag: "",
   description: "",
-
-  bio_markdown:
-    "This is a sample text about your community. Edit this text on the community configuration page.",
-
-  logo_url:
-    "https://ipfs.near.social/ipfs/bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
-
-  banner_url:
-    "https://ipfs.near.social/ipfs/bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
 };
 
-const CommunityInputsSchema = {
+const CommunityInputsPartialSchema = {
   handle: {
     inputProps: {
       min: 2,
@@ -172,21 +214,6 @@ const CommunityInputsSchema = {
     order: 1,
   },
 
-  description: {
-    inputProps: {
-      min: 2,
-      max: 60,
-
-      placeholder:
-        "Describe your community in one short sentence that will appear in the communities discovery page.",
-
-      required: true,
-    },
-
-    label: "Description",
-    order: 2,
-  },
-
   tag: {
     inputProps: {
       min: 2,
@@ -201,26 +228,55 @@ const CommunityInputsSchema = {
     label: "Tag",
     order: 4,
   },
+
+  description: {
+    inputProps: {
+      min: 2,
+      max: 60,
+
+      placeholder:
+        "Describe your community in one short sentence that will appear in the communities discovery page.",
+
+      required: true,
+    },
+
+    label: "Description",
+    order: 2,
+  },
 };
 
 const onCommunitySubmit = (inputs) =>
   typeof inputs.name === "string" && typeof inputs.description === "string"
-    ? DevHub.create_community({ inputs })
+    ? DevHub.create_community({
+        inputs: {
+          ...inputs,
+
+          bio_markdown: `
+            This is a sample text about your community.
+            You can change it on the community configuration page.
+          `,
+
+          logo_url:
+            "https://ipfs.near.social/ipfs/bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
+
+          banner_url:
+            "https://ipfs.near.social/ipfs/bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
+        },
+      })
     : null;
 
-const CommunitySpawner = ({ isHidden, ...otherProps }) => {
-  return widget("components.organism.configurator", {
+const CommunitySpawner = ({ isHidden, ...otherProps }) =>
+  widget("components.organism.configurator", {
     heading: "Community information",
     data: CommunityInputsDefaults,
     isActive: true,
     isHidden,
     isUnlocked: true,
     onSubmit: onCommunitySubmit,
-    schema: CommunityInputsSchema,
+    schema: CommunityInputsPartialSchema,
     submitIcon: { kind: "bootstrap-icon", variant: "bi-rocket-takeoff-fill" },
     submitLabel: "Launch",
     ...otherProps,
   });
-};
 
 return CommunitySpawner(props);

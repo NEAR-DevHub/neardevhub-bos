@@ -52,7 +52,7 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityConfigurePage = ({ handle }) =>
+const CommunityConfigurationPage = ({ handle }) =>
   widget("entity.community.layout", {
     path: [{ label: "Communities", pageId: "communities" }],
 
@@ -65,4 +65,4 @@ const CommunityConfigurePage = ({ handle }) =>
     noHeader: true,
   });
 
-return CommunityConfigurePage(props);
+return CommunityConfigurationPage(props);
