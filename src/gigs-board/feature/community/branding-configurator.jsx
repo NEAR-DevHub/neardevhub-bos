@@ -207,7 +207,7 @@ const Logo = styled.div`
 
 const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 
-const CommunityBrandingEditor = ({
+const CommunityBrandingConfigurator = ({
   isUnlocked,
   link,
   onChangesSubmit,
@@ -304,4 +304,4 @@ const CommunityBrandingEditor = ({
   );
 };
 
-return CommunityBrandingEditor(props);
+return CommunityBrandingConfigurator(props);

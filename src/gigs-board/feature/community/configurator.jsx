@@ -202,12 +202,9 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const withoutEmptyStrings = (array) =>
-  array.filter((string) => string.length > 0);
-
-const metadataFormatter = ({ admins, ...otherMetadata }) => ({
+const communityMetadataFormatter = ({ admins, ...otherMetadata }) => ({
   ...otherMetadata,
-  admins: withoutEmptyStrings(admins),
+  admins: (array) => array.filter((string) => string.length > 0),
 });
 
 const CommunityMetadataSchema = {
@@ -272,7 +269,7 @@ const CommunityMetadataSchema = {
     format: "markdown",
 
     inputProps: {
-      min: 2,
+      min: 3,
       max: 200,
 
       placeholder:
@@ -316,13 +313,14 @@ const CommunityMetadataSchema = {
   },
 };
 
-const CommunityEditor = ({ handle, link }) => {
+const CommunityConfigurator = ({ handle, link }) => {
   State.init({
     communityData: null,
     hasUnsavedChanges: false,
   });
 
   const community = DevHub.useQuery({ name: "community", params: { handle } }),
+    permissions = Viewer.communityPermissions({ handle }),
     isSynced = Struct.isEqual(state.communityData, community.data);
 
   if (!state.hasUnsavedChanges && !community.isLoading && !isSynced) {
@@ -378,7 +376,7 @@ const CommunityEditor = ({ handle, link }) => {
       ) : (
         <>
           {widget("feature.community.branding-configurator", {
-            isUnlocked: Viewer.communityPermissions({ handle }).can_configure,
+            isUnlocked: permissions.can_configure,
             link,
             onChangesSubmit: sectionSubmit,
             values: state.communityData,
@@ -387,8 +385,8 @@ const CommunityEditor = ({ handle, link }) => {
           {widget("components.organism.configurator", {
             heading: "Basic information and settings",
             data: state.communityData,
-            formatter: metadataFormatter,
-            isUnlocked: Viewer.communityPermissions({ handle }).can_configure,
+            formatter: communityMetadataFormatter,
+            isUnlocked: permissions.can_configure,
             onChangesSubmit: sectionSubmit,
             schema: CommunityMetadataSchema,
             submitLabel: "Accept",
@@ -396,7 +394,7 @@ const CommunityEditor = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Wiki page 1",
-            isUnlocked: Viewer.communityPermissions({ handle }).can_configure,
+            isUnlocked: permissions.can_configure,
             onChangesSubmit: onWiki1Submit,
             submitLabel: "Accept",
             data: state.communityData?.wiki1,
@@ -418,7 +416,7 @@ const CommunityEditor = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Wiki page 2",
-            isUnlocked: Viewer.communityPermissions({ handle }).can_configure,
+            isUnlocked: permissions.can_configure,
             onChangesSubmit: (value) => sectionSubmit({ wiki2: value }),
             submitLabel: "Accept",
             data: state.communityData?.wiki2,
@@ -438,7 +436,7 @@ const CommunityEditor = ({ handle, link }) => {
             },
           })}
 
-          {Viewer.role.isDevHubModerator ? (
+          {permissions.can_delete ? (
             <div
               className="d-flex justify-content-center gap-4 p-4 w-100"
               style={{ maxWidth: 896 }}
@@ -451,28 +449,27 @@ const CommunityEditor = ({ handle, link }) => {
             </div>
           ) : null}
 
-          {Viewer.communityPermissions({ handle }).can_configure &&
-            state.hasUnsavedChanges && (
-              <div
-                className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
-                style={{ borderTopLeftRadius: "100%" }}
-              >
-                {widget("components.atom.button", {
-                  adornment: widget("components.atom.icon", {
-                    kind: "svg",
-                    variant: "floppy-drive",
-                  }),
+          {permissions.can_configure && state.hasUnsavedChanges && (
+            <div
+              className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
+              style={{ borderTopLeftRadius: "100%" }}
+            >
+              {widget("components.atom.button", {
+                adornment: widget("components.atom.icon", {
+                  kind: "svg",
+                  variant: "floppy-drive",
+                }),
 
-                  classNames: { root: "btn-lg btn-success" },
-                  label: "Save",
-                  onClick: changesSave,
-                })}
-              </div>
-            )}
+                classNames: { root: "btn-lg btn-success" },
+                label: "Save",
+                onClick: changesSave,
+              })}
+            </div>
+          )}
         </>
       )}
     </div>
   );
 };
 
-return CommunityEditor(props);
+return CommunityConfigurator(props);

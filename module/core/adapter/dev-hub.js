@@ -6,6 +6,9 @@ const DevHub = {
   has_moderator: ({ account_id }) =>
     Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
 
+  create_community: ({ community }) =>
+    Near.call(devHubAccountId, "create_community", { community }),
+
   edit_community: ({ handle, community }) =>
     Near.call(devHubAccountId, "edit_community", { handle, community }),
 
@@ -13,12 +16,10 @@ const DevHub = {
     Near.call(devHubAccountId, "delete_community", { handle }),
 
   edit_community_github: ({ handle, github }) =>
-    Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
-    null,
+    Near.call(devHubAccountId, "edit_community_github", { handle, github }),
 
   edit_community_board: ({ handle, board }) =>
-    Near.call(devHubAccountId, "edit_community_board", { handle, board }) ??
-    null,
+    Near.call(devHubAccountId, "edit_community_board", { handle, board }),
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
