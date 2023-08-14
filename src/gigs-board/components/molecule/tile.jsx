@@ -51,6 +51,7 @@ const Tile = ({
     style={{
       maxWidth: !(fullWidth ?? false) ? 896 : null,
       minHeight: minHeight ?? 240,
+      height: "fit-content",
     }}
     {...{ id }}
   >

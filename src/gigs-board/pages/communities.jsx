@@ -153,12 +153,13 @@ const CommunitiesPage = () => {
           </h1>
 
           <p className="m-0 text-muted fs-6">
-            Discover developer communities on BOS
+            Discover NEAR developer communities
           </p>
         </div>
 
         <div className="d-flex flex-column justify-content-center">
           {widget("components.molecule.button", {
+            isHidden: !state.isSpawnerHidden,
             label: "Create community",
             onClick: () => spawnerToggle(true),
           })}
@@ -167,10 +168,11 @@ const CommunitiesPage = () => {
     ),
 
     children: (
-      <div className="d-flex flex-wrap gap-4 p-4 w-100 h-100">
+      <div className="d-flex flex-wrap align-content-start gap-4 p-4 w-100 h-100">
         {widget("components.atom.spinner", {
-          isHidden:
-            communitiesMetadata.data === null && !communitiesMetadata.isLoading,
+          isHidden: !(
+            communitiesMetadata.data === null && communitiesMetadata.isLoading
+          ),
         })}
 
         {widget("entity.community.spawner", {

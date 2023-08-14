@@ -380,6 +380,7 @@ const CommunityConfigurator = ({ handle, link }) => {
             heading: "Basic information and settings",
             data: state.communityData,
             formatter: communityMetadataFormatter,
+            isSubform: true,
             isUnlocked: permissions.can_configure,
             onSubmit: sectionSubmit,
             schema: CommunityMetadataSchema,
@@ -388,6 +389,7 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Wiki page 1",
+            isSubform: true,
             isUnlocked: permissions.can_configure,
             onSubmit: onWiki1Submit,
             submitLabel: "Accept",
@@ -410,6 +412,7 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Wiki page 2",
+            isSubform: true,
             isUnlocked: permissions.can_configure,
             onSubmit: (value) => sectionSubmit({ wiki2: value }),
             submitLabel: "Accept",

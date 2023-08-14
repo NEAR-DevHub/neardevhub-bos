@@ -303,6 +303,7 @@ const Configurator = ({
   heading,
   isActive,
   isHidden,
+  isSubform,
   isUnlocked,
   noFrame,
   onCancel,
@@ -336,7 +337,7 @@ const Configurator = ({
   const onCancelClick = () => {
     if (!isActive) formToggle(false);
     form.reset();
-    if (typeof onSubmit === "function") onSubmit(initialValues);
+    if (isSubform && typeof onSubmit === "function") onSubmit(initialValues);
     if (typeof onCancel === "function") onCancel();
   };
 

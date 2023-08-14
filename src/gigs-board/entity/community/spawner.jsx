@@ -246,15 +246,17 @@ const CommunityInputsPartialSchema = {
 };
 
 const onCommunitySubmit = (inputs) =>
-  typeof inputs.name === "string" && typeof inputs.description === "string"
+  Object.values(
+    Struct.pick(inputs, Object.keys(CommunityInputsPartialSchema))
+  ).every((value) => typeof value === "string" && value?.length > 0)
     ? DevHub.create_community({
         inputs: {
           ...inputs,
 
-          bio_markdown: `
-            This is a sample text about your community.
-            You can change it on the community configuration page.
-          `,
+          bio_markdown: [
+            "This is a sample text about your community.",
+            "You can change it on the community configuration page.",
+          ].join("\n"),
 
           logo_url:
             "https://ipfs.near.social/ipfs/bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
