@@ -156,7 +156,8 @@ const CommunityActivityPage = ({ handle }) => {
                   <small class="text-muted">
                     <span>Required tags:</span>
                     {widget("components.atom.tag", {
-                      label: communityData.tag,
+                      linkTo: "Feed",
+                      ...communityData,
                     })}
                   </small>
                   {widget("components.layout.Controls", {

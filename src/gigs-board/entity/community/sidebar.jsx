@@ -144,7 +144,7 @@ const CommunitySummary = (community) => {
     ...((community.github_handle?.length ?? 0) > 0
       ? [
           {
-            href: `https://github.com/${github_handle}`,
+            href: `https://github.com/${community.github_handle}`,
             iconClass: "bi bi-github",
             name: community.github_handle,
           },
@@ -161,14 +161,12 @@ const CommunitySummary = (community) => {
         ]
       : []),
 
-    ...((community.telegram_handle?.length ?? 0) > 0
-      ? [
-          {
-            href: `https://t.me/${community.telegram_handle}`,
-            iconClass: "bi bi-telegram",
-            name: community.telegram_handle,
-          },
-        ]
+    ...(community.telegram_handle.length > 0
+      ? community.telegram_handle.map((telegram_handle) => ({
+          href: `https://t.me/${telegram_handle}`,
+          iconClass: "bi bi-telegram",
+          name: telegram_handle,
+        }))
       : []),
   ];
 
@@ -177,7 +175,7 @@ const CommunitySummary = (community) => {
       <Markdown text={community.bio_markdown} />
 
       <small class="text-muted mb-3">
-        {widget("components.atom.tag", { label: community.tag })}
+        {widget("components.atom.tag", { linkTo: "Feed", ...community })}
       </small>
 
       <div className="mt-3">
@@ -220,8 +218,7 @@ const UserList = (users) => {
 };
 
 const Sidebar = ({ handle }) => {
-  const community = DevHub.get_community({ handle }) ?? null,
-    root_members = DevHub.get_root_members() ?? null;
+  const community = DevHub.get_community({ handle }) ?? null;
 
   if ((handle ?? null) === null) {
     return (
@@ -236,7 +233,6 @@ const Sidebar = ({ handle }) => {
   ) : (
     <div class="col-md-12 d-flex flex-column align-items-end">
       {widget("components.molecule.tile", {
-        heading: community.tag[0].toUpperCase() + community.tag.slice(1),
         minHeight: 0,
         children: CommunitySummary(community),
         noBorder: true,
@@ -246,9 +242,9 @@ const Sidebar = ({ handle }) => {
       <hr style={{ width: "100%", borderTop: "1px solid #00000033" }} />
 
       {widget("components.molecule.tile", {
-        heading: "Group Moderators",
+        heading: "Admins",
         minHeight: 0,
-        children: UserList(root_members?.["team:moderators"]?.children ?? []),
+        children: UserList(community.admins),
         noBorder: true,
         borderRadius: "rounded",
       })}
