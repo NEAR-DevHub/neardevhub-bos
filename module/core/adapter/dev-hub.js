@@ -9,17 +9,17 @@ const DevHub = {
   create_community: ({ community }) =>
     Near.call(devHubAccountId, "create_community", { community }),
 
-  edit_community: ({ handle, community }) =>
-    Near.call(devHubAccountId, "edit_community", { handle, community }),
+  update_community: ({ handle, community }) =>
+    Near.call(devHubAccountId, "update_community", { handle, community }),
 
   delete_community: ({ handle }) =>
     Near.call(devHubAccountId, "delete_community", { handle }),
 
-  edit_community_github: ({ handle, github }) =>
-    Near.call(devHubAccountId, "edit_community_github", { handle, github }),
+  update_community_github: ({ handle, github }) =>
+    Near.call(devHubAccountId, "update_community_github", { handle, github }),
 
-  edit_community_board: ({ handle, board }) =>
-    Near.call(devHubAccountId, "edit_community_board", { handle, board }),
+  update_community_board: ({ handle, board }) =>
+    Near.call(devHubAccountId, "update_community_board", { handle, board }),
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,

@@ -101,37 +101,37 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
-    fieldInput
-  ) => {
-    const updatedValues = Struct.deepFieldUpdate(
-      formState?.values ?? {},
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedValues = Struct.deepFieldUpdate(
+        formState?.values ?? {},
 
-      {
-        input: fieldInput?.target?.value ?? fieldInput,
-        params,
-        path,
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          params,
+          path,
 
-        via:
-          typeof customFieldUpdate === "function"
-            ? customFieldUpdate
-            : defaultFieldUpdate,
-      }
-    );
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
+      );
 
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
 
-      [formStateKey]: {
-        hasUnsubmittedChanges: !Struct.isEqual(
-          updatedValues,
-          initialFormState.values
-        ),
+        [formStateKey]: {
+          hasUnsubmittedChanges: !Struct.isEqual(
+            updatedValues,
+            initialFormState.values
+          ),
 
-        values: updatedValues,
-      },
-    }));
-  };
+          values: updatedValues,
+        },
+      }));
+    };
 
   if (
     !uninitialized &&
@@ -256,19 +256,20 @@ const DevHub = {
   has_moderator: ({ account_id }) =>
     Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
 
-  edit_community: ({ handle, community }) =>
-    Near.call(devHubAccountId, "edit_community", { handle, community }),
+  create_community: ({ community }) =>
+    Near.call(devHubAccountId, "create_community", { community }),
+
+  update_community: ({ handle, community }) =>
+    Near.call(devHubAccountId, "update_community", { handle, community }),
 
   delete_community: ({ handle }) =>
     Near.call(devHubAccountId, "delete_community", { handle }),
 
-  edit_community_github: ({ handle, github }) =>
-    Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
-    null,
+  update_community_github: ({ handle, github }) =>
+    Near.call(devHubAccountId, "update_community_github", { handle, github }),
 
-  edit_community_board: ({ handle, board }) =>
-    Near.call(devHubAccountId, "edit_community_board", { handle, board }) ??
-    null,
+  update_community_board: ({ handle, board }) =>
+    Near.call(devHubAccountId, "update_community_board", { handle, board }),
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -429,13 +430,15 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
-    Object.fromEntries(
-      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-    );
+  const columnsDeleteById =
+    (id) =>
+    ({ lastKnownValue }) =>
+      Object.fromEntries(
+        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+      );
 
   const onSubmit = () =>
-    DevHub.edit_community_github({
+    DevHub.update_community_github({
       handle: communityHandle,
 
       github: JSON.stringify({
