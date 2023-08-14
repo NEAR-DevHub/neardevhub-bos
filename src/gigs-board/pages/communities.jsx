@@ -160,7 +160,7 @@ const CommunitiesPage = () => {
         <div className="d-flex flex-column justify-content-center">
           {widget("components.molecule.button", {
             label: "Create community",
-            onClick: spawnerToggle,
+            onClick: () => spawnerToggle(true),
           })}
         </div>
       </div>
@@ -188,7 +188,5 @@ const CommunitiesPage = () => {
     ),
   });
 };
-
-console.log("all good");
 
 return CommunitiesPage(props);

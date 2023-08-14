@@ -127,29 +127,12 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
-/* INCLUDE: "entity/viewer" */
-const Viewer = {
-  communityPermissions: ({ handle }) =>
-    DevHub.useQuery("account_community_permissions", {
-      account_id: context.account_id,
-      community_handle: handle,
-    }).data ?? {
-      can_configure: false,
-      can_delete: false,
-    },
-
-  role: {
-    isDevHubModerator:
-      DevHub.has_moderator({ account_id: context.accountId }) ?? false,
-  },
-};
-/* END_INCLUDE: "entity/viewer" */
 
 const CommunityInputsDefaults = {
   handle: null,
   name: "",
-  description: "",
   tag: "",
+  description: "",
 
   bio_markdown:
     "This is a sample text about your community. Edit this text on the community configuration page.",
@@ -162,6 +145,21 @@ const CommunityInputsDefaults = {
 };
 
 const CommunityInputsSchema = {
+  handle: {
+    inputProps: {
+      min: 2,
+      max: 40,
+
+      placeholder:
+        "Choose unique URL handle for your community. Example: zero-knowledge.",
+
+      required: true,
+    },
+
+    label: "URL handle",
+    order: 3,
+  },
+
   name: {
     inputProps: {
       min: 2,
@@ -187,21 +185,6 @@ const CommunityInputsSchema = {
 
     label: "Description",
     order: 2,
-  },
-
-  handle: {
-    inputProps: {
-      min: 2,
-      max: 40,
-
-      placeholder:
-        "Choose unique URL handle for your community. Example: zero-knowledge.",
-
-      required: true,
-    },
-
-    label: "URL handle",
-    order: 3,
   },
 
   tag: {
@@ -230,9 +213,8 @@ const CommunitySpawner = ({ isHidden, ...otherProps }) => {
     heading: "Basic information and settings",
     data: CommunityInputsDefaults,
     isHidden,
-    isUnlocked: Viewer.communityPermissions({ handle }).can_configure,
     onSubmit: onCommunitySubmit,
-    schema: CommunityMetadataSchema,
+    schema: CommunityInputsSchema,
     submitIcon: { kind: "bootstrap-icon", variant: "bi-rocket-takeoff-fill" },
     submitLabel: "Launch",
     ...otherProps,
