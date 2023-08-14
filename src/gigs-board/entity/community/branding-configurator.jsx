@@ -210,7 +210,7 @@ const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 const CommunityBrandingConfigurator = ({
   isUnlocked,
   link,
-  onChangesSubmit,
+  onSubmit,
   values,
 }) => {
   const initialInput = { banner: null, logo: null };
@@ -231,7 +231,7 @@ const CommunityBrandingConfigurator = ({
   const isSynced = Struct.isEqual(state.input, initialValues);
 
   if (hasUnsubmittedChanges && !isSynced) {
-    onChangesSubmit({
+    onSubmit({
       banner_url: cidToURL(state.input.banner?.cid ?? initialValues.banner.cid),
       logo_url: cidToURL(state.input.logo?.cid ?? initialValues.logo.cid),
     });

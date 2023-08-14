@@ -302,10 +302,11 @@ const Configurator = ({
   fullWidth,
   heading,
   isActive,
+  isHidden,
   isUnlocked,
   noFrame,
   onCancel,
-  onChangesSubmit,
+  onSubmit,
   schema,
   submitLabel,
   ...restProps
@@ -334,13 +335,13 @@ const Configurator = ({
   const onCancelClick = () => {
     formToggle(false);
     form.reset();
-    if (typeof onChangesSubmit === "function") onChangesSubmit(initialValues);
+    if (typeof onSubmit === "function") onSubmit(initialValues);
     if (typeof onCancel === "function") onCancel();
   };
 
   const onSubmitClick = () => {
-    if (typeof onChangesSubmit === "function") {
-      onChangesSubmit(
+    if (typeof onSubmit === "function") {
+      onSubmit(
         typeof toFormatted === "function"
           ? toFormatted(form.values)
           : form.values
@@ -354,16 +355,14 @@ const Configurator = ({
     className: classNames.root,
     fullWidth,
     heading,
+    isHidden,
     noFrame,
 
     headerSlotRight:
       isUnlocked && !state.isActive
-        ? widget("components.atom.button", {
-            classNames: {
-              root: "btn-sm btn-secondary",
-              adornment: "bi bi-pen-fill",
-            },
-
+        ? widget("components.molecule.button", {
+            classNames: { root: "btn-sm btn-secondary" },
+            icon: { kind: "bootstrap-icon", variant: "bi-pen-fill" },
             label: "Edit",
             onClick: () => formToggle(true),
           })
@@ -385,22 +384,21 @@ const Configurator = ({
               <div className="me-auto">{actionsAdditional}</div>
             ) : null}
 
-            {widget("components.atom.button", {
+            {widget("components.molecule.button", {
               classNames: { root: "btn-outline-danger shadow-none border-0" },
               label: cancelLabel ?? "Cancel",
               onClick: onCancelClick,
             })}
 
-            {widget("components.atom.button", {
-              classNames: {
-                root: classNames.submit ?? "btn-success",
+            {widget("components.molecule.button", {
+              classNames: { root: classNames.submit ?? "btn-success" },
+              disabled: !form.hasUnsubmittedChanges,
 
-                adornment: `bi ${
-                  classNames.submitAdornment ?? "bi-check-circle-fill"
-                }`,
+              icon: submitIcon ?? {
+                kind: "bootstrap-icon",
+                variant: "bi-check-circle-fill",
               },
 
-              disabled: !form.hasUnsubmittedChanges,
               label: submitLabel ?? "Submit",
               onClick: onSubmitClick,
             })}

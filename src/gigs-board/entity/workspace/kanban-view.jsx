@@ -85,11 +85,17 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
   has_moderator: ({ account_id }) =>
     Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
 
-  create_community: ({ community }) =>
-    Near.call(devHubAccountId, "create_community", { community }),
+  create_community: ({ inputs }) =>
+    Near.call(devHubAccountId, "create_community", { inputs }),
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
   update_community: ({ handle, community }) =>
     Near.call(devHubAccountId, "update_community", { handle, community }),
@@ -113,9 +119,6 @@ const DevHub = {
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
-  get_community: ({ handle }) =>
-    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
-
   get_post: ({ post_id }) =>
     Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
 
@@ -126,9 +129,6 @@ const DevHub = {
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
       label,
     }) ?? null,
-
-  get_root_members: () =>
-    Near.view(devHubAccountId, "get_root_members") ?? null,
 
   useQuery: ({ name, params }) => {
     const initialState = { data: null, error: null, isLoading: true };
@@ -224,13 +224,10 @@ const WorkspaceKanbanView = ({
         {typeof link === "string" && link.length > 0 ? (
           <>
             {false && // TODO: Temporarily disabled
-              widget("components.atom.button", {
-                classNames: {
-                  root: "btn-sm btn-outline-secondary",
-                  adornment: "bi-box-arrow-up-right",
-                },
-
+              widget("components.molecule.button", {
+                classNames: { root: "btn-sm btn-outline-secondary" },
                 href: link,
+                icon: { kind: "bootstrap-icon", variant: "box-arrow-up-right" },
                 label: "Open in new tab",
                 rel: "noreferrer",
                 role: "button",
@@ -238,12 +235,12 @@ const WorkspaceKanbanView = ({
                 type: "link",
               })}
 
-            {widget("components.atom.button", {
+            {widget("components.molecule.button", {
               classNames: {
                 root: "btn-sm btn-outline-secondary me-auto text-white",
-                adornment: "bi-clipboard-fill",
               },
 
+              icon: { kind: "bootstrap-icon", variant: "bi-clipboard-fill" },
               label: "Copy link",
               onClick: () => clipboard.writeText(link),
             })}
@@ -253,10 +250,12 @@ const WorkspaceKanbanView = ({
         {permissions.can_configure && (
           <>
             {typeof onConfigureClick === "function"
-              ? widget("components.atom.button", {
-                  classNames: {
-                    root: "btn-sm btn-primary",
-                    adornment: "bi-gear-wide-connected",
+              ? widget("components.molecule.button", {
+                  classNames: { root: "btn-sm btn-primary" },
+
+                  icon: {
+                    kind: "bootstrap-icon",
+                    variant: "bi-gear-wide-connected",
                   },
 
                   label: "Configure view",
@@ -265,12 +264,12 @@ const WorkspaceKanbanView = ({
               : null}
 
             {typeof onDeleteClick === "function"
-              ? widget("components.atom.button", {
+              ? widget("components.molecule.button", {
                   classNames: {
                     root: "btn-sm btn-outline-danger shadow-none border-0",
-                    adornment: "bi-recycle",
                   },
 
+                  icon: { kind: "bootstrap-icon", variant: "bi-recycle" },
                   label: "Delete",
                   onClick: onDeleteClick,
                 })

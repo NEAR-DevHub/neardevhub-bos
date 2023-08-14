@@ -124,11 +124,17 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
   has_moderator: ({ account_id }) =>
     Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
 
-  create_community: ({ community }) =>
-    Near.call(devHubAccountId, "create_community", { community }),
+  create_community: ({ inputs }) =>
+    Near.call(devHubAccountId, "create_community", { inputs }),
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
   update_community: ({ handle, community }) =>
     Near.call(devHubAccountId, "update_community", { handle, community }),
@@ -152,9 +158,6 @@ const DevHub = {
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
-  get_community: ({ handle }) =>
-    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
-
   get_post: ({ post_id }) =>
     Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
 
@@ -165,9 +168,6 @@ const DevHub = {
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
       label,
     }) ?? null,
-
-  get_root_members: () =>
-    Near.view(devHubAccountId, "get_root_members") ?? null,
 
   useQuery: ({ name, params }) => {
     const initialState = { data: null, error: null, isLoading: true };
@@ -316,13 +316,10 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
         </div>
 
         <div className="d-flex align-items-end gap-3">
-          {widget("components.atom.button", {
-            classNames: {
-              root: "btn-outline-primary",
-              adornment: "bi bi-gear-wide-connected",
-            },
-
+          {widget("components.molecule.button", {
+            classNames: { root: "btn-outline-primary" },
             href: href("community.configure", { handle }),
+            icon: { kind: "bootstrap-icon", variant: "bi-gear-wide-connected" },
             isHidden: !Viewer.communityPermissions({ handle }).can_configure,
             label: "Configure community",
             type: "link",

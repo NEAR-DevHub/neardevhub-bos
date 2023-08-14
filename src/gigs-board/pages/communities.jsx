@@ -57,11 +57,17 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
   has_moderator: ({ account_id }) =>
     Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
 
-  create_community: ({ community }) =>
-    Near.call(devHubAccountId, "create_community", { community }),
+  create_community: ({ inputs }) =>
+    Near.call(devHubAccountId, "create_community", { inputs }),
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
   update_community: ({ handle, community }) =>
     Near.call(devHubAccountId, "update_community", { handle, community }),
@@ -85,9 +91,6 @@ const DevHub = {
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
-  get_community: ({ handle }) =>
-    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
-
   get_post: ({ post_id }) =>
     Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
 
@@ -98,9 +101,6 @@ const DevHub = {
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
       label,
     }) ?? null,
-
-  get_root_members: () =>
-    Near.view(devHubAccountId, "get_root_members") ?? null,
 
   useQuery: ({ name, params }) => {
     const initialState = { data: null, error: null, isLoading: true };
@@ -128,10 +128,18 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const CommunitiesPage = () =>
-  widget("components.template.app-layout", {
-    path: [{ label: "Communities", pageId: "communities", isHidden: true }],
+const CommunitiesPage = () => {
+  State.init({ isSpawnerHidden: true });
 
+  const spawnerToggle = () =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      isSpawnerHidden: !lastKnownState.isSpawnerHidden,
+    }));
+
+  const communitiesMetadata = DevHub.useQuery("all_communities_metadata");
+
+  return widget("components.template.app-layout", {
     banner: (
       <div
         className="d-flex justify-content-between p-4"
@@ -150,27 +158,34 @@ const CommunitiesPage = () =>
         </div>
 
         <div className="d-flex flex-column justify-content-center">
-          {widget("components.atom.button", {
-            href: href("community.new"),
+          {widget("components.molecule.button", {
             label: "Create community",
-            type: "link",
+            onClick: spawnerToggle,
           })}
         </div>
       </div>
     ),
 
     children: (
-      <div className="d-flex flex-wrap gap-4 p-4">
-        {(DevHub.get_all_communities_metadata() ?? []).map(
-          (communityMetadata) =>
-            widget(
-              "entity.community.card",
-              communityMetadata,
-              communityMetadata.handle
-            )
+      <div className="d-flex flex-wrap gap-4 p-4 w-100 h-100">
+        {widget("components.atom.spinner", {
+          isHidden: !communitiesMetadata.isLoading,
+        })}
+
+        {widget("entity.community.spawner", {
+          isHidden: state.isSpawnerHidden,
+        })}
+
+        {(communitiesMetadata.data ?? []).map((communityMetadata) =>
+          widget(
+            "entity.community.card",
+            communityMetadata,
+            communityMetadata.handle
+          )
         )}
       </div>
     ),
   });
+};
 
 return CommunitiesPage(props);

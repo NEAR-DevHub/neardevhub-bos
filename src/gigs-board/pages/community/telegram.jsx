@@ -57,11 +57,17 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
   has_moderator: ({ account_id }) =>
     Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
 
-  create_community: ({ community }) =>
-    Near.call(devHubAccountId, "create_community", { community }),
+  create_community: ({ inputs }) =>
+    Near.call(devHubAccountId, "create_community", { inputs }),
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
   update_community: ({ handle, community }) =>
     Near.call(devHubAccountId, "update_community", { handle, community }),
@@ -85,9 +91,6 @@ const DevHub = {
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
-  get_community: ({ handle }) =>
-    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
-
   get_post: ({ post_id }) =>
     Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
 
@@ -98,9 +101,6 @@ const DevHub = {
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
       label,
     }) ?? null,
-
-  get_root_members: () =>
-    Near.view(devHubAccountId, "get_root_members") ?? null,
 
   useQuery: ({ name, params }) => {
     const initialState = { data: null, error: null, isLoading: true };
@@ -154,7 +154,7 @@ const Telegram = (
         ></iframe>
 
         <a href={"https://t.me/" + tg} target="_blank">
-          {widget("components.atom.button", {
+          {widget("components.molecule.button", {
             classNames: {
               root: "btn-primary",
             },

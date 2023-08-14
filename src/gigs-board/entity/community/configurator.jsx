@@ -108,11 +108,17 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
   has_moderator: ({ account_id }) =>
     Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
 
-  create_community: ({ community }) =>
-    Near.call(devHubAccountId, "create_community", { community }),
+  create_community: ({ inputs }) =>
+    Near.call(devHubAccountId, "create_community", { inputs }),
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
   update_community: ({ handle, community }) =>
     Near.call(devHubAccountId, "update_community", { handle, community }),
@@ -136,9 +142,6 @@ const DevHub = {
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
-  get_community: ({ handle }) =>
-    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
-
   get_post: ({ post_id }) =>
     Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
 
@@ -149,9 +152,6 @@ const DevHub = {
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
       label,
     }) ?? null,
-
-  get_root_members: () =>
-    Near.view(devHubAccountId, "get_root_members") ?? null,
 
   useQuery: ({ name, params }) => {
     const initialState = { data: null, error: null, isLoading: true };
@@ -372,7 +372,7 @@ const CommunityConfigurator = ({ handle, link }) => {
           {widget("feature.community.branding-configurator", {
             isUnlocked: permissions.can_configure,
             link,
-            onChangesSubmit: sectionSubmit,
+            onSubmit: sectionSubmit,
             values: state.communityData,
           })}
 
@@ -381,7 +381,7 @@ const CommunityConfigurator = ({ handle, link }) => {
             data: state.communityData,
             formatter: communityMetadataFormatter,
             isUnlocked: permissions.can_configure,
-            onChangesSubmit: sectionSubmit,
+            onSubmit: sectionSubmit,
             schema: CommunityMetadataSchema,
             submitLabel: "Accept",
           })}
@@ -389,7 +389,7 @@ const CommunityConfigurator = ({ handle, link }) => {
           {widget("components.organism.configurator", {
             heading: "Wiki page 1",
             isUnlocked: permissions.can_configure,
-            onChangesSubmit: onWiki1Submit,
+            onSubmit: onWiki1Submit,
             submitLabel: "Accept",
             data: state.communityData?.wiki1,
 
@@ -411,7 +411,7 @@ const CommunityConfigurator = ({ handle, link }) => {
           {widget("components.organism.configurator", {
             heading: "Wiki page 2",
             isUnlocked: permissions.can_configure,
-            onChangesSubmit: (value) => sectionSubmit({ wiki2: value }),
+            onSubmit: (value) => sectionSubmit({ wiki2: value }),
             submitLabel: "Accept",
             data: state.communityData?.wiki2,
 
@@ -435,7 +435,7 @@ const CommunityConfigurator = ({ handle, link }) => {
               className="d-flex justify-content-center gap-4 p-4 w-100"
               style={{ maxWidth: 896 }}
             >
-              {widget("components.atom.button", {
+              {widget("components.molecule.button", {
                 classNames: { root: "btn-lg btn-outline-danger border-none" },
                 label: "Delete community",
                 onClick: onDelete,
@@ -448,13 +448,9 @@ const CommunityConfigurator = ({ handle, link }) => {
               className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
               style={{ borderTopLeftRadius: "100%" }}
             >
-              {widget("components.atom.button", {
-                adornment: widget("components.atom.icon", {
-                  kind: "svg",
-                  variant: "floppy-drive",
-                }),
-
+              {widget("components.molecule.button", {
                 classNames: { root: "btn-lg btn-success" },
+                icon: { kind: "svg", variant: "floppy-drive" },
                 label: "Save",
                 onClick: changesSave,
               })}

@@ -127,80 +127,116 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
+/* INCLUDE: "entity/viewer" */
+const Viewer = {
+  communityPermissions: ({ handle }) =>
+    DevHub.useQuery("account_community_permissions", {
+      account_id: context.account_id,
+      community_handle: handle,
+    }).data ?? {
+      can_configure: false,
+      can_delete: false,
+    },
 
-const communityData = DevHub.get_community({ handle: props.handle });
+  role: {
+    isDevHubModerator:
+      DevHub.has_moderator({ account_id: context.accountId }) ?? false,
+  },
+};
+/* END_INCLUDE: "entity/viewer" */
 
-if (communityData === null) {
-  return <div>Loading...</div>;
-}
+const CommunityInputsDefaults = {
+  handle: null,
+  name: "",
+  description: "",
+  tag: "",
 
-const postIdsWithTags = (tags) => {
-  const ids = tags
-    .map(
-      (tag) =>
-        Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
-          label: tag,
-        }) ?? []
-    )
-    .map((ids) => new Set(ids))
-    .reduce((previous, current) => {
-      let res = new Set();
-      for (let id of current) {
-        if (previous.has(id)) {
-          res.add(id);
-        }
-      }
-      return res;
-    });
+  bio_markdown:
+    "This is a sample text about your community. Edit this text on the community configuration page.",
 
-  return [...ids].reverse();
+  logo_url:
+    "https://ipfs.near.social/ipfs/bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
+
+  banner_url:
+    "https://ipfs.near.social/ipfs/bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
 };
 
-const sponsorshipRequiredTags = ["funding", communityData.tag];
-const sponsorshipRequiredPosts = postIdsWithTags(sponsorshipRequiredTags);
+const CommunityInputsSchema = {
+  name: {
+    inputProps: {
+      min: 2,
+      max: 30,
+      placeholder: "Community name.",
+      required: true,
+    },
 
-const Sponsorship = (
-  <div>
-    <div class="row mb-2 justify-content-center">
-      <div class="col-md-auto">
-        <small class="text-muted">
-          Post Type: <b>Sponsorship</b>
-        </small>
-      </div>
-      <div class="col-md-auto">
-        <small class="text-muted">
-          Required tags:
-          {sponsorshipRequiredTags.map((tag) => (
-            <a href={href("Feed", { tag })} key={tag}>
-              <span class="badge text-bg-primary me-1">{tag}</span>
-            </a>
-          ))}
-        </small>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <div class="card">
-          <div class="card-body border-secondary">
-            <h6 class="card-title">
-              Sponsored Projects ({sponsorshipRequiredPosts.length})
-            </h6>
-            <div class="row">
-              {sponsorshipRequiredPosts.map((postId) => (
-                <div class="col-3">
-                  {widget("entity.post.CompactPost", { id: postId }, postId)}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+    label: "Name",
+    order: 1,
+  },
 
-return widget("entity.community.layout", {
-  handle: props.handle,
-  title: "Sponsorship",
-  children: Sponsorship,
-});
+  description: {
+    inputProps: {
+      min: 2,
+      max: 60,
+
+      placeholder:
+        "Describe your community in one short sentence that will appear in the communities discovery page.",
+
+      required: true,
+    },
+
+    label: "Description",
+    order: 2,
+  },
+
+  handle: {
+    inputProps: {
+      min: 2,
+      max: 40,
+
+      placeholder:
+        "Choose unique URL handle for your community. Example: zero-knowledge.",
+
+      required: true,
+    },
+
+    label: "URL handle",
+    order: 3,
+  },
+
+  tag: {
+    inputProps: {
+      min: 2,
+      max: 20,
+
+      placeholder:
+        "Any posts with this tag will show up in your community feed.",
+
+      required: true,
+    },
+
+    label: "Tag",
+    order: 4,
+  },
+};
+
+const onCommunitySubmit = (inputs) =>
+  typeof name === "string" && typeof description === "string"
+    ? DevHub.create_community({ inputs })
+    : null;
+
+const CommunitySpawner = ({ isHidden, ...otherProps }) => {
+  return widget("components.organism.configurator", {
+    heading: "Basic information and settings",
+    data: CommunityInputsDefaults,
+    isHidden,
+    isUnlocked: Viewer.communityPermissions({ handle }).can_configure,
+    onSubmit: onCommunitySubmit,
+    schema: CommunityMetadataSchema,
+    submitIcon: { kind: "bootstrap-icon", variant: "bi-rocket-takeoff-fill" },
+    submitLabel: "Launch",
+    ...otherProps,
+  });
+};
+
+return CommunitySpawner(props);
