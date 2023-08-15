@@ -204,10 +204,17 @@ const Viewer = {
 
 const communityMetadataFormatter = ({ admins, ...otherMetadata }) => ({
   ...otherMetadata,
-  admins: (array) => array.filter((string) => string.length > 0),
+  admins: admins.filter((string) => string.length > 0),
 });
 
 const CommunityMetadataSchema = {
+  admins: {
+    format: "comma-separated",
+    inputProps: { required: true },
+    label: "Admins",
+    order: 10,
+  },
+
   handle: {
     inputProps: {
       min: 2,
@@ -303,13 +310,6 @@ const CommunityMetadataSchema = {
     inputProps: { min: 2, max: 60 },
     label: "Website",
     order: 9,
-  },
-
-  admins: {
-    format: "comma-separated",
-    inputProps: { required: true },
-    label: "Admins",
-    order: 10,
   },
 };
 
