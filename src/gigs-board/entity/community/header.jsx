@@ -351,7 +351,6 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
               variant: state.isLinkCopied ? "bi-check" : "bi-link-45deg",
             },
 
-            isHidden: !permissions.can_configure,
             label: "Share",
             onClick: onShareClick,
             onMouseLeave: () => linkCopyStateToggle(false),
