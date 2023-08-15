@@ -136,19 +136,19 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
+const useForm = ({ initialValues, stateKey, uninitialized }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
   };
 
-  const formState = state[formStateKey] ?? null,
+  const formState = state[stateKey] ?? null,
     isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
       ...lastKnownComponentState,
-      [formStateKey]: initialFormState,
+      [stateKey]: initialFormState,
       hasUnsubmittedChanges: false,
     }));
 
@@ -173,7 +173,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       State.update((lastKnownComponentState) => ({
         ...lastKnownComponentState,
 
-        [formStateKey]: {
+        [stateKey]: {
           hasUnsubmittedChanges: !Struct.isEqual(
             updatedValues,
             initialFormState.values
@@ -198,6 +198,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
     ...(formState ?? initialFormState),
     isSynced,
     reset: formReset,
+    stateKey,
     update: formUpdate,
   };
 };

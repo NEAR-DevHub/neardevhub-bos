@@ -136,19 +136,19 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
+const useForm = ({ initialValues, stateKey, uninitialized }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
   };
 
-  const formState = state[formStateKey] ?? null,
+  const formState = state[stateKey] ?? null,
     isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
       ...lastKnownComponentState,
-      [formStateKey]: initialFormState,
+      [stateKey]: initialFormState,
       hasUnsubmittedChanges: false,
     }));
 
@@ -173,7 +173,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       State.update((lastKnownComponentState) => ({
         ...lastKnownComponentState,
 
-        [formStateKey]: {
+        [stateKey]: {
           hasUnsubmittedChanges: !Struct.isEqual(
             updatedValues,
             initialFormState.values
@@ -198,6 +198,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
     ...(formState ?? initialFormState),
     isSynced,
     reset: formReset,
+    stateKey,
     update: formUpdate,
   };
 };
@@ -347,33 +348,30 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const KanbanViewConfiguratorSettings = {
-  maxColumnsNumber: 20,
-};
-
 const CompactContainer = styled.div`
   width: fit-content !important;
   max-width: 100%;
 `;
 
-const KanbanViewMetadataDefaults = {
-  kind: "kanban-view",
-  title: "",
-  description: "",
+const KanbanViewConfiguratorSettings = {
+  maxColumnsNumber: 20,
 };
 
-const KanbanViewConfigDefaults = {
-  ticket_kind: "post-ticket",
-  tags: { excluded: [], required: [] },
-  columns: {},
+const KanbanViewDefaults = {
+  metadata: {
+    kind: "kanban-view",
+    title: "",
+    description: "",
+  },
+
+  config: {
+    ticket_kind: "post-ticket",
+    tags: { excluded: [], required: [] },
+    columns: {},
+  },
 };
 
-const KanbanViewConfigurator = ({
-  communityHandle,
-  link,
-  metadata,
-  permissions,
-}) => {
+const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
   State.init({
     editingMode: "form",
     isActive: false,
@@ -382,28 +380,17 @@ const KanbanViewConfigurator = ({
   const community = DevHub.useQuery("community", { handle: communityHandle });
 
   const view =
-    ((community.data?.board ?? null) === null
+    (community.data?.board ?? null) === null
       ? {}
-      : JSON.parse(community.data.github)
-    )?.kanbanBoards ?? {};
-
-  const config = DevHub.useQuery("workspace_view_config", { id: metadata.id });
-
-  const isNewView = (metadata ?? null) === null;
+      : JSON.parse(community.data.board);
 
   const form = useForm({
-    initialValues: {
-      metadata: metadata ?? KanbanViewMetadataDefaults,
-
-      config: isNewView
-        ? KanbanViewConfigDefaults
-        : JSON.parse(config.data ?? "{}"),
-    },
-
+    initialValues: Struct.pick(view, ["config", "metadata"]),
     stateKey: "view",
+    uninitialized: isViewInitialized,
   });
 
-  const viewDelete = () => DevHub.delete_workspace_view({ id: metadata.id });
+  const isViewInitialized = (form.values.metadata ?? null) !== null;
 
   const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -415,6 +402,18 @@ const KanbanViewConfigurator = ({
     State.update((lastKnownState) => ({
       ...lastKnownState,
       editingMode: value,
+    }));
+
+  const newViewInit = () =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+
+      [form.stateKey]: {
+        hasUnsubmittedChanges: false,
+        values: KanbanViewDefaults,
+      },
+
+      isActive: true,
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
@@ -439,153 +438,165 @@ const KanbanViewConfigurator = ({
   };
 
   const onSubmit = () =>
-    DevHub[isNewView ? "create_workspace_view" : "update_workspace_view"]({
-      view: {
-        metadata: {
-          ...form.values.metadata,
-          workspace_id: parseInt(workspaceId),
-        },
-        config: JSON.stringify(form.values.config),
-      },
+    DevHub.update_community_board({
+      handle: communityHandle,
+      board: JSON.stringify(form.values),
     });
 
-  const formElement =
-    Object.keys(form.values.metadata).length > 0 &&
-    Object.keys(form.values.config).length > 0 ? (
-      <>
+  const viewDelete = () =>
+    DevHub.update_community_board({ handle: communityHandle, board: null });
+
+  const formElement = !isViewInitialized ? (
+    <div
+      className="d-flex flex-column align-items-center justify-content-center gap-4"
+      style={{ height: 384 }}
+    >
+      <h5 className="h5 d-inline-flex gap-2 m-0">
+        This community doesn't have a board
+      </h5>
+
+      {Viewer.communityPermissions({ handle }).can_configure ? (
+        <button
+          className="btn shadow btn-primary d-inline-flex gap-2"
+          onClick={newViewInit}
+        >
+          <i className="bi bi-kanban-fill" />
+          <span>Create board</span>
+        </button>
+      ) : null}
+    </div>
+  ) : (
+    <>
+      <div className="d-flex gap-3 flex-column flex-lg-row">
+        {widget("components.molecule.text-input", {
+          className: "flex-shrink-0",
+          key: "kanban-view-title",
+          label: "Name",
+          onChange: form.update({ path: ["metadata", "title"] }),
+          placeholder: "NEAR Protocol NEPs",
+          value: form.values.metadata.title,
+        })}
+      </div>
+
+      <CompactContainer>
         <div className="d-flex gap-3 flex-column flex-lg-row">
           {widget("components.molecule.text-input", {
             className: "flex-shrink-0",
-            key: `${form.values.metadata.id ?? "new-view"}-title`,
-            label: "Name",
-            onChange: form.update({ path: ["metadata", "title"] }),
-            placeholder: "NEAR Protocol NEPs",
-            value: form.values.metadata.title,
+            format: "comma-separated",
+            key: "kanban-view-tags-required",
+            label: "All the tags MUST be presented in posts",
+            onChange: form.update({ path: ["config", "tags", "required"] }),
+            placeholder: "near-protocol-neps, ",
+            value: form.values.config.tags.required.join(", "),
           })}
         </div>
 
-        <CompactContainer>
-          <div className="d-flex gap-3 flex-column flex-lg-row">
-            {widget("components.molecule.text-input", {
-              className: "flex-shrink-0",
-              format: "comma-separated",
-              key: `${form.values.metadata.id ?? "new-view"}-tags-required`,
-              label: "All the tags MUST be presented in posts",
-              onChange: form.update({ path: ["config", "tags", "required"] }),
-              placeholder: "near-protocol-neps, ",
-              value: form.values.config.tags.required.join(", "),
-            })}
-          </div>
+        <div className="d-flex gap-3 flex-column flex-lg-row">
+          {widget("components.molecule.text-input", {
+            className: "flex-shrink-0",
+            format: "comma-separated",
+            key: "kanban-view-tags-excluded",
+            label: "All the tags MUST NOT be presented in posts",
+            onChange: form.update({ path: ["config", "tags", "excluded"] }),
+            placeholder: "near-protocol-neps, ",
+            value: form.values.config.tags.excluded.join(", "),
+          })}
+        </div>
+      </CompactContainer>
 
-          <div className="d-flex gap-3 flex-column flex-lg-row">
-            {widget("components.molecule.text-input", {
-              className: "flex-shrink-0",
-              format: "comma-separated",
-              key: `${form.values.metadata.id ?? "new-view"}-tags-excluded`,
-              label: "All the tags MUST NOT be presented in posts",
-              onChange: form.update({ path: ["config", "tags", "excluded"] }),
-              placeholder: "near-protocol-neps, ",
-              value: form.values.config.tags.excluded.join(", "),
-            })}
-          </div>
-        </CompactContainer>
+      {widget("components.molecule.text-input", {
+        className: "w-100",
+        inputProps: { className: "h-75" },
+        key: "kanban-view-description",
+        label: "Description",
+        multiline: true,
+        onChange: form.update({ path: ["metadata", "description"] }),
+        placeholder: "Latest NEAR Enhancement Proposals by status.",
+        value: form.values.metadata.description,
+      })}
 
-        {widget("components.molecule.text-input", {
-          className: "w-100",
-          inputProps: { className: "h-75" },
-          key: `${form.values.metadata.id ?? "new-view"}-description`,
-          label: "Description",
-          multiline: true,
-          onChange: form.update({ path: ["metadata", "description"] }),
-          placeholder: "Latest NEAR Enhancement Proposals by status.",
-          value: form.values.metadata.description,
-        })}
+      <div className="d-flex align-items-center justify-content-between">
+        <span className="d-inline-flex gap-2 m-0">
+          <i className="bi bi-list-task" />
 
-        <div className="d-flex align-items-center justify-content-between">
-          <span className="d-inline-flex gap-2 m-0">
-            <i className="bi bi-list-task" />
-
-            <span>
-              {`Columns ( max. ${KanbanViewConfiguratorSettings.maxColumnsNumber} )`}
-            </span>
+          <span>
+            {`Columns ( max. ${KanbanViewConfiguratorSettings.maxColumnsNumber} )`}
           </span>
-        </div>
+        </span>
+      </div>
 
-        <div className="d-flex flex-column align-items-center gap-3">
-          {Object.values(form.values.config?.columns ?? {}).map(
-            ({ id, description, tag, title }) => (
-              <div
-                className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
-                key={id}
-              >
-                <div className="d-flex flex-column gap-1 w-100">
-                  {widget("components.molecule.text-input", {
-                    className: "flex-grow-1",
-                    key: `column-${id}-title`,
-                    label: "Title",
+      <div className="d-flex flex-column align-items-center gap-3">
+        {Object.values(form.values.config?.columns ?? {}).map(
+          ({ id, description, tag, title }) => (
+            <div
+              className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
+              key={id}
+            >
+              <div className="d-flex flex-column gap-1 w-100">
+                {widget("components.molecule.text-input", {
+                  className: "flex-grow-1",
+                  key: `column-${id}-title`,
+                  label: "Title",
 
-                    onChange: form.update({
-                      path: ["config", "columns", id, "title"],
-                    }),
+                  onChange: form.update({
+                    path: ["config", "columns", id, "title"],
+                  }),
 
-                    placeholder: "👀 Review",
-                    value: title,
-                  })}
+                  placeholder: "👀 Review",
+                  value: title,
+                })}
 
-                  {widget("components.molecule.text-input", {
-                    className: "flex-grow-1",
-                    key: `column-${id}-description`,
-                    label: "Description",
+                {widget("components.molecule.text-input", {
+                  className: "flex-grow-1",
+                  key: `column-${id}-description`,
+                  label: "Description",
 
-                    onChange: form.update({
-                      path: ["config", "columns", id, "description"],
-                    }),
+                  onChange: form.update({
+                    path: ["config", "columns", id, "description"],
+                  }),
 
-                    placeholder:
-                      "NEPs that need a review by Subject Matter Experts.",
+                  placeholder:
+                    "NEPs that need a review by Subject Matter Experts.",
 
-                    value: description,
-                  })}
+                  value: description,
+                })}
 
-                  {widget("components.molecule.text-input", {
-                    key: `${
-                      form.values.metadata.id ?? "new-view"
-                    }-column-${id}-tag`,
+                {widget("components.molecule.text-input", {
+                  key: `kanban-view-column-${id}-tag`,
+                  label: "Tag",
 
-                    label: "Tag",
+                  onChange: form.update({
+                    path: ["config", "columns", id, "tag"],
+                  }),
 
-                    onChange: form.update({
-                      path: ["config", "columns", id, "tag"],
-                    }),
-
-                    placeholder: "",
-                    value: tag,
-                  })}
-                </div>
-
-                <div
-                  className="d-flex flex-column gap-3 border-start p-3 pe-0"
-                  style={{ marginTop: -16, marginBottom: -16 }}
-                >
-                  <button
-                    className="btn btn-outline-danger shadow"
-                    onClick={form.update({
-                      path: ["config", "columns"],
-                      via: columnsDeleteById(id),
-                    })}
-                    title="Delete column"
-                  >
-                    <i className="bi bi-trash-fill" />
-                  </button>
-                </div>
+                  placeholder: "",
+                  value: tag,
+                })}
               </div>
-            )
-          )}
-        </div>
-      </>
-    ) : null;
 
-  return !isNewView && config.isLoading ? (
+              <div
+                className="d-flex flex-column gap-3 border-start p-3 pe-0"
+                style={{ marginTop: -16, marginBottom: -16 }}
+              >
+                <button
+                  className="btn btn-outline-danger shadow"
+                  onClick={form.update({
+                    path: ["config", "columns"],
+                    via: columnsDeleteById(id),
+                  })}
+                  title="Delete column"
+                >
+                  <i className="bi bi-trash-fill" />
+                </button>
+              </div>
+            </div>
+          )
+        )}
+      </div>
+    </>
+  );
+
+  return isViewInitialized && community.isLoading ? (
     <div>Loading...</div>
   ) : (
     <div className="d-flex flex-column gap-4">
@@ -665,7 +676,7 @@ const KanbanViewConfigurator = ({
       {widget(["entity.workspace", form.values.metadata.kind].join("."), {
         ...form.values,
         onConfigureClick: () => formToggle(true),
-        onDeleteClick: isNewView ? null : viewDelete,
+        onDeleteClick: isViewInitialized ? viewDelete : null,
         link,
         permissions,
       })}
