@@ -367,7 +367,7 @@ const BoardConfigDefaults = {
   title: "",
 };
 
-const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
+const GithubKanbanViewConfigurator = ({ communityHandle, link }) => {
   State.init({
     editingMode: "form",
     isActive: false,
@@ -702,7 +702,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, pageURL }) => {
           ...form.values,
           editorTrigger: () => formToggle(true),
           isEditable: Viewer.communityPermissions({ handle }).can_configure,
-          pageURL,
+          link,
         })
       ) : (
         <div

@@ -347,7 +347,7 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const WorkspaceViewConfiguratorSettings = {
+const KanbanViewConfiguratorSettings = {
   maxColumnsNumber: 20,
 };
 
@@ -356,39 +356,47 @@ const CompactContainer = styled.div`
   max-width: 100%;
 `;
 
-const WorkspaceViewMetadataDefaults = {
+const KanbanViewMetadataDefaults = {
   kind: "kanban-view",
   title: "",
   description: "",
 };
 
-const WorkspaceViewConfigDefaults = {
+const KanbanViewConfigDefaults = {
   ticket_kind: "post-ticket",
   tags: { excluded: [], required: [] },
   columns: {},
 };
 
-const WorkspaceViewConfigurator = ({
+const KanbanViewConfigurator = ({
+  communityHandle,
   link,
   metadata,
   permissions,
-  workspaceId,
 }) => {
-  const isNewView = (metadata ?? null) === null;
-
   State.init({
     editingMode: "form",
-    isActive: isNewView,
+    isActive: false,
   });
+
+  const community = DevHub.useQuery("community", { handle: communityHandle });
+
+  const view =
+    ((community.data?.board ?? null) === null
+      ? {}
+      : JSON.parse(community.data.github)
+    )?.kanbanBoards ?? {};
 
   const config = DevHub.useQuery("workspace_view_config", { id: metadata.id });
 
+  const isNewView = (metadata ?? null) === null;
+
   const form = useForm({
     initialValues: {
-      metadata: metadata ?? WorkspaceViewMetadataDefaults,
+      metadata: metadata ?? KanbanViewMetadataDefaults,
 
       config: isNewView
-        ? WorkspaceViewConfigDefaults
+        ? KanbanViewConfigDefaults
         : JSON.parse(config.data ?? "{}"),
     },
 
@@ -411,7 +419,7 @@ const WorkspaceViewConfigurator = ({
 
   const columnsCreateNew = ({ lastKnownValue }) =>
     Object.keys(lastKnownValue).length <
-    WorkspaceViewConfiguratorSettings.maxColumnsNumber
+    KanbanViewConfiguratorSettings.maxColumnsNumber
       ? {
           ...(lastKnownValue ?? {}),
           ...withUUIDIndex({ tag: "", title: "New column", description: "" }),
@@ -498,7 +506,7 @@ const WorkspaceViewConfigurator = ({
             <i className="bi bi-list-task" />
 
             <span>
-              {`Columns ( max. ${WorkspaceViewConfiguratorSettings.maxColumnsNumber} )`}
+              {`Columns ( max. ${KanbanViewConfiguratorSettings.maxColumnsNumber} )`}
             </span>
           </span>
         </div>
@@ -622,7 +630,7 @@ const WorkspaceViewConfigurator = ({
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
               disabled={
                 form.values.columns.length >=
-                WorkspaceViewConfiguratorSettings.maxColumnsNumber
+                KanbanViewConfiguratorSettings.maxColumnsNumber
               }
               onClick={form.update({
                 path: ["config", "columns"],
@@ -665,4 +673,4 @@ const WorkspaceViewConfigurator = ({
   );
 };
 
-return WorkspaceViewConfigurator(props);
+return KanbanViewConfigurator(props);

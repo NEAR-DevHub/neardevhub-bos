@@ -52,19 +52,23 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityGithubPage = ({ handle }) =>
-  widget("entity.community.layout", {
+const CommunityBoardPage = ({ handle }) => {
+  const permissions = Viewer.communityPermissions({ handle });
+
+  return widget("entity.community.layout", {
     handle,
-    title: "GitHub",
+    title: "Board",
 
     children: (
       <div className="d-flex flex-column">
-        {widget("feature.workspace.github-view-configurator", {
+        {widget("feature.workspace.kanban-view-configurator", {
           communityHandle: handle,
-          link: "near.org" + href("community.github", { handle }),
+          link: "https://near.org" + href("community.board", { handle }),
+          permissions,
         })}
       </div>
     ),
   });
+};
 
-return CommunityGithubPage(props);
+return CommunityBoardPage(props);

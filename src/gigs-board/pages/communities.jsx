@@ -146,6 +146,8 @@ const CommunitiesPage = () => {
   const communitiesMetadata = DevHub.useQuery("all_communities_metadata");
 
   return widget("components.template.app-layout", {
+    path: [{ label: "Communities", pageId: "communities", isHidden: true }],
+
     banner: (
       <div
         className="d-flex justify-content-between p-4"
@@ -165,6 +167,7 @@ const CommunitiesPage = () => {
 
         <div className="d-flex flex-column justify-content-center">
           {widget("components.molecule.button", {
+            icon: { kind: "bootstrap-icon", variant: "bi-people-fill" },
             isHidden: !state.isSpawnerHidden,
             label: "Create community",
             onClick: () => spawnerToggle(true),
