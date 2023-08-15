@@ -323,8 +323,6 @@ const CommunityConfigurator = ({ handle, link }) => {
     permissions = Viewer.communityPermissions({ handle }),
     isSynced = Struct.isEqual(state.communityData, community.data);
 
-  console.log(permissions);
-
   if (!state.hasUnsavedChanges && !community.isLoading && !isSynced) {
     State.update((lastKnownState) => ({
       ...lastKnownState,
@@ -367,7 +365,7 @@ const CommunityConfigurator = ({ handle, link }) => {
   return community.isLoading ? (
     <div>Loading...</div>
   ) : (
-    <div className="d-flex flex-column align-items-center gap-4 p-4">
+    <div className="d-flex flex-column align-items-center gap-4">
       {community.data === null ? (
         <div
           className="d-flex flex-column justify-content-center align-items-center w-100"

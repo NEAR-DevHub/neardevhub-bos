@@ -205,7 +205,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
 
 const ValueWrapper = styled.div`
   & > p {
-    padding: 0;
+    margin: 0;
   }
 `;
 
@@ -261,7 +261,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                             .filter((string) => string.length > 0)
                             .join(", ")
                         : form.values[fieldKey]
-                      )?.toString?.() ?? "none"}
+                      )?.toString?.() || "none"}
                     </span>
                   ) : (form.values[fieldKey]?.length ?? 0) > 0 ? (
                     <Markdown text={form.values[fieldKey]} />
@@ -378,7 +378,7 @@ const Configurator = ({
         : null,
 
     children: (
-      <div className="flex-grow-1 d-flex flex-column gap-3">
+      <div className="flex-grow-1 d-flex flex-column gap-4">
         <div
           className={`d-flex flex-column gap-${state.isActive ? 1 : 4} py-1`}
         >
