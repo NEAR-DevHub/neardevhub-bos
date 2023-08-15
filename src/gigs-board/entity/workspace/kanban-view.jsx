@@ -201,7 +201,7 @@ const configToColumns = ({ columns, tags }) =>
     };
   }, {});
 
-const WorkspaceKanbanView = ({
+const KanbanView = ({
   config,
   metadata,
   link,
@@ -344,4 +344,4 @@ const WorkspaceKanbanView = ({
   );
 };
 
-return WorkspaceKanbanView(props);
+return KanbanView(props);
