@@ -311,6 +311,7 @@ const Configurator = ({
   isHidden,
   isSubform,
   isUnlocked,
+  isValid,
   noFrame,
   onCancel,
   onSubmit,
@@ -334,6 +335,12 @@ const Configurator = ({
 
   const form = useForm({ initialValues, stateKey: "form" });
 
+  const formFormattedValues =
+    typeof toFormatted === "function" ? toFormatted(form.values) : form.values;
+
+  const isFormValid =
+    typeof isValid === "function" ? isValid(formFormattedValues) : true;
+
   const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
@@ -348,12 +355,8 @@ const Configurator = ({
   };
 
   const onSubmitClick = () => {
-    if (typeof onSubmit === "function") {
-      onSubmit(
-        typeof toFormatted === "function"
-          ? toFormatted(form.values)
-          : form.values
-      );
+    if (typeof onSubmit === "function" && isFormValid) {
+      onSubmit(formFormattedValues);
     }
 
     formToggle(false);
@@ -403,7 +406,7 @@ const Configurator = ({
 
             {widget("components.molecule.button", {
               classNames: { root: classNames.submit ?? "btn-success" },
-              disabled: !form.hasUnsubmittedChanges,
+              disabled: !form.hasUnsubmittedChanges || !isFormValid,
 
               icon: submitIcon ?? {
                 kind: "bootstrap-icon",

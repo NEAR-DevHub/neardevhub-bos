@@ -251,27 +251,28 @@ const CommunityInputsPartialSchema = {
   },
 };
 
-const onCommunitySubmit = (inputs) =>
-  Object.values(
-    Struct.pick(inputs, Object.keys(CommunityInputsPartialSchema))
-  ).every((value) => typeof value === "string" && value?.length > 0)
-    ? DevHub.create_community({
-        inputs: {
-          ...inputs,
+const communityInputsValidator = (formValues) =>
+  Struct.typeMatch(formValues) &&
+  Object.values(formValues).every(
+    (value) => typeof value === "string" && value.length > 0
+  );
 
-          bio_markdown: [
-            "This is a sample text about your community.",
-            "You can change it on the community configuration page.",
-          ].join("\n"),
+const onCommunitySubmit = DevHub.create_community({
+  inputs: {
+    ...inputs,
 
-          logo_url:
-            "https://ipfs.near.social/ipfs/bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
+    bio_markdown: [
+      "This is a sample text about your community.",
+      "You can change it on the community configuration page.",
+    ].join("\n"),
 
-          banner_url:
-            "https://ipfs.near.social/ipfs/bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
-        },
-      })
-    : null;
+    logo_url:
+      "https://ipfs.near.social/ipfs/bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
+
+    banner_url:
+      "https://ipfs.near.social/ipfs/bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
+  },
+});
 
 const CommunitySpawner = ({ isHidden, ...otherProps }) =>
   widget("components.organism.configurator", {
@@ -281,6 +282,7 @@ const CommunitySpawner = ({ isHidden, ...otherProps }) =>
     isActive: true,
     isHidden,
     isUnlocked: true,
+    isValid: communityInputsValidator,
     onSubmit: onCommunitySubmit,
     schema: CommunityInputsPartialSchema,
     submitIcon: { kind: "bootstrap-icon", variant: "bi-rocket-takeoff-fill" },

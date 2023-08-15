@@ -245,7 +245,7 @@ const CommunityBrandingConfigurator = ({
   return (
     <AttractableDiv
       className="card rounded-4 w-100"
-      style={{ maxWidth: 896, height: 280 }}
+      style={{ maxWidth: 920, height: 280 }}
     >
       <Banner
         alt="Community banner preview"
