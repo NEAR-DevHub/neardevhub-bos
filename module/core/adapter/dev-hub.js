@@ -15,6 +15,12 @@ const DevHub = {
   get_community: ({ handle }) =>
     Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
+  get_account_community_permissions: ({ account_id, community_handle }) =>
+    Near.view(devHubAccountId, "get_account_community_permissions", {
+      account_id,
+      community_handle,
+    }) ?? null,
+
   update_community: ({ handle, community }) =>
     Near.call(devHubAccountId, "update_community", { handle, community }),
 

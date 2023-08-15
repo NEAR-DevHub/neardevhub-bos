@@ -136,6 +136,12 @@ const DevHub = {
   get_community: ({ handle }) =>
     Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
+  get_account_community_permissions: ({ account_id, community_handle }) =>
+    Near.view(devHubAccountId, "get_account_community_permissions", {
+      account_id,
+      community_handle,
+    }) ?? null,
+
   update_community: ({ handle, community }) =>
     Near.call(devHubAccountId, "update_community", { handle, community }),
 
@@ -197,10 +203,10 @@ const DevHub = {
 /* INCLUDE: "entity/viewer" */
 const Viewer = {
   communityPermissions: ({ handle }) =>
-    DevHub.useQuery("account_community_permissions", {
+    DevHub.get_account_community_permissions({
       account_id: context.accountId,
       community_handle: handle,
-    }).data ?? {
+    }) ?? {
       can_configure: false,
       can_delete: false,
     },
@@ -229,10 +235,10 @@ const Banner = styled.div`
 const CommunityHeader = ({ activeTabTitle, handle }) => {
   State.init({ isLinkCopied: false });
 
-  const community = DevHub.useQuery("community", { handle }),
+  const community = DevHub.get_community({ handle }),
     permissions = Viewer.communityPermissions({ handle });
 
-  if (community.data === null && community.isLoading) {
+  if (community === null) {
     return <div>Loading...</div>;
   }
 
@@ -244,9 +250,9 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Activity",
     },
 
-    ...(!community.data?.features.wiki
+    ...(!community?.features.wiki
       ? []
-      : [community.data?.wiki1, community.data?.wiki2]
+      : [community?.wiki1, community?.wiki2]
           .filter((maybeWikiPage) => maybeWikiPage ?? false)
           .map(({ name }, idx) => ({
             params: { id: idx + 1 },
@@ -260,7 +266,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Teams",
     },
 
-    ...(!community.data?.features.board
+    ...(!community?.features.board
       ? []
       : [
           {
@@ -270,7 +276,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           },
         ]),
 
-    ...(!community.data?.features.github
+    ...(!community?.features.github
       ? []
       : [
           {
@@ -280,8 +286,8 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           },
         ]),
 
-    ...(!community.data?.features.telegram &&
-    (community.data?.telegram_handle.length ?? 0) === 0
+    ...(!community?.features.telegram &&
+    (community?.telegram_handle.length ?? 0) === 0
       ? []
       : [
           {
@@ -308,7 +314,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       <Banner
         className="object-fit-cover"
         style={{
-          background: `center / cover no-repeat url(${community.data.banner_url})`,
+          background: `center / cover no-repeat url(${community.banner_url})`,
         }}
       />
 
@@ -321,15 +327,15 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
                 className="border border-3 border-white rounded-circle shadow position-absolute"
                 width="150"
                 height="150"
-                src={community.data.logo_url}
+                src={community.logo_url}
                 style={{ top: -50 }}
               />
             </div>
           </div>
 
           <div className="d-flex flex-column ps-3 pt-3 pb-2">
-            <span className="h1 text-nowrap">{community.data.name}</span>
-            <span className="text-secondary">{community.data.description}</span>
+            <span className="h1 text-nowrap">{community.name}</span>
+            <span className="text-secondary">{community.description}</span>
           </div>
         </div>
 

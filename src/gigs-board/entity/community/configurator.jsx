@@ -120,6 +120,12 @@ const DevHub = {
   get_community: ({ handle }) =>
     Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
+  get_account_community_permissions: ({ account_id, community_handle }) =>
+    Near.view(devHubAccountId, "get_account_community_permissions", {
+      account_id,
+      community_handle,
+    }) ?? null,
+
   update_community: ({ handle, community }) =>
     Near.call(devHubAccountId, "update_community", { handle, community }),
 
@@ -181,10 +187,10 @@ const DevHub = {
 /* INCLUDE: "entity/viewer" */
 const Viewer = {
   communityPermissions: ({ handle }) =>
-    DevHub.useQuery("account_community_permissions", {
+    DevHub.get_account_community_permissions({
       account_id: context.accountId,
       community_handle: handle,
-    }).data ?? {
+    }) ?? {
       can_configure: false,
       can_delete: false,
     },
