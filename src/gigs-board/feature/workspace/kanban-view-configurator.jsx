@@ -370,7 +370,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
   const form = useForm({
     initialValues: Struct.pick(view, ["config", "metadata"]),
     stateKey: "view",
-    uninitialized: isViewInitialized,
+    uninitialized: (view.metadata ?? null) === null,
   });
 
   const isViewInitialized = (form.values.metadata ?? null) !== null;
@@ -429,26 +429,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
   const viewDelete = () =>
     DevHub.update_community_board({ handle: communityHandle, board: null });
 
-  const formElement = !isViewInitialized ? (
-    <div
-      className="d-flex flex-column align-items-center justify-content-center gap-4"
-      style={{ height: 384 }}
-    >
-      <h5 className="h5 d-inline-flex gap-2 m-0">
-        This community doesn't have a board
-      </h5>
-
-      {permissions.can_configure ? (
-        <button
-          className="btn shadow btn-primary d-inline-flex gap-2"
-          onClick={newViewInit}
-        >
-          <i className="bi bi-kanban-fill" />
-          <span>Create board</span>
-        </button>
-      ) : null}
-    </div>
-  ) : (
+  const formElement = isViewInitialized ? (
     <>
       <div className="d-flex gap-3 flex-column flex-lg-row">
         {widget("components.molecule.text-input", {
@@ -509,7 +490,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       </div>
 
       <div className="d-flex flex-column align-items-center gap-3">
-        {Object.values(form.values.config?.columns ?? {}).map(
+        {Object.values(form.values.config.columns ?? {}).map(
           ({ id, description, tag, title }) => (
             <div
               className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
@@ -577,13 +558,13 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         )}
       </div>
     </>
-  );
+  ) : null;
 
   return isViewInitialized && community.isLoading ? (
     <div>Loading...</div>
   ) : (
     <div className="d-flex flex-column gap-4">
-      {state.isActive && Object.keys(form.values).length > 0 ? (
+      {isViewInitialized && state.isActive ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
@@ -656,13 +637,32 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         </AttractableDiv>
       ) : null}
 
-      {widget(["entity.workspace", form.values.metadata.kind].join("."), {
-        ...form.values,
-        onConfigureClick: () => formToggle(true),
-        onDeleteClick: isViewInitialized ? viewDelete : null,
-        link,
-        permissions,
-      })}
+      {isViewInitialized ? (
+        widget(["entity.workspace", form.values.metadata.kind].join("."), {
+          ...form.values,
+          isUnderConfiguration: state.isActive,
+          onConfigureClick: () => formToggle(true),
+          onDeleteClick: isViewInitialized ? viewDelete : null,
+          link,
+          permissions,
+        })
+      ) : (
+        <div
+          className="d-flex flex-column align-items-center justify-content-center gap-4"
+          style={{ height: 384 }}
+        >
+          <h5 className="h5 d-inline-flex gap-2 m-0">
+            This community doesn't have a kanban board
+          </h5>
+
+          {widget("components.molecule.button", {
+            icon: { kind: "bootstrap-icon", variant: "bi-kanban-fill" },
+            isHidden: !permissions.can_configure,
+            label: "Create kanban board",
+            onClick: newViewInit,
+          })}
+        </div>
+      )}
     </div>
   );
 };

@@ -330,23 +330,6 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
-/* INCLUDE: "entity/viewer" */
-const Viewer = {
-  communityPermissions: ({ handle }) =>
-    DevHub.get_account_community_permissions({
-      account_id: context.accountId,
-      community_handle: handle,
-    }) ?? {
-      can_configure: false,
-      can_delete: false,
-    },
-
-  role: {
-    isDevHubModerator:
-      DevHub.has_moderator({ account_id: context.accountId }) ?? false,
-  },
-};
-/* END_INCLUDE: "entity/viewer" */
 
 const EditorSettings = {
   maxColumnsNumber: 20,
@@ -368,7 +351,11 @@ const BoardConfigDefaults = {
   title: "",
 };
 
-const GithubKanbanViewConfigurator = ({ communityHandle, link }) => {
+const GithubKanbanViewConfigurator = ({
+  communityHandle,
+  link,
+  permissions,
+}) => {
   State.init({
     editingMode: "form",
     isActive: false,
@@ -407,7 +394,7 @@ const GithubKanbanViewConfigurator = ({ communityHandle, link }) => {
       editingMode: value,
     }));
 
-  const boardCreate = () =>
+  const newViewInit = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       board: { hasUnsubmittedChanges: false, values: BoardConfigDefaults },
@@ -702,8 +689,8 @@ const GithubKanbanViewConfigurator = ({ communityHandle, link }) => {
         widget("entity.workspace.github-view", {
           ...form.values,
           editorTrigger: () => formToggle(true),
-          isEditable: Viewer.communityPermissions({ handle }).can_configure,
           link,
+          permissions,
         })
       ) : (
         <div
@@ -711,18 +698,15 @@ const GithubKanbanViewConfigurator = ({ communityHandle, link }) => {
           style={{ height: 384 }}
         >
           <h5 className="h5 d-inline-flex gap-2 m-0">
-            This community doesn't have GitHub integrations
+            This community doesn't have a GitHub board
           </h5>
 
-          {Viewer.communityPermissions({ handle }).can_configure ? (
-            <button
-              className="btn shadow btn-primary d-inline-flex gap-2"
-              onClick={boardCreate}
-            >
-              <i className="bi bi-kanban-fill" />
-              <span>Create board</span>
-            </button>
-          ) : null}
+          {widget("components.molecule.button", {
+            icon: { kind: "bootstrap-icon", variant: "bi-github" },
+            isHidden: !permissions.can_configure,
+            label: "Create GitHub board",
+            onClick: newViewInit,
+          })}
         </div>
       )}
     </div>

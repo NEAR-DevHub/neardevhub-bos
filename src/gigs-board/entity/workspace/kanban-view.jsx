@@ -204,6 +204,7 @@ const configToColumns = ({ columns, tags }) =>
 const KanbanView = ({
   config,
   metadata,
+  isUnderConfiguration,
   link,
   onConfigureClick,
   onDeleteClick,
@@ -245,31 +246,33 @@ const KanbanView = ({
 
         {permissions.can_configure && (
           <>
-            {typeof onConfigureClick === "function"
-              ? widget("components.molecule.button", {
-                  classNames: { root: "btn-sm btn-primary" },
+            {widget("components.molecule.button", {
+              classNames: { root: "btn-sm btn-primary" },
 
-                  icon: {
-                    kind: "bootstrap-icon",
-                    variant: "bi-gear-wide-connected",
-                  },
+              icon: {
+                kind: "bootstrap-icon",
+                variant: "bi-gear-wide-connected",
+              },
 
-                  label: "Configure view",
-                  onClick: onConfigureClick,
-                })
-              : null}
+              isHidden:
+                typeof onConfigureClick !== "function" ||
+                (typeof onConfigureClick === "function" &&
+                  isUnderConfiguration),
 
-            {typeof onDeleteClick === "function"
-              ? widget("components.molecule.button", {
-                  classNames: {
-                    root: "btn-sm btn-outline-danger shadow-none border-0",
-                  },
+              label: "Configure",
+              onClick: onConfigureClick,
+            })}
 
-                  icon: { kind: "bootstrap-icon", variant: "bi-recycle" },
-                  label: "Delete",
-                  onClick: onDeleteClick,
-                })
-              : null}
+            {widget("components.molecule.button", {
+              classNames: {
+                root: "btn-sm btn-outline-danger shadow-none border-0",
+              },
+
+              icon: { kind: "bootstrap-icon", variant: "bi-recycle" },
+              isHidden: "Disabled for MVP", // typeof onDeleteClick !== "function",
+              label: "Delete",
+              onClick: onDeleteClick,
+            })}
           </>
         )}
       </div>

@@ -174,6 +174,7 @@ const Telegram = (
 );
 
 return widget("entity.community.layout", {
+  path: [{ label: "Communities", pageId: "communities" }],
   handle: props.handle,
   title: "Telegram",
   children: Telegram,

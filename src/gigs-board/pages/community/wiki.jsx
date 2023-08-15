@@ -156,6 +156,7 @@ const WikiPage = ({ handle, id }) => {
   };
 
   return widget("entity.community.layout", {
+    path: [{ label: "Communities", pageId: "communities" }],
     handle,
     title: name,
 

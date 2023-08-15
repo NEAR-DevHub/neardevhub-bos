@@ -145,13 +145,13 @@ const dataToColumns = (data, columns) =>
 
 const withType = (type) => (data) => ({ ...data, type });
 
-const GithubKanbanTeamBoard = ({
+const GithubView = ({
   columns,
   dataTypesIncluded,
   description,
   editorTrigger,
-  isEditable,
-  pageURL,
+  link,
+  permissions,
   repoURL,
   ticketState,
   title,
@@ -210,7 +210,7 @@ const GithubKanbanTeamBoard = ({
     <div className="d-flex flex-column gap-4 py-4">
       <div className="d-flex flex-column align-items-center gap-2">
         <h5 className="h5 d-inline-flex gap-2 m-0">
-          <i className="bi bi-kanban-fill" />
+          <i className="bi bi-github" />
           <span>{(title?.length ?? 0) > 0 ? title : "Untitled board"}</span>
         </h5>
 
@@ -222,17 +222,17 @@ const GithubKanbanTeamBoard = ({
       </div>
 
       <div className="d-flex justify-content-end gap-3">
-        {pageURL ? (
+        {link ? (
           <button
             className="btn shadow btn-sm btn-outline-secondary d-inline-flex gap-2"
-            onClick={() => clipboard.writeText(pageURL)}
+            onClick={() => clipboard.writeText(link)}
           >
             <i className="bi bi-clipboard-fill" />
             <span>Copy link</span>
           </button>
         ) : null}
 
-        {isEditable ? (
+        {permissions.can_configure ? (
           <button
             className="btn shadow btn-sm btn-primary d-inline-flex gap-2"
             onClick={editorTrigger}
@@ -293,4 +293,4 @@ const GithubKanbanTeamBoard = ({
   );
 };
 
-return GithubKanbanTeamBoard(props);
+return GithubView(props);

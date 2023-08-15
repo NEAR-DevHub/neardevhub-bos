@@ -190,6 +190,7 @@ const Teams = (
 );
 
 return widget("entity.community.layout", {
+  path: [{ label: "Communities", pageId: "communities" }],
   handle: props.handle,
   title: "Teams",
   children: Teams,
