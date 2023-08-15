@@ -183,7 +183,7 @@ const CommunitiesPage = () => {
         {(communitiesMetadata.data ?? []).map((communityMetadata) =>
           widget(
             "entity.community.card",
-            communityMetadata,
+            { metadata: communityMetadata },
             communityMetadata.handle
           )
         )}

@@ -81,29 +81,31 @@ const AttractableImage = styled.img`
 /* END_INCLUDE: "core/lib/gui/attractable" */
 
 const CommunityCard = ({
-  banner_url,
-  description,
   format,
-  handle,
   isBannerEnabled,
-  logo_url,
-  name,
+  metadata,
   ...otherProps
 }) => {
   const renderFormat =
     format === "small" || format === "medium" ? format : "small";
 
-  const link = href("community.activity", { handle });
+  const link = href("community.activity", { handle: metadata.handle });
 
   const formatSmall = (
     <AttractableLink
       {...otherProps}
       href={link}
-      className="d-flex flex-shrink-0 rounded-4 border border-2 p-3 text-black text-decoration-none"
+      className={[
+        "d-flex flex-shrink-0 p-3",
+        "rounded-4 border border-2",
+        "text-black text-decoration-none",
+      ].join(" ")}
       style={{
+        order: metadata.admins.includes(context.accountId) ? 1 : 2,
+
         background:
           isBannerEnabled ?? false
-            ? `center / cover no-repeat url(${banner_url})`
+            ? `center / cover no-repeat url(${metadata.banner_url})`
             : "#ffffff",
 
         width: 400,
@@ -121,7 +123,7 @@ const CommunityCard = ({
           alt="Community logo"
           className="flex-shrink-0 rounded-circle"
           height={70}
-          src={logo_url}
+          src={metadata.logo_url}
           width={70}
         />
 
@@ -130,14 +132,14 @@ const CommunityCard = ({
             className="h5 m-0 text-nowrap overflow-hidden"
             style={{ textOverflow: "ellipsis" }}
           >
-            {name}
+            {metadata.name}
           </h5>
 
           <p
             className="card-text text-secondary overflow-hidden"
             style={{ fontSize: 12, textOverflow: "ellipsis" }}
           >
-            {description}
+            {metadata.description}
           </p>
         </div>
       </div>
@@ -153,14 +155,14 @@ const CommunityCard = ({
       <div
         className="card-img-top w-100"
         style={{
-          background: `center / cover no-repeat url(${banner_url})`,
+          background: `center / cover no-repeat url(${metadata.banner_url})`,
           height: 164,
         }}
       />
 
       <div className="d-flex flex-column gap-2 p-3 card-text">
-        <h5 class="h5 m-0">{name}</h5>
-        <span class="text-secondary text-wrap">{description}</span>
+        <h5 class="h5 m-0">{metadata.name}</h5>
+        <span class="text-secondary text-wrap">{metadata.description}</span>
       </div>
     </AttractableLink>
   );

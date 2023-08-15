@@ -203,15 +203,7 @@ const WorkspaceKanbanView = ({
   onDeleteClick,
   permissions,
 }) => {
-  const configuration =
-    (config ?? null) !== null
-      ? config
-      : JSON.parse(
-          DevHub.useQuery("workspace_view_config", { id: metadata.id }).data ??
-            "{}"
-        );
-
-  const columns = configToColumns(configuration);
+  const columns = configToColumns(config);
 
   return (
     <div className="d-flex flex-column gap-4">
