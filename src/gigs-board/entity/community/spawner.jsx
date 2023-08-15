@@ -257,22 +257,23 @@ const communityInputsValidator = (formValues) =>
     (value) => typeof value === "string" && value.length > 0
   );
 
-const onCommunitySubmit = DevHub.create_community({
-  inputs: {
-    ...inputs,
+const onCommunitySubmit = (inputs) =>
+  DevHub.create_community({
+    inputs: {
+      ...inputs,
 
-    bio_markdown: [
-      "This is a sample text about your community.",
-      "You can change it on the community configuration page.",
-    ].join("\n"),
+      bio_markdown: [
+        "This is a sample text about your community.",
+        "You can change it on the community configuration page.",
+      ].join("\n"),
 
-    logo_url:
-      "https://ipfs.near.social/ipfs/bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
+      logo_url:
+        "https://ipfs.near.social/ipfs/bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
 
-    banner_url:
-      "https://ipfs.near.social/ipfs/bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
-  },
-});
+      banner_url:
+        "https://ipfs.near.social/ipfs/bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
+    },
+  });
 
 const CommunitySpawner = ({ isHidden, ...otherProps }) =>
   widget("components.organism.configurator", {
