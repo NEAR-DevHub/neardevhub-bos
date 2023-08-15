@@ -115,6 +115,9 @@ const DevHub = {
   get_root_members: () =>
     Near.view(devHubAccountId, "get_root_members") ?? null,
 
+  get_featured_communities: () =>
+    Near.view(devHubAccountId, "get_featured_communities") ?? null,
+
   useQuery: ({ name, params }) => {
     const initialState = { data: null, error: null, isLoading: true };
 
@@ -200,23 +203,15 @@ const header = (
       </div>
 
       <div className="d-flex gap-4 justify-content-between">
-        {(DevHub.get_all_communities() ?? [])
-          .filter(({ handle }) =>
-            [
-              "zero-knowledge",
-              "protocol",
-              "contract-standards",
-              "education",
-            ].includes(handle)
+        {(DevHub.get_featured_communities() ?? []).map((community) =>
+          widget(
+            "entity.community.card",
+            { ...community, format: "medium" },
+            community.handle
           )
-          .map((community) =>
-            widget(
-              "entity.community.card",
-              { ...community, format: "medium" },
-              community.handle
-            )
-          )}
+        )}
       </div>
+      
     </div>
 
     <div className="h5 pb-4">Activity</div>
