@@ -203,6 +203,12 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
 };
 /* END_INCLUDE: "core/lib/gui/form" */
 
+const ValueWrapper = styled.div`
+  & > p {
+    padding: 0;
+  }
+`;
+
 const fieldParamsByType = {
   array: {
     name: "components.molecule.text-input",
@@ -245,24 +251,24 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
               >
                 <label className="fw-bold w-25">{label}</label>
 
-                {format !== "markdown" ? (
-                  <p className={[contentDisplayClassName, "w-75"].join(" ")}>
-                    {(fieldType === "array" && format === "comma-separated"
-                      ? form.values[fieldKey]
-                          .filter((string) => string.length > 0)
-                          .join(", ")
-                      : form.values[fieldKey]
-                    )?.toString?.() || "none"}
-                  </p>
-                ) : (
-                  <p className={[contentDisplayClassName, "w-75"].join(" ")}>
-                    {(form.values[fieldKey]?.length ?? 0) > 0 ? (
-                      <Markdown text={form.values[fieldKey]} />
-                    ) : (
-                      "none"
-                    )}
-                  </p>
-                )}
+                <ValueWrapper
+                  className={[contentDisplayClassName, "w-75"].join(" ")}
+                >
+                  {format !== "markdown" ? (
+                    <span>
+                      {(fieldType === "array" && format === "comma-separated"
+                        ? form.values[fieldKey]
+                            .filter((string) => string.length > 0)
+                            .join(", ")
+                        : form.values[fieldKey]
+                      )?.toString?.() ?? "none"}
+                    </span>
+                  ) : (form.values[fieldKey]?.length ?? 0) > 0 ? (
+                    <Markdown text={form.values[fieldKey]} />
+                  ) : (
+                    <span>none</span>
+                  )}
+                </ValueWrapper>
               </div>
             ) : (
               widget(fieldParamsByType[fieldType].name, {
@@ -373,7 +379,9 @@ const Configurator = ({
 
     children: (
       <div className="flex-grow-1 d-flex flex-column gap-3">
-        <div className={`d-flex flex-column gap-${state.isActive ? 1 : 4}`}>
+        <div
+          className={`d-flex flex-column gap-${state.isActive ? 1 : 4} py-1`}
+        >
           {fieldsRender({
             form,
             isEditable: isUnlocked && state.isActive,

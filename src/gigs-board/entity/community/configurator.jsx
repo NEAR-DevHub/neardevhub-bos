@@ -187,10 +187,10 @@ const DevHub = {
 /* INCLUDE: "entity/viewer" */
 const Viewer = {
   communityPermissions: ({ handle }) =>
-    DevHub.get_account_community_permissions({
+    DevHub.useQuery("account_community_permissions", {
       account_id: context.accountId,
       community_handle: handle,
-    }) ?? {
+    }).data ?? {
       can_configure: false,
       can_delete: false,
     },
@@ -208,33 +208,6 @@ const communityMetadataFormatter = ({ admins, ...otherMetadata }) => ({
 });
 
 const CommunityMetadataSchema = {
-  name: {
-    inputProps: {
-      min: 2,
-      max: 30,
-      placeholder: "Community name.",
-      required: true,
-    },
-
-    label: "Name",
-    order: 1,
-  },
-
-  description: {
-    inputProps: {
-      min: 2,
-      max: 60,
-
-      placeholder:
-        "Describe your community in one short sentence that will appear in the communities discovery page.",
-
-      required: true,
-    },
-
-    label: "Description",
-    order: 2,
-  },
-
   handle: {
     inputProps: {
       min: 2,
@@ -247,7 +220,19 @@ const CommunityMetadataSchema = {
     },
 
     label: "URL handle",
-    order: 3,
+    order: 1,
+  },
+
+  name: {
+    inputProps: {
+      min: 2,
+      max: 30,
+      placeholder: "Community name.",
+      required: true,
+    },
+
+    label: "Name",
+    order: 2,
   },
 
   tag: {
@@ -262,6 +247,21 @@ const CommunityMetadataSchema = {
     },
 
     label: "Tag",
+    order: 3,
+  },
+
+  description: {
+    inputProps: {
+      min: 2,
+      max: 60,
+
+      placeholder:
+        "Describe your community in one short sentence that will appear in the communities discovery page.",
+
+      required: true,
+    },
+
+    label: "Description",
     order: 4,
   },
 
@@ -278,38 +278,38 @@ const CommunityMetadataSchema = {
 
     label: "Bio",
     multiline: true,
-    order: 1,
+    order: 5,
   },
 
   twitter_handle: {
     inputProps: { min: 2, max: 60 },
     label: "Twitter handle",
-    order: 2,
+    order: 6,
   },
 
   github_handle: {
     inputProps: { min: 2, max: 60 },
     label: "Github organization handle",
-    order: 3,
+    order: 7,
   },
 
   telegram_handle: {
     format: "comma-separated",
     label: "Telegram handles",
-    order: 4,
+    order: 8,
   },
 
   website_url: {
     inputProps: { min: 2, max: 60 },
     label: "Website",
-    order: 5,
+    order: 9,
   },
 
   admins: {
     format: "comma-separated",
     inputProps: { required: true },
     label: "Admins",
-    order: 1,
+    order: 10,
   },
 };
 
@@ -322,6 +322,8 @@ const CommunityConfigurator = ({ handle, link }) => {
   const community = DevHub.useQuery("community", { handle }),
     permissions = Viewer.communityPermissions({ handle }),
     isSynced = Struct.isEqual(state.communityData, community.data);
+
+  console.log(permissions);
 
   if (!state.hasUnsavedChanges && !community.isLoading && !isSynced) {
     State.update((lastKnownState) => ({
@@ -375,7 +377,7 @@ const CommunityConfigurator = ({ handle, link }) => {
         </div>
       ) : (
         <>
-          {widget("feature.community.branding-configurator", {
+          {widget("entity.community.branding-configurator", {
             isUnlocked: permissions.can_configure,
             link,
             onSubmit: sectionSubmit,

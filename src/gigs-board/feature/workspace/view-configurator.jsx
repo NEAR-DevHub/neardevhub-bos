@@ -332,10 +332,10 @@ const DevHub = {
 /* INCLUDE: "entity/viewer" */
 const Viewer = {
   communityPermissions: ({ handle }) =>
-    DevHub.get_account_community_permissions({
+    DevHub.useQuery("account_community_permissions", {
       account_id: context.accountId,
       community_handle: handle,
-    }) ?? {
+    }).data ?? {
       can_configure: false,
       can_delete: false,
     },

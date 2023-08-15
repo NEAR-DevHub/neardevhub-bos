@@ -203,10 +203,10 @@ const DevHub = {
 /* INCLUDE: "entity/viewer" */
 const Viewer = {
   communityPermissions: ({ handle }) =>
-    DevHub.get_account_community_permissions({
+    DevHub.useQuery("account_community_permissions", {
       account_id: context.accountId,
       community_handle: handle,
-    }) ?? {
+    }).data ?? {
       can_configure: false,
       can_delete: false,
     },
@@ -342,7 +342,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
         <div className="d-flex align-items-end gap-3">
           {widget("components.molecule.button", {
             classNames: { root: "btn-outline-primary" },
-            href: href("community.configure", { handle }),
+            href: href("community.configuration", { handle }),
             icon: { kind: "bootstrap-icon", variant: "bi-gear-wide-connected" },
             isHidden: !permissions.can_configure,
             label: "Configure community",

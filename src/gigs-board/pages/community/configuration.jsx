@@ -56,7 +56,7 @@ const CommunityConfigurationPage = ({ handle }) =>
   widget("entity.community.layout", {
     path: [{ label: "Communities", pageId: "communities" }],
 
-    children: widget("feature.community.configurator", {
+    children: widget("entity.community.configurator", {
       handle,
       link: href("community.activity", { handle }),
     }),
