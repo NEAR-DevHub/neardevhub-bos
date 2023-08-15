@@ -27,11 +27,11 @@ const DevHub = {
   delete_community: ({ handle }) =>
     Near.call(devHubAccountId, "delete_community", { handle }),
 
-  update_community_github: ({ handle, github }) =>
-    Near.call(devHubAccountId, "update_community_github", { handle, github }),
-
   update_community_board: ({ handle, board }) =>
     Near.call(devHubAccountId, "update_community_board", { handle, board }),
+
+  update_community_github: ({ handle, github }) =>
+    Near.call(devHubAccountId, "update_community_github", { handle, github }),
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,

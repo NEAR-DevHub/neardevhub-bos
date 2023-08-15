@@ -278,11 +278,11 @@ const DevHub = {
   delete_community: ({ handle }) =>
     Near.call(devHubAccountId, "delete_community", { handle }),
 
-  update_community_github: ({ handle, github }) =>
-    Near.call(devHubAccountId, "update_community_github", { handle, github }),
-
   update_community_board: ({ handle, board }) =>
     Near.call(devHubAccountId, "update_community_board", { handle, board }),
+
+  update_community_github: ({ handle, github }) =>
+    Near.call(devHubAccountId, "update_community_github", { handle, github }),
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
@@ -330,23 +330,6 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
-/* INCLUDE: "entity/viewer" */
-const Viewer = {
-  communityPermissions: ({ handle }) =>
-    DevHub.useQuery("account_community_permissions", {
-      account_id: context.accountId,
-      community_handle: handle,
-    }).data ?? {
-      can_configure: false,
-      can_delete: false,
-    },
-
-  role: {
-    isDevHubModerator:
-      DevHub.has_moderator({ account_id: context.accountId }) ?? false,
-  },
-};
-/* END_INCLUDE: "entity/viewer" */
 
 const CompactContainer = styled.div`
   width: fit-content !important;
@@ -455,7 +438,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         This community doesn't have a board
       </h5>
 
-      {Viewer.communityPermissions({ handle }).can_configure ? (
+      {permissions.can_configure ? (
         <button
           className="btn shadow btn-primary d-inline-flex gap-2"
           onClick={newViewInit}
