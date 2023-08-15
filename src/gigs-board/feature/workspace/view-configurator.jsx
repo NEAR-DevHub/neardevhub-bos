@@ -327,7 +327,7 @@ const DevHub = {
 const Viewer = {
   communityPermissions: ({ handle }) =>
     DevHub.useQuery("account_community_permissions", {
-      account_id: context.account_id,
+      account_id: context.accountId,
       community_handle: handle,
     }).data ?? {
       can_configure: false,

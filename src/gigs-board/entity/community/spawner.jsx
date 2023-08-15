@@ -271,6 +271,7 @@ const CommunitySpawner = ({ isHidden, ...otherProps }) =>
   widget("components.organism.configurator", {
     heading: "Community information",
     data: CommunityInputsDefaults,
+    fullWidth: true,
     isActive: true,
     isHidden,
     isUnlocked: true,

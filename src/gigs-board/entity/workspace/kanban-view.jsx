@@ -221,7 +221,7 @@ const WorkspaceKanbanView = ({
       >
         {typeof link === "string" && link.length > 0 ? (
           <>
-            {false && // TODO: Temporarily disabled
+            {false && // Disabled until workspaces are introduced
               widget("components.molecule.button", {
                 classNames: { root: "btn-sm btn-outline-secondary" },
                 href: link,

@@ -198,7 +198,7 @@ const DevHub = {
 const Viewer = {
   communityPermissions: ({ handle }) =>
     DevHub.useQuery("account_community_permissions", {
-      account_id: context.account_id,
+      account_id: context.accountId,
       community_handle: handle,
     }).data ?? {
       can_configure: false,
@@ -227,11 +227,10 @@ const Banner = styled.div`
 `;
 
 const CommunityHeader = ({ activeTabTitle, handle }) => {
-  State.init({
-    copiedShareUrl: false,
-  });
+  State.init({ isLinkCopied: false });
 
-  const community = DevHub.useQuery("community", { handle });
+  const community = DevHub.useQuery("community", { handle }),
+    permissions = Viewer.communityPermissions({ handle });
 
   if (community.data === null && community.isLoading) {
     return <div>Loading...</div>;
@@ -245,13 +244,15 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Activity",
     },
 
-    ...[community.data?.wiki1, community.data?.wiki2]
-      .filter((maybeWikiPage) => maybeWikiPage ?? false)
-      .map(({ name }, idx) => ({
-        params: { id: idx + 1 },
-        route: "community.wiki",
-        title: name,
-      })),
+    ...(!community.data?.features.wiki
+      ? []
+      : [community.data?.wiki1, community.data?.wiki2]
+          .filter((maybeWikiPage) => maybeWikiPage ?? false)
+          .map(({ name }, idx) => ({
+            params: { id: idx + 1 },
+            route: "community.wiki",
+            title: name,
+          }))),
 
     {
       iconClass: "bi bi-people-fill",
@@ -259,28 +260,48 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Teams",
     },
 
-    {
-      iconClass: "bi bi-kanban-fill",
-      route: "community.board",
-      title: "Board",
-    },
+    ...(!community.data?.features.board
+      ? []
+      : [
+          {
+            iconClass: "bi bi-kanban-fill",
+            route: "community.board",
+            title: "Board",
+          },
+        ]),
 
-    {
-      iconClass: "bi bi-github",
-      route: "community.github",
-      title: "GitHub",
-    },
+    ...(!community.data?.features.github
+      ? []
+      : [
+          {
+            iconClass: "bi bi-github",
+            route: "community.github",
+            title: "GitHub",
+          },
+        ]),
 
-    ...((community.data?.telegram_handle?.length ?? 0) > 0
-      ? [
+    ...(!community.data?.features.telegram &&
+    (community.data?.telegram_handle.length ?? 0) === 0
+      ? []
+      : [
           {
             iconClass: "bi bi-telegram",
             route: "community.telegram",
             title: "Telegram",
           },
-        ]
-      : []),
+        ]),
   ];
+
+  const linkCopyStateToggle = (forcedState) =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      isLinkCopied: forcedState ?? !lastKnownState.isLinkCopied,
+    }));
+
+  const onShareClick = () =>
+    clipboard
+      .writeText("https://near.org" + href("community.activity", { handle }))
+      .then(linkCopyStateToggle(true));
 
   return (
     <div className="d-flex flex-column gap-3 bg-white">
@@ -296,7 +317,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           <div className="position-relative">
             <div style={{ width: 150, height: 100 }}>
               <img
-                alt="Community logo"
+                alt="Loading logo..."
                 className="border border-3 border-white rounded-circle shadow position-absolute"
                 width="150"
                 height="150"
@@ -317,43 +338,24 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
             classNames: { root: "btn-outline-primary" },
             href: href("community.configure", { handle }),
             icon: { kind: "bootstrap-icon", variant: "bi-gear-wide-connected" },
-            isHidden: !Viewer.communityPermissions({ handle }).can_configure,
+            isHidden: !permissions.can_configure,
             label: "Configure community",
             type: "link",
           })}
 
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip>Copy URL to clipboard</Tooltip>}
-          >
-            <Button
-              type="button"
-              className={[
-                "d-flex align-items-center gap-2 border border-1 rounded-pill px-3 py-2",
-                "text-dark text-nowrap font-weight-bold fs-6",
-              ].join(" ")}
-              onMouseLeave={() => {
-                State.update({ copiedShareUrl: false });
-              }}
-              onClick={() => {
-                clipboard
-                  .writeText(
-                    "https://near.org" + href("community.activity", { handle })
-                  )
-                  .then(() => {
-                    State.update({ copiedShareUrl: true });
-                  });
-              }}
-            >
-              {state.copiedShareUrl ? (
-                <i className="bi bi-16 bi-check"></i>
-              ) : (
-                <i className="bi bi-16 bi-link-45deg"></i>
-              )}
+          {widget("components.molecule.button", {
+            classNames: { root: "btn-outline-primary" },
 
-              <span>Share</span>
-            </Button>
-          </OverlayTrigger>
+            icon: {
+              kind: "bootstrap-icon",
+              variant: state.isLinkCopied ? "bi-check" : "bi-link-45deg",
+            },
+
+            isHidden: !permissions.can_configure,
+            label: "Share",
+            onClick: onShareClick,
+            onMouseLeave: () => linkCopyStateToggle(false),
+          })}
         </div>
       </div>
 

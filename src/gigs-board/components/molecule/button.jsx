@@ -146,6 +146,20 @@ const styles = `
     --bs-btn-disabled-bg: #0551604a;
   }
 
+	&.btn-outline-primary {
+		--bs-btn-color: #087990;
+		--bs-btn-border-color: #087990;
+		--bs-btn-hover-color: #ffffff;
+		--bs-btn-hover-bg: #087990;
+		--bs-btn-hover-border-color: #087990;
+		--bs-btn-focus-shadow-rgb: 49, 132, 253;
+		--bs-btn-active-color: #ffffff;
+		--bs-btn-active-bg: #087990;
+		--bs-btn-active-border-color: #087990;
+		--bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+		--bs-btn-disabled-border-color: #0551604a;
+	}
+
   &[class*="btn-outline-"] {
     border-width: 2px;
   }
