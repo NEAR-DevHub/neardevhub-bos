@@ -161,7 +161,8 @@ const CommunityActivityPage = ({ handle }) => {
                   <small class="text-muted">
                     <span>Required tags:</span>
                     {widget("components.atom.tag", {
-                      label: communityData.tag,
+                      linkTo: "Feed",
+                      ...communityData,
                     })}
                   </small>
                   {widget("components.layout.Controls", {
@@ -177,12 +178,9 @@ const CommunityActivityPage = ({ handle }) => {
             </div>
           </div>
           <div class="col-md-3 container-fluid">
-            <Widget
-              src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.sidebar`}
-              props={{
-                label: communityData.tag,
-              }}
-            />
+            {widget("entity.community.sidebar", {
+              handle: communityData.handle,
+            })}
           </div>
         </div>
       ) : (

@@ -52,9 +52,15 @@ const Tile = ({
     }}
     {...{ id }}
   >
-    {!noFrame && (
+    {
       <div
-        className="d-flex align-items-center justify-content-between gap-3"
+        className={[
+          "d-flex align-items-center justify-content-between gap-3",
+
+          noFrame || (!heading && !headingAdornment && !headerSlotRight)
+            ? "d-none"
+            : "",
+        ].join(" ")}
         style={{ minHeight: 30 }}
       >
         <h5 className="h5 d-inline-flex gap-2 m-0">
@@ -64,7 +70,7 @@ const Tile = ({
 
         {headerSlotRight}
       </div>
-    )}
+    }
 
     {children}
   </AttractableDiv>
