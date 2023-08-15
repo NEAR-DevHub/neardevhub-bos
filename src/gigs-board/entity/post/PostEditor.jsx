@@ -64,7 +64,7 @@ const AutoComplete = styled.div`
 
 function textareaInputHandler(value) {
   const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update({ text: value, showAccountAutocomplete, description: value });
+  State.update({ text: value, showAccountAutocomplete });
 }
 
 function autoCompleteAccountId(id) {
@@ -350,7 +350,10 @@ const descriptionDiv = fields.includes("description") ? (
   <div className="col-lg-12  mb-2">
     {widget("components.molecule.markdown-field", {
       content: state.description,
-      onChange: (content) => textareaInputHandler(content),
+      onChange: (content) => {
+        State.update({ description: content });
+        textareaInputHandler(content);
+      },
       label: "Description:",
     })}
     {autocompleteEnabled && state.showAccountAutocomplete && (
