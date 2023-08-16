@@ -369,7 +369,7 @@ const GithubKanbanViewConfigurator = ({
       : JSON.parse(community.data.github)
     )?.kanbanBoards ?? {};
 
-  const board = Object.keys(boards)[0] ?? {};
+  const board = Object.values(boards)[0] ?? {};
 
   const errors = {
     noBoards: Object.keys(boards).length === 0,
