@@ -254,7 +254,7 @@ const devHubAccountId =
 
 const DevHub = {
   edit_community_github: ({ handle, github }) =>
-    Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
+    Near.call(devHubAccountId, "update_community_github", { handle, github }) ??
     null,
 
   get_access_control_info: () =>
@@ -263,7 +263,7 @@ const DevHub = {
   get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
   get_all_communities: () =>
-    Near.view(devHubAccountId, "get_all_communities") ?? null,
+    Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
