@@ -155,6 +155,7 @@ const CommunityGithubPage = ({ handle }) => {
   const permissions = Viewer.communityPermissions({ handle });
 
   return widget("entity.community.layout", {
+    path: [{ label: "Communities", pageId: "communities" }],
     handle,
     title: "GitHub",
 
