@@ -438,7 +438,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       );
 
   const onSubmit = () =>
-    DevHub.edit_community_github({
+    DevHub.update_community_github({
       handle: communityHandle,
 
       github: JSON.stringify({
