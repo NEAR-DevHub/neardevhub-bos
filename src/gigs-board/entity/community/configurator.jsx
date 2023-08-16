@@ -308,7 +308,7 @@ const CommunityAboutSchema = {
   },
 };
 
-const AccessControlSchema = {
+const CommunityAccessControlSchema = {
   admins: {
     format: "comma-separated",
     inputProps: { required: true },
@@ -427,7 +427,7 @@ const CommunityConfigurator = ({ handle, link }) => {
             isSubform: true,
             isUnlocked: permissions.can_configure,
             onSubmit: sectionSubmit,
-            schema: AccessControlSchema,
+            schema: CommunityAccessControlSchema,
             submitLabel: "Accept",
           })}
 
