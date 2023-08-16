@@ -617,7 +617,7 @@ const GithubKanbanViewConfigurator = ({
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-gear-wide-connected" />
-              <span>Board configuration</span>
+              <span>GitHub board configuration</span>
             </h5>
 
             {widget("components.molecule.button-switch", {
