@@ -286,7 +286,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           },
         ]),
 
-    ...(!community?.features.telegram &&
+    ...(!community?.features.telegram ||
     (community?.telegram_handle.length ?? 0) === 0
       ? []
       : [

@@ -255,9 +255,7 @@ const KanbanView = ({
               },
 
               isHidden:
-                typeof onConfigureClick !== "function" ||
-                (typeof onConfigureClick === "function" &&
-                  isUnderConfiguration),
+                typeof onConfigureClick !== "function" || isUnderConfiguration,
 
               label: "Configure",
               onClick: onConfigureClick,
