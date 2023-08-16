@@ -436,7 +436,7 @@ const CommunityConfigurator = ({ handle, link }) => {
             data: state.communityData?.wiki1,
             isSubform: true,
             isUnlocked: permissions.can_configure,
-            onSubmit: onWiki1Submit,
+            onSubmit: (value) => sectionSubmit({ wiki1: value }),
             submitLabel: "Accept",
             schema: CommunityWikiPageSchema,
           })}
