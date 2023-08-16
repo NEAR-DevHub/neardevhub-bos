@@ -309,6 +309,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
             github: true,
             board: true,
             telegram: true,
+            wiki: true,
           },
         },
       }
