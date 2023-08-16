@@ -433,21 +433,21 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Wiki page 1",
+            data: state.communityData?.wiki1,
             isSubform: true,
             isUnlocked: permissions.can_configure,
             onSubmit: onWiki1Submit,
             submitLabel: "Accept",
-            data: state.communityData?.wiki1,
             schema: CommunityWikiPageSchema,
           })}
 
           {widget("components.organism.configurator", {
             heading: "Wiki page 2",
+            data: state.communityData?.wiki2,
             isSubform: true,
             isUnlocked: permissions.can_configure,
             onSubmit: (value) => sectionSubmit({ wiki2: value }),
             submitLabel: "Accept",
-            data: state.communityData?.wiki2,
             schema: CommunityWikiPageSchema,
           })}
 
