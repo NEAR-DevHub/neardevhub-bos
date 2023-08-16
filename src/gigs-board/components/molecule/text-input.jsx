@@ -10,6 +10,8 @@ const TextInput = ({
   type,
   value,
   skipPaddingGap,
+  style,
+  ...otherProps
 }) => {
   const typeAttribute =
     type === "text" || type === "password" || type === "number" ? type : "text";
@@ -50,6 +52,8 @@ const TextInput = ({
         skipPaddingGap ? "" : "gap-1 p-2",
         className ?? "",
       ].join(" ")}
+      style={style}
+      {...otherProps}
     >
       {renderedLabels.length > 0 ? (
         <span
