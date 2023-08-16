@@ -149,8 +149,9 @@ const GithubView = ({
   columns,
   dataTypesIncluded,
   description,
-  editorTrigger,
+  isUnderConfiguration,
   link,
+  onConfigureClick,
   permissions,
   repoURL,
   ticketState,
@@ -207,8 +208,57 @@ const GithubView = ({
   }
 
   return (
-    <div className="d-flex flex-column gap-4 py-4">
-      <div className="d-flex flex-column align-items-center gap-2">
+    <div className="d-flex flex-column gap-4">
+      <div
+        className={"d-flex justify-content-end gap-3 p-3 rounded-4"}
+        style={{ backgroundColor: "#181818" }}
+      >
+        {typeof link === "string" && link.length > 0 ? (
+          <>
+            {widget("components.molecule.button", {
+              classNames: {
+                root: "btn-sm btn-outline-secondary me-auto text-white",
+              },
+
+              icon: { kind: "bootstrap-icon", variant: "bi-clipboard-fill" },
+              label: "Copy link",
+              onClick: () => clipboard.writeText(link),
+            })}
+          </>
+        ) : null}
+
+        {permissions.can_configure && (
+          <>
+            {widget("components.molecule.button", {
+              classNames: { root: "btn-sm btn-primary" },
+
+              icon: {
+                kind: "bootstrap-icon",
+                variant: "bi-gear-wide-connected",
+              },
+
+              isHidden:
+                typeof onConfigureClick !== "function" || isUnderConfiguration,
+
+              label: "Configure",
+              onClick: onConfigureClick,
+            })}
+
+            {widget("components.molecule.button", {
+              classNames: {
+                root: "btn-sm btn-outline-danger shadow-none border-0",
+              },
+
+              icon: { kind: "bootstrap-icon", variant: "bi-recycle" },
+              isHidden: "Disabled for MVP", // typeof onDeleteClick !== "function",
+              label: "Delete",
+              onClick: onDeleteClick,
+            })}
+          </>
+        )}
+      </div>
+
+      <div className="d-flex flex-column align-items-center gap-2 pt-4">
         <h5 className="h5 d-inline-flex gap-2 m-0">
           <i className="bi bi-github" />
           <span>{(title?.length ?? 0) > 0 ? title : "Untitled board"}</span>
@@ -219,28 +269,6 @@ const GithubView = ({
             ? description
             : "No description provided"}
         </p>
-      </div>
-
-      <div className="d-flex justify-content-end gap-3">
-        {link ? (
-          <button
-            className="btn shadow btn-sm btn-outline-secondary d-inline-flex gap-2"
-            onClick={() => clipboard.writeText(link)}
-          >
-            <i className="bi bi-clipboard-fill" />
-            <span>Copy link</span>
-          </button>
-        ) : null}
-
-        {permissions.can_configure ? (
-          <button
-            className="btn shadow btn-sm btn-primary d-inline-flex gap-2"
-            onClick={editorTrigger}
-          >
-            <i className="bi bi-gear-wide-connected" />
-            <span>Configure</span>
-          </button>
-        ) : null}
       </div>
 
       <div className="d-flex gap-3" style={{ overflowX: "auto" }}>

@@ -673,7 +673,7 @@ const GithubKanbanViewConfigurator = ({
             </button>
 
             <button
-              disabled={false}
+              disabled={!form.hasUnsubmittedChanges}
               className="btn shadow btn-success d-inline-flex gap-2 align-items-center"
               onClick={onSubmit}
               style={{ width: "fit-content" }}
@@ -688,8 +688,9 @@ const GithubKanbanViewConfigurator = ({
       {Object.keys(form.values).length > 0 ? (
         widget("entity.workspace.github-view", {
           ...form.values,
-          editorTrigger: () => formToggle(true),
+          isUnderConfiguration: state.isActive,
           link,
+          onConfigureClick: () => formToggle(true),
           permissions,
         })
       ) : (
