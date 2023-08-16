@@ -202,19 +202,12 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
-const communityMetadataFormatter = ({ admins, ...otherMetadata }) => ({
-  ...otherMetadata,
+const communityAccessControlFormatter = ({ admins, ...otherFields }) => ({
+  ...otherFields,
   admins: admins.filter((string) => string.length > 0),
 });
 
-const CommunityMetadataSchema = {
-  admins: {
-    format: "comma-separated",
-    inputProps: { required: true },
-    label: "Admins",
-    order: 10,
-  },
-
+const CommunityInformationSchema = {
   handle: {
     inputProps: {
       min: 2,
@@ -271,7 +264,9 @@ const CommunityMetadataSchema = {
     label: "Description",
     order: 2,
   },
+};
 
+const CommunityAboutSchema = {
   bio_markdown: {
     format: "markdown",
 
@@ -280,36 +275,45 @@ const CommunityMetadataSchema = {
       max: 200,
 
       placeholder:
-        "Tell more about your community. This will appear on your community’s homepage.",
+        "Tell people about your community. This will appear on your community’s homepage.",
     },
 
     label: "Bio",
     multiline: true,
-    order: 5,
+    order: 1,
   },
 
   twitter_handle: {
     inputProps: { min: 2, max: 60 },
     label: "Twitter handle",
-    order: 6,
+    order: 2,
   },
 
   github_handle: {
     inputProps: { min: 2, max: 60 },
     label: "Github organization handle",
-    order: 7,
+    order: 3,
   },
 
   telegram_handle: {
     format: "comma-separated",
     label: "Telegram handles",
-    order: 8,
+    order: 4,
   },
 
   website_url: {
     inputProps: { min: 2, max: 60 },
     label: "Website",
-    order: 9,
+    order: 5,
+  },
+};
+
+const AccessControlSchema = {
+  admins: {
+    format: "comma-separated",
+    inputProps: { required: true },
+    label: "Admins",
+    order: 1,
   },
 };
 
@@ -383,13 +387,33 @@ const CommunityConfigurator = ({ handle, link }) => {
           })}
 
           {widget("components.organism.configurator", {
-            heading: "Basic information and settings",
+            heading: "Community information",
             data: state.communityData,
-            formatter: communityMetadataFormatter,
             isSubform: true,
             isUnlocked: permissions.can_configure,
             onSubmit: sectionSubmit,
-            schema: CommunityMetadataSchema,
+            schema: CommunityInformationSchema,
+            submitLabel: "Accept",
+          })}
+
+          {widget("components.organism.configurator", {
+            heading: "About",
+            data: state.communityData,
+            isSubform: true,
+            isUnlocked: permissions.can_configure,
+            onSubmit: sectionSubmit,
+            schema: CommunityAboutSchema,
+            submitLabel: "Accept",
+          })}
+
+          {widget("components.organism.configurator", {
+            heading: "Access control",
+            data: state.communityData,
+            formatter: communityAccessControlFormatter,
+            isSubform: true,
+            isUnlocked: permissions.can_configure,
+            onSubmit: sectionSubmit,
+            schema: AccessControlSchema,
             submitLabel: "Accept",
           })}
 
