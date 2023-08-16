@@ -105,7 +105,7 @@ function defaultRenderItem(postId, additionalProps) {
   }
   // It is important to have a non-zero-height element as otherwise InfiniteScroll loads too many items on initial load
   return (
-    <div style={{ minHeight: "150px" }}>
+    <div className="py-2" style={{ minHeight: "150px" }}>
       {widget(
         `entity.post.Post`,
         {

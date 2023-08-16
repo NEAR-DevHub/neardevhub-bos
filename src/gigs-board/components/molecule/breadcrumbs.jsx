@@ -52,15 +52,38 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const Tag = ({ linkTo, tag }) => (
-  <a href={href(linkTo, { tag })}>
-    <span
-      class="badge me-1 text-dark fw-normal"
-      style={{ border: "1px solid #D0D5DD" }}
+const Breadcrumbs = ({ classNames, path }) =>
+  (path ?? null) === null ? (
+    <></>
+  ) : (
+    <div
+      aria-label="breadcrumb"
+      className={["d-flex", classNames?.root ?? ""].join(" ")}
+      style={{ backgroundColor: "#181818" }}
     >
-      {tag}
-    </span>
-  </a>
-);
+      <ol className="breadcrumb d-flex align-items-end m-0 h-100">
+        {path.map(({ isActive, isHidden, label, pageId, params }) => (
+          <li
+            aria-current="page"
+            className={[
+              "breadcrumb-item d-flex",
+              isActive ? "active" : "",
+              isHidden ? "d-none" : "",
+            ].join(" ")}
+          >
+            <a
+              className={["pb-1 lh-1 text-white", classNames?.link ?? ""].join(
+                " "
+              )}
+              href={href(pageId, params ?? {})}
+              style={{ fontWeight: 420 }}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
 
-return Tag(props);
+return Breadcrumbs(props);

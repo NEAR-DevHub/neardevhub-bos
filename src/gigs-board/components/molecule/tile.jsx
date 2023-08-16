@@ -29,10 +29,11 @@ const AttractableImage = styled.img`
 
 const Tile = ({
   children,
-  id,
+  fullWidth,
   headerSlotRight,
   heading,
   headingAdornment,
+  id,
   noFrame,
   minHeight,
   noBorder,
@@ -45,12 +46,21 @@ const Tile = ({
       !noBorder ? "border" : "",
       !noFrame ? "p-4" : "",
     ].join(" ")}
-    style={{ maxWidth: 896, minHeight: minHeight ?? 240 }}
+    style={{
+      maxWidth: !(fullWidth ?? false) ? 896 : null,
+      minHeight: minHeight ?? 240,
+    }}
     {...{ id }}
   >
-    {!noFrame && (
+    {
       <div
-        className="d-flex align-items-center justify-content-between gap-3"
+        className={[
+          "d-flex align-items-center justify-content-between gap-3",
+
+          noFrame || (!heading && !headingAdornment && !headerSlotRight)
+            ? "d-none"
+            : "",
+        ].join(" ")}
         style={{ minHeight: 30 }}
       >
         <h5 className="h5 d-inline-flex gap-2 m-0">
@@ -60,7 +70,7 @@ const Tile = ({
 
         {headerSlotRight}
       </div>
-    )}
+    }
 
     {children}
   </AttractableDiv>

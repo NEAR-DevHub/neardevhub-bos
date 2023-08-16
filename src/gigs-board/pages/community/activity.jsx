@@ -61,6 +61,33 @@ const DevHub = {
     Near.call(devHubAccountId, "update_community_github", { handle, github }) ??
     null,
 
+  create_workspace: ({ author_community_handle, metadata }) =>
+    Near.call(devHubAccountId, "create_workspace", {
+      author_community_handle,
+      metadata,
+    }) ?? null,
+
+  delete_workspace: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace", { id }) ?? null,
+
+  update_workspace_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_workspace_metadata", { metadata }) ??
+    null,
+
+  get_workspace_views_metadata: ({ workspace_id }) =>
+    Near.view(devHubAccountId, "get_workspace_views_metadata", {
+      workspace_id,
+    }) ?? null,
+
+  create_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "create_workspace_view", { view }) ?? null,
+
+  update_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "update_workspace_view", { view }) ?? null,
+
+  delete_workspace_view: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace_view", { id }) ?? null,
+
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
@@ -134,7 +161,8 @@ const CommunityActivityPage = ({ handle }) => {
                   <small class="text-muted">
                     <span>Required tags:</span>
                     {widget("components.atom.tag", {
-                      label: communityData.tag,
+                      linkTo: "Feed",
+                      ...communityData,
                     })}
                   </small>
                   {widget("components.layout.Controls", {
@@ -150,12 +178,9 @@ const CommunityActivityPage = ({ handle }) => {
             </div>
           </div>
           <div class="col-md-3 container-fluid">
-            <Widget
-              src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.community.sidebar`}
-              props={{
-                label: communityData.tag,
-              }}
-            />
+            {widget("entity.community.sidebar", {
+              handle: communityData.handle,
+            })}
           </div>
         </div>
       ) : (
