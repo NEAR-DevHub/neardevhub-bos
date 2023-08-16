@@ -317,6 +317,20 @@ const AccessControlSchema = {
   },
 };
 
+const CommunityWikiPageSchema = {
+  name: {
+    label: "Name",
+    order: 1,
+  },
+
+  content_markdown: {
+    format: "markdown",
+    label: "Content",
+    multiline: true,
+    order: 2,
+  },
+};
+
 const CommunityConfigurator = ({ handle, link }) => {
   State.init({
     communityData: null,
@@ -424,20 +438,7 @@ const CommunityConfigurator = ({ handle, link }) => {
             onSubmit: onWiki1Submit,
             submitLabel: "Accept",
             data: state.communityData?.wiki1,
-
-            schema: {
-              name: {
-                label: "Name",
-                order: 1,
-              },
-
-              content_markdown: {
-                format: "markdown",
-                label: "Content",
-                multiline: true,
-                order: 2,
-              },
-            },
+            schema: CommunityWikiPageSchema,
           })}
 
           {widget("components.organism.configurator", {
@@ -447,20 +448,7 @@ const CommunityConfigurator = ({ handle, link }) => {
             onSubmit: (value) => sectionSubmit({ wiki2: value }),
             submitLabel: "Accept",
             data: state.communityData?.wiki2,
-
-            schema: {
-              name: {
-                label: "Name",
-                order: 1,
-              },
-
-              content_markdown: {
-                format: "markdown",
-                label: "Content",
-                multiline: true,
-                order: 2,
-              },
-            },
+            schema: CommunityWikiPageSchema,
           })}
 
           {permissions.can_delete ? (
