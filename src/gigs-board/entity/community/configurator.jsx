@@ -227,7 +227,7 @@ const CommunityMetadataSchema = {
     },
 
     label: "URL handle",
-    order: 1,
+    order: 3,
   },
 
   name: {
@@ -239,7 +239,7 @@ const CommunityMetadataSchema = {
     },
 
     label: "Name",
-    order: 2,
+    order: 1,
   },
 
   tag: {
@@ -254,7 +254,7 @@ const CommunityMetadataSchema = {
     },
 
     label: "Tag",
-    order: 3,
+    order: 4,
   },
 
   description: {
@@ -269,7 +269,7 @@ const CommunityMetadataSchema = {
     },
 
     label: "Description",
-    order: 4,
+    order: 2,
   },
 
   bio_markdown: {
