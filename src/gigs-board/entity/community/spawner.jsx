@@ -223,7 +223,7 @@ const CommunityInputsPartialSchema = {
   tag: {
     inputProps: {
       min: 2,
-      max: 20,
+      max: 30,
 
       placeholder:
         "Any posts with this tag will show up in your community feed.",
