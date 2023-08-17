@@ -289,6 +289,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                 inputProps: {
                   ...(inputProps ?? {}),
                   ...(fieldParamsByType[fieldType].inputProps ?? {}),
+                  tabIndex: order,
                 },
               })
             )}

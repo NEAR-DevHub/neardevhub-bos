@@ -337,7 +337,7 @@ const CompactContainer = styled.div`
 `;
 
 const KanbanViewConfiguratorSettings = {
-  maxColumnsNumber: 20,
+  maxColumnsNumber: 10,
 };
 
 const KanbanViewDefaults = {
@@ -435,12 +435,23 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         {widget("components.molecule.text-input", {
           className: "flex-shrink-0",
           key: "kanban-view-title",
-          label: "Name",
+          label: "Board title",
           onChange: form.update({ path: ["metadata", "title"] }),
-          placeholder: "NEAR Protocol NEPs",
+          placeholder: "Enter board title.",
           value: form.values.metadata.title,
         })}
       </div>
+
+      {widget("components.molecule.text-input", {
+        className: "w-100",
+        inputProps: { className: "h-75" },
+        key: "kanban-view-description",
+        label: "Board description",
+        multiline: true,
+        onChange: form.update({ path: ["metadata", "description"] }),
+        placeholder: "Latest NEAR Enhancement Proposals by status.",
+        value: form.values.metadata.description,
+      })}
 
       <CompactContainer>
         <div className="d-flex gap-3 flex-column flex-lg-row">
@@ -448,9 +459,12 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
             className: "flex-shrink-0",
             format: "comma-separated",
             key: "kanban-view-tags-required",
-            label: "All the tags MUST be presented in posts",
+
+            label:
+              "Enter tags you want to include. Posts with these tags will display.",
+
             onChange: form.update({ path: ["config", "tags", "required"] }),
-            placeholder: "near-protocol-neps, ",
+            placeholder: "tag1, tag2",
             value: form.values.config.tags.required.join(", "),
           })}
         </div>
@@ -460,24 +474,16 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
             className: "flex-shrink-0",
             format: "comma-separated",
             key: "kanban-view-tags-excluded",
-            label: "All the tags MUST NOT be presented in posts",
+
+            label:
+              "Enter tags you want to exclude. Posts with these tags will not show.",
+
             onChange: form.update({ path: ["config", "tags", "excluded"] }),
-            placeholder: "near-protocol-neps, ",
+            placeholder: "tag3, tag4",
             value: form.values.config.tags.excluded.join(", "),
           })}
         </div>
       </CompactContainer>
-
-      {widget("components.molecule.text-input", {
-        className: "w-100",
-        inputProps: { className: "h-75" },
-        key: "kanban-view-description",
-        label: "Description",
-        multiline: true,
-        onChange: form.update({ path: ["metadata", "description"] }),
-        placeholder: "Latest NEAR Enhancement Proposals by status.",
-        value: form.values.metadata.description,
-      })}
 
       <div className="d-flex align-items-center justify-content-between">
         <span className="d-inline-flex gap-2 m-0">
@@ -500,13 +506,13 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                 {widget("components.molecule.text-input", {
                   className: "flex-grow-1",
                   key: `column-${id}-title`,
-                  label: "Title",
+                  label: "Column title",
 
                   onChange: form.update({
                     path: ["config", "columns", id, "title"],
                   }),
 
-                  placeholder: "👀 Review",
+                  placeholder: "Enter column title.",
                   value: title,
                 })}
 
@@ -519,21 +525,19 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                     path: ["config", "columns", id, "description"],
                   }),
 
-                  placeholder:
-                    "NEPs that need a review by Subject Matter Experts.",
-
+                  placeholder: "Enter a brief description of the column.",
                   value: description,
                 })}
 
                 {widget("components.molecule.text-input", {
                   key: `kanban-view-column-${id}-tag`,
-                  label: "Tag",
+                  label: "Enter a single tag to show posts in this column",
 
                   onChange: form.update({
                     path: ["config", "columns", id, "tag"],
                   }),
 
-                  placeholder: "",
+                  placeholder: "Tag-Name",
                   value: tag,
                 })}
               </div>

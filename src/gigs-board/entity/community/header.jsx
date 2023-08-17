@@ -341,7 +341,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
 
         <div className="d-flex align-items-end gap-3">
           {widget("components.molecule.button", {
-            classNames: { root: "btn-outline-primary" },
+            classNames: { root: "btn-outline-light text-dark" },
             href: href("community.configuration", { handle }),
             icon: { kind: "bootstrap-icon", variant: "bi-gear-wide-connected" },
             isHidden: !permissions.can_configure,
@@ -350,7 +350,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           })}
 
           {widget("components.molecule.button", {
-            classNames: { root: "btn-outline-primary" },
+            classNames: { root: "btn-outline-light text-dark" },
 
             icon: {
               kind: "bootstrap-icon",
@@ -360,6 +360,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
             label: "Share",
             onClick: onShareClick,
             onMouseLeave: () => linkCopyStateToggle(false),
+            title: "Copy link to clipboard",
           })}
         </div>
       </div>

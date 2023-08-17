@@ -317,9 +317,7 @@ const KanbanView = ({
                   <div class="d-flex flex-column gap-3">
                     {column.postIds.map((postId) =>
                       widget(
-                        ["entity.workspace", configuration.ticket_kind].join(
-                          "."
-                        ),
+                        ["entity.workspace", config.ticket_kind].join("."),
                         { id: postId },
                         postId
                       )
