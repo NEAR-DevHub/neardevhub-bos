@@ -186,10 +186,7 @@ const useForm = ({ initialValues, stateKey, uninitialized }) => {
 
   if (
     !uninitialized &&
-    (formState === null ||
-      (Object.keys(formState?.values ?? {}).length > 0 &&
-        !formState.hasUnsubmittedChanges &&
-        !isSynced))
+    (formState === null || (!formState.hasUnsubmittedChanges && !isSynced))
   ) {
     formReset();
   }
