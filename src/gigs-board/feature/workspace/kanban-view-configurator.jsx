@@ -578,6 +578,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
             {widget("components.molecule.button-switch", {
               currentValue: state.editingMode,
+              isHidden: true,
               key: "editingMode",
               onChange: editingModeSwitch,
 

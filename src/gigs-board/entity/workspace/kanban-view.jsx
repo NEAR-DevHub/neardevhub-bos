@@ -300,21 +300,23 @@ const KanbanView = ({
               <div className="card rounded-4">
                 <div
                   className={[
-                    "card-body d-flex flex-column gap-3",
+                    "card-body d-flex flex-column gap-3 p-2",
                     "border border-2 border-secondary rounded-4",
                   ].join(" ")}
                 >
-                  <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
-                    {column.title}
+                  <span className="d-flex flex-column py-1">
+                    <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
+                      {column.title}
 
-                    <span className="badge rounded-pill bg-secondary">
-                      {column.postIds.length}
-                    </span>
-                  </h6>
+                      <span className="badge rounded-pill bg-secondary">
+                        {column.postIds.length}
+                      </span>
+                    </h6>
 
-                  <p class="text-secondary m-0">{column.description}</p>
+                    <p class="text-secondary m-0">{column.description}</p>
+                  </span>
 
-                  <div class="d-flex flex-column gap-3">
+                  <div class="d-flex flex-column gap-2">
                     {column.postIds.map((postId) =>
                       widget(
                         ["entity.workspace", config.ticket_kind].join("."),

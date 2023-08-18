@@ -622,6 +622,7 @@ const GithubKanbanViewConfigurator = ({
 
             {widget("components.molecule.button-switch", {
               currentValue: state.editingMode,
+              isHidden: true,
               key: "editingMode",
               onChange: onEditingModeChange,
 

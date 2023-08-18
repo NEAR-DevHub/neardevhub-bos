@@ -149,7 +149,7 @@ const borders = {
 const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
-const postLables = post.snapshot.labels ? (
+const postLabels = post.snapshot.labels ? (
   <div class="card-title">
     {post.snapshot.labels.map((label) => (
       <a href={href("Feed", { label })} key={label}>
@@ -184,12 +184,12 @@ const descriptionArea =
   ) : null;
 
 return (
-  <AttractableDiv className={`card my-2 ${borders[snapshot.post_type]}`}>
+  <AttractableDiv className={`card ${borders[snapshot.post_type]}`}>
     {header}
     <div className="card-body">
       {postTitle}
       {descriptionArea}
-      {postLables}
+      {postLabels}
     </div>
   </AttractableDiv>
 );
