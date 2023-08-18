@@ -189,13 +189,15 @@ const CommunitiesPage = () => {
           onCancel: () => spawnerToggle(false),
         })}
 
-        {(communitiesMetadata.data ?? []).map((communityMetadata) =>
-          widget(
-            "entity.community.card",
-            { metadata: communityMetadata },
-            communityMetadata.handle
-          )
-        )}
+        {(communitiesMetadata.data ?? [])
+          .reverse()
+          .map((communityMetadata) =>
+            widget(
+              "entity.community.card",
+              { metadata: communityMetadata },
+              communityMetadata.handle
+            )
+          )}
       </div>
     ),
   });

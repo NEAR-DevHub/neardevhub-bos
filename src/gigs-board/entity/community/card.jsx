@@ -101,8 +101,6 @@ const CommunityCard = ({
         "text-black text-decoration-none",
       ].join(" ")}
       style={{
-        order: metadata.admins.includes(context.accountId) ? 1 : 2,
-
         background:
           isBannerEnabled ?? false
             ? `center / cover no-repeat url(${metadata.banner_url})`

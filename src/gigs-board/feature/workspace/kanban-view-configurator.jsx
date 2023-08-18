@@ -449,7 +449,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         label: "Board description",
         multiline: true,
         onChange: form.update({ path: ["metadata", "description"] }),
-        placeholder: "Latest NEAR Enhancement Proposals by status.",
+        placeholder: "Enter board description.",
         value: form.values.metadata.description,
       })}
 
