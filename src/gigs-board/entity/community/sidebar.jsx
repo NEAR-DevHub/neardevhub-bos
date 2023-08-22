@@ -185,7 +185,11 @@ const UserList = (users) => {
   return (
     <div>
       {users.map((user, i) => (
-        <div className={`row ${i < users.length - 1 ? "mb-3" : ""}`}>
+        <div
+          className={`row ${
+            i < users.length - 1 ? "mb-3" : ""
+          } overflow-hidden`}
+        >
           <div class="col-9">
             <span
               key={user}
@@ -228,7 +232,7 @@ const Sidebar = ({ handle }) => {
       <hr style={{ width: "100%", borderTop: "1px solid #00000033" }} />
 
       {widget("components.molecule.tile", {
-        heading: "Admins",
+        heading: "Community Admins",
         minHeight: 0,
         children: UserList(community.admins),
         noBorder: true,

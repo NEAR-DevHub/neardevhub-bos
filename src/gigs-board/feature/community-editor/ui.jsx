@@ -475,7 +475,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
             },
 
             formatter: accessControlSectionFormatter,
-            heading: "Access control",
+            heading: "Community Admins",
 
             isEditingAllowed:
               isCommunityNew || Viewer.can.editCommunity(community.data),
@@ -488,7 +488,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
               admins: {
                 format: "comma-separated",
                 inputProps: { required: true },
-                label: "Admins",
+                label: "Admin",
                 order: 1,
               },
             },

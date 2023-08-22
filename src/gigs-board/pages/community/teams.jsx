@@ -157,14 +157,9 @@ const UserList = (name, users) => {
 const Teams = (
   <div class="d-flex flex-column align-items-center gap-4 p-4">
     {widget("components.molecule.tile", {
-      heading: "Admins",
+      heading: "Community Admins",
       minHeight: 0,
       children: UserList("Admin", admins),
-    })}
-    {widget("components.molecule.tile", {
-      heading: "Community Moderators",
-      minHeight: 0,
-      children: UserList("Moderator", moderators),
     })}
   </div>
 );
