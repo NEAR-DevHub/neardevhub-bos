@@ -205,7 +205,7 @@ const banner = (
           .map((community) =>
             widget(
               "entity.community.card",
-              { ...community, format: "medium" },
+              { metadata: community, format: "medium" },
               community.handle
             )
           )}
