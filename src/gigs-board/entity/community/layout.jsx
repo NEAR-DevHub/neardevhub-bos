@@ -52,22 +52,22 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityPageTemplate = ({ children, handle, path, title }) => (
-  <div className="w-100 h-100">
-    {widget("components.layout.app-header")}
-    {/* TODO: Add breadcrumbs rendered from path prop */}
+const CommunityLayout = ({ children, handle, noHeader, path, title }) =>
+  widget("components.template.app-layout", {
+    path,
 
-    {typeof handle === "string" ? (
-      <>
-        {widget("entity.community.header", { activeTabTitle: title, handle })}
-        <div style={{ padding: "0 32px" }}>{children}</div>
-      </>
-    ) : (
-      <div class="alert alert-danger" role="alert">
-        Error: community handle not found in URL parameters
-      </div>
-    )}
-  </div>
-);
+    banner:
+      typeof handle === "string" ? (
+        !noHeader &&
+        widget("entity.community.header", { activeTabTitle: title, handle })
+      ) : (
+        <div class="alert alert-danger" role="alert">
+          Error: community handle not found in URL parameters
+        </div>
+      ),
 
-return <CommunityPageTemplate {...props} />;
+    children:
+      typeof handle === "string" ? <div className="p-4">{children}</div> : null,
+  });
+
+return CommunityLayout(props);

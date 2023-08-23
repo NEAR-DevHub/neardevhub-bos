@@ -207,10 +207,10 @@ const Logo = styled.div`
 
 const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 
-const CommunityBrandingEditor = ({
-  isEditingAllowed,
+const CommunityBrandingConfigurator = ({
+  isUnlocked,
   link,
-  onChangesSubmit,
+  onSubmit,
   values,
 }) => {
   const initialInput = { banner: null, logo: null };
@@ -231,7 +231,7 @@ const CommunityBrandingEditor = ({
   const isSynced = Struct.isEqual(state.input, initialValues);
 
   if (hasUnsubmittedChanges && !isSynced) {
-    onChangesSubmit({
+    onSubmit({
       banner_url: cidToURL(state.input.banner?.cid ?? initialValues.banner.cid),
       logo_url: cidToURL(state.input.logo?.cid ?? initialValues.logo.cid),
     });
@@ -245,7 +245,7 @@ const CommunityBrandingEditor = ({
   return (
     <AttractableDiv
       className="card rounded-4 w-100"
-      style={{ maxWidth: 896, height: 280 }}
+      style={{ maxWidth: 920, height: 280 }}
     >
       <Banner
         alt="Community banner preview"
@@ -256,9 +256,7 @@ const CommunityBrandingEditor = ({
           )})`,
         }}
       >
-        {isEditingAllowed ? (
-          <IpfsImageUpload image={state.input.banner} />
-        ) : null}
+        {isUnlocked ? <IpfsImageUpload image={state.input.banner} /> : null}
       </Banner>
 
       <Logo
@@ -277,7 +275,7 @@ const CommunityBrandingEditor = ({
           )})`,
         }}
       >
-        {isEditingAllowed ? <IpfsImageUpload image={state.input.logo} /> : null}
+        {isUnlocked ? <IpfsImageUpload image={state.input.logo} /> : null}
       </Logo>
 
       <div
@@ -306,4 +304,4 @@ const CommunityBrandingEditor = ({
   );
 };
 
-return CommunityBrandingEditor(props);
+return CommunityBrandingConfigurator(props);

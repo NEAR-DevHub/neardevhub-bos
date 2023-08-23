@@ -107,7 +107,7 @@ if (is_edit_or_add_post_transaction) {
     </p>
   );
 } else {
-  return widget("components.layout.Page", {
+  return widget("components.template.app-layout", {
     children: widget("entity.post.Post", {
       id: props.id,
       timestamp: props.timestamp,

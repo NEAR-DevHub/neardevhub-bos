@@ -34,6 +34,7 @@ const Tile = ({
   heading,
   headingAdornment,
   id,
+  isHidden,
   noFrame,
   minHeight,
   noBorder,
@@ -45,10 +46,12 @@ const Tile = ({
       !borderRadius ? "rounded-4" : borderRadius,
       !noBorder ? "border" : "",
       !noFrame ? "p-4" : "",
+      isHidden ? "d-none" : "",
     ].join(" ")}
     style={{
-      maxWidth: !(fullWidth ?? false) ? 896 : null,
-      minHeight: minHeight ?? 240,
+      maxWidth: !(fullWidth ?? false) ? 920 : null,
+      minHeight: minHeight ?? 180,
+      height: "fit-content",
     }}
     {...{ id }}
   >

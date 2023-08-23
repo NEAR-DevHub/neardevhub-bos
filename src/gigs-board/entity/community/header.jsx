@@ -51,6 +51,22 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/gui/navigation" */
+const NavUnderline = styled.ul`
+  border-bottom: 1px #eceef0 solid;
+
+  a {
+    color: #687076;
+    text-decoration: none;
+  }
+
+  a.active {
+    font-weight: bold;
+    color: #0c7283;
+    border-bottom: 4px solid #0c7283;
+  }
+`;
+/* END_INCLUDE: "core/lib/gui/navigation" */
 /* INCLUDE: "core/lib/struct" */
 const Struct = {
   deepFieldUpdate: (
@@ -108,22 +124,45 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
+  has_moderator: ({ account_id }) =>
+    Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
+
+  create_community: ({ inputs }) =>
+    Near.call(devHubAccountId, "create_community", { inputs }),
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
+
+  get_account_community_permissions: ({ account_id, community_handle }) =>
+    Near.view(devHubAccountId, "get_account_community_permissions", {
+      account_id,
+      community_handle,
+    }) ?? null,
+
+  update_community: ({ handle, community }) =>
+    Near.call(devHubAccountId, "update_community", { handle, community }),
+
+  delete_community: ({ handle }) =>
+    Near.call(devHubAccountId, "delete_community", { handle }),
+
+  update_community_board: ({ handle, board }) =>
+    Near.call(devHubAccountId, "update_community_board", { handle, board }),
+
   update_community_github: ({ handle, github }) =>
-    Near.call(devHubAccountId, "update_community_github", { handle, github }) ??
-    null,
+    Near.call(devHubAccountId, "update_community_github", { handle, github }),
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
   get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
-  get_all_communities: () =>
+  get_all_communities_metadata: () =>
     Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
-
-  get_community: ({ handle }) =>
-    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
   get_post: ({ post_id }) =>
     Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
@@ -136,10 +175,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  get_root_members: () =>
-    Near.view(devHubAccountId, "get_root_members") ?? null,
-
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -165,62 +201,22 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 /* INCLUDE: "entity/viewer" */
-const access_control_info = DevHub.useQuery({
-  name: "access_control_info",
-});
-
 const Viewer = {
-  can: {
-    editCommunity: (communityData) =>
-      Struct.typeMatch(communityData) &&
-      (communityData.admins.includes(context.accountId) ||
-        Viewer.role.isDevHubModerator),
-  },
-
-  workspacePermissions: (workspaceId) => {
-    const workspace_id = parseInt(workspaceId);
-
-    const defaultPermissions = { can_configure: false };
-
-    return !isNaN(workspace_id)
-      ? Near.view(devHubAccountId, "get_account_workspace_permissions", {
-          account_id: context.accountId,
-          workspace_id: workspace_id,
-        }) ?? defaultPermissions
-      : defaultPermissions;
-  },
+  communityPermissions: ({ handle }) =>
+    DevHub.get_account_community_permissions({
+      account_id: context.accountId,
+      community_handle: handle,
+    }) ?? {
+      can_configure: false,
+      can_delete: false,
+    },
 
   role: {
     isDevHubModerator:
-      access_control_info.data === null || access_control_info.isLoading
-        ? false
-        : access_control_info.data.members_list[
-            "team:moderators"
-          ]?.children?.includes?.(context.accountId) ?? false,
+      DevHub.has_moderator({ account_id: context.accountId }) ?? false,
   },
 };
 /* END_INCLUDE: "entity/viewer" */
-
-const Header = styled.div`
-  overflow: hidden;
-  background: #fff;
-  margin-bottom: 25px;
-`;
-
-const NavUnderline = styled.ul`
-  border-bottom: 1px #eceef0 solid;
-
-  a {
-    color: #687076;
-    text-decoration: none;
-  }
-
-  a.active {
-    font-weight: bold;
-    color: #0c7283;
-    border-bottom: 4px solid #0c7283;
-  }
-`;
 
 const Button = styled.button`
   height: 40px;
@@ -232,29 +228,17 @@ const Button = styled.button`
 const Banner = styled.div`
   max-width: 100%;
   width: 1320px;
+  min-height: 240px;
   height: 240px;
 `;
 
-const LogoImage = styled.img`
-  top: -50px;
-`;
-
-const SizedDiv = styled.div`
-  width: 150px;
-  height: 100px;
-`;
-
 const CommunityHeader = ({ activeTabTitle, handle }) => {
-  State.init({
-    copiedShareUrl: false,
-  });
+  State.init({ isLinkCopied: false });
 
-  const community = DevHub.useQuery({
-    name: "community",
-    params: { handle },
-  });
+  const community = DevHub.get_community({ handle }),
+    permissions = Viewer.communityPermissions({ handle });
 
-  if (community.data === null && community.isLoading) {
+  if (community === null) {
     return <div>Loading...</div>;
   }
 
@@ -266,13 +250,15 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Activity",
     },
 
-    ...[community.data?.wiki1, community.data?.wiki2]
-      .filter((maybeWikiPage) => maybeWikiPage ?? false)
-      .map(({ name }, idx) => ({
-        params: { id: idx + 1 },
-        route: "community.wiki",
-        title: name,
-      })),
+    ...(!community?.features.wiki
+      ? []
+      : [community?.wiki1, community?.wiki2]
+          .filter((maybeWikiPage) => maybeWikiPage ?? false)
+          .map(({ name }, idx) => ({
+            params: { id: idx + 1 },
+            route: "community.wiki",
+            title: name,
+          }))),
 
     {
       iconClass: "bi bi-people-fill",
@@ -280,109 +266,102 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Teams",
     },
 
-    {
-      iconClass: "bi bi-coin",
-      route: "community.sponsorship",
-      title: "Sponsorship",
-    },
+    ...(!community?.features.board
+      ? []
+      : [
+          {
+            iconClass: "bi bi-kanban-fill",
+            route: "community.board",
+            title: "Board",
+          },
+        ]),
 
-    {
-      iconClass: "bi bi-github",
-      route: "community.github",
-      title: "GitHub",
-    },
+    ...(!community?.features.github
+      ? []
+      : [
+          {
+            iconClass: "bi bi-github",
+            route: "community.github",
+            title: "GitHub",
+          },
+        ]),
 
-    ...((community.data?.telegram_handle?.length ?? 0) > 0
-      ? [
+    ...(!community?.features.telegram ||
+    (community?.telegram_handle.length ?? 0) === 0
+      ? []
+      : [
           {
             iconClass: "bi bi-telegram",
             route: "community.telegram",
             title: "Telegram",
           },
-        ]
-      : []),
+        ]),
   ];
 
+  const linkCopyStateToggle = (forcedState) =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      isLinkCopied: forcedState ?? !lastKnownState.isLinkCopied,
+    }));
+
+  const onShareClick = () =>
+    clipboard
+      .writeText("https://near.org" + href("community.activity", { handle }))
+      .then(linkCopyStateToggle(true));
+
   return (
-    <Header className="d-flex flex-column gap-3">
+    <div className="d-flex flex-column gap-3 bg-white">
       <Banner
         className="object-fit-cover"
         style={{
-          background: `center / cover no-repeat url(${community.data.banner_url})`,
+          background: `center / cover no-repeat url(${community.banner_url})`,
         }}
       />
 
       <div className="d-md-flex d-block justify-content-between container">
         <div className="d-md-flex d-block align-items-end">
           <div className="position-relative">
-            <SizedDiv>
-              <LogoImage
-                src={community.data.logo_url}
-                alt="Community logo"
+            <div style={{ width: 150, height: 100 }}>
+              <img
+                alt="Loading logo..."
+                className="border border-3 border-white rounded-circle shadow position-absolute"
                 width="150"
                 height="150"
-                className="border border-3 border-white rounded-circle shadow position-absolute"
+                src={community.logo_url}
+                style={{ top: -50 }}
               />
-            </SizedDiv>
+            </div>
           </div>
 
-          <div>
-            <div className="h1 pt-3 ps-3 text-nowrap">
-              {community.data.name}
-            </div>
-
-            <div className="ps-3 pb-2 text-secondary">
-              {community.data.description}
-            </div>
+          <div className="d-flex flex-column ps-3 pt-3 pb-2">
+            <span className="h1 text-nowrap">{community.name}</span>
+            <span className="text-secondary">{community.description}</span>
           </div>
         </div>
 
         <div className="d-flex align-items-end gap-3">
-          {Viewer.can.editCommunity(community.data) ? (
-            <a
-              href={href("community.edit-info", { handle })}
-              className={[
-                "d-flex align-items-center gap-2 border border-1 rounded-pill px-3 py-2",
-                "text-decoration-none text-dark text-nowrap font-weight-bold fs-6",
-              ].join(" ")}
-            >
-              <i className="bi bi-gear" />
-              <span>Edit information</span>
-            </a>
-          ) : null}
+          {widget("components.molecule.button", {
+            classNames: { root: "btn-outline-light text-dark" },
+            href: href("community.configuration", { handle }),
+            icon: { kind: "bootstrap-icon", variant: "bi-gear-wide-connected" },
+            isHidden: !permissions.can_configure,
+            label: "Configure community",
+            type: "link",
+          })}
 
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip>Copy URL to clipboard</Tooltip>}
-          >
-            <Button
-              type="button"
-              className={[
-                "d-flex align-items-center gap-2 border border-1 rounded-pill px-3 py-2",
-                "text-dark text-nowrap font-weight-bold fs-6",
-              ].join(" ")}
-              onMouseLeave={() => {
-                State.update({ copiedShareUrl: false });
-              }}
-              onClick={() => {
-                clipboard
-                  .writeText(
-                    "https://near.org" + href("community.activity", { handle })
-                  )
-                  .then(() => {
-                    State.update({ copiedShareUrl: true });
-                  });
-              }}
-            >
-              {state.copiedShareUrl ? (
-                <i className="bi bi-16 bi-check"></i>
-              ) : (
-                <i className="bi bi-16 bi-link-45deg"></i>
-              )}
+          {widget("components.molecule.button", {
+            classNames: { root: "btn-outline-light text-dark" },
 
-              <span>Share</span>
-            </Button>
-          </OverlayTrigger>
+            icon: {
+              kind: "bootstrap-icon",
+              variant: state.isLinkCopied ? "bi-check" : "bi-link-45deg",
+            },
+
+            label: "Share",
+            onClick: onShareClick,
+            onMouseLeave: () => linkCopyStateToggle(false),
+            title: "Copy link to clipboard",
+          })}
         </div>
       </div>
 
@@ -404,7 +383,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           ) : null
         )}
       </NavUnderline>
-    </Header>
+    </div>
   );
 };
 
