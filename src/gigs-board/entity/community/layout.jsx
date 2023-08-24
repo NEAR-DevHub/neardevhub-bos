@@ -1,4 +1,4 @@
-/* INCLUDE: "common.jsx" */
+d; /* INCLUDE: "common.jsx" */
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -52,11 +52,22 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityNewPage = () => (
-  <div className="d-flex flex-column">
-    {widget("components.layout.app-header", { style: { marginBottom: 0 } })}
-    {widget("feature.community-editor.ui", {})}
-  </div>
-);
+const CommunityLayout = ({ children, handle, noHeader, path, title }) =>
+  widget("components.template.app-layout", {
+    path,
 
-return CommunityNewPage(props);
+    banner:
+      typeof handle === "string" ? (
+        !noHeader &&
+        widget("entity.community.header", { activeTabTitle: title, handle })
+      ) : (
+        <div class="alert alert-danger" role="alert">
+          Error: community handle not found in URL parameters
+        </div>
+      ),
+
+    children:
+      typeof handle === "string" ? <div className="p-4">{children}</div> : null,
+  });
+
+return CommunityLayout(props);

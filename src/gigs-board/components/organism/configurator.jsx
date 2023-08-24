@@ -136,19 +136,19 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
+const useForm = ({ initialValues, stateKey, uninitialized }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
   };
 
-  const formState = state[formStateKey] ?? null,
+  const formState = state[stateKey] ?? null,
     isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
       ...lastKnownComponentState,
-      [formStateKey]: initialFormState,
+      [stateKey]: initialFormState,
       hasUnsubmittedChanges: false,
     }));
 
@@ -173,7 +173,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       State.update((lastKnownComponentState) => ({
         ...lastKnownComponentState,
 
-        [formStateKey]: {
+        [stateKey]: {
           hasUnsubmittedChanges: !Struct.isEqual(
             updatedValues,
             initialFormState.values
@@ -186,10 +186,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
 
   if (
     !uninitialized &&
-    (formState === null ||
-      (Object.keys(formState?.values ?? {}).length > 0 &&
-        !formState.hasUnsubmittedChanges &&
-        !isSynced))
+    (formState === null || (!formState.hasUnsubmittedChanges && !isSynced))
   ) {
     formReset();
   }
@@ -198,10 +195,17 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
     ...(formState ?? initialFormState),
     isSynced,
     reset: formReset,
+    stateKey,
     update: formUpdate,
   };
 };
 /* END_INCLUDE: "core/lib/gui/form" */
+
+const ValueWrapper = styled.div`
+  & > p {
+    margin: 0;
+  }
+`;
 
 const fieldParamsByType = {
   array: {
@@ -245,24 +249,24 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
               >
                 <label className="fw-bold w-25">{label}</label>
 
-                {format !== "markdown" ? (
-                  <p className={[contentDisplayClassName, "w-75"].join(" ")}>
-                    {(fieldType === "array" && format === "comma-separated"
-                      ? form.values[fieldKey]
-                          .filter((string) => string.length > 0)
-                          .join(", ")
-                      : form.values[fieldKey]
-                    )?.toString?.() || "none"}
-                  </p>
-                ) : (
-                  <p className={[contentDisplayClassName, "w-75"].join(" ")}>
-                    {(form.values[fieldKey]?.length ?? 0) > 0 ? (
-                      <Markdown text={form.values[fieldKey]} />
-                    ) : (
-                      "none"
-                    )}
-                  </p>
-                )}
+                <ValueWrapper
+                  className={[contentDisplayClassName, "w-75"].join(" ")}
+                >
+                  {format !== "markdown" ? (
+                    <span>
+                      {(fieldType === "array" && format === "comma-separated"
+                        ? form.values[fieldKey]
+                            .filter((string) => string.length > 0)
+                            .join(", ")
+                        : form.values[fieldKey]
+                      )?.toString?.() || "none"}
+                    </span>
+                  ) : (form.values[fieldKey]?.length ?? 0) > 0 ? (
+                    <Markdown text={form.values[fieldKey]} />
+                  ) : (
+                    <span>none</span>
+                  )}
+                </ValueWrapper>
               </div>
             ) : (
               widget(fieldParamsByType[fieldType].name, {
@@ -282,6 +286,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                 inputProps: {
                   ...(inputProps ?? {}),
                   ...(fieldParamsByType[fieldType].inputProps ?? {}),
+                  tabIndex: order,
                 },
               })
             )}
@@ -292,22 +297,27 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
   </>
 );
 
-const Editor = ({
+const Configurator = ({
   actionsAdditional,
   cancelLabel,
   classNames,
   data,
   fieldsRender: customFieldsRender,
   formatter: toFormatted,
+  fullWidth,
   heading,
-  isEditorActive,
-  isEditingAllowed,
-  noEditorFrame,
+  isActive,
+  isHidden,
+  isSubform,
+  isUnlocked,
+  isValid,
+  noFrame,
   onCancel,
-  onChangesSubmit,
+  onSubmit,
   schema,
+  submitIcon,
   submitLabel,
-  ...restProps
+  ...otherProps
 }) => {
   const fieldsRender =
     typeof customFieldsRender === "function"
@@ -315,7 +325,7 @@ const Editor = ({
       : defaultFieldsRender;
 
   State.init({
-    isEditorActive: isEditorActive ?? false,
+    isActive: isActive ?? false,
   });
 
   const initialValues = Struct.typeMatch(schema)
@@ -324,80 +334,84 @@ const Editor = ({
 
   const form = useForm({ initialValues, stateKey: "form" });
 
-  const editorToggle = (forcedState) =>
+  const formFormattedValues =
+    typeof toFormatted === "function" ? toFormatted(form.values) : form.values;
+
+  const isFormValid =
+    typeof isValid === "function" ? isValid(formFormattedValues) : true;
+
+  const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
+      isActive: forcedState ?? !lastKnownState.isActive,
     }));
 
   const onCancelClick = () => {
-    editorToggle(false);
+    if (!isActive) formToggle(false);
     form.reset();
-    if (typeof onChangesSubmit === "function") onChangesSubmit(initialValues);
+    if (isSubform && typeof onSubmit === "function") onSubmit(initialValues);
     if (typeof onCancel === "function") onCancel();
   };
 
   const onSubmitClick = () => {
-    if (typeof onChangesSubmit === "function") {
-      onChangesSubmit(
-        typeof toFormatted === "function"
-          ? toFormatted(form.values)
-          : form.values
-      );
+    if (typeof onSubmit === "function" && isFormValid) {
+      onSubmit(formFormattedValues);
     }
 
-    editorToggle(false);
+    formToggle(false);
   };
 
   return widget("components.molecule.tile", {
     className: classNames.root,
+    fullWidth,
     heading,
-    noFrame: noEditorFrame,
+    isHidden,
+    noFrame,
+    ...otherProps,
 
     headerSlotRight:
-      isEditingAllowed && !state.isEditorActive
-        ? widget("components.atom.button", {
-            classNames: {
-              root: "btn-sm btn-secondary",
-              adornment: "bi bi-pen-fill",
-            },
-
+      isUnlocked && !state.isActive
+        ? widget("components.molecule.button", {
+            classNames: { root: "btn-sm btn-secondary" },
+            icon: { kind: "bootstrap-icon", variant: "bi-pen-fill" },
             label: "Edit",
-            onClick: () => editorToggle(true),
+            onClick: () => formToggle(true),
           })
         : null,
 
     children: (
-      <div className="flex-grow-1 d-flex flex-column gap-3">
+      <div className="flex-grow-1 d-flex flex-column gap-4">
         <div
-          className={`d-flex flex-column gap-${state.isEditorActive ? 1 : 4}`}
+          className={`d-flex flex-column gap-${state.isActive ? 1 : 4} py-1`}
         >
           {fieldsRender({
             form,
-            isEditable: isEditingAllowed && state.isEditorActive,
+            isEditable: isUnlocked && state.isActive,
             schema,
           })}
         </div>
 
-        {!noEditorFrame && isEditingAllowed && state.isEditorActive ? (
+        {!noFrame && isUnlocked && state.isActive ? (
           <div className="d-flex align-items-center justify-content-end gap-3 mt-auto">
             {actionsAdditional ? (
               <div className="me-auto">{actionsAdditional}</div>
             ) : null}
 
-            {widget("components.atom.button", {
+            {widget("components.molecule.button", {
               classNames: { root: "btn-outline-danger shadow-none border-0" },
               label: cancelLabel ?? "Cancel",
               onClick: onCancelClick,
             })}
 
-            {widget("components.atom.button", {
-              classNames: {
-                root: classNames.submit ?? "btn-success",
-                adornment: `bi ${classNames.submitAdornment}`,
+            {widget("components.molecule.button", {
+              classNames: { root: classNames.submit ?? "btn-success" },
+              disabled: !form.hasUnsubmittedChanges || !isFormValid,
+
+              icon: submitIcon ?? {
+                kind: "bootstrap-icon",
+                variant: "bi-check-circle-fill",
               },
 
-              disabled: !form.hasUnsubmittedChanges,
               label: submitLabel ?? "Submit",
               onClick: onSubmitClick,
             })}
@@ -405,9 +419,7 @@ const Editor = ({
         ) : null}
       </div>
     ),
-
-    ...restProps,
   });
 };
 
-return Editor(props);
+return Configurator(props);

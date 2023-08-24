@@ -85,19 +85,19 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
+const useForm = ({ initialValues, stateKey, uninitialized }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
   };
 
-  const formState = state[formStateKey] ?? null,
+  const formState = state[stateKey] ?? null,
     isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
       ...lastKnownComponentState,
-      [formStateKey]: initialFormState,
+      [stateKey]: initialFormState,
       hasUnsubmittedChanges: false,
     }));
 
@@ -122,7 +122,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
       State.update((lastKnownComponentState) => ({
         ...lastKnownComponentState,
 
-        [formStateKey]: {
+        [stateKey]: {
           hasUnsubmittedChanges: !Struct.isEqual(
             updatedValues,
             initialFormState.values
@@ -135,10 +135,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
 
   if (
     !uninitialized &&
-    (formState === null ||
-      (Object.keys(formState?.values ?? {}).length > 0 &&
-        !formState.hasUnsubmittedChanges &&
-        !isSynced))
+    (formState === null || (!formState.hasUnsubmittedChanges && !isSynced))
   ) {
     formReset();
   }
@@ -147,6 +144,7 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
     ...(formState ?? initialFormState),
     isSynced,
     reset: formReset,
+    stateKey,
     update: formUpdate,
   };
 };
@@ -253,22 +251,45 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
-  edit_community_github: ({ handle, github }) =>
-    Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
-    null,
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
+  has_moderator: ({ account_id }) =>
+    Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
+
+  create_community: ({ inputs }) =>
+    Near.call(devHubAccountId, "create_community", { inputs }),
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
+
+  get_account_community_permissions: ({ account_id, community_handle }) =>
+    Near.view(devHubAccountId, "get_account_community_permissions", {
+      account_id,
+      community_handle,
+    }) ?? null,
+
+  update_community: ({ handle, community }) =>
+    Near.call(devHubAccountId, "update_community", { handle, community }),
+
+  delete_community: ({ handle }) =>
+    Near.call(devHubAccountId, "delete_community", { handle }),
+
+  update_community_board: ({ handle, board }) =>
+    Near.call(devHubAccountId, "update_community_board", { handle, board }),
+
+  update_community_github: ({ handle, github }) =>
+    Near.call(devHubAccountId, "update_community_github", { handle, github }),
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
   get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
-  get_all_communities: () =>
-    Near.view(devHubAccountId, "get_all_communities") ?? null,
+  get_all_communities_metadata: () =>
+    Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
-
-  get_community: ({ handle }) =>
-    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
   get_post: ({ post_id }) =>
     Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
@@ -281,10 +302,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  get_root_members: () =>
-    Near.view(devHubAccountId, "get_root_members") ?? null,
-
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -309,29 +327,6 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
-/* INCLUDE: "entity/viewer" */
-const access_control_info = DevHub.useQuery({
-  name: "access_control_info",
-});
-
-const Viewer = {
-  can: {
-    editCommunity: (communityData) =>
-      Struct.typeMatch(communityData) &&
-      (communityData.admins.includes(context.accountId) ||
-        Viewer.role.isDevHubModerator),
-  },
-
-  role: {
-    isDevHubModerator:
-      access_control_info.data === null || access_control_info.isLoading
-        ? false
-        : access_control_info.data.members_list[
-            "team:moderators"
-          ]?.children?.includes?.(context.accountId) ?? false,
-  },
-};
-/* END_INCLUDE: "entity/viewer" */
 
 const EditorSettings = {
   maxColumnsNumber: 20,
@@ -344,6 +339,7 @@ const CompactContainer = styled.div`
 
 const BoardConfigDefaults = {
   id: uuid(),
+  kind: "github-view",
   columns: {},
   dataTypesIncluded: { Issue: false, PullRequest: true },
   description: "",
@@ -352,16 +348,17 @@ const BoardConfigDefaults = {
   title: "",
 };
 
-const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
+const GithubKanbanViewConfigurator = ({
+  communityHandle,
+  link,
+  permissions,
+}) => {
   State.init({
     editingMode: "form",
-    isEditorActive: false,
+    isActive: false,
   });
 
-  const community = DevHub.useQuery({
-    name: "community",
-    params: { handle: communityHandle },
-  });
+  const community = DevHub.useQuery("community", { handle: communityHandle });
 
   const boards =
     ((community?.data?.github ?? null) === null
@@ -369,26 +366,23 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       : JSON.parse(community.data.github)
     )?.kanbanBoards ?? {};
 
-  // TODO: Should be taken from props once support for multiple boards is introduced
-  const boardId = Object.keys(boards)[0] ?? null;
+  const board = Object.values(boards)[0] ?? {};
 
   const errors = {
-    noBoard: !Struct.typeMatch(boards[boardId]),
-    noBoards: !community.isLoading && Object.keys(boards).length === 0,
-    noBoardId: typeof boardId !== "string",
+    noBoards: Object.keys(boards).length === 0,
     noCommunity: !community.isLoading && community.data === null,
   };
 
   const form = useForm({
-    initialValues: boards[boardId],
+    initialValues: board,
     stateKey: "board",
-    uninitialized: errors.noBoards || errors.noBoardId,
+    uninitialized: errors.noBoards,
   });
 
-  const editorToggle = (forcedState) =>
+  const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      isEditorActive: forcedState ?? !lastKnownState.isEditorActive,
+      isActive: forcedState ?? !lastKnownState.isActive,
     }));
 
   const onEditingModeChange = ({ target: { value } }) =>
@@ -397,11 +391,11 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       editingMode: value,
     }));
 
-  const boardCreate = () =>
+  const newViewInit = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
       board: { hasUnsubmittedChanges: false, values: BoardConfigDefaults },
-      isEditorActive: true,
+      isActive: true,
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
@@ -425,13 +419,13 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       );
 
   const onSubmit = () =>
-    DevHub.edit_community_github({
+    DevHub.update_community_github({
       handle: communityHandle,
 
       github: JSON.stringify({
         kanbanBoards: {
           ...boards,
-          [form.values.id]: form.values,
+          [form.values.id]: { kind: "github-view", ...form.values },
         },
       }),
     });
@@ -473,7 +467,7 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
               <span>Ticket type</span>
             </span>
 
-            {Object.entries(form.values.dataTypesIncluded).map(
+            {Object.entries(form.values.dataTypesIncluded ?? {}).map(
               ([typeName, enabled]) =>
                 widget(
                   "components.atom.toggle",
@@ -533,12 +527,12 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
         <div className="d-flex align-items-center justify-content-between">
           <span className="d-inline-flex gap-2 m-0">
             <i className="bi bi-list-task" />
-            <span>Columns ( max. 6 )</span>
+            <span>Columns ( max. {EditorSettings.maxColumnsNumber} )</span>
           </span>
         </div>
 
         <div className="d-flex flex-column align-items-center gap-3">
-          {Object.values(form.values.columns).map(
+          {Object.values(form.values.columns ?? {}).map(
             ({ id, description, labelSearchTerms, title }) => (
               <div
                 className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
@@ -607,26 +601,25 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       </>
     ) : null;
 
-  return community.data === null || (!errors.noBoards && errors.noBoardId) ? (
+  return community.data === null ? (
     <div>
       {(community.isLoading && "Loading...") ||
-        (!errors.noBoards && errors.noBoardId
-          ? "Error: board id not found in editor props."
-          : errors.noCommunity &&
-            `Community with handle ${communityHandle} not found.`)}
+        (errors.noCommunity &&
+          `Community with handle ${communityHandle} not found.`)}
     </div>
   ) : (
     <div className="d-flex flex-column gap-4">
-      {state.isEditorActive && Object.keys(form.values).length > 0 ? (
+      {state.isActive && Object.keys(form.values).length > 0 ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
-              <i className="bi bi-wrench-adjustable-circle-fill" />
-              <span>Board configuration</span>
+              <i className="bi bi-gear-wide-connected" />
+              <span>GitHub board configuration</span>
             </h5>
 
             {widget("components.molecule.button-switch", {
               currentValue: state.editingMode,
+              isHidden: true,
               key: "editingMode",
               onChange: onEditingModeChange,
 
@@ -671,14 +664,14 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
 
             <button
               className="btn btn-outline-danger border-0 d-inline-flex gap-2 align-items-center"
-              onClick={() => editorToggle(false)}
+              onClick={() => formToggle(false)}
               style={{ width: "fit-content" }}
             >
               <span>Cancel</span>
             </button>
 
             <button
-              disabled={false}
+              disabled={!form.hasUnsubmittedChanges}
               className="btn shadow btn-success d-inline-flex gap-2 align-items-center"
               onClick={onSubmit}
               style={{ width: "fit-content" }}
@@ -691,11 +684,12 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
       ) : null}
 
       {Object.keys(form.values).length > 0 ? (
-        widget("entity.team-board.github-kanban", {
+        widget("entity.workspace.github-view", {
           ...form.values,
-          editorTrigger: () => editorToggle(true),
-          isEditable: Viewer.can.editCommunity(community.data),
-          pageURL,
+          isUnderConfiguration: state.isActive,
+          link,
+          onConfigureClick: () => formToggle(true),
+          permissions,
         })
       ) : (
         <div
@@ -703,22 +697,19 @@ const GithubKanbanBoardEditor = ({ communityHandle, pageURL }) => {
           style={{ height: 384 }}
         >
           <h5 className="h5 d-inline-flex gap-2 m-0">
-            This community doesn't have GitHub integrations
+            This community doesn't have a GitHub board
           </h5>
 
-          {Viewer.can.editCommunity(community.data) ? (
-            <button
-              className="btn shadow btn-primary d-inline-flex gap-2"
-              onClick={boardCreate}
-            >
-              <i className="bi bi-kanban-fill" />
-              <span>Create board</span>
-            </button>
-          ) : null}
+          {widget("components.molecule.button", {
+            icon: { kind: "bootstrap-icon", variant: "bi-github" },
+            isHidden: !permissions.can_configure,
+            label: "Create GitHub board",
+            onClick: newViewInit,
+          })}
         </div>
       )}
     </div>
   );
 };
 
-return GithubKanbanBoardEditor(props);
+return GithubKanbanViewConfigurator(props);
