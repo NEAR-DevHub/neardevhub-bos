@@ -52,11 +52,12 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityNewPage = () => (
-  <div className="d-flex flex-column">
-    {widget("components.layout.app-header", { style: { marginBottom: 0 } })}
-    {widget("feature.community-editor.ui", {})}
+const AppLayout = ({ banner, children, path }) => (
+  <div className="d-flex flex-column w-100 h-100" style={{ minHeight: "86vh" }}>
+    {widget("components.organism.app-header", { path })}
+    {banner}
+    <div className="w-100 h-100">{children}</div>
   </div>
 );
 
-return CommunityNewPage(props);
+return AppLayout(props);

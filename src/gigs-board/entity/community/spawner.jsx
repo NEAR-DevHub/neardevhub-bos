@@ -51,6 +51,57 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
+
+  isEqual: (input1, input2) =>
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
+      : false,
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+};
+/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -134,64 +185,110 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const communityData = DevHub.get_community({ handle: props.handle }) ?? null;
-const root_members = DevHub.get_root_members() ?? null;
-
-if (communityData === null || root_members === null) {
-  return <div>Loading...</div>;
-}
-
-const moderators = (root_members ?? {})?.["team:moderators"]?.children;
-const admins = communityData.admins;
-
-const UserList = (name, users) => {
-  return (
-    <div>
-      {(users ?? []).map((user, i) => (
-        <div className={`row ${i < users.length - 1 ? "mb-3" : ""}`}>
-          <div class="col-3">
-            <b>{name + " #" + (i + 1)}</b>
-          </div>
-          <div class="col-9">
-            <span
-              key={user}
-              className="d-inline-flex"
-              style={{ fontWeight: 500 }}
-            >
-              <Widget
-                src="neardevgov.near/widget/ProfileLine"
-                props={{
-                  accountId: user,
-                  hideAccountId: true,
-                  tooltip: true,
-                }}
-              />
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+const CommunityInputsDefaults = {
+  handle: "",
+  name: "",
+  tag: "",
+  description: "",
 };
 
-const Teams = (
-  <div class="d-flex flex-column align-items-center gap-4">
-    {widget("components.molecule.tile", {
-      heading: "Admins",
-      minHeight: 0,
-      children: UserList("Admin", admins),
-    })}
-    {widget("components.molecule.tile", {
-      heading: "Community Moderators",
-      minHeight: 0,
-      children: UserList("Moderator", moderators),
-    })}
-  </div>
-);
+const CommunityInputsPartialSchema = {
+  handle: {
+    inputProps: {
+      min: 2,
+      max: 40,
 
-return widget("entity.community.layout", {
-  path: [{ label: "Communities", pageId: "communities" }],
-  handle: props.handle,
-  title: "Teams",
-  children: Teams,
-});
+      placeholder:
+        "Choose unique URL handle for your community. Example: zero-knowledge.",
+
+      required: true,
+    },
+
+    label: "URL handle",
+    order: 3,
+  },
+
+  name: {
+    inputProps: {
+      min: 2,
+      max: 30,
+      placeholder: "Community name.",
+      required: true,
+    },
+
+    label: "Name",
+    order: 1,
+  },
+
+  tag: {
+    inputProps: {
+      min: 2,
+      max: 30,
+
+      placeholder:
+        "Any posts with this tag will show up in your community feed.",
+
+      required: true,
+    },
+
+    label: "Tag",
+    order: 4,
+  },
+
+  description: {
+    inputProps: {
+      min: 2,
+      max: 60,
+
+      placeholder:
+        "Describe your community in one short sentence that will appear in the communities discovery page.",
+
+      required: true,
+    },
+
+    label: "Description",
+    order: 2,
+  },
+};
+
+const communityInputsValidator = (formValues) =>
+  Struct.typeMatch(formValues) &&
+  Object.values(formValues).every(
+    (value) => typeof value === "string" && value.length > 0
+  );
+
+const onCommunitySubmit = (inputs) =>
+  DevHub.create_community({
+    inputs: {
+      ...inputs,
+
+      bio_markdown: [
+        "This is a sample text about your community.",
+        "You can change it on the community configuration page.",
+      ].join("\n"),
+
+      logo_url:
+        "https://ipfs.near.social/ipfs/bafkreibysr2mkwhb4j36h2t7mqwhynqdy4vzjfygfkfg65kuspd2bawauu",
+
+      banner_url:
+        "https://ipfs.near.social/ipfs/bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
+    },
+  });
+
+const CommunitySpawner = ({ isHidden, ...otherProps }) =>
+  widget("components.organism.configurator", {
+    heading: "Community information",
+    data: CommunityInputsDefaults,
+    fullWidth: true,
+    isActive: true,
+    isHidden,
+    isUnlocked: true,
+    isValid: communityInputsValidator,
+    onSubmit: onCommunitySubmit,
+    schema: CommunityInputsPartialSchema,
+    submitIcon: { kind: "bootstrap-icon", variant: "bi-rocket-takeoff-fill" },
+    submitLabel: "Launch",
+    ...otherProps,
+  });
+
+return CommunitySpawner(props);
