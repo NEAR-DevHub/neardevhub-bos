@@ -145,6 +145,7 @@ State.init({
   createTeam: false,
   createLabel: false,
   isEditorActive: false,
+  editTeams: false,
 });
 
 const access_info = DevHub.get_access_control_info() ?? null,
@@ -199,9 +200,26 @@ function addTeam(teamData) {
   ]);
 }
 
+// Check for the edit state and sufficient user permissions, it is passed down
+// to the TeamInfo widget
+const editMode =
+  (Viewer.role.isDevHubModerator || isContractOwner) && state.editTeams;
+
 const pageContent = (
   <div className="pt-3">
     {(Viewer.role.isDevHubModerator || isContractOwner) &&
+      widget("components.layout.Controls", {
+        title: state.editTeams ? "Stop editing" : "Edit Teams",
+        onClick: () => {
+          State.update({
+            editTeams: !state.editTeams,
+            icon: !state.editLabels
+              ? "bi-pencil-square"
+              : "bi-stop-circle-fill",
+          });
+        },
+      })}
+    {editMode &&
       widget("components.layout.Controls", {
         title: "Create Restricted labels",
         onClick: () => {
@@ -213,6 +231,7 @@ const pageContent = (
     <div className="pt-3">
       {widget("entity.team.LabelsPermissions", {
         rules: access_info.rules_list,
+        editMode: editMode,
       })}
     </div>
     {state.createLabel &&
@@ -223,7 +242,7 @@ const pageContent = (
         },
         heading: "Restricted labels",
         isEditorActive: state.isEditorActive,
-        isEditingAllowed: Viewer.role.isDevHubModerator || isContractOwner,
+        isEditingAllowed: editMode,
         onChangesSubmit: addLabel,
         submitLabel: "Accept",
         data: state.labelData,
@@ -250,7 +269,7 @@ const pageContent = (
           },
         },
       })}
-    {(Viewer.role.isDevHubModerator || isContractOwner) && (
+    {editMode && (
       <div class="pt-3">
         {widget("components.layout.Controls", {
           title: "Create Team",
@@ -270,7 +289,7 @@ const pageContent = (
         },
         heading: "Team info",
         isEditorActive: state.isEditorActive,
-        isEditingAllowed: Viewer.role.isDevHubModerator || isContractOwner,
+        isEditingAllowed: editMode,
         onChangesSubmit: addTeam,
         submitLabel: "Accept",
         data: state.teamData,
@@ -319,6 +338,7 @@ const pageContent = (
               teamLevel: true,
               root_members,
               teamId: member,
+              editMode: editMode,
             },
             member
           )

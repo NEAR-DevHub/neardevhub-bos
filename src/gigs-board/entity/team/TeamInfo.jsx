@@ -174,6 +174,7 @@ const header = isTeam ? (
     {props.member}
   </div>
 ) : (
+  // TODO
   // <Widget
   //   src={`neardevgov.near/widget/ProfileLine`}
   //   props={{ accountId: props.member }}
@@ -384,6 +385,11 @@ function removeLabelFromTeam(rule) {
   ]);
 }
 
+// Edit label
+// Add label
+// Remove label
+function editLabel() {}
+
 return (
   <>
     <AttractableDiv className="card my-2">
@@ -392,7 +398,7 @@ return (
           <small class="text-muted">{header}</small>
           <div class="d-flex">
             {props.teamLevel &&
-              (Viewer.role.isDevHubModerator || isContractOwner) &&
+              props.editMode &&
               widget("components.layout.Controls", {
                 title: "Add member",
                 onClick: () => {
@@ -402,23 +408,23 @@ return (
                   });
                 },
               })}
-            {!props.teamLevel &&
-              (Viewer.role.isDevHubModerator || isContractOwner) && (
-                <button
-                  class="btn btn-light"
-                  onClick={() => removeMemberFromTeam(props.member)}
-                >
-                  Remove
-                </button>
-              )}
+            {!props.teamLevel && props.editMode && (
+              <button
+                class="btn btn-light"
+                onClick={() => removeMemberFromTeam(props.member)}
+              >
+                Remove
+              </button>
+            )}
             {props.teamLevel &&
-              (Viewer.role.isDevHubModerator || isContractOwner) &&
+              props.editMode &&
               widget("components.layout.Controls", {
                 title: !state.editLabels ? "Edit Labels" : "Stop Editing",
                 icon: !state.editLabels
                   ? "bi-pencil-square"
                   : "bi-stop-circle-fill",
                 onClick: () => {
+                  // TODO
                   if (!state.editLabels) {
                     // Submit new labels
                   }
@@ -427,10 +433,9 @@ return (
                   });
                 },
               })}
-            {props.teamLevel &&
-            ((Viewer.role.isDevHubModerator &&
-              props.member !== "team:moderators") ||
-              isContractOwner) ? (
+            {/* TODO make it unable for moderators to delete the moderator team unless they are contract owner  */}
+            {/* props.member !== "team:moderators" */}
+            {props.teamLevel && props.editMode ? (
               <button
                 class="btn btn-light"
                 onClick={() => removeTeam(props.member)}
@@ -538,6 +543,7 @@ return (
                   teamLevel: false,
                   root_members: props.root_members,
                   teamId: props.teamId,
+                  editMode: props.editMode,
                 },
                 child
               )
