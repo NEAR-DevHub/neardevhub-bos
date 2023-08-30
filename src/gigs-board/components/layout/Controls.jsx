@@ -58,7 +58,7 @@ const buttonStyle = {
 };
 
 return (
-  <div class="d-flex flex-row-reverse">
+  <div class="d-flex flex-row-reverse" className={props.className}>
     {props.href ? (
       <a class="btn btn-light" style={buttonStyle} href={props.href}>
         <i

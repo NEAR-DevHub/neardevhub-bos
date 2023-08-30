@@ -185,8 +185,6 @@ const header = isTeam ? (
   </div>
 );
 
-const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
-
 const SlimButton = styled.button`
   height: 24px;
   line-height: 12px;
@@ -198,15 +196,26 @@ const TeamDataDefaults = {
   labels: Object.entries(metadata.permissions)
     .map((entry) => entry[0])
     .join(","),
+  permissions: Object.entries(metadata.permissions)
+    .map((entry) => entry[1])
+    .join(","),
 };
+
+const initialLabels = {};
+for (const [label, permissions] of Object.entries(metadata.permissions)) {
+  initialLabels[label] = permissions.join(',');
+}
 
 State.init({
   addMember: false,
   addLabel: false,
   labelError: "",
   memberError: "",
-  editLabels: false,
+  editLabels: true, // TODO false
   teamData: isTeam ? TeamDataDefaults : null,
+  permissions: initialLabels,
+  newLabel: "",
+  newPermissions: "",
 });
 
 const permissionDesc = {
@@ -338,6 +347,7 @@ function editLabelsFromTeam(labelData) {
   let allLabels = labelData.labels.split(",");
   let legitLabels = allLabels.filter((label) => possibleLabels.includes(label));
   legitLabels.forEach((label) => {
+    // TODO
     newPermissions[label] = ["edit-post", "use-labels"];
   });
   if (legitLabels.length) {
@@ -389,6 +399,104 @@ function removeLabelFromTeam(rule) {
 // Add label
 // Remove label
 function editLabel() {}
+
+const singleLabelEditor = (label) =>
+  widget("components.organism.editor", {
+    classNames: {
+      submit: "btn-primary",
+      submitAdornment: "bi-check-circle-fill",
+    },
+    heading: `Label: ${label}`,
+    isEditorActive: state.isEditorActive,
+    isEditingAllowed: props.editMode,
+    onChangesSubmit: editLabelsFromTeam,
+    submitLabel: "Accept",
+    data: state.teamData,
+    schema: {
+      permissions: {
+        inputProps: {
+          min: 9, // edit-post
+          max: 20, // edit-post,use-labels
+          format: "comma-separated",
+          placeholder: `edit-post,use-labels`,
+          required: true,
+        },
+        label: "Label permissions",
+        order: 2,
+      },
+    },
+  });
+
+const editLabelsDiv = () => {
+  return (
+    <div>
+      {Object.entries(metadata.permissions).map((entry) => {
+        return editLabelDiv(entry[0]);
+      })}
+      {editLabelDiv("")}
+    </div>
+  );
+};
+
+const editLabelDiv = (label) => {
+  const labelNameInput = widget("components.molecule.text-input", {
+    inputProps: { type: "text", disabled: !!label },
+    placeholder: "example-label",
+    label: "name",
+    value: !!label ? label : state.newLabel,
+    onChange: ({ text }) => {
+      State.update({ newLabel: text });
+    },
+  });
+  const labelPermissionsInput = widget("components.molecule.text-input", {
+    inputProps: { type: "text" },
+    placeholder: "edit-post,use-labels",
+    label: "permissions",
+    value: !!label ? state.permissions[label] : state.newPermissions,
+    onChange: ({ text }) => {
+      if (!!label) {
+        state.permissions[label] = text;
+        State.update({
+          permissions: state.permissions,
+        });
+      } else {
+        State.update({
+          newPermissions: text,
+        });
+      }
+    },
+  });
+
+  const deleteLabelBtn = (
+    <button
+      class="btn btn-light mb-2 align-self-end h-25"
+      onClick={() => emoveLabelFromTeam(label)}
+    >
+      Remove
+    </button>
+  );
+
+  return (
+    <div class="d-flex">
+      {labelNameInput}
+      {labelPermissionsInput}
+      {widget("components.layout.Controls", {
+        title: label ? "Edit" : "Add",
+        icon: label ? "bi-pencil-square" : "",
+        className: "d-flex align-items-end mb-2",
+        onClick: () => {
+          // TODO submit new label
+          if (label) {
+            editLabel();
+          } else {
+            addLabel();
+          }
+        },
+      })}
+      {label ? deleteLabelBtn : null}
+    </div>
+  );
+};
 
 return (
   <>
@@ -459,8 +567,7 @@ return (
               },
               heading: "Adding member",
               isEditorActive: state.isEditorActive,
-              isEditingAllowed:
-                Viewer.role.isDevHubModerator || isContractOwner,
+              isEditingAllowed: props.editMode,
               onChangesSubmit: addMemberToTeam,
               submitLabel: "Accept",
               data: state.teamData,
@@ -502,33 +609,7 @@ return (
               ></button>
             </div>
           ) : null}
-          {state.editLabels &&
-            widget("components.organism.editor", {
-              classNames: {
-                submit: "btn-primary",
-                submitAdornment: "bi-check-circle-fill",
-              },
-              heading: "Labels",
-              isEditorActive: state.isEditorActive,
-              isEditingAllowed:
-                Viewer.role.isDevHubModerator || isContractOwner,
-              onChangesSubmit: editLabelsFromTeam,
-              submitLabel: "Accept",
-              data: state.teamData,
-              schema: {
-                labels: {
-                  inputProps: {
-                    min: 2,
-                    max: 60,
-                    format: "comma-separated",
-                    placeholder: "label1,label2,starts-with:label3",
-                    required: true,
-                  },
-                  label: "Labels",
-                  order: 2,
-                },
-              },
-            })}
+          {state.editLabels && props.teamLevel && editLabelsDiv()}
         </div>
         {permissionsRenderer("edit-post")}
         {permissionsRenderer("use-labels")}
