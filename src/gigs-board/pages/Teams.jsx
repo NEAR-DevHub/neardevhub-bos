@@ -272,7 +272,7 @@ const pageContent = (
     {editMode && (
       <div class="pt-3">
         {widget("components.layout.Controls", {
-          title: "Create Team",
+          title: "Create team",
           onClick: () => {
             State.update({
               createTeam: !state.createTeam,

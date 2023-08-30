@@ -201,19 +201,20 @@ const TeamDataDefaults = {
     .join(","),
 };
 
-const initialLabels = {};
-for (const [label, permissions] of Object.entries(metadata.permissions)) {
-  initialLabels[label] = permissions.join(',');
+const initialPermissionsString = {};
+for (const [label, per] of Object.entries(metadata.permissions)) {
+  initialPermissionsString[label] = per.join(",");
 }
 
 State.init({
   addMember: false,
   addLabel: false,
   labelError: "",
+  permissionError: "",
   memberError: "",
   editLabels: true, // TODO false
   teamData: isTeam ? TeamDataDefaults : null,
-  permissions: initialLabels,
+  permissions: initialPermissionsString,
   newLabel: "",
   newPermissions: "",
 });
@@ -339,39 +340,42 @@ function addMemberToTeam(memberData) {
 }
 
 // TODO edit labels from members as well as top level
-function editLabelsFromTeam(labelData) {
+function editLabelsFromTeam(label) {
   // Labels need to exist in order to add them to a team.
   const possibleLabels = Object.keys(props.rules_list);
   const team = props.member;
-  let newPermissions = {};
-  let allLabels = labelData.labels.split(",");
-  let legitLabels = allLabels.filter((label) => possibleLabels.includes(label));
-  legitLabels.forEach((label) => {
-    // TODO
-    newPermissions[label] = ["edit-post", "use-labels"];
-  });
-  if (legitLabels.length) {
-    Near.call([
-      {
-        contractName: nearDevGovGigsContractAccountId,
-        methodName: "edit_member",
-        args: {
-          member: team,
-          metadata: {
-            ...props.root_members[team],
-            permissions: newPermissions,
-          },
-        },
-        deposit: Big(0).pow(21),
-        gas: Big(10).pow(12).mul(100),
-      },
-    ]);
-  } else {
+  let arr = state.permissions[label].split(",");
+  if (!checkPermissions(arr)) {
+    State.update({
+      permissionError:
+        "Permissions can only have value 'edit-post' and/or 'use-labels' comma-seperated.",
+    });
+    return;
+  }
+  /**
+   * TODO For every user in this team edit the personal labels.
+   */
+  if (!possibleLabels.includes(label)) {
     State.update({
       labelError:
-        "Error labels do not exist yet, first add it in the restricted labels section or use starts-with:<label>",
+        "Error label does not exist yet, first add it in the restricted labels section or use starts-with:<label>",
     });
   }
+  Near.call([
+    {
+      contractName: nearDevGovGigsContractAccountId,
+      methodName: "edit_member",
+      args: {
+        member: team,
+        metadata: {
+          ...props.root_members[team],
+          permissions: arr,
+        },
+      },
+      deposit: Big(0).pow(21),
+      gas: Big(10).pow(12).mul(100),
+    },
+  ]); 
 }
 
 function removeLabelFromTeam(rule) {
@@ -395,37 +399,63 @@ function removeLabelFromTeam(rule) {
   ]);
 }
 
-// Edit label
-// Add label
-// Remove label
-function editLabel() {}
+function checkPermissions(arr) {
+  // Create a set to keep track of unique values
+  const uniqueValues = new Set();
 
-const singleLabelEditor = (label) =>
-  widget("components.organism.editor", {
-    classNames: {
-      submit: "btn-primary",
-      submitAdornment: "bi-check-circle-fill",
-    },
-    heading: `Label: ${label}`,
-    isEditorActive: state.isEditorActive,
-    isEditingAllowed: props.editMode,
-    onChangesSubmit: editLabelsFromTeam,
-    submitLabel: "Accept",
-    data: state.teamData,
-    schema: {
-      permissions: {
-        inputProps: {
-          min: 9, // edit-post
-          max: 20, // edit-post,use-labels
-          format: "comma-separated",
-          placeholder: `edit-post,use-labels`,
-          required: true,
+  // Iterate through the array
+  for (const value of arr) {
+    // Check if the value is one of the allowed values
+    if (value !== "edit-post" && value !== "use-labels") {
+      return false; // Value is not allowed
+    }
+
+    // Check if the value is already in the set
+    if (uniqueValues.has(value)) {
+      return false; // Duplicate value found
+    }
+
+    // Add the value to the set
+    uniqueValues.add(value);
+  }
+
+  // Check if both are or either one of the values is present exactly once
+  return uniqueValues.size === 2 || uniqueValues.size === 1;
+}
+
+function addLabelToTeam(name, permissions) {
+  const possibleLabels = Object.keys(props.rules_list);
+  if (!possibleLabels.includes(name)) {
+    return State.update({
+      labelError:
+        "Error label does not exist yet, first add it in the restricted labels section or use starts-with:<label>",
+    });
+    
+  }
+  let arr = permissions.split(",");
+  if (!checkPermissions(arr)) {
+    return State.update({
+      permissionError:
+        "Permissions can only have value 'edit-post' and/or 'use-labels' comma-seperated.",
+    });
+  }
+  permissions[name] = arr;
+  Near.call([
+    {
+      contractName: nearDevGovGigsContractAccountId,
+      methodName: "edit_member",
+      args: {
+        member: props.teamId,
+        metadata: {
+          ...metadata,
+          permissions: permissions,
         },
-        label: "Label permissions",
-        order: 2,
       },
+      deposit: Big(0).pow(21),
+      gas: Big(10).pow(12).mul(100),
     },
-  });
+  ]);
+}
 
 const editLabelsDiv = () => {
   return (
@@ -470,31 +500,47 @@ const editLabelDiv = (label) => {
   const deleteLabelBtn = (
     <button
       class="btn btn-light mb-2 align-self-end h-25"
-      onClick={() => emoveLabelFromTeam(label)}
+      onClick={() => removeLabelFromTeam(label)}
     >
       Remove
     </button>
   );
 
-  return (
-    <div class="d-flex">
-      {labelNameInput}
-      {labelPermissionsInput}
-      {widget("components.layout.Controls", {
-        title: label ? "Edit" : "Add",
-        icon: label ? "bi-pencil-square" : "",
-        className: "d-flex align-items-end mb-2",
-        onClick: () => {
-          // TODO submit new label
-          if (label) {
-            editLabel();
-          } else {
-            addLabel();
-          }
-        },
-      })}
-      {label ? deleteLabelBtn : null}
+  const warning = state.permissionError && (
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      {state.permissionError}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+        onClick={() => State.update({ permissionError: "" })}
+      ></button>
     </div>
+  );
+
+  return (
+    <>
+      {warning}
+      <div class="d-flex">
+        {labelNameInput}
+        {labelPermissionsInput}
+        {widget("components.layout.Controls", {
+          title: label ? "Edit" : "Add",
+          icon: label ? "bi-pencil-square" : "",
+          className: "d-flex align-items-end mb-2",
+          onClick: () => {
+            // TODO submit new label
+            if (label) {
+              editLabelsFromTeam(label);
+            } else {
+              addLabelToTeam(state.newLabel, state.newPermissions);
+            }
+          },
+        })}
+        {label ? deleteLabelBtn : null}
+      </div>
+    </>
   );
 };
 
@@ -527,7 +573,9 @@ return (
             {props.teamLevel &&
               props.editMode &&
               widget("components.layout.Controls", {
-                title: !state.editLabels ? "Edit Labels" : "Stop Editing",
+                title: !state.editLabels
+                  ? "Edit labels"
+                  : "Stop editing labels",
                 icon: !state.editLabels
                   ? "bi-pencil-square"
                   : "bi-stop-circle-fill",
