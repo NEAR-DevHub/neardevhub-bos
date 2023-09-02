@@ -38,7 +38,15 @@ const ticketTypes = {
 };
 
 const GithubTicket = ({
-  data: { _links, labels, number, state: ticketState, title, type, user },
+  data: {
+    _links,
+    labels,
+    number,
+    state: ticketState,
+    title,
+    type,
+    user: author,
+  },
 }) => (
   <AttractableDiv className="card border-secondary">
     <div className="card-header">
@@ -47,17 +55,17 @@ const GithubTicket = ({
           <div className="col-4">
             <a
               className="link-dark text-truncate text-decoration-none"
-              href={user.html_url}
+              href={author.html_url}
               rel="noreferrer"
               target="_blank"
             >
               <img
-                alt={`${user.login}'s GitHub avatar`}
+                alt={`${author.login}'s GitHub avatar`}
                 className="img-fluid rounded"
-                src={user.avatar_url}
+                src={author.avatar_url}
               />
 
-              <span className="ms-1 text-muted">@{user.login}</span>
+              <span className="ms-1 text-muted">@{author.login}</span>
             </a>
           </div>
 
