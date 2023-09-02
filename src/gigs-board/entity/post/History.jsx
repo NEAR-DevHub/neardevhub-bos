@@ -26,7 +26,11 @@ function widget(widgetName, widgetProps, key) {
 
   return (
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
+      src={`${
+        props.env !== "local"
+          ? `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.`
+          : ""
+      }${widgetName}`}
       props={widgetProps}
       key={key}
     />
@@ -55,9 +59,15 @@ function href(widgetName, linkProps) {
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
+  return [
+    "/#/",
+
+    ...(props.env !== "local"
+      ? [`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.`]
+      : []),
+
+    `${widgetName}${linkPropsQuery ? "?" : ""}${linkPropsQuery}`,
+  ].join("");
 }
 /* END_INCLUDE: "common.jsx" */
 

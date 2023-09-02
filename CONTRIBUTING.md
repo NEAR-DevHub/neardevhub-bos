@@ -1,6 +1,7 @@
 # Contribution Guidelines for DevHub Repos
 
 ## Introduction
+
 At DevHub, we value the contributions of each individual. This document provides an overview of the developer setup and deployment process to help you contribute to our project. We also recommend familiarizing yourself with [how we work](https://github.com/near/devgigsboard-widgets/blob/main/docs/how-we-work.md) to learn about our development process and enhance your contribution experience.
 
 ## Developer Setup
@@ -18,10 +19,10 @@ You can also explore a list of [good first issues](https://github.com/near/devgi
 
 ### Installation
 
-We use `npm` and scripts in `package.json` to automate common developer tasks, so you will need NodeJS and then install project dependencies as usual:
+We use `pnpm` and scripts in `package.json` to automate common developer tasks, so you will need to run the following command in order to activate `pnpm` and install project dependencies:
 
-```
-npm install
+```sh
+npm run init
 ```
 
 ### Deployment
@@ -58,6 +59,7 @@ There is GitHub Actions automation that deploys all the widgets to [`devgovgigs.
 Thus, once a PR is merged, you should see the new version of the widgets on [DevHub](https://neardevhub.org) in less than 15 seconds.
 
 ### Before Publishing
+
 Before publishing, make sure that you’ve go through this section.
 
 #### Code Style and Formatting
@@ -84,4 +86,4 @@ Sometimes there is a need to deposit extra tokens to cover the widgets’ storag
 bos social-db prepaid-storage deposit
 ```
 
-NOTE: `bos` CLI will interactively ask all the rest of the details to prepare the transaction. 
+NOTE: `bos` CLI will interactively ask all the rest of the details to prepare the transaction.

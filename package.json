@@ -1,34 +1,38 @@
 {
-  "name": "neardevhub-widgets",
-  "version": "1.0.0",
-  "description": "NEAR DevHub widgets for NEAR Social",
-  "devDependencies": {
-    "near-social-local-viewer": "^2.1.3",
-    "prettier": "^2.8.4",
-    "replace-in-files": "^3.0.0"
-  },
-  "scripts": {
-    "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
-    "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
-    "build": "pnpm run fmt && node ./module/include.js",
-    "dev": "~/.cargo/bin/bos-loader devgovgigs.near --path src",
-    "preview": "init-viewer ./src/gigs-board/pages"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/near/neardevhub-widgets.git"
-  },
-  "author": "Near Inc <hello@nearprotocol.com>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/near/neardevhub-widgets/issues"
-  },
-  "homepage": "https://github.com/near/neardevhub-widgets#readme",
-  "pnpm": {
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "near-api-js": "0.45.1"
-      }
-    }
-  }
+	"name": "neardevhub-widgets",
+	"version": "1.0.0",
+	"description": "NEAR DevHub widgets for NEAR Social",
+	"engines": {
+		"pnpm": ">=8"
+	},
+	"devDependencies": {
+		"near-social-local-viewer": "^2.1.3",
+		"prettier": "^2.8.4",
+		"replace-in-files": "^3.0.0"
+	},
+	"scripts": {
+		"init": "corepack enable && corepack prepare pnpm@latest --activate && pnpm i && echo 'Package manager is set to pnpm'",
+		"fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
+		"fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
+		"build": "pnpm run fmt && node ./module/include.js",
+		"dev": "~/.cargo/bin/bos-loader devgovgigs.near --path src",
+		"preview": "corepack prepare pnpm@latest --activate && pnpm i && init-viewer ./src/gigs-board"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/near/neardevhub-widgets.git"
+	},
+	"author": "Near Inc <hello@nearprotocol.com>",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/near/neardevhub-widgets/issues"
+	},
+	"homepage": "https://github.com/near/neardevhub-widgets#readme",
+	"pnpm": {
+		"peerDependencyRules": {
+			"allowedVersions": {
+				"near-api-js": "0.45.1"
+			}
+		}
+	}
 }
