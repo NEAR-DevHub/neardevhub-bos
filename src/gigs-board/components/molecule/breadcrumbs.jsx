@@ -52,18 +52,38 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-return (
-  <div class="d-flex flex-row-reverse">
-    <a
-      class="btn btn-light"
-      style={{
-        backgroundColor: "#0C7283",
-        color: "#f3f3f3",
-      }}
-      href={href("Create", { labels: props.labels })}
+const Breadcrumbs = ({ classNames, path }) =>
+  (path ?? null) === null ? (
+    <></>
+  ) : (
+    <div
+      aria-label="breadcrumb"
+      className={["d-flex", classNames?.root ?? ""].join(" ")}
+      style={{ backgroundColor: "#181818" }}
     >
-      <i class="bi bi-plus-circle-fill"></i>
-      Post
-    </a>
-  </div>
-);
+      <ol className="breadcrumb d-flex align-items-end m-0 h-100">
+        {path.map(({ isActive, isHidden, label, pageId, params }) => (
+          <li
+            aria-current="page"
+            className={[
+              "breadcrumb-item d-flex",
+              isActive ? "active" : "",
+              isHidden ? "d-none" : "",
+            ].join(" ")}
+          >
+            <a
+              className={["pb-1 lh-1 text-white", classNames?.link ?? ""].join(
+                " "
+              )}
+              href={href(pageId, params ?? {})}
+              style={{ fontWeight: 420 }}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+
+return Breadcrumbs(props);

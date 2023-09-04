@@ -61,6 +61,33 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
+  create_workspace: ({ author_community_handle, metadata }) =>
+    Near.call(devHubAccountId, "create_workspace", {
+      author_community_handle,
+      metadata,
+    }) ?? null,
+
+  delete_workspace: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace", { id }) ?? null,
+
+  update_workspace_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_workspace_metadata", { metadata }) ??
+    null,
+
+  get_workspace_views_metadata: ({ workspace_id }) =>
+    Near.view(devHubAccountId, "get_workspace_views_metadata", {
+      workspace_id,
+    }) ?? null,
+
+  create_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "create_workspace_view", { view }) ?? null,
+
+  update_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "update_workspace_view", { view }) ?? null,
+
+  delete_workspace_view: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace_view", { id }) ?? null,
+
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
@@ -114,20 +141,20 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const communityData = DevHub.get_community({ handle: props.handle });
+const communityData = DevHub.get_community({ handle: props.handle }) ?? null;
 const root_members = DevHub.get_root_members() ?? null;
 
 if (communityData === null || root_members === null) {
   return <div>Loading...</div>;
 }
 
-const moderators = root_members["team:moderators"].children;
+const moderators = (root_members ?? {})?.["team:moderators"]?.children;
 const admins = communityData.admins;
 
 const UserList = (name, users) => {
   return (
     <div>
-      {users.map((user, i) => (
+      {(users ?? []).map((user, i) => (
         <div className={`row ${i < users.length - 1 ? "mb-3" : ""}`}>
           <div class="col-3">
             <b>{name + " #" + (i + 1)}</b>

@@ -61,6 +61,33 @@ const DevHub = {
     Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
     null,
 
+  create_workspace: ({ author_community_handle, metadata }) =>
+    Near.call(devHubAccountId, "create_workspace", {
+      author_community_handle,
+      metadata,
+    }) ?? null,
+
+  delete_workspace: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace", { id }) ?? null,
+
+  update_workspace_metadata: ({ metadata }) =>
+    Near.call(devHubAccountId, "update_workspace_metadata", { metadata }) ??
+    null,
+
+  get_workspace_views_metadata: ({ workspace_id }) =>
+    Near.view(devHubAccountId, "get_workspace_views_metadata", {
+      workspace_id,
+    }) ?? null,
+
+  create_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "create_workspace_view", { view }) ?? null,
+
+  update_workspace_view: ({ view }) =>
+    Near.call(devHubAccountId, "update_workspace_view", { view }) ?? null,
+
+  delete_workspace_view: ({ id }) =>
+    Near.call(devHubAccountId, "delete_workspace_view", { id }) ?? null,
+
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
@@ -124,33 +151,36 @@ const CommunityActivityPage = ({ handle }) => {
   return widget("components.template.community-page", {
     handle,
     title: "Activity",
-
     children:
       communityData !== null ? (
-        <div>
-          <div class="row mb-2">
-            <div class="col text-center">
-              <small class="text-muted">
-                <span>Required tags:</span>
-
-                <a
-                  href={href("Feed", { tag: communityData.tag })}
-                  key={communityData.tag}
-                >
-                  <span class="badge text-bg-primary me-1">
-                    {communityData.tag}
-                  </span>
-                </a>
-              </small>
+        <div class="row">
+          <div class="col-md-9">
+            <div class="row mb-2">
+              <div class="col">
+                <div class="d-flex align-items-center justify-content-between">
+                  <small class="text-muted">
+                    <span>Required tags:</span>
+                    {widget("components.atom.tag", {
+                      linkTo: "Feed",
+                      ...communityData,
+                    })}
+                  </small>
+                  {widget("components.layout.Controls", {
+                    labels: communityData.tag,
+                  })}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                {widget("entity.post.List", { tag: communityData.tag })}
+              </div>
             </div>
           </div>
-
-          {widget("components.layout.Controls", { labels: communityData.tag })}
-
-          <div class="row">
-            <div class="col">
-              {widget("entity.post.List", { tag: communityData.tag })}
-            </div>
+          <div class="col-md-3 container-fluid">
+            {widget("entity.community.sidebar", {
+              handle: communityData.handle,
+            })}
           </div>
         </div>
       ) : (

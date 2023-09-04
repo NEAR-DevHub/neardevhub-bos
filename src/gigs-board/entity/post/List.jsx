@@ -59,8 +59,32 @@ function href(widgetName, linkProps) {
 
 /* INCLUDE: "core/lib/draftstate" */
 const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
+let is_edit_or_add_post_transaction = false;
+let transaction_method_name;
+
 if (props.transactionHashes) {
-  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+  const transaction = fetch("https://rpc.mainnet.near.org", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: "dontcare",
+      method: "tx",
+      params: [props.transactionHashes, context.accountId],
+    }),
+  });
+  transaction_method_name =
+    transaction?.body?.result?.transaction?.actions[0].FunctionCall.method_name;
+
+  is_edit_or_add_post_transaction =
+    transaction_method_name == "add_post" ||
+    transaction_method_name == "edit_post";
+
+  if (is_edit_or_add_post_transaction) {
+    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+  }
 }
 
 const onDraftStateChange = (draftState) =>
@@ -81,7 +105,7 @@ function defaultRenderItem(postId, additionalProps) {
   }
   // It is important to have a non-zero-height element as otherwise InfiniteScroll loads too many items on initial load
   return (
-    <div style={{ minHeight: "150px" }}>
+    <div className="py-2" style={{ minHeight: "150px" }}>
       {widget(
         `entity.post.Post`,
         {
@@ -438,9 +462,10 @@ const Head =
 return (
   <>
     {Head}
-    {props.transactionHashes ? (
+    {is_edit_or_add_post_transaction ? (
       <p class="text-secondary mt-4">
-        Post submitted successfully. Back to{" "}
+        Post {transaction_method_name == "edit_post" ? "edited" : "added"}{" "}
+        successfully. Back to{" "}
         <a
           style={{
             color: "#3252A6",

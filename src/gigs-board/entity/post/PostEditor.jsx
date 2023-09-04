@@ -96,8 +96,12 @@ initState({
   postType,
   name: props.name ?? "",
   description: props.description ?? "",
-  amount: props.amount ?? "",
-  token: props.token ?? "",
+  amount: props.amount ?? "0",
+  token: props.token ?? {
+    NEP141: {
+      address: "usdt.tether-token.near",
+    },
+  },
   supervisor: props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
   warning: "",
@@ -361,12 +365,24 @@ const amountDiv = (
 
 const tokenDiv = (
   <div className="col-lg-6  mb-2">
-    Tokens:
-    <input
-      type="text"
-      value={state.token}
+    Currency
+    <select
       onChange={(event) => State.update({ token: event.target.value })}
-    />
+      class="form-select"
+      aria-label="Default select"
+    >
+      <option
+        selected
+        value={{
+          NEP141: {
+            address: "usdt.tether-token.near",
+          },
+        }}
+      >
+        USDT
+      </option>
+      <option value="NEAR">NEAR</option>
+    </select>
   </div>
 );
 
