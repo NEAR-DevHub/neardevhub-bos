@@ -101,37 +101,37 @@ const useForm = ({ initialValues, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [stateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [stateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -337,7 +337,7 @@ const CompactContainer = styled.div`
   max-width: 100%;
 `;
 
-const BoardConfigDefaults = {
+const GithubViewDefaults = {
   id: uuid(),
   kind: "github-view",
   columns: {},
@@ -346,13 +346,21 @@ const BoardConfigDefaults = {
   repoURL: "",
   ticketState: "all",
   title: "",
+
+  config: {
+    ticket: {
+      propVisibility: {
+        author: true,
+        name: true,
+        labels: true,
+        title: true,
+        type: true,
+      },
+    },
+  },
 };
 
-const GithubKanbanViewConfigurator = ({
-  communityHandle,
-  link,
-  permissions,
-}) => {
+const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
   State.init({
     editingMode: "form",
     isActive: false,
@@ -394,7 +402,7 @@ const GithubKanbanViewConfigurator = ({
   const newViewInit = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      board: { hasUnsubmittedChanges: false, values: BoardConfigDefaults },
+      board: { hasUnsubmittedChanges: false, values: GithubViewDefaults },
       isActive: true,
     }));
 
@@ -411,12 +419,10 @@ const GithubKanbanViewConfigurator = ({
         }
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownValue }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+    );
 
   const onSubmit = () =>
     DevHub.update_community_github({
@@ -712,4 +718,4 @@ const GithubKanbanViewConfigurator = ({
   );
 };
 
-return GithubKanbanViewConfigurator(props);
+return GithubViewConfigurator(props);

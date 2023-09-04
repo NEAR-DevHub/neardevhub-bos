@@ -152,37 +152,37 @@ const useForm = ({ initialValues, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
+      }
+    );
 
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
 
-        [stateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
+      [stateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
 
-          values: updatedValues,
-        },
-      }));
-    };
+        values: updatedValues,
+      },
+    }));
+  };
 
   if (
     !uninitialized &&
@@ -345,9 +345,21 @@ const KanbanViewDefaults = {
   },
 
   config: {
-    ticket_kind: "post-ticket",
-    tags: { excluded: [], required: [] },
     columns: {},
+    tags: { excluded: [], required: [] },
+
+    ticket: {
+      propVisibility: {
+        author: true,
+        name: true,
+        replyCount: true,
+        tags: true,
+        title: true,
+        type: true,
+      },
+    },
+
+    ticket_kind: "post-ticket",
   },
 };
 
@@ -405,12 +417,10 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownValue }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+    );
 
   const onCancel = () => {
     form.reset();

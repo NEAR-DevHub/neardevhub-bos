@@ -38,6 +38,8 @@ const ticketTypes = {
 };
 
 const GithubTicket = ({
+  config,
+
   data: {
     _links,
     labels,
@@ -50,39 +52,33 @@ const GithubTicket = ({
 }) => (
   <AttractableDiv className="card border-secondary">
     <div className="card-header">
-      <small className="text-muted">
-        <div className="row justify-content-between align-items-center">
-          <div className="col-4">
-            <a
-              className="link-dark text-truncate text-decoration-none"
-              href={author.html_url}
-              rel="noreferrer"
-              target="_blank"
-            >
-              <img
-                alt={`${author.login}'s GitHub avatar`}
-                className="img-fluid rounded"
-                src={author.avatar_url}
-              />
+      <div class="d-flex justify-content-between gap-3">
+        <a
+          className="d-flex gap-2 link-dark text-truncate"
+          href={author.html_url}
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            alt={`${author.login}'s GitHub avatar`}
+            className="img-fluid rounded"
+            src={author.avatar_url}
+          />
 
-              <span className="ms-1 text-muted">@{author.login}</span>
-            </a>
-          </div>
+          <span className="ms-1 text-muted">@{author.login}</span>
+        </a>
 
-          <div className="col-1 d-flex justify-content-end">
-            <a
-              className="card-link"
-              href={_links.html.href}
-              rel="noreferrer"
-              role="button"
-              target="_blank"
-              title="Open in new tab"
-            >
-              <i className="bi bi-share" />
-            </a>
-          </div>
-        </div>
-      </small>
+        <a
+          className="card-link"
+          href={_links.html.href}
+          rel="noreferrer"
+          role="button"
+          target="_blank"
+          title="Open in new tab"
+        >
+          <i className="bi bi-share" />
+        </a>
+      </div>
     </div>
 
     <div className="card-body d-flex flex-column gap-3">

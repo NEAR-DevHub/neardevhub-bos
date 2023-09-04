@@ -80,57 +80,7 @@ const AttractableImage = styled.img`
 `;
 /* END_INCLUDE: "core/lib/gui/attractable" */
 
-const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
-const post =
-  props.post ??
-  Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
-if (!post) {
-  return <div>Loading ...</div>;
-}
-const snapshot = post.snapshot;
-
-const shareButton = (
-  <a
-    class="card-link"
-    href={href("Post", { id: postId })}
-    role="button"
-    target="_blank"
-    title="Open in new tab"
-  >
-    <div class="bi bi-share"></div>
-  </a>
-);
-
-const header = (
-  <div className="card-header">
-    <small class="text-muted">
-      <div class="row justify-content-between">
-        <div class="col-4">
-          <a
-            href={`#/neardevgov.near/widget/ProfilePage?accountId=${post.author_id}`}
-            className="link-dark text-truncate"
-          >
-            <Widget
-              src="mob.near/widget/ProfileImage"
-              props={{
-                metadata,
-                accountId: post.author_id,
-                widgetName,
-                style: { height: "1.5em", width: "1.5em", minWidth: "1.5em" },
-              }}
-            />
-            <span className="text-muted">@{post.author_id}</span>
-          </a>
-        </div>
-        <div class="col-5">
-          <div class="d-flex justify-content-end">{shareButton}</div>
-        </div>
-      </div>
-    </small>
-  </div>
-);
-
-const emptyIcons = {
+const iconsByPostType = {
   Idea: "bi-lightbulb",
   Comment: "bi-chat",
   Submission: "bi-rocket",
@@ -138,58 +88,112 @@ const emptyIcons = {
   Sponsorship: "bi-cash-coin",
 };
 
-const borders = {
-  Idea: "border-secondary",
-  Comment: "border-secondary",
-  Submission: "border-secondary",
-  Attestation: "border-secondary",
-  Sponsorship: "border-secondary",
+const authorProfileImageStyle = {
+  height: "1.5em",
+  width: "1.5em",
+  minWidth: "1.5em",
 };
 
-const renamedPostType =
-  snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
+const PostTicket = ({ id, config, post }) => {
+  const postId = post.id ?? (id ? parseInt(id) : 0);
 
-const postLabels = post.snapshot.labels ? (
-  <div class="card-title">
-    {post.snapshot.labels.map((label) => (
-      <a href={href("Feed", { label })} key={label}>
-        <span class="badge text-bg-primary me-1">{label}</span>
-      </a>
-    ))}
-  </div>
-) : null;
+  const postData =
+    post ??
+    Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
 
-const postTitle =
-  snapshot.post_type == "Comment" ? null : (
-    <div class="card-text">
-      <div className="row justify-content-between">
-        <div class="col-9">
-          <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
-          {renamedPostType}: {snapshot.name}
-        </div>
+  if (!postData) {
+    return <div>Loading ...</div>;
+  }
+
+  const { snapshot } = postData;
+
+  const header = (
+    <div className="card-header">
+      <div class="d-flex justify-content-between gap-3">
+        {(config.propVisibility.author ?? true) && (
+          <a
+            href={`neardevgov.near/widget/ProfilePage?accountId=${postData.author_id}`}
+            className="d-flex gap-2 link-dark text-truncate"
+          >
+            <Widget
+              src="mob.near/widget/ProfileImage"
+              props={{
+                metadata,
+                accountId: postData.author_id,
+                widgetName,
+                style: authorProfileImageStyle,
+              }}
+            />
+
+            <span className="text-muted">@{postData.author_id}</span>
+          </a>
+        )}
+
+        <a
+          class="card-link"
+          href={href("Post", { id: postId })}
+          role="button"
+          target="_blank"
+          title="Open in new tab"
+        >
+          <i class="bi bi-share" />
+        </a>
       </div>
     </div>
   );
 
-const limitedMarkdown = styled.div`
-  max-height: 6em;
-`;
+  const tagList =
+    snapshot.labels && (config.propVisibility.tags ?? true) ? (
+      <div class="card-title">
+        {snapshot.labels.map((label) => (
+          <a href={href("Feed", { label })} key={label}>
+            <span class="badge text-bg-primary me-1">{label}</span>
+          </a>
+        ))}
+      </div>
+    ) : null;
 
-// Should make sure the posts under the currently top viewed post are limited in size.
-const descriptionArea =
-  snapshot.post_type == "Comment" ? (
-    <limitedMarkdown className="overflow-auto">
-      <Markdown class="card-text" text={snapshot.description}></Markdown>
-    </limitedMarkdown>
-  ) : null;
+  const titleArea =
+    snapshot.post_type !== "Comment" &&
+    ((config.propVisibility.title ?? true) ||
+      (config.propVisibility.type ?? true)) ? (
+      <div class="card-text">
+        <div className="row justify-content-between">
+          <div class="col-9 gap-1">
+            <i class={`bi ${iconsByPostType[snapshot.post_type]}`} />
 
-return (
-  <AttractableDiv className={`card ${borders[snapshot.post_type]}`}>
-    {header}
-    <div className="card-body">
-      {postTitle}
-      {descriptionArea}
-      {postLabels}
-    </div>
-  </AttractableDiv>
-);
+            <span>
+              {`${
+                snapshot.post_type === "Submission"
+                  ? "Solution"
+                  : snapshot.post_type
+              }${typeof snapshot.name === "string" ? ": " : ""}`}
+            </span>
+
+            <span>{snapshot.name}</span>
+          </div>
+        </div>
+      </div>
+    ) : null;
+
+  const descriptionArea =
+    snapshot.post_type == "Comment" ? (
+      <div className="overflow-auto" style={{ maxHeight: "6em" }}>
+        <Markdown class="card-text" text={snapshot.description}></Markdown>
+      </div>
+    ) : null;
+
+  return (
+    <AttractableDiv className="card border-secondary">
+      {header}
+
+      <div className="card-body">
+        {titleArea}
+        {descriptionArea}
+        {tagList}
+      </div>
+    </AttractableDiv>
+  );
+};
+
+return PostTicket(props);

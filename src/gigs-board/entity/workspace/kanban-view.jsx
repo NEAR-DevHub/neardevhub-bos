@@ -320,7 +320,7 @@ const KanbanView = ({
                     {column.postIds.map((postId) =>
                       widget(
                         ["entity.workspace", config.ticket_kind].join("."),
-                        { id: postId },
+                        { id: postId, config: config.ticket ?? {} },
                         postId
                       )
                     )}

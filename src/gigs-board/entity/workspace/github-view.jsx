@@ -147,6 +147,7 @@ const withType = (type) => (data) => ({ ...data, type });
 
 const GithubView = ({
   columns,
+  config,
   dataTypesIncluded,
   description,
   isUnderConfiguration,
@@ -298,7 +299,7 @@ const GithubView = ({
                     {(state.ticketsByColumn[column.id] ?? []).map((data) =>
                       widget(
                         "entity.workspace.github-ticket",
-                        { data },
+                        { config: config?.ticket ?? {}, data },
                         data.id
                       )
                     )}
