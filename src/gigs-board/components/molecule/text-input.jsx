@@ -61,6 +61,8 @@ const TextInput = ({
       ) : null}
 
       {!multiline ? (
+        <>
+          {/**
         <input
           aria-describedby={key}
           aria-label={label}
@@ -73,6 +75,8 @@ const TextInput = ({
           type={typeAttribute}
           {...{ onChange, placeholder, value, ...inputProps }}
         />
+         */}
+        </>
       ) : (
         <textarea
           aria-describedby={key}

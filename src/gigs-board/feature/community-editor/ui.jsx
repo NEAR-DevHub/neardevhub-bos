@@ -485,7 +485,7 @@ const CommunityEditorUI = ({ handle: communityHandle }) => {
             data: state.communityData,
 
             schema: {
-              admins: {
+              admins: { // this is the field
                 format: "comma-separated",
                 inputProps: { required: true },
                 label: "Admin",

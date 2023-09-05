@@ -204,9 +204,9 @@ const useForm = ({ initialValues, stateKey: formStateKey, uninitialized }) => {
 /* END_INCLUDE: "core/lib/gui/form" */
 
 const fieldParamsByType = {
-  array: {
-    name: "components.molecule.text-input",
-    inputProps: { type: "text" },
+  array: { // we check the value in the form and so we comma separate the values
+    name: "components.molecule.text-input", // oh I see. This is dumb.  // and feed it into this
+    inputProps: { type: "text" }, // so over complicated.
   },
 
   boolean: {
@@ -231,7 +231,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
           "m-0",
         ].join(" ");
 
-        const fieldType = Array.isArray(form.values[fieldKey])
+        const fieldType = Array.isArray(form.values[fieldKey]) // I need this to be an array
           ? "array"
           : typeof (form.values[fieldKey] ?? "");
 
@@ -247,7 +247,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
 
                 {format !== "markdown" ? (
                   <p className={[contentDisplayClassName, "w-75"].join(" ")}>
-                    {(fieldType === "array" && format === "comma-separated"
+                    {(fieldType === "array" && format === "comma-separated" // converting the array into text to view
                       ? form.values[fieldKey]
                           .filter((string) => string.length > 0)
                           .join(", ")
@@ -276,7 +276,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
 
                 value:
                   fieldType === "array" && format === "comma-separated"
-                    ? form.values[fieldKey].join(", ")
+                    ? form.values[fieldKey].join(", ") // readjusts array into a string
                     : form.values[fieldKey],
 
                 inputProps: {
