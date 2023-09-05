@@ -49,24 +49,26 @@ const GithubTicket = ({
     type,
     user: author,
   },
-}) => (
-  <AttractableDiv className="card border-secondary">
+}) => {
+  const header = (
     <div className="card-header">
       <div class="d-flex justify-content-between gap-3">
-        <a
-          className="d-flex gap-2 link-dark text-truncate"
-          href={author.html_url}
-          rel="noreferrer"
-          target="_blank"
-        >
-          <img
-            alt={`${author.login}'s GitHub avatar`}
-            className="img-fluid rounded"
-            src={author.avatar_url}
-          />
+        {config.propVisibility?.author ?? true ? (
+          <a
+            className="d-flex gap-2 link-dark text-truncate"
+            href={author.html_url}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <img
+              alt={`${author.login}'s GitHub avatar`}
+              className="img-fluid rounded"
+              src={author.avatar_url}
+            />
 
-          <span className="ms-1 text-muted">@{author.login}</span>
-        </a>
+            <span className="ms-1 text-muted">@{author.login}</span>
+          </a>
+        ) : null}
 
         <a
           className="card-link"
@@ -80,23 +82,36 @@ const GithubTicket = ({
         </a>
       </div>
     </div>
+  );
 
-    <div className="card-body d-flex flex-column gap-3">
-      <div className="card-text d-flex flex-column gap-3">
-        <span className="d-flex flex-nowrap gap-2">
-          <i
-            className={`bi ${ticketStates[ticketState].icon}`}
-            title={ticketStates[ticketState].displayName}
-          />
+  const titleArea = (
+    <div className="card-text d-flex flex-column gap-3">
+      <span className="d-flex flex-nowrap gap-2">
+        <i
+          className={`bi ${ticketStates[ticketState].icon}`}
+          title={ticketStates[ticketState].displayName}
+        />
 
+        {config.propVisibility?.type ?? true ? (
           <i className={`bi ${ticketTypes[type].icon}`} />
-          <span>{`${ticketTypes[type].displayName} #${number}`}</span>
+        ) : null}
+
+        <span>
+          {`${
+            config.propVisibility?.type ?? true
+              ? ticketTypes[type].displayName
+              : ""
+          } #${number}`.trim()}
         </span>
+      </span>
 
-        <span>{title}</span>
-      </div>
+      {config.propVisibility?.title ?? true ? <span>{title}</span> : null}
+    </div>
+  );
 
-      <div className="card-title d-flex flex-wrap gap-2 m-0">
+  const labelList =
+    config.propVisibility?.labels ?? true ? (
+      <div className="d-flex flex-wrap gap-2 m-0">
         {labels.map((label) => (
           <a href={label.url} key={label.id} title={label.description}>
             <span
@@ -108,8 +123,18 @@ const GithubTicket = ({
           </a>
         ))}
       </div>
-    </div>
-  </AttractableDiv>
-);
+    ) : null;
+
+  return (
+    <AttractableDiv className="card border-secondary">
+      {header}
+
+      <div className="card-body d-flex flex-column gap-3">
+        {titleArea}
+        {labelList}
+      </div>
+    </AttractableDiv>
+  );
+};
 
 return GithubTicket(props);

@@ -97,89 +97,88 @@ const authorProfileImageStyle = {
 const PostTicket = ({ id, config, post }) => {
   const postId = post.id ?? (id ? parseInt(id) : 0);
 
-  const postData =
+  const data =
     post ??
     Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
 
-  if (!postData) {
+  if (!data) {
     return <div>Loading ...</div>;
   }
 
-  const { snapshot } = postData;
+  const authorAvatar = (
+    <Widget
+      src="mob.near/widget/ProfileImage"
+      props={{
+        metadata,
+        accountId: data.author_id,
+        widgetName,
+        style: authorProfileImageStyle,
+      }}
+    />
+  );
 
   const header = (
     <div className="card-header">
-      <div class="d-flex justify-content-between gap-3">
-        {(config.propVisibility.author ?? true) && (
+      <div className="d-flex justify-content-between gap-3">
+        {config.propVisibility?.author ?? true ? (
           <a
-            href={`neardevgov.near/widget/ProfilePage?accountId=${postData.author_id}`}
+            href={`neardevgov.near/widget/ProfilePage?accountId=${data.author_id}`}
             className="d-flex gap-2 link-dark text-truncate"
           >
-            <Widget
-              src="mob.near/widget/ProfileImage"
-              props={{
-                metadata,
-                accountId: postData.author_id,
-                widgetName,
-                style: authorProfileImageStyle,
-              }}
-            />
-
-            <span className="text-muted">@{postData.author_id}</span>
+            {authorAvatar}
+            <span className="text-muted">@{data.author_id}</span>
           </a>
-        )}
+        ) : null}
 
         <a
-          class="card-link"
+          className="card-link"
           href={href("Post", { id: postId })}
           role="button"
           target="_blank"
           title="Open in new tab"
         >
-          <i class="bi bi-share" />
+          <i className="bi bi-share" />
         </a>
       </div>
     </div>
   );
 
-  const tagList =
-    snapshot.labels && (config.propVisibility.tags ?? true) ? (
-      <div class="card-title">
-        {snapshot.labels.map((label) => (
-          <a href={href("Feed", { label })} key={label}>
-            <span class="badge text-bg-primary me-1">{label}</span>
-          </a>
-        ))}
-      </div>
-    ) : null;
+  const title = [
+    config.propVisibility?.type ?? true
+      ? data.snapshot.post_type === "Submission"
+        ? "Solution"
+        : data.snapshot.post_type
+      : null,
+
+    config.propVisibility?.title ?? true ? data.snapshot.name : null,
+  ]
+    .filter((prop) => typeof prop === "string")
+    .join(": ");
 
   const titleArea =
-    snapshot.post_type !== "Comment" &&
-    ((config.propVisibility.title ?? true) ||
-      (config.propVisibility.type ?? true)) ? (
-      <div class="card-text">
-        <div className="row justify-content-between">
-          <div class="col-9 gap-1">
-            <i class={`bi ${iconsByPostType[snapshot.post_type]}`} />
-
-            <span>
-              {`${
-                snapshot.post_type === "Submission"
-                  ? "Solution"
-                  : snapshot.post_type
-              }${typeof snapshot.name === "string" ? ": " : ""}`}
-            </span>
-
-            <span>{snapshot.name}</span>
-          </div>
-        </div>
-      </div>
+    data.snapshot.post_type !== "Comment" && title.length > 0 ? (
+      <span className="card-text">
+        <i className={`bi ${iconsByPostType[data.snapshot.post_type]}`} />
+        {title}
+      </span>
     ) : null;
 
   const descriptionArea =
-    snapshot.post_type == "Comment" ? (
+    data.snapshot.post_type === "Comment" &&
+    (config.propVisibility?.type ?? true) ? (
       <div className="overflow-auto" style={{ maxHeight: "6em" }}>
-        <Markdown class="card-text" text={snapshot.description}></Markdown>
+        <Markdown className="card-text" text={data.snapshot.description} />
+      </div>
+    ) : null;
+
+  const tagList =
+    data.snapshot.labels && (config.propVisibility?.tags ?? true) ? (
+      <div className="d-flex flex-wrap gap-2 m-0">
+        {data.snapshot.labels.map((label) => (
+          <a href={href("Feed", { label })} key={label}>
+            <span className="badge text-bg-primary me-1">{label}</span>
+          </a>
+        ))}
       </div>
     ) : null;
 
@@ -187,7 +186,7 @@ const PostTicket = ({ id, config, post }) => {
     <AttractableDiv className="card border-secondary">
       {header}
 
-      <div className="card-body">
+      <div className="card-body d-flex flex-column gap-3">
         {titleArea}
         {descriptionArea}
         {tagList}
