@@ -201,20 +201,6 @@ const CommunitySummary = (community) => {
   );
 };
 
-const UserList = (users) => {
-  return (
-    <div className="d-flex flex-column gap-3">
-      {users.map((user, i) => (
-        <span key={user} className="d-inline-flex" style={{ fontWeight: 500 }}>
-          {widget("components.molecule.profile-card", {
-            accountId: user,
-          })}
-        </span>
-      ))}
-    </div>
-  );
-};
-
 const Sidebar = ({ handle }) => {
   const community = DevHub.get_community({ handle }) ?? null;
 
@@ -229,7 +215,7 @@ const Sidebar = ({ handle }) => {
   return community === null ? (
     <div>Loading...</div>
   ) : (
-    <div class="col-md-12 d-flex flex-column align-items-end">
+    <div class="d-flex flex-column align-items-end">
       {widget("components.molecule.tile", {
         minHeight: 0,
         children: CommunitySummary(community),
@@ -241,10 +227,18 @@ const Sidebar = ({ handle }) => {
 
       {widget("components.molecule.tile", {
         heading: "Admins",
+
+        children: (community?.admins ?? []).map((accountId) => (
+          <div key={accountId} className="d-flex" style={{ fontWeight: 500 }}>
+            {widget("components.molecule.profile-card", { accountId })}
+          </div>
+        )),
+
+        fullWidth: true,
         minHeight: 0,
-        children: UserList(community.admins),
         noBorder: true,
         borderRadius: "rounded",
+        style: { overflowX: "scroll" },
       })}
     </div>
   );

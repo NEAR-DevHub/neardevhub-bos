@@ -29,6 +29,7 @@ const AttractableImage = styled.img`
 
 const Tile = ({
   children,
+  borderRadius,
   className,
   fullWidth,
   headerSlotRight,
@@ -36,10 +37,10 @@ const Tile = ({
   headingAdornment,
   id,
   isHidden,
+  noBorder,
   noFrame,
   minHeight,
-  noBorder,
-  borderRadius,
+  style,
 }) => (
   <AttractableDiv
     className={[
@@ -51,7 +52,12 @@ const Tile = ({
       !noFrame ? "p-4" : "",
       isHidden ? "d-none" : "",
     ].join(" ")}
-    style={{ minHeight: minHeight ?? 180, height: "fit-content" }}
+    style={{
+      maxWidth: fullWidth ? "100%" : null,
+      minHeight: minHeight ?? 180,
+      height: "fit-content",
+      ...style,
+    }}
     {...{ id }}
   >
     {
