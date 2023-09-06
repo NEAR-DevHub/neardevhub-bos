@@ -88,12 +88,6 @@ const iconsByPostType = {
   Sponsorship: "bi-cash-coin",
 };
 
-const authorProfileImageStyle = {
-  height: "1.5em",
-  width: "1.5em",
-  minWidth: "1.5em",
-};
-
 const PostTicket = ({ id, config, post }) => {
   const postId = post.id ?? (id ? parseInt(id) : 0);
 
@@ -112,7 +106,11 @@ const PostTicket = ({ id, config, post }) => {
         metadata,
         accountId: data.author_id,
         widgetName,
-        style: authorProfileImageStyle,
+        style: {
+          height: "1.5em",
+          width: "1.5em",
+          minWidth: "1.5em",
+        },
       }}
     />
   );

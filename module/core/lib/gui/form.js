@@ -31,7 +31,7 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, stateKey, uninitialized }) => {
+const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
@@ -77,6 +77,13 @@ const useForm = ({ initialValues, stateKey, uninitialized }) => {
           values: updatedValues,
         },
       }));
+
+      if (
+        typeof onUpdate === "function" &&
+        !Struct.isEqual(updatedValues, initialFormState.values)
+      ) {
+        onUpdate(updatedValues);
+      }
     };
 
   if (

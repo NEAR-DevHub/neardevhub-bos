@@ -43,13 +43,13 @@ const ToggleLabel = styled.label`
 `;
 
 const Toggle = ({
-  active,
   className,
   direction,
   disabled,
   key,
   label,
   onSwitch,
+  value: checked,
   ...rest
 }) => (
   <ToggleRoot
@@ -63,12 +63,13 @@ const Toggle = ({
     <ToggleLabel htmlFor={`toggle-${key}`}>{label}</ToggleLabel>
 
     <ToggleSwitchRoot
-      checked={active}
       className="shadow-none"
       id={`toggle-${key}`}
       onCheckedChange={disabled ? null : onSwitch}
-      title={disabled ? `Permanently ${active ? "enabled" : "disabled"}` : null}
-      {...{ disabled }}
+      title={
+        disabled ? `Permanently ${checked ? "enabled" : "disabled"}` : null
+      }
+      {...{ checked, disabled }}
     >
       {!disabled && <ToggleSwitchThumb className="bg-light shadow" />}
     </ToggleSwitchRoot>

@@ -29,6 +29,7 @@ const AttractableImage = styled.img`
 
 const Tile = ({
   children,
+  className,
   fullWidth,
   headerSlotRight,
   heading,
@@ -42,17 +43,15 @@ const Tile = ({
 }) => (
   <AttractableDiv
     className={[
-      "d-flex flex-column gap-3 shadow-sm w-100",
+      "d-flex flex-column gap-3",
+      className,
+      fullWidth ? "w-100" : "",
       !borderRadius ? "rounded-4" : borderRadius,
-      !noBorder ? "border" : "",
+      !noBorder ? "border" : "shadow-none",
       !noFrame ? "p-4" : "",
       isHidden ? "d-none" : "",
     ].join(" ")}
-    style={{
-      maxWidth: !(fullWidth ?? false) ? 920 : null,
-      minHeight: minHeight ?? 180,
-      height: "fit-content",
-    }}
+    style={{ minHeight: minHeight ?? 180, height: "fit-content" }}
     {...{ id }}
   >
     {

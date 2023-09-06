@@ -174,24 +174,29 @@ const UserList = (name, users) => {
   );
 };
 
-const Teams = (
-  <div class="d-flex flex-column align-items-center gap-4">
-    {widget("components.molecule.tile", {
-      heading: "Admins",
-      minHeight: 0,
-      children: UserList("Admin", admins),
-    })}
-    {widget("components.molecule.tile", {
-      heading: "Community Moderators",
-      minHeight: 0,
-      children: UserList("Moderator", moderators),
-    })}
-  </div>
-);
-
 return widget("entity.community.layout", {
   path: [{ label: "Communities", pageId: "communities" }],
   handle: props.handle,
   title: "Teams",
-  children: Teams,
+
+  children: (
+    <div
+      className="d-flex flex-column align-items-center gap-4 w-100"
+      style={{ maxWidth: 960 }}
+    >
+      {widget("components.molecule.tile", {
+        heading: "Admins",
+        fullWidth: true,
+        minHeight: 0,
+        children: UserList("Admin", admins),
+      })}
+
+      {widget("components.molecule.tile", {
+        heading: "Community Moderators",
+        fullWidth: true,
+        minHeight: 0,
+        children: UserList("Moderator", moderators),
+      })}
+    </div>
+  ),
 });

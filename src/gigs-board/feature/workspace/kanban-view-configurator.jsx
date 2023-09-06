@@ -136,7 +136,7 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, stateKey, uninitialized }) => {
+const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
@@ -152,37 +152,44 @@ const useForm = ({ initialValues, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
-    fieldInput
-  ) => {
-    const updatedValues = Struct.deepFieldUpdate(
-      formState?.values ?? {},
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedValues = Struct.deepFieldUpdate(
+        formState?.values ?? {},
 
-      {
-        input: fieldInput?.target?.value ?? fieldInput,
-        params,
-        path,
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          params,
+          path,
 
-        via:
-          typeof customFieldUpdate === "function"
-            ? customFieldUpdate
-            : defaultFieldUpdate,
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
+      );
+
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+
+        [stateKey]: {
+          hasUnsubmittedChanges: !Struct.isEqual(
+            updatedValues,
+            initialFormState.values
+          ),
+
+          values: updatedValues,
+        },
+      }));
+
+      if (
+        typeof onUpdate === "function" &&
+        !Struct.isEqual(updatedValues, initialFormState.values)
+      ) {
+        onUpdate(updatedValues);
       }
-    );
-
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
-
-      [stateKey]: {
-        hasUnsubmittedChanges: !Struct.isEqual(
-          updatedValues,
-          initialFormState.values
-        ),
-
-        values: updatedValues,
-      },
-    }));
-  };
+    };
 
   if (
     !uninitialized &&
@@ -337,6 +344,30 @@ const KanbanViewConfiguratorSettings = {
   maxColumnsNumber: 10,
 };
 
+const TagsSchema = {
+  required: {
+    label:
+      "Enter tags you want to include. Posts with these tags will display.",
+
+    placeholder: "tag1, tag2",
+  },
+
+  excluded: {
+    label:
+      "Enter tags you want to exclude. Posts with these tags will not show.",
+
+    placeholder: "tag3, tag4",
+  },
+};
+
+const TicketFeaturesSchema = {
+  author: { label: "Author" },
+  replyCount: { label: "Reply count" },
+  tags: { label: "Tags" },
+  title: { label: "Post title" },
+  type: { label: "Post type" },
+};
+
 const KanbanViewDefaults = {
   metadata: {
     kind: "kanban-view",
@@ -351,7 +382,6 @@ const KanbanViewDefaults = {
     ticket: {
       propVisibility: {
         author: true,
-        name: true,
         replyCount: true,
         tags: true,
         title: true,
@@ -417,10 +447,12 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
-    Object.fromEntries(
-      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-    );
+  const columnsDeleteById =
+    (id) =>
+    ({ lastKnownValue }) =>
+      Object.fromEntries(
+        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+      );
 
   const onCancel = () => {
     form.reset();
@@ -460,37 +492,37 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         value: form.values.metadata.description,
       })}
 
-      <CompactContainer>
-        <div className="d-flex gap-3 flex-column flex-lg-row">
-          {widget("components.molecule.text-input", {
-            className: "flex-shrink-0",
-            format: "comma-separated",
-            key: "kanban-view-tags-required",
+      <div className="d-flex flex-wrap">
+        {widget("components.organism.configurator", {
+          heading: "Tags",
+          classNames: { root: "col-12 col-md-8" },
+          data: form.values.config.tags,
+          isActive: true,
+          isEmbedded: true,
+          isUnlocked: permissions.can_configure,
+          onChange: form.update({ path: ["config", "tags"] }),
+          schema: TagsSchema,
+        })}
 
-            label:
-              "Enter tags you want to include. Posts with these tags will display.",
+        {widget("components.organism.configurator", {
+          heading: "Ticket features",
+          classNames: { root: "col-12 col-md-4" },
 
-            onChange: form.update({ path: ["config", "tags", "required"] }),
-            placeholder: "tag1, tag2",
-            value: form.values.config.tags.required.join(", "),
-          })}
-        </div>
+          data:
+            form.values.config.ticket?.propVisibility ??
+            KanbanViewDefaults.config.ticket.propVisibility,
 
-        <div className="d-flex gap-3 flex-column flex-lg-row">
-          {widget("components.molecule.text-input", {
-            className: "flex-shrink-0",
-            format: "comma-separated",
-            key: "kanban-view-tags-excluded",
+          isActive: true,
+          isEmbedded: true,
+          isUnlocked: permissions.can_configure,
 
-            label:
-              "Enter tags you want to exclude. Posts with these tags will not show.",
+          onChange: form.update({
+            path: ["config", "ticket", "propVisibility"],
+          }),
 
-            onChange: form.update({ path: ["config", "tags", "excluded"] }),
-            placeholder: "tag3, tag4",
-            value: form.values.config.tags.excluded.join(", "),
-          })}
-        </div>
-      </CompactContainer>
+          schema: TicketFeaturesSchema,
+        })}
+      </div>
 
       <div className="d-flex align-items-center justify-content-between">
         <span className="d-inline-flex gap-2 m-0">
@@ -576,7 +608,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
   ) : (
     <div className="d-flex flex-column gap-4">
       {isViewInitialized && state.isActive ? (
-        <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
+        <div className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-gear-wide-connected" />
@@ -646,7 +678,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
               <span>Save</span>
             </button>
           </div>
-        </AttractableDiv>
+        </div>
       ) : null}
 
       {isViewInitialized ? (

@@ -203,21 +203,13 @@ const CommunitySummary = (community) => {
 
 const UserList = (users) => {
   return (
-    <div>
+    <div className="d-flex flex-column gap-3">
       {users.map((user, i) => (
-        <div className={`row ${i < users.length - 1 ? "mb-3" : ""}`}>
-          <div class="col-9">
-            <span
-              key={user}
-              className="d-inline-flex"
-              style={{ fontWeight: 500 }}
-            >
-              {widget("components.molecule.profile-card", {
-                accountId: user,
-              })}
-            </span>
-          </div>
-        </div>
+        <span key={user} className="d-inline-flex" style={{ fontWeight: 500 }}>
+          {widget("components.molecule.profile-card", {
+            accountId: user,
+          })}
+        </span>
       ))}
     </div>
   );

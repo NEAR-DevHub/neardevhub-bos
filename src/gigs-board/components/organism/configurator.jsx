@@ -136,7 +136,7 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, stateKey, uninitialized }) => {
+const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
@@ -182,6 +182,13 @@ const useForm = ({ initialValues, stateKey, uninitialized }) => {
           values: updatedValues,
         },
       }));
+
+      if (
+        typeof onUpdate === "function" &&
+        !Struct.isEqual(updatedValues, initialFormState.values)
+      ) {
+        onUpdate(updatedValues);
+      }
     };
 
   if (
@@ -201,7 +208,7 @@ const useForm = ({ initialValues, stateKey, uninitialized }) => {
 };
 /* END_INCLUDE: "core/lib/gui/form" */
 
-const ValueWrapper = styled.div`
+const ValueView = styled.div`
   & > p {
     margin: 0;
   }
@@ -214,7 +221,7 @@ const fieldParamsByType = {
   },
 
   boolean: {
-    name: "components.atom.switch",
+    name: "components.atom.toggle",
   },
 
   string: {
@@ -227,69 +234,74 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
   <>
     {Object.entries(schema).map(
       (
-        [fieldKey, { format, inputProps, label, order, style, ...fieldProps }],
+        [key, { format, inputProps, label, order, style, ...fieldProps }],
         idx
       ) => {
-        const contentDisplayClassName = [
-          (form.values[fieldKey]?.length ?? 0) > 0 ? "" : "text-muted",
+        const fieldKey = `${idx}-${key}`,
+          fieldValue = form.values[key];
+
+        const fieldType = Array.isArray(fieldValue)
+          ? "array"
+          : typeof (fieldValue ?? "");
+
+        const viewClassName = [
+          (fieldValue?.length ?? 0) > 0 ? "" : "text-muted",
           "m-0",
         ].join(" ");
 
-        const fieldType = Array.isArray(form.values[fieldKey])
-          ? "array"
-          : typeof (form.values[fieldKey] ?? "");
-
         return (
           <>
-            {!isEditable ? (
-              <div
-                className="d-flex gap-3"
-                key={`${idx}-${fieldKey}`}
-                style={{ order }}
-              >
-                <label className="fw-bold w-25">{label}</label>
+            <div
+              className={["d-flex gap-3", isEditable ? "d-none" : ""].join(" ")}
+              key={fieldKey}
+              style={{ order }}
+            >
+              <label className="fw-bold w-25">{label}</label>
 
-                <ValueWrapper
-                  className={[contentDisplayClassName, "w-75"].join(" ")}
-                >
-                  {format !== "markdown" ? (
-                    <span>
-                      {(fieldType === "array" && format === "comma-separated"
-                        ? form.values[fieldKey]
-                            .filter((string) => string.length > 0)
-                            .join(", ")
-                        : form.values[fieldKey]
-                      )?.toString?.() || "none"}
-                    </span>
-                  ) : (form.values[fieldKey]?.length ?? 0) > 0 ? (
-                    <Markdown text={form.values[fieldKey]} />
-                  ) : (
-                    <span>none</span>
-                  )}
-                </ValueWrapper>
-              </div>
-            ) : (
-              widget(fieldParamsByType[fieldType].name, {
-                ...fieldProps,
-                className: "w-100",
-                format,
-                key: `${idx}-${fieldKey}--editable`,
-                label,
-                onChange: form.update({ path: [fieldKey] }),
-                style: { ...style, order },
+              <ValueView className={[viewClassName, "w-75"].join(" ")}>
+                {format !== "markdown" ? (
+                  <span>
+                    {(fieldType === "array" && format === "comma-separated"
+                      ? fieldValue
+                          .filter((string) => string.length > 0)
+                          .join(", ")
+                      : fieldValue
+                    )?.toString?.() || "none"}
+                  </span>
+                ) : (fieldValue?.length ?? 0) > 0 ? (
+                  <Markdown text={fieldValue} />
+                ) : (
+                  <span>none</span>
+                )}
+              </ValueView>
+            </div>
 
-                value:
-                  fieldType === "array" && format === "comma-separated"
-                    ? form.values[fieldKey].join(", ")
-                    : form.values[fieldKey],
+            {widget(fieldParamsByType[fieldType].name, {
+              ...fieldProps,
 
-                inputProps: {
-                  ...(inputProps ?? {}),
-                  ...(fieldParamsByType[fieldType].inputProps ?? {}),
-                  tabIndex: order,
-                },
-              })
-            )}
+              className: [
+                "w-100",
+                fieldProps.className ?? "",
+                isEditable ? "" : "d-none",
+              ].join(" "),
+
+              format,
+              key: `${fieldKey}--editable`,
+              label,
+              onChange: form.update({ path: [key] }),
+              style: { ...style, order },
+
+              value:
+                fieldType === "array" && format === "comma-separated"
+                  ? fieldValue.join(", ")
+                  : fieldValue,
+
+              inputProps: {
+                ...(inputProps ?? {}),
+                ...(fieldParamsByType[fieldType].inputProps ?? {}),
+                tabIndex: order,
+              },
+            })}
           </>
         );
       }
@@ -307,12 +319,14 @@ const Configurator = ({
   fullWidth,
   heading,
   isActive,
+  isEmbedded,
   isHidden,
-  isSubform,
   isUnlocked,
   isValid,
+  noBorder,
   noFrame,
   onCancel,
+  onChange,
   onSubmit,
   schema,
   submitIcon,
@@ -332,7 +346,7 @@ const Configurator = ({
     ? Struct.pick(data ?? {}, Object.keys(schema))
     : {};
 
-  const form = useForm({ initialValues, stateKey: "form" });
+  const form = useForm({ initialValues, onUpdate: onChange, stateKey: "form" });
 
   const formFormattedValues =
     typeof toFormatted === "function" ? toFormatted(form.values) : form.values;
@@ -349,7 +363,7 @@ const Configurator = ({
   const onCancelClick = () => {
     if (!isActive) formToggle(false);
     form.reset();
-    if (isSubform && typeof onSubmit === "function") onSubmit(initialValues);
+    if (isEmbedded && typeof onSubmit === "function") onSubmit(initialValues);
     if (typeof onCancel === "function") onCancel();
   };
 
@@ -366,6 +380,7 @@ const Configurator = ({
     fullWidth,
     heading,
     isHidden,
+    noBorder,
     noFrame,
     ...otherProps,
 
@@ -391,8 +406,15 @@ const Configurator = ({
           })}
         </div>
 
-        {!noFrame && isUnlocked && state.isActive ? (
-          <div className="d-flex align-items-center justify-content-end gap-3 mt-auto">
+        {!noFrame ? (
+          <div
+            className={[
+              "d-flex align-items-center justify-content-end gap-3 mt-auto",
+              isUnlocked && state.isActive && typeof onChange !== "function"
+                ? ""
+                : "d-none",
+            ].join(" ")}
+          >
             {actionsAdditional ? (
               <div className="me-auto">{actionsAdditional}</div>
             ) : null}

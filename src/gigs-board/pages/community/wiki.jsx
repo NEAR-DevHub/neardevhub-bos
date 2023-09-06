@@ -162,7 +162,7 @@ const WikiPage = ({ handle, id }) => {
 
     children:
       communityData !== null ? (
-        <div>
+        <div className="w-100">
           <Markdown className="card-text" {...{ onMention, text }} />
         </div>
       ) : (

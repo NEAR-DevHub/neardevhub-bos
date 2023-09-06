@@ -64,9 +64,10 @@ const GithubTicket = ({
               alt={`${author.login}'s GitHub avatar`}
               className="img-fluid rounded"
               src={author.avatar_url}
+              style={{ width: 24, height: 24 }}
             />
 
-            <span className="ms-1 text-muted">@{author.login}</span>
+            <span className="text-muted">@{author.login}</span>
           </a>
         ) : null}
 

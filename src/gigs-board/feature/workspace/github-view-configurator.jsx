@@ -85,7 +85,7 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, stateKey, uninitialized }) => {
+const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
@@ -101,37 +101,44 @@ const useForm = ({ initialValues, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
-    fieldInput
-  ) => {
-    const updatedValues = Struct.deepFieldUpdate(
-      formState?.values ?? {},
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedValues = Struct.deepFieldUpdate(
+        formState?.values ?? {},
 
-      {
-        input: fieldInput?.target?.value ?? fieldInput,
-        params,
-        path,
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          params,
+          path,
 
-        via:
-          typeof customFieldUpdate === "function"
-            ? customFieldUpdate
-            : defaultFieldUpdate,
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
+      );
+
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+
+        [stateKey]: {
+          hasUnsubmittedChanges: !Struct.isEqual(
+            updatedValues,
+            initialFormState.values
+          ),
+
+          values: updatedValues,
+        },
+      }));
+
+      if (
+        typeof onUpdate === "function" &&
+        !Struct.isEqual(updatedValues, initialFormState.values)
+      ) {
+        onUpdate(updatedValues);
       }
-    );
-
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
-
-      [stateKey]: {
-        hasUnsubmittedChanges: !Struct.isEqual(
-          updatedValues,
-          initialFormState.values
-        ),
-
-        values: updatedValues,
-      },
-    }));
-  };
+    };
 
   if (
     !uninitialized &&
@@ -351,7 +358,6 @@ const GithubViewDefaults = {
     ticket: {
       propVisibility: {
         author: true,
-        name: true,
         labels: true,
         title: true,
         type: true,
@@ -419,10 +425,12 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
-    Object.fromEntries(
-      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-    );
+  const columnsDeleteById =
+    (id) =>
+    ({ lastKnownValue }) =>
+      Object.fromEntries(
+        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+      );
 
   const onSubmit = () =>
     DevHub.update_community_github({
@@ -479,7 +487,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
                   "components.atom.toggle",
 
                   {
-                    active: enabled,
+                    value: enabled,
                     className: "w-100",
                     key: typeName,
                     label: typeName,
@@ -614,9 +622,9 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
           `Community with handle ${communityHandle} not found.`)}
     </div>
   ) : (
-    <div className="d-flex flex-column gap-4">
+    <div className="d-flex flex-column gap-4" style={{ maxWidth: "100%" }}>
       {state.isActive && Object.keys(form.values).length > 0 ? (
-        <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
+        <div className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-gear-wide-connected" />
@@ -686,7 +694,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
               <span>Save</span>
             </button>
           </div>
-        </AttractableDiv>
+        </div>
       ) : null}
 
       {Object.keys(form.values).length > 0 ? (
