@@ -152,44 +152,44 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
-
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
-
-        [stateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
-
-          values: updatedValues,
-        },
-      }));
-
-      if (
-        typeof onUpdate === "function" &&
-        !Struct.isEqual(updatedValues, initialFormState.values)
-      ) {
-        onUpdate(updatedValues);
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
       }
-    };
+    );
+
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
+
+      [stateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
+
+        values: updatedValues,
+      },
+    }));
+
+    if (
+      typeof onUpdate === "function" &&
+      !Struct.isEqual(updatedValues, initialFormState.values)
+    ) {
+      onUpdate(updatedValues);
+    }
+  };
 
   if (
     !uninitialized &&
@@ -314,6 +314,7 @@ const Configurator = ({
   cancelLabel,
   classNames,
   data,
+  fieldGap,
   fieldsRender: customFieldsRender,
   formatter: toFormatted,
   fullWidth,
@@ -397,7 +398,9 @@ const Configurator = ({
     children: (
       <div className="flex-grow-1 d-flex flex-column gap-4">
         <div
-          className={`d-flex flex-column gap-${state.isActive ? 1 : 4} py-1`}
+          className={`d-flex flex-column gap-${
+            state.isActive ? fieldGap ?? 1 : 4
+          }`}
         >
           {fieldsRender({
             form,

@@ -152,44 +152,44 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
-
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
-
-        [stateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
-
-          values: updatedValues,
-        },
-      }));
-
-      if (
-        typeof onUpdate === "function" &&
-        !Struct.isEqual(updatedValues, initialFormState.values)
-      ) {
-        onUpdate(updatedValues);
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
       }
-    };
+    );
+
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
+
+      [stateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
+
+        values: updatedValues,
+      },
+    }));
+
+    if (
+      typeof onUpdate === "function" &&
+      !Struct.isEqual(updatedValues, initialFormState.values)
+    ) {
+      onUpdate(updatedValues);
+    }
+  };
 
   if (
     !uninitialized &&
@@ -412,6 +412,8 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
     uninitialized: (view.metadata ?? null) === null,
   });
 
+  console.log(form.values);
+
   const isViewInitialized = (form.values.metadata ?? null) !== null;
 
   const formToggle = (forcedState) =>
@@ -447,12 +449,10 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownValue }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+    );
 
   const onCancel = () => {
     form.reset();
@@ -492,10 +492,10 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         value: form.values.metadata.description,
       })}
 
-      <div className="d-flex flex-wrap">
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
         {widget("components.organism.configurator", {
           heading: "Tags",
-          classNames: { root: "col-12 col-md-8" },
+          classNames: { root: "col-12 col-md-7 col-lg-8" },
           data: form.values.config.tags,
           isActive: true,
           isEmbedded: true,
@@ -506,12 +506,13 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
         {widget("components.organism.configurator", {
           heading: "Ticket features",
-          classNames: { root: "col-12 col-md-4" },
+          classNames: { root: "col-12 col-md-4 col-lg-3" },
 
           data:
             form.values.config.ticket?.propVisibility ??
             KanbanViewDefaults.config.ticket.propVisibility,
 
+          fieldGap: 3,
           isActive: true,
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
