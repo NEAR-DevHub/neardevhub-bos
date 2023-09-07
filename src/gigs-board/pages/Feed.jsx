@@ -132,7 +132,7 @@ const DevHub = {
           })),
 
       JSON.stringify({ name, params }),
-      { subscribe: true },
+      { subscribe: true }
     );
 
     return cacheState === null ? initialState : cacheState;
@@ -202,8 +202,8 @@ const banner = (
           widget(
             "entity.community.card",
             { metadata: community, format: "medium" },
-            community.handle,
-          ),
+            community.handle
+          )
         )}
       </div>
     </div>
