@@ -145,7 +145,7 @@ State.init({
   createTeam: false,
   createLabel: false,
   isEditorActive: false,
-  editTeams: true, // TODO false
+  editTeams: false,
 });
 
 const access_info = DevHub.get_access_control_info() ?? null,

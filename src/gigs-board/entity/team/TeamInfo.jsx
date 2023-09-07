@@ -174,15 +174,14 @@ const header = isTeam ? (
     {props.member}
   </div>
 ) : (
-  // TODO
-  // <Widget
-  //   src={`neardevgov.near/widget/ProfileLine`}
-  //   props={{ accountId: props.member }}
-  // />
-  <div class="d-flex">
-    <i class="bi bi-people-fill me-1"></i>
-    {props.member}
-  </div>
+  <Widget
+    src={`neardevgov.near/widget/ProfileLine`}
+    props={{ accountId: props.member }}
+  />
+  // <div class="d-flex">
+  //   <i class="bi bi-people-fill me-1"></i>
+  //   {props.member}
+  // </div>
 );
 
 const SlimButton = styled.button`
@@ -211,7 +210,7 @@ State.init({
   labelError: "",
   permissionError: "",
   memberError: "",
-  editLabels: true, // TODO false
+  editLabels: false,
   teamData: isTeam ? TeamDataDefaults : null,
   permissions: getInitialPermissionsString(),
   newLabel: "",
@@ -280,8 +279,8 @@ function removeTeam(team) {
 
 function removeMemberFromTeam(memberId) {
   let isMemberInMultipleTeams =
-    Object.values(props.root_members).filter((metadata) =>
-      metadata.children.includes(memberId)
+    Object.values(props.root_members).filter((meta) =>
+      meta.children.includes(memberId)
     ).length > 1;
   if (isMemberInMultipleTeams) {
     // edit_member
@@ -317,14 +316,21 @@ function removeMemberFromTeam(memberId) {
 }
 
 // TODO check if already in another team same as remove
+// if so add labels instead of overwriting/ignoring
 function addMemberToTeam(memberData) {
-  let memberExists = !!props.members_list[memberData.member];
+  let memberId = memberData.member;
+  if (metadata.children.includes(memberId))
+    return State.update({
+      memberError: "Member already exists in team",
+    });
+  let memberExists = !!props.members_list[memberId];
+  console.log({ metadata });
   Near.call([
     {
       contractName: nearDevGovGigsContractAccountId,
       methodName: memberExists ? "edit_member" : "add_member",
       args: {
-        member: memberData.member,
+        member: memberId,
         metadata: {
           ...metadata,
           description: memberData.description,
@@ -357,7 +363,7 @@ function editLabelsFromTeam(label, permissions) {
     });
     return;
   }
-  let newPermissions = props.root_members[team].permissions;
+  let newPermissions = metadata.permissions;
   newPermissions[label] = permissionsArray;
   Near.call([
     {
@@ -561,7 +567,23 @@ return (
         <p class="card-text" key="description">
           <Markdown class="card-text" text={metadata.description}></Markdown>
         </p>
-        {state.addMember && props.editMode &&
+        {state.editLabels && state.memberError && props.editMode ? (
+          <div
+            class="alert alert-warning alert-dismissible fade show"
+            role="alert"
+          >
+            {state.memberError}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+              onClick={() => State.update({ memberError: "" })}
+            ></button>
+          </div>
+        ) : null}
+        {state.addMember &&
+          props.editMode &&
           widget("components.organism.editor", {
             classNames: {
               submit: "btn-primary",
@@ -611,7 +633,10 @@ return (
             ></button>
           </div>
         ) : null}
-        {state.editLabels && props.teamLevel && props.editMode && editLabelsDiv()}
+        {state.editLabels &&
+          props.teamLevel &&
+          props.editMode &&
+          editLabelsDiv()}
         {permissionsRenderer("edit-post")}
         {permissionsRenderer("use-labels")}
         {metadata.children && (
