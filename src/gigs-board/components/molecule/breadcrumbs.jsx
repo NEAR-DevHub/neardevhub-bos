@@ -52,38 +52,39 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const Breadcrumbs = ({ classNames, path }) =>
-  (path ?? null) === null ? (
-    <></>
-  ) : (
-    <div
-      aria-label="breadcrumb"
-      className={["d-flex", classNames?.root ?? ""].join(" ")}
-      style={{ backgroundColor: "#181818" }}
-    >
-      <ol className="breadcrumb d-flex align-items-end m-0 h-100">
-        {path.map(({ isActive, isHidden, label, pageId, params }) => (
-          <li
-            aria-current="page"
-            className={[
-              "breadcrumb-item d-flex",
-              isActive ? "active" : "",
-              isHidden ? "d-none" : "",
-            ].join(" ")}
+const Breadcrumbs = ({ classNames, path }) => (
+  <div
+    aria-label="breadcrumb"
+    className={[
+      "d-flex",
+      classNames?.root ?? "",
+      Array.isArray(path) ? "" : "d-none",
+    ].join(" ")}
+    style={{ backgroundColor: "#181818" }}
+  >
+    <ol className="breadcrumb d-flex align-items-end m-0 h-100">
+      {(path ?? []).map(({ isActive, isHidden, label, pageId, params }) => (
+        <li
+          aria-current="page"
+          className={[
+            "breadcrumb-item d-flex",
+            isActive ? "active" : "",
+            isHidden ? "d-none" : "",
+          ].join(" ")}
+        >
+          <a
+            className={["pb-1 lh-1 text-white", classNames?.link ?? ""].join(
+              " "
+            )}
+            href={href(pageId, params ?? {})}
+            style={{ fontWeight: 420 }}
           >
-            <a
-              className={["pb-1 lh-1 text-white", classNames?.link ?? ""].join(
-                " "
-              )}
-              href={href(pageId, params ?? {})}
-              style={{ fontWeight: 420 }}
-            >
-              {label}
-            </a>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
+            {label}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+);
 
 return Breadcrumbs(props);

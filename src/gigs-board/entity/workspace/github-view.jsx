@@ -145,13 +145,14 @@ const dataToColumns = (data, columns) =>
 
 const withType = (type) => (data) => ({ ...data, type });
 
-const GithubKanbanTeamBoard = ({
+const GithubView = ({
   columns,
   dataTypesIncluded,
   description,
-  editorTrigger,
-  isEditable,
-  pageURL,
+  isUnderConfiguration,
+  link,
+  onConfigureClick,
+  permissions,
   repoURL,
   ticketState,
   title,
@@ -207,10 +208,59 @@ const GithubKanbanTeamBoard = ({
   }
 
   return (
-    <div className="d-flex flex-column gap-4 py-4">
-      <div className="d-flex flex-column align-items-center gap-2">
+    <div className="d-flex flex-column gap-4">
+      <div
+        className={"d-flex justify-content-end gap-3 p-3 rounded-4"}
+        style={{ backgroundColor: "#181818" }}
+      >
+        {typeof link === "string" && link.length > 0 ? (
+          <>
+            {widget("components.molecule.button", {
+              classNames: {
+                root: "btn-sm btn-outline-secondary me-auto text-white",
+              },
+
+              icon: { kind: "bootstrap-icon", variant: "bi-clipboard-fill" },
+              label: "Copy link",
+              onClick: () => clipboard.writeText(link),
+            })}
+          </>
+        ) : null}
+
+        {permissions.can_configure && (
+          <>
+            {widget("components.molecule.button", {
+              classNames: { root: "btn-sm btn-primary" },
+
+              icon: {
+                kind: "bootstrap-icon",
+                variant: "bi-gear-wide-connected",
+              },
+
+              isHidden:
+                typeof onConfigureClick !== "function" || isUnderConfiguration,
+
+              label: "Configure",
+              onClick: onConfigureClick,
+            })}
+
+            {widget("components.molecule.button", {
+              classNames: {
+                root: "btn-sm btn-outline-danger shadow-none border-0",
+              },
+
+              icon: { kind: "bootstrap-icon", variant: "bi-recycle" },
+              isHidden: "Disabled for MVP", // typeof onDeleteClick !== "function",
+              label: "Delete",
+              onClick: onDeleteClick,
+            })}
+          </>
+        )}
+      </div>
+
+      <div className="d-flex flex-column align-items-center gap-2 pt-4">
         <h5 className="h5 d-inline-flex gap-2 m-0">
-          <i className="bi bi-kanban-fill" />
+          <i className="bi bi-github" />
           <span>{(title?.length ?? 0) > 0 ? title : "Untitled board"}</span>
         </h5>
 
@@ -221,44 +271,6 @@ const GithubKanbanTeamBoard = ({
         </p>
       </div>
 
-      <div className="d-flex justify-content-end gap-3">
-        {pageURL ? (
-          <a
-            className="card-link d-inline-flex me-auto"
-            href={pageURL}
-            rel="noreferrer"
-            role="button"
-            target="_blank"
-            title="Link to this board"
-          >
-            <span className="hstack gap-2">
-              <i className="bi bi-share" />
-              <span>Open in new tab</span>
-            </span>
-          </a>
-        ) : null}
-
-        {pageURL ? (
-          <button
-            className="btn shadow btn-sm btn-outline-secondary d-inline-flex gap-2"
-            onClick={() => clipboard.writeText(pageURL)}
-          >
-            <i className="bi bi-clipboard-fill" />
-            <span>Copy link</span>
-          </button>
-        ) : null}
-
-        {isEditable ? (
-          <button
-            className="btn shadow btn-sm btn-primary d-inline-flex gap-2"
-            onClick={editorTrigger}
-          >
-            <i className="bi bi-gear-wide-connected" />
-            <span>Configure</span>
-          </button>
-        ) : null}
-      </div>
-
       <div className="d-flex gap-3" style={{ overflowX: "auto" }}>
         {Object.keys(columns).length > 0 ? (
           Object.values(columns).map((column) => (
@@ -266,24 +278,26 @@ const GithubKanbanTeamBoard = ({
               <div className="card rounded-4">
                 <div
                   className={[
-                    "card-body d-flex flex-column gap-3",
+                    "card-body d-flex flex-column gap-3 p-2",
                     "border border-2 border-secondary rounded-4",
                   ].join(" ")}
                 >
-                  <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
-                    {column.title}
+                  <span className="d-flex flex-column py-1">
+                    <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
+                      {column.title}
 
-                    <span className="badge rounded-pill bg-secondary">
-                      {(state.ticketsByColumn[column.id] ?? []).length}
-                    </span>
-                  </h6>
+                      <span className="badge rounded-pill bg-secondary">
+                        {(state.ticketsByColumn[column.id] ?? []).length}
+                      </span>
+                    </h6>
 
-                  <p class="text-secondary m-0">{column.description}</p>
+                    <p class="text-secondary m-0">{column.description}</p>
+                  </span>
 
-                  <div class="d-flex flex-column gap-3">
+                  <div class="d-flex flex-column gap-2">
                     {(state.ticketsByColumn[column.id] ?? []).map((data) =>
                       widget(
-                        "entity.team-board.github-ticket",
+                        "entity.workspace.github-ticket",
                         { data },
                         data.id
                       )
@@ -309,4 +323,4 @@ const GithubKanbanTeamBoard = ({
   );
 };
 
-return GithubKanbanTeamBoard(props);
+return GithubView(props);

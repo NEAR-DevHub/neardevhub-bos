@@ -133,65 +133,42 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
+/* INCLUDE: "entity/viewer" */
+const Viewer = {
+  communityPermissions: ({ handle }) =>
+    DevHub.get_account_community_permissions({
+      account_id: context.accountId,
+      community_handle: handle,
+    }) ?? {
+      can_configure: false,
+      can_delete: false,
+    },
 
-const communityData = DevHub.get_community({ handle: props.handle }) ?? null;
-const root_members = DevHub.get_root_members() ?? null;
+  role: {
+    isDevHubModerator:
+      DevHub.has_moderator({ account_id: context.accountId }) ?? false,
+  },
+};
+/* END_INCLUDE: "entity/viewer" */
 
-if (communityData === null || root_members === null) {
-  return <div>Loading...</div>;
-}
+const CommunityBoardPage = ({ handle }) => {
+  const permissions = Viewer.communityPermissions({ handle });
 
-const moderators = (root_members ?? {})?.["team:moderators"]?.children;
-const admins = communityData.admins;
+  return widget("entity.community.layout", {
+    path: [{ label: "Communities", pageId: "communities" }],
+    handle,
+    title: "Board",
 
-const UserList = (name, users) => {
-  return (
-    <div>
-      {(users ?? []).map((user, i) => (
-        <div className={`row ${i < users.length - 1 ? "mb-3" : ""}`}>
-          <div class="col-3">
-            <b>{name + " #" + (i + 1)}</b>
-          </div>
-          <div class="col-9">
-            <span
-              key={user}
-              className="d-inline-flex"
-              style={{ fontWeight: 500 }}
-            >
-              <Widget
-                src="neardevgov.near/widget/ProfileLine"
-                props={{
-                  accountId: user,
-                  hideAccountId: true,
-                  tooltip: true,
-                }}
-              />
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+    children: (
+      <div className="d-flex flex-column">
+        {widget("feature.workspace.kanban-view-configurator", {
+          communityHandle: handle,
+          link: "https://near.org" + href("community.board", { handle }),
+          permissions,
+        })}
+      </div>
+    ),
+  });
 };
 
-const Teams = (
-  <div class="d-flex flex-column align-items-center gap-4">
-    {widget("components.molecule.tile", {
-      heading: "Admins",
-      minHeight: 0,
-      children: UserList("Admin", admins),
-    })}
-    {widget("components.molecule.tile", {
-      heading: "Community Moderators",
-      minHeight: 0,
-      children: UserList("Moderator", moderators),
-    })}
-  </div>
-);
-
-return widget("entity.community.layout", {
-  path: [{ label: "Communities", pageId: "communities" }],
-  handle: props.handle,
-  title: "Teams",
-  children: Teams,
-});
+return CommunityBoardPage(props);
