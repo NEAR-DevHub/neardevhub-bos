@@ -498,11 +498,15 @@ const fundraisingDiv = (
         <option selected value="NEAR">
           NEAR
         </option>
-        <option value={{
-          NEP141: {
-            address: "usdt.tether-token.near",
-          },
-        }}>USDT</option>
+        <option
+          value={{
+            NEP141: {
+              address: "usdt.tether-token.near",
+            },
+          }}
+        >
+          USDT
+        </option>
       </select>
     </div>
     <div className="col-lg-6 mb-2">
