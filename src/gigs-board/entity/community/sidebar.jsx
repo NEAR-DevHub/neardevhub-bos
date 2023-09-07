@@ -178,8 +178,9 @@ const CommunitySummary = (community) => {
 
   return (
     <div style={{ top: "0", left: "0" }}>
-      <Markdown text={community.bio_markdown} />
-
+      {widget("components.molecule.markdown-viewer", {
+        text: community.bio_markdown,
+      })}
       <small class="text-muted mb-3">
         {widget("components.atom.tag", { linkTo: "Feed", ...community })}
       </small>

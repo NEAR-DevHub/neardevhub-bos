@@ -70,7 +70,11 @@ function textareaInputHandler(value) {
 function autoCompleteAccountId(id) {
   let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
   description = `${description} @${id}`.trim() + " ";
-  State.update({ description, showAccountAutocomplete: false });
+  State.update({
+    description,
+    handler: "autocompleteSelected",
+    showAccountAutocomplete: false,
+  });
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
@@ -351,9 +355,9 @@ const descriptionDiv = fields.includes("description") ? (
     Description:
     <br />
     {widget("components.molecule.markdown-editor", {
-      content: state.description,
+      data: { handler: state.handler, content: state.description },
       onChange: (content) => {
-        State.update({ description: content });
+        State.update({ description: content, handler: "update" });
         textareaInputHandler(content);
       },
     })}

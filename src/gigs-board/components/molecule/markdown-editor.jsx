@@ -1,9 +1,9 @@
-const MarkdownEditor = ({ content, onChange }) => {
+const MarkdownEditor = ({ data, onChange }) => {
   return (
     <Widget
       src="devhub.efiz.near/widget/SimpleMDE"
       props={{
-        data: { content },
+        data,
         onChange,
         toolbar: [
           "heading",
@@ -16,7 +16,6 @@ const MarkdownEditor = ({ content, onChange }) => {
           "ordered-list",
           "checklist",
           "mention",
-          "reference",
         ],
         statusConfig: [],
       }}
