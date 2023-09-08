@@ -235,12 +235,9 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
           "m-0",
         ].join(" ");
 
-        let fieldType;
-        if (Array.isArray(form.values[fieldKey])) {
-          fieldType = "array";
-        } else {
-          fieldType = typeof (form.values[fieldKey] ?? "");
-        }
+        const fieldType = Array.isArray(form.values[fieldKey])
+          ? "array"
+          : typeof (form.values[fieldKey] ?? "");
 
         return (
           <>
@@ -265,9 +262,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                       )?.toString?.() || "none"}
                     </span>
                   ) : (form.values[fieldKey]?.length ?? 0) > 0 ? (
-                    widget("components.molecule.markdown-viewer", {
-                      text: form.values[fieldKey],
-                    })
+                    <Markdown text={form.values[fieldKey]} />
                   ) : (
                     <span>none</span>
                   )}

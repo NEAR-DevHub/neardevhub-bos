@@ -64,17 +64,13 @@ const AutoComplete = styled.div`
 
 function textareaInputHandler(value) {
   const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update({ text: value, showAccountAutocomplete, description: value });
+  State.update({ text: value, showAccountAutocomplete });
 }
 
 function autoCompleteAccountId(id) {
   let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
   description = `${description} @${id}`.trim() + " ";
-  State.update({
-    description,
-    handler: "autocompleteSelected",
-    showAccountAutocomplete: false,
-  });
+  State.update({ description, showAccountAutocomplete: false });
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
@@ -338,13 +334,19 @@ const nameDiv = (
 const descriptionDiv = (
   <div className="col-lg-12 mb-2">
     <p className="fs-6 fw-bold mb-1">Description</p>
-    {widget("components.molecule.markdown-editor", {
-      data: { handler: state.handler, content: state.description },
-      onChange: (content) => {
-        State.update({ description: content, handler: "update" });
-        textareaInputHandler(content);
-      },
-    })}
+    <textarea
+      value={state.description}
+      type="text"
+      rows={6}
+      className="form-control"
+      onInput={(event) => textareaInputHandler(event.target.value)}
+      onKeyUp={(event) => {
+        if (event.key === "Escape") {
+          State.update({ showAccountAutocomplete: false });
+        }
+      }}
+      onChange={(event) => State.update({ description: event.target.value })}
+    />
     {autocompleteEnabled && state.showAccountAutocomplete && (
       <AutoComplete>
         <Widget
