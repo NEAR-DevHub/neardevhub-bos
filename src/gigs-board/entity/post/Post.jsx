@@ -638,7 +638,7 @@ const postsList =
     </div>
   );
 
-const LimitedMarkdown = styled.div`
+const limitedMarkdown = styled.div`
   max-height: 20em;
 `;
 
@@ -655,19 +655,37 @@ const clampedContent = needClamp
   ? contentArray.slice(0, 3).join("\n")
   : snapshot.description;
 
+const onMention = (accountId) => (
+  <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
+    <Widget
+      src="neardevgov.near/widget/ProfileLine"
+      props={{
+        accountId: accountId.toLowerCase(),
+        hideAccountId: true,
+        tooltip: true,
+      }}
+    />
+  </span>
+);
+
 // Should make sure the posts under the currently top viewed post are limited in size.
 const descriptionArea = isUnderPost ? (
-  <LimitedMarkdown className="overflow-auto" key="description-area">
-    {widget("components.molecule.markdown-viewer", {
-      text: snapshot.description,
-    })}
-  </LimitedMarkdown>
+  <limitedMarkdown className="overflow-auto" key="description-area">
+    <Markdown
+      class="card-text"
+      text={snapshot.description}
+      onMention={onMention}
+    />
+  </limitedMarkdown>
 ) : (
   <div>
     <div class={state.clamp ? "clamp" : ""}>
-      {widget("components.molecule.markdown-viewer", {
-        text: state.clamp ? clampedContent : snapshot.description,
-      })}
+      <Markdown
+        class="card-text"
+        text={state.clamp ? clampedContent : snapshot.description}
+        onMention={onMention}
+        key="description-area"
+      ></Markdown>
     </div>
     {state.clamp ? (
       <div class="d-flex justify-content-start">

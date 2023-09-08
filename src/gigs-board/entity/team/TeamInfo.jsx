@@ -148,9 +148,7 @@ return (
     </div>
     <div className="card-body">
       <p class="card-text" key="description">
-        {widget("components.molecule.markdown-viewer", {
-          text: metadata.description,
-        })}
+        <Markdown class="card-text" text={metadata.description}></Markdown>
       </p>
       {permissionsRenderer("edit-post")}
       {permissionsRenderer("use-labels")}

@@ -134,6 +134,19 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
+const onMention = (accountId) => (
+  <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
+    <Widget
+      src="neardevgov.near/widget/ProfileLine"
+      props={{
+        accountId: accountId.toLowerCase(),
+        hideAccountId: true,
+        tooltip: true,
+      }}
+    />
+  </span>
+);
+
 const WikiPage = ({ handle, id }) => {
   const communityData = DevHub.get_community({ handle });
 
@@ -149,7 +162,9 @@ const WikiPage = ({ handle, id }) => {
 
     children:
       communityData !== null ? (
-        <div>{widget("components.molecule.markdown-viewer", { text })}</div>
+        <div>
+          <Markdown className="card-text" {...{ onMention, text }} />
+        </div>
       ) : (
         <div className={typeof id !== "string" ? "alert alert-danger" : ""}>
           {typeof id === "string"
