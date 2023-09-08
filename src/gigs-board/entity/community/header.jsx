@@ -318,8 +318,8 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
         }}
       />
 
-      <div className="d-md-flex d-block justify-content-between container">
-        <div className="d-md-flex d-block align-items-end">
+      <div className="container d-flex flex-wrap justify-content-between gap-4">
+        <div className="d-flex align-items-end">
           <div className="position-relative">
             <div style={{ width: 150, height: 100 }}>
               <img
@@ -339,7 +339,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           </div>
         </div>
 
-        <div className="d-flex align-items-end gap-3">
+        <div className="d-flex align-items-end gap-3 ms-auto">
           {widget("components.molecule.button", {
             classNames: { root: "btn-outline-light text-dark" },
             href: href("community.configuration", { handle }),

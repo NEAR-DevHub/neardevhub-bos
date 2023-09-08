@@ -101,44 +101,44 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
-    fieldInput
-  ) => {
-    const updatedValues = Struct.deepFieldUpdate(
-      formState?.values ?? {},
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedValues = Struct.deepFieldUpdate(
+        formState?.values ?? {},
 
-      {
-        input: fieldInput?.target?.value ?? fieldInput,
-        params,
-        path,
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          params,
+          path,
 
-        via:
-          typeof customFieldUpdate === "function"
-            ? customFieldUpdate
-            : defaultFieldUpdate,
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
+      );
+
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+
+        [stateKey]: {
+          hasUnsubmittedChanges: !Struct.isEqual(
+            updatedValues,
+            initialFormState.values
+          ),
+
+          values: updatedValues,
+        },
+      }));
+
+      if (
+        typeof onUpdate === "function" &&
+        !Struct.isEqual(updatedValues, initialFormState.values)
+      ) {
+        onUpdate(updatedValues);
       }
-    );
-
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
-
-      [stateKey]: {
-        hasUnsubmittedChanges: !Struct.isEqual(
-          updatedValues,
-          initialFormState.values
-        ),
-
-        values: updatedValues,
-      },
-    }));
-
-    if (
-      typeof onUpdate === "function" &&
-      !Struct.isEqual(updatedValues, initialFormState.values)
-    ) {
-      onUpdate(updatedValues);
-    }
-  };
+    };
 
   if (
     !uninitialized &&
@@ -339,11 +339,6 @@ const EditorSettings = {
   maxColumnsNumber: 20,
 };
 
-const CompactContainer = styled.div`
-  width: fit-content !important;
-  max-width: 100%;
-`;
-
 const GithubViewDefaults = {
   id: uuid(),
   kind: "github-view",
@@ -439,10 +434,12 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
-    Object.fromEntries(
-      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-    );
+  const columnsDeleteById =
+    (id) =>
+    ({ lastKnownValue }) =>
+      Object.fromEntries(
+        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+      );
 
   const onSubmit = () =>
     DevHub.update_community_github({
@@ -459,24 +456,11 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
   const formElement =
     Object.keys(form.values).length > 0 ? (
       <>
-        <div className="d-flex gap-3 flex-column flex-lg-row">
-          {widget(
-            "components.molecule.text-input",
-            {
-              className: "w-100",
-              key: `${form.values.id}-title`,
-              label: "Title",
-              onChange: form.update({ path: ["title"] }),
-              placeholder: "NEAR Protocol NEPs",
-              value: form.values.title,
-            },
-            `${form.values.id}-title`
-          )}
-
+        <div className="d-flex gap-1 flex-column flex-xl-row">
           {widget("components.molecule.text-input", {
             className: "w-100",
             key: `${form.values.id}-repoURL`,
-            label: "GitHub repository URL",
+            label: "Repository URL",
             onChange: form.update({ path: ["repoURL"] }),
             placeholder: "https://github.com/example-org/example-repo",
             value: form.values.repoURL,
@@ -484,24 +468,29 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
 
           {widget("components.molecule.text-input", {
             className: "w-100",
+            key: `${form.values.id}-title`,
+            label: "Title",
+            onChange: form.update({ path: ["title"] }),
+            placeholder: "NEAR Protocol NEPs",
+            value: form.values.title,
+          })}
+
+          {widget("components.molecule.text-input", {
+            className: "w-100",
             key: `${form.values.id}-column-${id}-description`,
             label: "Description",
-
-            onChange: form.update({
-              path: ["columns", id, "description"],
-            }),
-
+            onChange: form.update({ path: ["columns", id, "description"] }),
             placeholder: "NEPs that need a review by Subject Matter Experts.",
-
             value: description,
           })}
         </div>
 
-        <div className="d-flex gap-3 flex-column flex-lg-row">
+        <div className="d-flex gap-4 flex-row flex-wrap justify-content-between">
           {widget("components.organism.configurator", {
             heading: "Ticket types",
-            classNames: { root: "col-12 col-md-7 col-lg-8" },
+            classNames: { root: "col-12 col-md-4 h-auto" },
             externalState: form.values.dataTypesIncluded,
+            fieldGap: 3,
             isActive: true,
             isEmbedded: true,
             isUnlocked: permissions.can_configure,
@@ -509,7 +498,12 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
             schema: TicketTypesSchema,
           })}
 
-          <CompactContainer className="d-flex gap-3 flex-column justify-content-start p-2">
+          <div
+            className={[
+              "col-12 col-md-3",
+              "d-flex gap-3 flex-column justify-content-center p-4",
+            ].join(" ")}
+          >
             <span
               className="d-inline-flex gap-2"
               id={`${form.values.id}-ticketState`}
@@ -528,14 +522,12 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
                 { label: "Open", value: "open" },
                 { label: "Closed", value: "closed" },
               ],
-
-              title: "Editing mode selection",
             })}
-          </CompactContainer>
+          </div>
 
           {widget("components.organism.configurator", {
             heading: "Ticket features",
-            classNames: { root: "col-12 col-md-4 col-lg-3" },
+            classNames: { root: "col-12 col-md-4 h-auto" },
 
             externalState:
               form.values.config.ticket?.features ??
@@ -557,12 +549,12 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
           </span>
         </div>
 
-        <div className="d-flex flex-column align-items-center gap-3">
+        <div className="d-flex flex-column align-items-center gap-3 w-100">
           {Object.values(form.values.columns ?? {}).map(
             ({ id, description, labelSearchTerms, title }) => (
               <div
                 className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
-                key={id}
+                key={`column-${id}-configurator`}
               >
                 <div className="d-flex flex-column gap-1 w-100">
                   {widget("components.molecule.text-input", {
@@ -634,10 +626,13 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
           `Community with handle ${communityHandle} not found.`)}
     </div>
   ) : (
-    <div className="d-flex flex-column gap-4" style={{ maxWidth: "100%" }}>
+    <div
+      className="d-flex flex-column gap-4 w-100"
+      style={{ maxWidth: "100%" }}
+    >
       {state.isActive && Object.keys(form.values).length > 0 ? (
-        <div className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
-          <div className="d-flex align-items-center justify-content-between gap-3">
+        <div className="d-flex flex-column gap-4 w-100">
+          <div className="d-flex align-items-center justify-content-between gap-3 w-100">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-gear-wide-connected" />
               <span>GitHub board configuration</span>

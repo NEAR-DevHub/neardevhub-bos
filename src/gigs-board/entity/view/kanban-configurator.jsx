@@ -152,46 +152,44 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
-    fieldInput
-  ) => {
-    const updatedValues = Struct.deepFieldUpdate(
-      formState?.values ?? {},
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedValues = Struct.deepFieldUpdate(
+        formState?.values ?? {},
 
-      {
-        input: fieldInput?.target?.value ?? fieldInput,
-        params,
-        path,
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          params,
+          path,
 
-        via:
-          typeof customFieldUpdate === "function"
-            ? customFieldUpdate
-            : defaultFieldUpdate,
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
+      );
+
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+
+        [stateKey]: {
+          hasUnsubmittedChanges: !Struct.isEqual(
+            updatedValues,
+            initialFormState.values
+          ),
+
+          values: updatedValues,
+        },
+      }));
+
+      if (
+        typeof onUpdate === "function" &&
+        !Struct.isEqual(updatedValues, initialFormState.values)
+      ) {
+        onUpdate(updatedValues);
       }
-    );
-
-    console.log(fieldInput);
-
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
-
-      [stateKey]: {
-        hasUnsubmittedChanges: !Struct.isEqual(
-          updatedValues,
-          initialFormState.values
-        ),
-
-        values: updatedValues,
-      },
-    }));
-
-    if (
-      typeof onUpdate === "function" &&
-      !Struct.isEqual(updatedValues, initialFormState.values)
-    ) {
-      onUpdate(updatedValues);
-    }
-  };
+    };
 
   if (
     !uninitialized &&
@@ -452,10 +450,12 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
-    Object.fromEntries(
-      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-    );
+  const columnsDeleteById =
+    (id) =>
+    ({ lastKnownValue }) =>
+      Object.fromEntries(
+        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+      );
 
   const onCancel = () => {
     form.reset();
@@ -473,43 +473,30 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
   const formElement = isViewInitialized ? (
     <>
-      <div className="d-flex gap-3 flex-column flex-lg-row">
+      <div className="d-flex gap-1 flex-column flex-xl-row w-100">
         {widget("components.molecule.text-input", {
-          className: "flex-shrink-0",
+          label: "Title",
+          className: "w-100",
           key: "kanban-view-title",
-          label: "Board title",
           onChange: form.update({ path: ["metadata", "title"] }),
           placeholder: "Enter board title.",
           value: form.values.metadata.title,
         })}
+
+        {widget("components.molecule.text-input", {
+          label: "Description",
+          className: "w-100",
+          key: "kanban-view-description",
+          onChange: form.update({ path: ["metadata", "description"] }),
+          placeholder: "Enter board description.",
+          value: form.values.metadata.description,
+        })}
       </div>
 
-      {widget("components.molecule.text-input", {
-        className: "w-100",
-        inputProps: { className: "h-75" },
-        key: "kanban-view-description",
-        label: "Board description",
-        multiline: true,
-        onChange: form.update({ path: ["metadata", "description"] }),
-        placeholder: "Enter board description.",
-        value: form.values.metadata.description,
-      })}
-
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
-        {widget("components.organism.configurator", {
-          heading: "Tags",
-          classNames: { root: "col-12 col-md-7 col-lg-8" },
-          externalState: form.values.config.tags,
-          isActive: true,
-          isEmbedded: true,
-          isUnlocked: permissions.can_configure,
-          onChange: form.update({ path: ["config", "tags"] }),
-          schema: TagsSchema,
-        })}
-
+      <div className="d-flex flex-wrap align-items-stretch justify-content-between gap-4 w-100">
         {widget("components.organism.configurator", {
           heading: "Ticket features",
-          classNames: { root: "col-12 col-md-4 col-lg-3" },
+          classNames: { root: "col-12 col-lg-3" },
 
           externalState:
             form.values.config.ticket?.features ??
@@ -522,9 +509,20 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           onChange: form.update({ path: ["config", "ticket", "features"] }),
           schema: TicketFeaturesSchema,
         })}
+
+        {widget("components.organism.configurator", {
+          heading: "Tags",
+          classNames: { root: "col-12 col-lg-8 h-auto" },
+          externalState: form.values.config.tags,
+          isActive: true,
+          isEmbedded: true,
+          isUnlocked: permissions.can_configure,
+          onChange: form.update({ path: ["config", "tags"] }),
+          schema: TagsSchema,
+        })}
       </div>
 
-      <div className="d-flex align-items-center justify-content-between">
+      <div className="d-flex align-items-center justify-content-between w-100">
         <span className="d-inline-flex gap-2 m-0">
           <i className="bi bi-list-task" />
 
@@ -534,12 +532,12 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         </span>
       </div>
 
-      <div className="d-flex flex-column align-items-center gap-3">
+      <div className="d-flex flex-column align-items-center gap-3 w-100">
         {Object.values(form.values.config.columns ?? {}).map(
           ({ id, description, tag, title }) => (
             <div
               className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
-              key={id}
+              key={`column-${id}-configurator`}
             >
               <div className="d-flex flex-column gap-1 w-100">
                 {widget("components.molecule.text-input", {
@@ -606,10 +604,13 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
   return isViewInitialized && community.isLoading ? (
     <div>Loading...</div>
   ) : (
-    <div className="d-flex flex-column gap-4">
+    <div
+      className="d-flex flex-column gap-4 w-100"
+      style={{ maxWidth: "100%" }}
+    >
       {isViewInitialized && state.isActive ? (
-        <div className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
-          <div className="d-flex align-items-center justify-content-between gap-3">
+        <div className="d-flex flex-column gap-4 w-100">
+          <div className="d-flex align-items-center justify-content-between gap-3 w-100">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-gear-wide-connected" />
               <span>Kanban board configuration</span>
@@ -685,7 +686,10 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         widget(
           [
             "entity.view",
-            form.values.metadata.type ?? form.values.metadata.kind,
+
+            typeof form.values.metadata.type === "string"
+              ? form.values.metadata.type.split("-")[0]
+              : "kanban",
           ].join("."),
           {
             ...form.values,

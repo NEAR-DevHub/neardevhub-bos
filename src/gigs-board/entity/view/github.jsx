@@ -283,7 +283,7 @@ const GithubView = ({
       <div className="d-flex gap-3" style={{ overflowX: "auto" }}>
         {Object.keys(columns).length > 0 ? (
           Object.values(columns).map((column) => (
-            <div className="col-3" key={column.id}>
+            <div className="col-3" key={`column-${column.id}-view`}>
               <div className="card rounded-4">
                 <div
                   className={[
