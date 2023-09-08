@@ -171,16 +171,18 @@ const postTitle =
     </div>
   );
 
-const limitedMarkdown = styled.div`
+const LimitedMarkdown = styled.div`
   max-height: 6em;
 `;
 
 // Should make sure the posts under the currently top viewed post are limited in size.
 const descriptionArea =
   snapshot.post_type == "Comment" ? (
-    <limitedMarkdown className="overflow-auto">
-      <Markdown class="card-text" text={snapshot.description}></Markdown>
-    </limitedMarkdown>
+    <LimitedMarkdown className="overflow-auto">
+      {widget("components.molecule.markdown-viewer", {
+        text: snapshot.description,
+      })}
+    </LimitedMarkdown>
   ) : null;
 
 return (
