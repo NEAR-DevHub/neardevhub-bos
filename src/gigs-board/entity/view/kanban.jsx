@@ -51,41 +51,6 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/data-request" */
-const DataRequest = {
-  /**
-   * Requests all the data from non-empty pages of the paginated API.
-   *
-   * **Notice: currently expected to work only with array responses.**
-   *
-   * @param {object} parameters
-   * 	Request parameters including the number of page to start with,
-   * 	and an accumulated response buffer, if it exists.
-   *
-   * @param {array | null | undefined} parameters.buffer
-   * @param {number} parameters.startWith
-   *
-   * @param {(pageNumber: number) => array} requestByNumber
-   *
-   * @returns {array} The final accumulated response.
-   */
-  paginated: (requestByNumber, { buffer, startWith }) => {
-    const startPageNumber = startWith ?? 1,
-      accumulatedResponse = buffer ?? [];
-
-    const latestResponse = requestByNumber(startPageNumber) ?? [];
-
-    if (latestResponse.length === 0) {
-      return accumulatedResponse;
-    } else {
-      return DataRequest.paginated(requestByNumber, {
-        buffer: [...accumulatedResponse, ...latestResponse],
-        startWith: startPageNumber + 1,
-      });
-    }
-  },
-};
-/* END_INCLUDE: "core/lib/data-request" */
 /* INCLUDE: "core/lib/gui/attractable" */
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -114,99 +79,146 @@ const AttractableImage = styled.img`
   }
 `;
 /* END_INCLUDE: "core/lib/gui/attractable" */
+/* INCLUDE: "core/adapter/dev-hub" */
+const devHubAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
-const dataToColumns = (data, columns) =>
-  Object.values(columns).reduce(
-    (registry, column) => ({
+const DevHub = {
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
+  has_moderator: ({ account_id }) =>
+    Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
+
+  create_community: ({ inputs }) =>
+    Near.call(devHubAccountId, "create_community", { inputs }),
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
+
+  get_account_community_permissions: ({ account_id, community_handle }) =>
+    Near.view(devHubAccountId, "get_account_community_permissions", {
+      account_id,
+      community_handle,
+    }) ?? null,
+
+  update_community: ({ handle, community }) =>
+    Near.call(devHubAccountId, "update_community", { handle, community }),
+
+  delete_community: ({ handle }) =>
+    Near.call(devHubAccountId, "delete_community", { handle }),
+
+  update_community_board: ({ handle, board }) =>
+    Near.call(devHubAccountId, "update_community_board", { handle, board }),
+
+  update_community_github: ({ handle, github }) =>
+    Near.call(devHubAccountId, "update_community_github", { handle, github }),
+
+  get_access_control_info: () =>
+    Near.view(devHubAccountId, "get_access_control_info") ?? null,
+
+  get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
+
+  get_all_communities_metadata: () =>
+    Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
+
+  get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
+
+  get_post: ({ post_id }) =>
+    Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
+
+  get_posts_by_author: ({ author }) =>
+    Near.view(devHubAccountId, "get_posts_by_author", { author }) ?? null,
+
+  get_posts_by_label: ({ label }) =>
+    Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+      label,
+    }) ?? null,
+
+  useQuery: (name, params) => {
+    const initialState = { data: null, error: null, isLoading: true };
+
+    const cacheState = useCache(
+      () =>
+        Near.asyncView(devHubAccountId, ["get", name].join("_"), params ?? {})
+          .then((response) => ({
+            ...initialState,
+            data: response ?? null,
+            isLoading: false,
+          }))
+          .catch((error) => ({
+            ...initialState,
+            error: props?.error ?? error,
+            isLoading: false,
+          })),
+
+      JSON.stringify({ name, params }),
+      { subscribe: true }
+    );
+
+    return cacheState === null ? initialState : cacheState;
+  },
+};
+/* END_INCLUDE: "core/adapter/dev-hub" */
+
+const postTagsToIdSet = (tags) => {
+  return new Set(
+    tags
+      .map(
+        (tag) =>
+          Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+            label: tag,
+          }) ?? []
+      )
+      .flat(1)
+  );
+};
+
+const configToColumns = ({ columns, tags }) =>
+  Object.entries(columns).reduce((registry, [columnId, column]) => {
+    const postIds = (
+      Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
+        label: column.tag,
+      }) ?? []
+    ).reverse();
+
+    return {
       ...registry,
 
-      [column.id]:
-        column.labelSearchTerms.length > 0
-          ? [
-              ...(registry[column.id] ?? []),
+      [columnId]: {
+        ...column,
 
-              ...data.filter((ticket) =>
-                column.labelSearchTerms.every((searchTerm) =>
-                  searchTerm.length > 0
-                    ? ticket.labels.some((label) =>
-                        label.name
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
-                      )
-                    : false
-                )
-              ),
-            ]
-          : [],
-    }),
+        postIds:
+          tags.required.length > 0
+            ? postIds.filter(
+                (postId) =>
+                  postTagsToIdSet(tags.required).has(postId) &&
+                  !postTagsToIdSet(tags.excluded).has(postId)
+              )
+            : postIds,
+      },
+    };
+  }, {});
 
-    {}
-  );
-
-const withType = (type) => (data) => ({ ...data, type });
-
-const GithubView = ({
-  columns,
+const KanbanView = ({
   config,
-  dataTypesIncluded,
-  description,
+  metadata,
   isUnderConfiguration,
   link,
   onConfigureClick,
+  onDeleteClick,
   permissions,
-  repoURL,
-  ticketState,
-  title,
 }) => {
-  const ticketStateFilter =
-    ticketState === "open" || ticketState === "closed" || ticketState === "all"
-      ? ticketState
-      : "all";
+  const ticketViewId = [
+    "entity.ticket",
 
-  State.init({
-    ticketsByColumn: {},
-  });
+    typeof config.ticket?.type === "string"
+      ? [config.ticket.type.split("-")[0], config.ticket.kind].join("-")
+      : "kanban-post",
+  ].join(".");
 
-  if (repoURL) {
-    const pullRequests = dataTypesIncluded.PullRequest
-      ? DataRequest.paginated(
-          (pageNumber) =>
-            fetch(
-              `https://api.github.com/repos/${repoURL
-                .split("/")
-                .slice(-2)
-                .concat(["pulls"])
-                .join(
-                  "/"
-                )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-            )?.body,
-
-          { startWith: 1 }
-        ).map(withType("PullRequest"))
-      : [];
-
-    const issues = dataTypesIncluded.Issue
-      ? DataRequest.paginated(
-          (pageNumber) =>
-            fetch(
-              `https://api.github.com/repos/${repoURL
-                .split("/")
-                .slice(-2)
-                .concat(["issues"])
-                .join(
-                  "/"
-                )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-            )?.body,
-
-          { startWith: 1 }
-        ).map(withType("Issue"))
-      : [];
-
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      ticketsByColumn: dataToColumns([...issues, ...pullRequests], columns),
-    }));
-  }
+  const columns = configToColumns(config);
 
   return (
     <div className="d-flex flex-column gap-4">
@@ -216,6 +228,18 @@ const GithubView = ({
       >
         {typeof link === "string" && link.length > 0 ? (
           <>
+            {false && // Disabled until workspaces are introduced
+              widget("components.molecule.button", {
+                classNames: { root: "btn-sm btn-outline-secondary" },
+                href: link,
+                icon: { kind: "bootstrap-icon", variant: "box-arrow-up-right" },
+                label: "Open in new tab",
+                rel: "noreferrer",
+                role: "button",
+                target: "_blank",
+                type: "link",
+              })}
+
             {widget("components.molecule.button", {
               classNames: {
                 root: "btn-sm btn-outline-secondary me-auto text-white",
@@ -261,13 +285,18 @@ const GithubView = ({
 
       <div className="d-flex flex-column align-items-center gap-2 pt-4">
         <h5 className="h5 d-inline-flex gap-2 m-0">
-          <i className="bi bi-github" />
-          <span>{(title?.length ?? 0) > 0 ? title : "Untitled board"}</span>
+          <i className="bi bi-kanban-fill" />
+
+          <span>
+            {(metadata.title?.length ?? 0) > 0
+              ? metadata.title
+              : "Untitled view"}
+          </span>
         </h5>
 
         <p className="m-0 py-1 text-secondary text-center">
-          {(description?.length ?? 0) > 0
-            ? description
+          {(metadata.description?.length ?? 0) > 0
+            ? metadata.description
             : "No description provided"}
         </p>
       </div>
@@ -288,7 +317,7 @@ const GithubView = ({
                       {column.title}
 
                       <span className="badge rounded-pill bg-secondary">
-                        {(state.ticketsByColumn[column.id] ?? []).length}
+                        {column.postIds.length}
                       </span>
                     </h6>
 
@@ -296,11 +325,11 @@ const GithubView = ({
                   </span>
 
                   <div class="d-flex flex-column gap-2">
-                    {(state.ticketsByColumn[column.id] ?? []).map((data) =>
+                    {column.postIds.map((postId) =>
                       widget(
-                        "entity.workspace.github-ticket",
-                        { config: config?.ticket ?? {}, data },
-                        data.id
+                        ticketViewId,
+                        { id: postId, config: config.ticket ?? {} },
+                        postId
                       )
                     )}
                   </div>
@@ -324,4 +353,4 @@ const GithubView = ({
   );
 };
 
-return GithubView(props);
+return KanbanView(props);

@@ -405,7 +405,7 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Community information",
-            data: state.communityData,
+            externalState: state.communityData,
             fullWidth: true,
             isEmbedded: true,
             isUnlocked: permissions.can_configure,
@@ -416,7 +416,7 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "About",
-            data: state.communityData,
+            externalState: state.communityData,
             fullWidth: true,
             isEmbedded: true,
             isUnlocked: permissions.can_configure,
@@ -427,7 +427,7 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Access control",
-            data: state.communityData,
+            externalState: state.communityData,
             fullWidth: true,
             formatter: communityAccessControlFormatter,
             isEmbedded: true,
@@ -439,7 +439,7 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Wiki page 1",
-            data: state.communityData?.wiki1,
+            externalState: state.communityData?.wiki1,
             fullWidth: true,
             isEmbedded: true,
             isUnlocked: permissions.can_configure,
@@ -450,7 +450,7 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Wiki page 2",
-            data: state.communityData?.wiki2,
+            externalState: state.communityData?.wiki2,
             fullWidth: true,
             isEmbedded: true,
             isUnlocked: permissions.can_configure,

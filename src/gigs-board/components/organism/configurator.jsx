@@ -230,7 +230,7 @@ const fieldParamsByType = {
   },
 };
 
-const defaultFieldsRender = ({ schema, form, isEditable }) => (
+const defaultFieldsRender = ({ schema, form, isEditable, isUnlocked }) => (
   <>
     {Object.entries(schema).map(
       (
@@ -297,6 +297,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                   : fieldValue,
 
               inputProps: {
+                disabled: !isUnlocked,
                 ...(inputProps ?? {}),
                 ...(fieldParamsByType[fieldType].inputProps ?? {}),
                 tabIndex: order,
@@ -313,7 +314,7 @@ const Configurator = ({
   actionsAdditional,
   cancelLabel,
   classNames,
-  data,
+  externalState,
   fieldGap,
   fieldsRender: customFieldsRender,
   formatter: toFormatted,
@@ -344,7 +345,7 @@ const Configurator = ({
   });
 
   const initialValues = Struct.typeMatch(schema)
-    ? Struct.pick(data ?? {}, Object.keys(schema))
+    ? Struct.pick(externalState ?? {}, Object.keys(schema))
     : {};
 
   const form = useForm({ initialValues, onUpdate: onChange, stateKey: "form" });
@@ -405,6 +406,7 @@ const Configurator = ({
           {fieldsRender({
             form,
             isEditable: isUnlocked && state.isActive,
+            isUnlocked,
             schema,
           })}
         </div>

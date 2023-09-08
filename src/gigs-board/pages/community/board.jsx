@@ -161,7 +161,7 @@ const CommunityBoardPage = ({ handle }) => {
 
     children: (
       <div className="d-flex flex-column">
-        {widget("feature.workspace.kanban-view-configurator", {
+        {widget("entity.view.kanban-configurator", {
           communityHandle: handle,
           link: "https://near.org" + href("community.board", { handle }),
           permissions,

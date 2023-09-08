@@ -88,7 +88,7 @@ const iconsByPostType = {
   Sponsorship: "bi-cash-coin",
 };
 
-const PostTicket = ({ id, config, post }) => {
+const KanbanPostTicket = ({ id, config, post }) => {
   const postId = post.id ?? (id ? parseInt(id) : 0);
 
   const data =
@@ -193,4 +193,4 @@ const PostTicket = ({ id, config, post }) => {
   );
 };
 
-return PostTicket(props);
+return KanbanPostTicket(props);
