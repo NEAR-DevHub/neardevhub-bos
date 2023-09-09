@@ -18,6 +18,7 @@ const MarkdownEditor = ({ data, onChange }) => {
           "mention",
         ],
         statusConfig: [],
+        spellChecker: false,
       }}
     />
   );
