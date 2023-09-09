@@ -172,11 +172,10 @@ const btnEditorWidget = (postType, name) => {
     <li>
       <a
         class="dropdown-item"
-        data-bs-toggle="collapse"
-        href={`#collapse${postType}Editor${postId}`}
         role="button"
-        aria-expanded="false"
-        aria-controls={`collapse${postType}Editor${postId}`}
+        onClick={() =>
+          State.update({ postType, editorType: "EDIT", showEditor: true })
+        }
       >
         {name}
       </a>
@@ -331,11 +330,10 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
       <a
         class="dropdown-item text-decoration-none d-flex align-items-center lh-sm"
         style={{ color: "rgb(55,109,137)" }}
-        data-bs-toggle="collapse"
-        href={`#collapse${postType}Creator${postId}`}
         role="button"
-        aria-expanded="false"
-        aria-controls={`collapse${postType}Creator${postId}`}
+        onClick={() =>
+          State.update({ postType, editorType: "CREATE", showEditor: true })
+        }
       >
         <i class={`bi ${icon}`} style={{ fontSize: "1.5rem" }}>
           {" "}
@@ -499,22 +497,54 @@ const EditorWidget = (postType) => {
   );
 };
 
-const editorsFooter = props.isPreview ? null : (
-  <div class="row" id={`accordion${postId}`} key="editors-footer">
-    {CreatorWidget("Comment")}
-    {EditorWidget("Comment")}
-    {CreatorWidget("Idea")}
-    {EditorWidget("Idea")}
-    {CreatorWidget("Submission")}
-    {EditorWidget("Submission")}
-    {CreatorWidget("Attestation")}
-    {EditorWidget("Attestation")}
-    {CreatorWidget("Sponsorship")}
-    {EditorWidget("Sponsorship")}
-    {CreatorWidget("Github")}
-    {EditorWidget("Github")}
-  </div>
-);
+const isDraft =
+  (draftState?.parent_post_id === postId &&
+    draftState?.postType === state.postType) ||
+  (draftState?.edit_post_id == postId &&
+    draftState?.postType == state.postType);
+
+function Editor() {
+  return (
+    <div class="row" id={`accordion${postId}`} key="editors-footer">
+      <div
+        key={`${state.postType}${state.editorType}${postId}`}
+        className={"w-100"}
+      >
+        {state.editorType === "CREATE" ? (
+          <>
+            {widget("entity.post.PostEditor", {
+              postType: state.postType,
+              onDraftStateChange: props.onDraftStateChange,
+              draftState:
+                draftState?.parent_post_id == postId ? draftState : undefined,
+              parentId: postId,
+              mode: "Create",
+            })}
+          </>
+        ) : (
+          <>
+            {widget("entity.post.PostEditor", {
+              postType: state.postType,
+              postId,
+              mode: "Edit",
+              author_id: post.author_id,
+              labels: post.snapshot.labels,
+              name: post.snapshot.name,
+              description: post.snapshot.description,
+              amount: post.snapshot.amount,
+              token: post.snapshot.sponsorship_token,
+              supervisor: post.snapshot.supervisor,
+              githubLink: post.snapshot.github_link,
+              onDraftStateChange: props.onDraftStateChange,
+              draftState:
+                draftState?.edit_post_id == postId ? draftState : undefined,
+            })}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 
 const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
@@ -773,7 +803,7 @@ return (
       )}
       {tags}
       {buttonsFooter}
-      {editorsFooter}
+      {!props.isPreview && (isDraft || state.showEditor) && <Editor />}
       {postsList}
     </div>
   </AttractableDiv>
