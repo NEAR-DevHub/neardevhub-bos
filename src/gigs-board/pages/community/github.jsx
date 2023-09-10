@@ -159,7 +159,7 @@ const CommunityGithubPage = ({ handle }) => {
     handle,
     title: "GitHub",
 
-    children: widget("entity.view.github-configurator", {
+    children: widget("entity.workspace.view.github.configurator", {
       communityHandle: handle,
       link: "near.org" + href("community.github", { handle }),
       permissions,

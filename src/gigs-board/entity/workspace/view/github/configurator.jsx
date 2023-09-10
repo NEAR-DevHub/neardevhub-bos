@@ -342,6 +342,7 @@ const settings = {
 const TicketFeaturesSchema = {
   author: { label: "Author" },
   labels: { label: "Labels" },
+  number: { label: "Number" },
   title: { label: "Title" },
   type: { label: "Type" },
 };
@@ -353,7 +354,6 @@ const TicketTypesSchema = {
 
 const GithubViewDefaults = {
   id: uuid(),
-  kind: "github-view",
   columns: {},
   dataTypesIncluded: { Issue: false, PullRequest: true },
   description: "",
@@ -361,14 +361,16 @@ const GithubViewDefaults = {
   ticketState: "all",
   title: "",
 
-  config: {
+  metadata: {
+    type: "github.kanban-board",
+
     ticket: {
-      type: "kanban-ticket",
-      kind: "github",
+      type: "github.kanban-ticket",
 
       features: {
         author: true,
         labels: true,
+        number: true,
         title: true,
         type: true,
       },
@@ -392,16 +394,13 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
 
   const board = Object.values(boards)[0] ?? {};
 
-  const errors = {
-    noBoards: Object.keys(boards).length === 0,
-    noCommunity: !community.isLoading && community.data === null,
-  };
-
   const form = useForm({
     initialValues: board,
     stateKey: "board",
-    uninitialized: errors.noBoards,
+    uninitialized: Object.keys(boards).length === 0,
   });
+
+  const isViewInitialized = (form.values.metadata ?? null) !== null;
 
   const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -452,185 +451,189 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
       }),
     });
 
-  const formElement =
-    Object.keys(form.values).length > 0 ? (
-      <>
-        <div className="d-flex gap-1 flex-column flex-xl-row">
-          {widget("components.molecule.text-input", {
-            className: "w-100",
-            key: `${form.values.id}-repoURL`,
-            label: "Repository URL",
-            onChange: form.update({ path: ["repoURL"] }),
-            placeholder: "https://github.com/example-org/example-repo",
-            value: form.values.repoURL,
-          })}
+  const formElement = isViewInitialized ? (
+    <>
+      <div className="d-flex gap-1 flex-column flex-xl-row">
+        {widget("components.molecule.text-input", {
+          className: "w-100",
+          key: `${form.values.id}-repoURL`,
+          label: "Repository URL",
+          onChange: form.update({ path: ["repoURL"] }),
+          placeholder: "https://github.com/example-org/example-repo",
+          value: form.values.repoURL,
+        })}
 
-          {widget("components.molecule.text-input", {
-            className: "w-100",
-            key: `${form.values.id}-title`,
-            label: "Title",
-            onChange: form.update({ path: ["title"] }),
-            placeholder: "NEAR Protocol NEPs",
-            value: form.values.title,
-          })}
+        {widget("components.molecule.text-input", {
+          className: "w-100",
+          key: `${form.values.id}-title`,
+          label: "Title",
+          onChange: form.update({ path: ["title"] }),
+          placeholder: "NEAR Protocol NEPs",
+          value: form.values.title,
+        })}
 
-          {widget("components.molecule.text-input", {
-            className: "w-100",
-            key: `${form.values.id}-column-${id}-description`,
-            label: "Description",
-            onChange: form.update({ path: ["columns", id, "description"] }),
-            placeholder: "NEPs that need a review by Subject Matter Experts.",
-            value: description,
-          })}
-        </div>
+        {widget("components.molecule.text-input", {
+          className: "w-100",
+          key: `${form.values.id}-column-${id}-description`,
+          label: "Description",
+          onChange: form.update({ path: ["columns", id, "description"] }),
+          placeholder: "NEPs that need a review by Subject Matter Experts.",
+          value: description,
+        })}
+      </div>
 
-        <div className="d-flex gap-4 flex-row flex-wrap justify-content-between">
-          {widget("components.organism.configurator", {
-            heading: "Ticket types",
-            classNames: { root: "col-12 col-md-4 h-auto" },
-            externalState: form.values.dataTypesIncluded,
-            fieldGap: 3,
-            isActive: true,
-            isEmbedded: true,
-            isUnlocked: permissions.can_configure,
-            onChange: form.update({ path: ["dataTypesIncluded"] }),
-            schema: TicketTypesSchema,
-          })}
+      <div className="d-flex gap-4 flex-row flex-wrap justify-content-between">
+        {widget("components.organism.configurator", {
+          heading: "Ticket types",
+          classNames: { root: "col-12 col-md-4 h-auto" },
+          externalState: form.values.dataTypesIncluded,
+          fieldGap: 3,
+          isActive: true,
+          isEmbedded: true,
+          isUnlocked: permissions.can_configure,
+          onChange: form.update({ path: ["dataTypesIncluded"] }),
+          schema: TicketTypesSchema,
+        })}
 
-          <div
-            className={[
-              "col-12 col-md-3",
-              "d-flex gap-3 flex-column justify-content-center p-4",
-            ].join(" ")}
+        <div
+          className={[
+            "col-12 col-md-3",
+            "d-flex gap-3 flex-column justify-content-center p-4",
+          ].join(" ")}
+        >
+          <span
+            className="d-inline-flex gap-2"
+            id={`${form.values.id}-ticketState`}
           >
-            <span
-              className="d-inline-flex gap-2"
-              id={`${form.values.id}-ticketState`}
-            >
-              <i class="bi bi-cone-striped" />
-              <span>Ticket state</span>
-            </span>
+            <i class="bi bi-cone-striped" />
+            <span>Ticket state</span>
+          </span>
 
-            {widget("components.molecule.button-switch", {
-              currentValue: form.values.ticketState,
-              key: "ticketState",
-              onChange: form.update({ path: ["ticketState"] }),
+          {widget("components.molecule.button-switch", {
+            currentValue: form.values.ticketState,
+            key: "ticketState",
+            onChange: form.update({ path: ["ticketState"] }),
 
-              options: [
-                { label: "All", value: "all" },
-                { label: "Open", value: "open" },
-                { label: "Closed", value: "closed" },
-              ],
-            })}
-          </div>
-
-          {widget("components.organism.configurator", {
-            heading: "Ticket features",
-            classNames: { root: "col-12 col-md-4 h-auto" },
-
-            externalState:
-              form.values.config.ticket?.features ??
-              GithubViewDefaults.config.ticket.features,
-
-            fieldGap: 3,
-            isActive: true,
-            isEmbedded: true,
-            isUnlocked: permissions.can_configure,
-            onChange: form.update({ path: ["config", "ticket", "features"] }),
-            schema: TicketFeaturesSchema,
+            options: [
+              { label: "All", value: "all" },
+              { label: "Open", value: "open" },
+              { label: "Closed", value: "closed" },
+            ],
           })}
         </div>
 
-        <div className="d-flex align-items-center justify-content-between">
-          <span className="d-inline-flex gap-2 m-0">
-            <i className="bi bi-list-task" />
-            <span>Columns ( max. {settings.maxColumnsNumber} )</span>
-          </span>
-        </div>
+        {widget("components.organism.configurator", {
+          heading: "Ticket features",
+          classNames: { root: "col-12 col-md-4 h-auto" },
 
-        <div className="d-flex flex-column align-items-center gap-3 w-100">
-          {Object.values(form.values.columns ?? {}).map(
-            ({ id, description, labelSearchTerms, title }) => (
-              <div
-                className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
-                key={`column-${id}-configurator`}
-              >
-                <div className="d-flex flex-column gap-1 w-100">
-                  {widget("components.molecule.text-input", {
-                    className: "flex-grow-1",
-                    key: `${form.values.id}-column-${id}-title`,
-                    label: "Title",
-                    onChange: form.update({ path: ["columns", id, "title"] }),
-                    placeholder: "👀 Review",
-                    value: title,
-                  })}
+          externalState:
+            form.values.config.ticket?.features ??
+            GithubViewDefaults.config.ticket.features,
 
-                  {widget("components.molecule.text-input", {
-                    format: "comma-separated",
-                    key: `${form.values.id}-column-${title}-labelSearchTerms`,
+          fieldGap: 3,
+          isActive: true,
+          isEmbedded: true,
+          isUnlocked: permissions.can_configure,
+          onChange: form.update({ path: ["config", "ticket", "features"] }),
+          schema: TicketFeaturesSchema,
+        })}
+      </div>
 
-                    label: `Search terms for all the labels
+      <div className="d-flex align-items-center justify-content-between">
+        <span className="d-inline-flex gap-2 m-0">
+          <i className="bi bi-list-task" />
+          <span>Columns ( max. {settings.maxColumnsNumber} )</span>
+        </span>
+      </div>
+
+      <div className="d-flex flex-column align-items-center gap-3 w-100">
+        {Object.values(form.values.columns ?? {}).map(
+          ({ id, description, labelSearchTerms, title }) => (
+            <div
+              className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
+              key={`column-${id}-configurator`}
+            >
+              <div className="d-flex flex-column gap-1 w-100">
+                {widget("components.molecule.text-input", {
+                  className: "flex-grow-1",
+                  key: `${form.values.id}-column-${id}-title`,
+                  label: "Title",
+                  onChange: form.update({ path: ["columns", id, "title"] }),
+                  placeholder: "👀 Review",
+                  value: title,
+                })}
+
+                {widget("components.molecule.text-input", {
+                  format: "comma-separated",
+                  key: `${form.values.id}-column-${title}-labelSearchTerms`,
+
+                  label: `Search terms for all the labels
 											MUST be presented in included tickets`,
 
-                    onChange: form.update({
-                      path: ["columns", id, "labelSearchTerms"],
-                    }),
+                  onChange: form.update({
+                    path: ["columns", id, "labelSearchTerms"],
+                  }),
 
-                    placeholder: "WG-, draft, review, proposal, ...",
-                    value: labelSearchTerms.join(", "),
-                  })}
+                  placeholder: "WG-, draft, review, proposal, ...",
+                  value: labelSearchTerms.join(", "),
+                })}
 
-                  {widget("components.molecule.text-input", {
-                    className: "flex-grow-1",
-                    key: `${form.values.id}-column-${id}-description`,
-                    label: "Description",
+                {widget("components.molecule.text-input", {
+                  className: "flex-grow-1",
+                  key: `${form.values.id}-column-${id}-description`,
+                  label: "Description",
 
-                    onChange: form.update({
-                      path: ["columns", id, "description"],
-                    }),
+                  onChange: form.update({
+                    path: ["columns", id, "description"],
+                  }),
 
-                    placeholder:
-                      "NEPs that need a review by Subject Matter Experts.",
+                  placeholder:
+                    "NEPs that need a review by Subject Matter Experts.",
 
-                    value: description,
-                  })}
-                </div>
-
-                <div
-                  className="d-flex flex-column gap-3 border-start p-3 pe-0"
-                  style={{ marginTop: -16, marginBottom: -16 }}
-                >
-                  <button
-                    className="btn btn-outline-danger shadow"
-                    onClick={form.update({
-                      path: ["columns"],
-                      via: columnsDeleteById(id),
-                    })}
-                    title="Delete column"
-                  >
-                    <i className="bi bi-trash-fill" />
-                  </button>
-                </div>
+                  value: description,
+                })}
               </div>
-            )
-          )}
-        </div>
-      </>
-    ) : null;
+
+              <div
+                className="d-flex flex-column gap-3 border-start p-3 pe-0"
+                style={{ marginTop: -16, marginBottom: -16 }}
+              >
+                <button
+                  className="btn btn-outline-danger shadow"
+                  onClick={form.update({
+                    path: ["columns"],
+                    via: columnsDeleteById(id),
+                  })}
+                  title="Delete column"
+                >
+                  <i className="bi bi-trash-fill" />
+                </button>
+              </div>
+            </div>
+          )
+        )}
+      </div>
+    </>
+  ) : null;
 
   return community.data === null ? (
-    <div>
-      {(community.isLoading && "Loading...") ||
-        (errors.noCommunity &&
-          `Community with handle ${communityHandle} not found.`)}
+    <div class="alert alert-danger" role="alert">
+      {community.isLoading
+        ? "Loading..."
+        : `Community with handle ${communityHandle} not found.`}
     </div>
   ) : (
     <div
       className="d-flex flex-column gap-4 w-100"
       style={{ maxWidth: "100%" }}
     >
-      {state.isActive && Object.keys(form.values).length > 0 ? (
-        <div className="d-flex flex-column gap-4 w-100">
+      {isViewInitialized ? (
+        <div
+          className={[
+            "d-flex flex-column gap-4 w-100",
+            state.isActive ? "" : "d-none",
+          ].join(" ")}
+        >
           <div className="d-flex align-items-center justify-content-between gap-3 w-100">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-gear-wide-connected" />
@@ -704,13 +707,22 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
       ) : null}
 
       {Object.keys(form.values).length > 0 ? (
-        widget("entity.view.github", {
-          ...form.values,
-          isUnderConfiguration: state.isActive,
-          link,
-          onConfigureClick: () => formToggle(true),
-          permissions,
-        })
+        widget(
+          [
+            "entity.workspace.view",
+
+            typeof form.values.metadata?.type === "string"
+              ? form.values.metadata.type
+              : "github.kanban-board",
+          ].join("."),
+          {
+            ...form.values,
+            isConfiguratorActive: state.isActive,
+            link,
+            onConfigureClick: () => formToggle(true),
+            permissions,
+          }
+        )
       ) : (
         <div
           className="d-flex flex-column align-items-center justify-content-center gap-4"

@@ -201,143 +201,36 @@ const configToColumns = ({ columns, tags }) =>
     };
   }, {});
 
-const KanbanView = ({
+const KanbanPostBoard = ({
   config,
   metadata,
-  isUnderConfiguration,
+  isConfiguratorActive,
   link,
   onConfigureClick,
   onDeleteClick,
   permissions,
 }) => {
   const ticketViewId = [
-    "entity.ticket",
+    "entity.workspace.view.kanban",
 
-    typeof config.ticket?.type === "string"
-      ? [config.ticket.type.split("-")[0], config.ticket.kind].join("-")
-      : "kanban-post",
+    typeof metadata?.ticket?.type === "string"
+      ? metadata.ticket.type
+      : "post-ticket",
   ].join(".");
 
   const columns = configToColumns(config);
 
-  return (
-    <div className="d-flex flex-column gap-4">
-      <div
-        className={"d-flex justify-content-end gap-3 p-3 rounded-4"}
-        style={{ backgroundColor: "#181818" }}
-      >
-        {typeof link === "string" && link.length > 0 ? (
-          <>
-            {false && // Disabled until workspaces are introduced
-              widget("components.molecule.button", {
-                classNames: { root: "btn-sm btn-outline-secondary" },
-                href: link,
-                icon: { kind: "bootstrap-icon", variant: "box-arrow-up-right" },
-                label: "Open in new tab",
-                rel: "noreferrer",
-                role: "button",
-                target: "_blank",
-                type: "link",
-              })}
+  return widget("entity.workspace.view.layout", {
+    isConfiguratorActive,
+    link,
+    metadata,
+    onConfigureClick,
+    onDeleteClick,
+    permissions,
 
-            {widget("components.molecule.button", {
-              classNames: {
-                root: "btn-sm btn-outline-secondary me-auto text-white",
-              },
-
-              icon: { kind: "bootstrap-icon", variant: "bi-clipboard-fill" },
-              label: "Copy link",
-              onClick: () => clipboard.writeText(link),
-            })}
-          </>
-        ) : null}
-
-        {permissions.can_configure && (
-          <>
-            {widget("components.molecule.button", {
-              classNames: { root: "btn-sm btn-primary" },
-
-              icon: {
-                kind: "bootstrap-icon",
-                variant: "bi-gear-wide-connected",
-              },
-
-              isHidden:
-                typeof onConfigureClick !== "function" || isUnderConfiguration,
-
-              label: "Configure",
-              onClick: onConfigureClick,
-            })}
-
-            {widget("components.molecule.button", {
-              classNames: {
-                root: "btn-sm btn-outline-danger shadow-none border-0",
-              },
-
-              icon: { kind: "bootstrap-icon", variant: "bi-recycle" },
-              isHidden: "Disabled for MVP", // typeof onDeleteClick !== "function",
-              label: "Delete",
-              onClick: onDeleteClick,
-            })}
-          </>
-        )}
-      </div>
-
-      <div className="d-flex flex-column align-items-center gap-2 pt-4">
-        <h5 className="h5 d-inline-flex gap-2 m-0">
-          <i className="bi bi-kanban-fill" />
-
-          <span>
-            {(metadata.title?.length ?? 0) > 0
-              ? metadata.title
-              : "Untitled view"}
-          </span>
-        </h5>
-
-        <p className="m-0 py-1 text-secondary text-center">
-          {(metadata.description?.length ?? 0) > 0
-            ? metadata.description
-            : "No description provided"}
-        </p>
-      </div>
-
-      <div className="d-flex gap-3" style={{ overflowX: "auto" }}>
-        {Object.keys(columns).length > 0 ? (
-          Object.values(columns).map((column) => (
-            <div className="col-3" key={`column-${column.id}-view`}>
-              <div className="card rounded-4">
-                <div
-                  className={[
-                    "card-body d-flex flex-column gap-3 p-2",
-                    "border border-2 border-secondary rounded-4",
-                  ].join(" ")}
-                >
-                  <span className="d-flex flex-column py-1">
-                    <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
-                      {column.title}
-
-                      <span className="badge rounded-pill bg-secondary">
-                        {column.postIds.length}
-                      </span>
-                    </h6>
-
-                    <p class="text-secondary m-0">{column.description}</p>
-                  </span>
-
-                  <div class="d-flex flex-column gap-2">
-                    {column.postIds.map((postId) =>
-                      widget(
-                        ticketViewId,
-                        { id: postId, config: config.ticket ?? {} },
-                        postId
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
+    children: (
+      <>
+        {Object.keys(columns).length === 0 ? (
           <div
             className={[
               "d-flex align-items-center justify-content-center",
@@ -347,10 +240,45 @@ const KanbanView = ({
           >
             No columns were created so far.
           </div>
-        )}
-      </div>
-    </div>
-  );
+        ) : null}
+
+        {Object.values(columns).map((column) => (
+          <div className="col-3" key={`column-${column.id}-view`}>
+            <div className="card rounded-4">
+              <div
+                className={[
+                  "card-body d-flex flex-column gap-3 p-2",
+                  "border border-2 border-secondary rounded-4",
+                ].join(" ")}
+              >
+                <span className="d-flex flex-column py-1">
+                  <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
+                    {column.title}
+
+                    <span className="badge rounded-pill bg-secondary">
+                      {column.postIds.length}
+                    </span>
+                  </h6>
+
+                  <p class="text-secondary m-0">{column.description}</p>
+                </span>
+
+                <div class="d-flex flex-column gap-2">
+                  {column.postIds.map((postId) =>
+                    widget(
+                      ticketViewId,
+                      { id: postId, config: config.ticket ?? {} },
+                      postId
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </>
+    ),
+  });
 };
 
-return KanbanView(props);
+return KanbanPostBoard(props);

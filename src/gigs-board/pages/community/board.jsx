@@ -159,7 +159,7 @@ const CommunityBoardPage = ({ handle }) => {
     handle,
     title: "Board",
 
-    children: widget("entity.view.kanban-configurator", {
+    children: widget("entity.workspace.view.kanban.configurator", {
       communityHandle: handle,
       link: "https://near.org" + href("community.board", { handle }),
       permissions,

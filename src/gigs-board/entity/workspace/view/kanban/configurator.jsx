@@ -339,7 +339,7 @@ const settings = {
   maxColumnsNumber: 10,
 };
 
-const TagsSchema = {
+const KanbanPostBoardTagsSchema = {
   required: {
     label:
       "Enter tags you want to include. Posts with these tags will display.",
@@ -355,7 +355,7 @@ const TagsSchema = {
   },
 };
 
-const TicketFeaturesSchema = {
+const KanbanPostBoardTicketFeaturesSchema = {
   author: { label: "Author" },
   replyCount: { label: "Reply count" },
   tags: { label: "Tags" },
@@ -363,20 +363,14 @@ const TicketFeaturesSchema = {
   type: { label: "Post type" },
 };
 
-const KanbanViewDefaults = {
+const KanbanPostBoardDefaults = {
   metadata: {
-    type: "kanban-view",
+    type: "kanban.post-board",
     title: "",
     description: "",
-  },
-
-  config: {
-    columns: {},
-    tags: { excluded: [], required: [] },
 
     ticket: {
-      type: "kanban-ticket",
-      kind: "post",
+      type: "kanban.post-ticket",
 
       features: {
         author: true,
@@ -386,6 +380,11 @@ const KanbanViewDefaults = {
         type: true,
       },
     },
+  },
+
+  config: {
+    columns: {},
+    tags: { excluded: [], required: [] },
   },
 };
 
@@ -428,7 +427,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
       [form.stateKey]: {
         hasUnsubmittedChanges: false,
-        values: KanbanViewDefaults,
+        values: KanbanPostBoardDefaults,
       },
 
       isActive: true,
@@ -489,15 +488,15 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           classNames: { root: "col-12 col-lg-3" },
 
           externalState:
-            form.values.config.ticket?.features ??
-            KanbanViewDefaults.config.ticket.features,
+            form.values.metadata.ticket?.features ??
+            KanbanPostBoardDefaults.metadata.ticket.features,
 
           fieldGap: 3,
           isActive: true,
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
           onChange: form.update({ path: ["config", "ticket", "features"] }),
-          schema: TicketFeaturesSchema,
+          schema: KanbanPostBoardTicketFeaturesSchema,
         })}
 
         {widget("components.organism.configurator", {
@@ -508,7 +507,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
           onChange: form.update({ path: ["config", "tags"] }),
-          schema: TagsSchema,
+          schema: KanbanPostBoardTagsSchema,
         })}
       </div>
 
@@ -589,15 +588,24 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
     </>
   ) : null;
 
-  return isViewInitialized && community.isLoading ? (
-    <div>Loading...</div>
+  return !isViewInitialized && community.data === null ? (
+    <div class="alert alert-danger" role="alert">
+      {community.isLoading
+        ? "Loading..."
+        : `Community with handle ${communityHandle} not found.`}
+    </div>
   ) : (
     <div
       className="d-flex flex-column gap-4 w-100"
       style={{ maxWidth: "100%" }}
     >
-      {isViewInitialized && state.isActive ? (
-        <div className="d-flex flex-column gap-4 w-100">
+      {isViewInitialized ? (
+        <div
+          className={[
+            "d-flex flex-column gap-4 w-100",
+            state.isActive ? "" : "d-none",
+          ].join(" ")}
+        >
           <div className="d-flex align-items-center justify-content-between gap-3 w-100">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-gear-wide-connected" />
@@ -670,15 +678,15 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       {isViewInitialized ? (
         widget(
           [
-            "entity.view",
+            "entity.workspace.view",
 
-            typeof form.values.metadata.type === "string"
-              ? form.values.metadata.type.split("-")[0]
-              : "kanban",
+            typeof form.values.metadata?.type === "string"
+              ? form.values.metadata.type
+              : "kanban.post-board",
           ].join("."),
           {
             ...form.values,
-            isUnderConfiguration: state.isActive,
+            isConfiguratorActive: state.isActive,
             onConfigureClick: () => formToggle(true),
             onDeleteClick: isViewInitialized ? viewDelete : null,
             link,

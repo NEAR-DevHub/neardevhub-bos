@@ -52,7 +52,12 @@ const GithubTicket = ({
 }) => {
   const header = (
     <div className="card-header">
-      <div class="d-flex justify-content-between gap-3">
+      <div class="d-flex justify-content-start gap-3">
+        <i
+          className={`bi ${ticketStates[ticketState].icon}`}
+          title={ticketStates[ticketState].displayName}
+        />
+
         {config.features?.author ?? true ? (
           <a
             className="d-flex gap-2 link-dark text-truncate"
@@ -72,7 +77,7 @@ const GithubTicket = ({
         ) : null}
 
         <a
-          className="card-link"
+          className="card-link ms-auto"
           href={_links.html.href}
           rel="noreferrer"
           role="button"
@@ -88,11 +93,6 @@ const GithubTicket = ({
   const titleArea = (
     <div className="card-text d-flex flex-column gap-3">
       <span className="d-flex flex-nowrap gap-2">
-        <i
-          className={`bi ${ticketStates[ticketState].icon}`}
-          title={ticketStates[ticketState].displayName}
-        />
-
         {config.features?.type ?? true ? (
           <i className={`bi ${ticketTypes[type].icon}`} />
         ) : null}
@@ -100,7 +100,9 @@ const GithubTicket = ({
         <span>
           {`${
             config.features?.type ?? true ? ticketTypes[type].displayName : ""
-          } #${number}`.trim()}
+          } ${
+            config.features?.number ?? true ? `#${number.toString()}` : ""
+          }`.trim()}
         </span>
       </span>
 

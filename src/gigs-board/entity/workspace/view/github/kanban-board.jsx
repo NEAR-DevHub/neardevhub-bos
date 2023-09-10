@@ -145,13 +145,13 @@ const dataToColumns = (data, columns) =>
 
 const withType = (type) => (data) => ({ ...data, type });
 
-const GithubView = ({
+const GithubKanbanBoard = ({
   columns,
-  config,
   dataTypesIncluded,
   description,
-  isUnderConfiguration,
+  isConfiguratorActive,
   link,
+  metadata,
   onConfigureClick,
   permissions,
   repoURL,
@@ -159,11 +159,11 @@ const GithubView = ({
   title,
 }) => {
   const ticketViewId = [
-    "entity.ticket",
+    "entity.workspace.view.github",
 
-    typeof config?.ticket?.type === "string"
-      ? [config.ticket.type.split("-")[0], config.ticket.kind].join("-")
-      : "kanban-github",
+    typeof metadata?.ticket?.type === "string"
+      ? metadata.ticket.type
+      : "kanban-ticket",
   ].join(".");
 
   const ticketStateFilter =
@@ -216,107 +216,17 @@ const GithubView = ({
     }));
   }
 
-  return (
-    <div className="d-flex flex-column gap-4">
-      <div
-        className={"d-flex justify-content-end gap-3 p-3 rounded-4"}
-        style={{ backgroundColor: "#181818" }}
-      >
-        {typeof link === "string" && link.length > 0 ? (
-          <>
-            {widget("components.molecule.button", {
-              classNames: {
-                root: "btn-sm btn-outline-secondary me-auto text-white",
-              },
+  return widget("entity.workspace.view.layout", {
+    isConfiguratorActive,
+    link,
+    metadata: { title, description },
+    onConfigureClick,
+    onDeleteClick,
+    permissions,
 
-              icon: { kind: "bootstrap-icon", variant: "bi-clipboard-fill" },
-              label: "Copy link",
-              onClick: () => clipboard.writeText(link),
-            })}
-          </>
-        ) : null}
-
-        {permissions.can_configure && (
-          <>
-            {widget("components.molecule.button", {
-              classNames: { root: "btn-sm btn-primary" },
-
-              icon: {
-                kind: "bootstrap-icon",
-                variant: "bi-gear-wide-connected",
-              },
-
-              isHidden:
-                typeof onConfigureClick !== "function" || isUnderConfiguration,
-
-              label: "Configure",
-              onClick: onConfigureClick,
-            })}
-
-            {widget("components.molecule.button", {
-              classNames: {
-                root: "btn-sm btn-outline-danger shadow-none border-0",
-              },
-
-              icon: { kind: "bootstrap-icon", variant: "bi-recycle" },
-              isHidden: "Disabled for MVP", // typeof onDeleteClick !== "function",
-              label: "Delete",
-              onClick: onDeleteClick,
-            })}
-          </>
-        )}
-      </div>
-
-      <div className="d-flex flex-column align-items-center gap-2 pt-4">
-        <h5 className="h5 d-inline-flex gap-2 m-0">
-          <i className="bi bi-github" />
-          <span>{(title?.length ?? 0) > 0 ? title : "Untitled board"}</span>
-        </h5>
-
-        <p className="m-0 py-1 text-secondary text-center">
-          {(description?.length ?? 0) > 0
-            ? description
-            : "No description provided"}
-        </p>
-      </div>
-
-      <div className="d-flex gap-3" style={{ overflowX: "auto" }}>
-        {Object.keys(columns).length > 0 ? (
-          Object.values(columns).map((column) => (
-            <div className="col-3" key={`column-${column.id}-view`}>
-              <div className="card rounded-4">
-                <div
-                  className={[
-                    "card-body d-flex flex-column gap-3 p-2",
-                    "border border-2 border-secondary rounded-4",
-                  ].join(" ")}
-                >
-                  <span className="d-flex flex-column py-1">
-                    <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
-                      {column.title}
-
-                      <span className="badge rounded-pill bg-secondary">
-                        {(state.ticketsByColumn[column.id] ?? []).length}
-                      </span>
-                    </h6>
-
-                    <p class="text-secondary m-0">{column.description}</p>
-                  </span>
-
-                  <div class="d-flex flex-column gap-2">
-                    {(state.ticketsByColumn[column.id] ?? []).map((data) =>
-                      widget(
-                        ticketViewId,
-                        { config: config?.ticket ?? {}, data },
-                        data.id
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
+    children: (
+      <>
+        {Object.keys(columns).length === 0 ? (
           <div
             className={[
               "d-flex align-items-center justify-content-center",
@@ -326,10 +236,45 @@ const GithubView = ({
           >
             No columns were created so far.
           </div>
-        )}
-      </div>
-    </div>
-  );
+        ) : null}
+
+        {Object.values(columns).map((column) => (
+          <div className="col-3" key={`column-${column.id}-view`}>
+            <div className="card rounded-4">
+              <div
+                className={[
+                  "card-body d-flex flex-column gap-3 p-2",
+                  "border border-2 border-secondary rounded-4",
+                ].join(" ")}
+              >
+                <span className="d-flex flex-column py-1">
+                  <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
+                    {column.title}
+
+                    <span className="badge rounded-pill bg-secondary">
+                      {(state.ticketsByColumn[column.id] ?? []).length}
+                    </span>
+                  </h6>
+
+                  <p class="text-secondary m-0">{column.description}</p>
+                </span>
+
+                <div class="d-flex flex-column gap-2">
+                  {(state.ticketsByColumn[column.id] ?? []).map((data) =>
+                    widget(
+                      ticketViewId,
+                      { config: config?.ticket ?? {}, data },
+                      data.id
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </>
+    ),
+  });
 };
 
-return GithubView(props);
+return GithubKanbanBoard(props);
