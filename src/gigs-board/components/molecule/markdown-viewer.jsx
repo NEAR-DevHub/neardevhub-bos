@@ -13,7 +13,9 @@ const Wrapper = styled.div`
     border-left: 4px solid #ccc;
     color: #666;
     font-style: italic;
+    font-size: inherit;
   }
+
   pre {
     background-color: #f4f4f4;
     border: 1px solid #ddd;

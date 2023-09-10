@@ -500,8 +500,8 @@ const EditorWidget = (postType) => {
 const isDraft =
   (draftState?.parent_post_id === postId &&
     draftState?.postType === state.postType) ||
-  (draftState?.edit_post_id == postId &&
-    draftState?.postType == state.postType);
+  (draftState?.edit_post_id === postId &&
+    draftState?.postType === state.postType);
 
 function Editor() {
   return (
