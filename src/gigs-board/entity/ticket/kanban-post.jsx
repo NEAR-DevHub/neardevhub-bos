@@ -118,7 +118,7 @@ const KanbanPostTicket = ({ id, config, post }) => {
   const header = (
     <div className="card-header">
       <div className="d-flex justify-content-between gap-3">
-        {config.propVisibility?.author ?? true ? (
+        {config.features?.author ?? true ? (
           <a
             href={`neardevgov.near/widget/ProfilePage?accountId=${data.author_id}`}
             className="d-flex gap-2 link-dark text-truncate"
@@ -142,13 +142,13 @@ const KanbanPostTicket = ({ id, config, post }) => {
   );
 
   const title = [
-    config.propVisibility?.type ?? true
+    config.features?.type ?? true
       ? data.snapshot.post_type === "Submission"
         ? "Solution"
         : data.snapshot.post_type
       : null,
 
-    config.propVisibility?.title ?? true ? data.snapshot.name : null,
+    config.features?.title ?? true ? data.snapshot.name : null,
   ]
     .filter((prop) => typeof prop === "string")
     .join(": ");
@@ -156,21 +156,23 @@ const KanbanPostTicket = ({ id, config, post }) => {
   const titleArea =
     data.snapshot.post_type !== "Comment" && title.length > 0 ? (
       <span className="card-text">
-        <i className={`bi ${iconsByPostType[data.snapshot.post_type]}`} />
+        {config.features?.type ?? true ? (
+          <i className={`bi ${iconsByPostType[data.snapshot.post_type]}`} />
+        ) : null}
+
         {title}
       </span>
     ) : null;
 
   const descriptionArea =
-    data.snapshot.post_type === "Comment" &&
-    (config.propVisibility?.type ?? true) ? (
+    data.snapshot.post_type === "Comment" && (config.features?.type ?? true) ? (
       <div className="overflow-auto" style={{ maxHeight: "6em" }}>
         <Markdown className="card-text" text={data.snapshot.description} />
       </div>
     ) : null;
 
   const tagList =
-    data.snapshot.labels && (config.propVisibility?.tags ?? true) ? (
+    data.snapshot.labels && (config.features?.tags ?? true) ? (
       <div className="d-flex flex-wrap gap-2 m-0">
         {data.snapshot.labels.map((label) => (
           <a href={href("Feed", { label })} key={label}>

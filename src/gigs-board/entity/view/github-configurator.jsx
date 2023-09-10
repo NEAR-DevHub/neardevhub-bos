@@ -101,44 +101,44 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
-
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
-
-        [stateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
-
-          values: updatedValues,
-        },
-      }));
-
-      if (
-        typeof onUpdate === "function" &&
-        !Struct.isEqual(updatedValues, initialFormState.values)
-      ) {
-        onUpdate(updatedValues);
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
       }
-    };
+    );
+
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
+
+      [stateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
+
+        values: updatedValues,
+      },
+    }));
+
+    if (
+      typeof onUpdate === "function" &&
+      !Struct.isEqual(updatedValues, initialFormState.values)
+    ) {
+      onUpdate(updatedValues);
+    }
+  };
 
   if (
     !uninitialized &&
@@ -335,8 +335,20 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const EditorSettings = {
+const settings = {
   maxColumnsNumber: 20,
+};
+
+const TicketFeaturesSchema = {
+  author: { label: "Author" },
+  labels: { label: "Labels" },
+  title: { label: "Title" },
+  type: { label: "Type" },
+};
+
+const TicketTypesSchema = {
+  Issue: { label: "Issue" },
+  PullRequest: { label: "Pull Request" },
 };
 
 const GithubViewDefaults = {
@@ -353,6 +365,7 @@ const GithubViewDefaults = {
     ticket: {
       type: "kanban-ticket",
       kind: "github",
+
       features: {
         author: true,
         labels: true,
@@ -361,18 +374,6 @@ const GithubViewDefaults = {
       },
     },
   },
-};
-
-const TicketFeaturesSchema = {
-  author: { label: "Author" },
-  labels: { label: "Labels" },
-  title: { label: "Title" },
-  type: { label: "Type" },
-};
-
-const TicketTypesSchema = {
-  Issue: { label: "Issue" },
-  PullRequest: { label: "Pull Request" },
 };
 
 const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
@@ -422,7 +423,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
-    Object.keys(lastKnownValue).length < EditorSettings.maxColumnsNumber
+    Object.keys(lastKnownValue).length < settings.maxColumnsNumber
       ? {
           ...(lastKnownValue ?? {}),
 
@@ -434,12 +435,10 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownValue }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+    );
 
   const onSubmit = () =>
     DevHub.update_community_github({
@@ -545,7 +544,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
         <div className="d-flex align-items-center justify-content-between">
           <span className="d-inline-flex gap-2 m-0">
             <i className="bi bi-list-task" />
-            <span>Columns ( max. {EditorSettings.maxColumnsNumber} )</span>
+            <span>Columns ( max. {settings.maxColumnsNumber} )</span>
           </span>
         </div>
 
@@ -672,7 +671,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
               disabled={
                 Object.keys(form.values.columns).length >=
-                EditorSettings.maxColumnsNumber
+                settings.maxColumnsNumber
               }
               onClick={form.update({
                 path: ["columns"],

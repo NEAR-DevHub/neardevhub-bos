@@ -152,44 +152,44 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
-
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
-
-        [stateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
-
-          values: updatedValues,
-        },
-      }));
-
-      if (
-        typeof onUpdate === "function" &&
-        !Struct.isEqual(updatedValues, initialFormState.values)
-      ) {
-        onUpdate(updatedValues);
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
       }
-    };
+    );
+
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
+
+      [stateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
+
+        values: updatedValues,
+      },
+    }));
+
+    if (
+      typeof onUpdate === "function" &&
+      !Struct.isEqual(updatedValues, initialFormState.values)
+    ) {
+      onUpdate(updatedValues);
+    }
+  };
 
   if (
     !uninitialized &&
@@ -335,12 +335,7 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const CompactContainer = styled.div`
-  width: fit-content !important;
-  max-width: 100%;
-`;
-
-const KanbanViewConfiguratorSettings = {
+const settings = {
   maxColumnsNumber: 10,
 };
 
@@ -413,8 +408,6 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
     uninitialized: (view.metadata ?? null) === null,
   });
 
-  console.log(form.values.config);
-
   const isViewInitialized = (form.values.metadata ?? null) !== null;
 
   const formToggle = (forcedState) =>
@@ -442,20 +435,17 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
-    Object.keys(lastKnownValue).length <
-    KanbanViewConfiguratorSettings.maxColumnsNumber
+    Object.keys(lastKnownValue).length < settings.maxColumnsNumber
       ? {
           ...(lastKnownValue ?? {}),
           ...withUUIDIndex({ tag: "", title: "New column", description: "" }),
         }
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownValue }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+    );
 
   const onCancel = () => {
     form.reset();
@@ -526,9 +516,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         <span className="d-inline-flex gap-2 m-0">
           <i className="bi bi-list-task" />
 
-          <span>
-            {`Columns ( max. ${KanbanViewConfiguratorSettings.maxColumnsNumber} )`}
-          </span>
+          <span>{`Columns ( max. ${settings.maxColumnsNumber} )`}</span>
         </span>
       </div>
 
@@ -648,10 +636,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           <div className="d-flex align-items-center justify-content-end gap-3">
             <button
               className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
-              disabled={
-                form.values.columns.length >=
-                KanbanViewConfiguratorSettings.maxColumnsNumber
-              }
+              disabled={form.values.columns.length >= settings.maxColumnsNumber}
               onClick={form.update({
                 path: ["config", "columns"],
                 via: columnsCreateNew,

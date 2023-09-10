@@ -53,7 +53,7 @@ const GithubTicket = ({
   const header = (
     <div className="card-header">
       <div class="d-flex justify-content-between gap-3">
-        {config.propVisibility?.author ?? true ? (
+        {config.features?.author ?? true ? (
           <a
             className="d-flex gap-2 link-dark text-truncate"
             href={author.html_url}
@@ -93,25 +93,23 @@ const GithubTicket = ({
           title={ticketStates[ticketState].displayName}
         />
 
-        {config.propVisibility?.type ?? true ? (
+        {config.features?.type ?? true ? (
           <i className={`bi ${ticketTypes[type].icon}`} />
         ) : null}
 
         <span>
           {`${
-            config.propVisibility?.type ?? true
-              ? ticketTypes[type].displayName
-              : ""
+            config.features?.type ?? true ? ticketTypes[type].displayName : ""
           } #${number}`.trim()}
         </span>
       </span>
 
-      {config.propVisibility?.title ?? true ? <span>{title}</span> : null}
+      {config.features?.title ?? true ? <span>{title}</span> : null}
     </div>
   );
 
   const labelList =
-    config.propVisibility?.labels ?? true ? (
+    config.features?.labels ?? true ? (
       <div className="d-flex flex-wrap gap-2 m-0">
         {labels.map((label) => (
           <a href={label.url} key={label.id} title={label.description}>

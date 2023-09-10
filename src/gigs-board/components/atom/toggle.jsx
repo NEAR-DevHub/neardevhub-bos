@@ -48,7 +48,7 @@ const Toggle = ({
   disabled,
   key,
   label,
-  onSwitch,
+  onChange,
   value: checked,
   ...rest
 }) => (
@@ -65,7 +65,7 @@ const Toggle = ({
     <ToggleSwitchRoot
       className="shadow-none"
       id={`toggle-${key}`}
-      onCheckedChange={disabled ? null : onSwitch}
+      onCheckedChange={disabled ? null : onChange}
       title={
         disabled ? `Permanently ${checked ? "enabled" : "disabled"}` : null
       }
