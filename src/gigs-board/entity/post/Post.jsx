@@ -575,8 +575,6 @@ const postTitle =
     </h5>
   );
 
-
-
 const postExtra =
   snapshot.post_type == "Sponsorship" ? (
     <div key="post-extra">
