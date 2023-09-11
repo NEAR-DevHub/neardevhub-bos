@@ -134,7 +134,7 @@ if (grantNotify === null) {
 }
 
 const tokenMapping = {
-  NEAR: "Near",
+  NEAR: "NEAR",
   USDT: {
     NEP141: {
       address: "usdt.tether-token.near",
