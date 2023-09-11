@@ -152,7 +152,10 @@ const GithubKanbanBoard = ({
   isConfiguratorActive,
   link,
   metadata,
-  onConfigureClick,
+  onCancel,
+  onDelete,
+  onConfigure,
+  onSave,
   permissions,
   repoURL,
   ticketState,
@@ -220,8 +223,10 @@ const GithubKanbanBoard = ({
     isConfiguratorActive,
     link,
     metadata: { title, description },
-    onConfigureClick,
-    onDeleteClick,
+    onCancel,
+    onConfigure,
+    onDelete,
+    onSave,
     permissions,
 
     children: (
@@ -263,7 +268,7 @@ const GithubKanbanBoard = ({
                   {(state.ticketsByColumn[column.id] ?? []).map((data) =>
                     widget(
                       ticketViewId,
-                      { config: config?.ticket ?? {}, data },
+                      { config: metadata?.ticket ?? {}, data },
                       data.id
                     )
                   )}

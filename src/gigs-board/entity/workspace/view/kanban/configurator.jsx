@@ -366,6 +366,7 @@ const KanbanPostBoardTicketFeaturesSchema = {
 const KanbanPostBoardDefaults = {
   metadata: {
     type: "kanban.post-board",
+    id: uuid(),
     title: "",
     description: "",
 
@@ -497,7 +498,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           isActive: true,
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
-          onChange: form.update({ path: ["config", "ticket", "features"] }),
+          onChange: form.update({ path: ["metadata", "ticket", "features"] }),
           schema: KanbanPostBoardTicketFeaturesSchema,
         })}
 
@@ -643,10 +644,13 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
             </div>
           )}
 
-          <div className="d-flex align-items-center justify-content-end gap-3">
+          <div className="d-flex align-items-center gap-3">
             <button
-              className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
-              disabled={form.values.columns.length >= settings.maxColumnsNumber}
+              className="btn shadow btn-outline-secondary d-inline-flex gap-2"
+              disabled={
+                Object.keys(form.values.columns).length >=
+                settings.maxColumnsNumber
+              }
               onClick={form.update({
                 path: ["config", "columns"],
                 via: columnsCreateNew,
@@ -654,24 +658,6 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
             >
               <i className="bi bi-plus-lg" />
               <span>New column</span>
-            </button>
-
-            <button
-              className="btn btn-outline-danger border-0 d-inline-flex gap-2 align-items-center"
-              onClick={onCancel}
-              style={{ width: "fit-content" }}
-            >
-              <span>Cancel</span>
-            </button>
-
-            <button
-              disabled={!form.hasUnsubmittedChanges}
-              className="btn shadow btn-success d-inline-flex gap-2 align-items-center"
-              onClick={onSubmit}
-              style={{ width: "fit-content" }}
-            >
-              <i className="bi bi-cloud-arrow-up-fill" />
-              <span>Save</span>
             </button>
           </div>
         </div>
@@ -689,8 +675,10 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           {
             ...form.values,
             isConfiguratorActive: state.isActive,
-            onConfigureClick: () => formToggle(true),
-            onDeleteClick: isViewInitialized ? viewDelete : null,
+            onCancel: () => formToggle(false),
+            onConfigure: () => formToggle(true),
+            onDelete: isViewInitialized ? viewDelete : null,
+            onSave: onSubmit,
             link,
             permissions,
           }

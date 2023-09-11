@@ -320,7 +320,6 @@ const Configurator = ({
   formatter: toFormatted,
   fullWidth,
   heading,
-  isActive,
   isEmbedded,
   isHidden,
   isUnlocked,
@@ -341,8 +340,10 @@ const Configurator = ({
       : defaultFieldsRender;
 
   State.init({
-    isActive: isActive ?? false,
+    isActive: otherProps.isActive ?? false,
   });
+
+  const isActive = otherProps.isActive ?? state.isActive;
 
   const initialValues = Struct.typeMatch(schema)
     ? Struct.pick(externalState ?? {}, Object.keys(schema))
@@ -387,7 +388,7 @@ const Configurator = ({
     ...otherProps,
 
     headerSlotRight:
-      isUnlocked && !state.isActive
+      isUnlocked && !isActive
         ? widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-secondary" },
             icon: { kind: "bootstrap-icon", variant: "bi-pen-fill" },
@@ -399,13 +400,11 @@ const Configurator = ({
     children: (
       <div className="flex-grow-1 d-flex flex-column gap-4">
         <div
-          className={`d-flex flex-column gap-${
-            state.isActive ? fieldGap ?? 1 : 4
-          }`}
+          className={`d-flex flex-column gap-${isActive ? fieldGap ?? 1 : 4}`}
         >
           {fieldsRender({
             form,
-            isEditable: isUnlocked && state.isActive,
+            isEditable: isUnlocked && isActive,
             isUnlocked,
             schema,
           })}
@@ -415,7 +414,7 @@ const Configurator = ({
           <div
             className={[
               "d-flex align-items-center justify-content-end gap-3 mt-auto",
-              isUnlocked && state.isActive && typeof onChange !== "function"
+              isUnlocked && isActive && typeof onChange !== "function"
                 ? ""
                 : "d-none",
             ].join(" ")}

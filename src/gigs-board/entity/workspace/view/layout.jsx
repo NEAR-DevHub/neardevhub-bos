@@ -57,40 +57,19 @@ const WorkspaceViewLayout = ({
   link,
   metadata,
   isConfiguratorActive,
-  onConfigureClick,
-  onDeleteClick,
+  onCancel,
+  onConfigure,
+  onDelete,
+  onSave,
   permissions,
 }) => (
   <div
     className="d-flex flex-column align-items-center gap-4 w-100"
     style={{ paddingBottom: 72 }}
   >
-    <div className="d-flex flex-column align-items-center gap-2 py-4">
-      <h5 className="h5 d-inline-flex gap-2 m-0">
-        {widget("components.atom.icon", {
-          kind: "bootstrap-icon",
-          variant: "bi-kanban-fill",
-        })}
-
-        <span>
-          {(metadata.title?.length ?? 0) > 0 ? metadata.title : "Untitled view"}
-        </span>
-      </h5>
-
-      <p className="m-0 py-1 text-secondary text-center">
-        {(metadata.description?.length ?? 0) > 0
-          ? metadata.description
-          : "No description provided"}
-      </p>
-    </div>
-
-    <div className="d-flex gap-3 w-100" style={{ overflowX: "auto" }}>
-      {children}
-    </div>
-
     <div
-      className="position-fixed bottom-0 mb-2 d-flex gap-3 p-3 rounded-4 z-100"
-      style={{ backgroundColor: "#181818" }}
+      className="position-fixed bottom-0 mb-2 d-flex gap-3 p-3 rounded-4"
+      style={{ backgroundColor: "#181818", zIndex: 100 }}
     >
       {typeof link === "string" && link.length > 0 ? (
         <>
@@ -120,12 +99,35 @@ const WorkspaceViewLayout = ({
           {widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-primary" },
             icon: { kind: "bootstrap-icon", variant: "bi-gear-wide-connected" },
-
-            isHidden:
-              typeof onConfigureClick !== "function" || isConfiguratorActive,
-
+            isHidden: typeof onConfigure !== "function" || isConfiguratorActive,
             label: "Configure",
-            onClick: onConfigureClick,
+            onClick: onConfigure,
+          })}
+
+          {widget("components.molecule.button", {
+            classNames: {
+              root: "btn-sm btn-outline-warning shadow-none border-0",
+            },
+
+            icon: { kind: "bootstrap-icon", variant: "bi-arrow-90deg-left" },
+            isHidden: typeof onSave !== "function" || !isConfiguratorActive,
+            label: "Cancel",
+            onClick: onCancel,
+          })}
+
+          {widget("components.molecule.button", {
+            classNames: { root: "btn-sm btn-success" },
+
+            icon: {
+              kind: "svg",
+              variant: "floppy-drive",
+              width: 14,
+              height: 14,
+            },
+
+            isHidden: typeof onSave !== "function" || !isConfiguratorActive,
+            label: "Save",
+            onClick: onSave,
           })}
 
           {widget("components.molecule.button", {
@@ -134,12 +136,39 @@ const WorkspaceViewLayout = ({
             },
 
             icon: { kind: "bootstrap-icon", variant: "bi-recycle" },
-            isHidden: "Disabled for MVP", // typeof onDeleteClick !== "function",
+
+            isHidden:
+              "Disabled for MVP" ??
+              (typeof onDelete !== "function" || isConfiguratorActive),
+
             label: "Delete",
-            onClick: onDeleteClick,
+            onClick: onDelete,
           })}
         </>
       )}
+    </div>
+
+    <div className="d-flex flex-column align-items-center gap-2 py-4">
+      <h5 className="h5 d-inline-flex gap-2 m-0">
+        {widget("components.atom.icon", {
+          kind: "bootstrap-icon",
+          variant: "bi-kanban-fill",
+        })}
+
+        <span>
+          {(metadata.title?.length ?? 0) > 0 ? metadata.title : "Untitled view"}
+        </span>
+      </h5>
+
+      <p className="m-0 py-1 text-secondary text-center">
+        {(metadata.description?.length ?? 0) > 0
+          ? metadata.description
+          : "No description provided"}
+      </p>
+    </div>
+
+    <div className="d-flex gap-3 w-100" style={{ overflowX: "auto" }}>
+      {children}
     </div>
   </div>
 );

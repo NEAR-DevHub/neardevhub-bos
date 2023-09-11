@@ -206,8 +206,10 @@ const KanbanPostBoard = ({
   metadata,
   isConfiguratorActive,
   link,
-  onConfigureClick,
-  onDeleteClick,
+  onCancel,
+  onConfigure,
+  onDelete,
+  onSave,
   permissions,
 }) => {
   const ticketViewId = [
@@ -224,8 +226,10 @@ const KanbanPostBoard = ({
     isConfiguratorActive,
     link,
     metadata,
-    onConfigureClick,
-    onDeleteClick,
+    onCancel,
+    onConfigure,
+    onDelete,
+    onSave,
     permissions,
 
     children: (
@@ -267,7 +271,7 @@ const KanbanPostBoard = ({
                   {column.postIds.map((postId) =>
                     widget(
                       ticketViewId,
-                      { id: postId, config: config.ticket ?? {} },
+                      { id: postId, config: metadata.ticket ?? {} },
                       postId
                     )
                   )}

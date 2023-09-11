@@ -339,7 +339,7 @@ const settings = {
   maxColumnsNumber: 20,
 };
 
-const TicketFeaturesSchema = {
+const GithubKanbanBoardTicketFeaturesSchema = {
   author: { label: "Author" },
   labels: { label: "Labels" },
   number: { label: "Number" },
@@ -347,13 +347,12 @@ const TicketFeaturesSchema = {
   type: { label: "Type" },
 };
 
-const TicketTypesSchema = {
+const GithubKanbanBoardTicketTypesSchema = {
   Issue: { label: "Issue" },
   PullRequest: { label: "Pull Request" },
 };
 
-const GithubViewDefaults = {
-  id: uuid(),
+const GithubKanbanBoardDefaults = {
   columns: {},
   dataTypesIncluded: { Issue: false, PullRequest: true },
   description: "",
@@ -363,6 +362,7 @@ const GithubViewDefaults = {
 
   metadata: {
     type: "github.kanban-board",
+    id: uuid(),
 
     ticket: {
       type: "github.kanban-ticket",
@@ -400,7 +400,8 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
     uninitialized: Object.keys(boards).length === 0,
   });
 
-  const isViewInitialized = (form.values.metadata ?? null) !== null;
+  const isViewInitialized =
+    (form.values.metadata?.id ?? form.values.id ?? null) !== null;
 
   const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -417,7 +418,10 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
   const newViewInit = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      board: { hasUnsubmittedChanges: false, values: GithubViewDefaults },
+      board: {
+        hasUnsubmittedChanges: false,
+        values: GithubKanbanBoardDefaults,
+      },
       isActive: true,
     }));
 
@@ -494,7 +498,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
           onChange: form.update({ path: ["dataTypesIncluded"] }),
-          schema: TicketTypesSchema,
+          schema: GithubKanbanBoardTicketTypesSchema,
         })}
 
         <div
@@ -529,15 +533,15 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
           classNames: { root: "col-12 col-md-4 h-auto" },
 
           externalState:
-            form.values.config.ticket?.features ??
-            GithubViewDefaults.config.ticket.features,
+            form.values.metadata?.ticket?.features ??
+            GithubKanbanBoardDefaults.metadata.ticket.features,
 
           fieldGap: 3,
           isActive: true,
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
-          onChange: form.update({ path: ["config", "ticket", "features"] }),
-          schema: TicketFeaturesSchema,
+          onChange: form.update({ path: ["metadata", "ticket", "features"] }),
+          schema: GithubKanbanBoardTicketFeaturesSchema,
         })}
       </div>
 
@@ -671,9 +675,9 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
             </div>
           )}
 
-          <div className="d-flex align-items-center justify-content-end gap-3">
+          <div className="d-flex align-items-center gap-3">
             <button
-              className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
+              className="btn shadow btn-outline-secondary d-inline-flex gap-2"
               disabled={
                 Object.keys(form.values.columns).length >=
                 settings.maxColumnsNumber
@@ -685,24 +689,6 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
             >
               <i className="bi bi-plus-lg" />
               <span>New column</span>
-            </button>
-
-            <button
-              className="btn btn-outline-danger border-0 d-inline-flex gap-2 align-items-center"
-              onClick={() => formToggle(false)}
-              style={{ width: "fit-content" }}
-            >
-              <span>Cancel</span>
-            </button>
-
-            <button
-              disabled={!form.hasUnsubmittedChanges}
-              className="btn shadow btn-success d-inline-flex gap-2 align-items-center"
-              onClick={onSubmit}
-              style={{ width: "fit-content" }}
-            >
-              <i className="bi bi-cloud-arrow-up-fill" />
-              <span>Save</span>
             </button>
           </div>
         </div>
@@ -721,7 +707,9 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
             ...form.values,
             isConfiguratorActive: state.isActive,
             link,
-            onConfigureClick: () => formToggle(true),
+            onCancel: () => formToggle(false),
+            onConfigure: () => formToggle(true),
+            onSave: onSubmit,
             permissions,
           }
         )
