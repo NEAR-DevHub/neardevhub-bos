@@ -590,7 +590,9 @@ return (
           {fields.includes("supervisor") && supervisorDiv}
           {fields.includes("description") && callDescriptionDiv()}
           {fields.includes("fund_raising") && isFundraisingDiv}
-          {state.seekingFunding && fields.includes("fund_raising") && fundraisingDiv}
+          {state.seekingFunding &&
+            fields.includes("fund_raising") &&
+            fundraisingDiv}
         </div>
       )}
 
