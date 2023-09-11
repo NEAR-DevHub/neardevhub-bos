@@ -174,14 +174,14 @@ const header = isTeam ? (
     {props.member}
   </div>
 ) : (
-  <Widget
-    src={`neardevgov.near/widget/ProfileLine`}
-    props={{ accountId: props.member }}
-  />
-  // <div class="d-flex">
-  //   <i class="bi bi-people-fill me-1"></i>
-  //   {props.member}
-  // </div>
+  // <Widget
+  //   src={`neardevgov.near/widget/ProfileLine`}
+  //   props={{ accountId: props.member }}
+  // />
+  <div class="d-flex">
+    <i class="bi bi-people-fill me-1"></i>
+    {props.member}
+  </div>
 );
 
 const SlimButton = styled.button`
@@ -315,8 +315,6 @@ function removeMemberFromTeam(memberId) {
   }
 }
 
-// TODO check if already in another team same as remove
-// if so add labels instead of overwriting/ignoring
 function addMemberToTeam(memberData) {
   let memberId = memberData.member;
   if (metadata.children.includes(memberId))
@@ -343,7 +341,6 @@ function addMemberToTeam(memberData) {
   ]);
 }
 
-// TODO edit labels from members as well as top level
 function editLabelsFromTeam(label, permissions) {
   const possibleLabels = Object.keys(props.rules_list);
   const team = props.member;
@@ -435,10 +432,12 @@ const editLabelsDiv = () => {
   return (
     <div>
       {warning}
-      {Object.entries(metadata.permissions).map((entry) => {
-        return editLabelDiv(entry[0]);
-      })}
-      {editLabelDiv("")}
+      {Object.entries(metadata.permissions).length
+        ? Object.entries(metadata.permissions).map((entry) => {
+            return editLabelDiv(entry[0]);
+          })
+        : editLabelDiv("")}
+      {/* {editLabelDiv("")} */}
     </div>
   );
 };
