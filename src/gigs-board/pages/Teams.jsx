@@ -224,12 +224,13 @@ const pageContent = (
         children: (<div>
           <p><b>Step 1:</b> Create an label that needs to be restricted</p>
           <p>The 'any' label is reserved for moderators</p>
-          <p>Labels that start with <b>start-with:</b>label function for multiple labels</p>
+          <p>Labels that start with <b>start-with:</b>example can restrict all labels that start with that example.</p>
           <p><b>Step 2:</b> Create the team and add the label, only 1 label per Team allowed</p>
+          <p>Team 'moderators' is reserved</p>
           <p><b>Step 3:</b> Add a member to the team</p>
           <p>Members can be in multiple teams</p>
           <p><b>Step 4:</b> Edit the label on the team to edit it's permission</p>
-          <p>The only possible permissions are: 'edit-post' and 'use-labels'</p>
+          <p>The only possible permissions are: 'edit-post' and/or 'use-labels'</p>
         </div>),
       })
     }
@@ -251,6 +252,7 @@ const pageContent = (
     {editMode && state.createLabel &&
       widget("components.organism.editor", {
         classNames: {
+          root: "mt-1",
           submit: "btn-primary",
           submitAdornment: "bi-check-circle-fill",
         },
