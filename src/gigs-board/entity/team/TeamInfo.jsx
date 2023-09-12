@@ -323,7 +323,6 @@ function addMemberToTeam(memberData) {
       memberError: "Member already exists in team",
     });
   let memberExists = !!props.members_list[memberId];
-  console.log({ metadata });
   Near.call([
     {
       contractName: nearDevGovGigsContractAccountId,
