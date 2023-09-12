@@ -175,11 +175,6 @@ function addLabel(labelData) {
 }
 
 function addTeam(teamData) {
-  let permissions = {};
-  let labels = teamData.label.split(",");
-  labels.forEach((element) => {
-    permissions[element] = ["edit-post", "use-labels"];
-  });
   Near.call([
     {
       contractName: nearDevGovGigsContractAccountId,
@@ -189,7 +184,9 @@ function addTeam(teamData) {
         metadata: {
           member_metadata_version: "V0",
           description: teamData.description,
-          permissions,
+          permissions: {
+            [teamData.label]: ["edit-post", "use-labels"]
+          },
           children: [],
           parents: [],
         },
@@ -219,6 +216,23 @@ const pageContent = (
           });
         },
       })}
+    {editMode && 
+      widget("components.molecule.tile", {
+        className: "",
+        heading:"Some explanation",
+        minHeight: 0,
+        children: (<div>
+          <p><b>Step 1:</b> Create an label that needs to be restricted</p>
+          <p>The 'any' label is reserved for moderators</p>
+          <p>Labels that start with <b>start-with:</b>label function for multiple labels</p>
+          <p><b>Step 2:</b> Create the team and add the label, only 1 label per Team allowed</p>
+          <p><b>Step 3:</b> Add a member to the team</p>
+          <p>Members can be in multiple teams</p>
+          <p><b>Step 4:</b> Edit the label on the team to edit it's permission</p>
+          <p>The only possible permissions are: 'edit-post' and 'use-labels'</p>
+        </div>),
+      })
+    }
     {editMode &&
       widget("components.layout.Controls", {
         title: "Create Restricted labels",
@@ -317,7 +331,7 @@ const pageContent = (
           label: {
             label: "Labels",
             order: 3,
-            format: "comma-separated",
+            // format: "comma-separated",
             inputProps: {
               min: 2,
               max: 60,
