@@ -563,9 +563,9 @@ return (
         </div>
       </div>
       <div className="card-body">
-        <p class="card-text" key="description">
+        {props.teamLevel && <p class="card-text" key="description">
           <Markdown class="card-text" text={metadata.description}></Markdown>
-        </p>
+        </p>}
         {state.editLabels && state.memberError && props.editMode ? (
           <div
             class="alert alert-warning alert-dismissible fade show"
@@ -636,8 +636,8 @@ return (
           props.teamLevel &&
           props.editMode &&
           editLabelsDiv()}
-        {permissionsRenderer("edit-post")}
-        {permissionsRenderer("use-labels")}
+        {props.teamLevel && permissionsRenderer("edit-post")}
+        {props.teamLevel && permissionsRenderer("use-labels")}
         {metadata.children && (
           <div class="vstack">
             {metadata.children.map((child) =>
