@@ -408,7 +408,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
     uninitialized: (view.metadata ?? null) === null,
   });
 
-  const isViewInitialized = (form.values.metadata ?? null) !== null;
+  const isViewInitialized = Object.keys(form.values.metadata ?? {}).length > 0;
 
   const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -648,7 +648,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
             <button
               className="btn shadow btn-outline-secondary d-inline-flex gap-2"
               disabled={
-                Object.keys(form.values.columns).length >=
+                Object.keys(form.values.config.columns).length >=
                 settings.maxColumnsNumber
               }
               onClick={form.update({
