@@ -209,7 +209,7 @@ const pageContent = (
   <div className="pt-3">
     {(Viewer.role.isDevHubModerator || isContractOwner) &&
       widget("components.layout.Controls", {
-        title: state.editTeams ? "Stop editing" : "Edit Teams",
+        title: state.editTeams ? "Stop editing page" : "Edit page",
         onClick: () => {
           State.update({
             editTeams: !state.editTeams,
@@ -234,7 +234,7 @@ const pageContent = (
         editMode: editMode,
       })}
     </div>
-    {state.createLabel &&
+    {editMode && state.createLabel &&
       widget("components.organism.editor", {
         classNames: {
           submit: "btn-primary",
@@ -281,7 +281,7 @@ const pageContent = (
         })}
       </div>
     )}
-    {state.createTeam &&
+    {editMode && state.createTeam &&
       widget("components.organism.editor", {
         classNames: {
           submit: "btn-primary",
