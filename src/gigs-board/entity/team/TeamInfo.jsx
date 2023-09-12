@@ -215,6 +215,7 @@ State.init({
   permissions: getInitialPermissionsString(),
   newLabel: "",
   newPermissions: "",
+  isActive: true,
 });
 
 const permissionDesc = {
@@ -589,9 +590,9 @@ return (
               submitAdornment: "bi-check-circle-fill",
             },
             heading: "Adding member",
-            isEditorActive: state.isEditorActive,
-            isEditingAllowed: props.editMode,
-            onChangesSubmit: addMemberToTeam,
+            isActive: state.isActive,
+            isUnlocked: props.editMode,
+            onSubmit: addMemberToTeam,
             submitLabel: "Accept",
             data: state.teamData,
             schema: {
