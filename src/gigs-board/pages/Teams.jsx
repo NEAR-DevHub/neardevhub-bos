@@ -164,7 +164,7 @@ State.init({
   teamData: null,
   createTeam: false,
   createLabel: false,
-  isEditorActive: false,
+  isActive: true,
   editTeams: false,
 });
 
@@ -205,7 +205,7 @@ function addTeam(teamData) {
           member_metadata_version: "V0",
           description: teamData.description,
           permissions: {
-            [teamData.label]: ["edit-post", "use-labels"]
+            [teamData.label]: ["edit-post", "use-labels"],
           },
           children: [],
           parents: [],
@@ -223,7 +223,7 @@ const editMode =
   (Viewer.role.isDevHubModerator || isContractOwner) && state.editTeams;
 
 const pageContent = (
-  <div className="pt-3">
+  <div className="pt-3 pb-5">
     {(Viewer.role.isDevHubModerator || isContractOwner) &&
       widget("components.layout.Controls", {
         title: state.editTeams ? "Stop editing page" : "Edit page",
@@ -236,24 +236,39 @@ const pageContent = (
           });
         },
       })}
-    {editMode && 
+    {editMode &&
       widget("components.molecule.tile", {
         className: "",
-        heading:"Some explanation",
+        heading: "Some explanation",
         minHeight: 0,
-        children: (<div>
-          <p><b>Step 1:</b> Create an label that needs to be restricted</p>
-          <p>The 'any' label is reserved for moderators</p>
-          <p>Labels that start with <b>start-with:</b>example can restrict all labels that start with that example.</p>
-          <p><b>Step 2:</b> Create the team and add the label, only 1 label per Team allowed</p>
-          <p>Team 'moderators' is reserved</p>
-          <p><b>Step 3:</b> Add a member to the team</p>
-          <p>Members can be in multiple teams</p>
-          <p><b>Step 4:</b> Edit the label on the team to edit it's permission</p>
-          <p>The only possible permissions are: 'edit-post' and/or 'use-labels'</p>
-        </div>),
-      })
-    }
+        children: (
+          <div>
+            <p>
+              <b>Step 1:</b> Create an label that needs to be restricted
+            </p>
+            <p>The 'any' label is reserved for moderators</p>
+            <p>
+              Labels that start with <b>start-with:</b>example can restrict all
+              labels that start with that example.
+            </p>
+            <p>
+              <b>Step 2:</b> Create the team and add the label, only 1 label per
+              Team allowed
+            </p>
+            <p>Team 'moderators' is reserved</p>
+            <p>
+              <b>Step 3:</b> Add a member to the team
+            </p>
+            <p>Members can be in multiple teams</p>
+            <p>
+              <b>Step 4:</b> Edit the label on the team to edit it's permission
+            </p>
+            <p>
+              The only possible permissions are: 'edit-post' and/or 'use-labels'
+            </p>
+          </div>
+        ),
+      })}
     {editMode &&
       widget("components.layout.Controls", {
         title: "Create Restricted labels",
@@ -269,42 +284,46 @@ const pageContent = (
         editMode: editMode,
       })}
     </div>
-    {editMode && state.createLabel &&
-      widget("components.organism.configurator", {
-        classNames: {
-          root: "mt-1",
-          submit: "btn-primary",
-          submitAdornment: "bi-check-circle-fill",
-        },
-        heading: "Restricted labels",
-        isEditorActive: state.isEditorActive,
-        isEditingAllowed: editMode,
-        onChangesSubmit: addLabel,
-        submitLabel: "Accept",
-        data: state.labelData,
-        schema: {
-          name: {
-            inputProps: {
-              min: 2,
-              max: 30,
-              placeholder: "Label name (starts-with:<label>  or <label>)",
-              required: true,
-            },
-            label: "Name",
-            order: 1,
+    {editMode && state.createLabel && (
+      <div className="pt-3">
+        {widget("components.organism.configurator", {
+          classNames: {
+            root: "mt-1",
+            submit: "btn-primary",
+            submitAdornment: "bi-check-circle-fill",
           },
-          description: {
-            inputProps: {
-              min: 2,
-              max: 60,
-              placeholder: "Label description",
-              required: true,
+          heading: "Restricted labels",
+          isActive: state.isActive,
+          isUnlocked: editMode,
+          onSubmit: addLabel,
+          submitLabel: "Accept",
+          data: state.labelData,
+          schema: {
+            name: {
+              inputProps: {
+                min: 2,
+                max: 30,
+                placeholder: "Label name (starts-with:<label>  or <label>)",
+                required: true,
+              },
+              label: "Name",
+              order: 1,
             },
-            label: "Description",
-            order: 2,
+            description: {
+              inputProps: {
+                min: 2,
+                max: 60,
+                placeholder: "Label description",
+                required: true,
+              },
+              label: "Description",
+              order: 2,
+            },
           },
-        },
-      })}
+        })}
+      </div>
+    )}
+
     {editMode && (
       <div class="pt-3">
         {widget("components.layout.Controls", {
@@ -317,16 +336,17 @@ const pageContent = (
         })}
       </div>
     )}
-    {editMode && state.createTeam &&
+    {editMode &&
+      state.createTeam &&
       widget("components.organism.configurator", {
         classNames: {
           submit: "btn-primary",
           submitAdornment: "bi-check-circle-fill",
         },
         heading: "Team info",
-        isEditorActive: state.isEditorActive,
-        isEditingAllowed: editMode,
-        onChangesSubmit: addTeam,
+        isActive: state.isActive,
+        isUnlocked: editMode,
+        onSubmit: addTeam,
         submitLabel: "Accept",
         data: state.teamData,
         schema: {
