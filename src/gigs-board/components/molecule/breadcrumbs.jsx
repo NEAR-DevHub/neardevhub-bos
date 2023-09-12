@@ -1,4 +1,4 @@
-d; /* INCLUDE: "common.jsx" */
+/* INCLUDE: "common.jsx" */
 const nearDevGovGigsContractAccountId =
   props.nearDevGovGigsContractAccountId ||
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
@@ -52,22 +52,39 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityPageTemplate = ({ children, handle, path, title }) => (
-  <div className="w-100 h-100">
-    {widget("components.layout.app-header")}
-    {/* TODO: Add breadcrumbs rendered from path prop */}
-
-    {typeof handle === "string" ? (
-      <>
-        {widget("entity.community.header", { activeTabTitle: title, handle })}
-        <div style={{ padding: "0 32px" }}>{children}</div>
-      </>
-    ) : (
-      <div class="alert alert-danger" role="alert">
-        Error: community handle not found in URL parameters
-      </div>
-    )}
+const Breadcrumbs = ({ classNames, path }) => (
+  <div
+    aria-label="breadcrumb"
+    className={[
+      "d-flex",
+      classNames?.root ?? "",
+      Array.isArray(path) ? "" : "d-none",
+    ].join(" ")}
+    style={{ backgroundColor: "#181818" }}
+  >
+    <ol className="breadcrumb d-flex align-items-end m-0 h-100">
+      {(path ?? []).map(({ isActive, isHidden, label, pageId, params }) => (
+        <li
+          aria-current="page"
+          className={[
+            "breadcrumb-item d-flex",
+            isActive ? "active" : "",
+            isHidden ? "d-none" : "",
+          ].join(" ")}
+        >
+          <a
+            className={["pb-1 lh-1 text-white", classNames?.link ?? ""].join(
+              " "
+            )}
+            href={href(pageId, params ?? {})}
+            style={{ fontWeight: 420 }}
+          >
+            {label}
+          </a>
+        </li>
+      ))}
+    </ol>
   </div>
 );
 
-return <CommunityPageTemplate {...props} />;
+return Breadcrumbs(props);

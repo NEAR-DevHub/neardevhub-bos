@@ -57,22 +57,45 @@ const devHubAccountId =
   (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
 const DevHub = {
-  edit_community_github: ({ handle, github }) =>
-    Near.call(devHubAccountId, "edit_community_github", { handle, github }) ??
-    null,
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
+  has_moderator: ({ account_id }) =>
+    Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null,
+
+  create_community: ({ inputs }) =>
+    Near.call(devHubAccountId, "create_community", { inputs }),
+
+  get_community: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
+
+  get_account_community_permissions: ({ account_id, community_handle }) =>
+    Near.view(devHubAccountId, "get_account_community_permissions", {
+      account_id,
+      community_handle,
+    }) ?? null,
+
+  update_community: ({ handle, community }) =>
+    Near.call(devHubAccountId, "update_community", { handle, community }),
+
+  delete_community: ({ handle }) =>
+    Near.call(devHubAccountId, "delete_community", { handle }),
+
+  update_community_board: ({ handle, board }) =>
+    Near.call(devHubAccountId, "update_community_board", { handle, board }),
+
+  update_community_github: ({ handle, github }) =>
+    Near.call(devHubAccountId, "update_community_github", { handle, github }),
 
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
   get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
-  get_all_communities: () =>
-    Near.view(devHubAccountId, "get_all_communities") ?? null,
+  get_all_communities_metadata: () =>
+    Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
-
-  get_community: ({ handle }) =>
-    Near.view(devHubAccountId, "get_community", { handle }) ?? null,
 
   get_post: ({ post_id }) =>
     Near.view(devHubAccountId, "get_post", { post_id }) ?? null,
@@ -85,10 +108,7 @@ const DevHub = {
       label,
     }) ?? null,
 
-  get_root_members: () =>
-    Near.view(devHubAccountId, "get_root_members") ?? null,
-
-  useQuery: ({ name, params }) => {
+  useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -121,39 +141,42 @@ const CommunityActivityPage = ({ handle }) => {
     return <div>Loading...</div>;
   }
 
-  return widget("components.template.community-page", {
+  return widget("entity.community.layout", {
+    path: [{ label: "Communities", pageId: "communities" }],
     handle,
-    title: "Activity",
 
+    title: "Activity",
     children:
       communityData !== null ? (
-        <div>
-          <div class="row mb-2">
-            <div class="col text-center">
-              <small class="text-muted">
-                <span>Required tags:</span>
-
-                <a
-                  href={href("Feed", { tag: communityData.tag })}
-                  key={communityData.tag}
-                >
-                  <span class="badge text-bg-primary me-1">
-                    {communityData.tag}
-                  </span>
-                </a>
-              </small>
+        <div class="row">
+          <div class="col-md-9">
+            <div class="row mb-2">
+              <div class="col">
+                <div class="d-flex align-items-center justify-content-between">
+                  <small class="text-muted">
+                    <span>Required tags:</span>
+                    {widget("components.atom.tag", {
+                      linkTo: "Feed",
+                      ...communityData,
+                    })}
+                  </small>
+                  {widget("components.layout.Controls", {
+                    labels: communityData.tag,
+                  })}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                {widget("entity.post.List", { tag: communityData.tag })}
+              </div>
             </div>
           </div>
 
-          {widget("components.layout.Controls", {
-            title: "Post",
-            href: href("Create", { labels: communityData.tag }),
-          })}
-
-          <div class="row">
-            <div class="col">
-              {widget("entity.post.List", { tag: communityData.tag })}
-            </div>
+          <div class="col-md-3 container-fluid">
+            {widget("entity.community.sidebar", {
+              handle: communityData.handle,
+            })}
           </div>
         </div>
       ) : (

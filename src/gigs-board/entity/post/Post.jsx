@@ -80,6 +80,14 @@ const AttractableImage = styled.img`
 `;
 /* END_INCLUDE: "core/lib/gui/attractable" */
 
+const ButtonWithHover = styled.button`
+  background-color: #fff;
+  &:hover {
+    background-color: #e9ecef;
+    color: #000;
+  }
+`;
+
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
 const post =
   props.post ??
@@ -136,8 +144,8 @@ const timestamp = readableDate(
 const postSearchKeywords = props.searchKeywords ? (
   <div style={{ "font-family": "monospace" }} key="post-search-keywords">
     <span>Found keywords: </span>
-    {props.searchKeywords.map((label) => {
-      return <span class="badge text-bg-info me-1">{label}</span>;
+    {props.searchKeywords.map((tag) => {
+      return widget("components.atom.tag", { linkTo: "Feed", tag });
     })}
   </div>
 ) : (
@@ -145,23 +153,12 @@ const postSearchKeywords = props.searchKeywords ? (
 );
 
 const searchKeywords = props.searchKeywords ? (
-  <div class="mb-1" key="search-keywords">
+  <div class="mb-4" key="search-keywords">
     <small class="text-muted">{postSearchKeywords}</small>
   </div>
 ) : (
   <div key="search-keywords"></div>
 );
-
-const linkToParent =
-  isUnderPost || !parentId ? (
-    <div key="link-to-parent"></div>
-  ) : (
-    <div className="card-header" key="link-to-parent">
-      <a href={href("Post", { id: parentId })}>
-        <i class="bi bi-arrow-90deg-up"></i>Go to parent{" "}
-      </a>
-    </div>
-  );
 
 const allowedToEdit =
   !props.isPreview &&
@@ -215,7 +212,7 @@ const shareButton = props.isPreview ? (
   <div></div>
 ) : (
   <a
-    class="card-link"
+    class="card-link text-dark"
     href={href("Post", { id: postId })}
     role="button"
     target="_blank"
@@ -225,15 +222,15 @@ const shareButton = props.isPreview ? (
   </a>
 );
 
+// card-header
 const header = (
-  <div className="card-header" key="header">
+  <div className="p-3 pt-4" key="header">
     <small class="text-muted">
       <div class="row justify-content-between">
         <div class="col-4">
-          <Widget
-            src={`neardevgov.near/widget/ProfileLine`}
-            props={{ accountId: post.author_id }}
-          />
+          {widget("components.molecule.profile-card", {
+            accountId: post.author_id,
+          })}
         </div>
         <div class="col-5">
           <div class="d-flex justify-content-end">
@@ -276,12 +273,12 @@ const fillIcons = {
 // Trigger saving this widget.
 
 const borders = {
-  Idea: "border-secondary",
-  Comment: "border-secondary",
-  Submission: "border-secondary",
-  Attestation: "border-secondary",
-  Sponsorship: "border-secondary",
-  Github: "border-secondary",
+  Idea: "border-light",
+  Comment: "border-light",
+  Submission: "border-light",
+  Attestation: "border-light",
+  Sponsorship: "border-light",
+  Github: "border-light",
 };
 
 const containsLike = props.isPreview
@@ -356,9 +353,9 @@ const buttonsFooter = props.isPreview ? null : (
   <div class="row" key="buttons-footer">
     <div class="col-8">
       <div class="btn-group" role="group" aria-label="Basic outlined example">
-        <button
+        <ButtonWithHover
           type="button"
-          class="btn btn-outline-primary"
+          class="btn"
           style={{ border: "0px" }}
           onClick={onLike}
         >
@@ -370,17 +367,17 @@ const buttonsFooter = props.isPreview ? null : (
                   post.likes.map(({ author_id }) => [author_id, ""])
                 ),
               })}
-        </button>
+        </ButtonWithHover>
         <div class="btn-group" role="group">
-          <button
+          <ButtonWithHover
             type="button"
-            class="btn btn-outline-primary"
+            class="btn"
             style={{ border: "0px" }}
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
             <i class={`bi ${emptyIcons.Reply}`}> </i> Reply
-          </button>
+          </ButtonWithHover>
           <ul class="dropdown-menu">
             {btnCreatorWidget(
               "Idea",
@@ -417,9 +414,9 @@ const buttonsFooter = props.isPreview ? null : (
             )}
           </ul>
         </div>
-        <button
+        <ButtonWithHover
           type="button"
-          class="btn btn-outline-primary"
+          class="btn"
           style={{ border: "0px" }}
           data-bs-toggle="collapse"
           href={`#collapseChildPosts${postId}`}
@@ -428,7 +425,22 @@ const buttonsFooter = props.isPreview ? null : (
         >
           <i class="bi bi-arrows-expand"> </i>{" "}
           {`Expand Replies (${childPostIds.length})`}
-        </button>
+        </ButtonWithHover>
+
+        {isUnderPost || !parentId ? (
+          <div key="link-to-parent"></div>
+        ) : (
+          <a href={href("Post", { id: parentId })}>
+            <ButtonWithHover
+              type="button"
+              style={{ border: "0px" }}
+              className="btn"
+              key="link-to-parent"
+            >
+              <i class="bi bi-arrow-90deg-up"></i>Go to parent
+            </ButtonWithHover>
+          </a>
+        )}
       </div>
     </div>
   </div>
@@ -507,14 +519,10 @@ const editorsFooter = props.isPreview ? null : (
 const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
-const postLabels = post.snapshot.labels ? (
-  <div class="card-title" key="post-labels">
-    {post.snapshot.labels.map((label) => {
-      return (
-        <a href={href("Feed", { label }, label)}>
-          <span class="badge text-bg-primary me-1">{label}</span>
-        </a>
-      );
+const tags = post.snapshot.labels ? (
+  <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
+    {post.snapshot.labels.map((tag) => {
+      return widget("components.atom.tag", { linkTo: "Feed", tag });
     })}
   </div>
 ) : (
@@ -525,7 +533,7 @@ const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
   ) : (
-    <h5 class="card-title" key="post-title">
+    <h5 class="card-title mb-4" key="post-title">
       <div className="row justify-content-between">
         <div class="col-9">
           <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
@@ -535,11 +543,44 @@ const postTitle =
     </h5>
   );
 
+const tokenMapping = {
+  NEAR: "NEAR",
+  USDT: {
+    NEP141: {
+      address: "usdt.tether-token.near",
+    },
+  },
+  // Add more tokens here as needed
+};
+
+const reverseTokenMapping = Object.keys(tokenMapping).reduce(
+  (reverseMap, key) => {
+    const value = tokenMapping[key];
+    if (typeof value === "object") {
+      reverseMap[JSON.stringify(value)] = key;
+    }
+    return reverseMap;
+  },
+  {}
+);
+
+function tokenResolver(token) {
+  if (typeof token === "string") {
+    return token;
+  } else if (typeof token === "object") {
+    const tokenString = reverseTokenMapping[JSON.stringify(token)];
+    return tokenString || null;
+  } else {
+    return null; // Invalid input
+  }
+}
+
 const postExtra =
   snapshot.post_type == "Sponsorship" ? (
     <div key="post-extra">
       <h6 class="card-subtitle mb-2 text-muted">
-        Maximum amount: {snapshot.amount} {snapshot.sponsorship_token}
+        Maximum amount: {snapshot.amount}{" "}
+        {tokenResolver(snapshot.sponsorship_token)}
       </h6>
       <h6 class="card-subtitle mb-2 text-muted">
         Supervisor:{" "}
@@ -601,17 +642,6 @@ const limitedMarkdown = styled.div`
   max-height: 20em;
 `;
 
-const clampMarkdown = styled.div`
-  .clamp {
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 1),
-      rgba(0, 0, 0, 0)
-    );
-    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
-  }
-`;
-
 // Determine if located in the post page.
 const isInList = props.isInList;
 const contentArray = snapshot.description.split("\n");
@@ -622,7 +652,7 @@ initState({
 });
 
 const clampedContent = needClamp
-  ? contentArray.slice(0, 5).join("\n")
+  ? contentArray.slice(0, 3).join("\n")
   : snapshot.description;
 
 const onMention = (accountId) => (
@@ -648,7 +678,7 @@ const descriptionArea = isUnderPost ? (
     />
   </limitedMarkdown>
 ) : (
-  <clampMarkdown>
+  <div>
     <div class={state.clamp ? "clamp" : ""}>
       <Markdown
         class="card-text"
@@ -658,18 +688,18 @@ const descriptionArea = isUnderPost ? (
       ></Markdown>
     </div>
     {state.clamp ? (
-      <div class="d-flex justify-content-center">
+      <div class="d-flex justify-content-start">
         <a
-          class="btn btn-link text-secondary"
+          class="btn-link text-dark fw-bold text-decoration-none"
           onClick={() => State.update({ clamp: false })}
         >
-          Read More
+          See more
         </a>
       </div>
     ) : (
       <></>
     )}
-  </clampMarkdown>
+  </div>
 );
 
 const timestampElement = (_snapshot) => {
@@ -715,12 +745,10 @@ function combineText(_snapshot) {
 }
 
 return (
-  <AttractableDiv className={`card my-2 ${borders[snapshot.post_type]}`}>
-    {linkToParent}
+  <AttractableDiv className={`card ${borders[snapshot.post_type]}`}>
     {header}
     <div className="card-body">
       {searchKeywords}
-      {postLabels}
       {compareSnapshot ? (
         <div
           class="border rounded"
@@ -761,6 +789,7 @@ return (
           {descriptionArea}
         </>
       )}
+      {tags}
       {buttonsFooter}
       {editorsFooter}
       {postsList}

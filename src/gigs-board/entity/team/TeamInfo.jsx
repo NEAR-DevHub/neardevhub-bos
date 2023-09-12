@@ -583,7 +583,7 @@ return (
         ) : null}
         {state.addMember &&
           props.editMode &&
-          widget("components.organism.editor", {
+          widget("components.organism.configurator", {
             classNames: {
               submit: "btn-primary",
               submitAdornment: "bi-check-circle-fill",

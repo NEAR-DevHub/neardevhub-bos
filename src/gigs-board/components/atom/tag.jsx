@@ -52,11 +52,15 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const CommunityNewPage = () => (
-  <div className="d-flex flex-column">
-    {widget("components.layout.app-header", { style: { marginBottom: 0 } })}
-    {widget("feature.community-editor.ui", {})}
-  </div>
+const Tag = ({ linkTo, tag }) => (
+  <a href={href(linkTo, { tag })}>
+    <span
+      class="badge me-1 text-dark fw-normal"
+      style={{ border: "1px solid #D0D5DD" }}
+    >
+      {tag}
+    </span>
+  </a>
 );
 
-return CommunityNewPage(props);
+return Tag(props);

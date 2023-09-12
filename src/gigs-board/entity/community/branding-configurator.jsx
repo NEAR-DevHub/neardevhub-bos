@@ -207,9 +207,10 @@ const Logo = styled.div`
 
 const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 
-const CommunityEditorBrandingSection = ({
-  isEditingAllowed,
-  onChangesSubmit,
+const CommunityBrandingConfigurator = ({
+  isUnlocked,
+  link,
+  onSubmit,
   values,
 }) => {
   const initialInput = { banner: null, logo: null };
@@ -230,7 +231,7 @@ const CommunityEditorBrandingSection = ({
   const isSynced = Struct.isEqual(state.input, initialValues);
 
   if (hasUnsubmittedChanges && !isSynced) {
-    onChangesSubmit({
+    onSubmit({
       banner_url: cidToURL(state.input.banner?.cid ?? initialValues.banner.cid),
       logo_url: cidToURL(state.input.logo?.cid ?? initialValues.logo.cid),
     });
@@ -244,7 +245,7 @@ const CommunityEditorBrandingSection = ({
   return (
     <AttractableDiv
       className="card rounded-4 w-100"
-      style={{ maxWidth: 896, height: 280 }}
+      style={{ maxWidth: 920, height: 280 }}
     >
       <Banner
         alt="Community banner preview"
@@ -255,9 +256,7 @@ const CommunityEditorBrandingSection = ({
           )})`,
         }}
       >
-        {isEditingAllowed ? (
-          <IpfsImageUpload image={state.input.banner} />
-        ) : null}
+        {isUnlocked ? <IpfsImageUpload image={state.input.banner} /> : null}
       </Banner>
 
       <Logo
@@ -276,7 +275,7 @@ const CommunityEditorBrandingSection = ({
           )})`,
         }}
       >
-        {isEditingAllowed ? <IpfsImageUpload image={state.input.logo} /> : null}
+        {isUnlocked ? <IpfsImageUpload image={state.input.logo} /> : null}
       </Logo>
 
       <div
@@ -287,7 +286,11 @@ const CommunityEditorBrandingSection = ({
           className="h5 text-nowrap overflow-hidden"
           style={{ textOverflow: "ellipsis" }}
         >
-          {values.name}
+          {typeof link === "string" && link.length > 0 ? (
+            <a href={link}>{values.name}</a>
+          ) : (
+            values.name
+          )}
         </h5>
 
         <p
@@ -301,4 +304,4 @@ const CommunityEditorBrandingSection = ({
   );
 };
 
-return <CommunityEditorBrandingSection {...props} />;
+return CommunityBrandingConfigurator(props);

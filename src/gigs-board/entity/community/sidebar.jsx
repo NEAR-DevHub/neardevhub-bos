@@ -51,6 +51,7 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+
 /* INCLUDE: "core/adapter/dev-hub" */
 const devHubAccountId =
   props.nearDevGovGigsContractAccountId ||
@@ -134,38 +135,86 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const communityData = DevHub.get_community({ handle: props.handle }) ?? null;
-const root_members = DevHub.get_root_members() ?? null;
+const CommunitySummary = (community) => {
+  const socialLinks = [
+    ...((community.website_url?.length ?? 0) > 0
+      ? [
+          {
+            href: community.website_url,
+            iconClass: "bi bi-globe",
+            name: community.website_url,
+          },
+        ]
+      : []),
 
-if (communityData === null || root_members === null) {
-  return <div>Loading...</div>;
-}
+    ...((community.github_handle?.length ?? 0) > 0
+      ? [
+          {
+            href: `https://github.com/${community.github_handle}`,
+            iconClass: "bi bi-github",
+            name: community.github_handle,
+          },
+        ]
+      : []),
 
-const moderators = (root_members ?? {})?.["team:moderators"]?.children;
-const admins = communityData.admins;
+    ...((community.twitter_handle?.length ?? 0) > 0
+      ? [
+          {
+            href: `https://twitter.com/${community.twitter_handle}`,
+            iconClass: "bi bi-twitter",
+            name: community.twitter_handle,
+          },
+        ]
+      : []),
 
-const UserList = (name, users) => {
+    ...(community.telegram_handle.length > 0
+      ? community.telegram_handle.map((telegram_handle) => ({
+          href: `https://t.me/${telegram_handle}`,
+          iconClass: "bi bi-telegram",
+          name: telegram_handle,
+        }))
+      : []),
+  ];
+
+  return (
+    <div style={{ top: "0", left: "0" }}>
+      <Markdown text={community.bio_markdown} />
+
+      <small class="text-muted mb-3">
+        {widget("components.atom.tag", { linkTo: "Feed", ...community })}
+      </small>
+
+      <div className="mt-3">
+        {socialLinks.map((link, index) => (
+          <a
+            className={`mt-1 btn-outline-light text-reset border-0 d-flex align-items-center`}
+            href={link.href}
+            style={{ marginLeft: index !== 0 ? "0px" : "0px" }}
+            key={link.href}
+          >
+            <i className={link.iconClass}></i>
+            <span className="ms-1">{link.name}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const UserList = (users) => {
   return (
     <div>
-      {(users ?? []).map((user, i) => (
+      {users.map((user, i) => (
         <div className={`row ${i < users.length - 1 ? "mb-3" : ""}`}>
-          <div class="col-3">
-            <b>{name + " #" + (i + 1)}</b>
-          </div>
           <div class="col-9">
             <span
               key={user}
               className="d-inline-flex"
               style={{ fontWeight: 500 }}
             >
-              <Widget
-                src="neardevgov.near/widget/ProfileLine"
-                props={{
-                  accountId: user,
-                  hideAccountId: true,
-                  tooltip: true,
-                }}
-              />
+              {widget("components.molecule.profile-card", {
+                accountId: user,
+              })}
             </span>
           </div>
         </div>
@@ -174,24 +223,39 @@ const UserList = (name, users) => {
   );
 };
 
-const Teams = (
-  <div class="d-flex flex-column align-items-center gap-4">
-    {widget("components.molecule.tile", {
-      heading: "Admins",
-      minHeight: 0,
-      children: UserList("Admin", admins),
-    })}
-    {widget("components.molecule.tile", {
-      heading: "Community Moderators",
-      minHeight: 0,
-      children: UserList("Moderator", moderators),
-    })}
-  </div>
-);
+const Sidebar = ({ handle }) => {
+  const community = DevHub.get_community({ handle }) ?? null;
 
-return widget("entity.community.layout", {
-  path: [{ label: "Communities", pageId: "communities" }],
-  handle: props.handle,
-  title: "Teams",
-  children: Teams,
-});
+  if ((handle ?? null) === null) {
+    return (
+      <div class="alert alert-danger" role="alert">
+        Error: community handle is required in sidebar
+      </div>
+    );
+  }
+
+  return community === null ? (
+    <div>Loading...</div>
+  ) : (
+    <div class="col-md-12 d-flex flex-column align-items-end">
+      {widget("components.molecule.tile", {
+        minHeight: 0,
+        children: CommunitySummary(community),
+        noBorder: true,
+        borderRadius: "rounded",
+      })}
+
+      <hr style={{ width: "100%", borderTop: "1px solid #00000033" }} />
+
+      {widget("components.molecule.tile", {
+        heading: "Admins",
+        minHeight: 0,
+        children: UserList(community.admins),
+        noBorder: true,
+        borderRadius: "rounded",
+      })}
+    </div>
+  );
+};
+
+return Sidebar(props);
