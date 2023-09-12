@@ -340,10 +340,9 @@ const settings = {
 };
 
 const GithubKanbanBoardTicketFeaturesSchema = {
+  id: { label: "Id" },
   author: { label: "Author" },
   labels: { label: "Labels" },
-  number: { label: "Number" },
-  title: { label: "Title" },
   type: { label: "Type" },
 };
 
@@ -368,10 +367,9 @@ const GithubKanbanBoardDefaults = {
       type: "github.kanban-ticket",
 
       features: {
+        id: true,
         author: true,
         labels: true,
-        number: true,
-        title: true,
         type: true,
       },
     },
@@ -445,6 +443,11 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
         Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
       );
 
+  const onCancel = () => {
+    form.reset();
+    formToggle(false);
+  };
+
   const onSubmit = () =>
     DevHub.update_community_github({
       handle: communityHandle,
@@ -452,7 +455,15 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
       github: JSON.stringify({
         kanbanBoards: {
           ...boards,
-          [form.values.id]: { kind: "github-view", ...form.values },
+
+          [form.values.metadata.id]: {
+            ...form.values,
+
+            metadata: {
+              ...GithubKanbanBoardDefaults.metadata,
+              ...form.values.metadata,
+            },
+          },
         },
       }),
     });
@@ -707,7 +718,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
             ...form.values,
             isConfiguratorActive: state.isActive,
             link,
-            onCancel: () => formToggle(false),
+            onCancel,
             onConfigure: () => formToggle(true),
             onSave: onSubmit,
             permissions,
@@ -723,7 +734,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
           </h5>
 
           {widget("components.molecule.button", {
-            icon: { kind: "bootstrap-icon", variant: "bi-github" },
+            icon: { type: "bootstrap_icon", variant: "bi-github" },
             isHidden: !permissions.can_configure,
             label: "Create GitHub board",
             onClick: newViewInit,

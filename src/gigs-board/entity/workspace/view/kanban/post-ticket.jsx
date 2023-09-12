@@ -99,73 +99,95 @@ const KanbanPostTicket = ({ id, config, post }) => {
     return <div>Loading ...</div>;
   }
 
-  const authorAvatar = (
-    <Widget
-      src="mob.near/widget/ProfileImage"
-      props={{
-        metadata,
-        accountId: data.author_id,
-        widgetName,
-        style: {
-          height: "1.5em",
-          width: "1.5em",
-          minWidth: "1.5em",
-        },
-      }}
-    />
-  );
+  console.log(data);
 
   const header = (
-    <div className="card-header">
-      <div className="d-flex justify-content-between gap-3">
-        {config.features?.author ?? true ? (
-          <a
-            href={`neardevgov.near/widget/ProfilePage?accountId=${data.author_id}`}
-            className="d-flex gap-2 link-dark text-truncate"
-          >
-            {authorAvatar}
-            <span className="text-muted">@{data.author_id}</span>
-          </a>
+    <div className="card-header d-flex justify-content-between gap-3">
+      <a
+        href={`https://near.org/mob.near/widget/ProfilePage?accountId=${data.author_id}`}
+        className="d-flex gap-2 link-dark text-truncate"
+      >
+        {config.features?.author_avatar ?? true ? (
+          <Widget
+            src="mob.near/widget/ProfileImage"
+            props={{
+              metadata,
+              accountId: data.author_id,
+              widgetName,
+              style: { height: "1.5em", width: "1.5em", minWidth: "1.5em" },
+            }}
+          />
         ) : null}
 
-        <a
-          className="card-link"
-          href={href("Post", { id: postId })}
-          role="button"
-          target="_blank"
-          title="Open in new tab"
-        >
-          <i className="bi bi-share" />
-        </a>
-      </div>
+        <span className="text-muted">@{data.author_id}</span>
+      </a>
+
+      <a
+        className="card-link"
+        href={href("Post", { id: postId })}
+        role="button"
+        target="_blank"
+        title="Open in new tab"
+      >
+        <i className="bi bi-share" />
+      </a>
     </div>
   );
 
-  const title = [
-    config.features?.type ?? true
-      ? data.snapshot.post_type === "Submission"
-        ? "Solution"
-        : data.snapshot.post_type
-      : null,
+  const footer =
+    config.features?.likes_amount ?? config.features?.replies_amount ?? true ? (
+      <div className="card-footer d-flex justify-content-between gap-3">
+        {config.features?.likes_amount ?? true ? (
+          <span>
+            {widget("components.atom.icon", {
+              type: "bootstrap_icon",
+              variant: "bi-heart-fill",
+            })}
 
-    config.features?.title ?? true ? data.snapshot.name : null,
-  ]
-    .filter((prop) => typeof prop === "string")
-    .join(": ");
-
-  const titleArea =
-    data.snapshot.post_type !== "Comment" && title.length > 0 ? (
-      <span className="card-text">
-        {config.features?.type ?? true ? (
-          <i className={`bi ${iconsByPostType[data.snapshot.post_type]}`} />
+            {data.likes.length}
+          </span>
         ) : null}
 
-        {title}
-      </span>
+        {config.features?.replies_amount ?? true ? (
+          <span>
+            {widget("components.atom.icon", {
+              type: "bootstrap_icon",
+              variant: "bi-comment",
+            })}
+
+            {data.comments.length}
+          </span>
+        ) : null}
+      </div>
     ) : null;
 
+  const titleArea = (
+    <span className="card-text gap-2">
+      {config.features?.type ?? true ? (
+        <i className={`bi ${iconsByPostType[data.snapshot.post_type]}`} />
+      ) : null}
+
+      <span>
+        {[
+          config.features?.type ?? true
+            ? data.snapshot.post_type === "Submission"
+              ? "Solution"
+              : data.snapshot.post_type
+            : null,
+
+          data.snapshot.name,
+        ]
+          .filter(
+            (maybeString) =>
+              typeof maybeString === "string" && maybeString.length > 0
+          )
+          .join(": ")}
+      </span>
+    </span>
+  );
+
   const descriptionArea =
-    data.snapshot.post_type === "Comment" && (config.features?.type ?? true) ? (
+    data.snapshot.post_type === "Comment" ? (
       <div className="overflow-auto" style={{ maxHeight: "6em" }}>
         <Markdown className="card-text" text={data.snapshot.description} />
       </div>
@@ -191,6 +213,8 @@ const KanbanPostTicket = ({ id, config, post }) => {
         {descriptionArea}
         {tagList}
       </div>
+
+      {footer}
     </AttractableDiv>
   );
 };

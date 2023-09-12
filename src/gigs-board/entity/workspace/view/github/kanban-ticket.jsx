@@ -91,23 +91,28 @@ const GithubTicket = ({
   );
 
   const titleArea = (
-    <div className="card-text d-flex flex-column gap-3">
-      <span className="d-flex flex-nowrap gap-2">
-        {config.features?.type ?? true ? (
-          <i className={`bi ${ticketTypes[type].icon}`} />
-        ) : null}
+    <span className="card-text gap-2">
+      {config.features?.type ?? true ? (
+        <i className={`bi ${ticketTypes[type].icon}`} />
+      ) : null}
 
-        <span>
-          {`${
+      <span>
+        {[
+          `${
             config.features?.type ?? true ? ticketTypes[type].displayName : ""
           } ${
-            config.features?.number ?? true ? `#${number.toString()}` : ""
-          }`.trim()}
-        </span>
-      </span>
+            config.features?.id ?? true ? `#${number.toString()}` : ""
+          }`.trim(),
 
-      {config.features?.title ?? true ? <span>{title}</span> : null}
-    </div>
+          title,
+        ]
+          .filter(
+            (maybeString) =>
+              typeof maybeString === "string" && maybeString.length > 0
+          )
+          .join(": ")}
+      </span>
+    </span>
   );
 
   const labelList =

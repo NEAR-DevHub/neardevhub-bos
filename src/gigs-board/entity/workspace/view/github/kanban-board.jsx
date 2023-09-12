@@ -162,11 +162,11 @@ const GithubKanbanBoard = ({
   title,
 }) => {
   const ticketViewId = [
-    "entity.workspace.view.github",
+    "entity.workspace.view",
 
     typeof metadata?.ticket?.type === "string"
       ? metadata.ticket.type
-      : "kanban-ticket",
+      : "github.kanban-ticket",
   ].join(".");
 
   const ticketStateFilter =

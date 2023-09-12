@@ -391,7 +391,7 @@ const Configurator = ({
       isUnlocked && !isActive
         ? widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-secondary" },
-            icon: { kind: "bootstrap-icon", variant: "bi-pen-fill" },
+            icon: { type: "bootstrap_icon", variant: "bi-pen-fill" },
             label: "Edit",
             onClick: () => formToggle(true),
           })
@@ -434,7 +434,7 @@ const Configurator = ({
               disabled: !form.hasUnsubmittedChanges || !isFormValid,
 
               icon: submitIcon ?? {
-                kind: "bootstrap-icon",
+                type: "bootstrap_icon",
                 variant: "bi-check-circle-fill",
               },
 

@@ -213,11 +213,11 @@ const KanbanPostBoard = ({
   permissions,
 }) => {
   const ticketViewId = [
-    "entity.workspace.view.kanban",
+    "entity.workspace.view",
 
     typeof metadata?.ticket?.type === "string"
       ? metadata.ticket.type
-      : "post-ticket",
+      : "kanban.post-ticket",
   ].join(".");
 
   const columns = configToColumns(config);

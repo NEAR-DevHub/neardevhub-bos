@@ -479,7 +479,7 @@ const CommunityConfigurator = ({ handle, link }) => {
             >
               {widget("components.molecule.button", {
                 classNames: { root: "btn-lg btn-success" },
-                icon: { kind: "svg", variant: "floppy-drive" },
+                icon: { type: "svg_icon", variant: "floppy_drive" },
                 label: "Save",
                 onClick: changesSave,
               })}

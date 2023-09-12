@@ -76,7 +76,7 @@ const WorkspaceViewLayout = ({
           {widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-outline-secondary" },
             href: link,
-            icon: { kind: "bootstrap-icon", variant: "box-arrow-up-right" },
+            icon: { type: "bootstrap_icon", variant: "box-arrow-up-right" },
             isHidden: "Disabled for MVP",
             label: "Open in new tab",
             rel: "noreferrer",
@@ -87,7 +87,7 @@ const WorkspaceViewLayout = ({
 
           {widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-outline-secondary text-white" },
-            icon: { kind: "bootstrap-icon", variant: "bi-clipboard-fill" },
+            icon: { type: "bootstrap_icon", variant: "bi-clipboard-fill" },
             label: "Copy link",
             onClick: () => clipboard.writeText(link),
           })}
@@ -98,7 +98,7 @@ const WorkspaceViewLayout = ({
         <>
           {widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-primary" },
-            icon: { kind: "bootstrap-icon", variant: "bi-gear-wide-connected" },
+            icon: { type: "bootstrap_icon", variant: "bi-gear-wide-connected" },
             isHidden: typeof onConfigure !== "function" || isConfiguratorActive,
             label: "Configure",
             onClick: onConfigure,
@@ -109,7 +109,7 @@ const WorkspaceViewLayout = ({
               root: "btn-sm btn-outline-warning shadow-none border-0",
             },
 
-            icon: { kind: "bootstrap-icon", variant: "bi-arrow-90deg-left" },
+            icon: { type: "bootstrap_icon", variant: "bi-arrow-90deg-left" },
             isHidden: typeof onSave !== "function" || !isConfiguratorActive,
             label: "Cancel",
             onClick: onCancel,
@@ -119,8 +119,8 @@ const WorkspaceViewLayout = ({
             classNames: { root: "btn-sm btn-success" },
 
             icon: {
-              kind: "svg",
-              variant: "floppy-drive",
+              type: "svg_icon",
+              variant: "floppy_drive",
               width: 14,
               height: 14,
             },
@@ -135,7 +135,7 @@ const WorkspaceViewLayout = ({
               root: "btn-sm btn-outline-danger shadow-none border-0",
             },
 
-            icon: { kind: "bootstrap-icon", variant: "bi-recycle" },
+            icon: { type: "bootstrap_icon", variant: "bi-recycle" },
 
             isHidden:
               "Disabled for MVP" ??
@@ -151,7 +151,7 @@ const WorkspaceViewLayout = ({
     <div className="d-flex flex-column align-items-center gap-2 py-4">
       <h5 className="h5 d-inline-flex gap-2 m-0">
         {widget("components.atom.icon", {
-          kind: "bootstrap-icon",
+          type: "bootstrap_icon",
           variant: "bi-kanban-fill",
         })}
 

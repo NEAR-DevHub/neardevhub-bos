@@ -286,7 +286,7 @@ const CommunitySpawner = ({ isHidden, ...otherProps }) =>
     isValid: communityInputsValidator,
     onSubmit: onCommunitySubmit,
     schema: CommunityInputsPartialSchema,
-    submitIcon: { kind: "bootstrap-icon", variant: "bi-rocket-takeoff-fill" },
+    submitIcon: { type: "bootstrap_icon", variant: "bi-rocket-takeoff-fill" },
     submitLabel: "Launch",
     ...otherProps,
   });

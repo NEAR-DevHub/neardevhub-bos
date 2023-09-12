@@ -356,10 +356,10 @@ const KanbanPostBoardTagsSchema = {
 };
 
 const KanbanPostBoardTicketFeaturesSchema = {
-  author: { label: "Author" },
-  replyCount: { label: "Reply count" },
+  author_avatar: { label: "Author's avatar" },
+  likes_amount: { label: "Amount of likes" },
+  replies_amount: { label: "Amount of replies" },
   tags: { label: "Tags" },
-  title: { label: "Post title" },
   type: { label: "Post type" },
 };
 
@@ -374,10 +374,10 @@ const KanbanPostBoardDefaults = {
       type: "kanban.post-ticket",
 
       features: {
-        author: true,
-        replyCount: true,
+        author_avatar: true,
+        likes_amount: true,
+        replies_amount: false,
         tags: true,
-        title: true,
         type: true,
       },
     },
@@ -457,7 +457,15 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
   const onSubmit = () =>
     DevHub.update_community_board({
       handle: communityHandle,
-      board: JSON.stringify(form.values),
+
+      board: JSON.stringify({
+        ...form.values,
+
+        metadata: {
+          ...KanbanPostBoardDefaults.metadata,
+          ...form.values.metadata,
+        },
+      }),
     });
 
   const viewDelete = () =>
@@ -675,7 +683,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           {
             ...form.values,
             isConfiguratorActive: state.isActive,
-            onCancel: () => formToggle(false),
+            onCancel,
             onConfigure: () => formToggle(true),
             onDelete: isViewInitialized ? viewDelete : null,
             onSave: onSubmit,
@@ -693,7 +701,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           </h5>
 
           {widget("components.molecule.button", {
-            icon: { kind: "bootstrap-icon", variant: "bi-kanban-fill" },
+            icon: { type: "bootstrap_icon", variant: "bi-kanban-fill" },
             isHidden: !permissions.can_configure,
             label: "Create kanban board",
             onClick: newViewInit,
