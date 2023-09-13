@@ -283,19 +283,19 @@ function removeMemberFromTeam(memberId) {
     Object.values(props.root_members).filter((meta) =>
       meta.children.includes(memberId)
     ).length > 1;
+  let membersMetaData = props.members_list[memberId];
   if (isMemberInMultipleTeams) {
     // edit_member
-    let newChildren =
-      metadata.children?.filter((item) => item !== memberId) || [];
+    let newParents = membersMetaData?.parents?.filter((item) => item !== props.teamId) || [];
     Near.call([
       {
         contractName: nearDevGovGigsContractAccountId,
         methodName: "edit_member",
         args: {
-          member: props.teamId,
+          member: memberId,
           metadata: {
-            ...metadata,
-            children: [...newChildren],
+            ...membersMetaData,
+            parents: [...newParents],
           },
         },
         deposit: Big(0).pow(21),
@@ -323,18 +323,22 @@ function addMemberToTeam(memberData) {
       memberError: "Member already exists in team",
     });
   let memberExists = !!props.members_list[memberId];
+  let membersMetaData = memberExists ? props.members_list[memberId] : {parents:[]};
+  let args = {
+    member: memberId,
+    metadata: {
+      children: [],
+      description: "",
+      member_metadata_version: "V0",
+      parents: [...membersMetaData.parents, props.teamId],
+      permissions: {},
+    }
+  };
   Near.call([
     {
       contractName: nearDevGovGigsContractAccountId,
       methodName: memberExists ? "edit_member" : "add_member",
-      args: {
-        member: memberId,
-        metadata: {
-          ...metadata,
-          description: memberData.description,
-          parents: [...metadata.parents, props.teamId],
-        },
-      },
+      args,
       deposit: Big(0).pow(21),
       gas: Big(10).pow(12).mul(100),
     },
@@ -527,10 +531,10 @@ return (
               })}
             {!props.teamLevel && props.editMode && (
               <button
-                class="btn btn-light"
+                class="btn btn-sm btn-light"
                 onClick={() => removeMemberFromTeam(props.member)}
               >
-                Remove
+                Remove member
               </button>
             )}
             {props.teamLevel &&
@@ -549,9 +553,7 @@ return (
                   });
                 },
               })}
-            {/* TODO make it unable for moderators to delete the moderator team unless they are contract owner  */}
-            {/* props.member !== "team:moderators" */}
-            {props.teamLevel && props.editMode ? (
+            {props.teamLevel && props.editMode && props.member !== "team:moderators" ? (
               <button
                 class="btn btn-light"
                 onClick={() => removeTeam(props.member)}
@@ -562,101 +564,98 @@ return (
           </div>
         </div>
       </div>
-      <div className="card-body">
-        {props.teamLevel && <p class="card-text" key="description">
-          <Markdown class="card-text" text={metadata.description}></Markdown>
-        </p>}
-        {state.editLabels && state.memberError && props.editMode ? (
-          <div
-            class="alert alert-warning alert-dismissible fade show"
-            role="alert"
-          >
-            {state.memberError}
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="alert"
-              aria-label="Close"
-              onClick={() => State.update({ memberError: "" })}
-            ></button>
-          </div>
-        ) : null}
-        {state.addMember &&
-          props.editMode &&
-          widget("components.organism.configurator", {
-            classNames: {
-              submit: "btn-primary",
-              submitAdornment: "bi-check-circle-fill",
-            },
-            heading: "Adding member",
-            isActive: state.isActive,
-            isUnlocked: props.editMode,
-            onSubmit: addMemberToTeam,
-            submitLabel: "Accept",
-            data: state.teamData,
-            schema: {
-              member: {
-                inputProps: {
-                  min: 2,
-                  max: 60,
-                  placeholder: "member.near",
-                  required: true,
-                },
-                label: "Members name",
-                order: 2,
+      {props.teamLevel && (
+        <div className="card-body">
+          {
+            <p class="card-text" key="description">
+              <Markdown
+                class="card-text"
+                text={metadata.description}
+              ></Markdown>
+            </p>
+          }
+          {state.editLabels && state.memberError && props.editMode ? (
+            <div
+              class="alert alert-warning alert-dismissible fade show"
+              role="alert"
+            >
+              {state.memberError}
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+                onClick={() => State.update({ memberError: "" })}
+              ></button>
+            </div>
+          ) : null}
+          {state.addMember &&
+            props.editMode &&
+            widget("components.organism.configurator", {
+              classNames: {
+                submit: "btn-primary",
+                submitAdornment: "bi-check-circle-fill",
               },
-              description: {
-                inputProps: {
-                  min: 2,
-                  max: 60,
-                  placeholder: "Description",
-                  required: true,
+              heading: "Adding member",
+              isActive: state.isActive,
+              isUnlocked: props.editMode,
+              onSubmit: addMemberToTeam,
+              submitLabel: "Accept",
+              data: state.teamData,
+              schema: {
+                member: {
+                  inputProps: {
+                    min: 2,
+                    max: 60,
+                    placeholder: "member.near",
+                    required: true,
+                  },
+                  label: "Members name",
+                  order: 2,
                 },
-                label: "Role description",
-                order: 3,
               },
-            },
-          })}
-        {state.editLabels && state.labelError && props.editMode ? (
-          <div
-            class="alert alert-warning alert-dismissible fade show"
-            role="alert"
-          >
-            {state.labelError}
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="alert"
-              aria-label="Close"
-              onClick={() => State.update({ labelError: "" })}
-            ></button>
-          </div>
-        ) : null}
-        {state.editLabels &&
-          props.teamLevel &&
-          props.editMode &&
-          editLabelsDiv()}
-        {props.teamLevel && permissionsRenderer("edit-post")}
-        {props.teamLevel && permissionsRenderer("use-labels")}
-        {metadata.children && (
-          <div class="vstack">
-            {metadata.children.map((child) =>
-              widget(
-                "entity.team.TeamInfo",
-                {
-                  member: child,
-                  members_list: props.members_list,
-                  teamLevel: false,
-                  root_members: props.root_members,
-                  teamId: props.teamId,
-                  editMode: props.editMode,
-                },
-                child
-              )
-            )}
-          </div>
-        )}
-      </div>
+            })}
+          {state.editLabels && state.labelError && props.editMode ? (
+            <div
+              class="alert alert-warning alert-dismissible fade show"
+              role="alert"
+            >
+              {state.labelError}
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+                onClick={() => State.update({ labelError: "" })}
+              ></button>
+            </div>
+          ) : null}
+          {state.editLabels &&
+            props.teamLevel &&
+            props.editMode &&
+            editLabelsDiv()}
+          {permissionsRenderer("edit-post")}
+          {permissionsRenderer("use-labels")}
+          {metadata.children && (
+            <div class="vstack">
+              {metadata.children.map((child) =>
+                widget(
+                  "entity.team.TeamInfo",
+                  {
+                    member: child,
+                    members_list: props.members_list,
+                    teamLevel: false,
+                    root_members: props.root_members,
+                    teamId: props.teamId,
+                    editMode: props.editMode,
+                  },
+                  child
+                )
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </AttractableDiv>
   </>
 );
