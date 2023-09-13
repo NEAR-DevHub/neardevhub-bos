@@ -142,25 +142,19 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 /* INCLUDE: "entity/viewer" */
-const access_control_info = DevHub.useQuery({
-  name: "access_control_info",
-});
-
 const Viewer = {
-  can: {
-    editCommunity: (communityData) =>
-      Struct.typeMatch(communityData) &&
-      (communityData.admins.includes(context.accountId) ||
-        Viewer.role.isDevHubModerator),
-  },
+  communityPermissions: ({ handle }) =>
+    DevHub.get_account_community_permissions({
+      account_id: context.accountId,
+      community_handle: handle,
+    }) ?? {
+      can_configure: false,
+      can_delete: false,
+    },
 
   role: {
     isDevHubModerator:
-      access_control_info.data === null || access_control_info.isLoading
-        ? false
-        : access_control_info.data.members_list[
-            "team:moderators"
-          ]?.children?.includes?.(context.accountId) ?? false,
+      DevHub.has_moderator({ account_id: context.accountId }) ?? false,
   },
 };
 /* END_INCLUDE: "entity/viewer" */
@@ -286,7 +280,8 @@ function removeMemberFromTeam(memberId) {
   let membersMetaData = props.members_list[memberId];
   if (isMemberInMultipleTeams) {
     // edit_member
-    let newParents = membersMetaData?.parents?.filter((item) => item !== props.teamId) || [];
+    let newParents =
+      membersMetaData?.parents?.filter((item) => item !== props.teamId) || [];
     Near.call([
       {
         contractName: nearDevGovGigsContractAccountId,
@@ -323,7 +318,9 @@ function addMemberToTeam(memberData) {
       memberError: "Member already exists in team",
     });
   let memberExists = !!props.members_list[memberId];
-  let membersMetaData = memberExists ? props.members_list[memberId] : {parents:[]};
+  let membersMetaData = memberExists
+    ? props.members_list[memberId]
+    : { parents: [] };
   let args = {
     member: memberId,
     metadata: {
@@ -332,7 +329,7 @@ function addMemberToTeam(memberData) {
       member_metadata_version: "V0",
       parents: [...membersMetaData.parents, props.teamId],
       permissions: {},
-    }
+    },
   };
   Near.call([
     {
@@ -553,7 +550,9 @@ return (
                   });
                 },
               })}
-            {props.teamLevel && props.editMode && props.member !== "team:moderators" ? (
+            {props.teamLevel &&
+            props.editMode &&
+            props.member !== "team:moderators" ? (
               <button
                 class="btn btn-light"
                 onClick={() => removeTeam(props.member)}

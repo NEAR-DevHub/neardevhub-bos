@@ -172,7 +172,6 @@ const CommunityActivityPage = ({ handle }) => {
               </div>
             </div>
           </div>
-
           <div class="col-md-3 container-fluid">
             {widget("entity.community.sidebar", {
               handle: communityData.handle,
