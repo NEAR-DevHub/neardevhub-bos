@@ -179,7 +179,9 @@ const limitedMarkdown = styled.div`
 const descriptionArea =
   snapshot.post_type == "Comment" ? (
     <limitedMarkdown className="overflow-auto">
-      <Markdown class="card-text" text={snapshot.description}></Markdown>
+      {widget("components.molecule.markdown-viewer", {
+        text: snapshot.description,
+      })}
     </limitedMarkdown>
   ) : null;
 
