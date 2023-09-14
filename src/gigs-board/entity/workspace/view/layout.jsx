@@ -77,6 +77,7 @@ const WorkspaceViewLayout = ({
       style={{
         backdropFilter: "blur(10px)",
         backgroundColor: "rgba(24, 24, 24, 0.1)",
+        borderBottom: "none !important",
         borderTopLeftRadius: "1rem",
         borderTopRightRadius: "1rem",
         zIndex: 100,
