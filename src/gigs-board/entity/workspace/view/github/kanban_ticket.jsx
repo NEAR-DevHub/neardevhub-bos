@@ -37,18 +37,9 @@ const ticketTypes = {
   PullRequest: { displayName: "Pull request", icon: "bi-git" },
 };
 
-const GithubTicket = ({
-  config,
-
-  data: {
-    _links,
-    labels,
-    number,
-    state: ticketState,
-    title,
-    type,
-    user: author,
-  },
+const GithubKanbanTicket = ({
+  metadata: { features },
+  payload: { _links, labels, number, state: ticketState, title, type, user },
 }) => {
   const header = (
     <div className="card-header">
@@ -58,21 +49,21 @@ const GithubTicket = ({
           title={ticketStates[ticketState].displayName}
         />
 
-        {config.features?.author ?? true ? (
+        {features.author ? (
           <a
             className="d-flex gap-2 link-dark text-truncate"
-            href={author.html_url}
+            href={user.html_url}
             rel="noreferrer"
             target="_blank"
           >
             <img
-              alt={`${author.login}'s GitHub avatar`}
+              alt={`${user.login}'s GitHub avatar`}
               className="img-fluid rounded"
-              src={author.avatar_url}
+              src={user.avatar_url}
               style={{ width: 24, height: 24 }}
             />
 
-            <span className="text-muted">@{author.login}</span>
+            <span className="text-muted">@{user.login}</span>
           </a>
         ) : null}
 
@@ -92,16 +83,12 @@ const GithubTicket = ({
 
   const titleArea = (
     <span className="card-text gap-2">
-      {config.features?.type ?? true ? (
-        <i className={`bi ${ticketTypes[type].icon}`} />
-      ) : null}
+      {features.type ? <i className={`bi ${ticketTypes[type].icon}`} /> : null}
 
       <span>
         {[
-          `${
-            config.features?.type ?? true ? ticketTypes[type].displayName : ""
-          } ${
-            config.features?.id ?? true ? `#${number.toString()}` : ""
+          `${features.type ? ticketTypes[type].displayName : ""} ${
+            features.id ? `#${number.toString()}` : ""
           }`.trim(),
 
           title,
@@ -115,21 +102,20 @@ const GithubTicket = ({
     </span>
   );
 
-  const labelList =
-    config.features?.labels ?? true ? (
-      <div className="d-flex flex-wrap gap-2 m-0">
-        {labels.map((label) => (
-          <a href={label.url} key={label.id} title={label.description}>
-            <span
-              className="badge text-wrap"
-              style={{ backgroundColor: `#${label.color}` }}
-            >
-              {label.name}
-            </span>
-          </a>
-        ))}
-      </div>
-    ) : null;
+  const labelList = features.labels ? (
+    <div className="d-flex flex-wrap gap-2 m-0">
+      {labels.map((label) => (
+        <a href={label.url} key={label.id} title={label.description}>
+          <span
+            className="badge text-wrap"
+            style={{ backgroundColor: `#${label.color}` }}
+          >
+            {label.name}
+          </span>
+        </a>
+      ))}
+    </div>
+  ) : null;
 
   return (
     <AttractableDiv className="card border-secondary">
@@ -143,4 +129,4 @@ const GithubTicket = ({
   );
 };
 
-return GithubTicket(props);
+return GithubKanbanTicket(props);

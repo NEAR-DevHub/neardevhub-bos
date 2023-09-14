@@ -205,6 +205,7 @@ const KanbanPostBoard = ({
   metadata,
   payload,
   isConfiguratorActive,
+  isSynced,
   link,
   onCancel,
   onConfigure,
@@ -237,8 +238,8 @@ const KanbanPostBoard = ({
             <div class="d-flex flex-column gap-2">
               {column.postIds.map((postId) =>
                 widget(
-                  ["entity.workspace.view", metadata.ticket.type].join("."),
-                  { id: postId, ...metadata.ticket },
+                  `entity.workspace.view.${metadata.ticket.type}`,
+                  { metadata: { id: postId, ...metadata.ticket } },
                   postId
                 )
               )}
@@ -251,6 +252,7 @@ const KanbanPostBoard = ({
 
   return widget("entity.workspace.view.layout", {
     isConfiguratorActive,
+    isSynced,
     link,
     metadata,
     onCancel,

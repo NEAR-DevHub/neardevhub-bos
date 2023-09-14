@@ -533,31 +533,40 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       </div>
 
       <div className="d-flex flex-wrap align-items-stretch justify-content-between gap-4 w-100">
+        <div className="d-flex flex-column flex-xl-row gap-4 w-100">
+          {widget("components.organism.configurator", {
+            heading: "Basic information",
+            classNames: { root: "col-12 col-lg-5 h-auto" },
+            externalState: form.values.payload.tags,
+            isActive: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onChange: form.update({ path: ["payload", "tags"] }),
+            schema: KanbanPostBoardTagsSchema,
+          })}
+
+          {widget("components.organism.configurator", {
+            heading: "Tags",
+            classNames: { root: "col-12 col-lg-5 h-auto" },
+            externalState: form.values.payload.tags,
+            isActive: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onChange: form.update({ path: ["payload", "tags"] }),
+            schema: KanbanPostBoardTagsSchema,
+          })}
+        </div>
+
         {widget("components.organism.configurator", {
           heading: "Ticket features",
           classNames: { root: "col-12 col-lg-4" },
-
-          externalState:
-            form.values.metadata.ticket?.features ??
-            KanbanPostBoardDefaults.metadata.ticket.features,
-
+          externalState: form.values.metadata.ticket.features,
           fieldGap: 3,
           isActive: true,
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
           onChange: form.update({ path: ["metadata", "ticket", "features"] }),
           schema: KanbanPostBoardTicketFeaturesSchema,
-        })}
-
-        {widget("components.organism.configurator", {
-          heading: "Tags",
-          classNames: { root: "col-12 col-lg-7 h-auto" },
-          externalState: form.values.payload.tags,
-          isActive: true,
-          isEmbedded: true,
-          isUnlocked: permissions.can_configure,
-          onChange: form.update({ path: ["payload", "tags"] }),
-          schema: KanbanPostBoardTagsSchema,
         })}
       </div>
 
@@ -711,25 +720,17 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       ) : null}
 
       {isViewInitialized ? (
-        widget(
-          [
-            "entity.workspace.view",
-
-            typeof form.values.metadata?.type === "string"
-              ? form.values.metadata.type
-              : "kanban.post_board",
-          ].join("."),
-          {
-            ...form.values,
-            isConfiguratorActive: state.isActive,
-            onCancel,
-            onConfigure: () => formToggle(true),
-            onDelete: isViewInitialized ? viewDelete : null,
-            onSave: onSubmit,
-            link,
-            permissions,
-          }
-        )
+        widget(`entity.workspace.view.${form.values.metadata.type}`, {
+          ...form.values,
+          isConfiguratorActive: state.isActive,
+          isSynced: form.isSynced,
+          link,
+          onCancel,
+          onConfigure: () => formToggle(true),
+          onDelete: isViewInitialized ? viewDelete : null,
+          onSave: onSubmit,
+          permissions,
+        })
       ) : (
         <div
           className="d-flex flex-column align-items-center justify-content-center gap-4"

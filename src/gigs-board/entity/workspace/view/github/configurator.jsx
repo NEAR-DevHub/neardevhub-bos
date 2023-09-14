@@ -360,8 +360,8 @@ const GithubKanbanBoardDefaults = {
   title: "",
 
   metadata: {
-    type: "github.kanban_board",
     id: uuid(),
+    type: "github.kanban_board",
 
     ticket: {
       type: "github.kanban_ticket",
@@ -376,6 +376,16 @@ const GithubKanbanBoardDefaults = {
   },
 };
 
+const toMigrated = ({ metadata, id, ...restParams }) => ({
+  metadata: {
+    ...GithubKanbanBoardDefaults.metadata,
+    ...metadata,
+    id: id ?? metadata.id,
+  },
+
+  ...restParams,
+});
+
 const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
   State.init({
     editingMode: "form",
@@ -384,22 +394,20 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
 
   const community = DevHub.useQuery("community", { handle: communityHandle });
 
-  const boards =
+  const data = Object.values(
     ((community?.data?.github ?? null) === null
       ? {}
       : JSON.parse(community.data.github)
-    )?.kanbanBoards ?? {};
-
-  const board = Object.values(boards)[0] ?? {};
+    )?.kanbanBoards ?? {}
+  )[0];
 
   const form = useForm({
-    initialValues: board,
-    stateKey: "board",
-    uninitialized: Object.keys(boards).length === 0,
+    initialValues: Struct.typeMatch(data) ? toMigrated(data) : {},
+    stateKey: "view",
+    uninitialized: !Struct.typeMatch(data),
   });
 
-  const isViewInitialized =
-    (form.values.metadata?.id ?? form.values.id ?? null) !== null;
+  const isViewInitialized = (form.values.metadata.id ?? null) !== null;
 
   const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -416,10 +424,12 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
   const newViewInit = () =>
     State.update((lastKnownState) => ({
       ...lastKnownState,
+
       board: {
         hasUnsubmittedChanges: false,
         values: GithubKanbanBoardDefaults,
       },
+
       isActive: true,
     }));
 
@@ -453,18 +463,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
       handle: communityHandle,
 
       github: JSON.stringify({
-        kanbanBoards: {
-          ...boards,
-
-          [form.values.metadata.id]: {
-            ...form.values,
-
-            metadata: {
-              ...GithubKanbanBoardDefaults.metadata,
-              ...form.values.metadata,
-            },
-          },
-        },
+        kanbanBoards: { [form.values.metadata.id]: form.values },
       }),
     });
 
@@ -473,7 +472,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
       <div className="d-flex gap-1 flex-column flex-xl-row">
         {widget("components.molecule.text-input", {
           className: "w-100",
-          key: `${form.values.id}-repoURL`,
+          key: `${form.values.metadata.id}-repoURL`,
           label: "Repository URL",
           onChange: form.update({ path: ["repoURL"] }),
           placeholder: "https://github.com/example-org/example-repo",
@@ -482,7 +481,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
 
         {widget("components.molecule.text-input", {
           className: "w-100",
-          key: `${form.values.id}-title`,
+          key: `${form.values.metadata.id}-title`,
           label: "Title",
           onChange: form.update({ path: ["title"] }),
           placeholder: "NEAR Protocol NEPs",
@@ -491,7 +490,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
 
         {widget("components.molecule.text-input", {
           className: "w-100",
-          key: `${form.values.id}-column-${id}-description`,
+          key: `${form.values.metadata.id}-column-${id}-description`,
           label: "Description",
           onChange: form.update({ path: ["columns", id, "description"] }),
           placeholder: "NEPs that need a review by Subject Matter Experts.",
@@ -520,7 +519,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
         >
           <span
             className="d-inline-flex gap-2"
-            id={`${form.values.id}-ticketState`}
+            id={`${form.values.metadata.id}-ticketState`}
           >
             <i class="bi bi-cone-striped" />
             <span>Ticket state</span>
@@ -542,11 +541,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
         {widget("components.organism.configurator", {
           heading: "Ticket features",
           classNames: { root: "col-12 col-md-4 h-auto" },
-
-          externalState:
-            form.values.metadata?.ticket?.features ??
-            GithubKanbanBoardDefaults.metadata.ticket.features,
-
+          externalState: form.values.metadata.ticket.features,
           fieldGap: 3,
           isActive: true,
           isEmbedded: true,
@@ -573,7 +568,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
               <div className="d-flex flex-column gap-1 w-100">
                 {widget("components.molecule.text-input", {
                   className: "flex-grow-1",
-                  key: `${form.values.id}-column-${id}-title`,
+                  key: `${form.values.metadata.id}-column-${id}-title`,
                   label: "Title",
                   onChange: form.update({ path: ["columns", id, "title"] }),
                   placeholder: "👀 Review",
@@ -582,7 +577,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
 
                 {widget("components.molecule.text-input", {
                   format: "comma-separated",
-                  key: `${form.values.id}-column-${title}-labelSearchTerms`,
+                  key: `${form.values.metadata.id}-column-${title}-labelSearchTerms`,
 
                   label: `Search terms for all the labels
 											MUST be presented in included tickets`,
@@ -597,7 +592,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
 
                 {widget("components.molecule.text-input", {
                   className: "flex-grow-1",
-                  key: `${form.values.id}-column-${id}-description`,
+                  key: `${form.values.metadata.id}-column-${id}-description`,
                   label: "Description",
 
                   onChange: form.update({
@@ -706,24 +701,16 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
       ) : null}
 
       {Object.keys(form.values).length > 0 ? (
-        widget(
-          [
-            "entity.workspace.view",
-
-            typeof form.values.metadata?.type === "string"
-              ? form.values.metadata.type
-              : "github.kanban_board",
-          ].join("."),
-          {
-            ...form.values,
-            isConfiguratorActive: state.isActive,
-            link,
-            onCancel,
-            onConfigure: () => formToggle(true),
-            onSave: onSubmit,
-            permissions,
-          }
-        )
+        widget(`entity.workspace.view.${form.values.metadata.type}`, {
+          ...form.values,
+          isConfiguratorActive: state.isActive,
+          isSynced: form.isSynced,
+          link,
+          onCancel,
+          onConfigure: () => formToggle(true),
+          onSave: onSubmit,
+          permissions,
+        })
       ) : (
         <div
           className="d-flex flex-column align-items-center justify-content-center gap-4"

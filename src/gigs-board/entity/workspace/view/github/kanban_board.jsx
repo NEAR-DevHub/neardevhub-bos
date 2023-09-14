@@ -161,14 +161,6 @@ const GithubKanbanBoard = ({
   ticketState,
   title,
 }) => {
-  const ticketViewId = [
-    "entity.workspace.view",
-
-    typeof metadata?.ticket?.type === "string"
-      ? metadata.ticket.type
-      : "github.kanban_ticket",
-  ].join(".");
-
   const ticketStateFilter =
     ticketState === "open" || ticketState === "closed" || ticketState === "all"
       ? ticketState
@@ -243,40 +235,44 @@ const GithubKanbanBoard = ({
           </div>
         ) : null}
 
-        {Object.values(columns).map((column) => (
-          <div className="col-3" key={`column-${column.id}-view`}>
-            <div className="card rounded-4">
-              <div
-                className={[
-                  "card-body d-flex flex-column gap-3 p-2",
-                  "border border-2 border-secondary rounded-4",
-                ].join(" ")}
-              >
-                <span className="d-flex flex-column py-1">
-                  <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
-                    {column.title}
+        {Object.values(columns).map((column) => {
+          const tickets = state.ticketsByColumn[column.id] ?? [];
 
-                    <span className="badge rounded-pill bg-secondary">
-                      {(state.ticketsByColumn[column.id] ?? []).length}
-                    </span>
-                  </h6>
+          return (
+            <div className="col-3" key={`column-${column.id}-view`}>
+              <div className="card rounded-4">
+                <div
+                  className={[
+                    "card-body d-flex flex-column gap-3 p-2",
+                    "border border-2 border-secondary rounded-4",
+                  ].join(" ")}
+                >
+                  <span className="d-flex flex-column py-1">
+                    <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
+                      {column.title}
 
-                  <p class="text-secondary m-0">{column.description}</p>
-                </span>
+                      <span className="badge rounded-pill bg-secondary">
+                        {tickets.length}
+                      </span>
+                    </h6>
 
-                <div class="d-flex flex-column gap-2">
-                  {(state.ticketsByColumn[column.id] ?? []).map((data) =>
-                    widget(
-                      ticketViewId,
-                      { config: metadata?.ticket ?? {}, data },
-                      data.id
-                    )
-                  )}
+                    <p class="text-secondary m-0">{column.description}</p>
+                  </span>
+
+                  <div class="d-flex flex-column gap-2">
+                    {tickets.map((ticket) =>
+                      widget(
+                        `entity.workspace.view.${metadata.ticket.type}`,
+                        { metadata: metadata.ticket, payload: ticket },
+                        ticket.id
+                      )
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </>
     ),
   });

@@ -88,7 +88,7 @@ const iconsByPostType = {
   Sponsorship: "bi-cash-coin",
 };
 
-const KanbanPostTicket = ({ id, features }) => {
+const KanbanPostTicket = ({ metadata: { id, features } }) => {
   const data = Near.view(nearDevGovGigsContractAccountId, "get_post", {
     post_id: id ? parseInt(id) : 0,
   });
@@ -105,7 +105,7 @@ const KanbanPostTicket = ({ id, features }) => {
         href={`https://near.org/mob.near/widget/ProfilePage?accountId=${data.author_id}`}
         className="d-flex gap-2 link-dark text-truncate"
       >
-        {features?.author_avatar ?? true ? (
+        {features.author_avatar ? (
           <Widget
             src="mob.near/widget/ProfileImage"
             props={{
@@ -133,9 +133,9 @@ const KanbanPostTicket = ({ id, features }) => {
   );
 
   const footer =
-    features?.likes_amount ?? features?.replies_amount ?? true ? (
+    features.likes_amount || features.replies_amount ? (
       <div className="card-footer d-flex justify-content-between gap-3">
-        {features?.likes_amount ?? true ? (
+        {features.likes_amount ? (
           <span>
             {widget("components.atom.icon", {
               type: "bootstrap_icon",
@@ -146,7 +146,7 @@ const KanbanPostTicket = ({ id, features }) => {
           </span>
         ) : null}
 
-        {features?.replies_amount ?? true ? (
+        {features.replies_amount ? (
           <span>
             {widget("components.atom.icon", {
               type: "bootstrap_icon",
@@ -161,13 +161,13 @@ const KanbanPostTicket = ({ id, features }) => {
 
   const titleArea = (
     <span className="card-text gap-2">
-      {features?.type ?? true ? (
+      {features.type ? (
         <i className={`bi ${iconsByPostType[data.snapshot.post_type]}`} />
       ) : null}
 
       <span>
         {[
-          features?.type ?? true
+          features.type
             ? data.snapshot.post_type === "Submission"
               ? "Solution"
               : data.snapshot.post_type
@@ -192,7 +192,7 @@ const KanbanPostTicket = ({ id, features }) => {
     ) : null;
 
   const tagList =
-    data.snapshot.labels && (features?.tags ?? true) ? (
+    Array.isArray(data.snapshot.labels) && features.tags ? (
       <div className="d-flex flex-wrap gap-2 m-0">
         {data.snapshot.labels.map((label) => (
           <a href={href("Feed", { label })} key={label}>

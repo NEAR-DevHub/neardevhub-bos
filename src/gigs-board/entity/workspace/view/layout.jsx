@@ -57,6 +57,7 @@ const WorkspaceViewLayout = ({
   link,
   metadata,
   isConfiguratorActive,
+  isSynced,
   onCancel,
   onConfigure,
   onDelete,
@@ -117,6 +118,7 @@ const WorkspaceViewLayout = ({
 
           {widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-success" },
+            disabled: isSynced,
 
             icon: {
               type: "svg_icon",
