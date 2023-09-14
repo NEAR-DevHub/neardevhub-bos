@@ -7,10 +7,15 @@ const defaultFieldUpdate = ({
     case "boolean":
       return input;
 
-    case "object":
-      return Array.isArray(input) && typeof lastKnownValue === "string"
-        ? input.join(arrayDelimiter ?? ",")
-        : input;
+    case "object": {
+      if (Array.isArray(input) && typeof lastKnownValue === "string") {
+        return input.join(arrayDelimiter ?? ",");
+      } else {
+        return Array.isArray(lastKnownValue)
+          ? [...lastKnownValue, ...input]
+          : { ...lastKnownValue, ...input };
+      }
+    }
 
     case "string":
       return Array.isArray(lastKnownValue)

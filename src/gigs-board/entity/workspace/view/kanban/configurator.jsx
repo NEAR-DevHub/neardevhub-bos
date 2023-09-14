@@ -112,10 +112,15 @@ const defaultFieldUpdate = ({
     case "boolean":
       return input;
 
-    case "object":
-      return Array.isArray(input) && typeof lastKnownValue === "string"
-        ? input.join(arrayDelimiter ?? ",")
-        : input;
+    case "object": {
+      if (Array.isArray(input) && typeof lastKnownValue === "string") {
+        return input.join(arrayDelimiter ?? ",");
+      } else {
+        return Array.isArray(lastKnownValue)
+          ? [...lastKnownValue, ...input]
+          : { ...lastKnownValue, ...input };
+      }
+    }
 
     case "string":
       return Array.isArray(lastKnownValue)
@@ -551,7 +556,6 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           heading: "Ticket features",
           classNames: { root: "col-12 col-lg-4 h-auto" },
           externalState: form.values.metadata.ticket.features,
-          fieldGap: 3,
           isActive: true,
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
@@ -570,8 +574,8 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       <div className="d-flex flex-column align-items-center gap-3 w-100">
         {Object.values(form.values.payload.columns ?? {}).map(
           ({ id, description, tag, title }) => (
-            <div
-              className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
+            <AttractableDiv
+              className="d-flex gap-3 rounded-4 border p-3 w-100"
               key={`column-${id}-configurator`}
             >
               <div className="d-flex flex-column gap-1 w-100">
@@ -629,7 +633,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                   <i className="bi bi-trash-fill" />
                 </button>
               </div>
-            </div>
+            </AttractableDiv>
           )
         )}
       </div>

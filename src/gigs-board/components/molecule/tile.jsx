@@ -49,7 +49,7 @@ const Tile = ({
       fullWidth ? "w-100" : "",
       !borderRadius ? "rounded-4" : borderRadius,
       !noBorder ? "border" : "shadow-none",
-      !noFrame ? "p-4" : "",
+      !noFrame ? "p-3" : "",
       isHidden ? "d-none" : "",
     ].join(" ")}
     style={{

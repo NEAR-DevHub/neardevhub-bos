@@ -55,7 +55,7 @@ const Toggle = ({
 }) => (
   <ToggleRoot
     className={[
-      "d-flex justify-content-between, align-items-center gap-3",
+      "d-flex justify-content-between, align-items-center gap-3 p-2",
       direction === "rtl" ? "flex-row-reverse" : "",
       className,
     ].join(" ")}

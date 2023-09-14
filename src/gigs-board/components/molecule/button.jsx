@@ -119,7 +119,7 @@ const styles = `
   }
 
   &.btn-sm {
-    padding: 0.4rem 1rem !important;
+    padding: 0.5rem 0.8rem !important;
     min-height: 32px;
     line-height: 1;
   }
