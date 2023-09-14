@@ -360,11 +360,11 @@ const GithubKanbanBoardDefaults = {
   title: "",
 
   metadata: {
-    type: "github.kanban-board",
+    type: "github.kanban_board",
     id: uuid(),
 
     ticket: {
-      type: "github.kanban-ticket",
+      type: "github.kanban_ticket",
 
       features: {
         id: true,
@@ -712,7 +712,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
 
             typeof form.values.metadata?.type === "string"
               ? form.values.metadata.type
-              : "github.kanban-board",
+              : "github.kanban_board",
           ].join("."),
           {
             ...form.values,

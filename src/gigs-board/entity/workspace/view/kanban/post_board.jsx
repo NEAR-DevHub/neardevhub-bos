@@ -175,7 +175,7 @@ const postTagsToIdSet = (tags) => {
   );
 };
 
-const configToColumns = ({ columns, tags }) =>
+const configToColumnData = ({ columns, tags }) =>
   Object.entries(columns).reduce((registry, [columnId, column]) => {
     const postIds = (
       Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
@@ -202,8 +202,8 @@ const configToColumns = ({ columns, tags }) =>
   }, {});
 
 const KanbanPostBoard = ({
-  config,
   metadata,
+  payload,
   isConfiguratorActive,
   link,
   onCancel,
@@ -212,15 +212,42 @@ const KanbanPostBoard = ({
   onSave,
   permissions,
 }) => {
-  const ticketViewId = [
-    "entity.workspace.view",
+  const columns = Object.entries(configToColumnData(payload)).map(
+    ([columnId, column]) => (
+      <div className="col-3" key={`column-${columnId}-view`}>
+        <div className="card rounded-4">
+          <div
+            className={[
+              "card-body d-flex flex-column gap-3 p-2",
+              "border border-2 border-secondary rounded-4",
+            ].join(" ")}
+          >
+            <span className="d-flex flex-column py-1">
+              <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
+                {column.title}
 
-    typeof metadata?.ticket?.type === "string"
-      ? metadata.ticket.type
-      : "kanban.post-ticket",
-  ].join(".");
+                <span className="badge rounded-pill bg-secondary">
+                  {column.postIds.length}
+                </span>
+              </h6>
 
-  const columns = configToColumns(config);
+              <p class="text-secondary m-0">{column.description}</p>
+            </span>
+
+            <div class="d-flex flex-column gap-2">
+              {column.postIds.map((postId) =>
+                widget(
+                  ["entity.workspace.view", metadata.ticket.type].join("."),
+                  { id: postId, ...metadata.ticket },
+                  postId
+                )
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  );
 
   return widget("entity.workspace.view.layout", {
     isConfiguratorActive,
@@ -234,52 +261,17 @@ const KanbanPostBoard = ({
 
     children: (
       <>
-        {Object.keys(columns).length === 0 ? (
-          <div
-            className={[
-              "d-flex align-items-center justify-content-center",
-              "w-100 text-black-50 opacity-50",
-            ].join(" ")}
-            style={{ height: 384 }}
-          >
-            No columns were created so far.
-          </div>
-        ) : null}
+        <div
+          className={[
+            "d-flex align-items-center justify-content-center w-100 text-black-50 opacity-50",
+            columns.length === 0 ? "" : "d-none",
+          ].join(" ")}
+          style={{ height: 384 }}
+        >
+          No columns were created so far.
+        </div>
 
-        {Object.values(columns).map((column) => (
-          <div className="col-3" key={`column-${column.id}-view`}>
-            <div className="card rounded-4">
-              <div
-                className={[
-                  "card-body d-flex flex-column gap-3 p-2",
-                  "border border-2 border-secondary rounded-4",
-                ].join(" ")}
-              >
-                <span className="d-flex flex-column py-1">
-                  <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
-                    {column.title}
-
-                    <span className="badge rounded-pill bg-secondary">
-                      {column.postIds.length}
-                    </span>
-                  </h6>
-
-                  <p class="text-secondary m-0">{column.description}</p>
-                </span>
-
-                <div class="d-flex flex-column gap-2">
-                  {column.postIds.map((postId) =>
-                    widget(
-                      ticketViewId,
-                      { id: postId, config: metadata.ticket ?? {} },
-                      postId
-                    )
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+        {columns}
       </>
     ),
   });

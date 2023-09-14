@@ -357,37 +357,84 @@ const KanbanPostBoardTagsSchema = {
 
 const KanbanPostBoardTicketFeaturesSchema = {
   author_avatar: { label: "Author's avatar" },
+
+  funding_marker: {
+    label: "Indicate if funding is requested",
+    isUnderMaintenance: true,
+  },
+
+  funding_supervisor: { label: "Funding supervisor" },
+  funds_amount: { label: "Amount of granted funds" },
   likes_amount: { label: "Amount of likes" },
-  replies_amount: { label: "Amount of replies" },
+  replies_amount: { label: "Amount of replies", isUnderMaintenance: true },
+
+  requested_funding_sponsor: {
+    label: "Requested funding sponsor",
+    isUnderMaintenance: true,
+  },
+
+  requested_funds_amount: {
+    label: "Amount of requested funds",
+    isUnderMaintenance: true,
+  },
+
   tags: { label: "Tags" },
   type: { label: "Post type" },
 };
 
 const KanbanPostBoardDefaults = {
   metadata: {
-    type: "kanban.post-board",
     id: uuid(),
+    type: "kanban.post_board",
     title: "",
     description: "",
 
     ticket: {
-      type: "kanban.post-ticket",
+      type: "kanban.post_ticket",
 
       features: {
         author_avatar: true,
+        funding_marker: false,
+        funding_supervisor: true,
+        funds_amount: true,
         likes_amount: true,
         replies_amount: false,
+        requested_funding_sponsor: false,
+        requested_funds_amount: false,
         tags: true,
         type: true,
       },
     },
   },
 
-  config: {
+  payload: {
     columns: {},
     tags: { excluded: [], required: [] },
   },
 };
+
+const toMigrated = ({ config, metadata, payload }) => ({
+  metadata: {
+    ...KanbanPostBoardDefaults.metadata,
+    ...metadata,
+
+    ticket: {
+      ...KanbanPostBoardDefaults.metadata.ticket,
+      ...metadata.ticket,
+
+      features: {
+        ...KanbanPostBoardDefaults.metadata.ticket.features,
+        ...metadata.ticket.features,
+      },
+    },
+  },
+
+  payload: {
+    ...KanbanPostBoardDefaults.payload,
+    ...payload,
+    ...config,
+  },
+});
 
 const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
   State.init({
@@ -397,15 +444,15 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
   const community = DevHub.useQuery("community", { handle: communityHandle });
 
-  const view =
+  const data =
     (community.data?.board ?? null) === null
       ? {}
       : JSON.parse(community.data.board);
 
   const form = useForm({
-    initialValues: Struct.pick(view, ["config", "metadata"]),
+    initialValues: Struct.pick(toMigrated(data), ["metadata", "payload"]),
     stateKey: "view",
-    uninitialized: (view.metadata ?? null) === null,
+    uninitialized: (data.metadata ?? null) === null,
   });
 
   const isViewInitialized = Object.keys(form.values.metadata ?? {}).length > 0;
@@ -457,15 +504,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
   const onSubmit = () =>
     DevHub.update_community_board({
       handle: communityHandle,
-
-      board: JSON.stringify({
-        ...form.values,
-
-        metadata: {
-          ...KanbanPostBoardDefaults.metadata,
-          ...form.values.metadata,
-        },
-      }),
+      board: JSON.stringify(form.values),
     });
 
   const viewDelete = () =>
@@ -496,7 +535,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       <div className="d-flex flex-wrap align-items-stretch justify-content-between gap-4 w-100">
         {widget("components.organism.configurator", {
           heading: "Ticket features",
-          classNames: { root: "col-12 col-lg-3" },
+          classNames: { root: "col-12 col-lg-4" },
 
           externalState:
             form.values.metadata.ticket?.features ??
@@ -512,12 +551,12 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
         {widget("components.organism.configurator", {
           heading: "Tags",
-          classNames: { root: "col-12 col-lg-8 h-auto" },
-          externalState: form.values.config.tags,
+          classNames: { root: "col-12 col-lg-7 h-auto" },
+          externalState: form.values.payload.tags,
           isActive: true,
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
-          onChange: form.update({ path: ["config", "tags"] }),
+          onChange: form.update({ path: ["payload", "tags"] }),
           schema: KanbanPostBoardTagsSchema,
         })}
       </div>
@@ -531,7 +570,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       </div>
 
       <div className="d-flex flex-column align-items-center gap-3 w-100">
-        {Object.values(form.values.config.columns ?? {}).map(
+        {Object.values(form.values.payload.columns ?? {}).map(
           ({ id, description, tag, title }) => (
             <div
               className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
@@ -544,7 +583,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                   label: "Column title",
 
                   onChange: form.update({
-                    path: ["config", "columns", id, "title"],
+                    path: ["payload", "columns", id, "title"],
                   }),
 
                   placeholder: "Enter column title.",
@@ -557,7 +596,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                   label: "Description",
 
                   onChange: form.update({
-                    path: ["config", "columns", id, "description"],
+                    path: ["payload", "columns", id, "description"],
                   }),
 
                   placeholder: "Enter a brief description of the column.",
@@ -569,7 +608,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                   label: "Enter a single tag to show posts in this column",
 
                   onChange: form.update({
-                    path: ["config", "columns", id, "tag"],
+                    path: ["payload", "columns", id, "tag"],
                   }),
 
                   placeholder: "Tag-Name",
@@ -584,7 +623,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                 <button
                   className="btn btn-outline-danger shadow"
                   onClick={form.update({
-                    path: ["config", "columns"],
+                    path: ["payload", "columns"],
                     via: columnsDeleteById(id),
                   })}
                   title="Delete column"
@@ -656,11 +695,11 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
             <button
               className="btn shadow btn-outline-secondary d-inline-flex gap-2"
               disabled={
-                Object.keys(form.values.config.columns).length >=
+                Object.keys(form.values.payload.columns).length >=
                 settings.maxColumnsNumber
               }
               onClick={form.update({
-                path: ["config", "columns"],
+                path: ["payload", "columns"],
                 via: columnsCreateNew,
               })}
             >
@@ -678,7 +717,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
             typeof form.values.metadata?.type === "string"
               ? form.values.metadata.type
-              : "kanban.post-board",
+              : "kanban.post_board",
           ].join("."),
           {
             ...form.values,

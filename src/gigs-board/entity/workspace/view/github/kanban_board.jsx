@@ -166,7 +166,7 @@ const GithubKanbanBoard = ({
 
     typeof metadata?.ticket?.type === "string"
       ? metadata.ticket.type
-      : "github.kanban-ticket",
+      : "github.kanban_ticket",
   ].join(".");
 
   const ticketStateFilter =

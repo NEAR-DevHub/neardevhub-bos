@@ -46,6 +46,7 @@ const Toggle = ({
   className,
   direction,
   disabled,
+  inputProps,
   key,
   label,
   onChange,
@@ -66,10 +67,7 @@ const Toggle = ({
       className="shadow-none"
       id={`toggle-${key}`}
       onCheckedChange={disabled ? null : onChange}
-      title={
-        disabled ? `Permanently ${checked ? "enabled" : "disabled"}` : null
-      }
-      {...{ checked, disabled }}
+      {...{ checked, disabled, ...inputProps }}
     >
       {!disabled && <ToggleSwitchThumb className="bg-light shadow" />}
     </ToggleSwitchRoot>

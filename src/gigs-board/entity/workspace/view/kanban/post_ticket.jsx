@@ -88,12 +88,10 @@ const iconsByPostType = {
   Sponsorship: "bi-cash-coin",
 };
 
-const KanbanPostTicket = ({ id, config, post }) => {
-  const postId = post.id ?? (id ? parseInt(id) : 0);
-
-  const data =
-    post ??
-    Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
+const KanbanPostTicket = ({ id, features }) => {
+  const data = Near.view(nearDevGovGigsContractAccountId, "get_post", {
+    post_id: id ? parseInt(id) : 0,
+  });
 
   if (!data) {
     return <div>Loading ...</div>;
@@ -107,7 +105,7 @@ const KanbanPostTicket = ({ id, config, post }) => {
         href={`https://near.org/mob.near/widget/ProfilePage?accountId=${data.author_id}`}
         className="d-flex gap-2 link-dark text-truncate"
       >
-        {config.features?.author_avatar ?? true ? (
+        {features?.author_avatar ?? true ? (
           <Widget
             src="mob.near/widget/ProfileImage"
             props={{
@@ -124,7 +122,7 @@ const KanbanPostTicket = ({ id, config, post }) => {
 
       <a
         className="card-link"
-        href={href("Post", { id: postId })}
+        href={href("Post", { id: data.id })}
         role="button"
         target="_blank"
         title="Open in new tab"
@@ -135,9 +133,9 @@ const KanbanPostTicket = ({ id, config, post }) => {
   );
 
   const footer =
-    config.features?.likes_amount ?? config.features?.replies_amount ?? true ? (
+    features?.likes_amount ?? features?.replies_amount ?? true ? (
       <div className="card-footer d-flex justify-content-between gap-3">
-        {config.features?.likes_amount ?? true ? (
+        {features?.likes_amount ?? true ? (
           <span>
             {widget("components.atom.icon", {
               type: "bootstrap_icon",
@@ -148,7 +146,7 @@ const KanbanPostTicket = ({ id, config, post }) => {
           </span>
         ) : null}
 
-        {config.features?.replies_amount ?? true ? (
+        {features?.replies_amount ?? true ? (
           <span>
             {widget("components.atom.icon", {
               type: "bootstrap_icon",
@@ -163,13 +161,13 @@ const KanbanPostTicket = ({ id, config, post }) => {
 
   const titleArea = (
     <span className="card-text gap-2">
-      {config.features?.type ?? true ? (
+      {features?.type ?? true ? (
         <i className={`bi ${iconsByPostType[data.snapshot.post_type]}`} />
       ) : null}
 
       <span>
         {[
-          config.features?.type ?? true
+          features?.type ?? true
             ? data.snapshot.post_type === "Submission"
               ? "Solution"
               : data.snapshot.post_type
@@ -194,7 +192,7 @@ const KanbanPostTicket = ({ id, config, post }) => {
     ) : null;
 
   const tagList =
-    data.snapshot.labels && (config.features?.tags ?? true) ? (
+    data.snapshot.labels && (features?.tags ?? true) ? (
       <div className="d-flex flex-wrap gap-2 m-0">
         {data.snapshot.labels.map((label) => (
           <a href={href("Feed", { label })} key={label}>
