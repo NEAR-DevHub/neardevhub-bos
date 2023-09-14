@@ -339,11 +339,22 @@ const settings = {
   maxColumnsNumber: 10,
 };
 
+const KanbanPostBoardBasicInfoSchema = {
+  title: { label: "Title", order: 1, placeholder: "Enter board title." },
+
+  description: {
+    label: "Description",
+    order: 2,
+    placeholder: "Enter board description.",
+  },
+};
+
 const KanbanPostBoardTagsSchema = {
   required: {
     label:
       "Enter tags you want to include. Posts with these tags will display.",
 
+    order: 1,
     placeholder: "tag1, tag2",
   },
 
@@ -351,6 +362,7 @@ const KanbanPostBoardTagsSchema = {
     label:
       "Enter tags you want to exclude. Posts with these tags will not show.",
 
+    order: 2,
     placeholder: "tag3, tag4",
   },
 };
@@ -512,42 +524,20 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
   const formElement = isViewInitialized ? (
     <>
-      <div className="d-flex gap-1 flex-column flex-xl-row w-100">
-        {widget("components.molecule.text-input", {
-          label: "Title",
-          className: "w-100",
-          key: "kanban-view-title",
-          onChange: form.update({ path: ["metadata", "title"] }),
-          placeholder: "Enter board title.",
-          value: form.values.metadata.title,
-        })}
-
-        {widget("components.molecule.text-input", {
-          label: "Description",
-          className: "w-100",
-          key: "kanban-view-description",
-          onChange: form.update({ path: ["metadata", "description"] }),
-          placeholder: "Enter board description.",
-          value: form.values.metadata.description,
-        })}
-      </div>
-
       <div className="d-flex flex-wrap align-items-stretch justify-content-between gap-4 w-100">
-        <div className="d-flex flex-column flex-xl-row gap-4 w-100">
+        <div className="col-12 col-lg-7 d-flex flex-column gap-4">
           {widget("components.organism.configurator", {
             heading: "Basic information",
-            classNames: { root: "col-12 col-lg-5 h-auto" },
-            externalState: form.values.payload.tags,
+            externalState: form.values.metadata,
             isActive: true,
             isEmbedded: true,
             isUnlocked: permissions.can_configure,
-            onChange: form.update({ path: ["payload", "tags"] }),
-            schema: KanbanPostBoardTagsSchema,
+            onChange: form.update({ path: ["metadata"] }),
+            schema: KanbanPostBoardBasicInfoSchema,
           })}
 
           {widget("components.organism.configurator", {
             heading: "Tags",
-            classNames: { root: "col-12 col-lg-5 h-auto" },
             externalState: form.values.payload.tags,
             isActive: true,
             isEmbedded: true,
@@ -559,7 +549,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
         {widget("components.organism.configurator", {
           heading: "Ticket features",
-          classNames: { root: "col-12 col-lg-4" },
+          classNames: { root: "col-12 col-lg-4 h-auto" },
           externalState: form.values.metadata.ticket.features,
           fieldGap: 3,
           isActive: true,
@@ -573,7 +563,6 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       <div className="d-flex align-items-center justify-content-between w-100">
         <span className="d-inline-flex gap-2 m-0">
           <i className="bi bi-list-task" />
-
           <span>{`Columns ( max. ${settings.maxColumnsNumber} )`}</span>
         </span>
       </div>

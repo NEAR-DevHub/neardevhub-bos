@@ -70,7 +70,11 @@ const WorkspaceViewLayout = ({
   >
     <div
       className="position-fixed bottom-0 mb-2 d-flex gap-3 p-3 rounded-4"
-      style={{ backgroundColor: "#181818", zIndex: 100 }}
+      style={{
+        backdropFilter: "blur(10px)",
+        backgroundColor: "rgba(24, 24, 24, 0.1)",
+        zIndex: 100,
+      }}
     >
       {typeof link === "string" && link.length > 0 ? (
         <>
@@ -87,7 +91,7 @@ const WorkspaceViewLayout = ({
           })}
 
           {widget("components.molecule.button", {
-            classNames: { root: "btn-sm btn-outline-secondary text-white" },
+            classNames: { root: "btn-sm btn-outline-secondary" },
             icon: { type: "bootstrap_icon", variant: "bi-clipboard-fill" },
             label: "Copy link",
             onClick: () => clipboard.writeText(link),
@@ -107,10 +111,9 @@ const WorkspaceViewLayout = ({
 
           {widget("components.molecule.button", {
             classNames: {
-              root: "btn-sm btn-outline-warning shadow-none border-0",
+              root: "btn-sm btn-outline-warning shadow-none border-0 text-dark",
             },
 
-            icon: { type: "bootstrap_icon", variant: "bi-arrow-90deg-left" },
             isHidden: typeof onSave !== "function" || !isConfiguratorActive,
             label: "Cancel",
             onClick: onCancel,

@@ -365,13 +365,7 @@ const GithubKanbanBoardDefaults = {
 
     ticket: {
       type: "github.kanban_ticket",
-
-      features: {
-        id: true,
-        author: true,
-        labels: true,
-        type: true,
-      },
+      features: { id: true, author: true, labels: true, type: true },
     },
   },
 };
@@ -554,7 +548,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
       <div className="d-flex align-items-center justify-content-between">
         <span className="d-inline-flex gap-2 m-0">
           <i className="bi bi-list-task" />
-          <span>Columns ( max. {settings.maxColumnsNumber} )</span>
+          <span>{`Columns ( max. ${settings.maxColumnsNumber} )`}</span>
         </span>
       </div>
 
