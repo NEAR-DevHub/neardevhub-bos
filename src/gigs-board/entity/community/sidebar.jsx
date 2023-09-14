@@ -135,14 +135,21 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
+function trimHttps(url) {
+  if (url.startsWith("https://")) {
+    return url.substring(8);
+  }
+  return url;
+}
+
 const CommunitySummary = (community) => {
   const socialLinks = [
     ...((community.website_url?.length ?? 0) > 0
       ? [
           {
-            href: community.website_url,
+            href: `https://${trimHttps(community.website_url)}`,
             iconClass: "bi bi-globe",
-            name: community.website_url,
+            name: trimHttps(community.website_url),
           },
         ]
       : []),
@@ -192,9 +199,19 @@ const CommunitySummary = (community) => {
             href={link.href}
             style={{ marginLeft: index !== 0 ? "0px" : "0px" }}
             key={link.href}
+            target="_blank"
           >
             <i className={link.iconClass}></i>
-            <span className="ms-1">{link.name}</span>
+            <span
+              className="ms-1"
+              style={{
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {link.name}
+            </span>
           </a>
         ))}
       </div>
