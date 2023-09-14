@@ -97,6 +97,11 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
     return <div>Loading ...</div>;
   }
 
+  const postType =
+    data.snapshot.post_type === "Submission"
+      ? "Solution"
+      : data.snapshot.post_type;
+
   console.log(data);
 
   const header = (
@@ -166,15 +171,7 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
       ) : null}
 
       <span>
-        {[
-          features.type
-            ? data.snapshot.post_type === "Submission"
-              ? "Solution"
-              : data.snapshot.post_type
-            : null,
-
-          data.snapshot.name,
-        ]
+        {[features.type ? postType : null, data.snapshot.name]
           .filter(
             (maybeString) =>
               typeof maybeString === "string" && maybeString.length > 0
@@ -209,6 +206,33 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
       <div className="card-body d-flex flex-column gap-3">
         {titleArea}
         {descriptionArea}
+
+        {postType === "Sponsorship" ? (
+          <>
+            {features.granted_funds_amount ? (
+              <span className="d-flex flex-wrap gap-2">
+                <span>Maximum amount:</span>
+
+                <span>
+                  <span>{data.snapshot.amount}</span>
+                  <span>{data.snapshot.sponsorship_token}</span>
+                </span>
+              </span>
+            ) : null}
+
+            {features.funding_supervisor ? (
+              <div className="d-flex flex-wrap gap-2">
+                <span>Supervisor:</span>
+
+                <Widget
+                  src={`neardevgov.near/widget/ProfileLine`}
+                  props={{ accountId: data.snapshot.supervisor }}
+                />
+              </div>
+            ) : null}
+          </>
+        ) : null}
+
         {tagList}
       </div>
 

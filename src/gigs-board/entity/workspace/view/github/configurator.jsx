@@ -468,32 +468,34 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
 
   const formElement = isViewInitialized ? (
     <>
-      <div className="d-flex gap-1 flex-column flex-xl-row">
-        {widget("components.molecule.text-input", {
-          className: "w-100",
-          key: `${form.values.metadata.id}-repoURL`,
-          label: "Repository URL",
-          onChange: form.update({ path: ["repoURL"] }),
-          placeholder: "https://github.com/example-org/example-repo",
-          value: form.values.repoURL,
-        })}
+      <div className="d-flex flex-column">
+        <div className="d-flex gap-1 flex-column flex-xl-row">
+          {widget("components.molecule.text-input", {
+            className: "w-100",
+            key: `${form.values.metadata.id}-repoURL`,
+            label: "Repository URL",
+            onChange: form.update({ path: ["repoURL"] }),
+            placeholder: "https://github.com/example-org/example-repo",
+            value: form.values.repoURL,
+          })}
+
+          {widget("components.molecule.text-input", {
+            className: "w-100",
+            key: `${form.values.metadata.id}-title`,
+            label: "Title",
+            onChange: form.update({ path: ["title"] }),
+            placeholder: "NEAR Protocol NEPs",
+            value: form.values.title,
+          })}
+        </div>
 
         {widget("components.molecule.text-input", {
           className: "w-100",
-          key: `${form.values.metadata.id}-title`,
-          label: "Title",
-          onChange: form.update({ path: ["title"] }),
-          placeholder: "NEAR Protocol NEPs",
-          value: form.values.title,
-        })}
-
-        {widget("components.molecule.text-input", {
-          className: "w-100",
-          key: `${form.values.metadata.id}-column-${id}-description`,
+          key: `${form.values.metadata.id}-description`,
           label: "Description",
-          onChange: form.update({ path: ["columns", id, "description"] }),
-          placeholder: "NEPs that need a review by Subject Matter Experts.",
-          value: description,
+          onChange: form.update({ path: ["description"] }),
+          placeholder: "Latest NEAR Enhancement Proposals by status.",
+          value: form.values.description,
         })}
       </div>
 
@@ -558,8 +560,8 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
       <div className="d-flex flex-column align-items-center gap-3 w-100">
         {Object.values(form.values.columns ?? {}).map(
           ({ id, description, labelSearchTerms, title }) => (
-            <div
-              className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
+            <AttractableDiv
+              className="d-flex gap-3 rounded-4 border p-3 w-100"
               key={`column-${id}-configurator`}
             >
               <div className="d-flex flex-column gap-1 w-100">
@@ -608,7 +610,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
                 style={{ marginTop: -16, marginBottom: -16 }}
               >
                 <button
-                  className="btn btn-outline-danger shadow"
+                  className="btn btn-outline-danger"
                   onClick={form.update({
                     path: ["columns"],
                     via: columnsDeleteById(id),
@@ -618,7 +620,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
                   <i className="bi bi-trash-fill" />
                 </button>
               </div>
-            </div>
+            </AttractableDiv>
           )
         )}
       </div>
@@ -677,29 +679,30 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
               />
             </div>
           )}
-
-          <div className="d-flex align-items-center gap-3">
-            <button
-              className="btn shadow btn-outline-secondary d-inline-flex gap-2"
-              disabled={
-                Object.keys(form.values.columns).length >=
-                settings.maxColumnsNumber
-              }
-              onClick={form.update({
-                path: ["columns"],
-                via: columnsCreateNew,
-              })}
-            >
-              <i className="bi bi-plus-lg" />
-              <span>New column</span>
-            </button>
-          </div>
         </div>
       ) : null}
 
       {Object.keys(form.values).length > 0 ? (
         widget(`entity.workspace.view.${form.values.metadata.type}`, {
           ...form.values,
+
+          configurationControls: [
+            {
+              label: "New column",
+
+              disabled:
+                Object.keys(form.values.columns).length >=
+                settings.maxColumnsNumber,
+
+              icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
+
+              onClick: form.update({
+                path: ["columns"],
+                via: columnsCreateNew,
+              }),
+            },
+          ],
+
           isConfiguratorActive: state.isActive,
           isSynced: form.isSynced,
           link,

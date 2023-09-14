@@ -204,6 +204,7 @@ const configToColumnData = ({ columns, tags }) =>
 const KanbanPostBoard = ({
   metadata,
   payload,
+  configurationControls,
   isConfiguratorActive,
   isSynced,
   link,
@@ -251,6 +252,7 @@ const KanbanPostBoard = ({
   );
 
   return widget("entity.workspace.view.layout", {
+    configurationControls,
     isConfiguratorActive,
     isSynced,
     link,

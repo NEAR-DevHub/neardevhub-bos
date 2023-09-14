@@ -381,7 +381,7 @@ const KanbanPostBoardTicketFeaturesSchema = {
   },
 
   funding_supervisor: { label: "Funding supervisor" },
-  funds_amount: { label: "Amount of granted funds" },
+  granted_funds_amount: { label: "Amount of granted funds" },
   likes_amount: { label: "Amount of likes" },
   replies_amount: { label: "Amount of replies", isUnderMaintenance: true },
 
@@ -413,7 +413,7 @@ const KanbanPostBoardDefaults = {
         author_avatar: true,
         funding_marker: false,
         funding_supervisor: true,
-        funds_amount: true,
+        granted_funds_amount: true,
         likes_amount: true,
         replies_amount: false,
         requested_funding_sponsor: false,
@@ -529,8 +529,8 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
   const formElement = isViewInitialized ? (
     <>
-      <div className="d-flex flex-wrap align-items-stretch justify-content-between gap-4 w-100">
-        <div className="col-12 col-lg-7 d-flex flex-column gap-4">
+      <div className="d-flex flex-column flex-lg-row align-items-stretch gap-4 w-100">
+        <div className="d-flex flex-column gap-4 w-100">
           {widget("components.organism.configurator", {
             heading: "Basic information",
             externalState: form.values.metadata,
@@ -554,13 +554,14 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
         {widget("components.organism.configurator", {
           heading: "Ticket features",
-          classNames: { root: "col-12 col-lg-4 h-auto" },
+          classNames: { root: "w-auto h-auto" },
           externalState: form.values.metadata.ticket.features,
           isActive: true,
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
           onChange: form.update({ path: ["metadata", "ticket", "features"] }),
           schema: KanbanPostBoardTicketFeaturesSchema,
+          style: { minWidth: "36%" },
         })}
       </div>
 
@@ -623,7 +624,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                 style={{ marginTop: -16, marginBottom: -16 }}
               >
                 <button
-                  className="btn btn-outline-danger shadow"
+                  className="btn btn-outline-danger"
                   onClick={form.update({
                     path: ["payload", "columns"],
                     via: columnsDeleteById(id),
@@ -692,29 +693,30 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
               />
             </div>
           )}
-
-          <div className="d-flex align-items-center gap-3">
-            <button
-              className="btn shadow btn-outline-secondary d-inline-flex gap-2"
-              disabled={
-                Object.keys(form.values.payload.columns).length >=
-                settings.maxColumnsNumber
-              }
-              onClick={form.update({
-                path: ["payload", "columns"],
-                via: columnsCreateNew,
-              })}
-            >
-              <i className="bi bi-plus-lg" />
-              <span>New column</span>
-            </button>
-          </div>
         </div>
       ) : null}
 
       {isViewInitialized ? (
         widget(`entity.workspace.view.${form.values.metadata.type}`, {
           ...form.values,
+
+          configurationControls: [
+            {
+              label: "New column",
+
+              disabled:
+                Object.keys(form.values.payload.columns).length >=
+                settings.maxColumnsNumber,
+
+              icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
+
+              onClick: form.update({
+                path: ["payload", "columns"],
+                via: columnsCreateNew,
+              }),
+            },
+          ],
+
           isConfiguratorActive: state.isActive,
           isSynced: form.isSynced,
           link,

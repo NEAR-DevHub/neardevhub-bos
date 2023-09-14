@@ -147,19 +147,21 @@ const withType = (type) => (data) => ({ ...data, type });
 
 const GithubKanbanBoard = ({
   columns,
-  dataTypesIncluded,
-  description,
-  isConfiguratorActive,
-  link,
   metadata,
+  title,
+  description,
+  repoURL,
+  ticketState,
+  dataTypesIncluded,
+  configurationControls,
+  isConfiguratorActive,
+  isSynced,
+  link,
   onCancel,
   onDelete,
   onConfigure,
   onSave,
   permissions,
-  repoURL,
-  ticketState,
-  title,
 }) => {
   const ticketStateFilter =
     ticketState === "open" || ticketState === "closed" || ticketState === "all"
@@ -212,9 +214,11 @@ const GithubKanbanBoard = ({
   }
 
   return widget("entity.workspace.view.layout", {
-    isConfiguratorActive,
-    link,
     metadata: { title, description },
+    configurationControls,
+    isConfiguratorActive,
+    isSynced,
+    link,
     onCancel,
     onConfigure,
     onDelete,

@@ -53,6 +53,7 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 const WorkspaceViewLayout = ({
+  configurationControls,
   children,
   link,
   metadata,
@@ -69,7 +70,10 @@ const WorkspaceViewLayout = ({
     style={{ paddingBottom: 72 }}
   >
     <div
-      className="position-fixed bottom-0 d-flex gap-3 p-3"
+      className={[
+        "position-fixed bottom-0 d-flex gap-3 p-3",
+        "border border-2 border-dark border-bottom-0",
+      ].join(" ")}
       style={{
         backdropFilter: "blur(10px)",
         backgroundColor: "rgba(24, 24, 24, 0.1)",
@@ -95,6 +99,7 @@ const WorkspaceViewLayout = ({
           {widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-outline-secondary" },
             icon: { type: "bootstrap_icon", variant: "bi-clipboard-fill" },
+            isHidden: isConfiguratorActive,
             label: "Copy link",
             onClick: () => clipboard.writeText(link),
           })}
@@ -120,6 +125,18 @@ const WorkspaceViewLayout = ({
             label: "Cancel",
             onClick: onCancel,
           })}
+
+          {(configurationControls ?? []).map((controlProps) =>
+            widget(
+              "components.molecule.button",
+              {
+                classNames: { root: "btn-sm btn-outline-secondary" },
+                ...controlProps,
+                isHidden: !isConfiguratorActive,
+              },
+              controlProps.label
+            )
+          )}
 
           {widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-success" },
