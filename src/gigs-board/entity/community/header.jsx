@@ -175,9 +175,6 @@ const DevHub = {
       label,
     }) ?? null,
 
-  get_featured_communities: () =>
-    Near.view(devHubAccountId, "get_featured_communities") ?? null,
-
   useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
 
