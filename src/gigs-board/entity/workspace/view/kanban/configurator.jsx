@@ -376,7 +376,7 @@ const KanbanPostBoardTicketFeaturesSchema = {
   author_avatar: { label: "Author's avatar" },
   like_count: { label: "Amount of likes" },
   reply_count: { label: "Amount of replies", noop: true },
-  approved_grant_value: { label: "Amount of granted funds" },
+  approved_grant_value: { label: "Approved grant value" },
   sponsorship_supervisor: { label: "Sponsorship supervisor" },
 
   sponsorship_request_marker: {
@@ -384,7 +384,7 @@ const KanbanPostBoardTicketFeaturesSchema = {
     noop: true,
   },
 
-  requested_grant_value: { label: "Amount of requested funds", noop: true },
+  requested_grant_value: { label: "Requested grant value", noop: true },
   requested_sponsor: { label: "Requested sponsor", noop: true },
   tags: { label: "Tags" },
   type: { label: "Post type" },
