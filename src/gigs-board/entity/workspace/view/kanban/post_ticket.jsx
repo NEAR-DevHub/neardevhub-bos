@@ -206,7 +206,7 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
     isFundingRequested && features.requested_grant_value;
 
   const isGrantedFundsAmountFeatured =
-    postType === "Sponsorship" && features.grant_value;
+    postType === "Sponsorship" && features.approved_grant_value;
 
   const isRequestedSponsorFeatured =
     isFundingRequested && features.requested_sponsor;

@@ -239,18 +239,7 @@ const defaultFieldsRender = ({ schema, form, isEditable, isUnlocked }) => (
   <>
     {Object.entries(schema).map(
       (
-        [
-          key,
-          {
-            format,
-            inputProps,
-            isUnderMaintenance,
-            label,
-            order,
-            style,
-            ...fieldProps
-          },
-        ],
+        [key, { format, inputProps, noop, label, order, style, ...fieldProps }],
         idx
       ) => {
         const fieldKey = `${idx}-${key}`,
@@ -261,7 +250,7 @@ const defaultFieldsRender = ({ schema, form, isEditable, isUnlocked }) => (
           : typeof (fieldValue ?? "");
 
         const isDisabled =
-          (isUnderMaintenance ?? inputProps.disabled ?? false) || !isUnlocked;
+          (noop ?? inputProps.disabled ?? false) || !isUnlocked;
 
         const viewClassName = [
           (fieldValue?.length ?? 0) > 0 ? "" : "text-muted",
@@ -323,7 +312,7 @@ const defaultFieldsRender = ({ schema, form, isEditable, isUnlocked }) => (
                 disabled: isDisabled,
 
                 title:
-                  isUnderMaintenance ?? false
+                  noop ?? false
                     ? "Temporarily disabled due to technical reasons."
                     : inputProps.title,
 
