@@ -120,9 +120,6 @@ const DevHub = {
 
   get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
-  get_featured_communities: () =>
-    Near.view(devHubAccountId, "get_featured_communities") ?? null,
-
   get_all_communities_metadata: () =>
     Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
 
@@ -138,6 +135,9 @@ const DevHub = {
     Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
       label,
     }) ?? null,
+
+  get_featured_communities: () =>
+    Near.view(devHubAccountId, "get_featured_communities") ?? null,
 
   useQuery: (name, params) => {
     const initialState = { data: null, error: null, isLoading: true };
