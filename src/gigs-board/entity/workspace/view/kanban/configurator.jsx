@@ -375,22 +375,22 @@ const KanbanPostBoardTagsSchema = {
 const KanbanPostBoardTicketFeaturesSchema = {
   author_avatar: { label: "Author's avatar" },
 
-  funding_marker: {
+  sponsorship_request_marker: {
     label: "Indicate if funding is requested",
     isUnderMaintenance: true,
   },
 
-  funding_supervisor: { label: "Funding supervisor" },
-  granted_funds_amount: { label: "Amount of granted funds" },
-  likes_amount: { label: "Amount of likes" },
-  replies_amount: { label: "Amount of replies", isUnderMaintenance: true },
+  sponsorship_supervisor: { label: "Funding supervisor" },
+  grant_value: { label: "Amount of granted funds" },
+  like_count: { label: "Amount of likes" },
+  reply_count: { label: "Amount of replies", isUnderMaintenance: true },
 
   requested_sponsor: {
     label: "Requested funding sponsor",
     isUnderMaintenance: true,
   },
 
-  requested_funds_amount: {
+  requested_grant_value: {
     label: "Amount of requested funds",
     isUnderMaintenance: true,
   },
@@ -411,13 +411,13 @@ const KanbanPostBoardDefaults = {
 
       features: {
         author_avatar: true,
-        funding_marker: false,
-        funding_supervisor: true,
-        granted_funds_amount: true,
-        likes_amount: true,
-        replies_amount: false,
+        like_count: true,
+        reply_count: false,
+        grant_value: true,
+        sponsorship_request_marker: false,
+        sponsorship_supervisor: true,
+        requested_grant_value: false,
         requested_sponsor: false,
-        requested_funds_amount: false,
         tags: true,
         type: true,
       },

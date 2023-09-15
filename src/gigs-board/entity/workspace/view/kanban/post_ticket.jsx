@@ -138,9 +138,9 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
   );
 
   const footer =
-    features.likes_amount || features.replies_amount ? (
+    features.like_count || features.reply_count ? (
       <div className="card-footer d-flex justify-content-between gap-3">
-        {features.likes_amount ? (
+        {features.like_count ? (
           <span>
             {widget("components.atom.icon", {
               type: "bootstrap_icon",
@@ -151,7 +151,7 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
           </span>
         ) : null}
 
-        {features.replies_amount ? (
+        {features.reply_count ? (
           <span>
             {widget("components.atom.icon", {
               type: "bootstrap_icon",
@@ -199,6 +199,21 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
       </div>
     ) : null;
 
+  const isFundingRequested =
+    postType === "Solution" && data.snapshot.is_funding_requested;
+
+  const isRequestedFundsAmountFeatured =
+    isFundingRequested && features.requested_grant_value;
+
+  const isGrantedFundsAmountFeatured =
+    postType === "Sponsorship" && features.grant_value;
+
+  const isRequestedSponsorFeatured =
+    isFundingRequested && features.requested_sponsor;
+
+  const isFundingSupervisorFeatured =
+    postType === "Sponsorship" && features.sponsorship_supervisor;
+
   return (
     <AttractableDiv className="card border-secondary">
       {header}
@@ -207,30 +222,42 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
         {titleArea}
         {descriptionArea}
 
-        {postType === "Sponsorship" || postType === "Solution" ? (
-          <>
-            {features.granted_funds_amount ? (
-              <span className="d-flex flex-wrap gap-2">
-                <span>Maximum amount:</span>
+        {isFundingRequested && features.sponsorship_request_marker ? (
+          <span className="d-flex gap-2">
+            {widget("components.atom.icon", {
+              type: "bootstrap_icon",
+              variant: "bi-cash",
+            })}
 
-                <span>
-                  <span>{data.snapshot.amount}</span>
-                  <span>{data.snapshot.sponsorship_token}</span>
-                </span>
-              </span>
-            ) : null}
+            <span>Funding requested</span>
+          </span>
+        ) : null}
 
-            {features.funding_supervisor ? (
-              <div className="d-flex flex-wrap gap-2">
-                <span>Supervisor:</span>
+        {isRequestedFundsAmountFeatured || isGrantedFundsAmountFeatured ? (
+          <span className="d-flex flex-wrap gap-2">
+            <span>Amount:</span>
 
-                <Widget
-                  src={`neardevgov.near/widget/ProfileLine`}
-                  props={{ accountId: data.snapshot.supervisor }}
-                />
-              </div>
-            ) : null}
-          </>
+            <span className="d-flex flex-nowrap gap-1">
+              <span>{data.snapshot.amount}</span>
+              <span>{data.snapshot.sponsorship_token}</span>
+            </span>
+          </span>
+        ) : null}
+
+        {isRequestedSponsorFeatured || isFundingSupervisorFeatured ? (
+          <div className="d-flex flex-wrap gap-2">
+            <span>Supervisor:</span>
+
+            <Widget
+              className="flex-wrap"
+              src={`neardevgov.near/widget/ProfileLine`}
+              props={{
+                accountId: data.snapshot.supervisor,
+                hideAccountId: true,
+                tooltip: true,
+              }}
+            />
+          </div>
         ) : null}
 
         {tagList}
