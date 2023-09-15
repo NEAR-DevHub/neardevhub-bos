@@ -207,7 +207,7 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
         {titleArea}
         {descriptionArea}
 
-        {postType === "Sponsorship" ? (
+        {postType === "Sponsorship" || postType === "Solution" ? (
           <>
             {features.granted_funds_amount ? (
               <span className="d-flex flex-wrap gap-2">

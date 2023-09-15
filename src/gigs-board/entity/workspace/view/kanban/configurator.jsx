@@ -298,6 +298,9 @@ const DevHub = {
 
   get_all_authors: () => Near.view(devHubAccountId, "get_all_authors") ?? null,
 
+  get_featured_communities: () =>
+    Near.view(devHubAccountId, "get_featured_communities") ?? null,
+
   get_all_communities_metadata: () =>
     Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
 
@@ -385,7 +388,7 @@ const KanbanPostBoardTicketFeaturesSchema = {
   likes_amount: { label: "Amount of likes" },
   replies_amount: { label: "Amount of replies", isUnderMaintenance: true },
 
-  requested_funding_sponsor: {
+  requested_sponsor: {
     label: "Requested funding sponsor",
     isUnderMaintenance: true,
   },
@@ -416,7 +419,7 @@ const KanbanPostBoardDefaults = {
         granted_funds_amount: true,
         likes_amount: true,
         replies_amount: false,
-        requested_funding_sponsor: false,
+        requested_sponsor: false,
         requested_funds_amount: false,
         tags: true,
         type: true,
