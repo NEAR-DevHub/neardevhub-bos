@@ -88,9 +88,9 @@ const iconsByPostType = {
   Sponsorship: "bi-cash-coin",
 };
 
-const KanbanPostTicket = ({ metadata: { id, features } }) => {
+const KanbanPostTicket = ({ metadata }) => {
   const data = Near.view(nearDevGovGigsContractAccountId, "get_post", {
-    post_id: id ? parseInt(id) : 0,
+    post_id: metadata.id ? parseInt(metadata.id) : 0,
   });
 
   if (!data) {
@@ -101,6 +101,31 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
     data.snapshot.post_type === "Submission"
       ? "Solution"
       : data.snapshot.post_type;
+
+  const features = {
+    ...metadata.features,
+
+    sponsorship_request_indicator:
+      postType === "Solution" &&
+      data.snapshot.is_funding_requested &&
+      metadata.features.sponsorship_request_indicator,
+
+    requested_grant_value:
+      postType === "Solution" &&
+      data.snapshot.is_funding_requested &&
+      metadata.features.requested_grant_value,
+
+    requested_sponsor:
+      postType === "Solution" &&
+      data.snapshot.is_funding_requested &&
+      metadata.features.requested_sponsor,
+
+    approved_grant_value:
+      postType === "Sponsorship" && metadata.features.approved_grant_value,
+
+    sponsorship_supervisor:
+      postType === "Sponsorship" && metadata.features.sponsorship_supervisor,
+  };
 
   console.log(data);
 
@@ -199,21 +224,6 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
       </div>
     ) : null;
 
-  const isFundingRequested =
-    postType === "Solution" && data.snapshot.is_funding_requested;
-
-  const isRequestedFundsAmountFeatured =
-    isFundingRequested && features.requested_grant_value;
-
-  const isGrantedFundsAmountFeatured =
-    postType === "Sponsorship" && features.approved_grant_value;
-
-  const isRequestedSponsorFeatured =
-    isFundingRequested && features.requested_sponsor;
-
-  const isFundingSupervisorFeatured =
-    postType === "Sponsorship" && features.sponsorship_supervisor;
-
   return (
     <AttractableDiv className="card border-secondary">
       {header}
@@ -222,7 +232,7 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
         {titleArea}
         {descriptionArea}
 
-        {isFundingRequested && features.sponsorship_request_marker ? (
+        {features.sponsorship_request_indicator ? (
           <span className="d-flex gap-2">
             {widget("components.atom.icon", {
               type: "bootstrap_icon",
@@ -233,7 +243,7 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
           </span>
         ) : null}
 
-        {isRequestedFundsAmountFeatured || isGrantedFundsAmountFeatured ? (
+        {features.requested_grant_value || features.approved_grant_value ? (
           <span className="d-flex flex-wrap gap-2">
             <span>Amount:</span>
 
@@ -244,15 +254,23 @@ const KanbanPostTicket = ({ metadata: { id, features } }) => {
           </span>
         ) : null}
 
-        {isRequestedSponsorFeatured || isFundingSupervisorFeatured ? (
+        {features.requested_sponsor || features.sponsorship_supervisor ? (
           <div className="d-flex flex-wrap gap-2">
-            <span>Supervisor:</span>
+            <span>{`${
+              features.requested_sponsor ? "Requested sponsor" : "Supervisor"
+            }:`}</span>
 
             <Widget
               className="flex-wrap"
               src={`neardevgov.near/widget/ProfileLine`}
               props={{
-                accountId: data.snapshot.supervisor,
+                accountId:
+                  data.snapshot[
+                    features.requested_sponsor
+                      ? "requested_sponsor"
+                      : "supervisor"
+                  ],
+
                 hideAccountId: true,
                 tooltip: true,
               }}
