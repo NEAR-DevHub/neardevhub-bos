@@ -403,28 +403,28 @@ const supervisorDiv = (
 const callDescriptionDiv = () => {
   return (
     <div className="col-lg-12  mb-2">
-    Description:
-    <br />
-    {widget("components.molecule.markdown-editor", {
-      data: { handler: state.handler, content: state.description },
-      onChange: (content) => {
-        State.update({ description: content, handler: "update" });
-        textareaInputHandler(content);
-      },
-    })}
-    {autocompleteEnabled && state.showAccountAutocomplete && (
-      <AutoComplete>
-        <Widget
-          src="near/widget/AccountAutocomplete"
-          props={{
-            term: state.text.split("@").pop(),
-            onSelect: autoCompleteAccountId,
-            onClose: () => State.update({ showAccountAutocomplete: false }),
-          }}
-        />
-      </AutoComplete>
-    )}
-  </div>
+      Description:
+      <br />
+      {widget("components.molecule.markdown-editor", {
+        data: { handler: state.handler, content: state.description },
+        onChange: (content) => {
+          State.update({ description: content, handler: "update" });
+          textareaInputHandler(content);
+        },
+      })}
+      {autocompleteEnabled && state.showAccountAutocomplete && (
+        <AutoComplete>
+          <Widget
+            src="near/widget/AccountAutocomplete"
+            props={{
+              term: state.text.split("@").pop(),
+              onSelect: autoCompleteAccountId,
+              onClose: () => State.update({ showAccountAutocomplete: false }),
+            }}
+          />
+        </AutoComplete>
+      )}
+    </div>
   );
 };
 
