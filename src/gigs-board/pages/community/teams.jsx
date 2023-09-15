@@ -181,11 +181,6 @@ const Teams = (
       minHeight: 0,
       children: UserList("Admin", admins),
     })}
-    {widget("components.molecule.tile", {
-      heading: "Community Moderators",
-      minHeight: 0,
-      children: UserList("Moderator", moderators),
-    })}
   </div>
 );
 
