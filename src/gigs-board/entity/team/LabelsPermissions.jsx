@@ -158,17 +158,17 @@ const permissionExplainer = (permission) => {
 };
 
 function unsetRestrictedRules(name) {
-  let txn = [];
-  txn.push({
-    contractName: nearDevGovGigsContractAccountId,
-    methodName: "unset_restricted_rules",
-    args: {
-      rules: [name],
+  Near.call([
+    {
+      contractName: nearDevGovGigsContractAccountId,
+      methodName: "unset_restricted_rules",
+      args: {
+        rules: [name],
+      },
+      deposit: Big(0).pow(21),
+      gas: Big(10).pow(12).mul(100),
     },
-    deposit: Big(0).pow(21),
-    gas: Big(10).pow(12).mul(100),
-  });
-  Near.call(txn);
+  ]);
 }
 
 return (
