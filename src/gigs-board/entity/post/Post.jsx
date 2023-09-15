@@ -172,11 +172,10 @@ const btnEditorWidget = (postType, name) => {
     <li>
       <a
         class="dropdown-item"
-        data-bs-toggle="collapse"
-        href={`#collapse${postType}Editor${postId}`}
         role="button"
-        aria-expanded="false"
-        aria-controls={`collapse${postType}Editor${postId}`}
+        onClick={() =>
+          State.update({ postType, editorType: "EDIT", showEditor: true })
+        }
       >
         {name}
       </a>
@@ -331,11 +330,10 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
       <a
         class="dropdown-item text-decoration-none d-flex align-items-center lh-sm"
         style={{ color: "rgb(55,109,137)" }}
-        data-bs-toggle="collapse"
-        href={`#collapse${postType}Creator${postId}`}
         role="button"
-        aria-expanded="false"
-        aria-controls={`collapse${postType}Creator${postId}`}
+        onClick={() =>
+          State.update({ postType, editorType: "CREATE", showEditor: true })
+        }
       >
         <i class={`bi ${icon}`} style={{ fontSize: "1.5rem" }}>
           {" "}
@@ -469,80 +467,6 @@ const CreatorWidget = (postType) => {
   );
 };
 
-const EditorWidget = (postType) => {
-  return (
-    <div
-      class={`collapse ${
-        draftState?.edit_post_id == postId && draftState?.postType == postType
-          ? "show"
-          : ""
-      }`}
-      id={`collapse${postType}Editor${postId}`}
-      data-bs-parent={`#accordion${postId}`}
-    >
-      {widget("entity.post.PostEditor", {
-        postType,
-        postId,
-        mode: "Edit",
-        author_id: post.author_id,
-        labels: post.snapshot.labels,
-        name: post.snapshot.name,
-        description: post.snapshot.description,
-        amount: post.snapshot.amount,
-        token: post.snapshot.sponsorship_token,
-        supervisor: post.snapshot.supervisor,
-        githubLink: post.snapshot.github_link,
-        onDraftStateChange: props.onDraftStateChange,
-        draftState: draftState?.edit_post_id == postId ? draftState : undefined,
-      })}
-    </div>
-  );
-};
-
-const editorsFooter = props.isPreview ? null : (
-  <div class="row" id={`accordion${postId}`} key="editors-footer">
-    {CreatorWidget("Comment")}
-    {EditorWidget("Comment")}
-    {CreatorWidget("Idea")}
-    {EditorWidget("Idea")}
-    {CreatorWidget("Submission")}
-    {EditorWidget("Submission")}
-    {CreatorWidget("Attestation")}
-    {EditorWidget("Attestation")}
-    {CreatorWidget("Sponsorship")}
-    {EditorWidget("Sponsorship")}
-    {CreatorWidget("Github")}
-    {EditorWidget("Github")}
-  </div>
-);
-
-const renamedPostType =
-  snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
-
-const tags = post.snapshot.labels ? (
-  <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
-    {post.snapshot.labels.map((tag) => {
-      return widget("components.atom.tag", { linkTo: "Feed", tag });
-    })}
-  </div>
-) : (
-  <div key="post-labels"></div>
-);
-
-const postTitle =
-  snapshot.post_type == "Comment" ? (
-    <div key="post-title"></div>
-  ) : (
-    <h5 class="card-title mb-4" key="post-title">
-      <div className="row justify-content-between">
-        <div class="col-9">
-          <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
-          {renamedPostType}: {snapshot.name}
-        </div>
-      </div>
-    </h5>
-  );
-
 const tokenMapping = {
   NEAR: "NEAR",
   USDT: {
@@ -574,6 +498,112 @@ function tokenResolver(token) {
     return null; // Invalid input
   }
 }
+
+const EditorWidget = (postType) => {
+  return (
+    <div
+      class={`collapse ${
+        draftState?.edit_post_id == postId && draftState?.postType == postType
+          ? "show"
+          : ""
+      }`}
+      id={`collapse${postType}Editor${postId}`}
+      data-bs-parent={`#accordion${postId}`}
+    >
+      {widget("entity.post.PostEditor", {
+        postType,
+        postId,
+        mode: "Edit",
+        author_id: post.author_id,
+        labels: post.snapshot.labels,
+        name: post.snapshot.name,
+        description: post.snapshot.description,
+        amount: post.snapshot.amount,
+        token: tokenResolver(post.snapshot.sponsorship_token),
+        supervisor: post.snapshot.supervisor,
+        githubLink: post.snapshot.github_link,
+        onDraftStateChange: props.onDraftStateChange,
+        draftState: draftState?.edit_post_id == postId ? draftState : undefined,
+      })}
+    </div>
+  );
+};
+
+const isDraft =
+  (draftState?.parent_post_id === postId &&
+    draftState?.postType === state.postType) ||
+  (draftState?.edit_post_id === postId &&
+    draftState?.postType === state.postType);
+
+function Editor() {
+  return (
+    <div class="row" id={`accordion${postId}`} key="editors-footer">
+      <div
+        key={`${state.postType}${state.editorType}${postId}`}
+        className={"w-100"}
+      >
+        {state.editorType === "CREATE" ? (
+          <>
+            {widget("entity.post.PostEditor", {
+              postType: state.postType,
+              onDraftStateChange: props.onDraftStateChange,
+              draftState:
+                draftState?.parent_post_id == postId ? draftState : undefined,
+              parentId: postId,
+              mode: "Create",
+            })}
+          </>
+        ) : (
+          <>
+            {widget("entity.post.PostEditor", {
+              postType: state.postType,
+              postId,
+              mode: "Edit",
+              author_id: post.author_id,
+              labels: post.snapshot.labels,
+              name: post.snapshot.name,
+              description: post.snapshot.description,
+              amount: post.snapshot.amount,
+              token: post.snapshot.sponsorship_token,
+              supervisor: post.snapshot.supervisor,
+              githubLink: post.snapshot.github_link,
+              onDraftStateChange: props.onDraftStateChange,
+              draftState:
+                draftState?.edit_post_id == postId ? draftState : undefined,
+            })}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const renamedPostType =
+  snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
+
+const tags = post.snapshot.labels ? (
+  <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
+    {post.snapshot.labels.map((tag) => {
+      return widget("components.atom.tag", { linkTo: "Feed", tag });
+    })}
+  </div>
+) : (
+  <div key="post-labels"></div>
+);
+
+const postTitle =
+  snapshot.post_type == "Comment" ? (
+    <div key="post-title"></div>
+  ) : (
+    <h5 class="card-title mb-4" key="post-title">
+      <div className="row justify-content-between">
+        <div class="col-9">
+          <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
+          {renamedPostType}: {snapshot.name}
+        </div>
+      </div>
+    </h5>
+  );
 
 const postExtra =
   snapshot.post_type == "Sponsorship" ? (
@@ -638,7 +668,7 @@ const postsList =
     </div>
   );
 
-const limitedMarkdown = styled.div`
+const LimitedMarkdown = styled.div`
   max-height: 20em;
 `;
 
@@ -655,37 +685,19 @@ const clampedContent = needClamp
   ? contentArray.slice(0, 3).join("\n")
   : snapshot.description;
 
-const onMention = (accountId) => (
-  <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
-    <Widget
-      src="neardevgov.near/widget/ProfileLine"
-      props={{
-        accountId: accountId.toLowerCase(),
-        hideAccountId: true,
-        tooltip: true,
-      }}
-    />
-  </span>
-);
-
 // Should make sure the posts under the currently top viewed post are limited in size.
 const descriptionArea = isUnderPost ? (
-  <limitedMarkdown className="overflow-auto" key="description-area">
-    <Markdown
-      class="card-text"
-      text={snapshot.description}
-      onMention={onMention}
-    />
-  </limitedMarkdown>
+  <LimitedMarkdown className="overflow-auto" key="description-area">
+    {widget("components.molecule.markdown-viewer", {
+      text: snapshot.description,
+    })}
+  </LimitedMarkdown>
 ) : (
   <div>
     <div class={state.clamp ? "clamp" : ""}>
-      <Markdown
-        class="card-text"
-        text={state.clamp ? clampedContent : snapshot.description}
-        onMention={onMention}
-        key="description-area"
-      ></Markdown>
+      {widget("components.molecule.markdown-viewer", {
+        text: state.clamp ? clampedContent : snapshot.description,
+      })}
     </div>
     {state.clamp ? (
       <div class="d-flex justify-content-start">
@@ -791,7 +803,7 @@ return (
       )}
       {tags}
       {buttonsFooter}
-      {editorsFooter}
+      {!props.isPreview && (isDraft || state.showEditor) && <Editor />}
       {postsList}
     </div>
   </AttractableDiv>

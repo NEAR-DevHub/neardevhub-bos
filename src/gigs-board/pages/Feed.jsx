@@ -108,7 +108,13 @@ const DevHub = {
       label,
     }) ?? null,
 
-  useQuery: (name, params) => {
+  get_root_members: () =>
+    Near.view(devHubAccountId, "get_root_members") ?? null,
+
+  get_featured_communities: () =>
+    Near.view(devHubAccountId, "get_featured_communities") ?? null,
+
+  useQuery: ({ name, params }) => {
     const initialState = { data: null, error: null, isLoading: true };
 
     const cacheState = useCache(
@@ -191,24 +197,14 @@ const banner = (
       <div className="d-flex justify-content-between">
         <h5 className="h5 m-0">Featured Communities</h5>
       </div>
-
       <div className="d-flex gap-4 justify-content-between">
-        {(DevHub.get_all_communities_metadata() ?? [])
-          .filter(({ handle }) =>
-            [
-              "zero-knowledge",
-              "protocol",
-              "contract-standards",
-              "education",
-            ].includes(handle)
+        {(DevHub.get_featured_communities() ?? []).map((community) =>
+          widget(
+            "entity.community.card",
+            { metadata: community, format: "medium" },
+            community.handle
           )
-          .map((community) =>
-            widget(
-              "entity.community.card",
-              { metadata: community, format: "medium" },
-              community.handle
-            )
-          )}
+        )}
       </div>
     </div>
 
