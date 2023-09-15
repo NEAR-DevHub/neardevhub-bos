@@ -93,7 +93,7 @@ const labels = labelStrings.map((s) => {
 
 initState({
   seekingFunding: false,
-  //
+
   author_id: context.accountId,
   // Should be a list of objects with field "name".
   labels,
