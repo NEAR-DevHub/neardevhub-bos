@@ -184,7 +184,7 @@ const CommunitySummary = (community) => {
   ];
 
   return (
-    <div style={{ top: "0", left: "0" }}>
+    <>
       {widget("components.molecule.markdown-viewer", {
         text: community.bio_markdown,
       })}
@@ -215,7 +215,7 @@ const CommunitySummary = (community) => {
           </a>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 
@@ -235,6 +235,7 @@ const Sidebar = ({ handle }) => {
   ) : (
     <div class="d-flex flex-column align-items-end">
       {widget("components.molecule.tile", {
+        fullWidth: true,
         minHeight: 0,
         children: CommunitySummary(community),
         noBorder: true,
