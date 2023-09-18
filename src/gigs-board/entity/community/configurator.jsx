@@ -387,7 +387,7 @@ const CommunityConfigurator = ({ handle, link }) => {
     <div>Loading...</div>
   ) : (
     <div
-      className="d-flex flex-column align-items-center gap-4"
+      className="d-flex flex-column align-items-center gap-4 w-100"
       style={{ maxWidth: 960 }}
     >
       {community.data === null ? (
