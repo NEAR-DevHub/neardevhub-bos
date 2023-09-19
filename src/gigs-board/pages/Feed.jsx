@@ -177,6 +177,16 @@ const Gradient = styled.div`
   }
 `;
 
+const CardWrapper = styled.div`
+  display: flex;
+  gap: 1.5em !important;
+  justify-content: space-between;
+
+  @media only screen and (max-width: 768px) {
+    flex-wrap: wrap;
+  }
+`;
+
 const banner = (
   <div className="d-flex flex-column">
     <Gradient className="d-flex flex-column justify-content-center">
@@ -197,7 +207,7 @@ const banner = (
       <div className="d-flex justify-content-between">
         <h5 className="h5 m-0">Featured Communities</h5>
       </div>
-      <div className="d-flex gap-4 justify-content-between">
+      <CardWrapper>
         {(DevHub.get_featured_communities() ?? []).map((community) =>
           widget(
             "entity.community.card",
@@ -205,7 +215,7 @@ const banner = (
             community.handle
           )
         )}
-      </div>
+      </CardWrapper>
     </div>
 
     <div className="h5 pb-4">Activity</div>

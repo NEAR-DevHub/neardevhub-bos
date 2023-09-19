@@ -673,10 +673,31 @@ const showMoreSearchResults = () => {
   State.update({ shownSearchResults: newShownSearchResults });
 };
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem !important;
+
+  @media only screen and (max-width: 768px) {
+    flex-direction: column !important;
+  }
+`;
+
+const InputContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  width: 25%;
+
+  @media only screen and (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
 return (
   <>
-    <div className="d-flex flex-row gap-4">
-      <div className="d-flex flex-row position-relative w-25">
+    <Container className="d-flex flex-row gap-4">
+      <InputContainer>
         <div className="position-absolute d-flex ps-3 flex-column h-100 justify-center">
           {state.loading ? (
             <span
@@ -695,7 +716,7 @@ return (
           onChange={(e) => updateInput(e.target.value)}
           placeholder={props.placeholder ?? `Search Posts`}
         />
-      </div>
+      </InputContainer>
       <div class="dropdown">
         <button
           class="btn btn-light dropdown-toggle"
@@ -750,7 +771,7 @@ return (
       <div className="d-flex flex-row-reverse flex-grow-1">
         {props.children}
       </div>
-    </div>
+    </Container>
     {state.processedQuery &&
       state.processedQuery.length > 0 &&
       state.term.toLowerCase().trim() !== state.processedQuery.join(" ") && (
