@@ -161,7 +161,8 @@ const onSubmit = () => {
         state.description,
         state.amount,
         state.token,
-        state.supervisor
+        state.supervisor,
+        state.seekingFunding
       ),
       submission_version: "V1",
     },
@@ -539,10 +540,13 @@ const fundraisingDiv = (
   </div>
 );
 
-function generateDescription(text, amount, token, supervisor) {
-  const funding = `###### Requested amount: ${amount} ${token}\n###### Requested sponsor: @${supervisor}\n`;
-  if (amount > 0 && token && supervisor) return funding + text;
-  return text;
+function generateDescription(text, amount, token, supervisor, seekingFunding) {
+  const fundingText =
+    amount > 0 && token ? `###### Requested amount: ${amount} ${token}\n` : "";
+  const supervisorText = supervisor
+    ? `###### Requested sponsor: @${supervisor}\n`
+    : "";
+  return seekingFunding ? `${fundingText}${supervisorText}${text}` : text;
 }
 
 const renamedPostType = postType == "Submission" ? "Solution" : postType;
@@ -593,10 +597,18 @@ return (
             fundraisingDiv}
         </div>
       )}
-
-      <a className="btn btn-outline-primary mb-2" onClick={onSubmit}>
+      <button
+        style={{
+          width: "7rem",
+          backgroundColor: "#0C7283",
+          color: "#f3f3f3",
+        }}
+        disabled={state.seekingFunding && (!state.amount || state.amount < 1)}
+        className="btn btn-light mb-2 p-3"
+        onClick={onSubmit}
+      >
         Submit
-      </a>
+      </button>
       {disclaimer}
     </div>
     <div class="card-footer">
@@ -618,7 +630,8 @@ return (
                     state.description,
                     state.amount,
                     state.token,
-                    state.supervisor
+                    state.supervisor,
+                    state.seekingFunding
                   )
                 : state.description,
             amount: state.amount,
