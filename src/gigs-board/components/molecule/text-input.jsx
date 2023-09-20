@@ -65,18 +65,20 @@ const TextInput = ({
       ) : null}
 
       {!multiline ? (
-        <input
-          aria-describedby={key}
-          aria-label={label}
-          className={["form-control border border-2", inputClassName].join(" ")}
-          placeholder={
-            (placeholder ?? null) === null
-              ? null
-              : placeholder + (inputProps.required ? " ( required )" : "")
-          }
-          type={typeAttribute}
-          {...{ onChange, placeholder, value, ...inputProps }}
-        />
+        <div className="input-group">
+          {inputProps.prefix && (
+            <span className="input-group-text">{inputProps.prefix}</span>
+          )}
+          <input
+            aria-describedby={key}
+            aria-label={label}
+            className={["form-control border border-2", inputClassName].join(
+              " "
+            )}
+            type={typeAttribute}
+            {...{ onChange, placeholder, value, ...inputProps }}
+          />
+        </div>
       ) : (
         <textarea
           aria-describedby={key}
@@ -85,6 +87,7 @@ const TextInput = ({
           placeholder={
             placeholder + (inputProps.required ? " ( required )" : "")
           }
+          style={{ resize: inputProps.resize ?? "vertical" }}
           type={typeAttribute}
           {...{ onChange, placeholder, value, ...inputProps }}
         />
