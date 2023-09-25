@@ -345,7 +345,7 @@ const settings = {
 };
 
 const GithubKanbanBoardTicketFeaturesSchema = {
-  id: { label: "Id" },
+  id: { label: "GitHub ID" },
   author: { label: "Author" },
   labels: { label: "Labels" },
   type: { label: "Type" },
@@ -457,7 +457,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
     formToggle(false);
   };
 
-  const onSubmit = () =>
+  const onSave = () =>
     DevHub.update_community_github({
       handle: communityHandle,
 
@@ -539,7 +539,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
         </div>
 
         {widget("components.organism.configurator", {
-          heading: "Ticket features",
+          heading: "Card fields",
           classNames: { root: "col-12 col-md-4 h-auto" },
           externalState: form.values.metadata.ticket.features,
           isActive: true,
@@ -623,6 +623,34 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
             </AttractableDiv>
           )
         )}
+
+        <div className="d-flex gap-3 justify-content-end w-100">
+          {widget("components.molecule.button", {
+            classNames: {
+              root: "d-flex btn btn-outline-danger shadow-none border-0",
+            },
+
+            isHidden: typeof onCancel !== "function" || !state.isActive,
+            label: "Cancel",
+            onClick: onCancel,
+          })}
+
+          {widget("components.molecule.button", {
+            classNames: { root: "btn btn-success" },
+            disabled: form.isSynced,
+
+            icon: {
+              type: "svg_icon",
+              variant: "floppy_drive",
+              width: 14,
+              height: 14,
+            },
+
+            isHidden: typeof onSave !== "function" || !state.isActive,
+            label: "Save",
+            onClick: onSave,
+          })}
+        </div>
       </div>
     </>
   ) : null;
@@ -706,9 +734,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
           isConfiguratorActive: state.isActive,
           isSynced: form.isSynced,
           link,
-          onCancel,
           onConfigure: () => formToggle(true),
-          onSave: onSubmit,
           permissions,
         })
       ) : (

@@ -127,15 +127,13 @@ const KanbanPostTicket = ({ metadata }) => {
       postType === "Sponsorship" && metadata.features.sponsorship_supervisor,
   };
 
-  console.log(data);
-
   const header = (
     <div className="card-header d-flex justify-content-between gap-3">
       <a
         href={`https://near.org/mob.near/widget/ProfilePage?accountId=${data.author_id}`}
         className="d-flex gap-2 link-dark text-truncate"
       >
-        {features.author_avatar ? (
+        {features.author ? (
           <Widget
             src="mob.near/widget/ProfileImage"
             props={{

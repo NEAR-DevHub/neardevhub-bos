@@ -70,23 +70,16 @@ const WorkspaceViewLayout = ({
     style={{ paddingBottom: 72 }}
   >
     <div
-      className={[
-        "position-fixed bottom-0 d-flex gap-3 p-3",
-        "border border-2 border-dark border-bottom-0",
-      ].join(" ")}
+      className="d-flex justify-content-end gap-3 p-3 rounded-4 w-100"
       style={{
-        backdropFilter: "blur(10px)",
-        backgroundColor: "rgba(24, 24, 24, 0.1)",
-        borderBottom: "none !important",
-        borderTopLeftRadius: "1rem",
-        borderTopRightRadius: "1rem",
+        backgroundColor: "#181818",
         zIndex: 100,
       }}
     >
       {typeof link === "string" && link.length > 0 ? (
         <>
           {widget("components.molecule.button", {
-            classNames: { root: "btn-sm btn-outline-secondary" },
+            classNames: { root: "btn-sm btn-outline-secondary text-light" },
             href: link,
             icon: { type: "bootstrap_icon", variant: "box-arrow-up-right" },
             isHidden: "Disabled for MVP",
@@ -98,7 +91,7 @@ const WorkspaceViewLayout = ({
           })}
 
           {widget("components.molecule.button", {
-            classNames: { root: "btn-sm btn-outline-secondary" },
+            classNames: { root: "btn-sm btn-outline-secondary text-light" },
             icon: { type: "bootstrap_icon", variant: "bi-clipboard-fill" },
             isHidden: isConfiguratorActive,
             label: "Copy link",
@@ -109,6 +102,32 @@ const WorkspaceViewLayout = ({
 
       {permissions.can_configure && (
         <>
+          <div className="me-auto">
+            {(configurationControls ?? []).map((controlProps) =>
+              widget(
+                "components.molecule.button",
+                {
+                  classNames: {
+                    root: "btn-sm btn-outline-secondary text-light",
+                  },
+                  ...controlProps,
+                  isHidden: !isConfiguratorActive,
+                },
+                controlProps.label
+              )
+            )}
+          </div>
+
+          {widget("components.molecule.button", {
+            classNames: {
+              root: "btn-sm btn-outline-warning shadow-none border-0",
+            },
+
+            isHidden: typeof onCancel !== "function" || !isConfiguratorActive,
+            label: "Cancel",
+            onClick: onCancel,
+          })}
+
           {widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-primary" },
             icon: { type: "bootstrap_icon", variant: "bi-gear-wide-connected" },
@@ -116,28 +135,6 @@ const WorkspaceViewLayout = ({
             label: "Configure",
             onClick: onConfigure,
           })}
-
-          {widget("components.molecule.button", {
-            classNames: {
-              root: "btn-sm btn-outline-warning shadow-none border-0 text-dark",
-            },
-
-            isHidden: typeof onSave !== "function" || !isConfiguratorActive,
-            label: "Cancel",
-            onClick: onCancel,
-          })}
-
-          {(configurationControls ?? []).map((controlProps) =>
-            widget(
-              "components.molecule.button",
-              {
-                classNames: { root: "btn-sm btn-outline-secondary" },
-                ...controlProps,
-                isHidden: !isConfiguratorActive,
-              },
-              controlProps.label
-            )
-          )}
 
           {widget("components.molecule.button", {
             classNames: { root: "btn-sm btn-success" },

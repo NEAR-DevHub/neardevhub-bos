@@ -260,7 +260,10 @@ const defaultFieldsRender = ({ schema, form, isEditable, isUnlocked }) => (
         return (
           <>
             <div
-              className={["d-flex gap-3", isEditable ? "d-none" : ""].join(" ")}
+              className={[
+                "d-flex gap-3",
+                isEditable || noop ? "d-none" : "",
+              ].join(" ")}
               key={fieldKey}
               style={{ order }}
             >
@@ -292,7 +295,7 @@ const defaultFieldsRender = ({ schema, form, isEditable, isUnlocked }) => (
               className: [
                 "w-100",
                 fieldProps.className ?? "",
-                isEditable ? "" : "d-none",
+                isEditable && !noop ? "" : "d-none",
               ].join(" "),
 
               disabled: isDisabled,

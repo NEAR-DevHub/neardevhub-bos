@@ -373,9 +373,9 @@ const KanbanPostBoardTagsSchema = {
 };
 
 const KanbanPostBoardTicketFeaturesSchema = {
-  author_avatar: { label: "Author's avatar" },
-  like_count: { label: "Amount of likes" },
-  reply_count: { label: "Amount of replies", noop: true },
+  author: { label: "Author" },
+  like_count: { label: "Likes" },
+  reply_count: { label: "Replies", noop: true },
 
   sponsorship_request_indicator: {
     label: "Sponsorship request indicator",
@@ -384,8 +384,8 @@ const KanbanPostBoardTicketFeaturesSchema = {
 
   requested_grant_value: { label: "Requested grant value", noop: true },
   requested_sponsor: { label: "Requested sponsor", noop: true },
-  approved_grant_value: { label: "Approved grant value" },
-  sponsorship_supervisor: { label: "Sponsorship supervisor" },
+  approved_grant_value: { label: "Approved amount" },
+  sponsorship_supervisor: { label: "Supervisor" },
   tags: { label: "Tags" },
   type: { label: "Post type" },
 };
@@ -401,7 +401,7 @@ const KanbanPostBoardDefaults = {
       type: "kanban.post_ticket",
 
       features: {
-        author_avatar: true,
+        author: true,
         like_count: true,
         reply_count: false,
         sponsorship_request_indicator: false,
@@ -509,7 +509,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
     formToggle(false);
   };
 
-  const onSubmit = () =>
+  const onSave = () =>
     DevHub.update_community_board({
       handle: communityHandle,
       board: JSON.stringify(form.values),
@@ -544,7 +544,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         </div>
 
         {widget("components.organism.configurator", {
-          heading: "Ticket features",
+          heading: "Card fields",
           classNames: { root: "w-auto h-auto" },
           externalState: form.values.metadata.ticket.features,
           isActive: true,
@@ -628,6 +628,34 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
             </AttractableDiv>
           )
         )}
+
+        <div className="d-flex gap-3 justify-content-end w-100">
+          {widget("components.molecule.button", {
+            classNames: {
+              root: "d-flex btn btn-outline-danger shadow-none border-0",
+            },
+
+            isHidden: typeof onCancel !== "function" || !state.isActive,
+            label: "Cancel",
+            onClick: onCancel,
+          })}
+
+          {widget("components.molecule.button", {
+            classNames: { root: "btn btn-success" },
+            disabled: form.isSynced,
+
+            icon: {
+              type: "svg_icon",
+              variant: "floppy_drive",
+              width: 14,
+              height: 14,
+            },
+
+            isHidden: typeof onSave !== "function" || !state.isActive,
+            label: "Save",
+            onClick: onSave,
+          })}
+        </div>
       </div>
     </>
   ) : null;
@@ -711,10 +739,8 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           isConfiguratorActive: state.isActive,
           isSynced: form.isSynced,
           link,
-          onCancel,
           onConfigure: () => formToggle(true),
           onDelete: isViewInitialized ? viewDelete : null,
-          onSave: onSubmit,
           permissions,
         })
       ) : (
