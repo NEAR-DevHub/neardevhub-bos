@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('should show post history for posts in the feed', async ({ page }) => {
     await page.goto('https://near.org/');
     await page.evaluate(() => {
-        localStorage.setItem('flags', JSON.stringify({ "bosLoaderUrl": "http://localhost:3030" }));
+        localStorage.setItem('flags', JSON.stringify({ "bosLoaderUrl": "http://127.0.0.1:3030" }));
     });
     
     await page.goto('https://near.org/devgovgigs.near/widget/gigs-board.pages.Feed');
