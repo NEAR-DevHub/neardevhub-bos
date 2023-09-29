@@ -242,6 +242,27 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     return <div>Loading...</div>;
   }
 
+  const availableAddons = [
+    {
+      id: "1",
+      title: "Wiki",
+      description: "",
+      configurator: "entity.addon.wiki-configurator",
+      viewer: "community.wiki",
+      icon: "",
+    },
+  ];
+
+  const communityAddons = [
+    {
+      addon_id: "123",
+      name: "Wiki",
+      feature_id: "1",
+      parameters: JSON.stringify({}),
+      enabled: true,
+    },
+  ];
+
   const tabs = [
     {
       defaultActive: true,
@@ -296,6 +317,16 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
             title: "Telegram",
           },
         ]),
+
+    ...communityAddons.map((addon) => ({
+      title: addon.name,
+      route: "community.addon",
+      iconClass: addon.icon,
+      params: {
+        viewer: availableAddons.find((it) => it.id === addon.feature_id).viewer,
+        data: JSON.parse(addon.parameters || "null"),
+      },
+    })),
   ];
 
   const linkCopyStateToggle = (forcedState) =>

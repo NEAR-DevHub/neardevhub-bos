@@ -320,6 +320,7 @@ const CommunityAccessControlSchema = {
   },
 };
 
+// TO BE REMOVED
 const CommunityWikiPageSchema = {
   name: {
     label: "Name",
@@ -338,6 +339,7 @@ const CommunityConfigurator = ({ handle, link }) => {
   State.init({
     communityData: null,
     hasUnsavedChanges: false,
+    selectedAddon: null,
   });
 
   const community = DevHub.useQuery("community", { handle }),
@@ -351,6 +353,26 @@ const CommunityConfigurator = ({ handle, link }) => {
       hasUnsavedChanges: false,
     }));
   }
+
+  const availableAddons = [
+    {
+      id: "1",
+      title: "Wiki",
+      description: "",
+      configurator: "entity.addon.wiki-configurator",
+      icon: "",
+    },
+  ];
+
+  const communityAddons = [
+    {
+      addon_id: "123",
+      name: "Wiki",
+      feature_id: "1",
+      parameters: JSON.stringify({}),
+      enabled: true,
+    },
+  ];
 
   const sectionSubmit = (sectionData) => {
     State.update((lastKnownState) => {
@@ -402,7 +424,6 @@ const CommunityConfigurator = ({ handle, link }) => {
             onSubmit: sectionSubmit,
             values: state.communityData,
           })}
-
           {widget("components.organism.configurator", {
             heading: "Community information",
             data: state.communityData,
@@ -412,7 +433,6 @@ const CommunityConfigurator = ({ handle, link }) => {
             schema: CommunityInformationSchema,
             submitLabel: "Accept",
           })}
-
           {widget("components.organism.configurator", {
             heading: "About",
             data: state.communityData,
@@ -422,7 +442,6 @@ const CommunityConfigurator = ({ handle, link }) => {
             schema: CommunityAboutSchema,
             submitLabel: "Accept",
           })}
-
           {widget("components.organism.configurator", {
             heading: "Access control",
             data: state.communityData,
@@ -433,7 +452,6 @@ const CommunityConfigurator = ({ handle, link }) => {
             schema: CommunityAccessControlSchema,
             submitLabel: "Accept",
           })}
-
           {widget("components.organism.configurator", {
             heading: "Wiki page 1",
             data: state.communityData?.wiki1,
@@ -454,6 +472,80 @@ const CommunityConfigurator = ({ handle, link }) => {
             schema: CommunityWikiPageSchema,
           })}
 
+          {communityAddons &&
+            communityAddons.map((addon) => {
+              const match = availableAddons.find(
+                (it) => it.id === addon.feature_id
+              );
+              if (match) {
+                return (
+                  <>
+                    {widget("entity.community.configurator.section", {
+                      heading: addon.name,
+                      hasPermissionToConfgure: permissions.can_configure,
+                      configurator: (p) =>
+                        widget(match.configurator, {
+                          data: state.communityData[addon.addon_id],
+                          onSubmit: (value) =>
+                            sectionSubmit({ [addon.addon_id]: value }),
+                          ...p,
+                        }),
+                    })}
+                  </>
+                );
+              } else {
+                return widget("components.molecule.tile", {
+                  children:
+                    "Unknown addon with feature ID: " + addon.feature_id,
+                });
+              }
+            })}
+
+          {permissions.can_configure &&
+            (state.selectedAddon ? (
+              widget("entity.community.configurator.section", {
+                heading: "New " + state.selectedAddon.title,
+                hasPermissionToConfgure: permissions.can_configure,
+                configurator: (p) =>
+                  widget(state.selectedAddon.configurator, {
+                    data: state.communityData.newAddon,
+                    onSubmit: (value) => sectionSubmit({ newAddon: value }),
+                    ...p,
+                  }),
+              })
+            ) : (
+              <>
+                {widget("components.molecule.tile", {
+                  heading: "Add new addon",
+                  children: (
+                    <Widget
+                      src="near/widget/DIG.InputSelect"
+                      props={{
+                        groups: [
+                          {
+                            items: availableAddons.map((it) => ({
+                              label: it.title,
+                              value: it.id,
+                            })),
+                          },
+                        ],
+                        rootProps: {
+                          value: state.selectedAddon.id ?? null,
+                          onValueChange: (value) => {
+                            State.update({
+                              selectedAddon: availableAddons.find(
+                                (it) => it.id === value
+                              ),
+                            });
+                          },
+                        },
+                      }}
+                    />
+                  ),
+                })}
+              </>
+            ))}
+
           {permissions.can_delete ? (
             <div
               className="d-flex justify-content-center gap-4 p-4 w-100"
@@ -466,7 +558,6 @@ const CommunityConfigurator = ({ handle, link }) => {
               })}
             </div>
           ) : null}
-
           {permissions.can_configure && state.hasUnsavedChanges && (
             <div
               className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
