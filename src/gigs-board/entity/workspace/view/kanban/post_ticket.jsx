@@ -102,22 +102,25 @@ const KanbanPostTicket = ({ metadata }) => {
       ? "Solution"
       : data.snapshot.post_type;
 
+  const isFundingRequested =
+    typeof data.snapshot.amount === "number" && data.snapshot.amount > 0;
+
   const features = {
     ...metadata.features,
 
     sponsorship_request_indicator:
       postType === "Solution" &&
-      data.snapshot.is_funding_requested &&
+      isFundingRequested &&
       metadata.features.sponsorship_request_indicator,
 
     requested_grant_value:
       postType === "Solution" &&
-      data.snapshot.is_funding_requested &&
+      isFundingRequested &&
       metadata.features.requested_grant_value,
 
     requested_sponsor:
       postType === "Solution" &&
-      data.snapshot.is_funding_requested &&
+      isFundingRequested &&
       metadata.features.requested_sponsor,
 
     approved_grant_value:
