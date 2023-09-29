@@ -52,18 +52,29 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
+const buttonStyle = {
+  backgroundColor: "#0C7283",
+  color: "#f3f3f3",
+};
+
 return (
-  <div class="d-flex flex-row-reverse">
-    <a
-      class="btn btn-light"
-      style={{
-        backgroundColor: "#0C7283",
-        color: "#f3f3f3",
-      }}
-      href={href("Create", { labels: props.labels })}
-    >
-      <i class="bi bi-plus-circle-fill"></i>
-      Post
-    </a>
+  <div class="d-flex flex-row-reverse" className={props.className}>
+    {props.href ? (
+      <a class="btn btn-light" style={buttonStyle} href={props.href}>
+        <i
+          class="bi"
+          className={props.icon ? props.icon : "bi-plus-circle-fill"}
+        ></i>
+        {props.title}
+      </a>
+    ) : (
+      <button class="btn btn-light" style={buttonStyle} onClick={props.onClick}>
+        <i
+          class="bi"
+          className={props.icon ? props.icon : "bi-plus-circle-fill"}
+        ></i>
+        {props.title || "Post"}
+      </button>
+    )}
   </div>
 );
