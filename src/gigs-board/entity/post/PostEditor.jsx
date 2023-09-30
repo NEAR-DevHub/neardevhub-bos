@@ -51,7 +51,6 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-
 /* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
 const AutoComplete = styled.div`
@@ -79,20 +78,24 @@ const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
 
-const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
-const labelStrings = (props.labels ?? []).concat(referralLabels);
-const labels = labelStrings.map((s) => {
-  return { name: s };
-});
+const tags = (props.tags ?? props.labels ?? []).concat(
+  props.referral ? [`referral:${props.referral}`] : []
+);
 
 initState({
-  seekingFunding: false,
+  fundraising: false,
   author_id: context.accountId,
-  // Should be a list of objects with field "name".
-  labels,
-  // Should be a list of labels as strings.
-  // Both of the label structures should be modified together.
-  labelStrings,
+
+  /**
+   * A list of string tags.
+   */
+  tags,
+
+  /**
+   * Tags as a list of objects with field "name".
+   */
+  tagOptions: tags.map((tag) => ({ name: tag })),
+
   postType,
   name: props.name ?? "",
   description: props.description ?? "",
@@ -111,7 +114,7 @@ if (!state.draftStateApplied && props.draftState) {
 let fields = {
   Comment: ["description"],
   Idea: ["name", "description"],
-  Submission: ["name", "description", "fund_raising"],
+  Solution: ["name", "description", "fundraising"],
   Attestation: ["name", "description"],
   Sponsorship: [
     "name",
@@ -143,7 +146,7 @@ const tokenMapping = {
 };
 
 const onSubmit = () => {
-  let labels = state.labelStrings;
+  let labels = state.tags;
   var body = {
     Comment: { description: state.description, comment_version: "V2" },
     Idea: {
@@ -151,16 +154,13 @@ const onSubmit = () => {
       description: state.description,
       idea_version: "V1",
     },
-    Submission: {
+    Solution: {
       name: state.name,
-      description: generateDescription(
-        state.description,
-        state.amount,
-        state.token,
-        state.supervisor,
-        state.seekingFunding
-      ),
-      submission_version: "V1",
+      description: state.description,
+      amount: state.amount,
+      sponsorship_token: tokenMapping[state.token],
+      supervisor: state.supervisor,
+      solution_version: "V2",
     },
     Attestation: {
       name: state.name,
@@ -235,8 +235,8 @@ const onSubmit = () => {
   }
 };
 
-const normalizeLabel = (label) =>
-  label
+const normalizeTag = (tag) =>
+  tag
     .replaceAll(/[- \.]/g, "_")
     .replaceAll(/[^\w]+/g, "")
     .replaceAll(/_+/g, "-")
@@ -245,18 +245,18 @@ const normalizeLabel = (label) =>
     .toLowerCase()
     .trim("-");
 
-const checkLabel = (label) => {
+const checkTag = (tag) => {
   Near.asyncView(nearDevGovGigsContractAccountId, "is_allowed_to_use_labels", {
     editor: context.accountId,
-    labels: [label],
+    labels: [tag],
   }).then((allowed) => {
     if (allowed) {
       State.update({ warning: "" });
     } else {
       State.update({
         warning:
-          'The label "' +
-          label +
+          'The tag "' +
+          tag +
           '" is protected and can only be added by moderators',
       });
       return;
@@ -264,75 +264,69 @@ const checkLabel = (label) => {
   });
 };
 
-const setLabels = (labels) => {
-  labels = labels.map((o) => {
-    o.name = normalizeLabel(o.name);
-    return o;
-  });
-  if (labels.length < state.labels.length) {
-    let oldLabels = new Set(state.labels.map((label) => label.name));
-    for (let label of labels) {
-      oldLabels.delete(label.name);
+const setTags = (tagOptions) => {
+  tagOptions = tagOptions.map((tagOption) => ({
+    name: normalizeTag(tagOption.name),
+  }));
+
+  if (tagOptions.length < state.tagOptions.length) {
+    const lastKnownTagList = new Set(state.tagOptions.map(({ name }) => name));
+
+    for (const tag of tagOptions) {
+      lastKnownTagList.delete(tag.name);
     }
-    let removed = oldLabels.values().next().value;
+
+    const protectedTag = lastKnownTagList.values().next().value;
+
     Near.asyncView(
       nearDevGovGigsContractAccountId,
       "is_allowed_to_use_labels",
-      { editor: context.accountId, labels: [removed] }
-    ).then((allowed) => {
-      if (allowed) {
-        let labelStrings = labels.map(({ name }) => name);
-        State.update({ labels, labelStrings });
-      } else {
-        State.update({
-          warning:
-            'The label "' +
-            removed +
-            '" is protected and can only be updated by moderators',
-        });
-        return;
-      }
-    });
+      { editor: context.accountId, labels: [protectedTag] }
+    ).then((allowed) =>
+      State.update(
+        allowed
+          ? { tags: lastKnownTagList, tagOptions }
+          : {
+              warning: `The tag "${protectedTag}" is protected and can only be updated by moderators`,
+            }
+      )
+    );
   } else {
-    let labelStrings = labels.map((o) => {
-      return o.name;
+    State.update({
+      tags,
+
+      tagOptions: tags.map((tagOption) => ({
+        name: normalizeTag(tagOption.name),
+      })),
     });
-    State.update({ labels, labelStrings });
   }
 };
-const existingLabelStrings =
+const existingTags =
   Near.view(nearDevGovGigsContractAccountId, "get_all_allowed_labels", {
     editor: context.accountId,
   }) ?? [];
-const existingLabelSet = new Set(existingLabelStrings);
-const existingLabels = existingLabelStrings.map((s) => {
-  return { name: s };
-});
 
-const labelEditor = (
+const tagEditor = (
   <div className="col-lg-12  mb-2">
-    Labels:
+    Tags:
     <Typeahead
       multiple
       labelKey="name"
-      onInputChange={checkLabel}
-      onChange={setLabels}
-      options={existingLabels}
+      onInputChange={checkTag}
+      onChange={setTags}
+      options={existingTags.map((tag) => ({ name: tag }))}
       placeholder="near.social, widget, NEP, standard, protocol, tool"
-      selected={state.labels}
+      selected={state.tagOptions}
       positionFixed
-      allowNew={(results, props) => {
-        return (
-          !existingLabelSet.has(props.text) &&
-          props.selected.filter((selected) => selected.name === props.text)
-            .length == 0 &&
-          Near.view(
-            nearDevGovGigsContractAccountId,
-            "is_allowed_to_use_labels",
-            { editor: context.accountId, labels: [props.text] }
-          )
-        );
-      }}
+      allowNew={(results, props) =>
+        !new Set(existingTags).has(props.text) &&
+        props.selected.filter((selected) => selected.name === props.text)
+          .length == 0 &&
+        Near.view(nearDevGovGigsContractAccountId, "is_allowed_to_use_labels", {
+          editor: context.accountId,
+          labels: [props.text],
+        })
+      }
     />
   </div>
 );
@@ -447,14 +441,14 @@ const isFundraisingDiv = (
           <button
             className="btn btn-light p-0"
             style={{
-              backgroundColor: state.seekingFunding ? "#0C7283" : "inherit",
+              backgroundColor: state.fundraising ? "#0C7283" : "inherit",
               color: "#f3f3f3",
               border: "solid #D9D9D9",
               borderRadius: "100%",
               height: "20px",
               width: "20px",
             }}
-            onClick={() => State.update({ seekingFunding: true })}
+            onClick={() => State.update({ fundraising: true })}
           />
           Yes
         </label>
@@ -464,14 +458,14 @@ const isFundraisingDiv = (
           <button
             className="btn btn-light p-0"
             style={{
-              backgroundColor: !state.seekingFunding ? "#0C7283" : "inherit",
+              backgroundColor: !state.fundraising ? "#0C7283" : "inherit",
               color: "#f3f3f3",
               border: "solid #D9D9D9",
               borderRadius: "100%",
               height: "20px",
               width: "20px",
             }}
-            onClick={() => State.update({ seekingFunding: false })}
+            onClick={() => State.update({ fundraising: false })}
           />
           No
         </label>
@@ -536,22 +530,12 @@ const fundraisingDiv = (
   </div>
 );
 
-function generateDescription(text, amount, token, supervisor, seekingFunding) {
-  const fundingText =
-    amount > 0 && token ? `###### Requested amount: ${amount} ${token}\n` : "";
-  const supervisorText = supervisor
-    ? `###### Requested sponsor: @${supervisor}\n`
-    : "";
-  return seekingFunding ? `${fundingText}${supervisorText}${text}` : text;
-}
-
-const renamedPostType = postType == "Submission" ? "Solution" : postType;
 // Below there is a weird code with fields.includes("githubLink") ternary operator.
 // This is to hack around rendering bug of near.social.
 return (
   <div className="card">
     <div className="card-header">
-      {mode} {renamedPostType}
+      {mode} {postType}
     </div>
 
     <div class="card-body">
@@ -570,26 +554,26 @@ return (
           ></button>
         </div>
       )}
-      {/* This statement around the githubLinkDiv creates a weird render bug 
+      {/* This statement around the githubLinkDiv creates a weird render bug
       where the title renders extra on state change. */}
       {fields.includes("githubLink") ? (
         <div className="row">
           {fields.includes("githubLink") && githubLinkDiv}
-          {labelEditor}
+          {tagEditor}
           {fields.includes("name") && nameDiv}
           {fields.includes("description") && callDescriptionDiv()}
         </div>
       ) : (
         <div className="row">
-          {labelEditor}
+          {tagEditor}
           {fields.includes("name") && nameDiv}
           {fields.includes("amount") && amountDiv}
           {fields.includes("sponsorship_token") && tokenDiv}
           {fields.includes("supervisor") && supervisorDiv}
           {fields.includes("description") && callDescriptionDiv()}
-          {fields.includes("fund_raising") && isFundraisingDiv}
-          {state.seekingFunding &&
-            fields.includes("fund_raising") &&
+          {fields.includes("fundraising") && isFundraisingDiv}
+          {state.fundraising &&
+            fields.includes("fundraising") &&
             fundraisingDiv}
         </div>
       )}
@@ -599,7 +583,7 @@ return (
           backgroundColor: "#0C7283",
           color: "#f3f3f3",
         }}
-        disabled={state.seekingFunding && (!state.amount || state.amount < 1)}
+        disabled={state.fundraising && (!state.amount || state.amount < 1)}
         className="btn btn-light mb-2 p-3"
         onClick={onSubmit}
       >
@@ -617,19 +601,10 @@ return (
           likes: [],
           snapshot: {
             editor_id: state.editor_id,
-            labels: state.labelStrings,
+            labels: state.tags,
             post_type: postType,
             name: state.name,
-            description:
-              postType == "Submission"
-                ? generateDescription(
-                    state.description,
-                    state.amount,
-                    state.token,
-                    state.supervisor,
-                    state.seekingFunding
-                  )
-                : state.description,
+            description: state.description,
             amount: state.amount,
             sponsorship_token: state.token,
             supervisor: state.supervisor,

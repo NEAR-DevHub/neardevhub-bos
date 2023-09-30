@@ -197,7 +197,7 @@ const editControl = allowedToEdit ? (
     </a>
     <ul class="dropdown-menu">
       {btnEditorWidget("Idea", "Edit as an idea")}
-      {btnEditorWidget("Submission", "Edit as a solution")}
+      {btnEditorWidget("Solution", "Edit as a solution")}
       {btnEditorWidget("Attestation", "Edit as an attestation")}
       {btnEditorWidget("Sponsorship", "Edit as a sponsorship")}
       {btnEditorWidget("Comment", "Edit as a comment")}
@@ -250,7 +250,7 @@ const header = (
 const emptyIcons = {
   Idea: "bi-lightbulb",
   Comment: "bi-chat",
-  Submission: "bi-rocket",
+  Solution: "bi-rocket",
   Attestation: "bi-check-circle",
   Sponsorship: "bi-cash-coin",
   Github: "bi-github",
@@ -261,7 +261,7 @@ const emptyIcons = {
 const fillIcons = {
   Idea: "bi-lightbulb-fill",
   Comment: "bi-chat-fill",
-  Submission: "bi-rocket-fill",
+  Solution: "bi-rocket-fill",
   Attestation: "bi-check-circle-fill",
   Sponsorship: "bi-cash-coin",
   Github: "bi-github",
@@ -274,7 +274,7 @@ const fillIcons = {
 const borders = {
   Idea: "border-light",
   Comment: "border-light",
-  Submission: "border-light",
+  Solution: "border-light",
   Attestation: "border-light",
   Sponsorship: "border-light",
   Github: "border-light",
@@ -384,8 +384,8 @@ const buttonsFooter = props.isPreview ? null : (
               "Get feedback from the community about a problem, opportunity, or need."
             )}
             {btnCreatorWidget(
-              "Submission",
-              emptyIcons.Submission,
+              "Solution",
+              emptyIcons.Solution,
               "Solution",
               "Provide a specific proposal or implementation to an idea, optionally requesting funding."
             )}
@@ -578,9 +578,6 @@ function Editor() {
   );
 }
 
-const renamedPostType =
-  snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
-
 const tags = post.snapshot.labels ? (
   <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
     {post.snapshot.labels.map((tag) => {
@@ -599,7 +596,7 @@ const postTitle =
       <div className="row justify-content-between">
         <div class="col-9">
           <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
-          {renamedPostType}: {snapshot.name}
+          {snapshot.post_type}: {snapshot.name}
         </div>
       </div>
     </h5>

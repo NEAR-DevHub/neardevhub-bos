@@ -133,7 +133,7 @@ const header = (
 const emptyIcons = {
   Idea: "bi-lightbulb",
   Comment: "bi-chat",
-  Submission: "bi-rocket",
+  Solution: "bi-rocket",
   Attestation: "bi-check-circle",
   Sponsorship: "bi-cash-coin",
 };
@@ -141,13 +141,10 @@ const emptyIcons = {
 const borders = {
   Idea: "border-secondary",
   Comment: "border-secondary",
-  Submission: "border-secondary",
+  Solution: "border-secondary",
   Attestation: "border-secondary",
   Sponsorship: "border-secondary",
 };
-
-const renamedPostType =
-  snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
 const postLables = post.snapshot.labels ? (
   <div class="card-title">
@@ -165,7 +162,7 @@ const postTitle =
       <div className="row justify-content-between">
         <div class="col-9">
           <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
-          {renamedPostType}: {snapshot.name}
+          {snapshot.post_type}: {snapshot.name}
         </div>
       </div>
     </div>

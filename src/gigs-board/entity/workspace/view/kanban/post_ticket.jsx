@@ -83,7 +83,7 @@ const AttractableImage = styled.img`
 const iconsByPostType = {
   Idea: "bi-lightbulb",
   Comment: "bi-chat",
-  Submission: "bi-rocket",
+  Solution: "bi-rocket",
   Attestation: "bi-check-circle",
   Sponsorship: "bi-cash-coin",
 };
@@ -97,11 +97,6 @@ const KanbanPostTicket = ({ metadata }) => {
     return <div>Loading ...</div>;
   }
 
-  const postType =
-    data.snapshot.post_type === "Submission"
-      ? "Solution"
-      : data.snapshot.post_type;
-
   const isFundingRequested =
     typeof data.snapshot.amount === "number" && data.snapshot.amount > 0;
 
@@ -109,25 +104,27 @@ const KanbanPostTicket = ({ metadata }) => {
     ...metadata.features,
 
     sponsorship_request_indicator:
-      postType === "Solution" &&
+      data.snapshot.post_type === "Solution" &&
       isFundingRequested &&
       metadata.features.sponsorship_request_indicator,
 
     requested_grant_value:
-      postType === "Solution" &&
+      data.snapshot.post_type === "Solution" &&
       isFundingRequested &&
       metadata.features.requested_grant_value,
 
     requested_sponsor:
-      postType === "Solution" &&
+      data.snapshot.post_type === "Solution" &&
       isFundingRequested &&
       metadata.features.requested_sponsor,
 
     approved_grant_value:
-      postType === "Sponsorship" && metadata.features.approved_grant_value,
+      data.snapshot.post_type === "Sponsorship" &&
+      metadata.features.approved_grant_value,
 
     sponsorship_supervisor:
-      postType === "Sponsorship" && metadata.features.sponsorship_supervisor,
+      data.snapshot.post_type === "Sponsorship" &&
+      metadata.features.sponsorship_supervisor,
   };
 
   const header = (
@@ -197,7 +194,7 @@ const KanbanPostTicket = ({ metadata }) => {
       ) : null}
 
       <span>
-        {[features.type ? postType : null, data.snapshot.name]
+        {[features.type ? data.snapshot.post_type : null, data.snapshot.name]
           .filter(
             (maybeString) =>
               typeof maybeString === "string" && maybeString.length > 0

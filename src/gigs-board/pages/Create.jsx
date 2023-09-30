@@ -154,11 +154,10 @@ const onSubmit = () => {
   if (state.postType === "Solution") {
     body = {
       ...body,
-      post_type: "Submission",
-      submission_version: "V1",
+      post_type: "Solution",
+      solution_version: "V2",
     };
   } else {
-    // Idea
     body = {
       ...body,
       post_type: "Idea",
