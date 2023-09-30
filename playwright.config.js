@@ -43,12 +43,17 @@ export default defineConfig({
     storageState: {
       cookies: [],
       origins: [
-        {origin: 'https://near.org',localStorage: [{
-          name: 'flags',
-          value: JSON.stringify({ bosLoaderUrl: "http://127.0.0.1:3030" })
-        }]}
-      ]
-    }
+        {
+          origin: "https://near.org",
+          localStorage: [
+            {
+              name: "flags",
+              value: JSON.stringify({ bosLoaderUrl: "http://127.0.0.1:3030" }),
+            },
+          ],
+        },
+      ],
+    },
   },
 
   /* Configure projects for major browsers */

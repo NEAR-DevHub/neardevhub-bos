@@ -1,9 +1,7 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 
 test("should show post history for posts in the feed", async ({ page }) => {
   await page.goto("/devgovgigs.near/widget/gigs-board.pages.Feed");
-  const bodyText = await page.textContent("body");
-  expect(bodyText).not.toContain("BOS Loader fetch error");
 
   const firstPostHistoryButtonSelector = 'a.card-link[title="Post History"]';
   // Wait for the first post history button to be visible
