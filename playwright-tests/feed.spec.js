@@ -1,14 +1,6 @@
 import { test, expect } from "@playwright/test";
 
 test("should show post history for posts in the feed", async ({ page }) => {
-  await page.goto("/");
-  await page.evaluate(() => {
-    localStorage.setItem(
-      "flags",
-      JSON.stringify({ bosLoaderUrl: "http://127.0.0.1:3030" })
-    );
-  });
-
   await page.goto("/devgovgigs.near/widget/gigs-board.pages.Feed");
   const bodyText = await page.textContent("body");
   expect(bodyText).not.toContain("BOS Loader fetch error");
