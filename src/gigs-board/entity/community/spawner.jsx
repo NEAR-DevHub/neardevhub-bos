@@ -278,7 +278,7 @@ const onCommunitySubmit = (inputs) =>
 const CommunitySpawner = ({ isHidden, ...otherProps }) =>
   widget("components.organism.configurator", {
     heading: "Community information",
-    data: CommunityInputsDefaults,
+    externalState: CommunityInputsDefaults,
     fullWidth: true,
     isActive: true,
     isHidden,
@@ -286,7 +286,7 @@ const CommunitySpawner = ({ isHidden, ...otherProps }) =>
     isValid: communityInputsValidator,
     onSubmit: onCommunitySubmit,
     schema: CommunityInputsPartialSchema,
-    submitIcon: { kind: "bootstrap-icon", variant: "bi-rocket-takeoff-fill" },
+    submitIcon: { type: "bootstrap_icon", variant: "bi-rocket-takeoff-fill" },
     submitLabel: "Launch",
     ...otherProps,
   });

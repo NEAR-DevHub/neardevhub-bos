@@ -386,7 +386,10 @@ const CommunityConfigurator = ({ handle, link }) => {
   return community.isLoading ? (
     <div>Loading...</div>
   ) : (
-    <div className="d-flex flex-column align-items-center gap-4">
+    <div
+      className="d-flex flex-column align-items-center gap-4 w-100"
+      style={{ maxWidth: 960 }}
+    >
       {community.data === null ? (
         <div
           className="d-flex flex-column justify-content-center align-items-center w-100"
@@ -405,8 +408,9 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Community information",
-            data: state.communityData,
-            isSubform: true,
+            externalState: state.communityData,
+            fullWidth: true,
+            isEmbedded: true,
             isUnlocked: permissions.can_configure,
             onSubmit: sectionSubmit,
             schema: CommunityInformationSchema,
@@ -415,8 +419,9 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "About",
-            data: state.communityData,
-            isSubform: true,
+            externalState: state.communityData,
+            fullWidth: true,
+            isEmbedded: true,
             isUnlocked: permissions.can_configure,
             onSubmit: sectionSubmit,
             schema: CommunityAboutSchema,
@@ -425,9 +430,10 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Access control",
-            data: state.communityData,
+            externalState: state.communityData,
+            fullWidth: true,
             formatter: communityAccessControlFormatter,
-            isSubform: true,
+            isEmbedded: true,
             isUnlocked: permissions.can_configure,
             onSubmit: sectionSubmit,
             schema: CommunityAccessControlSchema,
@@ -436,8 +442,9 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Wiki page 1",
-            data: state.communityData?.wiki1,
-            isSubform: true,
+            externalState: state.communityData?.wiki1,
+            fullWidth: true,
+            isEmbedded: true,
             isUnlocked: permissions.can_configure,
             onSubmit: (value) => sectionSubmit({ wiki1: value }),
             submitLabel: "Accept",
@@ -446,8 +453,9 @@ const CommunityConfigurator = ({ handle, link }) => {
 
           {widget("components.organism.configurator", {
             heading: "Wiki page 2",
-            data: state.communityData?.wiki2,
-            isSubform: true,
+            externalState: state.communityData?.wiki2,
+            fullWidth: true,
+            isEmbedded: true,
             isUnlocked: permissions.can_configure,
             onSubmit: (value) => sectionSubmit({ wiki2: value }),
             submitLabel: "Accept",
@@ -474,7 +482,7 @@ const CommunityConfigurator = ({ handle, link }) => {
             >
               {widget("components.molecule.button", {
                 classNames: { root: "btn-lg btn-success" },
-                icon: { kind: "svg", variant: "floppy-drive" },
+                icon: { type: "svg_icon", variant: "floppy_drive" },
                 label: "Save",
                 onClick: changesSave,
               })}
