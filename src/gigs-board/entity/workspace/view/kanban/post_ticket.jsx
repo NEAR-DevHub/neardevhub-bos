@@ -93,9 +93,7 @@ const KanbanPostTicket = ({ metadata }) => {
     post_id: metadata.id ? parseInt(metadata.id) : 0,
   });
 
-  if (!data) {
-    return <div>Loading ...</div>;
-  }
+  if (!data) return <div>Loading ...</div>;
 
   const isFundingRequested =
     typeof data.snapshot.amount === "number" && data.snapshot.amount > 0;
