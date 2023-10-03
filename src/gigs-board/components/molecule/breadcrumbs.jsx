@@ -73,11 +73,9 @@ const Breadcrumbs = ({ classNames, path }) => (
           ].join(" ")}
         >
           <a
-            className={["pb-1 lh-1 text-white", classNames?.link ?? ""].join(
-              " "
-            )}
+            className={["lh-1 text-white", classNames?.link ?? ""].join(" ")}
             href={href(pageId, params ?? {})}
-            style={{ fontWeight: 420 }}
+            style={{ fontWeight: 420, paddingBottom: 3 }}
           >
             {label}
           </a>

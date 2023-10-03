@@ -201,7 +201,7 @@ const postTagsToIdSet = (tags) => {
   );
 };
 
-const configToColumns = ({ columns, tags }) =>
+const configToColumnData = ({ columns, tags }) =>
   Object.entries(columns).reduce((registry, [columnId, column]) => {
     const postIds = (
       Near.view(nearDevGovGigsContractAccountId, "get_posts_by_label", {
@@ -227,148 +227,84 @@ const configToColumns = ({ columns, tags }) =>
     };
   }, {});
 
-const KanbanView = ({
-  config,
+const KanbanPostBoard = ({
   metadata,
-  isUnderConfiguration,
+  payload,
+  configurationControls,
+  isConfiguratorActive,
+  isSynced,
   link,
-  onConfigureClick,
-  onDeleteClick,
+  onCancel,
+  onConfigure,
+  onDelete,
+  onSave,
   permissions,
 }) => {
-  const columns = configToColumns(config);
-
-  return (
-    <div className="d-flex flex-column gap-4">
-      <div
-        className={"d-flex justify-content-end gap-3 p-3 rounded-4"}
-        style={{ backgroundColor: "#181818" }}
-      >
-        {typeof link === "string" && link.length > 0 ? (
-          <>
-            {false && // Disabled until workspaces are introduced
-              widget("components.molecule.button", {
-                classNames: { root: "btn-sm btn-outline-secondary" },
-                href: link,
-                icon: { kind: "bootstrap-icon", variant: "box-arrow-up-right" },
-                label: "Open in new tab",
-                rel: "noreferrer",
-                role: "button",
-                target: "_blank",
-                type: "link",
-              })}
-
-            {widget("components.molecule.button", {
-              classNames: {
-                root: "btn-sm btn-outline-secondary me-auto text-white",
-              },
-
-              icon: { kind: "bootstrap-icon", variant: "bi-clipboard-fill" },
-              label: "Copy link",
-              onClick: () => clipboard.writeText(link),
-            })}
-          </>
-        ) : null}
-
-        {permissions.can_configure && (
-          <>
-            {widget("components.molecule.button", {
-              classNames: { root: "btn-sm btn-primary" },
-
-              icon: {
-                kind: "bootstrap-icon",
-                variant: "bi-gear-wide-connected",
-              },
-
-              isHidden:
-                typeof onConfigureClick !== "function" || isUnderConfiguration,
-
-              label: "Configure",
-              onClick: onConfigureClick,
-            })}
-
-            {widget("components.molecule.button", {
-              classNames: {
-                root: "btn-sm btn-outline-danger shadow-none border-0",
-              },
-
-              icon: { kind: "bootstrap-icon", variant: "bi-recycle" },
-              isHidden: "Disabled for MVP", // typeof onDeleteClick !== "function",
-              label: "Delete",
-              onClick: onDeleteClick,
-            })}
-          </>
-        )}
-      </div>
-
-      <div className="d-flex flex-column align-items-center gap-2 pt-4">
-        <h5 className="h5 d-inline-flex gap-2 m-0">
-          <i className="bi bi-kanban-fill" />
-
-          <span>
-            {(metadata.title?.length ?? 0) > 0
-              ? metadata.title
-              : "Untitled view"}
-          </span>
-        </h5>
-
-        <p className="m-0 py-1 text-secondary text-center">
-          {(metadata.description?.length ?? 0) > 0
-            ? metadata.description
-            : "No description provided"}
-        </p>
-      </div>
-
-      <div className="d-flex gap-3" style={{ overflowX: "auto" }}>
-        {Object.keys(columns).length > 0 ? (
-          Object.values(columns).map((column) => (
-            <div className="col-3" key={column.id}>
-              <div className="card rounded-4">
-                <div
-                  className={[
-                    "card-body d-flex flex-column gap-3 p-2",
-                    "border border-2 border-secondary rounded-4",
-                  ].join(" ")}
-                >
-                  <span className="d-flex flex-column py-1">
-                    <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
-                      {column.title}
-
-                      <span className="badge rounded-pill bg-secondary">
-                        {column.postIds.length}
-                      </span>
-                    </h6>
-
-                    <p class="text-secondary m-0">{column.description}</p>
-                  </span>
-
-                  <div class="d-flex flex-column gap-2">
-                    {column.postIds.map((postId) =>
-                      widget(
-                        ["entity.workspace", config.ticket_kind].join("."),
-                        { id: postId },
-                        postId
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
+  const columns = Object.entries(configToColumnData(payload)).map(
+    ([columnId, column]) => (
+      <div className="col-3" key={`column-${columnId}-view`}>
+        <div className="card rounded-4">
           <div
             className={[
-              "d-flex align-items-center justify-content-center",
-              "w-100 text-black-50 opacity-50",
+              "card-body d-flex flex-column gap-3 p-2",
+              "border border-2 border-secondary rounded-4",
             ].join(" ")}
-            style={{ height: 384 }}
           >
-            No columns were created so far.
+            <span className="d-flex flex-column py-1">
+              <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
+                {column.title}
+
+                <span className="badge rounded-pill bg-secondary">
+                  {column.postIds.length}
+                </span>
+              </h6>
+
+              <p class="text-secondary m-0">{column.description}</p>
+            </span>
+
+            <div class="d-flex flex-column gap-2">
+              {column.postIds.map((postId) =>
+                widget(
+                  `entity.workspace.view.${metadata.ticket.type}`,
+                  { metadata: { id: postId, ...metadata.ticket } },
+                  postId
+                )
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    )
   );
+
+  return widget("entity.workspace.view.layout", {
+    configurationControls,
+    isConfiguratorActive,
+    isSynced,
+    link,
+    metadata,
+    onCancel,
+    onConfigure,
+    onDelete,
+    onSave,
+    permissions,
+
+    children: (
+      <>
+        <div
+          className={[
+            "d-flex align-items-center justify-content-center w-100 text-black-50 opacity-50",
+            columns.length === 0 ? "" : "d-none",
+          ].join(" ")}
+          style={{ height: 384 }}
+        >
+          No columns were created so far.
+        </div>
+
+        {columns}
+      </>
+    ),
+  });
 };
 
-return KanbanView(props);
+return KanbanPostBoard(props);

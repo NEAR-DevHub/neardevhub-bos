@@ -67,7 +67,11 @@ const CommunityLayout = ({ children, handle, noHeader, path, title }) =>
       ),
 
     children:
-      typeof handle === "string" ? <div className="p-4">{children}</div> : null,
+      typeof handle === "string" ? (
+        <div className="d-flex flex-column align-items-center p-4 gap-4">
+          {children}
+        </div>
+      ) : null,
   });
 
 return CommunityLayout(props);

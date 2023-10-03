@@ -112,10 +112,15 @@ const defaultFieldUpdate = ({
     case "boolean":
       return input;
 
-    case "object":
-      return Array.isArray(input) && typeof lastKnownValue === "string"
-        ? input.join(arrayDelimiter ?? ",")
-        : input;
+    case "object": {
+      if (Array.isArray(input) && typeof lastKnownValue === "string") {
+        return input.join(arrayDelimiter ?? ",");
+      } else {
+        return Array.isArray(lastKnownValue)
+          ? [...lastKnownValue, ...input]
+          : { ...lastKnownValue, ...input };
+      }
+    }
 
     case "string":
       return Array.isArray(lastKnownValue)
@@ -136,7 +141,7 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, stateKey, uninitialized }) => {
+const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
@@ -182,6 +187,13 @@ const useForm = ({ initialValues, stateKey, uninitialized }) => {
           values: updatedValues,
         },
       }));
+
+      if (
+        typeof onUpdate === "function" &&
+        !Struct.isEqual(updatedValues, initialFormState.values)
+      ) {
+        onUpdate(updatedValues);
+      }
     };
 
   if (
@@ -354,28 +366,109 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const CompactContainer = styled.div`
-  width: fit-content !important;
-  max-width: 100%;
-`;
-
-const KanbanViewConfiguratorSettings = {
+const settings = {
   maxColumnsNumber: 10,
 };
 
-const KanbanViewDefaults = {
-  metadata: {
-    kind: "kanban-view",
-    title: "",
-    description: "",
-  },
+const KanbanPostBoardBasicInfoSchema = {
+  title: { label: "Title", order: 1, placeholder: "Enter board title." },
 
-  config: {
-    ticket_kind: "post-ticket",
-    tags: { excluded: [], required: [] },
-    columns: {},
+  description: {
+    label: "Description",
+    order: 2,
+    placeholder: "Enter board description.",
   },
 };
+
+const KanbanPostBoardTagsSchema = {
+  required: {
+    label:
+      "Enter tags you want to include. Posts with these tags will display.",
+
+    order: 1,
+    placeholder: "tag1, tag2",
+  },
+
+  excluded: {
+    label:
+      "Enter tags you want to exclude. Posts with these tags will not show.",
+
+    order: 2,
+    placeholder: "tag3, tag4",
+  },
+};
+
+const KanbanPostBoardTicketFeaturesSchema = {
+  author: { label: "Author" },
+  like_count: { label: "Likes" },
+  reply_count: { label: "Replies", noop: true },
+
+  sponsorship_request_indicator: {
+    label: "Sponsorship request indicator",
+    noop: true,
+  },
+
+  requested_grant_value: { label: "Requested grant value", noop: true },
+  requested_sponsor: { label: "Requested sponsor", noop: true },
+  approved_grant_value: { label: "Approved amount" },
+  sponsorship_supervisor: { label: "Supervisor" },
+  tags: { label: "Tags" },
+  type: { label: "Post type" },
+};
+
+const KanbanPostBoardDefaults = {
+  metadata: {
+    id: uuid(),
+    type: "kanban.post_board",
+    title: "",
+    description: "",
+
+    ticket: {
+      type: "kanban.post_ticket",
+
+      features: {
+        author: true,
+        like_count: true,
+        reply_count: false,
+        sponsorship_request_indicator: false,
+        requested_grant_value: false,
+        requested_sponsor: false,
+        approved_grant_value: true,
+        sponsorship_supervisor: true,
+        tags: true,
+        type: true,
+      },
+    },
+  },
+
+  payload: {
+    columns: {},
+    tags: { excluded: [], required: [] },
+  },
+};
+
+const toMigrated = ({ config, metadata, payload }) => ({
+  metadata: {
+    ...KanbanPostBoardDefaults.metadata,
+    ...metadata,
+
+    ticket: {
+      ...KanbanPostBoardDefaults.metadata.ticket,
+      ...metadata.ticket,
+
+      features: {
+        ...KanbanPostBoardDefaults.metadata.ticket.features,
+        ...metadata.ticket.features,
+      },
+    },
+  },
+
+  payload: {
+    ...KanbanPostBoardDefaults.payload,
+    ...payload,
+    ...config,
+  },
+});
 
 const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
   State.init({
@@ -385,18 +478,18 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
   const community = DevHub.useQuery("community", { handle: communityHandle });
 
-  const view =
+  const data =
     (community.data?.board ?? null) === null
       ? {}
       : JSON.parse(community.data.board);
 
   const form = useForm({
-    initialValues: Struct.pick(view, ["config", "metadata"]),
+    initialValues: Struct.pick(toMigrated(data), ["metadata", "payload"]),
     stateKey: "view",
-    uninitialized: (view.metadata ?? null) === null,
+    uninitialized: (data.metadata ?? null) === null,
   });
 
-  const isViewInitialized = (form.values.metadata ?? null) !== null;
+  const isViewInitialized = Object.keys(form.values.metadata ?? {}).length > 0;
 
   const formToggle = (forcedState) =>
     State.update((lastKnownState) => ({
@@ -416,15 +509,14 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
       [form.stateKey]: {
         hasUnsubmittedChanges: false,
-        values: KanbanViewDefaults,
+        values: KanbanPostBoardDefaults,
       },
 
       isActive: true,
     }));
 
   const columnsCreateNew = ({ lastKnownValue }) =>
-    Object.keys(lastKnownValue).length <
-    KanbanViewConfiguratorSettings.maxColumnsNumber
+    Object.keys(lastKnownValue).length < settings.maxColumnsNumber
       ? {
           ...(lastKnownValue ?? {}),
           ...withUUIDIndex({ tag: "", title: "New column", description: "" }),
@@ -443,7 +535,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
     formToggle(false);
   };
 
-  const onSubmit = () =>
+  const onSave = () =>
     DevHub.update_community_board({
       handle: communityHandle,
       board: JSON.stringify(form.values),
@@ -454,76 +546,55 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
 
   const formElement = isViewInitialized ? (
     <>
-      <div className="d-flex gap-3 flex-column flex-lg-row">
-        {widget("components.molecule.text-input", {
-          className: "flex-shrink-0",
-          key: "kanban-view-title",
-          label: "Board title",
-          onChange: form.update({ path: ["metadata", "title"] }),
-          placeholder: "Enter board title.",
-          value: form.values.metadata.title,
+      <div className="d-flex flex-column flex-lg-row align-items-stretch gap-4 w-100">
+        <div className="d-flex flex-column gap-4 w-100">
+          {widget("components.organism.configurator", {
+            heading: "Basic information",
+            externalState: form.values.metadata,
+            isActive: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onChange: form.update({ path: ["metadata"] }),
+            schema: KanbanPostBoardBasicInfoSchema,
+          })}
+
+          {widget("components.organism.configurator", {
+            heading: "Tags",
+            externalState: form.values.payload.tags,
+            isActive: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onChange: form.update({ path: ["payload", "tags"] }),
+            schema: KanbanPostBoardTagsSchema,
+          })}
+        </div>
+
+        {widget("components.organism.configurator", {
+          heading: "Card fields",
+          classNames: { root: "w-auto h-auto" },
+          externalState: form.values.metadata.ticket.features,
+          isActive: true,
+          isEmbedded: true,
+          isUnlocked: permissions.can_configure,
+          onChange: form.update({ path: ["metadata", "ticket", "features"] }),
+          schema: KanbanPostBoardTicketFeaturesSchema,
+          style: { minWidth: "36%" },
         })}
       </div>
 
-      {widget("components.molecule.text-input", {
-        className: "w-100",
-        inputProps: { className: "h-75" },
-        key: "kanban-view-description",
-        label: "Board description",
-        multiline: true,
-        onChange: form.update({ path: ["metadata", "description"] }),
-        placeholder: "Enter board description.",
-        value: form.values.metadata.description,
-      })}
-
-      <CompactContainer>
-        <div className="d-flex gap-3 flex-column flex-lg-row">
-          {widget("components.molecule.text-input", {
-            className: "flex-shrink-0",
-            format: "comma-separated",
-            key: "kanban-view-tags-required",
-
-            label:
-              "Enter tags you want to include. Posts with these tags will display.",
-
-            onChange: form.update({ path: ["config", "tags", "required"] }),
-            placeholder: "tag1, tag2",
-            value: form.values.config.tags.required.join(", "),
-          })}
-        </div>
-
-        <div className="d-flex gap-3 flex-column flex-lg-row">
-          {widget("components.molecule.text-input", {
-            className: "flex-shrink-0",
-            format: "comma-separated",
-            key: "kanban-view-tags-excluded",
-
-            label:
-              "Enter tags you want to exclude. Posts with these tags will not show.",
-
-            onChange: form.update({ path: ["config", "tags", "excluded"] }),
-            placeholder: "tag3, tag4",
-            value: form.values.config.tags.excluded.join(", "),
-          })}
-        </div>
-      </CompactContainer>
-
-      <div className="d-flex align-items-center justify-content-between">
+      <div className="d-flex align-items-center justify-content-between w-100">
         <span className="d-inline-flex gap-2 m-0">
           <i className="bi bi-list-task" />
-
-          <span>
-            {`Columns ( max. ${KanbanViewConfiguratorSettings.maxColumnsNumber} )`}
-          </span>
+          <span>{`Columns ( max. ${settings.maxColumnsNumber} )`}</span>
         </span>
       </div>
 
-      <div className="d-flex flex-column align-items-center gap-3">
-        {Object.values(form.values.config.columns ?? {}).map(
+      <div className="d-flex flex-column align-items-center gap-3 w-100">
+        {Object.values(form.values.payload.columns ?? {}).map(
           ({ id, description, tag, title }) => (
-            <div
-              className="d-flex gap-3 border border-secondary rounded-4 p-3 w-100"
-              key={id}
+            <AttractableDiv
+              className="d-flex gap-3 rounded-4 border p-3 w-100"
+              key={`column-${id}-configurator`}
             >
               <div className="d-flex flex-column gap-1 w-100">
                 {widget("components.molecule.text-input", {
@@ -532,7 +603,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                   label: "Column title",
 
                   onChange: form.update({
-                    path: ["config", "columns", id, "title"],
+                    path: ["payload", "columns", id, "title"],
                   }),
 
                   placeholder: "Enter column title.",
@@ -545,7 +616,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                   label: "Description",
 
                   onChange: form.update({
-                    path: ["config", "columns", id, "description"],
+                    path: ["payload", "columns", id, "description"],
                   }),
 
                   placeholder: "Enter a brief description of the column.",
@@ -557,7 +628,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                   label: "Enter a single tag to show posts in this column",
 
                   onChange: form.update({
-                    path: ["config", "columns", id, "tag"],
+                    path: ["payload", "columns", id, "tag"],
                   }),
 
                   placeholder: "Tag-Name",
@@ -570,9 +641,9 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                 style={{ marginTop: -16, marginBottom: -16 }}
               >
                 <button
-                  className="btn btn-outline-danger shadow"
+                  className="btn btn-outline-danger"
                   onClick={form.update({
-                    path: ["config", "columns"],
+                    path: ["payload", "columns"],
                     via: columnsDeleteById(id),
                   })}
                   title="Delete column"
@@ -580,20 +651,60 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
                   <i className="bi bi-trash-fill" />
                 </button>
               </div>
-            </div>
+            </AttractableDiv>
           )
         )}
+
+        <div className="d-flex gap-3 justify-content-end w-100">
+          {widget("components.molecule.button", {
+            classNames: {
+              root: "d-flex btn btn-outline-danger shadow-none border-0",
+            },
+
+            isHidden: typeof onCancel !== "function" || !state.isActive,
+            label: "Cancel",
+            onClick: onCancel,
+          })}
+
+          {widget("components.molecule.button", {
+            classNames: { root: "btn btn-success" },
+            disabled: form.isSynced,
+
+            icon: {
+              type: "svg_icon",
+              variant: "floppy_drive",
+              width: 14,
+              height: 14,
+            },
+
+            isHidden: typeof onSave !== "function" || !state.isActive,
+            label: "Save",
+            onClick: onSave,
+          })}
+        </div>
       </div>
     </>
   ) : null;
 
-  return isViewInitialized && community.isLoading ? (
-    <div>Loading...</div>
+  return !isViewInitialized && community.data === null ? (
+    <div class="alert alert-danger" role="alert">
+      {community.isLoading
+        ? "Loading..."
+        : `Community with handle ${communityHandle} not found.`}
+    </div>
   ) : (
-    <div className="d-flex flex-column gap-4">
-      {isViewInitialized && state.isActive ? (
-        <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
-          <div className="d-flex align-items-center justify-content-between gap-3">
+    <div
+      className="d-flex flex-column gap-4 w-100"
+      style={{ maxWidth: "100%" }}
+    >
+      {isViewInitialized ? (
+        <div
+          className={[
+            "d-flex flex-column gap-4 w-100",
+            state.isActive ? "" : "d-none",
+          ].join(" ")}
+        >
+          <div className="d-flex align-items-center justify-content-between gap-3 w-100">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-gear-wide-connected" />
               <span>Kanban board configuration</span>
@@ -627,51 +738,35 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
               />
             </div>
           )}
-
-          <div className="d-flex align-items-center justify-content-end gap-3">
-            <button
-              className="btn shadow btn-outline-secondary d-inline-flex gap-2 me-auto"
-              disabled={
-                form.values.columns.length >=
-                KanbanViewConfiguratorSettings.maxColumnsNumber
-              }
-              onClick={form.update({
-                path: ["config", "columns"],
-                via: columnsCreateNew,
-              })}
-            >
-              <i className="bi bi-plus-lg" />
-              <span>New column</span>
-            </button>
-
-            <button
-              className="btn btn-outline-danger border-0 d-inline-flex gap-2 align-items-center"
-              onClick={onCancel}
-              style={{ width: "fit-content" }}
-            >
-              <span>Cancel</span>
-            </button>
-
-            <button
-              disabled={!form.hasUnsubmittedChanges}
-              className="btn shadow btn-success d-inline-flex gap-2 align-items-center"
-              onClick={onSubmit}
-              style={{ width: "fit-content" }}
-            >
-              <i className="bi bi-cloud-arrow-up-fill" />
-              <span>Save</span>
-            </button>
-          </div>
-        </AttractableDiv>
+        </div>
       ) : null}
 
       {isViewInitialized ? (
-        widget(["entity.workspace", form.values.metadata.kind].join("."), {
+        widget(`entity.workspace.view.${form.values.metadata.type}`, {
           ...form.values,
-          isUnderConfiguration: state.isActive,
-          onConfigureClick: () => formToggle(true),
-          onDeleteClick: isViewInitialized ? viewDelete : null,
+
+          configurationControls: [
+            {
+              label: "New column",
+
+              disabled:
+                Object.keys(form.values.payload.columns).length >=
+                settings.maxColumnsNumber,
+
+              icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
+
+              onClick: form.update({
+                path: ["payload", "columns"],
+                via: columnsCreateNew,
+              }),
+            },
+          ],
+
+          isConfiguratorActive: state.isActive,
+          isSynced: form.isSynced,
           link,
+          onConfigure: () => formToggle(true),
+          onDelete: isViewInitialized ? viewDelete : null,
           permissions,
         })
       ) : (
@@ -684,7 +779,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           </h5>
 
           {widget("components.molecule.button", {
-            icon: { kind: "bootstrap-icon", variant: "bi-kanban-fill" },
+            icon: { type: "bootstrap_icon", variant: "bi-kanban-fill" },
             isHidden: !permissions.can_configure,
             label: "Create kanban board",
             onClick: newViewInit,

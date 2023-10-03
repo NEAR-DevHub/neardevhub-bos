@@ -105,7 +105,7 @@ const Struct = {
 
 const styles = `
   padding: 0.5rem 1.2rem !important;
-  min-height: 42;
+  min-height: 42px;
   line-height: 1.5;
   text-decoration: none !important;
 
@@ -119,14 +119,14 @@ const styles = `
   }
 
   &.btn-sm {
-    padding: 0.5rem 0.75rem !important;
-    min-height: 32;
+    padding: 0.5rem 0.8rem !important;
+    min-height: 32px;
     line-height: 1;
   }
 
   &.btn-lg {
     padding: 1rem 1.5rem !important;
-    min-height: 48;
+    min-height: 48px;
   }
 
   &.btn-primary {
