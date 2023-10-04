@@ -244,20 +244,76 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
 
   const availableAddons = [
     {
-      id: "1",
+      id: "wiki",
       title: "Wiki",
       description: "",
       configurator: "entity.addon.wiki-configurator",
       viewer: "community.wiki",
-      icon: "",
+      icon: "bi bi-wikipedia",
     },
+    {
+      "id": "github",
+      "title": "Git Hub",
+      "description": "Github description",
+      "configurator": "feature.workspace.github-view-configurator",
+      "viewer": "community.github",
+      "icon": "bi bi-github"
+    },
+    {
+      "id": "kanban",
+      "title": "Kanban",
+      "description": "Kanban description",
+      "configurator": "feature.workspace.kanban-view-configurator",
+      "viewer": "community.board",
+      "icon": "bi bi-kanban"
+    },
+    {
+      "id": "telegram",
+      "title": "Telegram",
+      "description": "Telegram description",
+      "configurator": "", // No configurator atm
+      "viewer": "community.telegram",
+      "icon": "bi bi-telegram"
+    }
   ];
 
   const communityAddons = [
     {
-      addon_id: "123",
-      name: "Wiki",
-      feature_id: "1",
+      addon_id: "wiki",
+      name: "Wiki1",
+      config_id: "wiki",
+      parameters: JSON.stringify({
+        id: 1
+      }),
+      enabled: true,
+    },
+    {
+      addon_id: "wiki",
+      name: "Wiki2",
+      config_id: "wiki",
+      parameters: JSON.stringify({
+        id: 2
+      }),
+      enabled: true,
+    },
+    {
+      addon_id: "github",
+      name: "GitHub", // Tab name
+      config_id: "github",
+      parameters: JSON.stringify({}),
+      enabled: true,
+    },
+    {
+      addon_id: "kanban",
+      name: "Kanban", // Tab name
+      config_id: "kanban",
+      parameters: JSON.stringify({}),
+      enabled: true,
+    },
+    {
+      addon_id: "telegram",
+      name: "Telegram", // Tab name
+      config_id: "telegram",
       parameters: JSON.stringify({}),
       enabled: true,
     },
@@ -320,11 +376,12 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
 
     ...communityAddons.map((addon) => ({
       title: addon.name,
-      route: "community.addon",
+      route: availableAddons.find((it) => it.id === addon.config_id).viewer,
       iconClass: addon.icon,
       params: {
-        viewer: availableAddons.find((it) => it.id === addon.feature_id).viewer,
-        data: JSON.parse(addon.parameters || "null"),
+        viewer: availableAddons.find((it) => it.id === addon.config_id).viewer,
+        data: addon.parameters || "", // @elliotBraem not sure which will work better
+        ...JSON.parse(addon.parameters), // this seems to work witht the wiki for now
       },
     })),
   ];
