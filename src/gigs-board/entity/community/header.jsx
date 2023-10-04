@@ -297,6 +297,15 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       enabled: true,
     },
     {
+      addon_id: "wiki",
+      name: "Wiki3",
+      config_id: "wiki",
+      parameters: JSON.stringify({
+        id: 3,
+      }),
+      enabled: true,
+    },
+    {
       addon_id: "github",
       name: "GitHub", // Tab name
       config_id: "github",
@@ -380,7 +389,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       iconClass: addon.icon,
       params: {
         viewer: availableAddons.find((it) => it.id === addon.config_id).viewer,
-        data: addon.parameters || "", // @elliotBraem not sure which will work better
+        data: addon.parameters || "", // @elliotBraem not sure which will work better I guess this is needed for the wiki data but we can also add another data object inside the addon's parameters
         ...JSON.parse(addon.parameters), // this seems to work witht the wiki for now
       },
     })),
