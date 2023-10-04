@@ -161,7 +161,11 @@ const DevHub = {
 
   get_all_communities_metadata: () =>
     Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
+  get_available_addons: () =>
+    Near.view(devHubAccountId, "get_available_addons") ?? null,
 
+  get_community_addons: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community_addons", { handle }),
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
   get_post: ({ post_id }) =>
@@ -242,91 +246,95 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     return <div>Loading...</div>;
   }
 
-  const availableAddons = [
-    {
-      id: "wiki",
-      title: "Wiki",
-      description: "",
-      configurator: "entity.addon.wiki-configurator",
-      viewer: "community.wiki",
-      icon: "bi bi-wikipedia",
-    },
-    {
-      id: "github",
-      title: "Git Hub",
-      description: "Github description",
-      configurator: "feature.workspace.github-view-configurator",
-      viewer: "community.github",
-      icon: "bi bi-github",
-    },
-    {
-      id: "kanban",
-      title: "Kanban",
-      description: "Kanban description",
-      configurator: "feature.workspace.kanban-view-configurator",
-      viewer: "community.board",
-      icon: "bi bi-kanban",
-    },
-    {
-      id: "telegram",
-      title: "Telegram",
-      description: "Telegram description",
-      configurator: "", // No configurator atm
-      viewer: "community.telegram",
-      icon: "bi bi-telegram",
-    },
-  ];
+  const availableAddons = DevHub.get_available_addons();
+  const communityAddons =  community.addon_list; // DevHub.get_community_addons({handle});
+  console.log({availableAddons});
+  console.log({communityAddons});
+  // const availableAddons = [
+  //   {
+  //     "id": "wiki",
+  //     "title": "Wiki",
+  //     "description": "Wiki description",
+  //     "configurator": "entity.addon.wiki-configurator",
+  //     "viewer": "community.wiki",
+  //     "icon": "bi bi-wikipedia"
+  //   },
+  //   {
+  //     id: "github",
+  //     title: "Git Hub",
+  //     description: "Github description",
+  //     configurator: "feature.workspace.github-view-configurator",
+  //     viewer: "community.github",
+  //     icon: "bi bi-github"
+  //   },
+  //   {
+  //     "id": "kanban",
+  //     "title": "Kanban",
+  //     "description": "Kanban description",
+  //     "configurator": "feature.workspace.kanban-view-configurator",
+  //     "viewer": "community.board",
+  //     "icon": "bi bi-kanban"
+  //   },
+  //   {
+  //     "id": "telegram",
+  //     "title": "Telegram",
+  //     "description": "Telegram description",
+  //     "configurator": "",
+  //     "viewer": "community.telegram",
+  //     "icon": "bi bi-telegram"
+  //   },
+  // ];
 
-  const communityAddons = [
-    {
-      addon_id: "wiki",
-      name: "Wiki1",
-      config_id: "wiki",
-      parameters: JSON.stringify({
-        id: 1,
-      }),
-      enabled: true,
-    },
-    {
-      addon_id: "wiki",
-      name: "Wiki2",
-      config_id: "wiki",
-      parameters: JSON.stringify({
-        id: 2,
-      }),
-      enabled: true,
-    },
-    {
-      addon_id: "wiki",
-      name: "Wiki3",
-      config_id: "wiki",
-      parameters: JSON.stringify({
-        id: 3,
-      }),
-      enabled: true,
-    },
-    {
-      addon_id: "github",
-      name: "GitHub", // Tab name
-      config_id: "github",
-      parameters: JSON.stringify({}),
-      enabled: true,
-    },
-    {
-      addon_id: "kanban",
-      name: "Kanban", // Tab name
-      config_id: "kanban",
-      parameters: JSON.stringify({}),
-      enabled: true,
-    },
-    {
-      addon_id: "telegram",
-      name: "Telegram", // Tab name
-      config_id: "telegram",
-      parameters: JSON.stringify({}),
-      enabled: true,
-    },
-  ];
+  // const communityAddons = [
+  //   {
+  //     addon_id: "wiki",
+  //     name: "Wiki1",
+  //     config_id: "wiki",
+  //     parameters: JSON.stringify({
+  //       id: 1,
+  //     }),
+  //     enabled: true,
+  //   },
+  //   {
+  //     addon_id: "wiki",
+  //     name: "Wiki2",
+  //     config_id: "wiki",
+  //     parameters: JSON.stringify({
+  //       id: 2,
+  //     }),
+  //     enabled: true,
+  //   },
+  //   {
+  //     addon_id: "wiki",
+  //     name: "Wiki3",
+  //     config_id: "wiki",
+  //     parameters: JSON.stringify({
+  //       id: 3,
+  //     }),
+  //     enabled: true,
+  //   },
+  //   {
+  //     addon_id: "github",
+  //     name: "GitHub", // Tab name
+  //     config_id: "github",
+  //     parameters: JSON.stringify({}),
+  //     enabled: true,
+  //   },
+  //   {
+  //     addon_id: "kanban",
+  //     name: "Kanban", // Tab name
+  //     config_id: "kanban",
+  //     parameters: JSON.stringify({}),
+  //     enabled: true,
+  //   },
+  //   {
+  //     addon_id: "telegram",
+  //     name: "Telegram", // Tab name
+  //     config_id: "telegram",
+  //     parameters: JSON.stringify({}),
+  //     enabled: true,
+  //   },
+  // ];
 
   const tabs = [
     {
