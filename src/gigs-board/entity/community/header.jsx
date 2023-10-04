@@ -252,29 +252,29 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       icon: "bi bi-wikipedia",
     },
     {
-      "id": "github",
-      "title": "Git Hub",
-      "description": "Github description",
-      "configurator": "feature.workspace.github-view-configurator",
-      "viewer": "community.github",
-      "icon": "bi bi-github"
+      id: "github",
+      title: "Git Hub",
+      description: "Github description",
+      configurator: "feature.workspace.github-view-configurator",
+      viewer: "community.github",
+      icon: "bi bi-github",
     },
     {
-      "id": "kanban",
-      "title": "Kanban",
-      "description": "Kanban description",
-      "configurator": "feature.workspace.kanban-view-configurator",
-      "viewer": "community.board",
-      "icon": "bi bi-kanban"
+      id: "kanban",
+      title: "Kanban",
+      description: "Kanban description",
+      configurator: "feature.workspace.kanban-view-configurator",
+      viewer: "community.board",
+      icon: "bi bi-kanban",
     },
     {
-      "id": "telegram",
-      "title": "Telegram",
-      "description": "Telegram description",
-      "configurator": "", // No configurator atm
-      "viewer": "community.telegram",
-      "icon": "bi bi-telegram"
-    }
+      id: "telegram",
+      title: "Telegram",
+      description: "Telegram description",
+      configurator: "", // No configurator atm
+      viewer: "community.telegram",
+      icon: "bi bi-telegram",
+    },
   ];
 
   const communityAddons = [
@@ -283,7 +283,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       name: "Wiki1",
       config_id: "wiki",
       parameters: JSON.stringify({
-        id: 1
+        id: 1,
       }),
       enabled: true,
     },
@@ -292,7 +292,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       name: "Wiki2",
       config_id: "wiki",
       parameters: JSON.stringify({
-        id: 2
+        id: 2,
       }),
       enabled: true,
     },

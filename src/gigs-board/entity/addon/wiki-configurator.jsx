@@ -48,7 +48,7 @@ return (
       data,
       schema: CommunityWikiPageSchema, // and a schema
       onSubmit, // triggers onSubmit button
-      ...props
+      ...props,
     })}
   </>
 );

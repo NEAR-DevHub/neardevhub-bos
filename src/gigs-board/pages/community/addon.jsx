@@ -1,1 +1,1 @@
-return <p>{JSON.stringify(props)}</p>
+return <p>{JSON.stringify(props)}</p>;
