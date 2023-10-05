@@ -285,6 +285,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   //   },
   // ];
 
+
   // const communityAddons = [
   //   {
   //     addon_id: "wiki",
@@ -298,7 +299,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   //   {
   //     addon_id: "wiki",
   //     name: "Wiki2",
-  //     config_id: "wiki",
+  //     config_id: "wiki2",
   //     parameters: JSON.stringify({
   //       id: 2,
   //     }),
@@ -307,7 +308,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   //   {
   //     addon_id: "wiki",
   //     name: "Wiki3",
-  //     config_id: "wiki",
+  //     config_id: "wiki3",
   //     parameters: JSON.stringify({
   //       id: 3,
   //     }),
@@ -336,6 +337,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   //   },
   // ];
 
+  var foundAddOn = (config_id) => communityAddons?.some((config) => config.config_id === config_id) || false;
   const tabs = [
     {
       defaultActive: true,
@@ -360,7 +362,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Teams",
     },
 
-    ...(!community?.features.board
+    ...(!community?.features.board || foundAddOn('kanban')
       ? []
       : [
           {
@@ -370,7 +372,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           },
         ]),
 
-    ...(!community?.features.github
+    ...(!community?.features.github || foundAddOn('github')
       ? []
       : [
           {
@@ -380,8 +382,8 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           },
         ]),
 
-    ...(!community?.features.telegram ||
-    (community?.telegram_handle.length ?? 0) === 0
+    ...((!community?.features.telegram ||
+    (community?.telegram_handle.length ?? 0) === 0) || foundAddOn('telegram')
       ? []
       : [
           {
