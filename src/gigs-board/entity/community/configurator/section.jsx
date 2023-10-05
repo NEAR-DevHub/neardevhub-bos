@@ -27,6 +27,7 @@ function widget(widgetName, widgetProps, key) {
 
 const ConfigurationSection = ({
   heading,
+  headerSlotRight,
   isEditActive,
   hasPermissionToConfgure,
   configurator,
@@ -43,16 +44,17 @@ const ConfigurationSection = ({
   return widget("components.molecule.tile", {
     heading,
     headerSlotRight:
-      hasPermissionToConfgure &&
-      widget("components.molecule.button", {
-        classNames: { root: "btn-sm btn-secondary" },
-        icon: {
-          kind: "bootstrap-icon",
-          variant: state.isEditActive ? "bi-x-circle" : "bi-pen-fill",
-        },
-        label: state.isEditActive ? "Cancel" : "Edit",
-        onClick: () => toggleEditActive(),
-      }),
+      headerSlotRight ??
+      (hasPermissionToConfgure &&
+        widget("components.molecule.button", {
+          classNames: { root: "btn-sm btn-secondary" },
+          icon: {
+            kind: "bootstrap-icon",
+            variant: state.isEditActive ? "bi-x-circle" : "bi-pen-fill",
+          },
+          label: state.isEditActive ? "Cancel" : "Edit",
+          onClick: () => toggleEditActive(),
+        })),
     children: hasPermissionToConfgure ? ( // TODO: I feel there is a better way to do this...
       <div className="flex-grow-1 d-flex flex-column gap-4">
         {configurator && configurator({ isEditActive: state.isEditActive })}

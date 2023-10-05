@@ -161,11 +161,13 @@ const DevHub = {
 
   get_all_communities_metadata: () =>
     Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
+    
   get_available_addons: () =>
     Near.view(devHubAccountId, "get_available_addons") ?? null,
 
   get_community_addons: ({ handle }) =>
     Near.view(devHubAccountId, "get_community_addons", { handle }),
+
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
   get_post: ({ post_id }) =>
@@ -246,8 +248,8 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
     return <div>Loading...</div>;
   }
 
-  const availableAddons = DevHub.get_available_addons();
-  const communityAddons =  community.addon_list; // DevHub.get_community_addons({handle});
+  const availableAddons = DevHub.get_available_addons() || [];
+  const communityAddons =  community.addon_list || []; // DevHub.get_community_addons({handle});
   console.log({availableAddons});
   console.log({communityAddons});
   // const availableAddons = [
@@ -393,7 +395,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           },
         ]),
 
-    ...communityAddons.map((addon) => ({
+    ...(communityAddons || []).map((addon) => ({
       title: addon.name,
       route: availableAddons.find((it) => it.id === addon.config_id).viewer,
       iconClass: addon.icon,
