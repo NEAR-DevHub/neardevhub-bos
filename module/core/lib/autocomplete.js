@@ -1,4 +1,5 @@
 const autocompleteEnabled = true;
+
 const AutoComplete = styled.div`
   z-index: 5;
 
@@ -9,11 +10,19 @@ const AutoComplete = styled.div`
 
 function textareaInputHandler(value) {
   const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update({ text: value, showAccountAutocomplete });
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    text: value,
+    showAccountAutocomplete,
+  }));
 }
 
 function autoCompleteAccountId(id) {
   let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
   description = `${description} @${id}`.trim() + " ";
-  State.update({ description, showAccountAutocomplete: false });
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    description,
+    showAccountAutocomplete: false,
+  }));
 }

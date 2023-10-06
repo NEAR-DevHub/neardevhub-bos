@@ -53,6 +53,7 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
+
 const AutoComplete = styled.div`
   z-index: 5;
 
@@ -63,13 +64,21 @@ const AutoComplete = styled.div`
 
 function textareaInputHandler(value) {
   const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update({ text: value, showAccountAutocomplete });
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    text: value,
+    showAccountAutocomplete,
+  }));
 }
 
 function autoCompleteAccountId(id) {
   let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
   description = `${description} @${id}`.trim() + " ";
-  State.update({ description, showAccountAutocomplete: false });
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    description,
+    showAccountAutocomplete: false,
+  }));
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
@@ -98,9 +107,9 @@ State.init({
   postType: props.postType ?? "Idea",
   name: props.name ?? "",
   description: props.description ?? "",
-  amount: props.amount ?? props.requested_sponsorship_amount ?? "0",
+  amount: props.requested_sponsorship_amount ?? props.amount ?? "0",
   token: tokenMapping[props.token] ?? "USDT",
-  supervisor: props.supervisor ?? props.requested_sponsor ?? "",
+  supervisor: props.requested_sponsor ?? props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
   warning: "",
   draftStateApplied: false,
@@ -110,7 +119,7 @@ if (!state.draftStateApplied && props.draftState) {
   State.update({ ...props.draftState, draftStateApplied: true });
 }
 
-let fields = {
+const fields = {
   Comment: ["description"],
   Idea: ["name", "description"],
 

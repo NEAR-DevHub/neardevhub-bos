@@ -95,34 +95,41 @@ const KanbanPostTicket = ({ metadata }) => {
 
   if (!data) return <div>Loading ...</div>;
 
+  const {
+    post_type,
+    name,
+    description,
+    labels,
+    requested_sponsor,
+    supervisor,
+    requested_sponsorship_amount,
+    amount,
+    sponsorship_token,
+  } = data.snapshot;
+
   const isFundingRequested =
-    typeof data.snapshot.amount === "number" && data.snapshot.amount > 0;
+    post_type === "Solution" &&
+    typeof requested_sponsorship_amount === "string" &&
+    parseInt(requested_sponsorship_amount, 10) > 0;
 
   const features = {
     ...metadata.features,
 
     sponsorship_request_indicator:
-      data.snapshot.post_type === "Solution" &&
-      isFundingRequested &&
-      metadata.features.sponsorship_request_indicator,
+      isFundingRequested && metadata.features.sponsorship_request_indicator,
 
     requested_sponsorship_value:
-      data.snapshot.post_type === "Solution" &&
-      isFundingRequested &&
-      metadata.features.requested_sponsorship_value,
-
-    requested_sponsor:
-      data.snapshot.post_type === "Solution" &&
-      isFundingRequested &&
-      metadata.features.requested_sponsor,
+      isFundingRequested && metadata.features.requested_sponsorship_value,
 
     approved_sponsorship_value:
-      data.snapshot.post_type === "Sponsorship" &&
+      post_type === "Sponsorship" &&
       metadata.features.approved_sponsorship_value,
 
+    requested_sponsor:
+      isFundingRequested && metadata.features.requested_sponsor,
+
     sponsorship_supervisor:
-      data.snapshot.post_type === "Sponsorship" &&
-      metadata.features.sponsorship_supervisor,
+      post_type === "Sponsorship" && metadata.features.sponsorship_supervisor,
   };
 
   const header = (
@@ -188,11 +195,11 @@ const KanbanPostTicket = ({ metadata }) => {
   const titleArea = (
     <span className="card-text gap-2">
       {features.type ? (
-        <i className={`bi ${iconsByPostType[data.snapshot.post_type]}`} />
+        <i className={`bi ${iconsByPostType[post_type]}`} />
       ) : null}
 
       <span>
-        {[features.type ? data.snapshot.post_type : null, data.snapshot.name]
+        {[features.type ? post_type : null, name]
           .filter(
             (maybeString) =>
               typeof maybeString === "string" && maybeString.length > 0
@@ -203,16 +210,16 @@ const KanbanPostTicket = ({ metadata }) => {
   );
 
   const descriptionArea =
-    data.snapshot.post_type === "Comment" ? (
+    post_type === "Comment" ? (
       <div className="overflow-auto" style={{ maxHeight: "6em" }}>
-        <Markdown className="card-text" text={data.snapshot.description} />
+        <Markdown className="card-text" text={description} />
       </div>
     ) : null;
 
   const tagList =
-    Array.isArray(data.snapshot.labels) && features.tags ? (
+    Array.isArray(labels) && features.tags ? (
       <div className="d-flex flex-wrap gap-2 m-0">
-        {data.snapshot.labels.map((label) => (
+        {labels.map((label) => (
           <a href={href("Feed", { label })} key={label}>
             <span className="badge text-bg-primary me-1">{label}</span>
           </a>
@@ -242,11 +249,13 @@ const KanbanPostTicket = ({ metadata }) => {
         {features.requested_sponsorship_value ||
         features.approved_sponsorship_value ? (
           <span className="d-flex flex-wrap gap-2">
-            <span>Amount:</span>
+            <span>{`${
+              post_type === "Solution" ? "Requested" : "Approved"
+            } funding:`}</span>
 
             <span className="d-flex flex-nowrap gap-1">
-              <span>{data.snapshot.amount}</span>
-              <span>{data.snapshot.sponsorship_token}</span>
+              <span>{requested_sponsorship_amount ?? amount}</span>
+              <span>{sponsorship_token}</span>
             </span>
           </span>
         ) : null}
@@ -254,20 +263,14 @@ const KanbanPostTicket = ({ metadata }) => {
         {features.requested_sponsor || features.sponsorship_supervisor ? (
           <div className="d-flex flex-wrap gap-2">
             <span>{`${
-              features.requested_sponsor ? "Requested sponsor" : "Supervisor"
+              post_type === "Solution" ? "Requested sponsor" : "Supervisor"
             }:`}</span>
 
             <Widget
               className="flex-wrap"
               src={`neardevgov.near/widget/ProfileLine`}
               props={{
-                accountId:
-                  data.snapshot[
-                    features.requested_sponsor
-                      ? "requested_sponsor"
-                      : "supervisor"
-                  ],
-
+                accountId: requested_sponsor ?? supervisor,
                 hideAccountId: true,
                 tooltip: true,
               }}
