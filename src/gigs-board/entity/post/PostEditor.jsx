@@ -73,7 +73,6 @@ function autoCompleteAccountId(id) {
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
-const postType = props.postType ?? "Idea";
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
@@ -82,7 +81,7 @@ const tags = (props.tags ?? props.labels ?? []).concat(
   props.referral ? [`referral:${props.referral}`] : []
 );
 
-initState({
+State.init({
   fundraising: false,
   author_id: context.accountId,
 
@@ -96,7 +95,7 @@ initState({
    */
   tagOptions: tags.map((tag) => ({ name: tag })),
 
-  postType,
+  postType: props.postType ?? "Idea",
   name: props.name ?? "",
   description: props.description ?? "",
   amount: props.amount ?? props.requested_sponsorship_amount ?? "0",
@@ -134,7 +133,7 @@ let fields = {
   ],
 
   Github: ["githubLink", "name", "description"],
-}[postType];
+}[state.postType];
 
 // This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onClick, it will give `null` and we cannot tell the result is true or false.
@@ -191,8 +190,8 @@ const onSubmit = () => {
       github_version: "V0",
       github_link: state.githubLink,
     },
-  }[postType];
-  body["post_type"] = postType;
+  }[state.postType];
+  body["post_type"] = state.postType;
   if (!context.accountId) {
     return;
   }
@@ -318,7 +317,8 @@ const existingTags =
 
 const tagEditor = (
   <div className="col-lg-12  mb-2">
-    Tags:
+    <span>Tags:</span>
+
     <Typeahead
       multiple
       labelKey="name"
@@ -341,17 +341,6 @@ const tagEditor = (
   </div>
 );
 
-const githubLinkDiv = (
-  <div className="col-lg-12  mb-2">
-    Github Issue URL:
-    <input
-      type="text"
-      value={state.githubLink}
-      onChange={(event) => State.update({ githubLink: event.target.value })}
-    />
-  </div>
-);
-
 const nameDiv = (
   <div className="col-lg-6  mb-2">
     Title:
@@ -360,33 +349,6 @@ const nameDiv = (
       value={state.name}
       onChange={(event) => State.update({ name: event.target.value })}
     />
-  </div>
-);
-
-const amountDiv = (
-  <div className="col-lg-6  mb-2">
-    Amount:
-    <input
-      type="text"
-      value={state.amount}
-      onChange={(event) => State.update({ amount: event.target.value })}
-    />
-  </div>
-);
-
-const tokenDiv = (
-  <div className="col-lg-6  mb-2">
-    Currency
-    <select
-      onChange={(event) => State.update({ token: event.target.value })}
-      class="form-select"
-      aria-label="Default select"
-    >
-      <option selected value={"USDT"}>
-        USDT
-      </option>
-      <option value="NEAR">NEAR</option>
-    </select>
   </div>
 );
 
@@ -427,15 +389,15 @@ const disclaimer = (
   </p>
 );
 
-const isFundraisingDiv = (
-  <div class="mb-2">
-    <p class="fs-6 fw-bold mb-1">
-      Are you seeking funding for your solution?
-      <span class="text-muted fw-normal">(Optional)</span>
+const fundraisingToggle = (
+  <div className="mb-2">
+    <p className="fs-6 fw-bold mb-1">
+      <span>Are you seeking funding for your solution?</span>
+      <span className="text-muted fw-normal">(Optional)</span>
     </p>
 
-    <div class="form-check form-check-inline">
-      <label class="form-check-label">
+    <div className="form-check form-check-inline">
+      <label className="form-check-label">
         <button
           className="btn btn-light p-0"
           style={{
@@ -457,8 +419,8 @@ const isFundraisingDiv = (
       </label>
     </div>
 
-    <div class="form-check form-check-inline">
-      <label class="form-check-label">
+    <div className="form-check form-check-inline">
+      <label className="form-check-label">
         <button
           className="btn btn-light p-0"
           style={{
@@ -482,25 +444,23 @@ const isFundraisingDiv = (
   </div>
 );
 
-// Below there is a weird code with fields.includes("githubLink") ternary operator.
-// This is to hack around rendering bug of near.social.
 return (
   <div className="card">
     <div className="card-header">
-      {mode} {postType}
+      {mode} {state.postType}
     </div>
 
-    <div class="card-body">
+    <div className="card-body">
       {state.warning && (
         <div
-          class="alert alert-warning alert-dismissible fade show"
+          className="alert alert-warning alert-dismissible fade show"
           role="alert"
         >
           {state.warning}
 
           <button
             type="button"
-            class="btn-close"
+            className="btn-close"
             data-bs-dismiss="alert"
             aria-label="Close"
             onClick={() => State.update({ warning: "" })}
@@ -512,7 +472,23 @@ return (
       where the title renders extra on state change. */}
       {fields.includes("githubLink") ? (
         <div className="row">
-          {fields.includes("githubLink") && githubLinkDiv}
+          {fields.includes("githubLink") && (
+            <div className="col-lg-12  mb-2">
+              <span>Github Issue URL:</span>
+
+              <input
+                type="text"
+                value={state.githubLink}
+                onChange={(event) =>
+                  State.update((lastKnownState) => ({
+                    ...lastKnownState,
+                    githubLink: event.target.value,
+                  }))
+                }
+              />
+            </div>
+          )}
+
           {tagEditor}
           {fields.includes("name") && nameDiv}
           {fields.includes("description") && callDescriptionDiv()}
@@ -522,9 +498,47 @@ return (
           {tagEditor}
           {fields.includes("name") && nameDiv}
 
-          {fields.includes("amount") && amountDiv}
+          {fundraisingToggle}
 
-          {fields.includes("sponsorship_token") && tokenDiv}
+          {fields.includes("amount") && (
+            <div className="col-lg-6 mb-2">
+              <span>Amount:</span>
+
+              <input
+                type="text"
+                value={state.amount}
+                onChange={(event) =>
+                  State.update((lastKnownState) => ({
+                    ...lastKnownState,
+                    amount: event.target.value,
+                  }))
+                }
+              />
+            </div>
+          )}
+
+          {state.postType === "Sponsorship" && (
+            <div className="col-lg-6 mb-2">
+              <span>Currency</span>
+
+              <select
+                onChange={(event) =>
+                  State.update((lastKnownState) => ({
+                    ...lastKnownState,
+                    token: event.target.value,
+                  }))
+                }
+                className="form-select"
+                aria-label="Default select"
+              >
+                <option selected value={"USDT"}>
+                  USDT
+                </option>
+
+                <option value="NEAR">NEAR</option>
+              </select>
+            </div>
+          )}
 
           {(fields.includes("supervisor") ||
             fields.includes("requested_sponsor")) && (
@@ -539,7 +553,10 @@ return (
                 type="text"
                 value={state.supervisor}
                 onChange={(event) =>
-                  State.update({ supervisor: event.target.value })
+                  State.update((lastKnownState) => ({
+                    ...lastKnownState,
+                    supervisor: event.target.value,
+                  }))
                 }
               />
             </div>
@@ -549,15 +566,18 @@ return (
 
           {fields.includes("requested_sponsorship_amount") &&
             state.fundraising && (
-              <div class="d-flex flex-column mb-2">
+              <div className="d-flex flex-column mb-2">
                 <div className="col-lg-6  mb-2">
                   <span>Currency</span>
 
                   <select
                     onChange={(event) =>
-                      State.update({ token: event.target.value })
+                      State.update((lastKnownState) => ({
+                        ...lastKnownState,
+                        token: event.target.value,
+                      }))
                     }
-                    class="form-select"
+                    className="form-select"
                     aria-label="Default select example"
                   >
                     <option selected value="NEAR">
@@ -570,48 +590,53 @@ return (
 
                 <div className="col-lg-6 mb-2">
                   <span>Requested amount</span>
-                  <span class="text-muted fw-normal">(Numbers only)</span>
+                  <span className="text-muted fw-normal">(Numbers only)</span>
 
                   <input
                     type="number"
                     value={parseInt(state.amount) > 0 ? state.amount : ""}
                     min={0}
                     onChange={(event) =>
-                      State.update({
+                      State.update((lastKnownState) => ({
+                        ...lastKnownState,
+
                         amount: Number(
                           event.target.value.toString().replace(/e/g, "")
                         ).toString(),
-                      })
+                      }))
                     }
                   />
                 </div>
 
                 <div className="col-lg-6 mb-2">
-                  <p class="mb-1">
+                  <p className="mb-1">
                     <span>Requested sponsor</span>
-                    <span class="text-muted fw-normal">(Optional)</span>
+                    <span className="text-muted fw-normal">(Optional)</span>
                   </p>
 
                   <p
                     style={{ fontSize: "13px" }}
-                    class="m-0 text-muted fw-light"
+                    className="m-0 text-muted fw-light"
                   >
                     If you are requesting funding from a specific sponsor,
-                    please enter their username.
+                    please enter their account ID.
                   </p>
 
-                  <div class="input-group flex-nowrap">
-                    <span class="input-group-text" id="addon-wrapping">
+                  <div className="input-group flex-nowrap">
+                    <span className="input-group-text" id="addon-wrapping">
                       @
                     </span>
 
                     <input
                       type="text"
-                      class="form-control"
-                      placeholder="Enter username"
+                      className="form-control"
+                      placeholder="Enter account ID"
                       value={state.supervisor}
                       onChange={(event) =>
-                        State.update({ supervisor: event.target.value })
+                        State.update((lastKnownState) => ({
+                          ...lastKnownState,
+                          supervisor: event.target.value,
+                        }))
                       }
                     />
                   </div>
@@ -622,11 +647,7 @@ return (
       )}
 
       <button
-        style={{
-          width: "7rem",
-          backgroundColor: "#0C7283",
-          color: "#f3f3f3",
-        }}
+        style={{ width: "7rem", backgroundColor: "#0C7283", color: "#f3f3f3" }}
         disabled={state.fundraising && (!state.amount || state.amount < 1)}
         className="btn btn-light mb-2 p-3"
         onClick={onSubmit}
@@ -637,12 +658,13 @@ return (
       {disclaimer}
     </div>
 
-    <div class="card-footer">
+    <div className="card-footer">
       <span>Preview:</span>
 
       {widget("entity.post.Post", {
         isPreview: true,
         id: 0, // irrelevant
+
         post: {
           author_id: state.author_id,
           likes: [],
@@ -650,7 +672,7 @@ return (
           snapshot: {
             editor_id: state.editor_id,
             labels: state.tags,
-            post_type: postType,
+            post_type: state.postType,
             name: state.name,
             description: state.description,
             amount: state.amount,
