@@ -73,7 +73,7 @@ function autoCompleteAccountId(id) {
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
-const postType = props.postType ?? "Sponsorship";
+const postType = props.postType ?? "Idea";
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
@@ -99,9 +99,9 @@ initState({
   postType,
   name: props.name ?? "",
   description: props.description ?? "",
-  amount: props.amount ?? "0",
+  amount: props.amount ?? props.requested_sponsorship_amount ?? "0",
   token: tokenMapping[props.token] ?? "USDT",
-  supervisor: props.supervisor ?? "",
+  supervisor: props.supervisor ?? props.requested_sponsor ?? "",
   githubLink: props.githubLink ?? "",
   warning: "",
   draftStateApplied: false,
@@ -114,8 +114,17 @@ if (!state.draftStateApplied && props.draftState) {
 let fields = {
   Comment: ["description"],
   Idea: ["name", "description"],
-  Solution: ["name", "description", "fundraising"],
+
+  Solution: [
+    "name",
+    "description",
+    "requested_sponsorship_amount",
+    "sponsorship_token",
+    "requested_sponsor",
+  ],
+
   Attestation: ["name", "description"],
+
   Sponsorship: [
     "name",
     "description",
@@ -123,6 +132,7 @@ let fields = {
     "sponsorship_token",
     "supervisor",
   ],
+
   Github: ["githubLink", "name", "description"],
 }[postType];
 
@@ -157,9 +167,9 @@ const onSubmit = () => {
     Solution: {
       name: state.name,
       description: state.description,
-      amount: state.amount,
+      requested_sponsor: state.supervisor,
+      requested_sponsorship_amount: state.amount,
       sponsorship_token: tokenMapping[state.token],
-      supervisor: state.supervisor,
       solution_version: "V2",
     },
     Attestation: {
@@ -170,9 +180,9 @@ const onSubmit = () => {
     Sponsorship: {
       name: state.name,
       description: state.description,
+      supervisor: state.supervisor,
       amount: state.amount,
       sponsorship_token: tokenMapping[state.token],
-      supervisor: state.supervisor,
       sponsorship_version: "V1",
     },
     Github: {
@@ -380,17 +390,6 @@ const tokenDiv = (
   </div>
 );
 
-const supervisorDiv = (
-  <div className="col-lg-6 mb-2">
-    Supervisor:
-    <input
-      type="text"
-      value={state.supervisor}
-      onChange={(event) => State.update({ supervisor: event.target.value })}
-    />
-  </div>
-);
-
 const callDescriptionDiv = () => {
   return (
     <div className="col-lg-12  mb-2">
@@ -429,103 +428,56 @@ const disclaimer = (
 );
 
 const isFundraisingDiv = (
-  // This is jank with just btns and not radios. But the radios were glitchy af
-  <>
-    <div class="mb-2">
-      <p class="fs-6 fw-bold mb-1">
-        Are you seeking funding for your solution?
-        <span class="text-muted fw-normal">(Optional)</span>
-      </p>
-      <div class="form-check form-check-inline">
-        <label class="form-check-label">
-          <button
-            className="btn btn-light p-0"
-            style={{
-              backgroundColor: state.fundraising ? "#0C7283" : "inherit",
-              color: "#f3f3f3",
-              border: "solid #D9D9D9",
-              borderRadius: "100%",
-              height: "20px",
-              width: "20px",
-            }}
-            onClick={() => State.update({ fundraising: true })}
-          />
-          Yes
-        </label>
-      </div>
-      <div class="form-check form-check-inline">
-        <label class="form-check-label">
-          <button
-            className="btn btn-light p-0"
-            style={{
-              backgroundColor: !state.fundraising ? "#0C7283" : "inherit",
-              color: "#f3f3f3",
-              border: "solid #D9D9D9",
-              borderRadius: "100%",
-              height: "20px",
-              width: "20px",
-            }}
-            onClick={() => State.update({ fundraising: false })}
-          />
-          No
-        </label>
-      </div>
-    </div>
-  </>
-);
+  <div class="mb-2">
+    <p class="fs-6 fw-bold mb-1">
+      Are you seeking funding for your solution?
+      <span class="text-muted fw-normal">(Optional)</span>
+    </p>
 
-const fundraisingDiv = (
-  <div class="d-flex flex-column mb-2">
-    <div className="col-lg-6  mb-2">
-      Currency
-      <select
-        onChange={(event) => State.update({ token: event.target.value })}
-        class="form-select"
-        aria-label="Default select example"
-      >
-        <option selected value="NEAR">
-          NEAR
-        </option>
-        <option value={"USDT"}>USDT</option>
-      </select>
-    </div>
-    <div className="col-lg-6 mb-2">
-      Requested amount
-      <span class="text-muted fw-normal">(Numbers Only)</span>
-      <input
-        type="number"
-        value={parseInt(state.amount) > 0 ? state.amount : ""}
-        min={0}
-        onChange={(event) => {
-          State.update({
-            amount: Number(
-              event.target.value.toString().replace(/e/g, "")
-            ).toString(),
-          });
-        }}
-      />
-    </div>
-    <div className="col-lg-6 mb-2">
-      <p class="mb-1">
-        Requested sponsor
-        <span class="text-muted fw-normal">(Optional)</span>
-      </p>
-      <p style={{ fontSize: "13px" }} class="m-0 text-muted fw-light">
-        If you are requesting funding from a specific sponsor, please enter
-        their username.
-      </p>
-      <div class="input-group flex-nowrap">
-        <span class="input-group-text" id="addon-wrapping">
-          @
-        </span>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Enter username"
-          value={state.supervisor}
-          onChange={(event) => State.update({ supervisor: event.target.value })}
+    <div class="form-check form-check-inline">
+      <label class="form-check-label">
+        <button
+          className="btn btn-light p-0"
+          style={{
+            backgroundColor: state.fundraising ? "#0C7283" : "inherit",
+            color: "#f3f3f3",
+            border: "solid #D9D9D9",
+            borderRadius: "100%",
+            height: "20px",
+            width: "20px",
+          }}
+          onClick={() =>
+            State.update((lastKnownState) => ({
+              ...lastKnownState,
+              fundraising: true,
+            }))
+          }
         />
-      </div>
+        Yes
+      </label>
+    </div>
+
+    <div class="form-check form-check-inline">
+      <label class="form-check-label">
+        <button
+          className="btn btn-light p-0"
+          style={{
+            backgroundColor: !state.fundraising ? "#0C7283" : "inherit",
+            color: "#f3f3f3",
+            border: "solid #D9D9D9",
+            borderRadius: "100%",
+            height: "20px",
+            width: "20px",
+          }}
+          onClick={() =>
+            State.update((lastKnownState) => ({
+              ...lastKnownState,
+              fundraising: false,
+            }))
+          }
+        />
+        No
+      </label>
     </div>
   </div>
 );
@@ -545,15 +497,17 @@ return (
           role="alert"
         >
           {state.warning}
+
           <button
             type="button"
             class="btn-close"
             data-bs-dismiss="alert"
             aria-label="Close"
             onClick={() => State.update({ warning: "" })}
-          ></button>
+          />
         </div>
       )}
+
       {/* This statement around the githubLinkDiv creates a weird render bug
       where the title renders extra on state change. */}
       {fields.includes("githubLink") ? (
@@ -567,16 +521,106 @@ return (
         <div className="row">
           {tagEditor}
           {fields.includes("name") && nameDiv}
+
           {fields.includes("amount") && amountDiv}
+
           {fields.includes("sponsorship_token") && tokenDiv}
-          {fields.includes("supervisor") && supervisorDiv}
+
+          {(fields.includes("supervisor") ||
+            fields.includes("requested_sponsor")) && (
+            <div className="col-lg-6 mb-2">
+              <span>{`${
+                state.postType === "Solution"
+                  ? "Requested sponsor"
+                  : "Supervisor"
+              }:`}</span>
+
+              <input
+                type="text"
+                value={state.supervisor}
+                onChange={(event) =>
+                  State.update({ supervisor: event.target.value })
+                }
+              />
+            </div>
+          )}
+
           {fields.includes("description") && callDescriptionDiv()}
-          {fields.includes("fundraising") && isFundraisingDiv}
-          {state.fundraising &&
-            fields.includes("fundraising") &&
-            fundraisingDiv}
+
+          {fields.includes("requested_sponsorship_amount") &&
+            state.fundraising && (
+              <div class="d-flex flex-column mb-2">
+                <div className="col-lg-6  mb-2">
+                  <span>Currency</span>
+
+                  <select
+                    onChange={(event) =>
+                      State.update({ token: event.target.value })
+                    }
+                    class="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option selected value="NEAR">
+                      NEAR
+                    </option>
+
+                    <option value={"USDT"}>USDT</option>
+                  </select>
+                </div>
+
+                <div className="col-lg-6 mb-2">
+                  <span>Requested amount</span>
+                  <span class="text-muted fw-normal">(Numbers only)</span>
+
+                  <input
+                    type="number"
+                    value={parseInt(state.amount) > 0 ? state.amount : ""}
+                    min={0}
+                    onChange={(event) =>
+                      State.update({
+                        amount: Number(
+                          event.target.value.toString().replace(/e/g, "")
+                        ).toString(),
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="col-lg-6 mb-2">
+                  <p class="mb-1">
+                    <span>Requested sponsor</span>
+                    <span class="text-muted fw-normal">(Optional)</span>
+                  </p>
+
+                  <p
+                    style={{ fontSize: "13px" }}
+                    class="m-0 text-muted fw-light"
+                  >
+                    If you are requesting funding from a specific sponsor,
+                    please enter their username.
+                  </p>
+
+                  <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping">
+                      @
+                    </span>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Enter username"
+                      value={state.supervisor}
+                      onChange={(event) =>
+                        State.update({ supervisor: event.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
         </div>
       )}
+
       <button
         style={{
           width: "7rem",
@@ -589,16 +633,20 @@ return (
       >
         Submit
       </button>
+
       {disclaimer}
     </div>
+
     <div class="card-footer">
-      Preview:
+      <span>Preview:</span>
+
       {widget("entity.post.Post", {
         isPreview: true,
         id: 0, // irrelevant
         post: {
           author_id: state.author_id,
           likes: [],
+
           snapshot: {
             editor_id: state.editor_id,
             labels: state.tags,

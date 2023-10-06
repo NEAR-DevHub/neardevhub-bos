@@ -157,44 +157,44 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
-    fieldInput
-  ) => {
-    const updatedValues = Struct.deepFieldUpdate(
-      formState?.values ?? {},
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const updatedValues = Struct.deepFieldUpdate(
+        formState?.values ?? {},
 
-      {
-        input: fieldInput?.target?.value ?? fieldInput,
-        params,
-        path,
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          params,
+          path,
 
-        via:
-          typeof customFieldUpdate === "function"
-            ? customFieldUpdate
-            : defaultFieldUpdate,
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
+      );
+
+      State.update((lastKnownComponentState) => ({
+        ...lastKnownComponentState,
+
+        [stateKey]: {
+          hasUnsubmittedChanges: !Struct.isEqual(
+            updatedValues,
+            initialFormState.values
+          ),
+
+          values: updatedValues,
+        },
+      }));
+
+      if (
+        typeof onUpdate === "function" &&
+        !Struct.isEqual(updatedValues, initialFormState.values)
+      ) {
+        onUpdate(updatedValues);
       }
-    );
-
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
-
-      [stateKey]: {
-        hasUnsubmittedChanges: !Struct.isEqual(
-          updatedValues,
-          initialFormState.values
-        ),
-
-        values: updatedValues,
-      },
-    }));
-
-    if (
-      typeof onUpdate === "function" &&
-      !Struct.isEqual(updatedValues, initialFormState.values)
-    ) {
-      onUpdate(updatedValues);
-    }
-  };
+    };
 
   if (
     !uninitialized &&
@@ -377,9 +377,9 @@ const KanbanPostBoardTicketFeaturesSchema = {
   like_count: { label: "Likes" },
   reply_count: { label: "Replies" },
   sponsorship_request_indicator: { label: "Sponsorship request indicator" },
-  requested_grant_value: { label: "Requested grant value" },
+  requested_sponsorship_value: { label: "Amount of requested funds" },
   requested_sponsor: { label: "Requested sponsor" },
-  approved_grant_value: { label: "Approved amount" },
+  approved_sponsorship_value: { label: "Approved amount" },
   sponsorship_supervisor: { label: "Supervisor" },
   tags: { label: "Tags" },
   type: { label: "Post type" },
@@ -400,9 +400,9 @@ const KanbanPostBoardDefaults = {
         like_count: true,
         reply_count: false,
         sponsorship_request_indicator: false,
-        requested_grant_value: false,
+        requested_sponsorship_value: false,
         requested_sponsor: false,
-        approved_grant_value: true,
+        approved_sponsorship_value: true,
         sponsorship_supervisor: true,
         tags: true,
         type: true,
@@ -492,10 +492,12 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
-    Object.fromEntries(
-      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-    );
+  const columnsDeleteById =
+    (id) =>
+    ({ lastKnownValue }) =>
+      Object.fromEntries(
+        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+      );
 
   const onCancel = () => {
     form.reset();

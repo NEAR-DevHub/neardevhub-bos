@@ -106,19 +106,19 @@ const KanbanPostTicket = ({ metadata }) => {
       isFundingRequested &&
       metadata.features.sponsorship_request_indicator,
 
-    requested_grant_value:
+    requested_sponsorship_value:
       data.snapshot.post_type === "Solution" &&
       isFundingRequested &&
-      metadata.features.requested_grant_value,
+      metadata.features.requested_sponsorship_value,
 
     requested_sponsor:
       data.snapshot.post_type === "Solution" &&
       isFundingRequested &&
       metadata.features.requested_sponsor,
 
-    approved_grant_value:
+    approved_sponsorship_value:
       data.snapshot.post_type === "Sponsorship" &&
-      metadata.features.approved_grant_value,
+      metadata.features.approved_sponsorship_value,
 
     sponsorship_supervisor:
       data.snapshot.post_type === "Sponsorship" &&
@@ -239,7 +239,8 @@ const KanbanPostTicket = ({ metadata }) => {
           </span>
         ) : null}
 
-        {features.requested_grant_value || features.approved_grant_value ? (
+        {features.requested_sponsorship_value ||
+        features.approved_sponsorship_value ? (
           <span className="d-flex flex-wrap gap-2">
             <span>Amount:</span>
 

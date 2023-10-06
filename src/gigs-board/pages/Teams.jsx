@@ -149,7 +149,6 @@ const Viewer = {
       DevHub.has_moderator({ account_id: context.accountId }) ?? false,
   },
 };
-
 /* END_INCLUDE: "entity/viewer" */
 
 const isContractOwner = nearDevGovGigsContractAccountId == context.accountId;
