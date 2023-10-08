@@ -151,6 +151,7 @@ const onSubmit = () => {
 
   let body = {
     name: state.name,
+
     description: generateDescription(
       state.description,
       state.amount,
