@@ -98,10 +98,6 @@ State.init({
    * A list of string tags.
    */
   tags,
-
-  /**
-   * Tags as a list of objects with field "name".
-   */
   tagOptions: tags.map((tag) => ({ name: tag })),
 
   postType: props.postType ?? "Idea",
@@ -116,7 +112,11 @@ State.init({
 });
 
 if (!state.draftStateApplied && props.draftState) {
-  State.update({ ...props.draftState, draftStateApplied: true });
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    ...props.draftState,
+    draftStateApplied: true,
+  }));
 }
 
 const fields = {
@@ -267,19 +267,14 @@ const checkTag = (tag) => {
   Near.asyncView(nearDevGovGigsContractAccountId, "is_allowed_to_use_labels", {
     editor: context.accountId,
     labels: [tag],
-  }).then((allowed) => {
-    if (allowed) {
-      State.update({ warning: "" });
-    } else {
-      State.update({
-        warning:
-          'The tag "' +
-          tag +
-          '" is protected and can only be added by moderators',
-      });
-      return;
-    }
-  });
+  }).then((allowed) =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      warning: allowed
+        ? ""
+        : `The tag "${tag}" is protected and can only be added by moderators`,
+    }))
+  );
 };
 
 const setTags = (tagOptions) => {
@@ -310,13 +305,14 @@ const setTags = (tagOptions) => {
       )
     );
   } else {
-    State.update({
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
       tags,
 
       tagOptions: tags.map((tagOption) => ({
         name: normalizeTag(tagOption.name),
       })),
-    });
+    }));
   }
 };
 const existingTags =
@@ -351,12 +347,18 @@ const tagEditor = (
 );
 
 const nameDiv = (
-  <div className="col-lg-6  mb-2">
-    Title:
+  <div className="col-lg-6 mb-2">
+    <span>Title:</span>
+
     <input
       type="text"
       value={state.name}
-      onChange={(event) => State.update({ name: event.target.value })}
+      onChange={(event) =>
+        State.update((lastKnownState) => ({
+          ...lastKnownState,
+          name: event.target.value,
+        }))
+      }
     />
   </div>
 );
@@ -364,15 +366,23 @@ const nameDiv = (
 const callDescriptionDiv = () => {
   return (
     <div className="col-lg-12  mb-2">
-      Description:
+      <span>Description:</span>
       <br />
+
       {widget("components.molecule.markdown-editor", {
         data: { handler: state.handler, content: state.description },
+
         onChange: (content) => {
-          State.update({ description: content, handler: "update" });
+          State.update((lastKnownState) => ({
+            ...lastKnownState,
+            description: content,
+            handler: "update",
+          }));
+
           textareaInputHandler(content);
         },
       })}
+
       {autocompleteEnabled && state.showAccountAutocomplete && (
         <AutoComplete>
           <Widget
@@ -380,7 +390,12 @@ const callDescriptionDiv = () => {
             props={{
               term: state.text.split("@").pop(),
               onSelect: autoCompleteAccountId,
-              onClose: () => State.update({ showAccountAutocomplete: false }),
+
+              onClose: () =>
+                State.update((lastKnownState) => ({
+                  ...lastKnownState,
+                  showAccountAutocomplete: false,
+                })),
             }}
           />
         </AutoComplete>
@@ -424,7 +439,8 @@ const fundraisingToggle = (
             }))
           }
         />
-        Yes
+
+        <span>Yes</span>
       </label>
     </div>
 
@@ -447,7 +463,8 @@ const fundraisingToggle = (
             }))
           }
         />
-        No
+
+        <span>No</span>
       </label>
     </div>
   </div>
@@ -472,7 +489,12 @@ return (
             className="btn-close"
             data-bs-dismiss="alert"
             aria-label="Close"
-            onClick={() => State.update({ warning: "" })}
+            onClick={() =>
+              State.update((lastKnownState) => ({
+                ...lastKnownState,
+                warning: "",
+              }))
+            }
           />
         </div>
       )}
