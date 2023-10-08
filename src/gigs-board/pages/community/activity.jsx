@@ -134,6 +134,29 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
+const CreatorWidget = (postType) => {
+  return (
+    <div
+      class={`collapse ${
+        draftState?.parent_post_id == postId && draftState?.postType == postType
+          ? "show"
+          : ""
+      }`}
+      id={`collapse${postType}Creator${postId}`}
+      data-bs-parent={`#accordion${postId}`}
+    >
+      {widget("entity.post.editor", {
+        postType,
+        onDraftStateChange: props.onDraftStateChange,
+        draftState:
+          draftState?.parent_post_id == postId ? draftState : undefined,
+        parentId: postId,
+        mode: "Create",
+      })}
+    </div>
+  );
+};
+
 const CommunityActivityPage = ({ handle }) => {
   const communityData = DevHub.get_community({ handle });
 

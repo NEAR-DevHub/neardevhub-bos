@@ -116,16 +116,19 @@ const PostEditor = ({
   name,
   description,
   draftState,
-  githubLink,
+  github_link,
+  onDraftStateChange,
   parentId,
   postId,
   postType,
   referral,
   requested_sponsor,
   requested_sponsorship_amount,
+  selected,
   supervisor,
   tags,
-  token,
+  text,
+  sponsorship_token,
   ...otherProps
 }) => {
   const mode = otherProps.mode ?? "Create";
@@ -147,9 +150,9 @@ const PostEditor = ({
     name: name ?? "",
     description: description ?? "",
     amount: requested_sponsorship_amount ?? amount ?? "0",
-    token: availableTokenParameters[token] ?? "USDT",
+    sponsorship_token: availableTokenParameters[sponsorship_token] ?? "USDT",
     supervisor: requested_sponsor ?? supervisor ?? "",
-    githubLink: githubLink ?? "",
+    github_link: github_link ?? "",
     draftStateApplied: false,
     warning: "",
   });
@@ -204,7 +207,7 @@ const PostEditor = ({
       "supervisor",
     ],
 
-    Github: ["githubLink", "name", "description"],
+    Github: ["github_link", "name", "description"],
   }[state.post_type];
 
   const onSubmit = () => {
@@ -222,7 +225,7 @@ const PostEditor = ({
         description: state.description,
         requested_sponsor: state.supervisor,
         requested_sponsorship_amount: state.amount,
-        sponsorship_token: availableTokenParameters[state.token],
+        sponsorship_token: availableTokenParameters[state.sponsorship_token],
         solution_version: "V2",
       },
 
@@ -237,7 +240,7 @@ const PostEditor = ({
         description: state.description,
         supervisor: state.supervisor,
         amount: state.amount,
-        sponsorship_token: availableTokenParameters[state.token],
+        sponsorship_token: availableTokenParameters[state.sponsorship_token],
         sponsorship_version: "V1",
       },
 
@@ -245,7 +248,7 @@ const PostEditor = ({
         name: state.name,
         description: state.description,
         github_version: "V0",
-        github_link: state.githubLink,
+        github_link: state.github_link,
       },
     }[state.post_type];
 
@@ -254,9 +257,7 @@ const PostEditor = ({
     let transactions = [];
 
     if (mode == "Create") {
-      props.onDraftStateChange(
-        Object.assign({}, state, { parent_post_id: parentId })
-      );
+      onDraftStateChange({ ...state, parent_post_id: postId });
 
       transactions.push({
         contractName: nearDevGovGigsContractAccountId,
@@ -266,9 +267,7 @@ const PostEditor = ({
         gas: Big(10).pow(12).mul(100),
       });
     } else if (mode == "Edit") {
-      props.onDraftStateChange(
-        Object.assign({}, state, { edit_post_id: postId })
-      );
+      onDraftStateChange({ ...state, edit_post_id: postId });
 
       transactions.push({
         contractName: nearDevGovGigsContractAccountId,
@@ -374,16 +373,17 @@ const PostEditor = ({
         placeholder="near.social, widget, NEP, standard, protocol, tool"
         selected={state.tagOptions}
         positionFixed
-        allowNew={(results, props) =>
-          !new Set(existingTags).has(props.text) &&
-          props.selected.filter((selected) => selected.name === props.text)
-            .length == 0 &&
+        allowNew={(results, params) =>
+          !new Set(existingTags).has(params.text) &&
+          selected.filter(
+            (selectedTagOption) => selectedTagOption.name === params.text
+          ).length === 0 &&
           Near.view(
             nearDevGovGigsContractAccountId,
             "is_allowed_to_use_labels",
             {
               editor: context.accountId,
-              labels: [props.text],
+              labels: [params.text],
             }
           )
         }
@@ -533,19 +533,19 @@ const PostEditor = ({
 
         {/* This statement around the githubLinkDiv creates a weird render bug
       where the title renders extra on state change. */}
-        {fields.includes("githubLink") ? (
+        {fields.includes("github_link") ? (
           <div className="row">
-            {fields.includes("githubLink") && (
+            {fields.includes("github_link") && (
               <div className="col-lg-12  mb-2">
                 <span>Github Issue URL:</span>
 
                 <input
                   type="text"
-                  value={state.githubLink}
+                  value={state.github_link}
                   onChange={(event) =>
                     State.update((lastKnownState) => ({
                       ...lastKnownState,
-                      githubLink: event.target.value,
+                      github_link: event.target.value,
                     }))
                   }
                 />
@@ -587,7 +587,7 @@ const PostEditor = ({
                   onChange={(event) =>
                     State.update((lastKnownState) => ({
                       ...lastKnownState,
-                      token: event.target.value,
+                      sponsorship_token: event.target.value,
                     }))
                   }
                   className="form-select"
@@ -636,7 +636,7 @@ const PostEditor = ({
                       onChange={(event) =>
                         State.update((lastKnownState) => ({
                           ...lastKnownState,
-                          token: event.target.value,
+                          sponsorship_token: event.target.value,
                         }))
                       }
                       className="form-select"
@@ -736,15 +736,15 @@ const PostEditor = ({
             likes: [],
 
             snapshot: {
-              editor_id: state.editor_id,
-              labels: state.tags,
-              post_type: state.post_type,
+              amount: state.amount,
               name: state.name,
               description: state.description,
-              amount: state.amount,
-              sponsorship_token: state.token,
+              editor_id: state.editor_id,
+              github_link: state.github_link,
+              labels: state.tags,
+              post_type: state.post_type,
+              sponsorship_token: state.sponsorship_token,
               supervisor: state.supervisor,
-              github_link: state.githubLink,
             },
           },
         })}

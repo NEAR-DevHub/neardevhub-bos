@@ -444,29 +444,6 @@ const buttonsFooter = props.isPreview ? null : (
   </div>
 );
 
-const CreatorWidget = (postType) => {
-  return (
-    <div
-      class={`collapse ${
-        draftState?.parent_post_id == postId && draftState?.postType == postType
-          ? "show"
-          : ""
-      }`}
-      id={`collapse${postType}Creator${postId}`}
-      data-bs-parent={`#accordion${postId}`}
-    >
-      {widget("entity.post.PostEditor", {
-        postType,
-        onDraftStateChange: props.onDraftStateChange,
-        draftState:
-          draftState?.parent_post_id == postId ? draftState : undefined,
-        parentId: postId,
-        mode: "Create",
-      })}
-    </div>
-  );
-};
-
 const tokenMapping = {
   NEAR: "NEAR",
   USDT: {
@@ -499,36 +476,6 @@ function tokenResolver(token) {
   }
 }
 
-const EditorWidget = (postType) => {
-  return (
-    <div
-      class={`collapse ${
-        draftState?.edit_post_id == postId && draftState?.postType == postType
-          ? "show"
-          : ""
-      }`}
-      id={`collapse${postType}Editor${postId}`}
-      data-bs-parent={`#accordion${postId}`}
-    >
-      {widget("entity.post.PostEditor", {
-        postType,
-        postId,
-        mode: "Edit",
-        author_id: post.author_id,
-        labels: post.snapshot.labels,
-        name: post.snapshot.name,
-        description: post.snapshot.description,
-        amount: post.snapshot.amount,
-        token: tokenResolver(post.snapshot.sponsorship_token),
-        supervisor: post.snapshot.supervisor,
-        githubLink: post.snapshot.github_link,
-        onDraftStateChange: props.onDraftStateChange,
-        draftState: draftState?.edit_post_id == postId ? draftState : undefined,
-      })}
-    </div>
-  );
-};
-
 const isDraft =
   (draftState?.parent_post_id === postId &&
     draftState?.postType === state.postType) ||
@@ -544,7 +491,7 @@ function Editor() {
       >
         {state.editorType === "CREATE" ? (
           <>
-            {widget("entity.post.PostEditor", {
+            {widget("entity.post.editor", {
               postType: state.postType,
               onDraftStateChange: props.onDraftStateChange,
               draftState:
@@ -555,19 +502,15 @@ function Editor() {
           </>
         ) : (
           <>
-            {widget("entity.post.PostEditor", {
+            {widget("entity.post.editor", {
+              ...post.snapshot,
               postType: state.postType,
               postId,
               mode: "Edit",
               author_id: post.author_id,
-              labels: post.snapshot.labels,
-              name: post.snapshot.name,
-              description: post.snapshot.description,
-              amount: post.snapshot.amount,
-              token: post.snapshot.sponsorship_token,
-              supervisor: post.snapshot.supervisor,
-              githubLink: post.snapshot.github_link,
+              sponsorship_token: tokenResolver(post.snapshot.sponsorship_token),
               onDraftStateChange: props.onDraftStateChange,
+
               draftState:
                 draftState?.edit_post_id == postId ? draftState : undefined,
             })}
@@ -606,7 +549,7 @@ const postExtra =
   snapshot.post_type == "Sponsorship" ? (
     <div key="post-extra">
       <h6 class="card-subtitle mb-2 text-muted">
-        Maximum amount: {snapshot.amount}{" "}
+        {`Maximum amount: ${snapshot.amount}`}
         {tokenResolver(snapshot.sponsorship_token)}
       </h6>
       <h6 class="card-subtitle mb-2 text-muted">

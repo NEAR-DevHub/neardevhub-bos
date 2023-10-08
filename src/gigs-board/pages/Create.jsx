@@ -51,7 +51,6 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
-
 /* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
 
@@ -111,7 +110,7 @@ initState({
   amount: props.amount ?? "",
   token: props.token ?? "USDT",
   supervisor: props.supervisor ?? "neardevgov.near",
-  githubLink: props.githubLink ?? "",
+  github_link: props.github_link ?? "",
   warning: "",
   waitForDraftStateRestore: true,
 });
@@ -615,7 +614,7 @@ return (
                         state.supervisor,
                         state.seekingFunding
                       ),
-                      github_link: state.githubLink,
+                      github_link: state.github_link,
                     },
                   },
                 })}
