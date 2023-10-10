@@ -134,30 +134,15 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const CreatorWidget = (postType) => {
-  return (
-    <div
-      class={`collapse ${
-        draftState?.parent_post_id == postId && draftState?.postType == postType
-          ? "show"
-          : ""
-      }`}
-      id={`collapse${postType}Creator${postId}`}
-      data-bs-parent={`#accordion${postId}`}
-    >
-      {widget("entity.post.editor", {
-        postType,
-        onDraftStateChange: props.onDraftStateChange,
-        draftState:
-          draftState?.parent_post_id == postId ? draftState : undefined,
-        parentId: postId,
-        mode: "Create",
-      })}
-    </div>
-  );
-};
-
 const CommunityActivityPage = ({ handle }) => {
+  State.init({ isSpawnerHidden: true });
+
+  const spawnerToggle = (forcedState) =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      isSpawnerHidden: !(forcedState ?? lastKnownState.isSpawnerHidden),
+    }));
+
   const communityData = DevHub.get_community({ handle });
 
   if (communityData === null) {
@@ -166,9 +151,9 @@ const CommunityActivityPage = ({ handle }) => {
 
   return widget("entity.community.layout", {
     path: [{ label: "Communities", pageId: "communities" }],
+    title: "Activity",
     handle,
 
-    title: "Activity",
     children:
       communityData !== null ? (
         <div class="row">
@@ -178,24 +163,39 @@ const CommunityActivityPage = ({ handle }) => {
                 <div class="d-flex align-items-center justify-content-between">
                   <small class="text-muted">
                     <span>Required tags:</span>
+
                     {widget("components.atom.tag", {
+                      tag: communityData.tag,
                       linkTo: "Feed",
-                      ...communityData,
                     })}
                   </small>
-                  {widget("components.layout.Controls", {
-                    title: "Post",
-                    href: href("Create", {}),
+
+                  {widget("components.molecule.button", {
+                    icon: {
+                      type: "bootstrap_icon",
+                      variant: "bi-plus-circle-fill",
+                    },
+
+                    isHidden: !state.isSpawnerHidden,
+                    label: "Post",
+                    onClick: () => spawnerToggle(true),
                   })}
                 </div>
               </div>
             </div>
+
             <div class="row">
               <div class="col">
+                {widget("entity.post.spawner", {
+                  isHidden: state.isSpawnerHidden,
+                  onCancel: () => spawnerToggle(false),
+                })}
+
                 {widget("entity.post.List", { tag: communityData.tag })}
               </div>
             </div>
           </div>
+
           <div class="col-md-3 container-fluid">
             {widget("entity.community.sidebar", {
               handle: communityData.handle,

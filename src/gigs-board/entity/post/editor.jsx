@@ -112,15 +112,16 @@ const kycDisclaimer = (
 );
 
 const PostEditor = ({
+  id,
   amount,
   name,
   description,
   draftState,
   github_link,
+  onCancel,
   onDraftStateChange,
-  parentId,
-  postId,
-  postType,
+  parent_id,
+  post_type,
   referral,
   requested_sponsor,
   requested_sponsorship_amount,
@@ -146,7 +147,7 @@ const PostEditor = ({
     ],
 
     tagOptions: tags.map((tag) => ({ name: tag })),
-    post_type: postType ?? "Idea",
+    post_type: post_type ?? "Idea",
     name: name ?? "",
     description: description ?? "",
     amount: requested_sponsorship_amount ?? amount ?? "0",
@@ -257,22 +258,22 @@ const PostEditor = ({
     let transactions = [];
 
     if (mode == "Create") {
-      onDraftStateChange({ ...state, parent_post_id: postId });
+      onDraftStateChange?.({ ...state, parent_post_id: id });
 
       transactions.push({
         contractName: nearDevGovGigsContractAccountId,
         methodName: "add_post",
-        args: { parent_id: parentId, labels: state.tags, body },
+        args: { parent_id, labels: state.tags, body },
         deposit: Big(10).pow(21).mul(2),
         gas: Big(10).pow(12).mul(100),
       });
     } else if (mode == "Edit") {
-      onDraftStateChange({ ...state, edit_post_id: postId });
+      onDraftStateChange?.({ ...state, edit_post_id: id });
 
       transactions.push({
         contractName: nearDevGovGigsContractAccountId,
         methodName: "edit_post",
-        args: { id: postId, labels: state.tags, body },
+        args: { id, labels: state.tags, body },
         deposit: Big(10).pow(21).mul(2),
         gas: Big(10).pow(12).mul(100),
       });
@@ -707,6 +708,14 @@ const PostEditor = ({
               )}
           </div>
         )}
+
+        <button
+          style={{ width: "7rem" }}
+          className="btn btn-light mb-2 p-3"
+          onClick={onCancel}
+        >
+          Cancel
+        </button>
 
         <button
           style={{

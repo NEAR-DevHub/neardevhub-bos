@@ -117,7 +117,7 @@ const compareSnapshot =
 
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
-const parentId = Near.view(nearDevGovGigsContractAccountId, "get_parent_id", {
+const parent_id = Near.view(nearDevGovGigsContractAccountId, "get_parent_id", {
   post_id: postId,
 });
 
@@ -167,14 +167,14 @@ const allowedToEdit =
     editor: context.accountId,
   });
 
-const btnEditorWidget = (postType, name) => {
+const btnEditorWidget = (post_type, name) => {
   return (
     <li>
       <a
         class="dropdown-item"
         role="button"
         onClick={() =>
-          State.update({ postType, editorType: "EDIT", showEditor: true })
+          State.update({ post_type, editorType: "EDIT", showEditor: true })
         }
       >
         {name}
@@ -324,7 +324,7 @@ const onLike = () => {
   Near.call(likeTxn);
 };
 
-const btnCreatorWidget = (postType, icon, name, desc) => {
+const btnCreatorWidget = (post_type, icon, name, desc) => {
   return (
     <li class="py-1">
       <a
@@ -332,7 +332,7 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
         style={{ color: "rgb(55,109,137)" }}
         role="button"
         onClick={() =>
-          State.update({ postType, editorType: "CREATE", showEditor: true })
+          State.update({ post_type, editorType: "CREATE", showEditor: true })
         }
       >
         <i class={`bi ${icon}`} style={{ fontSize: "1.5rem" }}>
@@ -425,10 +425,10 @@ const buttonsFooter = props.isPreview ? null : (
           {`Expand Replies (${childPostIds.length})`}
         </ButtonWithHover>
 
-        {isUnderPost || !parentId ? (
+        {isUnderPost || !parent_id ? (
           <div key="link-to-parent"></div>
         ) : (
-          <a href={href("Post", { id: parentId })}>
+          <a href={href("Post", { id: parent_id })}>
             <ButtonWithHover
               type="button"
               style={{ border: "0px" }}
@@ -478,25 +478,25 @@ function tokenResolver(token) {
 
 const isDraft =
   (draftState?.parent_post_id === postId &&
-    draftState?.postType === state.postType) ||
+    draftState?.post_type === state.post_type) ||
   (draftState?.edit_post_id === postId &&
-    draftState?.postType === state.postType);
+    draftState?.post_type === state.post_type);
 
 function Editor() {
   return (
     <div class="row" id={`accordion${postId}`} key="editors-footer">
       <div
-        key={`${state.postType}${state.editorType}${postId}`}
+        key={`${state.post_type}${state.editorType}${postId}`}
         className={"w-100"}
       >
         {state.editorType === "CREATE" ? (
           <>
             {widget("entity.post.editor", {
-              postType: state.postType,
+              post_type: state.post_type,
               onDraftStateChange: props.onDraftStateChange,
               draftState:
                 draftState?.parent_post_id == postId ? draftState : undefined,
-              parentId: postId,
+              parent_id: postId,
               mode: "Create",
             })}
           </>
@@ -504,8 +504,8 @@ function Editor() {
           <>
             {widget("entity.post.editor", {
               ...post.snapshot,
-              postType: state.postType,
-              postId,
+              post_type: state.post_type,
+              id: postId,
               mode: "Edit",
               author_id: post.author_id,
               sponsorship_token: tokenResolver(post.snapshot.sponsorship_token),

@@ -83,7 +83,7 @@ function autoCompleteAccountId(id) {
 /* END_INCLUDE: "core/lib/autocomplete" */
 
 const DRAFT_STATE_STORAGE_KEY = "DRAFT_STATE";
-const parentId = props.parentId ?? null;
+const parent_id = props.parent_id ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
 
@@ -104,7 +104,7 @@ initState({
   // Should be a list of labels as strings.
   // Both of the label structures should be modified together.
   labelStrings,
-  postType: "Idea",
+  post_type: "Idea",
   name: props.name ?? "",
   description: props.description ?? "",
   amount: props.amount ?? "",
@@ -160,7 +160,7 @@ const onSubmit = () => {
     ),
   };
 
-  if (state.postType === "Solution") {
+  if (state.post_type === "Solution") {
     body = {
       ...body,
       post_type: "Solution",
@@ -182,7 +182,7 @@ const onSubmit = () => {
       contractName: nearDevGovGigsContractAccountId,
       methodName: "add_post",
       args: {
-        parent_id: parentId,
+        parent_id,
         labels,
         body: body,
       },
@@ -220,11 +220,11 @@ const onSubmit = () => {
 };
 
 const onIdeaClick = () => {
-  State.update({ postType: "Idea", seekingFunding: false });
+  State.update({ post_type: "Idea", seekingFunding: false });
 };
 
 const onSolutionClick = () => {
-  State.update({ postType: "Solution" });
+  State.update({ post_type: "Solution" });
 };
 
 const normalizeLabel = (label) =>
@@ -522,7 +522,7 @@ return (
                   type="button"
                   class={`btn btn-outline-secondary`}
                   style={
-                    state.postType === "Idea"
+                    state.post_type === "Idea"
                       ? {
                           backgroundColor: "#0C7283",
                           color: "#f3f3f3",
@@ -538,7 +538,7 @@ return (
                   type="button"
                   class={`btn btn-outline-secondary`}
                   style={
-                    state.postType !== "Idea"
+                    state.post_type !== "Idea"
                       ? {
                           backgroundColor: "#0C7283",
                           color: "#f3f3f3",
@@ -551,7 +551,7 @@ return (
                 </button>
               </div>
               <p class="text-muted w-75 my-1">
-                {state.postType === "Idea"
+                {state.post_type === "Idea"
                   ? "Get feedback from the community about a problem, opportunity, or need."
                   : "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution."}
               </p>
@@ -574,7 +574,7 @@ return (
                 {nameDiv}
                 {descriptionDiv}
                 {labelEditor}
-                {state.postType === "Solution" && isFundraisingDiv}
+                {state.post_type === "Solution" && isFundraisingDiv}
                 {state.seekingFunding && fundraisingDiv}
               </div>
               <button
@@ -605,7 +605,7 @@ return (
                     snapshot: {
                       editor_id: state.editor_id,
                       labels: state.labelStrings,
-                      post_type: state.postType,
+                      post_type: state.post_type,
                       name: state.name,
                       description: generateDescription(
                         state.description,
