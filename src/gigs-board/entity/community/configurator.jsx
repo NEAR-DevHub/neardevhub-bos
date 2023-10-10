@@ -434,15 +434,12 @@ const sectionSubmit = (sectionData) => {
   setHasUnsavedChanges(true);
 };
 
-const changesSave = () =>
-  DevHub.update_community({ handle, community: communityData });
-
 const onDeleteCommunity = () => DevHub.delete_community({ handle });
 
 const handleCreateAddon = (addon_id, values) => {
   DevHub.add_community_addon({
     handle,
-    config: {
+    addon_config: {
       name: "Wiki",
       config_id: "123",
       addon_id,
@@ -558,7 +555,7 @@ return (
           }),
       })} */}
 
-    {availableAddons &&
+    {/* {availableAddons &&
       permissions.can_configure &&
       widget("components.molecule.tile", {
         heading: "Add new addon",
@@ -587,7 +584,7 @@ return (
             }}
           />
         ),
-      })}
+      })} */}
 
     {permissions.can_delete ? (
       <div
