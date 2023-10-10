@@ -434,6 +434,9 @@ const sectionSubmit = (sectionData) => {
   setHasUnsavedChanges(true);
 };
 
+const changesSave = () =>
+  DevHub.update_community({ handle, community: communityData });
+
 const onDeleteCommunity = () => DevHub.delete_community({ handle });
 
 const handleCreateAddon = (addon_id, values) => {
