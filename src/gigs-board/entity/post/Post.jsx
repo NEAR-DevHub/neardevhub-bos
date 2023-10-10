@@ -549,7 +549,7 @@ const postExtra =
   snapshot.post_type == "Sponsorship" ? (
     <div key="post-extra">
       <h6 class="card-subtitle mb-2 text-muted">
-        {`Maximum amount: ${snapshot.amount}`}
+        {`Maximum amount: ${snapshot.amount} `}
         {tokenResolver(snapshot.sponsorship_token)}
       </h6>
       <h6 class="card-subtitle mb-2 text-muted">

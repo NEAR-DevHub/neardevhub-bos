@@ -189,6 +189,7 @@ const CommunityActivityPage = ({ handle }) => {
                 {widget("entity.post.spawner", {
                   isHidden: state.isSpawnerHidden,
                   onCancel: () => spawnerToggle(false),
+                  tags: [communityData.tag],
                 })}
 
                 {widget("entity.post.List", { tag: communityData.tag })}

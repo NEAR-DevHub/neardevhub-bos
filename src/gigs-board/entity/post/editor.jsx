@@ -255,7 +255,7 @@ const PostEditor = ({
 
     body["post_type"] = state.post_type;
 
-    let transactions = [];
+    const transactions = [];
 
     if (mode == "Create") {
       onDraftStateChange?.({ ...state, parent_post_id: id });
@@ -314,8 +314,8 @@ const PostEditor = ({
       }))
     );
 
-  const setTags = (tagOptions) => {
-    tagOptions = tagOptions.map((tagOption) => ({
+  const setTags = (options) => {
+    const tagOptions = options.map((tagOption) => ({
       name: normalizeTag(tagOption.name),
     }));
 
@@ -376,7 +376,7 @@ const PostEditor = ({
         positionFixed
         allowNew={(results, params) =>
           !new Set(existingTags).has(params.text) &&
-          selected.filter(
+          (selected ?? []).filter(
             (selectedTagOption) => selectedTagOption.name === params.text
           ).length === 0 &&
           Near.view(
@@ -392,7 +392,7 @@ const PostEditor = ({
     </div>
   );
 
-  const nameDiv = (
+  const titleSection = (
     <div className="col-lg-6 mb-2">
       <span>Title:</span>
 
@@ -409,7 +409,7 @@ const PostEditor = ({
     </div>
   );
 
-  const callDescriptionDiv = () => (
+  const descriptionSection = (
     <div className="col-lg-12 mb-2">
       <span>Description:</span>
       <br />
@@ -554,13 +554,13 @@ const PostEditor = ({
             )}
 
             {tagEditor}
-            {fields.includes("name") && nameDiv}
-            {fields.includes("description") && callDescriptionDiv()}
+            {fields.includes("name") && titleSection}
+            {fields.includes("description") && descriptionSection}
           </div>
         ) : (
           <div className="row">
             {tagEditor}
-            {fields.includes("name") && nameDiv}
+            {fields.includes("name") && titleSection}
             {fundraisingToggle}
 
             {fields.includes("amount") && (
@@ -625,7 +625,7 @@ const PostEditor = ({
               </div>
             )}
 
-            {fields.includes("description") && callDescriptionDiv()}
+            {fields.includes("description") && descriptionSection}
 
             {fields.includes("requested_sponsorship_amount") &&
               state.fundraising && (
