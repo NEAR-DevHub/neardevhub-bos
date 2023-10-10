@@ -731,7 +731,7 @@ const PostEditor = ({
       <div className="card-footer">
         <span>Preview:</span>
 
-        {widget("entity.post.Post", {
+        {widget("entity.post.card", {
           isPreview: true,
           id: 0, // irrelevant
 

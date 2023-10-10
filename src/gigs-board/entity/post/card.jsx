@@ -635,7 +635,7 @@ const postsList =
       >
         {childPostIds.map((childId) =>
           widget(
-            "entity.post.Post",
+            "entity.post.card",
             {
               id: childId,
               isUnderPost: true,
@@ -713,13 +713,8 @@ const timestampElement = (_snapshot) => (
       src="mob.near/widget/ProfileImage"
       props={{
         accountId: _snapshot.editor_id,
-        style: {
-          width: "1.25em",
-          height: "1.25em",
-        },
-        imageStyle: {
-          transform: "translateY(-12.5%)",
-        },
+        style: { width: "1.25em", height: "1.25em" },
+        imageStyle: { transform: "translateY(-12.5%)" },
       }}
     />
 
