@@ -460,6 +460,15 @@ const handleUpdateCommunityAddonConfig = (config) => {
   DevHub.update_community_addon({ handle, config });
 };
 
+const CommunityAccessControlSchema = {
+  admins: {
+    format: "comma-separated",
+    inputProps: { required: true },
+    label: "Admins",
+    order: 1,
+  },
+};
+
 return (
   <div className="d-flex flex-column align-items-center gap-4">
     {widget("entity.community.branding-configurator", {
