@@ -103,7 +103,6 @@ const Struct = {
 };
 /* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/lib/gui/form" */
-
 const defaultFieldUpdate = ({
   input,
   lastKnownValue,

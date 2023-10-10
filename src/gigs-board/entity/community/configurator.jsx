@@ -138,6 +138,24 @@ const DevHub = {
   update_community_github: ({ handle, github }) =>
     Near.call(devHubAccountId, "update_community_github", { handle, github }),
 
+  add_community_addon: ({ handle, config }) =>
+    Near.call(devHubAccountId, "add_community_addon", {
+      community_handle: handle,
+      addon_config: config,
+    }),
+
+  update_community_addon: ({ handle, config }) =>
+    Near.call(devHubAccountId, "update_community_addon", {
+      community_handle: handle,
+      addon_config: config,
+    }),
+
+  remove_community_addon: ({ handle, config_id }) =>
+    Near.call(devHubAccountId, "remove_community_addon", {
+      community_handle: handle,
+      config_id,
+    }),
+
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
@@ -209,135 +227,6 @@ const Viewer = {
   },
 };
 /* END_INCLUDE: "entity/viewer" */
-
-const communityAccessControlFormatter = ({ admins, ...otherFields }) => ({
-  ...otherFields,
-  admins: admins.filter((string) => string.length > 0),
-});
-
-const CenteredMessage = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: ${(p) => p.height ?? "100%"};
-`;
-
-const { handle, link } = props;
-
-const community = DevHub.useQuery("community", { handle }), // We don't need to useQuery
-  permissions = Viewer.communityPermissions({ handle });
-
-if (community.isLoading) {
-  return (
-    <CenteredMessage height={"384px"}>
-      <h2>Loading...</h2>
-    </CenteredMessage>
-  );
-} else if (!community.data) {
-  return (
-    <CenteredMessage height={"384px"}>
-      <h2>{`Community with handle "${handle}" not found.`}</h2>
-    </CenteredMessage>
-  );
-}
-
-const [communityData, setCommunityData] = useState(community.data);
-const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
-if (permissions.can_configure) {
-  // START MIGRATION MODULE (withMigrate)
-  const needsMigration = (data) => {
-    if (data.github || data.board || data.wiki1 || data.wiki2) {
-      return "253"; // Issue #253
-    }
-    return null;
-  };
-
-  const migrationScenario = needsMigration(communityData);
-
-  const handleMigrate = () => {
-    switch (migrationScenario) {
-      case "253": // Issue #253
-        // TODO: Handle migration to features
-        console.log("Migrate with scenario 253");
-        return;
-      // default is not available in VM
-    }
-    console.log("No migration or unknown scenario");
-  };
-
-  if (migrationScenario) {
-    return (
-      <>
-        <button onClick={handleMigrate}>Migrate</button>
-        {widget("entity.community.configurator.old", { handle, link })}
-      </>
-    );
-  }
-}
-
-const availableAddons = [
-  {
-    id: "1",
-    title: "Wiki",
-    description: "",
-    configurator: "entity.addon.wiki-configurator",
-    icon: "",
-  },
-];
-
-const communityAddons = [
-  {
-    addon_id: "123",
-    name: "Wiki",
-    feature_id: "1",
-    parameters: JSON.stringify({}),
-    enabled: true,
-  },
-];
-
-const sectionSubmit = (sectionData) => {
-  const updatedCommunityData = {
-    ...Object.entries(sectionData).reduce(
-      (update, [propertyKey, propertyValue]) => ({
-        ...update,
-
-        [propertyKey]:
-          typeof propertyValue !== "string" || (propertyValue?.length ?? 0) > 0
-            ? propertyValue ?? null
-            : null,
-      }),
-
-      communityData
-    ),
-  };
-  setCommunityData(updatedCommunityData);
-  setHasUnsavedChanges(true);
-};
-
-const changesSave = () =>
-  DevHub.update_community({ handle, community: communityData });
-
-const onDeleteCommunity = () => DevHub.delete_community({ handle });
-
-const handleCreateAddon = (addon_id, values) => {
-  DevHub.add_community_addon({
-    handle,
-    addon_config: {
-      name: "Wiki",
-      config_id: "123",
-      addon_id,
-      parameters: JSON.stringify(values),
-      enabled: true,
-    },
-  });
-};
-
-const handleDeleteAddon = (addon_id) => {
-  DevHub.remove_community_addon({ handle, config_id: addon_id });
-};
 
 const CommunityInformationSchema = {
   handle: {
@@ -452,6 +341,125 @@ const CommunityAccessControlSchema = {
   },
 };
 
+const communityAccessControlFormatter = ({ admins, ...otherFields }) => ({
+  ...otherFields,
+  admins: admins.filter((string) => string.length > 0),
+});
+
+const CenteredMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: ${(p) => p.height ?? "100%"};
+`;
+
+const { handle, link } = props;
+
+const community = DevHub.useQuery("community", { handle }), // We don't need to useQuery
+  permissions = Viewer.communityPermissions({ handle });
+
+if (community.isLoading) {
+  return (
+    <CenteredMessage height={"384px"}>
+      <h2>Loading...</h2>
+    </CenteredMessage>
+  );
+} else if (!community.data) {
+  return (
+    <CenteredMessage height={"384px"}>
+      <h2>{`Community with handle "${handle}" not found.`}</h2>
+    </CenteredMessage>
+  );
+}
+
+const [communityData, setCommunityData] = useState(community.data);
+const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+if (permissions.can_configure) {
+  // START MIGRATION MODULE (withMigrate)
+  const needsMigration = (data) => {
+    if (data.github || data.board || data.wiki1 || data.wiki2) {
+      return "253"; // Issue #253
+    }
+    return null;
+  };
+
+  const migrationScenario = needsMigration(communityData);
+
+  const handleMigrate = () => {
+    switch (migrationScenario) {
+      case "253": // Issue #253
+        // TODO: Handle migration to features
+        console.log("Migrate with scenario 253");
+        return;
+      // default is not available in VM
+    }
+    console.log("No migration or unknown scenario");
+  };
+
+  if (migrationScenario) {
+    return (
+      <>
+        <button onClick={handleMigrate}>Migrate</button>
+        {widget("entity.community.configurator.old", { handle, link })}
+      </>
+    );
+  }
+}
+
+const availableAddons = DevHub.get_available_addons();
+const communityAddonConfigs = DevHub.get_community_addon_configs({ handle });
+
+console.log("availableAddons", availableAddons);
+console.log("communityAddonConfigs", communityAddonConfigs);
+
+const sectionSubmit = (sectionData) => {
+  const updatedCommunityData = {
+    ...Object.entries(sectionData).reduce(
+      (update, [propertyKey, propertyValue]) => ({
+        ...update,
+
+        [propertyKey]:
+          typeof propertyValue !== "string" || (propertyValue?.length ?? 0) > 0
+            ? propertyValue ?? null
+            : null,
+      }),
+
+      communityData
+    ),
+  };
+  setCommunityData(updatedCommunityData);
+  setHasUnsavedChanges(true);
+};
+
+const changesSave = () =>
+  DevHub.update_community({ handle, community: communityData });
+
+const onDeleteCommunity = () => DevHub.delete_community({ handle });
+
+const handleCreateAddon = (addon_id, values) => {
+  DevHub.add_community_addon({
+    handle,
+    config: {
+      name: "Wiki",
+      config_id: "123",
+      addon_id,
+      parameters: JSON.stringify(values),
+      enabled: true,
+    },
+  });
+};
+
+const handleDeleteCommunityAddonConfig = (config_id) => {
+  DevHub.remove_community_addon({ handle, config_id });
+};
+
+const handleUpdateCommunityAddonConfig = (config) => {
+  DevHub.update_community_addon({ handle, config });
+};
+
 return (
   <div className="d-flex flex-column align-items-center gap-4">
     {widget("entity.community.branding-configurator", {
@@ -490,10 +498,10 @@ return (
       schema: CommunityAccessControlSchema,
       submitLabel: "Accept",
     })}
-    {/* 
-    {communityAddons &&
-      communityAddons.map((addon) => {
-        const match = availableAddons.find((it) => it.id === addon.feature_id);
+
+    {communityAddonConfigs &&
+      communityAddonConfigs.map((addon) => {
+        const match = availableAddons.find((it) => it.id === addon.addon_id);
         if (match) {
           return (
             <>
@@ -502,23 +510,30 @@ return (
                 hasPermissionToConfgure: permissions.can_configure,
                 configurator: (p) =>
                   widget(match.configurator, {
-                    data: communityData[addon.addon_id],
+                    data: JSON.parse(addon.parameters),
                     onSubmit: (value) =>
-                      sectionSubmit({ [addon.addon_id]: value }),
+                      handleUpdateCommunityAddonConfig({
+                        ...addon,
+                        parameters: JSON.stringify(value),
+                      }),
                     ...p,
                   }),
               })}
-              <button onClick={() => handleDeleteAddon(addon.addon_id)}>
+              <button
+                onClick={() =>
+                  handleDeleteCommunityAddonConfig(addon.config_id)
+                }
+              >
                 delete
               </button>
             </>
           );
         } else {
           return widget("components.molecule.tile", {
-            children: "Unknown addon with feature ID: " + addon.feature_id,
+            children: "Unknown addon with addon ID: " + addon.id,
           });
         }
-      })} */}
+      })}
 
     {/* {state.selectedAddon &&
       widget("entity.community.configurator.section", {
@@ -543,7 +558,7 @@ return (
           }),
       })} */}
 
-    {/* {availableAddons &&
+    {availableAddons &&
       permissions.can_configure &&
       widget("components.molecule.tile", {
         heading: "Add new addon",
@@ -572,7 +587,7 @@ return (
             }}
           />
         ),
-      })} */}
+      })}
 
     {permissions.can_delete ? (
       <div
