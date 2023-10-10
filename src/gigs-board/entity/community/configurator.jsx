@@ -339,7 +339,109 @@ const handleDeleteAddon = (addon_id) => {
   DevHub.remove_community_addon({ handle, config_id: addon_id });
 };
 
-console.log("permssions:", permissions);
+const CommunityInformationSchema = {
+  handle: {
+    inputProps: {
+      min: 2,
+      max: 40,
+
+      placeholder:
+        "Choose unique URL handle for your community. Example: zero-knowledge.",
+
+      required: true,
+    },
+
+    label: "URL handle",
+    order: 3,
+  },
+
+  name: {
+    inputProps: {
+      min: 2,
+      max: 30,
+      placeholder: "Community name.",
+      required: true,
+    },
+
+    label: "Name",
+    order: 1,
+  },
+
+  tag: {
+    inputProps: {
+      min: 2,
+      max: 30,
+
+      placeholder:
+        "Any posts with this tag will show up in your community feed.",
+
+      required: true,
+    },
+
+    label: "Tag",
+    order: 4,
+  },
+
+  description: {
+    inputProps: {
+      min: 2,
+      max: 60,
+
+      placeholder:
+        "Describe your community in one short sentence that will appear in the communities discovery page.",
+
+      required: true,
+    },
+
+    label: "Description",
+    order: 2,
+  },
+};
+
+const CommunityAboutSchema = {
+  bio_markdown: {
+    format: "markdown",
+
+    inputProps: {
+      min: 3,
+      max: 200,
+
+      placeholder:
+        "Tell people about your community. This will appear on your community’s homepage.",
+
+      resize: "none",
+    },
+
+    label: "Bio",
+    multiline: true,
+    order: 1,
+  },
+
+  twitter_handle: {
+    inputProps: { prefix: "https://twitter.com/", min: 2, max: 60 },
+    label: "Twitter",
+    order: 2,
+  },
+
+  github_handle: {
+    inputProps: { prefix: "https://github.com/", min: 2, max: 60 },
+    label: "Github",
+    order: 3,
+  },
+
+  telegram_handle: {
+    inputProps: { prefix: "https://t.me/", min: 2, max: 60 },
+    format: "comma-separated",
+    label: "Telegram",
+    order: 4,
+  },
+
+  website_url: {
+    inputProps: { prefix: "https://", min: 2, max: 60 },
+    label: "Website",
+    order: 5,
+  },
+};
 
 return (
   <div className="d-flex flex-column align-items-center gap-4">
@@ -349,7 +451,8 @@ return (
       onSubmit: sectionSubmit,
       values: communityData,
     })}
-    {/* {widget("components.organism.configurator", {
+
+    {widget("components.organism.configurator", {
       heading: "Community information",
       data: communityData,
       isSubform: true,
@@ -366,7 +469,8 @@ return (
       onSubmit: sectionSubmit,
       schema: CommunityAboutSchema,
       submitLabel: "Accept",
-    })} */}
+    })}
+
     {/* {widget("components.organism.configurator", {
       heading: "Access control",
       data: communityData,
@@ -473,7 +577,7 @@ return (
         })}
       </div>
     ) : null}
-    {permissions.can_configure && state.hasUnsavedChanges && (
+    {permissions.can_configure && hasUnsavedChanges && (
       <div
         className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
         style={{ borderTopLeftRadius: "100%" }}

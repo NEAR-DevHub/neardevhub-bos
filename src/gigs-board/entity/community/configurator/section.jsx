@@ -56,7 +56,7 @@ const ConfigurationSection = ({
           onClick: () => toggleEditActive(),
         })),
     children: hasPermissionToConfgure ? ( // TODO: I feel there is a better way to do this...
-      <div className="flex-grow-1 d-flex flex-column gap-4">
+      <div className="flex-grow-1 d-flex flex-column">
         {configurator && configurator({ isEditActive: state.isEditActive })}
       </div>
     ) : null,

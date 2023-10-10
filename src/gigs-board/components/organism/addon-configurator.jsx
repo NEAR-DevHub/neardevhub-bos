@@ -289,11 +289,15 @@ function FormFields({ schema, form, isEditable }) {
     }
   };
 
-  return Object.entries(schema).map(([fieldKey, fieldConfig], idx) => (
-    <div key={idx}>
-      {renderFormField({ fieldKey, fieldConfig, form, isEditable })}
+  return (
+    <div className={`d-flex flex-column ${!isEditable && "gap-4"}`}>
+      {Object.entries(schema).map(([fieldKey, fieldConfig], idx) => (
+        <div key={idx}>
+          {renderFormField({ fieldKey, fieldConfig, form, isEditable })}
+        </div>
+      ))}
     </div>
-  ));
+  );
 }
 
 const Configurator = ({
