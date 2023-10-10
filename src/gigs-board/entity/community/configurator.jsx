@@ -443,6 +443,15 @@ const CommunityAboutSchema = {
   },
 };
 
+const CommunityAccessControlSchema = {
+  admins: {
+    format: "comma-separated",
+    inputProps: { required: true },
+    label: "Admins",
+    order: 1,
+  },
+};
+
 return (
   <div className="d-flex flex-column align-items-center gap-4">
     {widget("entity.community.branding-configurator", {
@@ -471,7 +480,7 @@ return (
       submitLabel: "Accept",
     })}
 
-    {/* {widget("components.organism.configurator", {
+    {widget("components.organism.configurator", {
       heading: "Access control",
       data: communityData,
       formatter: communityAccessControlFormatter,
@@ -480,7 +489,7 @@ return (
       onSubmit: sectionSubmit,
       schema: CommunityAccessControlSchema,
       submitLabel: "Accept",
-    })} */}
+    })}
     {/* 
     {communityAddons &&
       communityAddons.map((addon) => {

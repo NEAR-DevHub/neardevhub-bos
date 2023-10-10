@@ -338,7 +338,6 @@ const Configurator = ({
     : {};
 
   const form = useForm({ initialValues, stateKey: "form" });
-
   const formFormattedValues =
     typeof toFormatted === "function" ? toFormatted(form.values) : form.values;
 
