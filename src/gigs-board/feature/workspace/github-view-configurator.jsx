@@ -609,6 +609,7 @@ const GithubKanbanViewConfigurator = ({
     </div>
   ) : (
     <div className="d-flex flex-column gap-4">
+      {/* TODO: remove Configurator from this page */}
       {state.isActive && Object.keys(form.values).length > 0 ? (
         <AttractableDiv className="d-flex flex-column gap-3 p-3 w-100 rounded-4">
           <div className="d-flex align-items-center justify-content-between gap-3">

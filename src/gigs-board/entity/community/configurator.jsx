@@ -138,18 +138,6 @@ const DevHub = {
   update_community_github: ({ handle, github }) =>
     Near.call(devHubAccountId, "update_community_github", { handle, github }),
 
-  add_community_addon: ({ handle, addon_config }) =>
-    Near.call(devHubAccountId, "add_community_addon", {
-      community_handle: handle,
-      addon_config,
-    }),
-
-  remove_community_addon: ({ handle, config_id }) =>
-    Near.call(devHubAccountId, "remove_community_addon", {
-      community_handle: handle,
-      config_id,
-    }),
-
   get_access_control_info: () =>
     Near.view(devHubAccountId, "get_access_control_info") ?? null,
 
@@ -163,6 +151,8 @@ const DevHub = {
 
   get_community_addons: ({ handle }) =>
     Near.view(devHubAccountId, "get_community_addons", { handle }),
+  get_community_addon_configs: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community_addon_configs", { handle }),
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
@@ -195,7 +185,7 @@ const DevHub = {
           })),
 
       JSON.stringify({ name, params }),
-      { subscribe: false } // If you turn to false, then flashing goes away
+      { subscribe: true }
     );
 
     return cacheState === null ? initialState : cacheState;
@@ -373,25 +363,26 @@ function Configurator253({ handle, link }) {
     }));
   }
 
-  const availableAddons = [
-    {
-      id: "1",
-      title: "Wiki",
-      description: "",
-      configurator: "entity.addon.wiki-configurator",
-      icon: "",
-    },
-  ];
-
-  const communityAddons = [
-    {
-      addon_id: "123",
-      name: "Wiki",
-      feature_id: "1",
-      parameters: JSON.stringify({}),
-      enabled: true,
-    },
-  ];
+  // const availableAddons = [
+  //   {
+  //     id: "wiki",
+  //     title: "Wiki",
+  //     description: "",
+  //     configurator: "entity.addon.wiki-configurator",
+  //     icon: "",
+  //   },
+  // ];
+  const availableAddons = DevHub.get_available_addons() || [];
+  // const communityAddons = [
+  //   {
+  //     config_id: "wiki",
+  //     name: "Wiki",
+  //     addon_id: "wiki",
+  //     parameters: JSON.stringify({}),
+  //     enabled: true,
+  //   },
+  // ];
+  const communityAddons = DevHub.get_community_addon_configs({ handle }) || [];
 
   const sectionSubmit = (sectionData) => {
     State.update((lastKnownState) => {
@@ -494,7 +485,7 @@ function Configurator253({ handle, link }) {
           {communityAddons &&
             communityAddons.map((addon) => {
               const match = availableAddons.find(
-                (it) => it.id === addon.feature_id
+                (it) => it.id === addon.addon_id // TODO maybe use config ID?
               );
               if (match) {
                 return (
@@ -514,8 +505,7 @@ function Configurator253({ handle, link }) {
                 );
               } else {
                 return widget("components.molecule.tile", {
-                  children:
-                    "Unknown addon with feature ID: " + addon.feature_id,
+                  children: "Unknown addon with feature ID: " + addon.addon_id, // TODO config id?
                 });
               }
             })}
@@ -670,14 +660,13 @@ if (permissions.can_configure) {
 // END MIGRATION MODULE
 // }
 
-const availableAddons = DevHub.get_available_addons();
-const communityAddons =  community.addon_list; // DevHub.get_community_addons({handle});
-
+const availableAddons = DevHub.get_available_addons() || [];
+const communityAddons = DevHub.get_community_addon_configs({ handle }) || []; // DevHub.get_community_addons({handle});
 
 console.log(availableAddons);
 // const availableAddons = [
 //   {
-//     id: "1",
+//     id: "wiki",
 //     title: "Wiki",
 //     description: "",
 //     configurator: "entity.addon.wiki-configurator",
@@ -687,9 +676,9 @@ console.log(availableAddons);
 
 // const communityAddons = [
 //   {
-//     addon_id: "123",
+//     addon_id: "wiki",
 //     name: "Wiki",
-//     feature_id: "1",
+//     config_id: "wiki", // wiki 1 wiki 2 wiki 3
 //     parameters: JSON.stringify({}),
 //     enabled: true,
 //   },
@@ -783,7 +772,7 @@ return (
 
     {communityAddons &&
       communityAddons.map((addon) => {
-        const match = availableAddons.find((it) => it.id === addon.feature_id);
+        const match = availableAddons.find((it) => it.id === addon.addon_id);
         if (match) {
           return (
             <>
@@ -805,7 +794,7 @@ return (
           );
         } else {
           return widget("components.molecule.tile", {
-            children: "Unknown addon with feature ID: " + addon.feature_id,
+            children: "Unknown addon with feature ID: " + addon.addon_id,
           });
         }
       })}
@@ -833,7 +822,8 @@ return (
           }),
       })}
 
-    {availableAddons && permissions.can_configure &&
+    {availableAddons &&
+      permissions.can_configure &&
       widget("components.molecule.tile", {
         heading: "Add new addon",
         children: (

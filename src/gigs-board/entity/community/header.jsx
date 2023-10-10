@@ -161,12 +161,14 @@ const DevHub = {
 
   get_all_communities_metadata: () =>
     Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
-    
+
   get_available_addons: () =>
     Near.view(devHubAccountId, "get_available_addons") ?? null,
 
   get_community_addons: ({ handle }) =>
     Near.view(devHubAccountId, "get_community_addons", { handle }),
+  get_community_addon_configs: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community_addon_configs", { handle }),
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
@@ -249,9 +251,12 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   }
 
   const availableAddons = DevHub.get_available_addons() || [];
-  const communityAddons =  community.addon_list || []; // DevHub.get_community_addons({handle});
-  console.log({availableAddons});
-  console.log({communityAddons});
+  const communityAddons = community.addon_list || []; // DevHub.get_community_addons({handle});
+  const communityAddonConfigs =
+    DevHub.get_community_addon_configs({ handle }) || [];
+  console.log({ availableAddons });
+  console.log({ communityAddons });
+  console.log({ communityAddonConfigs });
   // const availableAddons = [
   //   {
   //     "id": "wiki",
@@ -286,7 +291,6 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   //     "icon": "bi bi-telegram"
   //   },
   // ];
-
 
   // const communityAddons = [
   //   {
@@ -339,7 +343,14 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
   //   },
   // ];
 
-  var foundAddOn = (config_id) => communityAddons?.some((config) => config.config_id === config_id) || false;
+  var foundAddOn = (config_id) =>
+    communityAddonConfigs?.some((config) => config.config_id === config_id) ||
+    false;
+  console.log(
+    "!community?.github || foundAddOn('github')",
+    !community?.github,
+    foundAddOn("github")
+  );
   const tabs = [
     {
       defaultActive: true,
@@ -364,7 +375,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       title: "Teams",
     },
 
-    ...(!community?.features.board || foundAddOn('kanban')
+    ...(!community?.features.board || foundAddOn("kanban")
       ? []
       : [
           {
@@ -374,7 +385,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           },
         ]),
 
-    ...((!community?.features.github && community?.github) || foundAddOn('github')
+    ...(!community?.github || foundAddOn("github")
       ? []
       : [
           {
@@ -384,8 +395,9 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           },
         ]),
 
-    ...((!community?.features.telegram ||
-    (community?.telegram_handle.length ?? 0) === 0) || foundAddOn('telegram')
+    ...(!community?.features.telegram ||
+    (community?.telegram_handle.length ?? 0) === 0 ||
+    foundAddOn("telegram")
       ? []
       : [
           {
@@ -395,7 +407,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           },
         ]),
 
-    ...(communityAddons || []).map((addon) => ({
+    ...(communityAddonConfigs || []).map((addon) => ({
       title: addon.name,
       route: availableAddons.find((it) => it.id === addon.config_id).viewer,
       iconClass: addon.icon,

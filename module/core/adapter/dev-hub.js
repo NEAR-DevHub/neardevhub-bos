@@ -40,12 +40,14 @@ const DevHub = {
 
   get_all_communities_metadata: () =>
     Near.view(devHubAccountId, "get_all_communities_metadata") ?? null,
-  
+
   get_available_addons: () =>
     Near.view(devHubAccountId, "get_available_addons") ?? null,
-  
-   get_community_addons: ({ handle }) =>
+
+  get_community_addons: ({ handle }) =>
     Near.view(devHubAccountId, "get_community_addons", { handle }),
+  get_community_addon_configs: ({ handle }) =>
+    Near.view(devHubAccountId, "get_community_addon_configs", { handle }),
 
   get_all_labels: () => Near.view(devHubAccountId, "get_all_labels") ?? null,
 
