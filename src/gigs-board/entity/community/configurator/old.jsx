@@ -157,7 +157,7 @@ const DevHub = {
     }),
 
   remove_community_addon: ({ handle, config_id }) =>
-    Near.call(devHubAccountId, "update_community_addon", {
+    Near.call(devHubAccountId, "remove_community_addon", {
       community_handle: handle,
       config_id,
     }),
@@ -415,99 +415,113 @@ const CommunityConfigurator = ({ handle, link }) => {
 
   const onDelete = () => DevHub.delete_community({ handle });
 
-  return (
-    <div className="d-flex flex-column align-items-center w-100">
-      <div className="d-flex flex-column gap-4" style={{ maxWidth: 960 }}>
-        {widget("entity.community.branding-configurator", {
-          isUnlocked: permissions.can_configure,
-          link,
-          onSubmit: sectionSubmit,
-          values: state.communityData,
-        })}
+  return community.isLoading ? (
+    <div>Loading...</div>
+  ) : (
+    <div
+      className="d-flex flex-column align-items-center gap-4 w-100"
+      style={{ maxWidth: 960 }}
+    >
+      {community.data === null ? (
+        <div
+          className="d-flex flex-column justify-content-center align-items-center w-100"
+          style={{ height: 384 }}
+        >
+          <h2 className="h2">{`Community with handle "${handle}" not found.`}</h2>
+        </div>
+      ) : (
+        <>
+          {widget("entity.community.branding-configurator", {
+            isUnlocked: permissions.can_configure,
+            link,
+            onSubmit: sectionSubmit,
+            values: state.communityData,
+          })}
 
-        {widget("components.organism.configurator", {
-          heading: "Community information",
-          externalState: state.communityData,
-          fullWidth: true,
-          isEmbedded: true,
-          isUnlocked: permissions.can_configure,
-          onSubmit: sectionSubmit,
-          schema: CommunityInformationSchema,
-          submitLabel: "Accept",
-        })}
+          {widget("components.organism.configurator", {
+            heading: "Community information",
+            externalState: state.communityData,
+            fullWidth: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onSubmit: sectionSubmit,
+            schema: CommunityInformationSchema,
+            submitLabel: "Accept",
+          })}
 
-        {widget("components.organism.configurator", {
-          heading: "About",
-          externalState: state.communityData,
-          fullWidth: true,
-          isEmbedded: true,
-          isUnlocked: permissions.can_configure,
-          onSubmit: sectionSubmit,
-          schema: CommunityAboutSchema,
-          submitLabel: "Accept",
-        })}
+          {widget("components.organism.configurator", {
+            heading: "About",
+            externalState: state.communityData,
+            fullWidth: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onSubmit: sectionSubmit,
+            schema: CommunityAboutSchema,
+            submitLabel: "Accept",
+          })}
 
-        {widget("components.organism.configurator", {
-          heading: "Access control",
-          externalState: state.communityData,
-          fullWidth: true,
-          formatter: communityAccessControlFormatter,
-          isEmbedded: true,
-          isUnlocked: permissions.can_configure,
-          onSubmit: sectionSubmit,
-          schema: CommunityAccessControlSchema,
-          submitLabel: "Accept",
-        })}
+          {widget("components.organism.configurator", {
+            heading: "Access control",
+            externalState: state.communityData,
+            fullWidth: true,
+            formatter: communityAccessControlFormatter,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onSubmit: sectionSubmit,
+            schema: CommunityAccessControlSchema,
+            submitLabel: "Accept",
+          })}
 
-        {widget("components.organism.configurator", {
-          heading: "Wiki page 1",
-          externalState: state.communityData?.wiki1,
-          fullWidth: true,
-          isEmbedded: true,
-          isUnlocked: permissions.can_configure,
-          onSubmit: (value) => sectionSubmit({ wiki1: value }),
-          submitLabel: "Accept",
-          schema: CommunityWikiPageSchema,
-        })}
+          {widget("components.organism.configurator", {
+            heading: "Wiki page 1",
+            externalState: state.communityData?.wiki1,
+            fullWidth: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onSubmit: (value) => sectionSubmit({ wiki1: value }),
+            submitLabel: "Accept",
+            schema: CommunityWikiPageSchema,
+          })}
 
-        {widget("components.organism.configurator", {
-          heading: "Wiki page 2",
-          externalState: state.communityData?.wiki2,
-          fullWidth: true,
-          isEmbedded: true,
-          isUnlocked: permissions.can_configure,
-          onSubmit: (value) => sectionSubmit({ wiki2: value }),
-          submitLabel: "Accept",
-          schema: CommunityWikiPageSchema,
-        })}
+          {widget("components.organism.configurator", {
+            heading: "Wiki page 2",
+            externalState: state.communityData?.wiki2,
+            fullWidth: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onSubmit: (value) => sectionSubmit({ wiki2: value }),
+            submitLabel: "Accept",
+            schema: CommunityWikiPageSchema,
+          })}
 
-        {permissions.can_delete ? (
-          <div
-            className="d-flex justify-content-center gap-4 p-4 w-100"
-            style={{ maxWidth: 896 }}
-          >
-            {widget("components.molecule.button", {
-              classNames: { root: "btn-lg btn-outline-danger border-none" },
-              label: "Delete community",
-              onClick: onDelete,
-            })}
-          </div>
-        ) : null}
+          {permissions.can_delete ? (
+            <div
+              className="d-flex justify-content-center gap-4 p-4 w-100"
+              style={{ maxWidth: 896 }}
+            >
+              {widget("components.molecule.button", {
+                classNames: { root: "btn-lg btn-outline-danger border-none" },
+                label: "Delete community",
+                onClick: onDelete,
+              })}
+            </div>
+          ) : null}
 
-        {permissions.can_configure && state.hasUnsavedChanges && (
-          <div
-            className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
-            style={{ borderTopLeftRadius: "100%" }}
-          >
-            {widget("components.molecule.button", {
-              classNames: { root: "btn-lg btn-success" },
-              icon: { type: "svg_icon", variant: "floppy_drive" },
-              label: "Save",
-              onClick: changesSave,
-            })}
-          </div>
-        )}
-      </div>
+          {permissions.can_configure && state.hasUnsavedChanges && (
+            <div
+              className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
+              style={{ borderTopLeftRadius: "100%" }}
+            >
+              {widget("components.molecule.button", {
+                classNames: { root: "btn-lg btn-success" },
+                icon: { type: "svg_icon", variant: "floppy_drive" },
+                label: "Save",
+                onClick: changesSave,
+              })}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

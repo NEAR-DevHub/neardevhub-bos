@@ -377,43 +377,47 @@ if (community.isLoading) {
 const [communityData, setCommunityData] = useState(community.data);
 const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-if (permissions.can_configure) {
-  // START MIGRATION MODULE (withMigrate)
-  const needsMigration = (data) => {
-    if (data.github || data.board || data.wiki1 || data.wiki2) {
-      return "253"; // Issue #253
+// MIGRATION MODULE
+const withMigrate = (scenarios, data) => {
+  for (let scenario of scenarios) {
+    if (scenario.condition(data)) {
+      return {
+        identifier: scenario.identifier,
+        migrate: () => scenario.migrate(data),
+        output: scenario.output,
+      };
     }
-    return null;
-  };
+  }
+  console.log("No migration or unknown scenario");
+  return null;
+};
 
-  const migrationScenario = needsMigration(communityData);
-
-  const handleMigrate = () => {
-    switch (migrationScenario) {
-      case "253": // Issue #253
-        // TODO: Handle migration to features
-        console.log("Migrate with scenario 253");
-        return;
-      // default is not available in VM
-    }
-    console.log("No migration or unknown scenario");
-  };
-
-  if (migrationScenario) {
-    return (
+const migrationScenarios = [
+  {
+    identifier: "253", // Issue #253
+    condition: (data) => data.github || data.board || data.wiki1 || data.wiki2,
+    // condition: (data) => true,
+    migrate: (data) => console.log("Migrate with scenario 253: ", data),
+    output: (data, migrate) => (
       <>
-        <button onClick={handleMigrate}>Migrate</button>
+        {permissions.can_configure && (
+          <button onClick={() => migrate(data)}>Migrate</button>
+        )}
         {widget("entity.community.configurator.old", { handle, link })}
       </>
-    );
-  }
+    ),
+  },
+];
+
+const MigrationResponse = withMigrate(migrationScenarios, communityData);
+
+if (MigrationResponse) {
+  const { output: Component, migrate } = MigrationResponse;
+  return <Component data={communityData} migrate={migrate} />;
 }
 
 const availableAddons = DevHub.get_available_addons();
 const communityAddonConfigs = DevHub.get_community_addon_configs({ handle });
-
-console.log("availableAddons", availableAddons);
-console.log("communityAddonConfigs", communityAddonConfigs);
 
 const sectionSubmit = (sectionData) => {
   const updatedCommunityData = {
@@ -439,12 +443,26 @@ const changesSave = () =>
 
 const onDeleteCommunity = () => DevHub.delete_community({ handle });
 
+const UUID = {
+  generate: (template) => {
+    if (typeof template !== "string") {
+      template = "xxxxxxxx-xxxx-xxxx-yxxx-xxxxxxxxxxxx";
+    }
+    return template.replace(/[xy]/g, (c) => {
+      var r = (Math.random() * 16) | 0;
+      var v = c === "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  },
+};
+
 const handleCreateAddon = (addon_id, values) => {
+  const uuid = UUID.generate("xxxxxxx");
   DevHub.add_community_addon({
     handle,
     config: {
       name: "Wiki",
-      config_id: "123",
+      config_id: uuid,
       addon_id,
       parameters: JSON.stringify(values),
       enabled: true,
@@ -461,7 +479,10 @@ const handleUpdateCommunityAddonConfig = (config) => {
 };
 
 return (
-  <div className="d-flex flex-column align-items-center gap-4">
+  <div
+    className="d-flex flex-column align-items-center gap-4 w-100"
+    style={{ maxWidth: 960 }}
+  >
     {widget("entity.community.branding-configurator", {
       isUnlocked: permissions.can_configure,
       link,
@@ -471,7 +492,8 @@ return (
 
     {widget("components.organism.configurator", {
       heading: "Community information",
-      data: communityData,
+      externalState: communityData,
+      fullWidth: true,
       isSubform: true,
       isUnlocked: permissions.can_configure,
       onSubmit: sectionSubmit,
@@ -480,7 +502,8 @@ return (
     })}
     {widget("components.organism.configurator", {
       heading: "About",
-      data: communityData,
+      externalState: communityData,
+      fullWidth: true,
       isSubform: true,
       isUnlocked: permissions.can_configure,
       onSubmit: sectionSubmit,
@@ -490,7 +513,8 @@ return (
 
     {widget("components.organism.configurator", {
       heading: "Access control",
-      data: communityData,
+      externalState: communityData,
+      fullWidth: true,
       formatter: communityAccessControlFormatter,
       isSubform: true,
       isUnlocked: permissions.can_configure,
@@ -508,7 +532,9 @@ return (
               {widget("entity.community.configurator.section", {
                 heading: addon.name,
                 hasPermissionToConfgure: permissions.can_configure,
-                configurator: (p) =>
+                configurator: (
+                  p // TODO: Add support for changing the name and enable/disable, and delete if not created yet
+                ) =>
                   widget(match.configurator, {
                     data: JSON.parse(addon.parameters),
                     onSubmit: (value) =>
@@ -535,9 +561,9 @@ return (
         }
       })}
 
-    {/* {state.selectedAddon &&
+    {state.selectedAddon &&
       widget("entity.community.configurator.section", {
-        heading: "New " + state.selectedAddon.title, // TODO: This should swap out with an input
+        heading: "New " + state.selectedAddon.title,
         headerSlotRight: widget("components.molecule.button", {
           classNames: { root: "btn-sm btn-secondary" },
           icon: {
@@ -549,14 +575,15 @@ return (
         }),
         isEditActive: true,
         hasPermissionToConfgure: permissions.can_configure,
-        configurator: (p) =>
+        configurator: (
+          p // TODO: Add support for changing the name and enable/disable
+        ) =>
           widget(state.selectedAddon.configurator, {
-            data: communityData.newAddon,
             onSubmit: (value) =>
               handleCreateAddon(state.selectedAddon.id, value),
             ...p,
           }),
-      })} */}
+      })}
 
     {availableAddons &&
       permissions.can_configure &&
@@ -564,7 +591,9 @@ return (
         heading: "Add new addon",
         children: (
           <Widget
-            src="discom.testnet/widget/DIG.InputSelect" // if mainnet, replace discom.testnet with "near"
+            src={`${
+              context.networkId === "mainnet" ? "near" : "discom.testnet"
+            }/widget/DIG.InputSelect`} // if mainnet, replace discom.testnet with "near"
             props={{
               groups: [
                 {

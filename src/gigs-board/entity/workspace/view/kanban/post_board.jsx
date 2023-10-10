@@ -128,7 +128,7 @@ const DevHub = {
     }),
 
   remove_community_addon: ({ handle, config_id }) =>
-    Near.call(devHubAccountId, "update_community_addon", {
+    Near.call(devHubAccountId, "remove_community_addon", {
       community_handle: handle,
       config_id,
     }),
