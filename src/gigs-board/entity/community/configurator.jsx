@@ -276,68 +276,70 @@ if (permissions.can_configure) {
       </>
     );
   }
+}
 
-  const availableAddons = [
-    {
-      id: "1",
-      title: "Wiki",
-      description: "",
-      configurator: "entity.addon.wiki-configurator",
-      icon: "",
-    },
-  ];
+const availableAddons = [
+  {
+    id: "1",
+    title: "Wiki",
+    description: "",
+    configurator: "entity.addon.wiki-configurator",
+    icon: "",
+  },
+];
 
-  const communityAddons = [
-    {
-      addon_id: "123",
+const communityAddons = [
+  {
+    addon_id: "123",
+    name: "Wiki",
+    feature_id: "1",
+    parameters: JSON.stringify({}),
+    enabled: true,
+  },
+];
+
+const sectionSubmit = (sectionData) => {
+  const updatedCommunityData = {
+    ...Object.entries(sectionData).reduce(
+      (update, [propertyKey, propertyValue]) => ({
+        ...update,
+
+        [propertyKey]:
+          typeof propertyValue !== "string" || (propertyValue?.length ?? 0) > 0
+            ? propertyValue ?? null
+            : null,
+      }),
+
+      communityData
+    ),
+  };
+  setCommunityData(updatedCommunityData);
+  setHasUnsavedChanges(true);
+};
+
+const changesSave = () =>
+  DevHub.update_community({ handle, community: communityData });
+
+const onDeleteCommunity = () => DevHub.delete_community({ handle });
+
+const handleCreateAddon = (addon_id, values) => {
+  DevHub.add_community_addon({
+    handle,
+    addon_config: {
       name: "Wiki",
-      feature_id: "1",
-      parameters: JSON.stringify({}),
+      config_id: "123",
+      addon_id,
+      parameters: JSON.stringify(values),
       enabled: true,
     },
-  ];
+  });
+};
 
-  const sectionSubmit = (sectionData) => {
-    const updatedCommunityData = {
-      ...Object.entries(sectionData).reduce(
-        (update, [propertyKey, propertyValue]) => ({
-          ...update,
+const handleDeleteAddon = (addon_id) => {
+  DevHub.remove_community_addon({ handle, config_id: addon_id });
+};
 
-          [propertyKey]:
-            typeof propertyValue !== "string" ||
-            (propertyValue?.length ?? 0) > 0
-              ? propertyValue ?? null
-              : null,
-        }),
-
-        communityData
-      ),
-    };
-    setCommunityData(updatedCommunityData);
-    setHasUnsavedChanges(true);
-  };
-
-  const changesSave = () =>
-    DevHub.update_community({ handle, community: communityData });
-
-  const onDeleteCommunity = () => DevHub.delete_community({ handle });
-
-  const handleCreateAddon = (addon_id, values) => {
-    DevHub.add_community_addon({
-      handle,
-      addon_config: {
-        name: "Wiki",
-        config_id: "123",
-        addon_id,
-        parameters: JSON.stringify(values),
-        enabled: true,
-      },
-    });
-  };
-
-  const handleDeleteAddon = (addon_id) => {
-    DevHub.remove_community_addon({ handle, config_id: addon_id });
-  };
+console.log("permssions:", permissions);
 
 return (
   <div className="d-flex flex-column align-items-center gap-4">
@@ -347,7 +349,7 @@ return (
       onSubmit: sectionSubmit,
       values: communityData,
     })}
-    {widget("components.organism.configurator", {
+    {/* {widget("components.organism.configurator", {
       heading: "Community information",
       data: communityData,
       isSubform: true,
@@ -364,7 +366,7 @@ return (
       onSubmit: sectionSubmit,
       schema: CommunityAboutSchema,
       submitLabel: "Accept",
-    })}
+    })} */}
     {/* {widget("components.organism.configurator", {
       heading: "Access control",
       data: communityData,
@@ -375,7 +377,7 @@ return (
       schema: CommunityAccessControlSchema,
       submitLabel: "Accept",
     })} */}
-{/* 
+    {/* 
     {communityAddons &&
       communityAddons.map((addon) => {
         const match = availableAddons.find((it) => it.id === addon.feature_id);
@@ -459,35 +461,30 @@ return (
         ),
       })} */}
 
-          {permissions.can_delete ? (
-            <div
-              className="d-flex justify-content-center gap-4 p-4 w-100"
-              style={{ maxWidth: 896 }}
-            >
-              {widget("components.molecule.button", {
-                classNames: { root: "btn-lg btn-outline-danger border-none" },
-                label: "Delete community",
-                onClick: onDelete,
-              })}
-            </div>
-          ) : null}
-          {permissions.can_configure && state.hasUnsavedChanges && (
-            <div
-              className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
-              style={{ borderTopLeftRadius: "100%" }}
-            >
-              {widget("components.molecule.button", {
-                classNames: { root: "btn-lg btn-success" },
-                icon: { kind: "svg", variant: "floppy-drive" },
-                label: "Save",
-                onClick: changesSave,
-              })}
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
-return CommunityConfigurator(props);
+    {permissions.can_delete ? (
+      <div
+        className="d-flex justify-content-center gap-4 p-4 w-100"
+        style={{ maxWidth: 896 }}
+      >
+        {widget("components.molecule.button", {
+          classNames: { root: "btn-lg btn-outline-danger border-none" },
+          label: "Delete community",
+          onClick: onDelete,
+        })}
+      </div>
+    ) : null}
+    {permissions.can_configure && state.hasUnsavedChanges && (
+      <div
+        className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
+        style={{ borderTopLeftRadius: "100%" }}
+      >
+        {widget("components.molecule.button", {
+          classNames: { root: "btn-lg btn-success" },
+          icon: { kind: "svg", variant: "floppy-drive" },
+          label: "Save",
+          onClick: changesSave,
+        })}
+      </div>
+    )}
+  </div>
+);
