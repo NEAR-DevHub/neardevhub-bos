@@ -442,7 +442,7 @@ const onDeleteCommunity = () => DevHub.delete_community({ handle });
 const handleCreateAddon = (addon_id, values) => {
   DevHub.add_community_addon({
     handle,
-    addon_config: {
+    config: {
       name: "Wiki",
       config_id: "123",
       addon_id,
@@ -458,15 +458,6 @@ const handleDeleteCommunityAddonConfig = (config_id) => {
 
 const handleUpdateCommunityAddonConfig = (config) => {
   DevHub.update_community_addon({ handle, config });
-};
-
-const CommunityAccessControlSchema = {
-  admins: {
-    format: "comma-separated",
-    inputProps: { required: true },
-    label: "Admins",
-    order: 1,
-  },
 };
 
 return (
@@ -567,7 +558,7 @@ return (
           }),
       })} */}
 
-    {/* {availableAddons &&
+    {availableAddons &&
       permissions.can_configure &&
       widget("components.molecule.tile", {
         heading: "Add new addon",
@@ -596,7 +587,7 @@ return (
             }}
           />
         ),
-      })} */}
+      })}
 
     {permissions.can_delete ? (
       <div
