@@ -92,6 +92,31 @@ const normalizeTag = (tag) =>
     .toLowerCase()
     .trim("-");
 
+const postSchemas = {
+  Comment: ["description"],
+  Idea: ["name", "description"],
+
+  Solution: [
+    "name",
+    "description",
+    "requested_sponsorship_amount",
+    "sponsorship_token",
+    "requested_sponsor",
+  ],
+
+  Attestation: ["name", "description"],
+
+  Sponsorship: [
+    "name",
+    "description",
+    "amount",
+    "sponsorship_token",
+    "supervisor",
+  ],
+
+  Github: ["github_link", "name", "description"],
+};
+
 const availableTokenParameters = {
   NEAR: "NEAR",
 
@@ -121,7 +146,6 @@ const PostEditor = ({
   onCancel,
   onDraftStateChange,
   parent_id,
-  post_type,
   referral,
   requested_sponsor,
   requested_sponsorship_amount,
@@ -132,10 +156,11 @@ const PostEditor = ({
   sponsorship_token,
   ...otherProps
 }) => {
-  const mode = otherProps.mode ?? "Create";
+  const mode = otherProps.mode ?? "Create",
+    post_type = otherProps.post_type ?? "Idea";
 
   State.init({
-    fundraising: false,
+    fundraising: typeof amount === "string" && parseInt(amount) > 0,
     author_id: context.accountId,
 
     /**
@@ -147,7 +172,6 @@ const PostEditor = ({
     ],
 
     tagOptions: tags.map((tag) => ({ name: tag })),
-    post_type: post_type ?? "Idea",
     name: name ?? "",
     description: description ?? "",
     amount: requested_sponsorship_amount ?? amount ?? "0",
@@ -186,30 +210,7 @@ const PostEditor = ({
     }));
   }
 
-  const fields = {
-    Comment: ["description"],
-    Idea: ["name", "description"],
-
-    Solution: [
-      "name",
-      "description",
-      "requested_sponsorship_amount",
-      "sponsorship_token",
-      "requested_sponsor",
-    ],
-
-    Attestation: ["name", "description"],
-
-    Sponsorship: [
-      "name",
-      "description",
-      "amount",
-      "sponsorship_token",
-      "supervisor",
-    ],
-
-    Github: ["github_link", "name", "description"],
-  }[state.post_type];
+  const fields = postSchemas[post_type];
 
   const onSubmit = () => {
     const body = {
@@ -251,9 +252,9 @@ const PostEditor = ({
         github_version: "V0",
         github_link: state.github_link,
       },
-    }[state.post_type];
+    }[post_type];
 
-    body["post_type"] = state.post_type;
+    body["post_type"] = post_type;
 
     const transactions = [];
 
@@ -507,7 +508,7 @@ const PostEditor = ({
 
   return (
     <div className="card">
-      <div className="card-header">{`${mode} ${state.post_type}`}</div>
+      <div className="card-header">{`${mode} ${post_type}`}</div>
 
       <div className="card-body">
         {state.warning && (
@@ -560,10 +561,10 @@ const PostEditor = ({
         ) : (
           <div className="row">
             {tagEditor}
-            {fields.includes("name") && titleSection}
-            {fundraisingToggle}
+            {fields.includes("name") ? titleSection : null}
+            {post_type === "Solution" ? fundraisingToggle : null}
 
-            {fields.includes("amount") && (
+            {fields.includes("amount") ? (
               <div className="col-lg-6 mb-2">
                 <span>Amount:</span>
 
@@ -578,9 +579,9 @@ const PostEditor = ({
                   }
                 />
               </div>
-            )}
+            ) : null}
 
-            {state.post_type === "Sponsorship" && (
+            {post_type === "Sponsorship" ? (
               <div className="col-lg-6 mb-2">
                 <span>Currency</span>
 
@@ -601,16 +602,11 @@ const PostEditor = ({
                   <option value="NEAR">NEAR</option>
                 </select>
               </div>
-            )}
+            ) : null}
 
-            {(fields.includes("supervisor") ||
-              fields.includes("requested_sponsor")) && (
+            {post_type === "Sponsorship" && (
               <div className="col-lg-6 mb-2">
-                <span>{`${
-                  state.post_type === "Solution"
-                    ? "Requested sponsor"
-                    : "Supervisor"
-                }:`}</span>
+                <span>Supervisor</span>
 
                 <input
                   type="text"
@@ -625,87 +621,86 @@ const PostEditor = ({
               </div>
             )}
 
-            {fields.includes("description") && descriptionSection}
+            {fields.includes("description") ? descriptionSection : null}
 
-            {fields.includes("requested_sponsorship_amount") &&
-              state.fundraising && (
-                <div className="d-flex flex-column mb-2">
-                  <div className="col-lg-6  mb-2">
-                    <span>Currency</span>
+            {post_type === "Solution" && state.fundraising ? (
+              <div className="d-flex flex-column mb-2">
+                <div className="col-lg-6  mb-2">
+                  <span>Currency</span>
 
-                    <select
-                      onChange={(event) =>
-                        State.update((lastKnownState) => ({
-                          ...lastKnownState,
-                          sponsorship_token: event.target.value,
-                        }))
-                      }
-                      className="form-select"
-                      aria-label="Default select example"
-                    >
-                      <option selected value="NEAR">
-                        NEAR
-                      </option>
+                  <select
+                    onChange={(event) =>
+                      State.update((lastKnownState) => ({
+                        ...lastKnownState,
+                        sponsorship_token: event.target.value,
+                      }))
+                    }
+                    className="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option selected value="NEAR">
+                      NEAR
+                    </option>
 
-                      <option value={"USDT"}>USDT</option>
-                    </select>
-                  </div>
+                    <option value={"USDT"}>USDT</option>
+                  </select>
+                </div>
 
-                  <div className="col-lg-6 mb-2">
-                    <span>Requested amount</span>
-                    <span className="text-muted fw-normal">(Numbers only)</span>
+                <div className="col-lg-6 mb-2">
+                  <span>Requested amount</span>
+                  <span className="text-muted fw-normal">(Numbers only)</span>
+
+                  <input
+                    type="number"
+                    value={parseInt(state.amount) > 0 ? state.amount : ""}
+                    min={0}
+                    onChange={(event) =>
+                      State.update((lastKnownState) => ({
+                        ...lastKnownState,
+
+                        amount: Number(
+                          event.target.value.toString().replace(/e/g, "")
+                        ).toString(),
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className="col-lg-6 mb-2">
+                  <p className="mb-1">
+                    <span>Requested sponsor</span>
+                    <span className="text-muted fw-normal">(Optional)</span>
+                  </p>
+
+                  <p
+                    style={{ fontSize: "13px" }}
+                    className="m-0 text-muted fw-light"
+                  >
+                    If you are requesting funding from a specific sponsor,
+                    please enter their account ID.
+                  </p>
+
+                  <div className="input-group flex-nowrap">
+                    <span className="input-group-text" id="addon-wrapping">
+                      @
+                    </span>
 
                     <input
-                      type="number"
-                      value={parseInt(state.amount) > 0 ? state.amount : ""}
-                      min={0}
+                      type="text"
+                      className="form-control"
+                      placeholder="Enter account ID"
+                      value={state.supervisor}
                       onChange={(event) =>
                         State.update((lastKnownState) => ({
                           ...lastKnownState,
-
-                          amount: Number(
-                            event.target.value.toString().replace(/e/g, "")
-                          ).toString(),
+                          supervisor: event.target.value,
                         }))
                       }
                     />
                   </div>
-
-                  <div className="col-lg-6 mb-2">
-                    <p className="mb-1">
-                      <span>Requested sponsor</span>
-                      <span className="text-muted fw-normal">(Optional)</span>
-                    </p>
-
-                    <p
-                      style={{ fontSize: "13px" }}
-                      className="m-0 text-muted fw-light"
-                    >
-                      If you are requesting funding from a specific sponsor,
-                      please enter their account ID.
-                    </p>
-
-                    <div className="input-group flex-nowrap">
-                      <span className="input-group-text" id="addon-wrapping">
-                        @
-                      </span>
-
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter account ID"
-                        value={state.supervisor}
-                        onChange={(event) =>
-                          State.update((lastKnownState) => ({
-                            ...lastKnownState,
-                            supervisor: event.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                  </div>
                 </div>
-              )}
+              </div>
+            ) : null}
           </div>
         )}
 
@@ -751,7 +746,7 @@ const PostEditor = ({
               editor_id: state.editor_id,
               github_link: state.github_link,
               labels: state.tags,
-              post_type: state.post_type,
+              post_type: post_type,
               sponsorship_token: state.sponsorship_token,
               supervisor: state.supervisor,
             },

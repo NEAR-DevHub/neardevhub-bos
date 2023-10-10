@@ -184,16 +184,14 @@ const CommunityActivityPage = ({ handle }) => {
               </div>
             </div>
 
-            <div class="row">
-              <div class="col">
-                {widget("entity.post.spawner", {
-                  isHidden: state.isSpawnerHidden,
-                  onCancel: () => spawnerToggle(false),
-                  tags: [communityData.tag],
-                })}
+            <div class="col">
+              {widget("entity.post.spawner", {
+                isHidden: state.isSpawnerHidden,
+                onCancel: () => spawnerToggle(false),
+                tags: [communityData.tag],
+              })}
 
-                {widget("entity.post.List", { tag: communityData.tag })}
-              </div>
+              {widget("entity.post.List", { tag: communityData.tag })}
             </div>
           </div>
 

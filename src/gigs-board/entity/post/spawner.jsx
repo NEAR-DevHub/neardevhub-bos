@@ -123,9 +123,11 @@ const PostSpawner = ({ isHidden, onCancel, tags }) => {
 
   return (
     <div
-      className={`collapse ${isHidden ? "" : "show"}`}
+      className={`flex-column gap-3 py-4 collapse ${
+        isHidden ? "" : "d-flex show"
+      }`}
       data-bs-parent={`#accordion${postId}`}
-      id={`${type}_post_spawner`}
+      id={`${state.post_type}_post_spawner`}
     >
       <div className="d-flex gap-3">
         {Object.values(postTypeOptions).map((option) => (
@@ -153,7 +155,7 @@ const PostSpawner = ({ isHidden, onCancel, tags }) => {
         onCancel,
         onDraftStateChange,
         parent_id: null,
-        post_type: type,
+        post_type: state.post_type,
         tags,
       })}
     </div>
