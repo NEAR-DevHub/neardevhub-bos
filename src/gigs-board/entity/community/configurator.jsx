@@ -589,6 +589,7 @@ return (
       permissions.can_configure &&
       widget("components.molecule.tile", {
         heading: "Add new addon",
+        fullWidth: true,
         children: (
           <Widget
             src={`${

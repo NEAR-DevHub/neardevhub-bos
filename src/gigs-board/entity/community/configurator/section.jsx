@@ -70,6 +70,7 @@ const ConfigurationSection = ({
 
   return widget("components.molecule.tile", {
     heading,
+    fullWidth: true,
     headerSlotRight:
       headerSlotRight ??
       (hasPermissionToConfgure &&
