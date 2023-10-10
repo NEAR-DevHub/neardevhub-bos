@@ -374,7 +374,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
           },
         ]),
 
-    ...(!community?.features.github || foundAddOn('github')
+    ...((!community?.features.github && community?.github) || foundAddOn('github')
       ? []
       : [
           {
