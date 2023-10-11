@@ -474,6 +474,11 @@ const tokenMapping = {
       address: "usdt.tether-token.near",
     },
   },
+  USDC: {
+    NEP141: {
+      address: "usdc.tether-token.near",
+    },
+  },
   // Add more tokens here as needed
 };
 

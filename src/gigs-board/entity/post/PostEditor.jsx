@@ -144,6 +144,11 @@ const tokenMapping = {
       address: "usdt.tether-token.near",
     },
   },
+  USDC: {
+    NEP141: {
+      address: "usdc.tether-token.near",
+    },
+  },
 };
 
 const onSubmit = () => {
@@ -386,6 +391,7 @@ const tokenDiv = (
         USDT
       </option>
       <option value="NEAR">NEAR</option>
+      <option value="USDC">USDC</option>
     </select>
   </div>
 );
@@ -497,6 +503,7 @@ const fundraisingDiv = (
           NEAR
         </option>
         <option value={"USDT"}>USDT</option>
+        <option value="USDC">USDC</option>
       </select>
     </div>
     <div className="col-lg-6 mb-2">
