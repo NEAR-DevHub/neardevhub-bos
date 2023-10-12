@@ -68,6 +68,13 @@ We use `prettier` to unify formatting. Run the following command to format your 
 npm run fmt
 ```
 
+#### Writing tests
+
+We use [Playwright](https://playwright.dev) for tests, which are located in the [playwright-tests](./playwright-tests/) folder. For each change or addition to the codebase you should also make sure that your changes are covered by tests in order to ensure that other developers will not break it in the future. Also you should write tests to accelerate your own development, so that you don't have to do manual coding/test interations via the browser.
+
+See the [test-pipeline](./.github/workflows/continuous-integration-workflow.yml) for what dependencies that needs to be installed on your workstation for tests to run.
+
+
 #### Making Changes to common.jsx
 
 The `common.jsx` file contains a set of shared utilities that are often reused in DevHub widgets. When you need to change it, just edit the file in the root of the project, and update the widgets with this one command:
