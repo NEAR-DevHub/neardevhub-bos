@@ -1,5 +1,3 @@
-const { children, page } = props;
-
 const StyledHeader = styled.div`
   height: 62px;
   background: #181818;
@@ -73,10 +71,10 @@ function QuestionButton() {
   );
 }
 
-const AppHeader = ({ page }) => {
+const AppHeader = ({ page, nearDevGovGigsWidgetsAccountId }) => {
   return (
     <StyledHeader>
-      <Link to="/devhub.efiz.testnet/widget/DevHub.App?page=home">
+      <Link to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=home`}>
         <Logo
           src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"
           alt="DevHub"
@@ -85,7 +83,9 @@ const AppHeader = ({ page }) => {
 
       <HeaderActions>
         {page !== "communities" && (
-          <Link to="/devhub.efiz.testnet/widget/DevHub.App?page=communities">Communities</Link>
+          <Link to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=communities`}>
+            Communities
+          </Link>
         )}
 
         <a
@@ -100,10 +100,10 @@ const AppHeader = ({ page }) => {
   );
 };
 
-function AppLayout({ page, children }) {
+function AppLayout({ nearDevGovGigsWidgetsAccountId, page, children }) {
   return (
     <Container>
-      <AppHeader page={page} />
+      <AppHeader page={page} nearDevGovGigsWidgetsAccountId={nearDevGovGigsWidgetsAccountId} />
       {children}
     </Container>
   );
