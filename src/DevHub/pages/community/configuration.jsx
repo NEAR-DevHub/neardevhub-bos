@@ -14,57 +14,42 @@ const {
 
 const handleUpdateCommunityAddonConfig = (v) => console.log(v);
 
-{/* <Widget
-src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
-props={{
-  classNames: { root: "btn-sm btn-secondary" },
-  icon: {
-    kind: "bootstrap-icon",
-    variant: state.isEditActive ? "bi-x-circle" : "bi-pen-fill",
-  },
-  label: state.isEditActive ? "Cancel" : "Edit",
-  onClick: () => setEditActive(!isEditActive),
-  nearDevGovGigsWidgetsAccountId,
-}}
-/> */}
-
 function CommunityAddonConfigurator({ addonConfig }) {
+  // TODO: Simplify this. Tile should be module.
   const match = availableAddons.find((it) => it.id === addonConfig.addon_id);
-  if (match) {
-    return (
-      <Widget
-        src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
-        props={{
-          children: (
-            <>
-              <div
-                className="d-flex align-items-center justify-content-between w-100"
-                style={{ minHeight: 30 }}
-              >
-                <h5 className="h5 d-inline-flex gap-2 m-0">
-                  <span>{addonConfig.name}</span>
-                </h5>
-              </div>
-              {/* TODO: We want an edit button. This should be moved to it's own stateful widget. "ConfigurationSection"? */}
-              <Widget
-                src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.AddonConfigurator`}
-                props={{
-                  addon: match,
-                  data: addonConfig,
-                  onSubmit: (value) => handleUpdateCommunityAddonConfig(value),
-                  nearDevGovGigsWidgetsAccountId,
-                }}
-              />
-            </>
-          ),
-        }}
-      />
-    );
-  } else {
-    return widget("components.molecule.tile", {
-      children: "Unknown addon with addon ID: " + addon.id,
-    });
-  }
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      props={{
+        className: "p-3",
+        children: (
+          <Widget
+            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.ConfigurationSection`}
+            props={{
+              title: addonConfig.name,
+              hasConfigurePermissions: permissions.can_configure,
+              nearDevGovGigsWidgetsAccountId,
+              Configurator: () =>
+                match ? (
+                  <Widget
+                    src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.AddonConfigurator`}
+                    props={{
+                      addon: match,
+                      data: addonConfig,
+                      onSubmit: (value) =>
+                        handleUpdateCommunityAddonConfig(value),
+                      nearDevGovGigsWidgetsAccountId,
+                    }}
+                  />
+                ) : (
+                  <p>{"Unknown addon with addon ID: " + addon.id}</p>
+                ),
+            }}
+          />
+        ),
+      }}
+    />
+  );
 }
 
 return (
@@ -82,7 +67,59 @@ return (
               onSubmit: (v) => console.log(v),
               data: community,
               hasConfigurePermissions: permissions.can_configure,
-              link: `/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community&handle=${handle}`
+              link: `/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community&handle=${handle}`,
+            }}
+          />
+        ),
+      }}
+    />
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      props={{
+        className: "p-3",
+        children: (
+          <Widget
+            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.ConfigurationSection`}
+            props={{
+              title: "Community Information",
+              hasConfigurePermissions: permissions.can_configure,
+              nearDevGovGigsWidgetsAccountId,
+              Configurator: () => (
+                <Widget
+                  src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.InformationConfigurator`}
+                  props={{
+                    data: community,
+                    onSubmit: (v) => console.log(v),
+                    nearDevGovGigsWidgetsAccountId,
+                  }}
+                />
+              ),
+            }}
+          />
+        ),
+      }}
+    />
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      props={{
+        className: "p-3",
+        children: (
+          <Widget
+            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.ConfigurationSection`}
+            props={{
+              title: "About",
+              hasConfigurePermissions: permissions.can_configure,
+              nearDevGovGigsWidgetsAccountId,
+              Configurator: () => (
+                <Widget
+                  src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.AboutConfigurator`}
+                  props={{
+                    data: community,
+                    onSubmit: (v) => console.log(v),
+                    nearDevGovGigsWidgetsAccountId,
+                  }}
+                />
+              ),
             }}
           />
         ),

@@ -89,7 +89,7 @@ useEffect(() => {
 }, [logo, banner]);
 
 return (
-  <div className="card rounded-4 w-100 attractable" style={{ height: 280 }}>
+  <div style={{ height: 280 }}>
     <Banner
       alt="Community banner preview"
       className="card-img-top d-flex flex-column justify-content-end align-items-end p-4"

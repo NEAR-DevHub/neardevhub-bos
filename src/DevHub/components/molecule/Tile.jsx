@@ -1,5 +1,4 @@
 // TODO: Convert into a module
-
 const Tile = ({
   id,
   children,
