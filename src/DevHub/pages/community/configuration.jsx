@@ -6,6 +6,7 @@
 const {
   nearDevGovGigsWidgetsAccountId,
   permissions,
+  handle,
   community,
   communityAddonConfigs,
   availableAddons,
@@ -26,6 +27,7 @@ props={{
   nearDevGovGigsWidgetsAccountId,
 }}
 /> */}
+
 function CommunityAddonConfigurator({ addonConfig }) {
   const match = availableAddons.find((it) => it.id === addonConfig.addon_id);
   if (match) {
@@ -43,6 +45,7 @@ function CommunityAddonConfigurator({ addonConfig }) {
                   <span>{addonConfig.name}</span>
                 </h5>
               </div>
+              {/* TODO: We want an edit button. This should be moved to it's own stateful widget. "ConfigurationSection"? */}
               <Widget
                 src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.AddonConfigurator`}
                 props={{
@@ -76,9 +79,10 @@ return (
           <Widget
             src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.BrandingConfigurator`}
             props={{
-              isUnlocked: true,
-              onSubmit: () => {},
-              values: {},
+              onSubmit: (v) => console.log(v),
+              data: community,
+              hasConfigurePermissions: permissions.can_configure,
+              link: `/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community&handle=${handle}`
             }}
           />
         ),
