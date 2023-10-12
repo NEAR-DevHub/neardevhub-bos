@@ -1,9 +1,11 @@
+const { nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, handle, tab } = props;
+
 const {
   useQuery,
   getAccountCommunityPermissions,
   getAvailableAddons,
   getCommunityAddonConfigs,
-} = VM.require("devhub.efiz.testnet/widget/DevHub.modules.contract-sdk");
+} = VM.require(`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`);
 
 if (
   !useQuery ||
@@ -51,14 +53,12 @@ const NavUnderline = styled.ul`
   }
 `;
 
-const { handle, tab } = props;
-
 if (!tab) {
   tab = "Activity";
 }
 
-const community = useQuery("community", { handle });
-const permissions = getAccountCommunityPermissions({
+const community = useQuery(nearDevGovGigsContractAccountId, "community", { handle });
+const permissions = getAccountCommunityPermissions(nearDevGovGigsContractAccountId, {
   account_id: context.accountId,
   community_handle: handle,
 }) || {
@@ -84,8 +84,8 @@ community = community.data;
 
 const [isLinkCopied, setLinkCopied] = useState(false);
 
-const availableAddons = getAvailableAddons() || [];
-const communityAddonConfigs = getCommunityAddonConfigs({ handle }) || [];
+const availableAddons = getAvailableAddons(nearDevGovGigsContractAccountId) || [];
+const communityAddonConfigs = getCommunityAddonConfigs(nearDevGovGigsContractAccountId, { handle }) || [];
 
 const tabs = [
   {

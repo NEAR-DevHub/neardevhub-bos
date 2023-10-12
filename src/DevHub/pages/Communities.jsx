@@ -1,9 +1,11 @@
+const { nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId } = props;
+
 const { Struct } = VM.require(
-  "devhub.efiz.testnet/widget/DevHub.modules.Struct"
+  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
 );
 
 const { getAllCommunitiesMetadata, createCommunity } = VM.require(
-  "devhub.efiz.testnet/widget/DevHub.modules.contract-sdk"
+  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
 );
 
 if (!Struct || !getAllCommunitiesMetadata || !createCommunity) {
@@ -12,10 +14,10 @@ if (!Struct || !getAllCommunitiesMetadata || !createCommunity) {
 
 switch (props.test) {
   case "1": {
-    return <p>hello</p>
+    return <p>hello</p>;
   }
   default: {
-    return <p>default</p>
+    return <p>default</p>;
   }
 }
 
@@ -131,7 +133,7 @@ const CommunitySpawner = () => (
   />
 );
 
-const communitiesMetadata = getAllCommunitiesMetadata();
+const communitiesMetadata = getAllCommunitiesMetadata(nearDevGovGigsContractAccountId);
 
 if (!communitiesMetadata) {
   return <p>Loading...</p>;

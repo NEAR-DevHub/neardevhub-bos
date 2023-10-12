@@ -27,11 +27,20 @@ const Theme = styled.div`
   }
 `;
 
-const { page, ...passProps } = props;
+const { page, nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, ...passProps } = props;
 
 if (!page) {
   // If no page is specified, we default to the home page
   page = "home";
+}
+
+// THESE ARE TEMPORARY
+// This can be solved with injection during build
+if (!nearDevGovGigsWidgetsAccountId) {
+  nearDevGovGigsWidgetsAccountId = "devhub.efiz.testnet";
+}
+if (!nearDevGovGigsContractAccountId) {
+  nearDevGovGigsContractAccountId = "previewthomas.testnet";
 }
 
 // This is our navigation, rendering the page based on the page parameter
@@ -46,8 +55,8 @@ function Page() {
       return (
         // It would be nice if we gave providers
         <Widget
-          src="devhub.efiz.testnet/widget/DevHub.pages.Communities"
-          props={passProps}
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.Communities`}
+          props={{ nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, ...passProps }}
         />
       );
     }
@@ -55,8 +64,8 @@ function Page() {
     case "community": {
       return (
         <Widget
-          src="devhub.efiz.testnet/widget/DevHub.pages.Community"
-          props={passProps}
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.Community`}
+          props={{ nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, ...passProps }}
         />
       );
     }
@@ -64,8 +73,8 @@ function Page() {
     case "feed": {
       return (
         <Widget
-          src="devhub.efiz.testnet/widget/gigs-board.pages.Feed"
-          props={passProps}
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.Feed`}
+          props={{ nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, ...passProps }}
         />
       );
     }
