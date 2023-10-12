@@ -3,15 +3,20 @@
  * Page route gets passed in through params, along with all other page props.
  */
 
-const { page, nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, ...passProps } = props;
+const {
+  page,
+  nearDevGovGigsWidgetsAccountId,
+  nearDevGovGigsContractAccountId,
+  ...passProps
+} = props;
 
 // THESE ARE TEMPORARY
 // This can be solved with injection during build
 if (!nearDevGovGigsWidgetsAccountId) {
-  nearDevGovGigsWidgetsAccountId = "1.devhub.efiz.testnet";
+  nearDevGovGigsWidgetsAccountId = "devhub.efiz.testnet";
 }
 if (!nearDevGovGigsContractAccountId) {
-  nearDevGovGigsContractAccountId = "previewthomas.testnet";
+  nearDevGovGigsContractAccountId = "thomaspreview.testnet";
 }
 
 // Import our modules
@@ -45,7 +50,8 @@ if (!page) {
 
 // This is our navigation, rendering the page based on the page parameter
 function Page() {
-  switch (page) {
+  const routes = page.split(".");
+  switch (routes[0]) {
     // ?page=home
     case "home": {
       return <p>Homepage</p>;
@@ -55,8 +61,12 @@ function Page() {
       return (
         // It would be nice if we gave providers
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.Communities`}
-          props={{ nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, ...passProps }}
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.communities`}
+          props={{
+            nearDevGovGigsWidgetsAccountId,
+            nearDevGovGigsContractAccountId,
+            ...passProps,
+          }}
         />
       );
     }
@@ -64,8 +74,42 @@ function Page() {
     case "community": {
       return (
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.Community`}
-          props={{ nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, ...passProps }}
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.Provider`}
+          props={{
+            nearDevGovGigsWidgetsAccountId,
+            nearDevGovGigsContractAccountId,
+            ...passProps,
+            Children: (p) => {
+              switch (routes[1]) {
+                // ?page=community.configuration
+                case "configuration": {
+                  return (
+                    <Widget
+                      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.community.configuration`}
+                      props={{
+                        nearDevGovGigsWidgetsAccountId,
+                        nearDevGovGigsContractAccountId,
+                        ...passProps,
+                        ...p,
+                      }}
+                    />
+                  );
+                }
+              }
+              // ?page=community
+              return (
+                <Widget
+                  src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.community.index`}
+                  props={{
+                    nearDevGovGigsWidgetsAccountId,
+                    nearDevGovGigsContractAccountId,
+                    ...passProps,
+                    ...p,
+                  }}
+                />
+              );
+            },
+          }}
         />
       );
     }
@@ -75,7 +119,11 @@ function Page() {
       return (
         <Widget
           src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.Feed`}
-          props={{ nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, ...passProps }}
+          props={{
+            nearDevGovGigsWidgetsAccountId,
+            nearDevGovGigsContractAccountId,
+            ...passProps,
+          }}
         />
       );
     }
@@ -86,7 +134,10 @@ function Page() {
 
 return (
   <Theme>
-    <AppLayout page={page} nearDevGovGigsWidgetsAccountId={nearDevGovGigsWidgetsAccountId}>
+    <AppLayout
+      page={page}
+      nearDevGovGigsWidgetsAccountId={nearDevGovGigsWidgetsAccountId}
+    >
       <Page />
     </AppLayout>
   </Theme>

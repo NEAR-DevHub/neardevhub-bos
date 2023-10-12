@@ -27,6 +27,13 @@ const Container = styled.div`
   min-height: 100vh;
 `;
 
+const ContentContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 function QuestionButton() {
   return (
     <div className="btn-group" role="group">
@@ -74,7 +81,9 @@ function QuestionButton() {
 const AppHeader = ({ page, nearDevGovGigsWidgetsAccountId }) => {
   return (
     <StyledHeader>
-      <Link to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=home`}>
+      <Link
+        to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=home`}
+      >
         <Logo
           src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"
           alt="DevHub"
@@ -83,7 +92,9 @@ const AppHeader = ({ page, nearDevGovGigsWidgetsAccountId }) => {
 
       <HeaderActions>
         {page !== "communities" && (
-          <Link to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=communities`}>
+          <Link
+            to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=communities`}
+          >
             Communities
           </Link>
         )}
@@ -103,8 +114,11 @@ const AppHeader = ({ page, nearDevGovGigsWidgetsAccountId }) => {
 function AppLayout({ nearDevGovGigsWidgetsAccountId, page, children }) {
   return (
     <Container>
-      <AppHeader page={page} nearDevGovGigsWidgetsAccountId={nearDevGovGigsWidgetsAccountId} />
-      {children}
+      <AppHeader
+        page={page}
+        nearDevGovGigsWidgetsAccountId={nearDevGovGigsWidgetsAccountId}
+      />
+      <ContentContainer>{children}</ContentContainer>
     </Container>
   );
 }
