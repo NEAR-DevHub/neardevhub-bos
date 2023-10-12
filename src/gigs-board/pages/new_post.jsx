@@ -112,7 +112,7 @@ const postTypeOptions = {
   },
 };
 
-const PostSpawner = ({ isHidden, onCancel, tags }) => {
+const NewPostPage = ({ transactionHashes }) => {
   State.init({ post_type: postTypeOptions.Idea.name });
 
   const typeSwitch = (optionName) =>
@@ -121,50 +121,89 @@ const PostSpawner = ({ isHidden, onCancel, tags }) => {
       post_type: optionName,
     }));
 
-  return (
-    <div
-      className={`flex-column gap-3 py-4 collapse ${
-        isHidden ? "" : "d-flex show"
-      }`}
-      id={`${state.post_type}_post_spawner`}
-    >
-      <div className="d-flex flex-column gap-3">
-        <p className="card-title fw-bold fs-6">What do you want to create?</p>
-
-        <div className="d-flex gap-3">
-          {Object.values(postTypeOptions).map((option) => (
-            <button
-              className={`btn btn-${
-                state.post_type === option.name
-                  ? "primary"
-                  : "outline-secondary"
-              }`}
-              key={option.name}
-              onClick={() => typeSwitch(option.name)}
-              style={state.post_type === option.name ? activeOptionStyle : null}
-              type="button"
+  return widget("components.template.app-layout", {
+    banner: (
+      <div aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a
+              className="fw-bold"
+              href={href("Feed")}
+              style={{ color: "#3252A6" }}
             >
-              <i className={`bi ${option.icon}`} />
-              <span>{option.name}</span>
-            </button>
-          ))}
-        </div>
+              DevHub
+            </a>
+          </li>
+
+          <li class="breadcrumb-item active" aria-current="page">
+            New post
+          </li>
+        </ol>
       </div>
+    ),
 
-      <p className="text-muted w-75 my-1">
-        {postTypeOptions[state.post_type].description}
-      </p>
+    children: (
+      <div
+        className="d-flex flex-column align-items-center gap-4 p-4"
+        data-bs-parent={`#accordion${postId}`}
+        id={`${state.post_type}_post_spawner`}
+      >
+        {transactionHashes ? (
+          <p className="d-flex gap-2">
+            <span>Post created successfully.</span>
 
-      {widget("entity.post.editor", {
-        mode: "Create",
-        onCancel,
-        onDraftStateChange,
-        parent_id: null,
-        post_type: state.post_type,
-        tags,
-      })}
-    </div>
-  );
+            <a
+              style={{ backgroundColor: "#3252A6" }}
+              className="btn fw-bold"
+              href={href("Feed")}
+            >
+              Back to feed
+            </a>
+          </p>
+        ) : (
+          <>
+            <div className="d-flex flex-column gap-3">
+              <p className="card-title fw-bold fs-6">
+                What do you want to create?
+              </p>
+
+              <div className="d-flex gap-3">
+                {Object.values(postTypeOptions).map((option) => (
+                  <button
+                    className={`btn btn-${
+                      state.post_type === option.name
+                        ? "primary"
+                        : "outline-secondary"
+                    }`}
+                    key={option.name}
+                    onClick={() => typeSwitch(option.name)}
+                    style={
+                      state.post_type === option.name ? activeOptionStyle : null
+                    }
+                    type="button"
+                  >
+                    <i className={`bi ${option.icon}`} />
+                    <span>{option.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-muted w-75 my-1">
+              {postTypeOptions[state.post_type].description}
+            </p>
+
+            {widget("entity.post.editor", {
+              mode: "Create",
+              onDraftStateChange,
+              parent_id: null,
+              post_type: state.post_type,
+            })}
+          </>
+        )}
+      </div>
+    ),
+  });
 };
 
-return PostSpawner(props);
+return NewPostPage(props);

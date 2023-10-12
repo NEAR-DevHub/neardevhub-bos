@@ -81,6 +81,43 @@ function autoCompleteAccountId(id) {
   }));
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
+/* INCLUDE: "core/lib/draftstate" */
+const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
+let is_edit_or_add_post_transaction = false;
+let transaction_method_name;
+
+if (props.transactionHashes) {
+  const transaction = fetch("https://rpc.mainnet.near.org", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: "dontcare",
+      method: "tx",
+      params: [props.transactionHashes, context.accountId],
+    }),
+  });
+  transaction_method_name =
+    transaction?.body?.result?.transaction?.actions[0].FunctionCall.method_name;
+
+  is_edit_or_add_post_transaction =
+    transaction_method_name == "add_post" ||
+    transaction_method_name == "edit_post";
+
+  if (is_edit_or_add_post_transaction) {
+    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+  }
+}
+
+const onDraftStateChange = (draftState) =>
+  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, JSON.stringify(draftState));
+let draftState;
+try {
+  draftState = JSON.parse(Storage.privateGet(DRAFT_STATE_STORAGE_KEY));
+} catch (e) {}
+/* END_INCLUDE: "core/lib/draftstate" */
 
 const normalizeTag = (tag) =>
   tag
@@ -163,14 +200,14 @@ const PostEditor = ({
     fundraising: typeof amount === "string" && parseInt(amount) > 0,
     author_id: context.accountId,
 
-    /**
-     * A list of string tags.
-     */
     tags: [
       ...(tags ?? otherProps.labels ?? []),
       ...(typeof referral === "string" ? [`referral:${referral}`] : []),
     ],
 
+    /**
+     * Should always be updated along with `state.tags`
+     */
     tagOptions: tags.map((tag) => ({ name: tag })),
     name: name ?? "",
     description: description ?? "",
@@ -179,8 +216,41 @@ const PostEditor = ({
     supervisor: requested_sponsor ?? supervisor ?? "",
     github_link: github_link ?? "",
     draftStateApplied: false,
+    waitForDraftStateRestore: true,
     warning: "",
   });
+
+  if (state.waitForDraftStateRestore) {
+    const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
+
+    if (draftstatestring != null) {
+      if (props.transactionHashes) {
+        // TODO: Consider to remove this particular state update as it might be redundant
+        State.update((lastKnownState) => ({
+          ...lastKnownState,
+          waitForDraftStateRestore: false,
+        }));
+
+        Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+      } else {
+        try {
+          State.update(JSON.parse(draftstatestring));
+        } catch (error) {
+          console.error("error restoring draft", draftstatestring);
+        }
+      }
+
+      State.update((lastKnownState) => ({
+        ...lastKnownState,
+        waitForDraftStateRestore: false,
+      }));
+    }
+  }
+
+  const onCancelClick = () => {
+    if (typeof onCancel === "function") onCancel();
+    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+  };
 
   // This must be outside onClick, because Near.view returns null at first,
   // and when the view call finished, it returns true/false.
@@ -705,9 +775,9 @@ const PostEditor = ({
         )}
 
         <button
-          style={{ width: "7rem" }}
           className="btn btn-light mb-2 p-3"
-          onClick={onCancel}
+          onClick={onCancelClick}
+          style={{ width: "7rem" }}
         >
           Cancel
         </button>
