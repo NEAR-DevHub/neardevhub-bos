@@ -3,9 +3,20 @@
  * Page route gets passed in through params, along with all other page props.
  */
 
+const { page, nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, ...passProps } = props;
+
+// THESE ARE TEMPORARY
+// This can be solved with injection during build
+if (!nearDevGovGigsWidgetsAccountId) {
+  nearDevGovGigsWidgetsAccountId = "1.devhub.efiz.testnet";
+}
+if (!nearDevGovGigsContractAccountId) {
+  nearDevGovGigsContractAccountId = "previewthomas.testnet";
+}
+
 // Import our modules
 const { AppLayout } = VM.require(
-  "devhub.efiz.testnet/widget/DevHub.components.templates.AppLayout"
+  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.templates.AppLayout`
 );
 if (!AppLayout) {
   return <p>Loading modules...</p>;
@@ -27,20 +38,9 @@ const Theme = styled.div`
   }
 `;
 
-const { page, nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, ...passProps } = props;
-
 if (!page) {
   // If no page is specified, we default to the home page
   page = "home";
-}
-
-// THESE ARE TEMPORARY
-// This can be solved with injection during build
-if (!nearDevGovGigsWidgetsAccountId) {
-  nearDevGovGigsWidgetsAccountId = "devhub.efiz.testnet";
-}
-if (!nearDevGovGigsContractAccountId) {
-  nearDevGovGigsContractAccountId = "previewthomas.testnet";
 }
 
 // This is our navigation, rendering the page based on the page parameter
@@ -71,6 +71,7 @@ function Page() {
     }
     // ?page=feed
     case "feed": {
+      // TODO: This needs to be updated, old widget has the header attached
       return (
         <Widget
           src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.Feed`}
@@ -85,7 +86,7 @@ function Page() {
 
 return (
   <Theme>
-    <AppLayout page={page}>
+    <AppLayout page={page} nearDevGovGigsWidgetsAccountId={nearDevGovGigsWidgetsAccountId}>
       <Page />
     </AppLayout>
   </Theme>

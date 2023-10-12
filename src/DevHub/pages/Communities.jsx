@@ -1,7 +1,7 @@
 const { nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId } = props;
 
 const { Struct } = VM.require(
-  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
+  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.Struct`
 );
 
 const { getAllCommunitiesMetadata, createCommunity } = VM.require(
@@ -94,7 +94,7 @@ const communityInputsValidator = (formValues) =>
   );
 
 const onCommunitySubmit = (inputs) =>
-  createCommunity({
+  createCommunity(nearDevGovGigsContractAccountId, {
     inputs: {
       ...inputs,
 
@@ -144,7 +144,7 @@ function CommunityCard({ format, isBannerEnabled, metadata }) {
     format === "small" || format === "medium" ? format : "small";
 
   const formatSmall = (
-    <Link to={`?page=community&handle=${metadata.handle}`}>
+    <Link to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community&handle=${metadata.handle}`}>
       <div
         {...otherProps}
         className={[
@@ -233,7 +233,7 @@ return (
     >
       <div className="d-flex flex-column gap-3">
         <h1 className="m-0 fs-4">
-          <Link to="?page=communities" className="text-white">
+          <Link to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=communities`} className="text-white">
             Communities
           </Link>
         </h1>
