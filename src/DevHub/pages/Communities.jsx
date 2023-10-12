@@ -1,4 +1,5 @@
-const { nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId } = props;
+const { nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId } =
+  props;
 
 const { Struct } = VM.require(
   `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.Struct`
@@ -10,15 +11,6 @@ const { getAllCommunitiesMetadata, createCommunity } = VM.require(
 
 if (!Struct || !getAllCommunitiesMetadata || !createCommunity) {
   return <p>Loading modules...</p>;
-}
-
-switch (props.test) {
-  case "1": {
-    return <p>hello</p>;
-  }
-  default: {
-    return <p>default</p>;
-  }
 }
 
 const CommunityInputsDefaults = {
@@ -115,7 +107,7 @@ const [showSpawner, setShowSpawner] = useState(false);
 
 const CommunitySpawner = () => (
   <Widget
-    src="devgovgigs.near/widget/gigs-board.components.organism.configurator"
+    src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.components.organism.configurator`}
     props={{
       heading: "Community information",
       externalState: CommunityInputsDefaults,
@@ -133,7 +125,9 @@ const CommunitySpawner = () => (
   />
 );
 
-const communitiesMetadata = getAllCommunitiesMetadata(nearDevGovGigsContractAccountId);
+const communitiesMetadata = getAllCommunitiesMetadata(
+  nearDevGovGigsContractAccountId
+);
 
 if (!communitiesMetadata) {
   return <p>Loading...</p>;
@@ -144,7 +138,9 @@ function CommunityCard({ format, isBannerEnabled, metadata }) {
     format === "small" || format === "medium" ? format : "small";
 
   const formatSmall = (
-    <Link to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community&handle=${metadata.handle}`}>
+    <Link
+      to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community&handle=${metadata.handle}`}
+    >
       <div
         {...otherProps}
         className={[
@@ -233,7 +229,10 @@ return (
     >
       <div className="d-flex flex-column gap-3">
         <h1 className="m-0 fs-4">
-          <Link to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=communities`} className="text-white">
+          <Link
+            to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=communities`}
+            className="text-white"
+          >
             Communities
           </Link>
         </h1>
@@ -244,16 +243,21 @@ return (
       </div>
 
       <div className="d-flex flex-column justify-content-center">
-        <button
-          onClick={() => setShowSpawner(true)}
-          className="btn btn-primary"
-        >
-          Create Community
-        </button>
+        <Widget
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+          props={{
+            icon: { type: "bootstrap_icon", variant: "bi-people-fill" },
+            onClick: () => setShowSpawner(!showSpawner),
+            className: "btn btn-primary",
+            label: "Create Community",
+            nearDevGovGigsWidgetsAccountId
+          }}
+        />
       </div>
     </div>
+    {/* // TODO: Align centers */}
     <div className="d-flex flex-wrap align-content-start gap-4 p-4 w-100 h-100">
-      <CommunitySpawner />
+      {showSpawner && <CommunitySpawner />}
       {(communitiesMetadata ?? []).reverse().map((communityMetadata) => (
         <CommunityCard metadata={communityMetadata} />
       ))}
