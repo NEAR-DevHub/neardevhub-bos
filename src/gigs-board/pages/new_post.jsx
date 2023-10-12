@@ -122,29 +122,9 @@ const NewPostPage = ({ transactionHashes }) => {
     }));
 
   return widget("components.template.app-layout", {
-    banner: (
-      <div aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item">
-            <a
-              className="fw-bold"
-              href={href("Feed")}
-              style={{ color: "#3252A6" }}
-            >
-              DevHub
-            </a>
-          </li>
-
-          <li class="breadcrumb-item active" aria-current="page">
-            New post
-          </li>
-        </ol>
-      </div>
-    ),
-
     children: (
       <div
-        className="d-flex flex-column align-items-center gap-4 p-4"
+        className="d-flex flex-column gap-4 p-4 bg-light"
         data-bs-parent={`#accordion${postId}`}
         id={`${state.post_type}_post_spawner`}
       >
@@ -162,7 +142,7 @@ const NewPostPage = ({ transactionHashes }) => {
           </p>
         ) : (
           <>
-            <div className="d-flex flex-column gap-3">
+            <div className="d-flex flex-column gap-3 w-100">
               <p className="card-title fw-bold fs-6">
                 What do you want to create?
               </p>
@@ -187,11 +167,11 @@ const NewPostPage = ({ transactionHashes }) => {
                   </button>
                 ))}
               </div>
-            </div>
 
-            <p className="text-muted w-75 my-1">
-              {postTypeOptions[state.post_type].description}
-            </p>
+              <p className="text-muted w-75">
+                {postTypeOptions[state.post_type].description}
+              </p>
+            </div>
 
             {widget("entity.post.editor", {
               mode: "Create",

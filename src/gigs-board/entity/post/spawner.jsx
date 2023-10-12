@@ -149,11 +149,11 @@ const PostSpawner = ({ isHidden, onCancel, tags }) => {
             </button>
           ))}
         </div>
-      </div>
 
-      <p className="text-muted w-75 my-1">
-        {postTypeOptions[state.post_type].description}
-      </p>
+        <p className="text-muted w-75">
+          {postTypeOptions[state.post_type].description}
+        </p>
+      </div>
 
       {widget("entity.post.editor", {
         mode: "Create",

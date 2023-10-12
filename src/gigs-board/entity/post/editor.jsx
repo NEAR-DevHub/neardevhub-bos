@@ -181,7 +181,6 @@ const PostEditor = ({
   draftState,
   github_link,
   onCancel,
-  onDraftStateChange,
   parent_id,
   referral,
   requested_sponsor,
@@ -208,7 +207,7 @@ const PostEditor = ({
     /**
      * Should always be updated along with `state.tags`
      */
-    tagOptions: tags.map((tag) => ({ name: tag })),
+    tagOptions: (tags ?? []).map((tag) => ({ name: tag })),
     name: name ?? "",
     description: description ?? "",
     amount: requested_sponsorship_amount ?? amount ?? "0",

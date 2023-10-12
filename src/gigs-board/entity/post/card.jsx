@@ -242,7 +242,7 @@ const header = (
             {editControl}
             {timestamp}
 
-            {widget("entity.post.History", {
+            {widget("entity.post.history", {
               post,
               timestamp: currentTimestamp,
             })}
@@ -535,7 +535,6 @@ function Editor() {
                     : undefined,
 
                 mode: "Create",
-                onDraftStateChange: props.onDraftStateChange,
                 parent_id: postId,
                 post_type: state.post_type,
               }
@@ -548,7 +547,6 @@ function Editor() {
                   draftState?.edit_post_id === postId ? draftState : undefined,
 
                 mode: "Edit",
-                onDraftStateChange: props.onDraftStateChange,
                 post_type: state.post_type,
 
                 sponsorship_token: tokenResolver(
@@ -639,7 +637,6 @@ const postsList =
             {
               id: childId,
               isUnderPost: true,
-              onDraftStateChange: props.onDraftStateChange,
               draftState,
 
               expandParent: () =>

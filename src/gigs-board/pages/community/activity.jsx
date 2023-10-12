@@ -191,7 +191,7 @@ const CommunityActivityPage = ({ handle }) => {
                 tags: [communityData.tag],
               })}
 
-              {widget("entity.post.List", { tag: communityData.tag })}
+              {widget("entity.post.list", { tag: communityData.tag })}
             </div>
           </div>
 
