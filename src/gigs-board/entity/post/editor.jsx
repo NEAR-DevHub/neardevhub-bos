@@ -173,6 +173,13 @@ const availableTokenParameters = {
       address: "usdt.tether-token.near",
     },
   },
+
+  USDC: {
+    NEP141: {
+      address:
+        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1.near",
+    },
+  },
 };
 
 const kycDisclaimer = (
@@ -689,13 +696,20 @@ const PostEditor = ({
                     }))
                   }
                   className="form-select"
-                  aria-label="Default select"
+                  aria-label="Select currency"
                 >
                   <option
                     selected={tokenResolver(state.sponsorship_token) === "USDT"}
-                    value={"USDT"}
+                    value="USDT"
                   >
                     USDT
+                  </option>
+
+                  <option
+                    selected={tokenResolver(state.sponsorship_token) === "USDC"}
+                    value="USDC"
+                  >
+                    USDC
                   </option>
 
                   <option
@@ -740,7 +754,7 @@ const PostEditor = ({
                       }))
                     }
                     className="form-select"
-                    aria-label="Default select example"
+                    aria-label="Select currency"
                   >
                     <option
                       selected={
@@ -749,6 +763,15 @@ const PostEditor = ({
                       value="USDT"
                     >
                       USDT
+                    </option>
+
+                    <option
+                      selected={
+                        tokenResolver(state.sponsorship_token) === "USDC"
+                      }
+                      value="USDC"
+                    >
+                      USDC
                     </option>
 
                     <option
