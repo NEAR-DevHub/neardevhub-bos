@@ -112,7 +112,7 @@ const postTypeOptions = {
   },
 };
 
-const PostSpawner = ({ isHidden, onCancel, tags }) => {
+const PostSpawner = ({ isHidden, onCancel, tags, transactionHashes }) => {
   State.init({ post_type: postTypeOptions.Idea.name });
 
   const typeSwitch = (optionName) =>
@@ -162,6 +162,7 @@ const PostSpawner = ({ isHidden, onCancel, tags }) => {
         parent_id: null,
         post_type: state.post_type,
         tags,
+        transactionHashes,
       })}
     </div>
   );

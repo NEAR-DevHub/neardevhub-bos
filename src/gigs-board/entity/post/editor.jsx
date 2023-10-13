@@ -129,6 +129,17 @@ const normalizeTag = (tag) =>
     .toLowerCase()
     .trim("-");
 
+function tokenResolver(token) {
+  if (typeof token === "string") {
+    return token;
+  } else if (typeof token === "object") {
+    const tokenString = reverseTokenMapping[JSON.stringify(token)];
+    return tokenString || null;
+  } else {
+    return null; // Invalid input
+  }
+}
+
 const postSchemas = {
   Comment: ["description"],
   Idea: ["name", "description"],
@@ -189,13 +200,14 @@ const PostEditor = ({
   supervisor,
   tags,
   text,
+  transactionHashes,
   sponsorship_token,
   ...otherProps
 }) => {
   const mode = otherProps.mode ?? "Create",
     post_type = otherProps.post_type ?? "Idea";
 
-  State.init({
+  const initialState = {
     fundraising: typeof amount === "string" && parseInt(amount) > 0,
     author_id: context.accountId,
 
@@ -217,23 +229,36 @@ const PostEditor = ({
     draftStateApplied: false,
     waitForDraftStateRestore: true,
     warning: "",
-  });
+  };
+
+  State.init(initialState);
+
+  const stateReset = () => {
+    State.update({ ...initialState, waitForDraftStateRestore: false });
+    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+  };
 
   if (state.waitForDraftStateRestore) {
     const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
 
-    if (draftstatestring != null) {
-      if (props.transactionHashes) {
-        // TODO: Consider to remove this particular state update as it might be redundant
-        State.update((lastKnownState) => ({
-          ...lastKnownState,
-          waitForDraftStateRestore: false,
-        }));
-
-        Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+    if (draftstatestring !== null) {
+      if (transactionHashes) {
+        stateReset();
       } else {
         try {
-          State.update(JSON.parse(draftstatestring));
+          const recoveredDraft = JSON.parse(draftstatestring);
+
+          State.update((lastKnownState) => ({
+            ...lastKnownState,
+            ...recoveredDraft,
+
+            ...{
+              tags: (lastKnownState.tags.length > 0
+                ? lastKnownState
+                : recoveredDraft
+              ).tags,
+            },
+          }));
         } catch (error) {
           console.error("error restoring draft", draftstatestring);
         }
@@ -248,7 +273,7 @@ const PostEditor = ({
 
   const onCancelClick = () => {
     if (typeof onCancel === "function") onCancel();
-    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+    stateReset();
   };
 
   // This must be outside onClick, because Near.view returns null at first,
@@ -327,8 +352,8 @@ const PostEditor = ({
 
     const transactions = [];
 
-    if (mode == "Create") {
-      onDraftStateChange?.({ ...state, parent_post_id: id });
+    if (mode === "Create") {
+      onDraftStateChange?.({ ...state, parent_post_id: id ?? null });
 
       transactions.push({
         contractName: nearDevGovGigsContractAccountId,
@@ -337,7 +362,7 @@ const PostEditor = ({
         deposit: Big(10).pow(21).mul(2),
         gas: Big(10).pow(12).mul(100),
       });
-    } else if (mode == "Edit") {
+    } else if (mode === "Edit") {
       onDraftStateChange?.({ ...state, edit_post_id: id });
 
       transactions.push({
@@ -664,11 +689,19 @@ const PostEditor = ({
                   className="form-select"
                   aria-label="Default select"
                 >
-                  <option selected value={"USDT"}>
+                  <option
+                    selected={tokenResolver(state.sponsorship_token) === "USDT"}
+                    value={"USDT"}
+                  >
                     USDT
                   </option>
 
-                  <option value="NEAR">NEAR</option>
+                  <option
+                    selected={tokenResolver(state.sponsorship_token) === "NEAR"}
+                    value="NEAR"
+                  >
+                    NEAR
+                  </option>
                 </select>
               </div>
             ) : null}
@@ -707,11 +740,23 @@ const PostEditor = ({
                     className="form-select"
                     aria-label="Default select example"
                   >
-                    <option selected value="NEAR">
-                      NEAR
+                    <option
+                      selected={
+                        tokenResolver(state.sponsorship_token) === "USDT"
+                      }
+                      value="USDT"
+                    >
+                      USDT
                     </option>
 
-                    <option value={"USDT"}>USDT</option>
+                    <option
+                      selected={
+                        tokenResolver(state.sponsorship_token) === "NEAR"
+                      }
+                      value="NEAR"
+                    >
+                      NEAR
+                    </option>
                   </select>
                 </div>
 

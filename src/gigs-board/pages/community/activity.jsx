@@ -134,7 +134,7 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const CommunityActivityPage = ({ handle }) => {
+const CommunityActivityPage = ({ handle, transactionHashes }) => {
   State.init({ isSpawnerHidden: true });
 
   const spawnerToggle = (forcedState) =>
@@ -189,6 +189,7 @@ const CommunityActivityPage = ({ handle }) => {
                 isHidden: state.isSpawnerHidden,
                 onCancel: () => spawnerToggle(false),
                 tags: [communityData.tag],
+                transactionHashes,
               })}
 
               {widget("entity.post.list", { tag: communityData.tag })}

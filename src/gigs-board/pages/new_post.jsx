@@ -129,7 +129,10 @@ const NewPostPage = ({ transactionHashes }) => {
         id={`${state.post_type}_post_spawner`}
       >
         {transactionHashes ? (
-          <p className="d-flex gap-2">
+          <p
+            className="d-flex flex-column justify-content-center align-items-center gap-3"
+            style={{ height: 480 }}
+          >
             <span>Post created successfully.</span>
 
             <a
@@ -178,6 +181,7 @@ const NewPostPage = ({ transactionHashes }) => {
               onDraftStateChange,
               parent_id: null,
               post_type: state.post_type,
+              transactionHashes,
             })}
           </>
         )}
