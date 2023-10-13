@@ -157,44 +157,44 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
       hasUnsubmittedChanges: false,
     }));
 
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
+  const formUpdate = ({ path, via: customFieldUpdate, ...params }) => (
+    fieldInput
+  ) => {
+    const updatedValues = Struct.deepFieldUpdate(
+      formState?.values ?? {},
 
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
+      {
+        input: fieldInput?.target?.value ?? fieldInput,
+        params,
+        path,
 
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
-      );
-
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
-
-        [stateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
-
-          values: updatedValues,
-        },
-      }));
-
-      if (
-        typeof onUpdate === "function" &&
-        !Struct.isEqual(updatedValues, initialFormState.values)
-      ) {
-        onUpdate(updatedValues);
+        via:
+          typeof customFieldUpdate === "function"
+            ? customFieldUpdate
+            : defaultFieldUpdate,
       }
-    };
+    );
+
+    State.update((lastKnownComponentState) => ({
+      ...lastKnownComponentState,
+
+      [stateKey]: {
+        hasUnsubmittedChanges: !Struct.isEqual(
+          updatedValues,
+          initialFormState.values
+        ),
+
+        values: updatedValues,
+      },
+    }));
+
+    if (
+      typeof onUpdate === "function" &&
+      !Struct.isEqual(updatedValues, initialFormState.values)
+    ) {
+      onUpdate(updatedValues);
+    }
+  };
 
   if (
     !uninitialized &&
@@ -375,7 +375,7 @@ const KanbanPostBoardTagsSchema = {
 const KanbanPostBoardTicketFeaturesSchema = {
   author: { label: "Author" },
   like_count: { label: "Likes" },
-  reply_count: { label: "Replies" },
+  reply_count: { label: "Replies", noop: true },
   sponsorship_request_indicator: { label: "Sponsorship request indicator" },
   requested_sponsorship_value: { label: "Amount of requested funds" },
   requested_sponsor: { label: "Requested sponsor" },
@@ -492,12 +492,10 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         }
       : lastKnownValue;
 
-  const columnsDeleteById =
-    (id) =>
-    ({ lastKnownValue }) =>
-      Object.fromEntries(
-        Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
-      );
+  const columnsDeleteById = (id) => ({ lastKnownValue }) =>
+    Object.fromEntries(
+      Object.entries(lastKnownValue).filter(([columnId]) => columnId !== id)
+    );
 
   const onCancel = () => {
     form.reset();
