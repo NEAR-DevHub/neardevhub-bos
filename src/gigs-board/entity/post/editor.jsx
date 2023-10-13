@@ -187,6 +187,7 @@ const kycDisclaimer = (
 const PostEditor = ({
   id,
   amount,
+  className,
   name,
   description,
   draftState,
@@ -239,7 +240,8 @@ const PostEditor = ({
   };
 
   if (state.waitForDraftStateRestore) {
-    const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
+    const draftstatestring =
+      Storage.privateGet(DRAFT_STATE_STORAGE_KEY) ?? null;
 
     if (draftstatestring !== null) {
       if (transactionHashes) {
@@ -353,7 +355,7 @@ const PostEditor = ({
     const transactions = [];
 
     if (mode === "Create") {
-      onDraftStateChange?.({ ...state, parent_post_id: id ?? null });
+      onDraftStateChange({ ...state, parent_post_id: id ?? null });
 
       transactions.push({
         contractName: nearDevGovGigsContractAccountId,
@@ -363,7 +365,7 @@ const PostEditor = ({
         gas: Big(10).pow(12).mul(100),
       });
     } else if (mode === "Edit") {
-      onDraftStateChange?.({ ...state, edit_post_id: id });
+      onDraftStateChange({ ...state, edit_post_id: id });
 
       transactions.push({
         contractName: nearDevGovGigsContractAccountId,
@@ -601,7 +603,7 @@ const PostEditor = ({
   );
 
   return (
-    <div className="card">
+    <div className={["card", className].join(" ")}>
       <div className="card-header">{`${mode} ${post_type}`}</div>
 
       <div className="card-body">

@@ -152,20 +152,27 @@ const NewPostPage = ({ transactionHashes }) => {
         id={`${state.post_type}_post_spawner`}
       >
         {transactionHashes ? (
-          <p
-            className="d-flex flex-column justify-content-center align-items-center gap-3"
-            style={{ height: 480 }}
-          >
-            <span>Post created successfully.</span>
-
-            <a
-              style={{ backgroundColor: "#3252A6" }}
-              className="btn fw-bold"
-              href={href("Feed")}
+          <>
+            <p
+              className="d-flex flex-column justify-content-center align-items-center gap-3"
+              style={{ height: 480 }}
             >
-              Back to feed
-            </a>
-          </p>
+              <span>Post created successfully.</span>
+
+              <a
+                style={{ backgroundColor: "#3252A6" }}
+                className="btn fw-bold"
+                href={href("Feed")}
+              >
+                Back to feed
+              </a>
+            </p>
+
+            {widget("entity.post.editor", {
+              className: "d-none",
+              transactionHashes,
+            })}
+          </>
         ) : (
           <>
             <div className="d-flex flex-column gap-3 w-100">
@@ -202,7 +209,6 @@ const NewPostPage = ({ transactionHashes }) => {
             {widget("entity.post.editor", {
               mode: "Create",
               onCancel: stateReset,
-              onDraftStateChange,
               parent_id: null,
               post_type: state.post_type,
               transactionHashes,

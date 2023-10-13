@@ -186,7 +186,6 @@ const PostSpawner = ({ isHidden, onCancel, tags, transactionHashes }) => {
       {widget("entity.post.editor", {
         mode: "Create",
         onCancel: onCancelClick,
-        onDraftStateChange,
         parent_id: null,
         post_type: state.post_type,
         tags,
