@@ -2,6 +2,7 @@ const {
   title,
   hasConfigurePermissions,
   Configurator,
+  Preview,
   nearDevGovGigsWidgetsAccountId,
   headerRight,
   forceEditActive
@@ -12,13 +13,14 @@ const [isEditActive, setEditActive] = useState(forceEditActive || false);
 function SectionHeader() {
   return (
     <div
-      className="d-flex align-items-center justify-content-between w-100 "
+      className="d-flex align-items-center justify-content-between w-100 pb-3"
       style={{ minHeight: 30 }}
     >
       <h5 className="h5 d-inline-flex gap-2 m-0">
         <span>{title}</span>
       </h5>
       {headerRight || (
+        hasConfigurePermissions && (
         <Widget
           src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
           props={{
@@ -32,7 +34,7 @@ function SectionHeader() {
             nearDevGovGigsWidgetsAccountId,
           }}
         />
-      )}
+      ))}
     </div>
   );
 }
@@ -40,6 +42,6 @@ function SectionHeader() {
 return (
   <div>
     <SectionHeader />
-    {isEditActive && <Configurator />}
+    <Configurator isActive={isEditActive} />
   </div>
 );

@@ -235,7 +235,7 @@ const fieldParamsByType = {
   },
 };
 
-const defaultFieldsRender = ({ schema, form, isEditable, isUnlocked }) => (
+const defaultFieldsRender = ({ schema, form, isEditable }) => (
   <>
     {Object.entries(schema).map(
       (
@@ -249,8 +249,7 @@ const defaultFieldsRender = ({ schema, form, isEditable, isUnlocked }) => (
           ? "array"
           : typeof (fieldValue ?? "");
 
-        const isDisabled =
-          (noop ?? inputProps.disabled ?? false) || !isUnlocked;
+        const isDisabled = noop ?? inputProps.disabled ?? false;
 
         const viewClassName = [
           (fieldValue?.length ?? 0) > 0 ? "" : "text-muted",
@@ -337,14 +336,8 @@ const Configurator = ({
   externalState,
   fieldsRender: customFieldsRender,
   formatter: toFormatted,
-  fullWidth,
-  heading,
   isEmbedded,
-  isHidden,
-  isUnlocked,
   isValid,
-  noBorder,
-  noFrame,
   onCancel,
   onChange,
   onSubmit,
@@ -397,72 +390,53 @@ const Configurator = ({
     formToggle(false);
   };
 
-  return widget("components.molecule.tile", {
-    className: classNames.root,
-    fullWidth,
-    heading,
-    isHidden,
-    noBorder,
-    noFrame,
-    ...otherProps,
-
-    headerSlotRight:
-      isUnlocked && !isActive
-        ? widget("components.molecule.button", {
-            classNames: { root: "btn-sm btn-secondary" },
-            icon: { type: "bootstrap_icon", variant: "bi-pen-fill" },
-            label: "Edit",
-            onClick: () => formToggle(true),
-          })
-        : null,
-
-    children: (
-      <div className="flex-grow-1 d-flex flex-column gap-4">
-        <div className={`d-flex flex-column gap-${isActive ? 1 : 4}`}>
-          {fieldsRender({
-            form,
-            isEditable: isUnlocked && isActive,
-            isUnlocked,
-            schema,
-          })}
-        </div>
-
-        {!noFrame ? (
-          <div
-            className={[
-              "d-flex align-items-center justify-content-end gap-3 mt-auto",
-              isUnlocked && isActive && typeof onChange !== "function"
-                ? ""
-                : "d-none",
-            ].join(" ")}
-          >
-            {actionsAdditional ? (
-              <div className="me-auto">{actionsAdditional}</div>
-            ) : null}
-
-            {widget("components.molecule.button", {
-              classNames: { root: "btn-outline-danger shadow-none border-0" },
-              label: cancelLabel ?? "Cancel",
-              onClick: onCancelClick,
-            })}
-
-            {widget("components.molecule.button", {
-              classNames: { root: classNames.submit ?? "btn-success" },
-              disabled: !form.hasUnsubmittedChanges || !isFormValid,
-
-              icon: submitIcon ?? {
-                type: "bootstrap_icon",
-                variant: "bi-check-circle-fill",
-              },
-
-              label: submitLabel ?? "Submit",
-              onClick: onSubmitClick,
-            })}
-          </div>
-        ) : null}
+  return (
+    <div className="flex-grow-1 d-flex flex-column gap-4">
+      <div className={`d-flex flex-column gap-${isActive ? 1 : 4}`}>
+        {fieldsRender({
+          form,
+          isEditable: isActive,
+          schema,
+        })}
       </div>
-    ),
-  });
+
+      <div
+        className={[
+          "d-flex align-items-center justify-content-end gap-3 mt-auto",
+          isActive && typeof onChange !== "function" ? "" : "d-none",
+        ].join(" ")}
+      >
+        {actionsAdditional ? (
+          <div className="me-auto">{actionsAdditional}</div>
+        ) : null}
+
+        <Widget
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+          props={{
+            classNames: { root: "btn-outline-danger shadow-none border-0" },
+
+            label: cancelLabel ?? "Cancel",
+            onClick: onCancelClick,
+            nearDevGovGigsWidgetsAccountId,
+          }}
+        />
+        <Widget
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+          props={{
+            classNames: { root: classNames.submit ?? "btn-success" },
+            disabled: !form.hasUnsubmittedChanges || !isFormValid,
+            icon: submitIcon ?? {
+              type: "bootstrap_icon",
+              variant: "bi-check-circle-fill",
+            },
+            label: submitLabel ?? "Submit",
+            onClick: onSubmitClick,
+            nearDevGovGigsWidgetsAccountId,
+          }}
+        />
+      </div>
+    </div>
+  );
 };
 
 return Configurator(props);

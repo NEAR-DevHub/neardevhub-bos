@@ -70,6 +70,8 @@ function handleCreateAddon(addonId, value) {
   // });
 }
 
+const hasConfigurePermissions = true;
+
 return (
   <div
     className="d-flex flex-column align-items-center gap-4 w-100 p-4"
@@ -84,7 +86,7 @@ return (
             props={{
               onSubmit: (v) => console.log(v),
               data: community,
-              hasConfigurePermissions: permissions.can_configure,
+              hasConfigurePermissions,
               link: `/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community&handle=${handle}`,
             }}
           />
@@ -100,15 +102,16 @@ return (
             src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.ConfigurationSection`}
             props={{
               title: "Community Information",
-              hasConfigurePermissions: permissions.can_configure,
+              hasConfigurePermissions,
               nearDevGovGigsWidgetsAccountId,
-              Configurator: () => (
+              Configurator: (p) => (
                 <Widget
                   src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.InformationConfigurator`}
                   props={{
                     data: community,
                     onSubmit: (v) => console.log(v),
                     nearDevGovGigsWidgetsAccountId,
+                    ...p
                   }}
                 />
               ),
@@ -126,15 +129,16 @@ return (
             src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.ConfigurationSection`}
             props={{
               title: "About",
-              hasConfigurePermissions: permissions.can_configure,
+              hasConfigurePermissions,
               nearDevGovGigsWidgetsAccountId,
-              Configurator: () => (
+              Configurator: (p) => (
                 <Widget
                   src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.AboutConfigurator`}
                   props={{
                     data: community,
                     onSubmit: (v) => console.log(v),
                     nearDevGovGigsWidgetsAccountId,
+                    ...p
                   }}
                 />
               ),
