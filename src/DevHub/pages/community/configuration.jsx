@@ -10,9 +10,12 @@ const {
   community,
   communityAddonConfigs,
   availableAddons,
+  deleteCommunity,
+  updateCommunity,
 } = props;
 
 const handleUpdateCommunityAddonConfig = (v) => console.log(v);
+const [selectedAddon, setSelectedAddon] = useState(null);
 
 function CommunityAddonConfigurator({ addonConfig }) {
   // TODO: Simplify this. Tile should be module.
@@ -50,6 +53,21 @@ function CommunityAddonConfigurator({ addonConfig }) {
       }}
     />
   );
+}
+
+function handleCreateAddon(addonId, value) {
+  console.log(value);
+  // const uuid = UUID.generate("xxxxxxx");
+  // addCommunityAddon({
+  //   handle,
+  //   config: {
+  //     name: "Wiki",
+  //     config_id: uuid,
+  //     addon_id: addonId,
+  //     parameters: JSON.stringify(value),
+  //     enabled: true,
+  //   },
+  // });
 }
 
 return (
@@ -128,94 +146,47 @@ return (
     {(communityAddonConfigs || []).map((addonConfig) => (
       <CommunityAddonConfigurator addonConfig={addonConfig} />
     ))}
+    {permissions.can_configure && (
+      <Widget
+        src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.NewAddon`}
+        props={{
+          availableAddons,
+          onSubmit: handleCreateAddon,
+          nearDevGovGigsWidgetsAccountId,
+        }}
+      />
+    )}
+    {permissions.can_delete && (
+      <div
+        className="d-flex justify-content-center gap-4 p-4 w-100"
+        style={{ maxWidth: 896 }}
+      >
+        <Widget
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+          props={{
+            classNames: { root: "btn-lg btn-outline-danger border-none" },
+            label: "Delete community",
+            onClick: () => deleteCommunity({ handle }),
+          }}
+        />
+      </div>
+    )}
+    {permissions.can_configure && ( // TODO: Check if community has changed
+      <div
+        className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
+        style={{ borderTopLeftRadius: "100%" }}
+      >
+        <Widget
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+          props={{
+            classNames: { root: "btn-lg btn-success" },
+            icon: { type: "svg_icon", variant: "floppy_drive" },
+            label: "Save",
+            onClick: () => updateCommunity({ handle, community }), // TODO : Track changes in State
+            nearDevGovGigsWidgetsAccountId,
+          }}
+        />
+      </div>
+    )}
   </div>
 );
-
-{
-  /*           
-
-          {widget("components.organism.configurator", {
-            heading: "Community information",
-            externalState: state.communityData,
-            fullWidth: true,
-            isEmbedded: true,
-            isUnlocked: permissions.can_configure,
-            onSubmit: sectionSubmit,
-            schema: CommunityInformationSchema,
-            submitLabel: "Accept",
-          })}
-
-          {widget("components.organism.configurator", {
-            heading: "About",
-            externalState: state.communityData,
-            fullWidth: true,
-            isEmbedded: true,
-            isUnlocked: permissions.can_configure,
-            onSubmit: sectionSubmit,
-            schema: CommunityAboutSchema,
-            submitLabel: "Accept",
-          })}
-
-          {widget("components.organism.configurator", {
-            heading: "Access control",
-            externalState: state.communityData,
-            fullWidth: true,
-            formatter: communityAccessControlFormatter,
-            isEmbedded: true,
-            isUnlocked: permissions.can_configure,
-            onSubmit: sectionSubmit,
-            schema: CommunityAccessControlSchema,
-            submitLabel: "Accept",
-          })}
-
-          {widget("components.organism.configurator", {
-            heading: "Wiki page 1",
-            externalState: state.communityData?.wiki1,
-            fullWidth: true,
-            isEmbedded: true,
-            isUnlocked: permissions.can_configure,
-            onSubmit: (value) => sectionSubmit({ wiki1: value }),
-            submitLabel: "Accept",
-            schema: CommunityWikiPageSchema,
-          })}
-
-          {widget("components.organism.configurator", {
-            heading: "Wiki page 2",
-            externalState: state.communityData?.wiki2,
-            fullWidth: true,
-            isEmbedded: true,
-            isUnlocked: permissions.can_configure,
-            onSubmit: (value) => sectionSubmit({ wiki2: value }),
-            submitLabel: "Accept",
-            schema: CommunityWikiPageSchema,
-          })} */
-}
-{
-  /* 
-          {permissions.can_delete ? (
-            <div
-              className="d-flex justify-content-center gap-4 p-4 w-100"
-              style={{ maxWidth: 896 }}
-            >
-              {widget("components.molecule.button", {
-                classNames: { root: "btn-lg btn-outline-danger border-none" },
-                label: "Delete community",
-                onClick: onDelete,
-              })}
-            </div>
-          ) : null}
-
-          {permissions.can_configure && state.hasUnsavedChanges && (
-            <div
-              className="position-fixed end-0 bottom-0 bg-transparent pe-4 pb-4"
-              style={{ borderTopLeftRadius: "100%" }}
-            >
-              {widget("components.molecule.button", {
-                classNames: { root: "btn-lg btn-success" },
-                icon: { type: "svg_icon", variant: "floppy_drive" },
-                label: "Save",
-                onClick: changesSave,
-              })}
-            </div>
-          )} */
-}

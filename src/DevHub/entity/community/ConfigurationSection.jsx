@@ -3,9 +3,11 @@ const {
   hasConfigurePermissions,
   Configurator,
   nearDevGovGigsWidgetsAccountId,
+  headerRight,
+  forceEditActive
 } = props;
 
-const [isEditActive, setEditActive] = useState(false);
+const [isEditActive, setEditActive] = useState(forceEditActive || false);
 
 function SectionHeader() {
   return (
@@ -16,19 +18,21 @@ function SectionHeader() {
       <h5 className="h5 d-inline-flex gap-2 m-0">
         <span>{title}</span>
       </h5>
-      <Widget
-        src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
-        props={{
-          classNames: { root: "btn-sm btn-secondary" },
-          icon: {
-            type: "bootstrap_icon",
-            variant: isEditActive ? "bi-x-circle" : "bi-pen-fill",
-          },
-          label: isEditActive ? "Cancel" : "Edit",
-          onClick: () => setEditActive(!isEditActive),
-          nearDevGovGigsWidgetsAccountId,
-        }}
-      />
+      {headerRight || (
+        <Widget
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+          props={{
+            classNames: { root: "btn-sm btn-secondary" },
+            icon: {
+              type: "bootstrap_icon",
+              variant: isEditActive ? "bi-x-circle" : "bi-pen-fill",
+            },
+            label: isEditActive ? "Cancel" : "Edit",
+            onClick: () => setEditActive(!isEditActive),
+            nearDevGovGigsWidgetsAccountId,
+          }}
+        />
+      )}
     </div>
   );
 }
