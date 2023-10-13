@@ -32,6 +32,7 @@ const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 `;
 
 function QuestionButton() {
@@ -118,7 +119,9 @@ function AppLayout({ nearDevGovGigsWidgetsAccountId, page, children }) {
         page={page}
         nearDevGovGigsWidgetsAccountId={nearDevGovGigsWidgetsAccountId}
       />
-      <ContentContainer>{children}</ContentContainer>
+      <ContentContainer>
+        {children}
+      </ContentContainer>
     </Container>
   );
 }

@@ -72,7 +72,7 @@ function handleCreateAddon(addonId, value) {
 
 return (
   <div
-    className="d-flex flex-column align-items-center gap-4 w-100"
+    className="d-flex flex-column align-items-center gap-4 w-100 p-4"
     style={{ maxWidth: 960 }}
   >
     <Widget

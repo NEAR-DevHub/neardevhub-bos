@@ -229,7 +229,7 @@ function CommunityCard({ format, isBannerEnabled, metadata }) {
 }
 
 return (
-  <div>
+  <div className="w-100">
     <div
       className="d-flex justify-content-between p-4"
       style={{ backgroundColor: "#181818" }}
