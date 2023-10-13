@@ -10,6 +10,10 @@ const {
   getAccountCommunityPermissions,
   getAvailableAddons,
   getCommunityAddonConfigs,
+  createCommunity,
+  getAllCommunitiesMetadata,
+  updateCommunity,
+  deleteCommunity
 } = VM.require(
   `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
 );
@@ -85,5 +89,9 @@ return (
     community={community}
     availableAddons={availableAddons}
     communityAddonConfigs={communityAddonConfigs}
+    createCommunity={createCommunity}
+    getAllCommunitiesMetadata={getAllCommunitiesMetadata}
+    updateCommunity={updateCommunity}
+    deleteCommunity={deleteCommunity}
   />
 );

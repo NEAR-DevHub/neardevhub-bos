@@ -47,7 +47,7 @@ const { data, onSubmit, nearDevGovGigsWidgetsAccountId } = props;
 
 return (
   <Widget
-    src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.components.organism.configurator`}
+    src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.organism.Configurator`}
     props={{
       externalState: data,
       schema: CommunityAboutSchema,

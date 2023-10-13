@@ -1,15 +1,11 @@
-const { nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId } =
+const { nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, createCommunity, getAllCommunitiesMetadata } =
   props;
 
 const { Struct } = VM.require(
   `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.Struct`
 );
 
-const { getAllCommunitiesMetadata, createCommunity } = VM.require(
-  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
-);
-
-if (!Struct || !getAllCommunitiesMetadata || !createCommunity) {
+if (!Struct) {
   return <p>Loading modules...</p>;
 }
 

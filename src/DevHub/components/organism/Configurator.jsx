@@ -1,12 +1,108 @@
-const { nearDevGovGigsWidgetsAccountId } = props;
-const { Struct } = VM.require(
-  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.Struct`
-);
+/* INCLUDE: "common.jsx" */
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
 
-if (!Struct) {
-  return <p>Loading modules...</p>;
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+function widget(widgetName, widgetProps, key) {
+  widgetProps = {
+    ...widgetProps,
+    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
+    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+    referral: props.referral,
+  };
+
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
 }
 
+function href(widgetName, linkProps) {
+  linkProps = { ...linkProps };
+
+  if (props.nearDevGovGigsContractAccountId) {
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
+  }
+
+  if (props.nearDevGovGigsWidgetsAccountId) {
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
+  }
+
+  if (props.referral) {
+    linkProps.referral = props.referral;
+  }
+
+  const linkPropsQuery = Object.entries(linkProps)
+    .filter(([_key, nullable]) => (nullable ?? null) !== null)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
+}
+/* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/struct" */
+const Struct = {
+  deepFieldUpdate: (
+    node,
+    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
+  ) => ({
+    ...node,
+
+    [nextNodeKey]:
+      remainingPath.length > 0
+        ? Struct.deepFieldUpdate(
+            Struct.typeMatch(node[nextNodeKey]) ||
+              Array.isArray(node[nextNodeKey])
+              ? node[nextNodeKey]
+              : {
+                  ...((node[nextNodeKey] ?? null) !== null
+                    ? { __archivedLeaf__: node[nextNodeKey] }
+                    : {}),
+                },
+
+            { input, path: remainingPath, via: toFieldValue }
+          )
+        : toFieldValue({
+            input,
+            lastKnownValue: node[nextNodeKey],
+            params,
+          }),
+  }),
+
+  isEqual: (input1, input2) =>
+    Struct.typeMatch(input1) && Struct.typeMatch(input2)
+      ? JSON.stringify(Struct.toOrdered(input1)) ===
+        JSON.stringify(Struct.toOrdered(input2))
+      : false,
+
+  toOrdered: (input) =>
+    Object.keys(input)
+      .sort()
+      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
+
+  pick: (object, subsetKeys) =>
+    Object.fromEntries(
+      Object.entries(object ?? {}).filter(([key, _]) =>
+        subsetKeys.includes(key)
+      )
+    ),
+
+  typeMatch: (input) =>
+    input !== null && typeof input === "object" && !Array.isArray(input),
+};
+/* END_INCLUDE: "core/lib/struct" */
+/* INCLUDE: "core/lib/gui/form" */
 const defaultFieldUpdate = ({
   input,
   lastKnownValue,
@@ -184,56 +280,49 @@ const defaultFieldsRender = ({ schema, form, isEditable, isUnlocked }) => (
                     )?.toString?.() || "none"}
                   </span>
                 ) : (fieldValue?.length ?? 0) > 0 ? (
-                  <Widget
-                    src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.markdown-viewer`}
-                    props={{ text: fieldValue }}
-                  />
+                  widget("components.molecule.markdown-viewer", {
+                    text: fieldValue,
+                  })
                 ) : (
                   <span>none</span>
                 )}
               </ValueView>
             </div>
 
-            <Widget
-              src={
-                `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.` +
-                fieldParamsByType[fieldType].name
-              }
-              props={{
-                ...fieldProps,
+            {widget(fieldParamsByType[fieldType].name, {
+              ...fieldProps,
 
-                className: [
-                  "w-100",
-                  fieldProps.className ?? "",
-                  isEditable && !noop ? "" : "d-none",
-                ].join(" "),
+              className: [
+                "w-100",
+                fieldProps.className ?? "",
+                isEditable && !noop ? "" : "d-none",
+              ].join(" "),
 
+              disabled: isDisabled,
+              format,
+              key: `${fieldKey}--editable`,
+              label,
+              onChange: form.update({ path: [key] }),
+              style: { ...style, order },
+
+              value:
+                fieldType === "array" && format === "comma-separated"
+                  ? fieldValue.join(", ")
+                  : fieldValue,
+
+              inputProps: {
+                ...(inputProps ?? {}),
                 disabled: isDisabled,
-                format,
-                key: `${fieldKey}--editable`,
-                label,
-                onChange: form.update({ path: [key] }),
-                style: { ...style, order },
 
-                value:
-                  fieldType === "array" && format === "comma-separated"
-                    ? fieldValue.join(", ")
-                    : fieldValue,
+                title:
+                  noop ?? false
+                    ? "Temporarily disabled due to technical reasons."
+                    : inputProps.title,
 
-                inputProps: {
-                  ...(inputProps ?? {}),
-                  disabled: isDisabled,
-
-                  title:
-                    noop ?? false
-                      ? "Temporarily disabled due to technical reasons."
-                      : inputProps.title,
-
-                  ...(fieldParamsByType[fieldType].inputProps ?? {}),
-                  tabIndex: order,
-                },
-              }}
-            />
+                ...(fieldParamsByType[fieldType].inputProps ?? {}),
+                tabIndex: order,
+              },
+            })}
           </>
         );
       }
@@ -308,7 +397,7 @@ const Configurator = ({
     formToggle(false);
   };
 
-  return <Widget src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.tile`} props={{
+  return widget("components.molecule.tile", {
     className: classNames.root,
     fullWidth,
     heading,
