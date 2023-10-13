@@ -1,5 +1,16 @@
-const { nearDevGovGigsWidgetsAccountId, nearDevGovGigsContractAccountId, createCommunity, getAllCommunitiesMetadata } =
-  props;
+const {
+  nearDevGovGigsWidgetsAccountId,
+  nearDevGovGigsContractAccountId,
+  createCommunity,
+} = props;
+
+const { getAllCommunitiesMetadata } = VM.require(
+  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
+);
+
+if (!getAllCommunitiesMetadata) {
+  return <p>Loading modules...</p>;
+}
 
 const { Struct } = VM.require(
   `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.Struct`
@@ -246,7 +257,7 @@ return (
             onClick: () => setShowSpawner(!showSpawner),
             className: "btn btn-primary",
             label: "Create Community",
-            nearDevGovGigsWidgetsAccountId
+            nearDevGovGigsWidgetsAccountId,
           }}
         />
       </div>
