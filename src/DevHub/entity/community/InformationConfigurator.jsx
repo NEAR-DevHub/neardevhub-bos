@@ -57,7 +57,7 @@ const CommunityInformationSchema = {
   },
 };
 
-const { data, onSubmit, nearDevGovGigsWidgetsAccountId } = props;
+const { data, onSubmit, nearDevGovGigsWidgetsAccountId, isActive } = props;
 
 return (
   <Widget
@@ -67,6 +67,7 @@ return (
       schema: CommunityInformationSchema,
       onSubmit: onSubmit,
       nearDevGovGigsWidgetsAccountId,
+      isActive
     }}
   />
 );
