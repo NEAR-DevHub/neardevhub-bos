@@ -167,7 +167,7 @@ const CommunitiesPage = () => {
 
         <div className="d-flex flex-column justify-content-center">
           {widget("components.molecule.button", {
-            icon: { kind: "bootstrap-icon", variant: "bi-people-fill" },
+            icon: { type: "bootstrap_icon", variant: "bi-people-fill" },
             isHidden: !state.isSpawnerHidden,
             label: "Create community",
             onClick: () => spawnerToggle(true),

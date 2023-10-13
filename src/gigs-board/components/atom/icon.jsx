@@ -1,5 +1,5 @@
 const svgIconsByVariant = {
-  "floppy-drive": (elementProps) => (
+  floppy_drive: (elementProps) => (
     <svg
       fill="#ffffff"
       version="1.1"
@@ -28,16 +28,18 @@ const svgIconsByVariant = {
   ),
 };
 
-const iconsByKind = {
-  "bootstrap-icon": ({ className, variant, ...otherProps }) => (
+const iconsByType = {
+  bootstrap_icon: ({ className, variant, ...otherProps }) => (
     <i className={`bi ${variant} ${className}`} {...otherProps} />
   ),
 
-  svg: ({ variant, ...elementProps }) =>
+  svg_icon: ({ variant, ...elementProps }) =>
     svgIconsByVariant[variant](elementProps),
 };
 
-const Icon = ({ kind, ...otherProps }) =>
-  typeof iconsByKind[kind] !== undefined ? iconsByKind[kind](otherProps) : null;
+const Icon = ({ type, ...otherProps }) =>
+  typeof iconsByType[type] === "function"
+    ? iconsByType[type](otherProps)
+    : null;
 
 return Icon(props);

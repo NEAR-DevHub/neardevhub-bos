@@ -64,17 +64,13 @@ const AutoComplete = styled.div`
 
 function textareaInputHandler(value) {
   const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update({ text: value, showAccountAutocomplete, description: value });
+  State.update({ text: value, showAccountAutocomplete });
 }
 
 function autoCompleteAccountId(id) {
   let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
   description = `${description} @${id}`.trim() + " ";
-  State.update({
-    description,
-    handler: "autocompleteSelected",
-    showAccountAutocomplete: false,
-  });
+  State.update({ description, showAccountAutocomplete: false });
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
@@ -150,7 +146,8 @@ const onSubmit = () => {
       state.description,
       state.amount,
       state.token,
-      state.supervisor
+      state.supervisor,
+      state.seekingFunding
     ),
   };
 
@@ -460,10 +457,13 @@ const fundraisingDiv = (
   </div>
 );
 
-function generateDescription(text, amount, token, supervisor) {
-  const funding = `###### Requested amount: ${amount} ${token}\n###### Requested sponsor: @${supervisor}\n`;
-  if (amount > 0 && token && supervisor) return funding + text;
-  return text;
+function generateDescription(text, amount, token, supervisor, seekingFunding) {
+  const fundingText =
+    amount > 0 && token ? `###### Requested amount: ${amount} ${token}\n` : "";
+  const supervisorText = supervisor
+    ? `###### Requested sponsor: @${supervisor}\n`
+    : "";
+  return seekingFunding ? `${fundingText}${supervisorText}${text}` : text;
 }
 
 return (
@@ -575,6 +575,9 @@ return (
                   backgroundColor: "#0C7283",
                   color: "#f3f3f3",
                 }}
+                disabled={
+                  state.seekingFunding && (!state.amount || state.amount < 1)
+                }
                 className="btn btn-light mb-2 p-3"
                 onClick={onSubmit}
               >
@@ -600,7 +603,8 @@ return (
                         state.description,
                         state.amount,
                         state.token,
-                        state.supervisor
+                        state.supervisor,
+                        state.seekingFunding
                       ),
                       github_link: state.githubLink,
                     },

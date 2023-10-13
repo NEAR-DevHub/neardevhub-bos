@@ -135,57 +135,33 @@ const DevHub = {
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
 const communityData = DevHub.get_community({ handle: props.handle }) ?? null;
-const root_members = DevHub.get_root_members() ?? null;
 
-if (communityData === null || root_members === null) {
+if (communityData === null) {
   return <div>Loading...</div>;
 }
 
-const moderators = (root_members ?? {})?.["team:moderators"]?.children;
-const admins = communityData.admins;
-
-const UserList = (name, users) => {
-  return (
-    <div>
-      {(users ?? []).map((user, i) => (
-        <div className={`row ${i < users.length - 1 ? "mb-3" : ""}`}>
-          <div class="col-3">
-            <b>{name + " #" + (i + 1)}</b>
-          </div>
-          <div class="col-9">
-            <span
-              key={user}
-              className="d-inline-flex"
-              style={{ fontWeight: 500 }}
-            >
-              <Widget
-                src="neardevgov.near/widget/ProfileLine"
-                props={{
-                  accountId: user,
-                  hideAccountId: true,
-                  tooltip: true,
-                }}
-              />
-            </span>
-          </div>
+const UserList = (name, users) => (
+  <div>
+    {(users ?? []).map((user, i) => (
+      <div className={`row ${i < users.length - 1 ? "mb-3" : ""}`}>
+        <div class="col-3">
+          <b>{name + " #" + (i + 1)}</b>
         </div>
-      ))}
-    </div>
-  );
-};
 
-const Teams = (
-  <div class="d-flex flex-column align-items-center gap-4">
-    {widget("components.molecule.tile", {
-      heading: "Admins",
-      minHeight: 0,
-      children: UserList("Admin", admins),
-    })}
-    {widget("components.molecule.tile", {
-      heading: "Community Moderators",
-      minHeight: 0,
-      children: UserList("Moderator", moderators),
-    })}
+        <div class="col-9">
+          <span
+            key={user}
+            className="d-inline-flex"
+            style={{ fontWeight: 500 }}
+          >
+            <Widget
+              src="neardevgov.near/widget/ProfileLine"
+              props={{ accountId: user, hideAccountId: true, tooltip: true }}
+            />
+          </span>
+        </div>
+      </div>
+    ))}
   </div>
 );
 
@@ -193,5 +169,17 @@ return widget("entity.community.layout", {
   path: [{ label: "Communities", pageId: "communities" }],
   handle: props.handle,
   title: "Teams",
-  children: Teams,
+  children: (
+    <div
+      className="d-flex flex-column align-items-center gap-4 w-100"
+      style={{ maxWidth: 960 }}
+    >
+      {widget("components.molecule.tile", {
+        heading: "Admins",
+        fullWidth: true,
+        minHeight: 0,
+        children: UserList("Admin", communityData.admins),
+      })}
+    </div>
+  ),
 });

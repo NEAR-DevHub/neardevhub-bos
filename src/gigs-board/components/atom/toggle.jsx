@@ -43,18 +43,19 @@ const ToggleLabel = styled.label`
 `;
 
 const Toggle = ({
-  active,
   className,
   direction,
   disabled,
+  inputProps,
   key,
   label,
-  onSwitch,
+  onChange,
+  value: checked,
   ...rest
 }) => (
   <ToggleRoot
     className={[
-      "d-flex justify-content-between, align-items-center gap-3",
+      "d-flex justify-content-between, align-items-center gap-3 p-2",
       direction === "rtl" ? "flex-row-reverse" : "",
       className,
     ].join(" ")}
@@ -63,12 +64,10 @@ const Toggle = ({
     <ToggleLabel htmlFor={`toggle-${key}`}>{label}</ToggleLabel>
 
     <ToggleSwitchRoot
-      checked={active}
       className="shadow-none"
       id={`toggle-${key}`}
-      onCheckedChange={disabled ? null : onSwitch}
-      title={disabled ? `Permanently ${active ? "enabled" : "disabled"}` : null}
-      {...{ disabled }}
+      onCheckedChange={disabled ? null : onChange}
+      {...{ checked, disabled, ...inputProps }}
     >
       {!disabled && <ToggleSwitchThumb className="bg-light shadow" />}
     </ToggleSwitchRoot>
