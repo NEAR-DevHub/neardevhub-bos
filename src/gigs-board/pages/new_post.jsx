@@ -113,13 +113,36 @@ const postTypeOptions = {
 };
 
 const NewPostPage = ({ transactionHashes }) => {
-  State.init({ post_type: postTypeOptions.Idea.name });
+  const recoveredPostType = Storage.privateGet("post_type");
 
-  const typeSwitch = (optionName) =>
+  const initialState = {
+    post_type: recoveredPostType ?? postTypeOptions.Idea.name,
+  };
+
+  State.init(initialState);
+
+  const stateReset = () => {
+    Storage.privateSet("post_type", null);
+    State.update(initialState);
+  };
+
+  if (typeof transactionHashes === "string") stateReset();
+
+  if (recoveredPostType !== null) {
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      post_type: recoveredPostType,
+    }));
+  }
+
+  const typeSwitch = (optionName) => {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       post_type: optionName,
     }));
+
+    Storage.privateSet("post_type", optionName);
+  };
 
   return widget("components.template.app-layout", {
     children: (
@@ -178,6 +201,7 @@ const NewPostPage = ({ transactionHashes }) => {
 
             {widget("entity.post.editor", {
               mode: "Create",
+              onCancel: stateReset,
               onDraftStateChange,
               parent_id: null,
               post_type: state.post_type,

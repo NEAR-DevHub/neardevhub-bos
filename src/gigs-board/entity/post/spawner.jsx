@@ -113,13 +113,41 @@ const postTypeOptions = {
 };
 
 const PostSpawner = ({ isHidden, onCancel, tags, transactionHashes }) => {
-  State.init({ post_type: postTypeOptions.Idea.name });
+  const recoveredPostType = Storage.privateGet("post_type");
 
-  const typeSwitch = (optionName) =>
+  const initialState = {
+    post_type: recoveredPostType ?? postTypeOptions.Idea.name,
+  };
+
+  State.init(initialState);
+
+  const stateReset = () => {
+    Storage.privateSet("post_type", null);
+    State.update(initialState);
+  };
+
+  if (typeof transactionHashes === "string") stateReset();
+
+  if (recoveredPostType !== null) {
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      post_type: recoveredPostType,
+    }));
+  }
+
+  const typeSwitch = (optionName) => {
     State.update((lastKnownState) => ({
       ...lastKnownState,
       post_type: optionName,
     }));
+
+    Storage.privateSet("post_type", optionName);
+  };
+
+  const onCancelClick = () => {
+    if (typeof onCancel === "function") onCancel();
+    stateReset();
+  };
 
   return (
     <div
@@ -157,7 +185,7 @@ const PostSpawner = ({ isHidden, onCancel, tags, transactionHashes }) => {
 
       {widget("entity.post.editor", {
         mode: "Create",
-        onCancel,
+        onCancel: onCancelClick,
         onDraftStateChange,
         parent_id: null,
         post_type: state.post_type,

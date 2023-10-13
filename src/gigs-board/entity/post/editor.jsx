@@ -234,8 +234,8 @@ const PostEditor = ({
   State.init(initialState);
 
   const stateReset = () => {
-    State.update({ ...initialState, waitForDraftStateRestore: false });
     Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+    State.update({ ...initialState, waitForDraftStateRestore: false });
   };
 
   if (state.waitForDraftStateRestore) {
@@ -847,7 +847,7 @@ const PostEditor = ({
 
         {widget("entity.post.card", {
           isPreview: true,
-          id: 0, // irrelevant
+          id: null,
 
           post: {
             author_id: state.author_id,
