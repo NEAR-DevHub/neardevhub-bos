@@ -85,6 +85,10 @@ const availableAddons =
 const communityAddonConfigs =
   getCommunityAddonConfigs(nearDevGovGigsContractAccountId, { handle }) || [];
 
+function handleUpdateCommunity(v) {
+  updateCommunity(nearDevGovGigsContractAccountId, v);
+}
+
 return (
   <Children
     permissions={permissions}
@@ -92,7 +96,7 @@ return (
     availableAddons={availableAddons}
     communityAddonConfigs={communityAddonConfigs}
     createCommunity={createCommunity}
-    updateCommunity={updateCommunity}
+    updateCommunity={handleUpdateCommunity}
     deleteCommunity={deleteCommunity}
   />
 );

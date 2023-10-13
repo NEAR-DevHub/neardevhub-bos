@@ -43,7 +43,12 @@ const CommunityAboutSchema = {
   },
 };
 
-const { data, onSubmit, nearDevGovGigsWidgetsAccountId, isActive } = props;
+const { data, onSubmit, onCancel, nearDevGovGigsWidgetsAccountId, setIsActive, isActive } = props;
+
+function handleOnSubmit(v) {
+  onSubmit(v);
+  setIsActive(false);
+}
 
 return (
   <Widget
@@ -51,9 +56,10 @@ return (
     props={{
       externalState: data,
       schema: CommunityAboutSchema,
-      onSubmit: onSubmit,
+      onSubmit: handleOnSubmit,
       nearDevGovGigsWidgetsAccountId,
-      isActive
+      isActive,
+      onCancel: onCancel,
     }}
   />
 );
