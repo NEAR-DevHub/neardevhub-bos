@@ -1,7 +1,11 @@
 const MarkdownEditor = ({ data, onChange }) => {
   return (
     <Widget
-      src="devhub.efiz.near/widget/SimpleMDE"
+      src={
+        context.networkId === "mainnet"
+          ? "devhub.efiz.near/widget/SimpleMDE"
+          : "efiz.testnet/widget/SimpleMDE"
+      }
       props={{
         data,
         onChange,
