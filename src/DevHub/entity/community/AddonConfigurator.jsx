@@ -32,7 +32,7 @@ return (
     />
     <Widget
       src={addon.configurator}
-      props={{ data: JSON.parse(config.parameters), onSubmit: handleOnSubmit }}
+      props={{ data: JSON.parse(config.parameters), onSubmit: handleOnSubmit, nearDevGovGigsWidgetsAccountId }}
     />
   </div>
 );
