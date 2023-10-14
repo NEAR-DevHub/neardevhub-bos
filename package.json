@@ -10,8 +10,7 @@
   "scripts": {
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
     "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
-    "build": "npm run fmt && node ./module/include.js",
-    "dev": "sh ./scripts/dev.sh",
+    "dev": "~/.cargo/bin/bos-loader devhub.efiz.testnet --path src -r replacements.dev.json",
     "test": "npx playwright test"
   },
   "repository": {
