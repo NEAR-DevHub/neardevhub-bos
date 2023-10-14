@@ -76,17 +76,21 @@ const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 
 const { data, onSubmit, hasConfigurePermissions, link } = props;
 
-const [banner, setBanner] = useState({
-  cid: data.banner_url.split("/").at(-1),
-});
-const [logo, setLogo] = useState({ cid: data.logo_url.split("/").at(-1) });
+State.init({
+  banner: { cid: data.banner_url.split("/").at(-1) },
+  logo: { cid: data.logo_url.split("/").at(-1) },
+})
+
+// const [banner, setBanner] = useState(data.banner_url.split("/").at(-1));
+// const [logo, setLogo] = useState(data.logo_url.split("/").at(-1));
 
 useEffect(() => {
+  // console.log(state.banner);
   onSubmit({
-    banner_url: cidToURL(banner.cid),
-    logo_url: cidToURL(logo.cid),
+    banner_url: cidToURL(state.banner.cid),
+    logo_url: cidToURL(state.logo.cid),
   });
-}, [logo, banner]);
+}, [state.logo, state.banner]);
 
 return (
   <div style={{ height: 280 }}>
@@ -94,10 +98,10 @@ return (
       alt="Community banner preview"
       className="card-img-top d-flex flex-column justify-content-end align-items-end p-4"
       style={{
-        background: `center / cover no-repeat url(${cidToURL(banner.cid)})`,
+        background: `center / cover no-repeat url(${cidToURL(state.banner.cid)})`,
       }}
     >
-      {hasConfigurePermissions && <IpfsImageUpload image={banner.cid} />}
+      {hasConfigurePermissions && <IpfsImageUpload image={state.banner.cid} />}
     </Banner>
     <Logo
       alt="Community logo preview"
@@ -110,10 +114,10 @@ return (
         width: 128,
         height: 128,
 
-        background: `center / cover no-repeat url(${cidToURL(logo.cid)})`,
+        background: `center / cover no-repeat url(${cidToURL(state.logo.cid)})`,
       }}
     >
-      {hasConfigurePermissions && <IpfsImageUpload image={logo.cid} />}
+      {hasConfigurePermissions && <IpfsImageUpload image={state.logo.cid} />}
     </Logo>
 
     <div
