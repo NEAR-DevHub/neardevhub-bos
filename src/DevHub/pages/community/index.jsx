@@ -148,13 +148,12 @@ return (
         />
       </div>
     </div>
-
     <NavUnderline className="nav">
       {tabs.map(({ defaultActive, params, route, title }) =>
         title ? (
           <li className="nav-item" key={title}>
             <Link
-              to={`&tab=${title}`}
+              to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community&handle=${handle}&tab=${title}`}
               aria-current={defaultActive && "page"}
               className={[
                 "d-inline-flex gap-2",

@@ -13,7 +13,7 @@ const {
 // THESE ARE TEMPORARY
 // This can be solved with injection during build
 if (!nearDevGovGigsWidgetsAccountId) {
-  nearDevGovGigsWidgetsAccountId = "thomaspreview.testnet";
+  nearDevGovGigsWidgetsAccountId = "devhub.efiz.testnet";
 }
 if (!nearDevGovGigsContractAccountId) {
   nearDevGovGigsContractAccountId = "thomaspreview.testnet";
