@@ -200,7 +200,8 @@ return (
           props={{
             classNames: { root: "btn-lg btn-outline-danger border-none" },
             label: "Delete community",
-            onClick: () => deleteCommunity(nearDevGovGigsContractAccountId, { handle }),
+            onClick: () =>
+              deleteCommunity(nearDevGovGigsContractAccountId, { handle }),
           }}
         />
       </div>
@@ -216,7 +217,8 @@ return (
             classNames: { root: "btn-lg btn-success" },
             icon: { type: "svg_icon", variant: "floppy_drive" },
             label: "Save",
-            onClick: () => updateCommunity({ handle, community: communityData }), // TODO : Track changes in State
+            onClick: () =>
+              updateCommunity({ handle, community: communityData }), // TODO : Track changes in State
             nearDevGovGigsWidgetsAccountId,
           }}
         />

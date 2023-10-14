@@ -12,7 +12,14 @@ const communityAccessControlFormatter = ({ admins, ...otherFields }) => ({
   admins: admins.filter((string) => string.length > 0),
 });
 
-const { data, onSubmit, onCancel, nearDevGovGigsWidgetsAccountId, setIsActive, isActive } = props;
+const {
+  data,
+  onSubmit,
+  onCancel,
+  nearDevGovGigsWidgetsAccountId,
+  setIsActive,
+  isActive,
+} = props;
 
 function handleOnSubmit(v) {
   onSubmit(v);

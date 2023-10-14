@@ -18,7 +18,10 @@ function getFeaturedCommunities(devHubAccountId) {
   return Near.view(devHubAccountId, "get_featured_communities") ?? null;
 }
 
-function getAccountCommunityPermissions(devHubAccountId, { account_id, community_handle }) {
+function getAccountCommunityPermissions(
+  devHubAccountId,
+  { account_id, community_handle }
+) {
   return (
     Near.view(devHubAccountId, "get_account_community_permissions", {
       account_id,

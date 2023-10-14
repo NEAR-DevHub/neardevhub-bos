@@ -30,7 +30,7 @@ return (
         </small>
         <Widget
           src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.PostControls`}
-          props={{ labels: communityData.tag  }}
+          props={{ labels: communityData.tag }}
         />
       </div>
       <Widget
