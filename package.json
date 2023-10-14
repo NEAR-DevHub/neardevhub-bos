@@ -11,7 +11,7 @@
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
     "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
     "build": "npm run fmt && node ./module/include.js",
-    "dev": "~/.cargo/bin/bos-loader thomaspreview.testnet --path src",
+    "dev": "~/.cargo/bin/bos-loader devhub.efiz.testnet --path src",
     "test": "npx playwright test"
   },
   "repository": {
