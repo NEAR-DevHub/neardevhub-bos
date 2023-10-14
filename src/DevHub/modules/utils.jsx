@@ -48,4 +48,15 @@ const Struct = {
     input !== null && typeof input === "object" && !Array.isArray(input),
 };
 
-return { Struct };
+function href({ gateway, widgetSrc, params }) {
+  params = Object.entries(params)
+    .filter(([_key, nullable]) => (nullable ?? null) !== null)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return `${gateway ? `https://${gateway}` : ""}/${widgetSrc}/${
+    params ? `?${params}` : ""
+  }`;
+}
+
+return { href, Struct };
