@@ -60,6 +60,7 @@ const tabs = [
   ...(communityAddonConfigs || []).map((addon) => ({
     title: addon.name,
     route: availableAddons.find((it) => it.id === addon.config_id).viewer,
+    viewer: availableAddons.find((it) => it.id === addon.config_id).viewer,
     iconClass: addon.icon,
     params: {
       viewer: availableAddons.find((it) => it.id === addon.config_id).viewer,
@@ -75,7 +76,9 @@ const onShareClick = () =>
       `https://near.org/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community?handle=${handle}`
     ) // TODO: how should this be determined?
     .then(setLinkCopied(true));
-
+// TODO;
+let currentTab = tabs.find((tab) => tab.title == props.tab);
+console.log(currentTab);
 return (
   <div className="d-flex flex-column gap-3 bg-white w-100">
     <Banner
@@ -103,6 +106,7 @@ return (
         <div className="d-flex flex-column ps-3 pt-3 pb-2">
           <span className="h1 text-nowrap">{community.name}</span>
           <span className="text-secondary">{community.description}</span>
+          <span className="text-secondary">{props.tab}</span>
         </div>
       </div>
 
@@ -120,7 +124,7 @@ return (
               },
               label: "Configure community",
               type: "link",
-              nearDevGovGigsWidgetsAccountId
+              nearDevGovGigsWidgetsAccountId,
             }}
           />
         )}
@@ -132,14 +136,14 @@ return (
 
             icon: {
               type: "bootstrap_icon",
-              variant:  isLinkCopied ? "bi-check" : "bi-link-45deg",
+              variant: isLinkCopied ? "bi-check" : "bi-link-45deg",
             },
 
             label: "Share",
             onClick: onShareClick,
             onMouseLeave: () => setLinkCopied(false),
             title: "Copy link to clipboard",
-            nearDevGovGigsWidgetsAccountId
+            nearDevGovGigsWidgetsAccountId,
           }}
         />
       </div>
@@ -164,5 +168,14 @@ return (
         ) : null
       )}
     </NavUnderline>
+    {/* TODO: remove */}
+    <div>{tabs.find((tab) => tab.viewer == props.tab)[0]}</div>
+    <div>{tabs.map((tab) => tab.viewer).join(",")}</div>
+    <Widget
+      src={currentTab.viewer}
+      props={{
+        tab: currentTab,
+      }}
+    />
   </div>
 );
