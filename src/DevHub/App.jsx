@@ -59,7 +59,6 @@ function Page() {
     // ?page=communities
     case "communities": {
       return (
-        // It would be nice if we gave providers
         <Widget
           src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.communities`}
           props={{

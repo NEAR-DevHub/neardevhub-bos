@@ -57,7 +57,14 @@ const CommunityInformationSchema = {
   },
 };
 
-const { data, onSubmit, onCancel, nearDevGovGigsWidgetsAccountId, setIsActive, isActive } = props;
+const {
+  data,
+  onSubmit,
+  onCancel,
+  nearDevGovGigsWidgetsAccountId,
+  setIsActive,
+  isActive,
+} = props;
 
 function handleOnSubmit(v) {
   onSubmit(v);

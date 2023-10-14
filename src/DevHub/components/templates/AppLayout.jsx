@@ -119,9 +119,7 @@ function AppLayout({ nearDevGovGigsWidgetsAccountId, page, children }) {
         page={page}
         nearDevGovGigsWidgetsAccountId={nearDevGovGigsWidgetsAccountId}
       />
-      <ContentContainer>
-        {children}
-      </ContentContainer>
+      <ContentContainer>{children}</ContentContainer>
     </Container>
   );
 }

@@ -78,32 +78,32 @@ const { data, onSubmit, hasConfigurePermissions, link } = props;
 
 const initialInput = { banner: null, logo: null };
 
-  const initialValues = {
-    banner: { cid: data.banner_url.split("/").at(-1) },
-    logo: { cid: data.logo_url.split("/").at(-1) },
-  };
+const initialValues = {
+  banner: { cid: data.banner_url.split("/").at(-1) },
+  logo: { cid: data.logo_url.split("/").at(-1) },
+};
 
-  State.init({
-    input: initialInput,
+State.init({
+  input: initialInput,
+});
+
+const hasUnsubmittedChanges = Object.values(state.input).some(
+  (value) => value !== null
+);
+
+const isSynced = state.input === initialValues;
+
+if (hasUnsubmittedChanges && !isSynced) {
+  onSubmit({
+    banner_url: cidToURL(state.input.banner?.cid ?? initialValues.banner.cid),
+    logo_url: cidToURL(state.input.logo?.cid ?? initialValues.logo.cid),
   });
 
-  const hasUnsubmittedChanges = Object.values(state.input).some(
-    (value) => value !== null
-  );
-
-  const isSynced = state.input === initialValues;
-
-  if (hasUnsubmittedChanges && !isSynced) {
-    onSubmit({
-      banner_url: cidToURL(state.input.banner?.cid ?? initialValues.banner.cid),
-      logo_url: cidToURL(state.input.logo?.cid ?? initialValues.logo.cid),
-    });
-
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      input: initialInput,
-    }));
-  }
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    input: initialInput,
+  }));
+}
 
 return (
   <div style={{ height: 280 }}>
@@ -116,7 +116,9 @@ return (
         )})`,
       }}
     >
-      {hasConfigurePermissions && <IpfsImageUpload image={state.input.banner} />}
+      {hasConfigurePermissions && (
+        <IpfsImageUpload image={state.input.banner} />
+      )}
     </Banner>
     <Logo
       alt="Community logo preview"
@@ -129,7 +131,9 @@ return (
         width: 128,
         height: 128,
 
-        background: `center / cover no-repeat url(${cidToURL(initialValues.logo.cid)})`,
+        background: `center / cover no-repeat url(${cidToURL(
+          initialValues.logo.cid
+        )})`,
       }}
     >
       {hasConfigurePermissions && <IpfsImageUpload image={state.input.logo} />}

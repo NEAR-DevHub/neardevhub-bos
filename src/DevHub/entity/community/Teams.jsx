@@ -40,14 +40,12 @@ const UserList = ({ name, users }) => (
 );
 
 return (
-  <div
-    className="d-flex flex-column align-items-center gap-4 w-100"
-  >
+  <div className="d-flex flex-column align-items-center gap-4 w-100">
     <Widget
       src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
       props={{
         className: "p-3 w-100",
-        style: { "maxWidth": 960 },
+        style: { maxWidth: 960 },
         children: (
           <div>
             <div

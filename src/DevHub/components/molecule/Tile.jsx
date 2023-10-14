@@ -1,11 +1,5 @@
 // TODO: Convert into a module
-const Tile = ({
-  id,
-  children,
-  className,
-  minHeight,
-  style,
-}) => (
+const Tile = ({ id, children, className, minHeight, style }) => (
   <div
     id={id}
     className={[
