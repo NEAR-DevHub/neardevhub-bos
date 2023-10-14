@@ -45,7 +45,7 @@ const Theme = styled.div`
 
 if (!page) {
   // If no page is specified, we default to the home page
-  page = "home";
+  page = "feed";
 }
 
 // This is our navigation, rendering the page based on the page parameter
@@ -118,7 +118,7 @@ function Page() {
       // TODO: This needs to be updated, old widget has the header attached
       return (
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.Feed`}
+          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.feed`}
           props={{
             nearDevGovGigsWidgetsAccountId,
             nearDevGovGigsContractAccountId,
