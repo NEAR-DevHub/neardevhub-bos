@@ -1,15 +1,10 @@
-// Pulls community data
-// Cycles through the addons
-// Creates a tile
-// Supplies the onSubmit and data
-
 const {
   nearDevGovGigsWidgetsAccountId,
   permissions,
   handle,
   community,
-  communityAddonConfigs,
-  availableAddons,
+  // communityAddonConfigs, Commenting out to reduce scope on root merge
+  // availableAddons,
   deleteCommunity,
   updateCommunity,
 } = props;
@@ -19,6 +14,7 @@ const [selectedAddon, setSelectedAddon] = useState(null);
 const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
 const sectionSubmit = (sectionData) => {
+  console.log(sectionData);
   const updatedCommunityData = {
     ...Object.entries(sectionData).reduce(
       (update, [propertyKey, propertyValue]) => ({
@@ -77,21 +73,6 @@ function CommunityAddonConfigurator({ addonConfig }) {
       }}
     />
   );
-}
-
-function handleCreateAddon(addonId, value) {
-  console.log(value);
-  // const uuid = UUID.generate("xxxxxxx");
-  // addCommunityAddon({
-  //   handle,
-  //   config: {
-  //     name: "Wiki",
-  //     config_id: uuid,
-  //     addon_id: addonId,
-  //     parameters: JSON.stringify(value),
-  //     enabled: true,
-  //   },
-  // });
 }
 
 return (
@@ -199,7 +180,7 @@ return (
     {(communityAddonConfigs || []).map((addonConfig) => (
       <CommunityAddonConfigurator addonConfig={addonConfig} />
     ))}
-    {hasConfigurePermissions && (
+    {/* {hasConfigurePermissions && (
       <Widget
         src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.NewAddon`}
         props={{
@@ -208,7 +189,7 @@ return (
           nearDevGovGigsWidgetsAccountId,
         }}
       />
-    )}
+    )} */}
     {hasDeletePermissions && (
       <div
         className="d-flex justify-content-center gap-4 p-4 w-100"
@@ -219,7 +200,7 @@ return (
           props={{
             classNames: { root: "btn-lg btn-outline-danger border-none" },
             label: "Delete community",
-            onClick: () => deleteCommunity({ handle }),
+            onClick: () => deleteCommunity(nearDevGovGigsContractAccountId, { handle }),
           }}
         />
       </div>
