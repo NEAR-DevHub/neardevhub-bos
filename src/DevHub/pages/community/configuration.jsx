@@ -177,9 +177,47 @@ return (
         ),
       }}
     />
-    {(communityAddonConfigs || []).map((addonConfig) => (
-      <CommunityAddonConfigurator addonConfig={addonConfig} />
-    ))}
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      props={{
+        className: "p-3",
+        children: (
+          <Widget
+            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.Addons`}
+            props={{
+              nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId,
+              items: [
+                {
+                  id: `${handle}-wiki-1`,
+                  addon_id: "wiki",
+                  display_name: "Screams and Whispers",
+                  icon: "bi bi-book",
+                  enabled: true,
+                },
+                {
+                  id: `${handle}-wiki-2`,
+                  addon_id: "wiki2",
+                  display_name: "No",
+                  icon: "bi bi-gear",
+                  enabled: true,
+                },
+                {
+                  id: `${handle}-wiki-3`,
+                  addon_id: "wiki3",
+                  display_name: "Haha",
+                  icon: "bi bi-gear",
+                  enabled: true,
+                },
+              ],
+            }}
+          />
+        ),
+      }}
+    />
+    {/*
+     {(communityAddonConfigs || []).map((addonConfig) => (
+    //   <CommunityAddonConfigurator addonConfig={addonConfig} />
+    // ))}
     {/* {hasConfigurePermissions && (
       <Widget
         src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.NewAddon`}

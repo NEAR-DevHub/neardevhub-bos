@@ -117,6 +117,25 @@ function getPostsByLabel(devHubAccountId, { label }) {
   );
 }
 
+function getAddons(devHubAccountId, { handle }) {
+  return Near.view(devHubAccountId, "get_addons", { handle }) ?? null;
+}
+
+function setAddons(devHubAccountId, { handle, addons }) {
+  return Near.view(devHubAccountId, "get_addons", { handle, addons }) ?? null;
+}
+
+function getConfig(devHubAccountId, { config_id }) {
+  return Near.view(devHubAccountId, "get_config", { config_id }) ?? null;
+}
+
+function setConfig(devHubAccountId, { handle, config_id, config }) {
+  return (
+    Near.view(devHubAccountId, "set_config", { handle, config_id, config }) ??
+    null
+  );
+}
+
 function useQuery(devHubAccountId, name, params) {
   const initialState = { data: null, error: null, isLoading: true };
 

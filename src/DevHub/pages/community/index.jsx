@@ -42,8 +42,6 @@ const {
   tab,
   permissions,
   community,
-  communityAddonConfigs,
-  availableAddons,
 } = props;
 
 const { href } = VM.require(
@@ -77,21 +75,19 @@ const tabs = [
       handle,
     },
   },
-
-  // Commenting the below out to reduce scope
-
-  // ...(communityAddonConfigs || []).map((addon) => ({
-  //   title: addon.name,
-  //   route: availableAddons.find((it) => it.id === addon.config_id).viewer,
-  //   viewer: availableAddons.find((it) => it.id === addon.config_id).viewer,
-  //   iconClass: addon.icon,
-  //   params: {
-  //     viewer: availableAddons.find((it) => it.id === addon.config_id).viewer,
-  //     data: addon.parameters || "", // @elliotBraem not sure which will work better I guess this is needed for the wiki data but we can also add another data object inside the addon's parameters
-  //     ...JSON.parse(addon.parameters), // this seems to work witht the wiki for now
-  //   },
-  // })),
 ];
+
+(community.addons || []).map((addon) => {
+  tabs.push({
+    id: addon.id,
+    title: addon.display_name,
+    iconClass: addon.icon,
+    view: `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.addon.index`,
+    params: { 
+      addon_id: addon.addon_id, 
+      config: community.configs[addon.id] },
+  });
+});
 
 const onShareClick = () =>
   clipboard
@@ -137,7 +133,7 @@ return (
       </div>
 
       <div className="d-flex align-items-end gap-3 ms-auto">
-        {permissions.can_configure && (
+        {true && ( // TODO: Add back permissions check permissions.can_configure
           <Link
             to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community.configuration&handle=${handle}`}
           >
@@ -203,8 +199,8 @@ return (
           src={currentTab.view}
           props={{
             ...currentTab.params,
-            nearDevGovGigsContractAccountId, // TEMP
-            nearDevGovGigsWidgetsAccountId, // TEMP
+            nearDevGovGigsContractAccountId: nearDevGovGigsContractAccountId, // TEMP
+            nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId, // TEMP
           }}
         />
       )}
