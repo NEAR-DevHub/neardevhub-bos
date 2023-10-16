@@ -154,15 +154,25 @@ const Viewer = {
 const AdminPage = () => {
   const featuredCommunities = DevHub.useQuery("featured_communities");
 
-  console.log(featuredCommunities);
-
   return widget("components.template.app-layout", {
     path: [{ label: "Administration", pageId: "admin" }],
     viewerRole: Viewer.role,
 
     children: (
       <div className="d-flex flex-column gap-4 p-4">
-        <></>
+        {widget("components.atom.spinner", {
+          isHidden: !(
+            featuredCommunities.data === null && featuredCommunities.isLoading
+          ),
+        })}
+
+        <div className="d-flex flex-column gap-4">
+          <h2>Featured communities</h2>
+
+          {(featuredCommunities.data ?? []).map(({ name }) => (
+            <div>{name}</div>
+          ))}
+        </div>
       </div>
     ),
   });
