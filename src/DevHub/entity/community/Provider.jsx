@@ -6,22 +6,18 @@ const {
 } = props;
 
 const {
-  useQuery,
   getAccountCommunityPermissions,
-  getAvailableAddons,
-  getCommunityAddonConfigs,
   createCommunity,
   updateCommunity,
   deleteCommunity,
+  getCommunity,
 } = VM.require(
   `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
 );
 
 if (
-  !useQuery ||
+  !getCommunity ||
   !getAccountCommunityPermissions ||
-  !getAvailableAddons ||
-  !getCommunityAddonConfigs ||
   !createCommunity ||
   !updateCommunity ||
   !deleteCommunity
@@ -38,22 +34,14 @@ const CenteredMessage = styled.div`
   height: ${(p) => p.height ?? "100%"};
 `;
 
-const [isLoading, setIsLoading] = useState(true);
+const [isLoading, setIsLoading] = useState(false);
 const [error, setError] = useState(null);
-const [community, setCommunity] = useState(null);
+// const [community, setCommunity] = useState(null);
 
 // TODO: This doesn't work as expected, it does not catch the error
-Near.asyncView(nearDevGovGigsContractAccountId, "get_community", {
+const community = Near.view(nearDevGovGigsContractAccountId, "get_community", {
   handle,
-})
-  .then((response) => {
-    setCommunity(response ?? null);
-    setIsLoading(false);
-  })
-  .catch((error) => {
-    setError(props?.error ?? error);
-    setIsLoading(false);
-  });
+});
 
 const permissions = getAccountCommunityPermissions(
   nearDevGovGigsContractAccountId,
@@ -80,21 +68,35 @@ if (isLoading) {
   );
 }
 
-const availableAddons =
-  getAvailableAddons(nearDevGovGigsContractAccountId) || [];
-const communityAddonConfigs =
-  getCommunityAddonConfigs(nearDevGovGigsContractAccountId, { handle }) || [];
-
 function handleUpdateCommunity(v) {
   updateCommunity(nearDevGovGigsContractAccountId, v);
 }
+
+community.addons = [
+  {
+    id: `${handle}-wiki-1`,
+    addon_id: "wiki",
+    display_name: "Screams and Whispers",
+    icon: "bi bi-book",
+    enabled: true,
+  }
+];
+
+community.configs = {
+  [`${handle}-wiki-1`]: {
+    parameters: JSON.stringify({
+      title: "Screams and Whispers",
+      description: "The Haunted Hack House Wiki",
+      content:
+        "🎃 **Hack-o-ween is Upon Us!** 🎃 Prepare to be spooked and code in the dark shadows. As the moon rises on this haunted month, Boo's Horror House Wiki welcomes you to join us for the sinister celebration of Hacktoberfest and Hack-o-ween. 🦇 **Hacktoberfest Tombstone** 🦇 Don't be scared, contribute to our open-source projects during this eerie month. Dive into the world of code and contribute your terrifyingly awesome enhancements, bug fixes, and features. Each pull request brings you one step closer to the grand prize. Who knows what dark secrets and hidden gems you'll unearth in our haunted repositories? 🕸️ **Hack-o-ween: Unmask the Coder Within** 🕸️ Halloween is a time for costumes and masks, but this Hacktoberfest, it's all about unmasking the coder within you. Join our ghoulish coding challenges, hackathons, and themed coding nights. Share your code horrors and achievements in our spooky community. 🌙 **The Boo's Horror House Wiki** 🌙 *Screams and Whispers* beckon you to explore our wiki of the supernatural and macabre. Unlock the mysteries of coding in the dark and discover eerie coding tricks and tales from the crypt. Contribute to our spine-chilling articles and be a part of this horror-themed knowledge repository. It's a month filled with frights, delights, and code that bites! Join us for Hacktoberfest and Hack-o-ween, if you dare... 🧛‍♂️💻🦉",
+    }),
+  },
+};
 
 return (
   <Children
     permissions={permissions}
     community={community}
-    availableAddons={availableAddons}
-    communityAddonConfigs={communityAddonConfigs}
     createCommunity={createCommunity}
     updateCommunity={handleUpdateCommunity}
     deleteCommunity={deleteCommunity}
