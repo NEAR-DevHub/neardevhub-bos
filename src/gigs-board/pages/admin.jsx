@@ -133,13 +133,33 @@ const DevHub = {
   },
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
+/* INCLUDE: "entity/viewer" */
+const Viewer = {
+  communityPermissions: ({ handle }) =>
+    DevHub.get_account_community_permissions({
+      account_id: context.accountId,
+      community_handle: handle,
+    }) ?? {
+      can_configure: false,
+      can_delete: false,
+    },
 
-export const AdminPage = () => {
+  role: {
+    isDevHubModerator:
+      DevHub.has_moderator({ account_id: context.accountId }) ?? false,
+  },
+};
+/* END_INCLUDE: "entity/viewer" */
+
+const AdminPage = () => {
   const featuredCommunities = DevHub.useQuery("featured_communities");
 
   console.log(featuredCommunities);
 
   return widget("components.template.app-layout", {
+    path: [{ label: "Administration", pageId: "admin" }],
+    viewerRole: Viewer.role,
+
     children: (
       <div className="d-flex flex-column gap-4 p-4">
         <></>
