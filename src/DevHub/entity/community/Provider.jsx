@@ -79,7 +79,7 @@ community.addons = [
     display_name: "Screams and Whispers",
     icon: "bi bi-book",
     enabled: true,
-  }
+  },
 ];
 
 community.configs = {

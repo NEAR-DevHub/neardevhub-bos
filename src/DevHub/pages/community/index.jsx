@@ -83,9 +83,10 @@ const tabs = [
     title: addon.display_name,
     iconClass: addon.icon,
     view: `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.addon.index`,
-    params: { 
-      addon_id: addon.addon_id, 
-      config: community.configs[addon.id] },
+    params: {
+      addon_id: addon.addon_id,
+      config: community.configs[addon.id],
+    },
   });
 });
 

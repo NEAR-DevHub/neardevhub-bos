@@ -64,14 +64,20 @@ return (
                 console.log("data", data);
                 setTempParameters(data);
               },
-              nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId
+              nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId,
             }}
           />
         </div>
       ) : (
         <div>
           <h2>View Content</h2>
-          <Widget src={addon.widgets.viewer} props={{ ...tempParameters, nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId }} />
+          <Widget
+            src={addon.widgets.viewer}
+            props={{
+              ...tempParameters,
+              nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId,
+            }}
+          />
         </div>
       )}
     </Content>
