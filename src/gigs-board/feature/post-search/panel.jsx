@@ -88,7 +88,7 @@ function search() {
     where = { author_id: { _eq: props.authorQuery.author }, ...where };
   }
   if (state.term) {
-    where = { description: { _like: `%${state.term}%` }, ...where };
+    where = { description: { _ilike: `%${state.term}%` }, ...where };
   }
   if (props.tagQuery && props.tagQuery.tag) {
     where = { labels: { _contains: props.tagQuery.tag }, ...where };
