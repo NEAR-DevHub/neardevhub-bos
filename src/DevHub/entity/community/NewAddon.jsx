@@ -1,4 +1,4 @@
-const { availableAddons, nearDevGovGigsWidgetsAccountId, onSubmit } = props;
+const { availableAddons, onSubmit } = props;
 
 const [selectedAddon, setSelectedAddon] = useState(null);
 
@@ -6,17 +6,17 @@ return (
   <>
     {selectedAddon && (
       <Widget
-        src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+        src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
         props={{
           className: "p-3",
           children: (
             <Widget
-              src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.ConfigurationSection`}
+              src={"${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"}
               props={{
                 title: "New " + selectedAddon.title,
                 headerRight: (
                   <Widget
-                    src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+                    src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
                     props={{
                       classNames: { root: "btn-sm btn-secondary" },
                       icon: {
@@ -25,20 +25,17 @@ return (
                       },
                       label: "Cancel",
                       onClick: () => setSelectedAddon(null),
-                      nearDevGovGigsWidgetsAccountId,
                     }}
                   />
                 ),
                 forceEditActive: true,
                 hasConfigurePermissions: true,
-                nearDevGovGigsWidgetsAccountId,
                 Configurator: () => (
                   <Widget
-                    src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.AddonConfigurator`}
+                    src={"${REPL_DEVHUB}/widget/DevHub.entity.community.AddonConfigurator"}
                     props={{
                       addon: selectedAddon,
                       onSubmit,
-                      nearDevGovGigsWidgetsAccountId,
                     }}
                   />
                 ),
@@ -50,7 +47,7 @@ return (
     )}
     {availableAddons && (
       <Widget
-        src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+        src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
         props={{
           className: "p-3",
           children: (
@@ -64,9 +61,7 @@ return (
                 </h5>
               </div>
               <Widget
-                src={`${
-                  context.networkId === "mainnet" ? "near" : "discom.testnet"
-                }/widget/DIG.InputSelect`} // if mainnet, replace discom.testnet with "near"
+                src={"${REPL_DEVHUB_CONTRACT}/widget/DIG.InputSelect"} // if mainnet, replace discom.testnet with "near"
                 props={{
                   groups: [
                     {

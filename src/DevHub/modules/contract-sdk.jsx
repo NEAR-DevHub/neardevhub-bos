@@ -1,147 +1,146 @@
-function getRootMembers(devHubAccountId) {
-  return Near.view(devHubAccountId, "get_root_members") ?? null;
+function getRootMembers() {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_root_members") ?? null;
 }
 
-function hasModerator(devHubAccountId, { account_id }) {
-  return Near.view(devHubAccountId, "has_moderator", { account_id }) ?? null;
+function hasModerator({ account_id }) {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", { account_id }) ?? null;
 }
 
-function createCommunity(devHubAccountId, { inputs }) {
-  return Near.call(devHubAccountId, "create_community", { inputs });
+function createCommunity({ inputs }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "create_community", { inputs });
 }
 
-function getCommunity(devHubAccountId, { handle }) {
-  return Near.view(devHubAccountId, "get_community", { handle }) ?? null;
+function getCommunity({ handle }) {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community", { handle }) ?? null;
 }
 
-function getFeaturedCommunities(devHubAccountId) {
-  return Near.view(devHubAccountId, "get_featured_communities") ?? null;
+function getFeaturedCommunities() {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_featured_communities") ?? null;
 }
 
 function getAccountCommunityPermissions(
-  devHubAccountId,
   { account_id, community_handle }
 ) {
   return (
-    Near.view(devHubAccountId, "get_account_community_permissions", {
+    Near.view("${REPL_DEVHUB_CONTRACT}", "get_account_community_permissions", {
       account_id,
       community_handle,
     }) ?? null
   );
 }
 
-function updateCommunity(devHubAccountId, { handle, community }) {
-  return Near.call(devHubAccountId, "update_community", { handle, community });
+function updateCommunity({ handle, community }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community", { handle, community });
 }
 
-function deleteCommunity(devHubAccountId, { handle }) {
-  return Near.call(devHubAccountId, "delete_community", { handle });
+function deleteCommunity({ handle }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "delete_community", { handle });
 }
 
-function updateCommunityBoard(devHubAccountId, { handle, board }) {
-  return Near.call(devHubAccountId, "update_community_board", {
+function updateCommunityBoard({ handle, board }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community_board", {
     handle,
     board,
   });
 }
 
-function updateCommunityGithub(devHubAccountId, { handle, github }) {
-  return Near.call(devHubAccountId, "update_community_github", {
+function updateCommunityGithub({ handle, github }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community_github", {
     handle,
     github,
   });
 }
 
-function addCommunityAddon(devHubAccountId, { handle, config }) {
-  return Near.call(devHubAccountId, "add_community_addon", {
+function addCommunityAddon({ handle, config }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "add_community_addon", {
     community_handle: handle,
     addon_config: config,
   });
 }
 
-function updateCommunityAddon(devHubAccountId, { handle, config }) {
-  return Near.call(devHubAccountId, "update_community_addon", {
+function updateCommunityAddon({ handle, config }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community_addon", {
     community_handle: handle,
     addon_config: config,
   });
 }
 
-function removeCommunityAddon(devHubAccountId, { handle, config_id }) {
-  return Near.call(devHubAccountId, "remove_community_addon", {
+function removeCommunityAddon({ handle, config_id }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "remove_community_addon", {
     community_handle: handle,
     config_id,
   });
 }
 
-function getAccessControlInfo(devHubAccountId) {
-  return Near.view(devHubAccountId, "get_access_control_info") ?? null;
+function getAccessControlInfo() {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_access_control_info") ?? null;
 }
 
-function getAllAuthors(devHubAccountId) {
-  return Near.view(devHubAccountId, "get_all_authors") ?? null;
+function getAllAuthors() {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_authors") ?? null;
 }
 
-function getAllCommunitiesMetadata(devHubAccountId) {
-  return Near.view(devHubAccountId, "get_all_communities_metadata") ?? null;
+function getAllCommunitiesMetadata() {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_communities_metadata") ?? null;
 }
 
-function getAvailableAddons(devHubAccountId) {
-  return Near.view(devHubAccountId, "get_available_addons") ?? null;
+function getAvailableAddons() {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_available_addons") ?? null;
 }
 
-function getCommunityAddons(devHubAccountId, { handle }) {
-  return Near.view(devHubAccountId, "get_community_addons", { handle });
+function getCommunityAddons({ handle }) {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addons", { handle });
 }
 
-function getCommunityAddonConfigs(devHubAccountId, { handle }) {
-  return Near.view(devHubAccountId, "get_community_addon_configs", { handle });
+function getCommunityAddonConfigs({ handle }) {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addon_configs", { handle });
 }
 
-function getAllLabels(devHubAccountId) {
-  return Near.view(devHubAccountId, "get_all_labels") ?? null;
+function getAllLabels() {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_labels") ?? null;
 }
 
-function getPost(devHubAccountId, { post_id }) {
-  return Near.view(devHubAccountId, "get_post", { post_id }) ?? null;
+function getPost({ post_id }) {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_post", { post_id }) ?? null;
 }
 
-function getPostsByAuthor(devHubAccountId, { author }) {
-  return Near.view(devHubAccountId, "get_posts_by_author", { author }) ?? null;
+function getPostsByAuthor({ author }) {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_author", { author }) ?? null;
 }
 
-function getPostsByLabel(devHubAccountId, { label }) {
+function getPostsByLabel({ label }) {
   return (
-    Near.view(devHubAccountId, "get_posts_by_label", {
+    Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_label", {
       label,
     }) ?? null
   );
 }
 
-function getAddons(devHubAccountId, { handle }) {
-  return Near.view(devHubAccountId, "get_addons", { handle }) ?? null;
+function getAddons({ handle }) {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_addons", { handle }) ?? null;
 }
 
-function setAddons(devHubAccountId, { handle, addons }) {
-  return Near.view(devHubAccountId, "get_addons", { handle, addons }) ?? null;
+function setAddons({ handle, addons }) {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_addons", { handle, addons }) ?? null;
 }
 
-function getConfig(devHubAccountId, { config_id }) {
-  return Near.view(devHubAccountId, "get_config", { config_id }) ?? null;
+function getConfig({ config_id }) {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_config", { config_id }) ?? null;
 }
 
-function setConfig(devHubAccountId, { handle, config_id, config }) {
+function setConfig({ handle, config_id, config }) {
   return (
-    Near.view(devHubAccountId, "set_config", { handle, config_id, config }) ??
+    Near.view("${REPL_DEVHUB_CONTRACT}", "set_config", { handle, config_id, config }) ??
     null
   );
 }
 
-function useQuery(devHubAccountId, name, params) {
+function useQuery(name, params) {
   const initialState = { data: null, error: null, isLoading: true };
 
   const cacheState = useCache(
     () =>
-      Near.asyncView(devHubAccountId, ["get", name].join("_"), params ?? {})
+      Near.asyncView("${REPL_DEVHUB_CONTRACT}", ["get", name].join("_"), params ?? {})
         .then((response) => ({
           ...initialState,
           data: response ?? null,

@@ -1,4 +1,4 @@
-const { addon_id, nearDevGovGigsWidgetsAccountId, config } = props;
+const { addon_id, config } = props;
 
 const addon = {
   id: "wiki", // this could be determined by the Type
@@ -6,8 +6,8 @@ const addon = {
   description: "Add a wiki to your community.",
   icon: "bi bi-book",
   widgets: {
-    viewer: `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.addon.wiki.Viewer`,
-    configurator: `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.addon.wiki.Configurator`,
+    viewer: "${REPL_DEVHUB}/widget/DevHub.entity.addon.wiki.Viewer",
+    configurator: "${REPL_DEVHUB}/widget/DevHub.entity.addon.wiki.Configurator",
   },
 };
 const Container = styled.div`
@@ -64,14 +64,13 @@ return (
                 console.log("data", data);
                 setTempParameters(data);
               },
-              nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId
             }}
           />
         </div>
       ) : (
         <div>
           <h2>View Content</h2>
-          <Widget src={addon.widgets.viewer} props={{ ...tempParameters, nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId }} />
+          <Widget src={addon.widgets.viewer} props={tempParameters} />
         </div>
       )}
     </Content>

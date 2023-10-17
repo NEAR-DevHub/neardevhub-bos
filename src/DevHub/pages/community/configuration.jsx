@@ -1,5 +1,4 @@
 const {
-  nearDevGovGigsWidgetsAccountId,
   permissions,
   handle,
   community,
@@ -43,25 +42,23 @@ function CommunityAddonConfigurator({ addonConfig }) {
   const match = availableAddons.find((it) => it.id === addonConfig.addon_id);
   return (
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
       props={{
         className: "p-3",
         children: (
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.ConfigurationSection`}
+            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"}
             props={{
               title: addonConfig.name,
               hasConfigurePermissions: hasConfigurePermissions,
-              nearDevGovGigsWidgetsAccountId,
               Configurator: () =>
                 match ? (
                   <Widget
-                    src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.AddonConfigurator`}
+                    src={"${REPL_DEVHUB}/widget/DevHub.entity.community.AddonConfigurator"}
                     props={{
                       addon: match,
                       data: addonConfig,
                       onSubmit: (v) => console.log(v),
-                      nearDevGovGigsWidgetsAccountId,
                     }}
                   />
                 ) : (
@@ -81,39 +78,37 @@ return (
     style={{ maxWidth: 960 }}
   >
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
       props={{
         children: (
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.BrandingConfigurator`}
+            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.BrandingConfigurator"}
             props={{
               onSubmit: sectionSubmit,
               data: communityData,
               hasConfigurePermissions,
-              link: `/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community&handle=${handle}`,
+              link: "${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=${handle}",
             }}
           />
         ),
       }}
     />
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
       props={{
         className: "p-3",
         children: (
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.ConfigurationSection`}
+            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"}
             props={{
               title: "Community Information",
               hasConfigurePermissions,
-              nearDevGovGigsWidgetsAccountId,
               Configurator: (p) => (
                 <Widget
-                  src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.InformationConfigurator`}
+                  src={"${REPL_DEVHUB}/widget/DevHub.entity.community.InformationConfigurator"}
                   props={{
                     data: communityData,
                     onSubmit: sectionSubmit,
-                    nearDevGovGigsWidgetsAccountId,
                     ...p,
                   }}
                 />
@@ -124,23 +119,21 @@ return (
       }}
     />
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
       props={{
         className: "p-3",
         children: (
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.ConfigurationSection`}
+            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"}
             props={{
               title: "About",
               hasConfigurePermissions,
-              nearDevGovGigsWidgetsAccountId,
               Configurator: (p) => (
                 <Widget
-                  src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.AboutConfigurator`}
+                  src={"${REPL_DEVHUB}/widget/DevHub.entity.community.AboutConfigurator"}
                   props={{
                     data: communityData,
                     onSubmit: sectionSubmit,
-                    nearDevGovGigsWidgetsAccountId,
                     ...p,
                   }}
                 />
@@ -151,23 +144,21 @@ return (
       }}
     />
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
       props={{
         className: "p-3",
         children: (
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.ConfigurationSection`}
+            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"}
             props={{
               title: "Access Control",
               hasConfigurePermissions,
-              nearDevGovGigsWidgetsAccountId,
               Configurator: (p) => (
                 <Widget
-                  src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.AccessControlConfigurator`}
+                  src={"${REPL_DEVHUB}/widget/DevHub.entity.community.AccessControlConfigurator"}
                   props={{
                     data: communityData,
                     onSubmit: sectionSubmit,
-                    nearDevGovGigsWidgetsAccountId,
                     ...p,
                   }}
                 />
@@ -178,14 +169,13 @@ return (
       }}
     />
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
       props={{
         className: "p-3",
         children: (
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.Addons`}
+            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Addons"}
             props={{
-              nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId,
               items: [
                 {
                   id: `${handle}-wiki-1`,
@@ -220,7 +210,7 @@ return (
     // ))}
     {/* {hasConfigurePermissions && (
       <Widget
-        src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.NewAddon`}
+        src={"${REPL_DEVHUB}/widget/DevHub.entity.community.NewAddon`}
         props={{
           availableAddons,
           onSubmit: handleCreateAddon,
@@ -234,12 +224,12 @@ return (
         style={{ maxWidth: 896 }}
       >
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-lg btn-outline-danger border-none" },
             label: "Delete community",
             onClick: () =>
-              deleteCommunity(nearDevGovGigsContractAccountId, { handle }),
+              deleteCommunity({ handle }),
           }}
         />
       </div>
@@ -250,14 +240,13 @@ return (
         style={{ borderTopLeftRadius: "100%" }}
       >
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-lg btn-success" },
             icon: { type: "svg_icon", variant: "floppy_drive" },
             label: "Save",
             onClick: () =>
               updateCommunity({ handle, community: communityData }), // TODO : Track changes in State
-            nearDevGovGigsWidgetsAccountId,
           }}
         />
       </div>

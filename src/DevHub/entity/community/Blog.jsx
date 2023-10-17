@@ -11,13 +11,13 @@ const onAuthorSearch = (author) => {
 
 return (
   <Widget
-    src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.post.Panel`}
+    src={"${REPL_DEVHUB}/widget/DevHub.entity.post.Panel"}
     props={{
       author: author,
       authorQuery: { author },
       children: (
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.PostControls`}
+          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.PostControls"}
           props={{ title: "Post", link: "Create" }}
         />
       ),

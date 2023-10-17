@@ -1,57 +1,13 @@
-/* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-function widget(widgetName, widgetProps, key) {
-  widgetProps = {
-    ...widgetProps,
-    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
-    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    referral: props.referral,
-  };
-
-  return (
-    <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
-      props={widgetProps}
-      key={key}
-    />
-  );
-}
-
 function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-
-  if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId =
-      props.nearDevGovGigsContractAccountId;
-  }
-
-  if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId =
-      props.nearDevGovGigsWidgetsAccountId;
-  }
-
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
   const linkPropsQuery = Object.entries(linkProps)
     .filter(([_key, nullable]) => (nullable ?? null) !== null)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+  return `/#/${REPL_DEVHUB}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
-/* END_INCLUDE: "common.jsx" */
-
 //////////////////////////////////////////////////////////////////////
 ///STOPWORDS//////////////////////////////////////////////////////////
 const stopWords = [
@@ -736,16 +692,22 @@ return (
         </ul>
       </div>
       <div class="dropdown">
-        {widget("feature.post-search.by-author", {
-          authorQuery: props.authorQuery,
-          onAuthorSearch: props.onAuthorSearch,
-        })}
+        <Widget
+          src={"${REPL_DEVHUB}/widget/gigs-board.feature.post-search.by-author"}
+          props={{
+            authorQuery: props.authorQuery,
+            onAuthorSearch: props.onAuthorSearch,
+          }}
+        />
       </div>
       <div>
-        {widget("feature.post-search.by-tag", {
-          tagQuery: props.tagQuery,
-          onTagSearch: props.onTagSearch,
-        })}
+        <Widget
+          src={"${REPL_DEVHUB}/widget/gigs-board.feature.post-search.by-tag"}
+          props={{
+            tagQuery: props.tagQuery,
+            onTagSearch: props.onTagSearch,
+          }}
+        />
       </div>
       <div className="d-flex flex-row-reverse flex-grow-1">
         {props.children}
@@ -761,7 +723,7 @@ return (
       )}
     {state.term && state.term.length > 1 && state.searchResult ? (
       <Widget
-        src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.post.List`}
+        src={"${REPL_DEVHUB}/widget/DevHub.entity.post.List"}
         props={{
           searchResult: {
             postIds: state.searchResult,
@@ -779,7 +741,7 @@ return (
       />
     ) : (
       <Widget
-        src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.post.List`}
+        src={"${REPL_DEVHUB}/widget/DevHub.entity.post.List"}
         props={{
           recency: props.recency,
           tag: props.tag,

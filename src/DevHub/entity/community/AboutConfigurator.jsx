@@ -47,7 +47,6 @@ const {
   data,
   onSubmit,
   onCancel,
-  nearDevGovGigsWidgetsAccountId,
   setIsActive,
   isActive,
 } = props;
@@ -59,12 +58,11 @@ function handleOnSubmit(v) {
 
 return (
   <Widget
-    src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.organism.Configurator`}
+    src={"${REPL_DEVHUB}/widget/DevHub.components.organism.Configurator"}
     props={{
       externalState: data,
       schema: CommunityAboutSchema,
       onSubmit: handleOnSubmit,
-      nearDevGovGigsWidgetsAccountId,
       isActive,
       onCancel: onCancel,
     }}

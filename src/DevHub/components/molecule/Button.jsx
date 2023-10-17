@@ -119,7 +119,6 @@ const Button = ({
   icon: iconProps,
   label,
   type,
-  nearDevGovGigsWidgetsAccountId,
   ...restProps
 }) => {
   const ButtonRoot = rootElementByType(type);
@@ -137,7 +136,7 @@ const Button = ({
         typeof iconProps === "object" &&
         !Array.isArray(iconProps) && (
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.atom.Icon`}
+            src={"${REPL_DEVHUB}/widget/DevHub.components.atom.Icon"}
             props={iconProps}
           />
         )}

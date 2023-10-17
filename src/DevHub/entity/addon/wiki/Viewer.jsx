@@ -1,4 +1,4 @@
-const { title, description, content, nearDevGovGigsWidgetsAccountId } = props;
+const { title, description, content } = props;
 
 const Container = styled.div`
   width: 80%;
@@ -29,7 +29,7 @@ return (
     <Description>{description}</Description>
     <Content>
       <Widget
-        src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.MarkdownViewer`}
+        src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.MarkdownViewer"}
         props={{ text: content }}
       />
     </Content>

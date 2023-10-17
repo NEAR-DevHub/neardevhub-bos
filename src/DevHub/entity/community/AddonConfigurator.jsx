@@ -1,4 +1,4 @@
-const { addon, config, onSubmit, nearDevGovGigsWidgetsAccountId } = props;
+const { addon, config, onSubmit } = props;
 
 const [name, setName] = useState(config.name || "");
 const [enabled, setEnabled] = useState(config.enabled || true);
@@ -23,7 +23,7 @@ return (
       onChange={(e) => setName(e.target.value)}
     />
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.atom.Toggle`}
+      src={"${REPL_DEVHUB}/widget/DevHub.components.atom.Toggle"}
       props={{
         label: "Enabled",
         value: enabled,
@@ -35,7 +35,6 @@ return (
       props={{
         data: JSON.parse(config.parameters),
         onSubmit: handleOnSubmit,
-        nearDevGovGigsWidgetsAccountId,
       }}
     />
   </div>

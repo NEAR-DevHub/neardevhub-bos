@@ -1,17 +1,15 @@
 const {
-  nearDevGovGigsWidgetsAccountId,
-  nearDevGovGigsContractAccountId,
   author,
   recency,
   tag,
 } = props;
 
 const { getFeaturedCommunities } = VM.require(
-  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
+  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
 );
 
 const { href } = VM.require(
-  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.utils`
+  "${REPL_DEVHUB}/widget/DevHub.modules.utils"
 );
 
 if (!getFeaturedCommunities || !href) {
@@ -56,7 +54,7 @@ const Gradient = styled.div`
 `;
 
 const featuredCommunities =
-  getFeaturedCommunities(nearDevGovGigsContractAccountId) || [];
+  getFeaturedCommunities() || [];
 
 function Banner() {
   return (
@@ -82,7 +80,7 @@ function Banner() {
         <div className="d-flex gap-4 justify-content-between">
           {featuredCommunities.map((community) => (
             <Widget
-              src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.card`}
+              src={"${REPL_DEVHUB}/widget/DevHub.entity.community.card"}
               props={{ metadata: community, format: "medium" }}
             />
           ))}
@@ -108,20 +106,18 @@ return (
   <div className="w-100">
     <Banner />
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.feature.post-search.panel`}
+      src={"${REPL_DEVHUB}/widget/gigs-board.feature.post-search.panel"}
       props={{
         author: searchAuthor,
         authorQuery: { author: searchAuthor },
         children: (
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.components.layout.Controls`}
+            src={"${REPL_DEVHUB}/widget/gigs-board.components.layout.Controls"}
             props={{
               title: "Post",
               href: href({
-                widgetSrc: `${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.Create`,
+                widgetSrc: "${REPL_DEVHUB}/widget/gigs-board.pages.Create",
               }),
-              nearDevGovGigsContractAccountId: nearDevGovGigsContractAccountId,
-              nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId,
             }}
           />
         ),
@@ -131,8 +127,6 @@ return (
         tag: searchTag,
         tagQuery: { tag: searchTag },
         transactionHashes: props.transactionHashes,
-        nearDevGovGigsContractAccountId: nearDevGovGigsContractAccountId,
-        nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId,
       }}
     />
   </div>

@@ -1,14 +1,10 @@
-const {
-  nearDevGovGigsWidgetsAccountId,
-  nearDevGovGigsContractAccountId,
-  handle,
-} = props;
+const { handle } = props;
 
 const { getCommunity } = VM.require(
-  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
+  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
 );
 
-const communityData = getCommunity(nearDevGovGigsContractAccountId, { handle });
+const communityData = getCommunity({ handle });
 
 if (communityData === null) {
   return <div>Loading...</div>;
@@ -42,7 +38,7 @@ const UserList = ({ name, users }) => (
 return (
   <div className="d-flex flex-column align-items-center gap-4 w-100">
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Tile`}
+      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
       props={{
         className: "p-3 w-100",
         style: { maxWidth: 960 },

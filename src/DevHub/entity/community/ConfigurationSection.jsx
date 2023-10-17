@@ -3,7 +3,6 @@ const {
   hasConfigurePermissions,
   Configurator,
   Preview,
-  nearDevGovGigsWidgetsAccountId,
   headerRight,
   forceEditActive,
 } = props;
@@ -22,7 +21,7 @@ function SectionHeader() {
       {headerRight ||
         (hasConfigurePermissions && (
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+            src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
             props={{
               classNames: { root: "btn-sm btn-secondary" },
               icon: {
@@ -31,7 +30,6 @@ function SectionHeader() {
               },
               label: isEditActive ? "Cancel" : "Edit",
               onClick: () => setEditActive(!isEditActive),
-              nearDevGovGigsWidgetsAccountId,
             }}
           />
         ))}

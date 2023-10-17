@@ -1,4 +1,4 @@
-const { data, onChange, nearDevGovGigsWidgetsAccountId } = props;
+const { data, onChange } = props;
 
 const [content, setContent] = useState(data.content);
 
@@ -12,7 +12,7 @@ const Container = styled.div`
 return (
   <Container>
     <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.MarkdownEditor`}
+      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.MarkdownEditor"}
       props={{ data: content, onChange: setContent }}
     />
   </Container>

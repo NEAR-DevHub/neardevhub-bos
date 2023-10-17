@@ -35,17 +35,10 @@ const NavUnderline = styled.ul`
   }
 `;
 
-const {
-  nearDevGovGigsWidgetsAccountId,
-  nearDevGovGigsContractAccountId,
-  handle,
-  tab,
-  permissions,
-  community,
-} = props;
+const { handle, tab, permissions, community } = props;
 
 const { href } = VM.require(
-  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.utils`
+  "${REPL_DEVHUB_CONTRACT}/widget/DevHub.modules.utils"
 );
 
 if (!href) {
@@ -62,7 +55,7 @@ const tabs = [
   {
     title: "Activity",
     iconClass: "bi bi-house-door",
-    view: `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.Activity`,
+    view: "${REPL_DEVHUB}/widget/DevHub.entity.community.Activity",
     params: {
       handle,
     },
@@ -70,7 +63,7 @@ const tabs = [
   {
     title: "Teams",
     iconClass: "bi bi-people-fill",
-    view: `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.Teams`,
+    view: "${REPL_DEVHUB}/widget/DevHub.entity.community.Teams",
     params: {
       handle,
     },
@@ -82,10 +75,11 @@ const tabs = [
     id: addon.id,
     title: addon.display_name,
     iconClass: addon.icon,
-    view: `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.addon.index`,
-    params: { 
-      addon_id: addon.addon_id, 
-      config: community.configs[addon.id] },
+    view: "${REPL_DEVHUB}/widget/DevHub.pages.addon.index",
+    params: {
+      addon_id: addon.addon_id,
+      config: community.configs[addon.id],
+    },
   });
 });
 
@@ -94,7 +88,7 @@ const onShareClick = () =>
     .writeText(
       href({
         gateway: "near.org",
-        widgetSrc: `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App`,
+        widgetSrc: "${REPL_DEVHUB}/widget/DevHub.App",
         params: { page: "community", handle },
       })
     )
@@ -135,10 +129,10 @@ return (
       <div className="d-flex align-items-end gap-3 ms-auto">
         {true && ( // TODO: Add back permissions check permissions.can_configure
           <Link
-            to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=community.configuration&handle=${handle}`}
+            to={`/${REPL_DEVHUB}/widget/DevHub.App?page=community.configuration&handle=${handle}`}
           >
             <Widget
-              src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+              src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
               props={{
                 classNames: { root: "btn-outline-light text-dark" },
                 icon: {
@@ -146,14 +140,13 @@ return (
                   variant: "bi-gear-wide-connected",
                 },
                 label: "Configure community",
-                nearDevGovGigsWidgetsAccountId,
               }}
             />
           </Link>
         )}
 
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-outline-light text-dark" },
 
@@ -166,7 +159,6 @@ return (
             onClick: onShareClick,
             onMouseLeave: () => setLinkCopied(false),
             title: "Copy link to clipboard",
-            nearDevGovGigsWidgetsAccountId,
           }}
         />
       </div>
@@ -178,7 +170,7 @@ return (
             <li className="nav-item" key={title}>
               <Link
                 to={href({
-                  widgetSrc: `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App`,
+                  widgetSrc: "${REPL_DEVHUB}/widget/DevHub.App",
                   params: { page: "community", handle, tab: title },
                 })}
                 aria-current={tab === title && "page"}
@@ -194,16 +186,7 @@ return (
       )}
     </NavUnderline>
     <div className="d-flex w-100 h-100">
-      {currentTab && (
-        <Widget
-          src={currentTab.view}
-          props={{
-            ...currentTab.params,
-            nearDevGovGigsContractAccountId: nearDevGovGigsContractAccountId, // TEMP
-            nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId, // TEMP
-          }}
-        />
-      )}
+      {currentTab && <Widget src={currentTab.view} props={currentTab.params} />}
     </div>
   </div>
 );

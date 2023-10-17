@@ -5,23 +5,12 @@
 
 const {
   page,
-  nearDevGovGigsWidgetsAccountId,
-  nearDevGovGigsContractAccountId,
   ...passProps
 } = props;
 
-// THESE ARE TEMPORARY
-// This can be solved with injection during build
-if (!nearDevGovGigsWidgetsAccountId) {
-  nearDevGovGigsWidgetsAccountId = "devhub.efiz.testnet";
-}
-if (!nearDevGovGigsContractAccountId) {
-  nearDevGovGigsContractAccountId = "thomaspreview.testnet";
-}
-
 // Import our modules
 const { AppLayout } = VM.require(
-  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.templates.AppLayout`
+  "${REPL_DEVHUB}/widget/DevHub.components.templates.AppLayout"
 );
 if (!AppLayout) {
   return <p>Loading modules...</p>;
@@ -60,12 +49,8 @@ function Page() {
     case "communities": {
       return (
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.communities`}
-          props={{
-            nearDevGovGigsWidgetsAccountId,
-            nearDevGovGigsContractAccountId,
-            ...passProps,
-          }}
+          src={"${REPL_DEVHUB}/widget/DevHub.pages.communities"}
+          props={passProps}
         />
       );
     }
@@ -73,10 +58,8 @@ function Page() {
     case "community": {
       return (
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.community.Provider`}
+          src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Provider"}
           props={{
-            nearDevGovGigsWidgetsAccountId,
-            nearDevGovGigsContractAccountId,
             ...passProps,
             Children: (p) => {
               switch (routes[1]) {
@@ -84,10 +67,8 @@ function Page() {
                 case "configuration": {
                   return (
                     <Widget
-                      src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.community.configuration`}
+                      src={"${REPL_DEVHUB}/widget/DevHub.pages.community.configuration"}
                       props={{
-                        nearDevGovGigsWidgetsAccountId,
-                        nearDevGovGigsContractAccountId,
                         ...passProps,
                         ...p,
                       }}
@@ -98,10 +79,8 @@ function Page() {
               // ?page=community
               return (
                 <Widget
-                  src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.community.index`}
+                  src={"${REPL_DEVHUB}/widget/DevHub.pages.community.index"}
                   props={{
-                    nearDevGovGigsWidgetsAccountId,
-                    nearDevGovGigsContractAccountId,
                     ...passProps,
                     ...p,
                   }}
@@ -117,10 +96,8 @@ function Page() {
       // TODO: This needs to be updated, old widget has the header attached
       return (
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.pages.feed`}
+          src={"${REPL_DEVHUB}/widget/DevHub.pages.feed"}
           props={{
-            nearDevGovGigsWidgetsAccountId,
-            nearDevGovGigsContractAccountId,
             ...passProps,
           }}
         />
@@ -135,7 +112,6 @@ return (
   <Theme>
     <AppLayout
       page={page}
-      nearDevGovGigsWidgetsAccountId={nearDevGovGigsWidgetsAccountId}
     >
       <Page />
     </AppLayout>

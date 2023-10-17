@@ -1,14 +1,10 @@
-const {
-  nearDevGovGigsWidgetsAccountId,
-  nearDevGovGigsContractAccountId,
-  handle,
-} = props;
+const { handle } = props;
 
 const { getCommunity } = VM.require(
-  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
+  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
 );
 
-const communityData = getCommunity(nearDevGovGigsContractAccountId, { handle });
+const communityData = getCommunity({ handle });
 
 if (communityData === null) {
   return <div>Loading...</div>;
@@ -21,7 +17,7 @@ return (
         <small class="text-muted">
           <span>Required tags:</span>
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.components.atom.tag`}
+            src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.tag"}
             props={{
               linkTo: "Feed",
               ...communityData,
@@ -29,25 +25,21 @@ return (
           />
         </small>
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.PostControls`}
+          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.PostControls"}
           props={{ labels: communityData.tag }}
         />
       </div>
       <Widget
-        src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.entity.post.List`}
+        src={"${REPL_DEVHUB}/widget/DevHub.entity.post.List"}
         props={{
-          nearDevGovGigsContractAccountId,
-          nearDevGovGigsWidgetsAccountId,
           tag: communityData.tag,
         }}
       />
     </div>
     <div class="col-md-3 container-fluid">
       <Widget
-        src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.entity.community.sidebar`}
+        src={"${REPL_DEVHUB}/widget/gigs-board.entity.community.sidebar"}
         props={{
-          nearDevGovGigsContractAccountId,
-          nearDevGovGigsWidgetsAccountId,
           handle: communityData.handle,
         }}
       />

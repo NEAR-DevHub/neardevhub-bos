@@ -1,5 +1,3 @@
-const { nearDevGovGigsWidgetsAccountId } = props;
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -58,23 +56,21 @@ const Editor = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
       <Item>
         <div>
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+            src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
             props={{
               classNames: { root: "btn-sm btn-secondary" },
               icon: { type: "bootstrap_icon", variant: "bi-arrow-up" },
               onClick: moveItemUp,
               disabled: isTop,
-              nearDevGovGigsWidgetsAccountId,
             }}
           />
           <Widget
-            src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.molecule.Button`}
+            src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
             props={{
               classNames: { root: "btn-sm btn-secondary" },
               icon: { type: "bootstrap_icon", variant: "bi-arrow-down" },
               onClick: moveItemDown,
               disabled: isBottom,
-              nearDevGovGigsWidgetsAccountId,
             }}
           />
         </div>
@@ -86,7 +82,7 @@ const Editor = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
           onChange={handleNameChange}
         />
         <Widget
-          src={`${nearDevGovGigsWidgetsAccountId}/widget/DevHub.components.atom.Toggle`}
+          src={"${REPL_DEVHUB}/widget/DevHub.components.atom.Toggle"}
           props={{
             label: "Enabled",
             value: data.enabled,

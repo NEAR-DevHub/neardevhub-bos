@@ -1,8 +1,6 @@
 const {
   handle,
   Children,
-  nearDevGovGigsWidgetsAccountId,
-  nearDevGovGigsContractAccountId,
 } = props;
 
 const {
@@ -12,7 +10,7 @@ const {
   deleteCommunity,
   getCommunity,
 } = VM.require(
-  `${nearDevGovGigsWidgetsAccountId}/widget/DevHub.modules.contract-sdk`
+  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
 );
 
 if (
@@ -39,12 +37,12 @@ const [error, setError] = useState(null);
 // const [community, setCommunity] = useState(null);
 
 // TODO: This doesn't work as expected, it does not catch the error
-const community = Near.view(nearDevGovGigsContractAccountId, "get_community", {
+const community = Near.view("${REPL_DEVHUB_CONTRACT}", "get_community", {
   handle,
 });
 
 const permissions = getAccountCommunityPermissions(
-  nearDevGovGigsContractAccountId,
+  "${REPL_DEVHUB_CONTRACT}",
   {
     account_id: context.accountId,
     community_handle: handle,
@@ -69,7 +67,7 @@ if (isLoading) {
 }
 
 function handleUpdateCommunity(v) {
-  updateCommunity(nearDevGovGigsContractAccountId, v);
+  updateCommunity(v);
 }
 
 community.addons = [

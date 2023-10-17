@@ -79,12 +79,10 @@ function QuestionButton() {
   );
 }
 
-const AppHeader = ({ page, nearDevGovGigsWidgetsAccountId }) => {
+const AppHeader = ({ page }) => {
   return (
     <StyledHeader>
-      <Link
-        to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=home`}
-      >
+      <Link to={`/${REPL_DEVHUB}/widget/DevHub.App?page=home`}>
         <Logo
           src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"
           alt="DevHub"
@@ -93,9 +91,7 @@ const AppHeader = ({ page, nearDevGovGigsWidgetsAccountId }) => {
 
       <HeaderActions>
         {page !== "communities" && (
-          <Link
-            to={`/${nearDevGovGigsWidgetsAccountId}/widget/DevHub.App?page=communities`}
-          >
+          <Link to={`/${REPL_DEVHUB}/widget/DevHub.App?page=communities`}>
             Communities
           </Link>
         )}
@@ -112,13 +108,10 @@ const AppHeader = ({ page, nearDevGovGigsWidgetsAccountId }) => {
   );
 };
 
-function AppLayout({ nearDevGovGigsWidgetsAccountId, page, children }) {
+function AppLayout({ page, children }) {
   return (
     <Container>
-      <AppHeader
-        page={page}
-        nearDevGovGigsWidgetsAccountId={nearDevGovGigsWidgetsAccountId}
-      />
+      <AppHeader page={page} />
       <ContentContainer>{children}</ContentContainer>
     </Container>
   );

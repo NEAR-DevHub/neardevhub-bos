@@ -3,60 +3,16 @@
 // The contract will need to be extended with pagination support, yet, even in the current state the page loads much faster.
 // [IndexFeed]: https://near.social/#/mob.near/widget/WidgetSource?src=mob.near/widget/IndexFeed
 
-/* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-function widget(widgetName, widgetProps, key) {
-  widgetProps = {
-    ...widgetProps,
-    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
-    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    referral: props.referral,
-  };
-
-  return (
-    <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
-      props={widgetProps}
-      key={key}
-    />
-  );
-}
-
 function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-
-  if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId =
-      props.nearDevGovGigsContractAccountId;
-  }
-
-  if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId =
-      props.nearDevGovGigsWidgetsAccountId;
-  }
-
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
   const linkPropsQuery = Object.entries(linkProps)
     .filter(([_key, nullable]) => (nullable ?? null) !== null)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+  return `/#/${REPL_DEVHUB}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
 }
-/* END_INCLUDE: "common.jsx" */
-
 /* INCLUDE: "core/lib/draftstate" */
 const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
 let is_edit_or_add_post_transaction = false;
@@ -106,9 +62,9 @@ function defaultRenderItem(postId, additionalProps) {
   // It is important to have a non-zero-height element as otherwise InfiniteScroll loads too many items on initial load
   return (
     <div className="py-2" style={{ minHeight: "150px" }}>
-      {widget(
-        `entity.post.Post`,
-        {
+      <Widget
+        src={"${REPL_DEVHUB}/widget/gigs-board.pages.Post"}
+        props={{
           id: postId,
           expandable: true,
           defaultExpanded: false,
@@ -116,9 +72,9 @@ function defaultRenderItem(postId, additionalProps) {
           draftState,
           onDraftStateChange,
           ...additionalProps,
-        },
-        postId
-      )}
+        }}
+        postId={postId}
+      />
     </div>
   );
 }
@@ -146,7 +102,7 @@ const addDisplayCount = props.nextLimit ?? initialRenderLimit;
 
 function getPostsByLabel() {
   let postIds = Near.view(
-    nearDevGovGigsContractAccountId,
+    "${REPL_DEVHUB_CONTRACT}",
     "get_posts_by_label",
     {
       label: props.tag,
@@ -160,7 +116,7 @@ function getPostsByLabel() {
 
 function getPostsByAuthor() {
   let postIds = Near.view(
-    nearDevGovGigsContractAccountId,
+    "${REPL_DEVHUB_CONTRACT}",
     "get_posts_by_author",
     {
       author: props.author,
@@ -228,7 +184,7 @@ const getPeriodText = (period) => {
 const findHottestsPosts = (postIds, period) => {
   let allPosts;
   if (!state.allPosts) {
-    allPosts = Near.view("devgovgigs.near", "get_posts");
+    allPosts = Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts");
     if (!allPosts) {
       return [];
     }
@@ -252,7 +208,7 @@ const findHottestsPosts = (postIds, period) => {
   });
   const modifiedPosts = periodLimitedPosts.map((post) => {
     const comments =
-      Near.view("devgovgigs.near", "get_children_ids", {
+      Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids", {
         post_id: post.id,
       }) || [];
     post = { ...post, comments };
@@ -276,12 +232,12 @@ if (props.searchResult) {
 } else if (props.author) {
   postIds = getPostsByAuthor();
 } else if (props.recency == "all") {
-  postIds = Near.view(nearDevGovGigsContractAccountId, "get_all_post_ids");
+  postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_post_ids");
   if (postIds) {
     postIds.reverse();
   }
 } else {
-  postIds = Near.view(nearDevGovGigsContractAccountId, "get_children_ids");
+  postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
   if (postIds) {
     postIds.reverse();
   }
