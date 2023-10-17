@@ -3,7 +3,10 @@ function getRootMembers() {
 }
 
 function hasModerator({ account_id }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", { account_id }) ?? null;
+  return (
+    Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", { account_id }) ??
+    null
+  );
 }
 
 function createCommunity({ inputs }) {
@@ -11,16 +14,18 @@ function createCommunity({ inputs }) {
 }
 
 function getCommunity({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community", { handle }) ?? null;
+  return (
+    Near.view("${REPL_DEVHUB_CONTRACT}", "get_community", { handle }) ?? null
+  );
 }
 
 function getFeaturedCommunities() {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_featured_communities") ?? null;
+  return (
+    Near.view("${REPL_DEVHUB_CONTRACT}", "get_featured_communities") ?? null
+  );
 }
 
-function getAccountCommunityPermissions(
-  { account_id, community_handle }
-) {
+function getAccountCommunityPermissions({ account_id, community_handle }) {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "get_account_community_permissions", {
       account_id,
@@ -30,7 +35,10 @@ function getAccountCommunityPermissions(
 }
 
 function updateCommunity({ handle, community }) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community", { handle, community });
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community", {
+    handle,
+    community,
+  });
 }
 
 function deleteCommunity({ handle }) {
@@ -73,7 +81,9 @@ function removeCommunityAddon({ handle, config_id }) {
 }
 
 function getAccessControlInfo() {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_access_control_info") ?? null;
+  return (
+    Near.view("${REPL_DEVHUB_CONTRACT}", "get_access_control_info") ?? null
+  );
 }
 
 function getAllAuthors() {
@@ -81,7 +91,9 @@ function getAllAuthors() {
 }
 
 function getAllCommunitiesMetadata() {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_communities_metadata") ?? null;
+  return (
+    Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_communities_metadata") ?? null
+  );
 }
 
 function getAvailableAddons() {
@@ -89,11 +101,15 @@ function getAvailableAddons() {
 }
 
 function getCommunityAddons({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addons", { handle });
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addons", {
+    handle,
+  });
 }
 
 function getCommunityAddonConfigs({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addon_configs", { handle });
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addon_configs", {
+    handle,
+  });
 }
 
 function getAllLabels() {
@@ -105,7 +121,10 @@ function getPost({ post_id }) {
 }
 
 function getPostsByAuthor({ author }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_author", { author }) ?? null;
+  return (
+    Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_author", { author }) ??
+    null
+  );
 }
 
 function getPostsByLabel({ label }) {
@@ -121,17 +140,25 @@ function getAddons({ handle }) {
 }
 
 function setAddons({ handle, addons }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_addons", { handle, addons }) ?? null;
+  return (
+    Near.view("${REPL_DEVHUB_CONTRACT}", "get_addons", { handle, addons }) ??
+    null
+  );
 }
 
 function getConfig({ config_id }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_config", { config_id }) ?? null;
+  return (
+    Near.view("${REPL_DEVHUB_CONTRACT}", "get_config", { config_id }) ?? null
+  );
 }
 
 function setConfig({ handle, config_id, config }) {
   return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "set_config", { handle, config_id, config }) ??
-    null
+    Near.view("${REPL_DEVHUB_CONTRACT}", "set_config", {
+      handle,
+      config_id,
+      config,
+    }) ?? null
   );
 }
 
@@ -140,7 +167,11 @@ function useQuery(name, params) {
 
   const cacheState = useCache(
     () =>
-      Near.asyncView("${REPL_DEVHUB_CONTRACT}", ["get", name].join("_"), params ?? {})
+      Near.asyncView(
+        "${REPL_DEVHUB_CONTRACT}",
+        ["get", name].join("_"),
+        params ?? {}
+      )
         .then((response) => ({
           ...initialState,
           data: response ?? null,

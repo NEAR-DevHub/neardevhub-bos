@@ -3,10 +3,7 @@
  * Page route gets passed in through params, along with all other page props.
  */
 
-const {
-  page,
-  ...passProps
-} = props;
+const { page, ...passProps } = props;
 
 // Import our modules
 const { AppLayout } = VM.require(
@@ -67,7 +64,9 @@ function Page() {
                 case "configuration": {
                   return (
                     <Widget
-                      src={"${REPL_DEVHUB}/widget/DevHub.pages.community.configuration"}
+                      src={
+                        "${REPL_DEVHUB}/widget/DevHub.pages.community.configuration"
+                      }
                       props={{
                         ...passProps,
                         ...p,
@@ -110,9 +109,7 @@ function Page() {
 
 return (
   <Theme>
-    <AppLayout
-      page={page}
-    >
+    <AppLayout page={page}>
       <Page />
     </AppLayout>
   </Theme>

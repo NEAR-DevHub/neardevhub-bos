@@ -114,13 +114,7 @@ const rootElementByType = (type) =>
         ${styles}
       `;
 
-const Button = ({
-  classNames,
-  icon: iconProps,
-  label,
-  type,
-  ...restProps
-}) => {
+const Button = ({ classNames, icon: iconProps, label, type, ...restProps }) => {
   const ButtonRoot = rootElementByType(type);
 
   return (

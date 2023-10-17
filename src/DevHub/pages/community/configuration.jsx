@@ -47,14 +47,18 @@ function CommunityAddonConfigurator({ addonConfig }) {
         className: "p-3",
         children: (
           <Widget
-            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"}
+            src={
+              "${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"
+            }
             props={{
               title: addonConfig.name,
               hasConfigurePermissions: hasConfigurePermissions,
               Configurator: () =>
                 match ? (
                   <Widget
-                    src={"${REPL_DEVHUB}/widget/DevHub.entity.community.AddonConfigurator"}
+                    src={
+                      "${REPL_DEVHUB}/widget/DevHub.entity.community.AddonConfigurator"
+                    }
                     props={{
                       addon: match,
                       data: addonConfig,
@@ -82,7 +86,9 @@ return (
       props={{
         children: (
           <Widget
-            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.BrandingConfigurator"}
+            src={
+              "${REPL_DEVHUB}/widget/DevHub.entity.community.BrandingConfigurator"
+            }
             props={{
               onSubmit: sectionSubmit,
               data: communityData,
@@ -99,13 +105,17 @@ return (
         className: "p-3",
         children: (
           <Widget
-            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"}
+            src={
+              "${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"
+            }
             props={{
               title: "Community Information",
               hasConfigurePermissions,
               Configurator: (p) => (
                 <Widget
-                  src={"${REPL_DEVHUB}/widget/DevHub.entity.community.InformationConfigurator"}
+                  src={
+                    "${REPL_DEVHUB}/widget/DevHub.entity.community.InformationConfigurator"
+                  }
                   props={{
                     data: communityData,
                     onSubmit: sectionSubmit,
@@ -124,13 +134,17 @@ return (
         className: "p-3",
         children: (
           <Widget
-            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"}
+            src={
+              "${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"
+            }
             props={{
               title: "About",
               hasConfigurePermissions,
               Configurator: (p) => (
                 <Widget
-                  src={"${REPL_DEVHUB}/widget/DevHub.entity.community.AboutConfigurator"}
+                  src={
+                    "${REPL_DEVHUB}/widget/DevHub.entity.community.AboutConfigurator"
+                  }
                   props={{
                     data: communityData,
                     onSubmit: sectionSubmit,
@@ -149,13 +163,17 @@ return (
         className: "p-3",
         children: (
           <Widget
-            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"}
+            src={
+              "${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"
+            }
             props={{
               title: "Access Control",
               hasConfigurePermissions,
               Configurator: (p) => (
                 <Widget
-                  src={"${REPL_DEVHUB}/widget/DevHub.entity.community.AccessControlConfigurator"}
+                  src={
+                    "${REPL_DEVHUB}/widget/DevHub.entity.community.AccessControlConfigurator"
+                  }
                   props={{
                     data: communityData,
                     onSubmit: sectionSubmit,
@@ -228,8 +246,7 @@ return (
           props={{
             classNames: { root: "btn-lg btn-outline-danger border-none" },
             label: "Delete community",
-            onClick: () =>
-              deleteCommunity({ handle }),
+            onClick: () => deleteCommunity({ handle }),
           }}
         />
       </div>

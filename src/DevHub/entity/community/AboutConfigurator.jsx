@@ -43,13 +43,7 @@ const CommunityAboutSchema = {
   },
 };
 
-const {
-  data,
-  onSubmit,
-  onCancel,
-  setIsActive,
-  isActive,
-} = props;
+const { data, onSubmit, onCancel, setIsActive, isActive } = props;
 
 function handleOnSubmit(v) {
   onSubmit(v);

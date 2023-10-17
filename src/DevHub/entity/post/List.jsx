@@ -101,13 +101,9 @@ const initialRenderLimit = props.initialRenderLimit ?? 3;
 const addDisplayCount = props.nextLimit ?? initialRenderLimit;
 
 function getPostsByLabel() {
-  let postIds = Near.view(
-    "${REPL_DEVHUB_CONTRACT}",
-    "get_posts_by_label",
-    {
-      label: props.tag,
-    }
-  );
+  let postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_label", {
+    label: props.tag,
+  });
   if (postIds) {
     postIds.reverse();
   }
@@ -115,13 +111,9 @@ function getPostsByLabel() {
 }
 
 function getPostsByAuthor() {
-  let postIds = Near.view(
-    "${REPL_DEVHUB_CONTRACT}",
-    "get_posts_by_author",
-    {
-      author: props.author,
-    }
-  );
+  let postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_author", {
+    author: props.author,
+  });
   if (postIds) {
     postIds.reverse();
   }

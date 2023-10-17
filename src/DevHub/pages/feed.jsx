@@ -1,16 +1,10 @@
-const {
-  author,
-  recency,
-  tag,
-} = props;
+const { author, recency, tag } = props;
 
 const { getFeaturedCommunities } = VM.require(
   "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
 );
 
-const { href } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.utils"
-);
+const { href } = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.utils");
 
 if (!getFeaturedCommunities || !href) {
   return <p>Loading modules...</p>;
@@ -53,8 +47,7 @@ const Gradient = styled.div`
   }
 `;
 
-const featuredCommunities =
-  getFeaturedCommunities() || [];
+const featuredCommunities = getFeaturedCommunities() || [];
 
 function Banner() {
   return (

@@ -11,12 +11,16 @@ return (
           className: "p-3",
           children: (
             <Widget
-              src={"${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"}
+              src={
+                "${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"
+              }
               props={{
                 title: "New " + selectedAddon.title,
                 headerRight: (
                   <Widget
-                    src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+                    src={
+                      "${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"
+                    }
                     props={{
                       classNames: { root: "btn-sm btn-secondary" },
                       icon: {
@@ -32,7 +36,9 @@ return (
                 hasConfigurePermissions: true,
                 Configurator: () => (
                   <Widget
-                    src={"${REPL_DEVHUB}/widget/DevHub.entity.community.AddonConfigurator"}
+                    src={
+                      "${REPL_DEVHUB}/widget/DevHub.entity.community.AddonConfigurator"
+                    }
                     props={{
                       addon: selectedAddon,
                       onSubmit,

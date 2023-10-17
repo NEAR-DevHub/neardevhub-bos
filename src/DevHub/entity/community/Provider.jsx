@@ -1,7 +1,4 @@
-const {
-  handle,
-  Children,
-} = props;
+const { handle, Children } = props;
 
 const {
   getAccountCommunityPermissions,
@@ -9,9 +6,7 @@ const {
   updateCommunity,
   deleteCommunity,
   getCommunity,
-} = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
-);
+} = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk");
 
 if (
   !getCommunity ||
@@ -41,13 +36,10 @@ const community = Near.view("${REPL_DEVHUB_CONTRACT}", "get_community", {
   handle,
 });
 
-const permissions = getAccountCommunityPermissions(
-  "${REPL_DEVHUB_CONTRACT}",
-  {
-    account_id: context.accountId,
-    community_handle: handle,
-  }
-) || {
+const permissions = getAccountCommunityPermissions("${REPL_DEVHUB_CONTRACT}", {
+  account_id: context.accountId,
+  community_handle: handle,
+}) || {
   can_configure: false,
   can_delete: false,
 };
@@ -77,7 +69,7 @@ community.addons = [
     display_name: "Screams and Whispers",
     icon: "bi bi-book",
     enabled: true,
-  }
+  },
 ];
 
 community.configs = {
