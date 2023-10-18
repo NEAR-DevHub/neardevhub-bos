@@ -192,7 +192,7 @@ const CommunityActivityPage = ({ handle, transactionHashes }) => {
                 transactionHashes,
               })}
 
-              {widget("entity.posr.List", { tag: communityData.tag })}
+              {widget("entity.post.List", { tag: communityData.tag })}
             </div>
           </div>
 

@@ -185,7 +185,7 @@ return (
           searchResult: state.searchResult,
           recency: props.recency,
         })
-      : widget("entity.posr.List", {
+      : widget("entity.post.List", {
           recency: props.recency,
           transactionHashes: props.transactionHashes,
         })}
