@@ -35,7 +35,7 @@ const NavUnderline = styled.ul`
   }
 `;
 
-const { tab, permissions, community } = props;
+const { tab, permissions, community, availableAddons } = props;
 
 
 const { href } = VM.require(
@@ -73,9 +73,8 @@ const tabs = [
 
 (community.addons || []).map((addon) => {
   tabs.push({
-    id: addon.id,
     title: addon.display_name,
-    iconClass: addon.icon,
+    iconClass: availableAddons.find((it) => it.id === addon.addon_id).icon,
     view: "${REPL_DEVHUB}/widget/DevHub.pages.addon.index",
     params: {
       addon_id: addon.addon_id,
