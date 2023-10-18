@@ -235,13 +235,13 @@ const FeedPage = ({ author, recency, tag }) => {
   return widget("components.template.app-layout", {
     banner,
 
-    children: widget("entity.post.search_panel", {
+    children: widget("entity.post.search-panel", {
       author: state.author,
       authorQuery: { author: state.author },
 
       children: widget("components.molecule.button", {
         type: "link",
-        href: href("new_post"),
+        href: href("new-post"),
         icon: { type: "bootstrap_icon", variant: "bi-plus-circle-fill" },
         label: "Post",
       }),
