@@ -238,7 +238,7 @@ return (
       <div className="d-flex flex-column gap-3">
         <h1 className="m-0 fs-4">
           <Link
-            to={"${REPL_DEVHUB}/widget/app?page=communities"}
+            to={"/${REPL_DEVHUB}/widget/app?page=communities"}
             className="text-white"
           >
             Communities
