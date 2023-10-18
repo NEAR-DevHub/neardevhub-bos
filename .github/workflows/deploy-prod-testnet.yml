@@ -1,0 +1,39 @@
+name: Deploy Widgets to Testnet
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy-widgets:
+    runs-on: ubuntu-latest
+    name: Deploy widgets to devhub.testnet
+    env:
+      NEAR_SOCIAL_ACCOUNT_ID: ${{ vars.NEAR_SOCIAL_TESTNET_ACCOUNT_ID }}
+      NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY: ${{ vars.NEAR_SOCIAL_TESTNET_ACCOUNT_PUBLIC_KEY }}
+      NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY: ${{ secrets.NEAR_SOCIAL_TESTNET_ACCOUNT_PRIVATE_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set replacements
+        id: set_replacements
+        run: |
+          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value)]' replacements.testnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
+
+      - name: Replace placeholders
+        uses: flcdrg/replace-multiple-action@v1
+        with:
+          files: '**/*.jsx'
+          find: '${{ steps.set_replacements.outputs.replacements }}'
+          prefix: '(^|.*)'
+          suffix: '($|.*)'
+
+      - name: Install bos CLI
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.5/bos-cli-installer.sh | sh
+      
+      - name: Deploy widgets
+        run: |
+          which bos
+          echo $PATH
+          bos components deploy "$NEAR_SOCIAL_ACCOUNT_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config testnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
