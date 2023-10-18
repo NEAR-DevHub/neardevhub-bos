@@ -20,9 +20,62 @@ You can also explore a list of [good first issues](https://github.com/near/devgi
 
 We use `npm` and scripts in `package.json` to automate common developer tasks, so you will need NodeJS and then install project dependencies as usual:
 
-```
+```sh
 npm install
 ```
+
+### Development
+
+#### Run the dev script
+
+To initiate the development environment, you can use the following script. This script will first check if bos-loader is installed and, if not, install it. Then, it will serve the default development environment.
+
+```sh
+npm run dev
+```
+
+#### Customizing Creator ID, Contract ID, or Network
+
+If you need to customize the account ID, override the contract ID, or specify a different network for your development environment, you can use the following flags:
+
+-a or --account: Specify the desired account ID.
+-c or --contract: Override the default contract ID.
+-n or --network: Set the network environment.
+
+Here's how you can use these flags:
+
+```sh
+npm run dev -a your_account_id -c your_contract_id -n your_network
+```
+
+For example:
+
+```sh
+npm run dev -a bob.near -c contract.bobs.near -n mainnet
+```
+
+By using these flags, you have the flexibility to customize the development environment according to your specific needs.
+
+
+#### Developing across multiple environments
+
+When referencing a component or any parameter that depends on the network, please use the placeholders defined in replacements.*.json. There are three such files that correspond to different environments:
+
+`replacements.dev.json` - deploys the develop branch, to testnet @ test.beta.near.org 
+
+`replacements.testnet.json` - deploys main branch, to testnet @ test.near.org
+
+`replacements.mainnet.json` - deploys main branch to mainnet @ near.org
+
+Placeholders should be encapsulated in the ${} expression. Here is an example of a placeholder usage:
+
+`<Widget src={homepage ?? "${REPL_ACCOUNT}/widget/ActivityPage"} />`
+
+Placeholders are replaced with the target values specified in replacements.json when github actions deploys the components.
+
+Feel free to specify a new placeholder if needed. The placeholder should have a REPL prefix, for example: `REPL_PROJECT_NAME`
+
+A new placeholder should be defined for all three environments: dev-testnet, prod-testnet and prod-mainnet.
 
 ### Deployment
 
