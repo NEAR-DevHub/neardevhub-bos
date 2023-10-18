@@ -235,7 +235,7 @@ const FeedPage = ({ author, recency, tag }) => {
   return widget("components.template.app-layout", {
     banner,
 
-    children: widget("entity.post.search-panel", {
+    children: widget("entity.post.SearchPanel", {
       author: state.author,
       authorQuery: { author: state.author },
 

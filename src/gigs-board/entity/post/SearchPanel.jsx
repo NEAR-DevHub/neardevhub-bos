@@ -736,13 +736,13 @@ return (
         </ul>
       </div>
       <div class="dropdown">
-        {widget("entity.post.author-search", {
+        {widget("entity.post.AuthorSearch", {
           authorQuery: props.authorQuery,
           onAuthorSearch: props.onAuthorSearch,
         })}
       </div>
       <div>
-        {widget("entity.post.tag-search", {
+        {widget("entity.post.TagSearch", {
           tagQuery: props.tagQuery,
           onTagSearch: props.onTagSearch,
         })}

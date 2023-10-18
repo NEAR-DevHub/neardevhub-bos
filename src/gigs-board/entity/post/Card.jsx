@@ -530,7 +530,7 @@ function Editor() {
         key={`${state.post_type}${state.editorType}${postId}`}
       >
         {widget(
-          "entity.post.editor",
+          "entity.post.Editor",
 
           state.editorType === "CREATE"
             ? {
@@ -638,7 +638,7 @@ const postsList =
       >
         {childPostIds.map((childId) =>
           widget(
-            "entity.post.card",
+            "entity.post.Card",
             {
               id: childId,
               isUnderPost: true,

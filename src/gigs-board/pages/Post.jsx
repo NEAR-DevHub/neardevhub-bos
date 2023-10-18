@@ -108,7 +108,7 @@ if (is_edit_or_add_post_transaction) {
   );
 } else {
   return widget("components.template.app-layout", {
-    children: widget("entity.post.card", {
+    children: widget("entity.post.Card", {
       id: props.id,
       timestamp: props.timestamp,
       compareTimestamp: props.compareTimestamp,

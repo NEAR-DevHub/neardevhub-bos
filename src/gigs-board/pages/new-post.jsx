@@ -168,7 +168,7 @@ const NewPostPage = ({ transactionHashes }) => {
               </a>
             </p>
 
-            {widget("entity.post.editor", {
+            {widget("entity.post.Editor", {
               className: "d-none",
               transactionHashes,
             })}
@@ -206,7 +206,7 @@ const NewPostPage = ({ transactionHashes }) => {
               </p>
             </div>
 
-            {widget("entity.post.editor", {
+            {widget("entity.post.Editor", {
               mode: "Create",
               onCancel: stateReset,
               parent_id: null,

@@ -107,7 +107,7 @@ function defaultRenderItem(postId, additionalProps) {
   return (
     <div className="py-2" style={{ minHeight: "150px" }}>
       {widget(
-        `entity.post.card`,
+        `entity.post.Card`,
         {
           id: postId,
           expandable: true,
