@@ -224,6 +224,13 @@ const AdminPage = () => {
               {widget("components.organism.configurator", {
                 heading: "Add featured community",
                 isActive: true,
+
+                // isHidden: !(
+                //   Viewer.role.isDevHubModerator &&
+                //   featuredCommunityList.length <
+                //     AdministrationSettings.communities.maxFeatured
+                // ),
+
                 isUnlocked: true, // Viewer.role.isDevHubModerator,
                 schema: CommunityFeaturingSchema,
                 onClick: addFeaturedCommunity,
