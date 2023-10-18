@@ -58,4 +58,4 @@ else
 fi
 
 # Run bos-loader with updated replacements
-bos-loader "$ACCOUNT_ID" --path src -r "$REPLACEMENTS_JSON"
+~/.cargo/bin/bos-loader "$ACCOUNT_ID" --path src -r "$REPLACEMENTS_JSON"

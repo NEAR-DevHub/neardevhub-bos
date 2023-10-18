@@ -146,7 +146,7 @@ function CommunityCard({ format, isBannerEnabled, metadata }) {
 
   const formatSmall = (
     <Link
-      to={`${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=${metadata.handle}`}
+      to={"${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=" + metadata.handle}
     >
       <div
         {...otherProps}
@@ -237,7 +237,7 @@ return (
       <div className="d-flex flex-column gap-3">
         <h1 className="m-0 fs-4">
           <Link
-            to={`${REPL_DEVHUB}/widget/DevHub.App?page=communities`}
+            to={"${REPL_DEVHUB}/widget/DevHub.App?page=communities"}
             className="text-white"
           >
             Communities
