@@ -151,28 +151,59 @@ const Viewer = {
 };
 /* END_INCLUDE: "entity/viewer" */
 
+const AdministrationSettings = {
+  communities: {
+    maxFeatured: 4,
+  },
+};
+
+const CommunityFeaturingSchema = {
+  handle: { label: "Community handle", type: "text", required: true },
+};
+
 const AdminPage = () => {
-  const featuredCommunities = DevHub.useQuery("featured_communities");
+  const featuredCommunitiesMeta = DevHub.useQuery(
+    "featured_communities_metadata"
+  );
 
   return widget("components.template.app-layout", {
     path: [{ label: "Administration", pageId: "admin" }],
-    viewerRole: Viewer.role,
+    viewer: Viewer,
 
     children: (
       <div className="d-flex flex-column gap-4 p-4">
         {widget("components.atom.spinner", {
           isHidden: !(
-            featuredCommunities.data === null && featuredCommunities.isLoading
+            featuredCommunitiesMeta.data === null &&
+            featuredCommunitiesMeta.isLoading
           ),
         })}
 
-        <div className="d-flex flex-column gap-4">
-          <h2>Featured communities</h2>
+        {widget("components.molecule.tile", {
+          heading: "Featured communities",
 
-          {(featuredCommunities.data ?? []).map(({ name }) => (
-            <div>{name}</div>
-          ))}
-        </div>
+          isHidden:
+            featuredCommunitiesMeta.data === null &&
+            featuredCommunitiesMeta.isLoading,
+
+          noBorder: true,
+          noFrame: true,
+
+          children: (
+            <>
+              {(featuredCommunitiesMeta.data ?? []).map((metadata) =>
+                widget("entity.community.card", { format: "small", metadata })
+              )}
+
+              {widget("components.organism.configurator", {
+                heading: "Add community",
+                isActive: true,
+                isUnlocked: true, // Viewer.role.isDevHubModerator,
+                schema: CommunityFeaturingSchema,
+              })}
+            </>
+          ),
+        })}
       </div>
     ),
   });

@@ -52,9 +52,9 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const AppLayout = ({ banner, children, path, viewerRole }) => (
+const AppLayout = ({ banner, children, path, viewer }) => (
   <div className="d-flex flex-column w-100 h-100" style={{ minHeight: "86vh" }}>
-    {widget("components.organism.app-header", { path, viewerRole })}
+    {widget("components.organism.app-header", { path, viewer })}
     {banner}
     <div className="w-100 h-100">{children}</div>
   </div>

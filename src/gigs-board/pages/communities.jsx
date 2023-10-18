@@ -143,7 +143,7 @@ const CommunitiesPage = () => {
       isSpawnerHidden: !(forcedState ?? lastKnownState.isSpawnerHidden),
     }));
 
-  const communitiesMetadata = DevHub.useQuery("all_communities_metadata");
+  const communitiesMeta = DevHub.useQuery("all_communities_metadata");
 
   return widget("components.template.app-layout", {
     path: [{ label: "Communities", pageId: "communities", isHidden: true }],
@@ -180,7 +180,7 @@ const CommunitiesPage = () => {
       <div className="d-flex flex-wrap align-content-start gap-4 p-4 w-100 h-100">
         {widget("components.atom.spinner", {
           isHidden: !(
-            communitiesMetadata.data === null && communitiesMetadata.isLoading
+            communitiesMeta.data === null && communitiesMeta.isLoading
           ),
         })}
 
@@ -189,7 +189,7 @@ const CommunitiesPage = () => {
           onCancel: () => spawnerToggle(false),
         })}
 
-        {(communitiesMetadata.data ?? [])
+        {(communitiesMeta.data ?? [])
           .reverse()
           .map((communityMetadata) =>
             widget(

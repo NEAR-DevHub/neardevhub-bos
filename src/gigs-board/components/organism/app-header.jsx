@@ -63,7 +63,7 @@ const Header = styled.div`
   }
 `;
 
-const AppHeader = ({ path, viewerRole }) => (
+const AppHeader = ({ path, viewer }) => (
   <Header className="d-flex justify-content-between align-items-center">
     <div className="d-flex gap-2">
       <a href={href("Feed")}>
@@ -84,7 +84,7 @@ const AppHeader = ({ path, viewerRole }) => (
       ) : null}
 
       {!(path ?? []).some(({ pageId }) => pageId === "admin") &&
-      !viewerRole.isDevHubModerator ? (
+      viewer.role.isDevHubModerator ? (
         <a href={href("admin")} class="text-white me-2">
           Admin
         </a>
