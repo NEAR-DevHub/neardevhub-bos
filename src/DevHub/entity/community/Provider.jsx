@@ -33,7 +33,7 @@ const [error, setError] = useState(null);
 
 // TODO: This doesn't work as expected, it does not catch the error
 const community = Near.view("${REPL_DEVHUB_CONTRACT}", "get_community", {
-  handle,
+  handle: handle,
 });
 
 const permissions = getAccountCommunityPermissions("${REPL_DEVHUB_CONTRACT}", {

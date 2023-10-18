@@ -35,10 +35,11 @@ const NavUnderline = styled.ul`
   }
 `;
 
-const { handle, tab, permissions, community } = props;
+const { tab, permissions, community } = props;
+
 
 const { href } = VM.require(
-  "${REPL_DEVHUB_CONTRACT}/widget/DevHub.modules.utils"
+  "${REPL_DEVHUB}/widget/DevHub.modules.utils"
 );
 
 if (!href) {
@@ -57,7 +58,7 @@ const tabs = [
     iconClass: "bi bi-house-door",
     view: "${REPL_DEVHUB}/widget/DevHub.entity.community.Activity",
     params: {
-      handle,
+      handle: community.handle,
     },
   },
   {
@@ -65,7 +66,7 @@ const tabs = [
     iconClass: "bi bi-people-fill",
     view: "${REPL_DEVHUB}/widget/DevHub.entity.community.Teams",
     params: {
-      handle,
+      handle: community.handle,
     },
   },
 ];
@@ -82,14 +83,13 @@ const tabs = [
     },
   });
 });
-
 const onShareClick = () =>
   clipboard
     .writeText(
       href({
         gateway: "near.org",
         widgetSrc: "${REPL_DEVHUB}/widget/DevHub.App",
-        params: { page: "community", handle },
+        params: { page: "community", handle: community.handle },
       })
     )
     .then(setLinkCopied(true));
@@ -127,9 +127,9 @@ return (
       </div>
 
       <div className="d-flex align-items-end gap-3 ms-auto">
-        {true && ( // TODO: Add back permissions check permissions.can_configure
+        {permissions.can_configure && (
           <Link
-            to={`/${REPL_DEVHUB}/widget/DevHub.App?page=community.configuration&handle=${handle}`}
+            to={`/${REPL_DEVHUB}/widget/DevHub.App?page=community.configuration&handle=${community.handle}`}
           >
             <Widget
               src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
@@ -171,7 +171,7 @@ return (
               <Link
                 to={href({
                   widgetSrc: "${REPL_DEVHUB}/widget/DevHub.App",
-                  params: { page: "community", handle, tab: title },
+                  params: { page: "community", handle: community.handle, tab: title },
                 })}
                 aria-current={tab === title && "page"}
                 className={[

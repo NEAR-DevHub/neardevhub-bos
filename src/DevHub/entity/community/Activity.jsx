@@ -38,10 +38,8 @@ return (
     </div>
     <div class="col-md-3 container-fluid">
       <Widget
-        src={"${REPL_DEVHUB}/widget/gigs-board.entity.community.sidebar"}
-        props={{
-          handle: communityData.handle,
-        }}
+        src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Sidebar"}
+        props={{ community: communityData }}
       />
     </div>
   </div>
