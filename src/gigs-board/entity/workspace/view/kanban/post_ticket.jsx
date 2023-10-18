@@ -99,7 +99,7 @@ const KanbanPostTicket = ({ metadata }) => {
     post_type,
     name,
     description,
-    labels,
+    labels: tags,
     requested_sponsor,
     supervisor,
     requested_sponsorship_amount,
@@ -217,11 +217,11 @@ const KanbanPostTicket = ({ metadata }) => {
     ) : null;
 
   const tagList =
-    Array.isArray(labels) && features.tags ? (
+    Array.isArray(tags) && features.tags ? (
       <div className="d-flex flex-wrap gap-2 m-0">
-        {labels.map((label) => (
-          <a href={href("Feed", { label })} key={label}>
-            <span className="badge text-bg-primary me-1">{label}</span>
+        {tags.map((tag) => (
+          <a href={href("Feed", { tag })} key={tag}>
+            <span className="badge text-bg-primary me-1">{tag}</span>
           </a>
         ))}
       </div>
