@@ -6,6 +6,7 @@ const {
   updateCommunity,
   deleteCommunity,
   getCommunity,
+  setCommunityAddons,
 } = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk");
 
 if (
@@ -13,7 +14,8 @@ if (
   !getAccountCommunityPermissions ||
   !createCommunity ||
   !updateCommunity ||
-  !deleteCommunity
+  !deleteCommunity ||
+  !setCommunityAddons
 ) {
   return <p>Loading modules...</p>;
 }
@@ -36,7 +38,7 @@ const community = Near.view("${REPL_DEVHUB_CONTRACT}", "get_community", {
   handle: handle,
 });
 
-const permissions = getAccountCommunityPermissions("${REPL_DEVHUB_CONTRACT}", {
+const permissions = getAccountCommunityPermissions({
   account_id: context.accountId,
   community_handle: handle,
 }) || {
@@ -77,60 +79,11 @@ community.addons = [
   },
 ];
 
-const availableAddons = [
-  {
-    id: "wiki",
-    title: "Wiki",
-    icon: "bi bi-book",
-    description: "Create a wiki for your community",
-    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.wiki.Viewer",
-    configurator_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.wiki.Configurator",
-  },
-  {
-    id: "telegram",
-    title: "Telegram",
-    icon: "bi bi-telegram",
-    description: "Connect your telegram",
-    view_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.telegram.Viewer",
-    configurator_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.telegram.Configurator",
-  },
-  {
-    id: "github",
-    title: "Github",
-    icon: "bi bi-github",
-    description: "Connect your github",
-    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.github.Viewer",
-    configurator_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.github.Configurator",
-  },
-  {
-    id: "kanban",
-    title: "Kanban",
-    icon: "bi bi-columns-gap",
-    description: "Connect your github kanban board",
-    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.kanban.Viewer",
-    configurator_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.kanban.Configurator",
-  },
-  {
-    id: "blog",
-    title: "Blog",
-    icon: "bi bi-newspaper",
-    description: "Create a blog for your community",
-    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.blog.Viewer",
-    configurator_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.blog.Configurator",
-  },
-];
-
 return (
   <Children
     permissions={permissions}
     community={community}
-    availableAddons={availableAddons}
+    setCommunityAddons={setCommunityAddons}
     createCommunity={createCommunity}
     updateCommunity={handleUpdateCommunity}
     deleteCommunity={deleteCommunity}

@@ -2,10 +2,10 @@ const {
   permissions,
   handle,
   community,
-  // communityAddonConfigs, Commenting out to reduce scope on root merge
-  // availableAddons,
+  setCommunityAddons,
   deleteCommunity,
   updateCommunity,
+
 } = props;
 
 const [communityData, setCommunityData] = useState(community);
@@ -194,29 +194,8 @@ return (
           <Widget
             src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Addons"}
             props={{
-              items: [
-                {
-                  id: `${handle}-wiki-1`,
-                  addon_id: "wiki",
-                  display_name: "Screams and Whispers",
-                  icon: "bi bi-book",
-                  enabled: true,
-                },
-                {
-                  id: `${handle}-wiki-2`,
-                  addon_id: "wiki2",
-                  display_name: "No",
-                  icon: "bi bi-gear",
-                  enabled: true,
-                },
-                {
-                  id: `${handle}-wiki-3`,
-                  addon_id: "wiki3",
-                  display_name: "Haha",
-                  icon: "bi bi-gear",
-                  enabled: true,
-                },
-              ],
+              data: communityData.addons || [],
+              onSubmit: (v) => setCommunityAddons({ handle, addons: v }),
             }}
           />
         ),

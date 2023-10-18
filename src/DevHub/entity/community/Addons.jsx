@@ -1,3 +1,52 @@
+const availableAddons = [
+  {
+    id: "wiki",
+    title: "Wiki",
+    icon: "bi bi-book",
+    description: "Create a wiki for your community",
+    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.wiki.Viewer",
+    configurator_widget:
+      "devhub-dev.testnet/widget/DevHub.entity.addon.wiki.Configurator",
+  },
+  {
+    id: "telegram",
+    title: "Telegram",
+    icon: "bi bi-telegram",
+    description: "Connect your telegram",
+    view_widget:
+      "devhub-dev.testnet/widget/DevHub.entity.addon.telegram.Viewer",
+    configurator_widget:
+      "devhub-dev.testnet/widget/DevHub.entity.addon.telegram.Configurator",
+  },
+  {
+    id: "github",
+    title: "Github",
+    icon: "bi bi-github",
+    description: "Connect your github",
+    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.github.Viewer",
+    configurator_widget:
+      "devhub-dev.testnet/widget/DevHub.entity.addon.github.Configurator",
+  },
+  {
+    id: "kanban",
+    title: "Kanban",
+    icon: "bi bi-columns-gap",
+    description: "Connect your github kanban board",
+    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.kanban.Viewer",
+    configurator_widget:
+      "devhub-dev.testnet/widget/DevHub.entity.addon.kanban.Configurator",
+  },
+  {
+    id: "blog",
+    title: "Blog",
+    icon: "bi bi-newspaper",
+    description: "Create a blog for your community",
+    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.blog.Viewer",
+    configurator_widget:
+      "devhub-dev.testnet/widget/DevHub.entity.addon.blog.Configurator",
+  },
+];
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -24,7 +73,15 @@ const ToggleButton = styled.input`
   margin-left: 10px;
 `;
 
-const Editor = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
+function generateRandom6CharUUID() {
+  const gen = () => {
+    const r = (Math.random() * 36) | 0;
+    return r.toString(36);
+  };
+  return "xxxxxx".replace(/x/g, gen());
+}
+
+const AddonItem = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
   const handleNameChange = (event) => {
     const newName = event.target.value;
     onUpdate({ ...data, display_name: newName });
@@ -55,26 +112,23 @@ const Editor = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
     <div>
       <Item>
         <div>
-          <Widget
-            src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
-            props={{
-              classNames: { root: "btn-sm btn-secondary" },
-              icon: { type: "bootstrap_icon", variant: "bi-arrow-up" },
-              onClick: moveItemUp,
-              disabled: isTop,
-            }}
-          />
-          <Widget
-            src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
-            props={{
-              classNames: { root: "btn-sm btn-secondary" },
-              icon: { type: "bootstrap_icon", variant: "bi-arrow-down" },
-              onClick: moveItemDown,
-              disabled: isBottom,
-            }}
-          />
+          <div style={{ display: "flex", gap: "0" }}>
+            <button
+              className="btn btn-sm btn-secondary rounded-0"
+              onClick={moveItemUp}
+              disabled={isTop}
+            >
+              <i className="bi bi-arrow-up"></i>
+            </button>
+            <button
+              className="btn btn-sm btn-secondary rounded-0"
+              onClick={moveItemDown}
+              disabled={isBottom}
+            >
+              <i className="bi bi-arrow-down"></i>
+            </button>
+          </div>
         </div>
-        <i className={data.icon} />
         <EditableField
           className="form-control border border-2"
           type="text"
@@ -84,7 +138,7 @@ const Editor = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
         <Widget
           src={"${REPL_DEVHUB}/widget/DevHub.components.atom.Toggle"}
           props={{
-            label: "Enabled",
+            label: "Enabled:",
             value: data.enabled,
             onChange: handleEnableChange,
           }}
@@ -94,14 +148,39 @@ const Editor = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
   );
 };
 
-const AddonsConfigurator = ({ items }) => {
-  const [list, setList] = useState(items);
+function arraysAreEqual(arr1, arr2) {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+const AddonsConfigurator = ({ data, onSubmit }) => {
+  // This is a workaround because no identifier in the data
+  const initialList = data.map((item) => ({
+    ...item,
+    id: generateRandom6CharUUID(),
+  }));
+
+  const [originalList, setOriginalList] = useState(initialList);
+  const [list, setList] = useState(initialList);
+  const [changesMade, setChangesMade] = useState(false);
+
+  useEffect(() => {
+    setOriginalList(data);
+  }, [data]);
 
   const updateItem = (updatedItem) => {
     const updatedList = list.map((item) =>
       item.id === updatedItem.id ? updatedItem : item
     );
     setList(updatedList);
+    setChangesMade(!arraysAreEqual(originalList, updatedList));
   };
 
   const moveItem = (fromIndex, toIndex) => {
@@ -109,12 +188,28 @@ const AddonsConfigurator = ({ items }) => {
     const [movedItem] = updatedList.splice(fromIndex, 1);
     updatedList.splice(toIndex, 0, movedItem);
     setList(updatedList);
+    setChangesMade(!arraysAreEqual(originalList, updatedList));
+  };
+
+  const [selectedAddon, setSelectedAddon] = useState(null);
+
+  const handleAddItem = () => {
+    const newItem = {
+      id: generateRandom6CharUUID(),
+      addon_id: selectedAddon.id,
+      display_name: selectedAddon.title,
+      enabled: true,
+      parameters: "{}"
+    };
+    const updatedList = [...list, newItem];
+    setList(updatedList);
+    setChangesMade(!arraysAreEqual(originalList, updatedList));
   };
 
   return (
     <Container>
       {list.map((item, index) => (
-        <Editor
+        <AddonItem
           key={item.id}
           data={item}
           onUpdate={updateItem}
@@ -124,6 +219,57 @@ const AddonsConfigurator = ({ items }) => {
           isBottom={index === list.length - 1}
         />
       ))}
+      {availableAddons && list.length < 7 && (
+        <div className="d-flex justify-content-center">
+          <div className="d-flex gap-2" >
+            <Widget
+              src={"${REPL_NEAR}/widget/DIG.InputSelect"}
+              props={{
+                groups: [
+                  {
+                    items: (availableAddons || []).map((it) => ({
+                      label: it.title,
+                      value: it.id,
+                    })),
+                  },
+                ],
+                rootProps: {
+                  value: selectedAddon.id ?? null,
+                  placeholder: "Select an addon",
+                  onValueChange: (value) =>
+                    setSelectedAddon(
+                      (availableAddons || []).find((it) => it.id === value)
+                    ),
+                },
+              }}
+            />
+            <button
+              className="btn btn-sm btn-secondary"
+              onClick={handleAddItem}
+              disabled={!selectedAddon}
+            >
+              Add
+            </button>
+          </div>
+        </div>
+      )}
+      <div
+        className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
+      >
+        <Widget
+          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+          props={{
+            classNames: { root: "btn-success" },
+            disabled: !changesMade,
+            icon: {
+              type: "bootstrap_icon",
+              variant: "bi-check-circle-fill",
+            },
+            label: "Submit",
+            onClick: () => onSubmit(list),
+          }}
+        />
+      </div>
     </Container>
   );
 };
