@@ -19,6 +19,8 @@ const Dropdown = styled.div`
 `;
 
 const DropdownMenu = styled.div`
+  z-index: 50;
+
   &.active {
     padding: 0.5rem 1rem;
     padding-top: 1rem;
