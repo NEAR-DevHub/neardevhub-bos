@@ -81,6 +81,7 @@ const AttractableImage = styled.img`
 /* END_INCLUDE: "core/lib/gui/attractable" */
 
 const CommunityCard = ({
+  actions,
   format,
   isBannerEnabled,
   metadata,
@@ -92,12 +93,10 @@ const CommunityCard = ({
   const link = href("community.activity", { handle: metadata.handle });
 
   const formatSmall = (
-    <AttractableLink
+    <AttractableDiv
       {...otherProps}
-      href={link}
       className={[
-        "d-flex flex-shrink-0 p-3",
-        "rounded-4 border border-2",
+        "d-flex flex-shrink-0 gap-3 p-3 rounded-4 border border-2",
         "text-black text-decoration-none",
       ].join(" ")}
       style={{
@@ -110,8 +109,12 @@ const CommunityCard = ({
         height: 110,
       }}
     >
-      <div
-        className="d-flex align-items-center gap-3 rounded-4 w-100 h-100"
+      <a
+        className={[
+          "d-flex align-items-center gap-3 rounded-4 w-100 h-100",
+          "text-dark text-decoration-none",
+        ].join(" ")}
+        href={link}
         style={{
           background: "rgba(255, 255, 255, 0.9)",
           backdropFilter: "blur(4px)",
@@ -140,8 +143,10 @@ const CommunityCard = ({
             {metadata.description}
           </p>
         </div>
-      </div>
-    </AttractableLink>
+      </a>
+
+      {actions}
+    </AttractableDiv>
   );
 
   const formatMedium = (

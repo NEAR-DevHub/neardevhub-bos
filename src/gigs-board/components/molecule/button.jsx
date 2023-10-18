@@ -109,6 +109,10 @@ const styles = `
   line-height: 1.5;
   text-decoration: none !important;
 
+	&.vertical {
+		padding: 1.2rem 0.5rem !important;
+	}
+
   &:not(.shadow-none) {
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
     transition: box-shadow 0.6s;
@@ -241,7 +245,13 @@ const Button = ({
     >
       {Struct.typeMatch(iconProps) && widget("components.atom.icon", iconProps)}
 
-      <span className={classNames?.label} style={{ lineHeight: "inherit" }}>
+      <span
+        className={[
+          classNames?.label,
+          typeof label === "string" ? "" : "d-none",
+        ].join(" ")}
+        style={{ lineHeight: "inherit" }}
+      >
         {label}
       </span>
     </ButtonRoot>

@@ -158,13 +158,24 @@ const AdministrationSettings = {
 };
 
 const CommunityFeaturingSchema = {
-  handle: { label: "Community handle", type: "text", required: true },
+  handle: { label: "Community handle", required: true },
 };
 
 const AdminPage = () => {
-  const featuredCommunitiesMeta = DevHub.useQuery(
-    "featured_communities_metadata"
+  const featuredCommunities = DevHub.useQuery("featured_communities"),
+    featuredCommunityList = featuredCommunities.data ?? [];
+
+  const featuredCommunityHandles = featuredCommunityList.map(
+    ({ handle }) => handle
   );
+
+  const addFeaturedCommunity = ({ handle }) => {
+    console.log(handle);
+  };
+
+  const removeFeaturedCommunity = ({ handle }) => {
+    console.log(handle);
+  };
 
   return widget("components.template.app-layout", {
     path: [{ label: "Administration", pageId: "admin" }],
@@ -174,8 +185,7 @@ const AdminPage = () => {
       <div className="d-flex flex-column gap-4 p-4">
         {widget("components.atom.spinner", {
           isHidden: !(
-            featuredCommunitiesMeta.data === null &&
-            featuredCommunitiesMeta.isLoading
+            featuredCommunities.data === null && featuredCommunities.isLoading
           ),
         })}
 
@@ -183,23 +193,40 @@ const AdminPage = () => {
           heading: "Featured communities",
 
           isHidden:
-            featuredCommunitiesMeta.data === null &&
-            featuredCommunitiesMeta.isLoading,
+            featuredCommunities.data === null && featuredCommunities.isLoading,
 
           noBorder: true,
           noFrame: true,
 
           children: (
             <>
-              {(featuredCommunitiesMeta.data ?? []).map((metadata) =>
-                widget("entity.community.card", { format: "small", metadata })
-              )}
+              <div className="d-flex flex-wrap align-content-start gap-4">
+                {featuredCommunityList.map((community) =>
+                  widget("entity.community.card", {
+                    actions: (
+                      <div className="d-flex justify-content-center align-items-center">
+                        {widget("components.molecule.button", {
+                          classNames: { root: "btn-outline-danger vertical" },
+                          icon: { type: "bootstrap_icon", variant: "bi-x-lg" },
+                          title: "Remove from featured",
+                          onClick: () => removeFeaturedCommunity(community),
+                        })}
+                      </div>
+                    ),
+
+                    format: "small",
+                    metadata: community,
+                    target: "_blank",
+                  })
+                )}
+              </div>
 
               {widget("components.organism.configurator", {
-                heading: "Add community",
+                heading: "Add featured community",
                 isActive: true,
                 isUnlocked: true, // Viewer.role.isDevHubModerator,
                 schema: CommunityFeaturingSchema,
+                onClick: addFeaturedCommunity,
               })}
             </>
           ),
