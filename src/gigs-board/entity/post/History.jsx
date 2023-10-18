@@ -68,7 +68,7 @@ const post =
     post_id: postId,
   });
 if (!post || !post.snapshot_history) {
-  return <div className="bi bi-clock-history px-2"></div>;
+  return <div class="bi bi-clock-history px-2"></div>;
 }
 const referral = props.referral;
 
@@ -91,20 +91,20 @@ snapshotHistory.push(snapshot);
 snapshotHistory.reverse();
 
 const history = (
-  <div className="btn-group" role="group">
+  <div class="btn-group" role="group">
     <a
-      className="card-link"
+      class="card-link"
       role="button"
       title="Post History"
       data-bs-toggle="dropdown"
       aria-expanded="false"
       type="button"
     >
-      <div className="bi bi-clock-history px-2"></div>
+      <div class="bi bi-clock-history px-2"></div>
     </a>
-    <ul className="dropdown-menu">
+    <ul class="dropdown-menu">
       <a
-        className="d-flex text-muted"
+        class="d-flex text-muted"
         style={{ fontSize: "12px", textDecoration: "none", cursor: "default" }}
       >
         <a
@@ -129,7 +129,7 @@ const history = (
               }}
             >
               <a
-                className="dropdown-item"
+                class="dropdown-item"
                 href={href("Post", {
                   id: postId,
                   timestamp: item.timestamp,
@@ -157,7 +157,7 @@ const history = (
               </a>
             </div>
             <a
-              className="dropdown-item"
+              class="dropdown-item"
               href={href("Post", {
                 id: postId,
                 timestamp: currentTimestamp,
@@ -165,7 +165,7 @@ const history = (
                 referral,
               })}
             >
-              <i className="bi bi-file-earmark-diff" />
+              <i class="bi bi-file-earmark-diff" />
             </a>
           </li>
         );
