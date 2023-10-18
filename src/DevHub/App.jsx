@@ -46,7 +46,7 @@ function Page() {
     case "communities": {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.pages.communities"}
+          src={"${REPL_DEVHUB}/widget/DevHub.page.communities"}
           props={passProps}
         />
       );
@@ -65,7 +65,7 @@ function Page() {
                   return (
                     <Widget
                       src={
-                        "${REPL_DEVHUB}/widget/DevHub.pages.community.configuration"
+                        "${REPL_DEVHUB}/widget/DevHub.page.community.configuration"
                       }
                       props={{
                         ...passProps,
@@ -78,7 +78,7 @@ function Page() {
               // ?page=community
               return (
                 <Widget
-                  src={"${REPL_DEVHUB}/widget/DevHub.pages.community.index"}
+                  src={"${REPL_DEVHUB}/widget/DevHub.page.community.index"}
                   props={{
                     ...passProps,
                     ...p,
@@ -95,7 +95,7 @@ function Page() {
       // TODO: This needs to be updated, old widget has the header attached
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.pages.feed"}
+          src={"${REPL_DEVHUB}/widget/DevHub.page.feed"}
           props={{
             ...passProps,
           }}

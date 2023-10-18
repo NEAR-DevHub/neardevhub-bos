@@ -75,7 +75,7 @@ const tabs = [
   tabs.push({
     title: addon.display_name,
     iconClass: availableAddons.find((it) => it.id === addon.addon_id).icon,
-    view: "${REPL_DEVHUB}/widget/DevHub.pages.addon.index",
+    view: "${REPL_DEVHUB}/widget/DevHub.page.addon",
     params: {
       addon_id: addon.addon_id,
       config: community.configs[addon.id],

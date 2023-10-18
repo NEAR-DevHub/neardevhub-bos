@@ -1,4 +1,15 @@
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+`;
+
 const { addon_id, config } = props;
+
+
+
+const [view, setView] = useState(props.view || "viewer");
 
 const addon = {
   id: "wiki", // this could be determined by the Type
@@ -10,19 +21,13 @@ const addon = {
     configurator: "${REPL_DEVHUB}/widget/DevHub.entity.addon.wiki.Configurator",
   },
 };
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-`;
+
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #333;
-  color: #fff;
+  background-color: #fff;
   padding: 10px;
 `;
 
