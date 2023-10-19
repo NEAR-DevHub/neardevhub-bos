@@ -5,7 +5,6 @@ const {
   setCommunityAddons,
   deleteCommunity,
   updateCommunity,
-
 } = props;
 
 const [communityData, setCommunityData] = useState(community);
@@ -32,10 +31,8 @@ const sectionSubmit = (sectionData) => {
   setHasUnsavedChanges(true);
 };
 
-const hasConfigurePermissions = true;
-// permissions.can_configure
-const hasDeletePermissions = true;
-// permissions.can_delete
+const hasConfigurePermissions = permissions.can_configure;
+const hasDeletePermissions = permissions.can_delete;
 
 function CommunityAddonConfigurator({ addonConfig }) {
   // TODO: Simplify this. Tile should be module.
@@ -93,7 +90,7 @@ return (
               onSubmit: sectionSubmit,
               data: communityData,
               hasConfigurePermissions,
-              link: "${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=${handle}",
+              link: `/${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=${handle}`,
             }}
           />
         ),
@@ -186,7 +183,7 @@ return (
         ),
       }}
     />
-    <Widget
+    {hasConfigurePermissions && <Widget
       src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
       props={{
         className: "p-3",
@@ -200,21 +197,7 @@ return (
           />
         ),
       }}
-    />
-    {/*
-     {(communityAddonConfigs || []).map((addonConfig) => (
-    //   <CommunityAddonConfigurator addonConfig={addonConfig} />
-    // ))}
-    {/* {hasConfigurePermissions && (
-      <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.entity.community.NewAddon`}
-        props={{
-          availableAddons,
-          onSubmit: handleCreateAddon,
-          nearDevGovGigsWidgetsAccountId,
-        }}
-      />
-    )} */}
+    />}
     {hasDeletePermissions && (
       <div
         className="d-flex justify-content-center gap-4 p-4 w-100"

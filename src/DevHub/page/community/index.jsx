@@ -35,8 +35,7 @@ const NavUnderline = styled.ul`
   }
 `;
 
-const { tab, permissions, community, availableAddons } = props;
-
+const { tab, permissions, community } = props;
 
 const { href } = VM.require(
   "${REPL_DEVHUB}/widget/DevHub.modules.utils"
@@ -55,7 +54,6 @@ const [isLinkCopied, setLinkCopied] = useState(false);
 const tabs = [
   {
     title: "Activity",
-    iconClass: "bi bi-house-door",
     view: "${REPL_DEVHUB}/widget/DevHub.entity.community.Activity",
     params: {
       handle: community.handle,
@@ -63,7 +61,6 @@ const tabs = [
   },
   {
     title: "Teams",
-    iconClass: "bi bi-people-fill",
     view: "${REPL_DEVHUB}/widget/DevHub.entity.community.Teams",
     params: {
       handle: community.handle,
@@ -71,14 +68,14 @@ const tabs = [
   },
 ];
 
+
 (community.addons || []).map((addon) => {
-  tabs.push({
+  addon.enabled && tabs.push({
     title: addon.display_name,
-    iconClass: availableAddons.find((it) => it.id === addon.addon_id).icon,
     view: "${REPL_DEVHUB}/widget/DevHub.page.addon",
     params: {
       addon_id: addon.addon_id,
-      config: community.configs[addon.id],
+      config: JSON.parse(addon.parameters),
     },
   });
 });
