@@ -15,35 +15,42 @@ const Title = styled.h1`
   font-size: 64px;
   font-style: normal;
   font-weight: 700;
-  line-height: 100%; /* 64px */
-  letter-spacing: -1.28px;
-
-  margin-bottom: 36px;
+  line-height: 100%; /* 88px */
+  letter-spacing: -1.76px;
 `;
 
 const Lead = styled.p`
   color: #151515;
-  font-size: 24px;
+  font-size: 28px;
   font-style: normal;
-  font-weight: 700;
-  line-height: 110%; /* 26.4px */
-  width: 85%;
+  font-weight: 400;
+  line-height: 110%; /* 39.6px */
 
-  margin-bottom: 62px;
+  width: 70%;
 `;
 
-const Content = styled.p`
+const CTA = styled.a`
+  display: inline-flex;
+  padding: 14px 16px;
+  align-items: center;
+  gap: 8px;
+
+  border-radius: 16px;
+  border: 1px solid #151515;
+
   color: #151515;
   font-size: 20px;
   font-style: normal;
-  font-weight: 400;
-  line-height: 120%;
-
-  width: 75%;
+  font-weight: 700;
+  line-height: 120%; /* 28.8px */
+  letter-spacing: -0.48px;
 `;
 
 return (
-  <div className="position-relative w-100" style={{ height: "max-content" }}>
+  <div
+    className="position-relative w-100 overflow-hidden"
+    style={{ height: "max-content" }}
+  >
     <HeroSection className="h-auto z-3" style={{ width: "70%" }}>
       <Title>
         The decentralized <br />{" "}
@@ -51,16 +58,7 @@ return (
         for NEAR builders
       </Title>
       <Lead>Join a vibrant community of innovators shaping the open web.</Lead>
-      <Content>
-        /dev/hub's mission is to foster a productive and innovative ecosystem of
-        open-source developers on NEAR. <br />
-        <br />
-        Here you&apos;ll find a broad range of resources, including developer
-        tools, funding, mentorship, and more. Whether you're a blockchain
-        developer eager to contribute your skills to the common good or an
-        advocate of the Open Web movement, /dev/hub is your gateway to shaping
-        NEAR's incredible narrative and ecosystem.
-      </Content>
+      <CTA href="#">Read more →</CTA>
     </HeroSection>
     <div
       className="position-absolute top-0 z-n1 end-0 h-100"

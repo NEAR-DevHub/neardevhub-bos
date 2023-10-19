@@ -1,5 +1,5 @@
 const title = props.title;
-const desciption = props.desciption;
+const description = props.description;
 const children = props.children;
 const background = props.background;
 
@@ -35,7 +35,7 @@ return (
   <Section>
     <div style={{ padding: 48, paddingBottom: 0 }}>
       <SectionHeader>{title}</SectionHeader>
-      {desciption && <SectionDescription>{desciption}</SectionDescription>}
+      {description && <SectionDescription>{description}</SectionDescription>}
     </div>
     {children}
   </Section>

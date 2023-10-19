@@ -5,7 +5,7 @@ State.init({
 
 const DescriptionHeader = styled.h2`
   color: #f4f4f4;
-  font-size: 36px;
+  font-size: 28px;
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 43.2px */
@@ -14,13 +14,10 @@ const DescriptionHeader = styled.h2`
 const Description = styled.p`
   color: #f4f4f4;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-
-  font-size: 24px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
   line-height: 120%; /* 28.8px */
-
-  max-width: 85%;
 `;
 
 const imageSource =
@@ -32,7 +29,7 @@ const CardBody = styled.div`
   background: #3f4040;
 
   display: flex;
-  max-width: 30%;
+  max-width: 31.5%;
   padding: 24px;
   flex-direction: column;
   justify-content: center;
@@ -82,33 +79,28 @@ const Card = ({ title, description, cta }) => {
 
 const Cards = [
   {
-    title: "Featured Community 1",
-    description:
-      "Nightshade ensures maximum performance at the scale of the internet thanks to its sharded design",
+    title: "/dev/hub Hacks",
+    description: "Host and support developer focused events around the globe.",
     href: "#",
   },
   {
-    title: "Featured Community 2",
-    description:
-      "Nightshade ensures maximum performance at the scale of the internet thanks to its sharded design",
+    title: "DevDAO Fellowship Program",
+    description: "Improve the NEAR dev experience with guidance & funding.",
     href: "#",
   },
   {
-    title: "Featured Community 3",
-    description:
-      "Nightshade ensures maximum performance at the scale of the internet thanks to its sharded design",
+    title: "Protocol",
+    description: "Support the ongoing innovation of the NEAR protocol.",
     href: "#",
   },
   {
     title: "Featured Community 4",
-    description:
-      "Nightshade ensures maximum performance at the scale of the internet thanks to its sharded design",
+    description: "Host and support developer focused events around the globe.",
     href: "#",
   },
   {
     title: "Featured Community 5",
-    description:
-      "Nightshade ensures maximum performance at the scale of the internet thanks to its sharded design",
+    description: "Host and support developer focused events around the globe.",
     href: "#",
   },
 ];
@@ -149,6 +141,17 @@ const CTA = styled.a`
   line-height: 120%; /* 28.8px */
 `;
 
+const Subheading = styled.h3`
+  color: #8a8e93;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 120%; /* 43.2px */
+
+  padding: 48px;
+  padding-top: 0;
+`;
+
 const Content = (
   <>
     <div className="w-100 d-flex position-relative align-items-center">
@@ -157,10 +160,9 @@ const Content = (
           Communities are the lifeblood of /dev/hub
         </DescriptionHeader>
         <Description>
-          We firmly believe they form the sturdy foundation of a decentralized
-          ecosystem. Here at /dev/hub they are the driving force behind our most
-          impactful innovations. Explore our diverse range of communities,
-          discover their ongoing initiatives and start engaging with them today.
+          We believe that communities are the foundation of a decentralized
+          ecosystem. Explore and engage with our diverse range of communities
+          today.
         </Description>
       </div>
       <div
@@ -174,13 +176,15 @@ const Content = (
             height: "90%",
             objectFit: "cover",
             clipPath: "polygon(15% 0, 100% 0%, 100% 100%, 0% 100%)",
+            objectPosition: "center top",
           }}
         />
       </div>
     </div>
+    <Subheading>Featured Communities</Subheading>
     <div
       style={{ padding: 48, paddingTop: 0 }}
-      className="position-relative d-flex flex-row gap-4 w-100 align-items-center justify-content-center"
+      className="position-relative d-flex flex-row gap-3 w-100 align-items-center justify-content-center"
     >
       {Cards.slice(state.startIndex, state.endIndex + 1).map((card, idx) => (
         <Card
@@ -211,7 +215,7 @@ const Content = (
       </ForwardButton>
     </div>
     <div style={{ padding: 48, paddingTop: 0 }}>
-      <CTA href="#">Join a community →</CTA>
+      <CTA href="#">Explore all communities →</CTA>
     </div>
   </>
 );

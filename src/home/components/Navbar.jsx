@@ -35,8 +35,6 @@ const Navbar = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-
-  margin-top: 60px;
   margin-bottom: 8px;
 `;
 

@@ -9,6 +9,8 @@ const App = () => {
       <Widget src="devhub.testnet/widget/home.components.Hero" />
       <Widget src="devhub.testnet/widget/home.components.Explore" />
       <Widget src="devhub.testnet/widget/home.components.Connect" />
+      <Widget src="devhub.testnet/widget/home.components.Contribute" />
+      <Widget src="devhub.testnet/widget/home.components.Support" />
     </AppContainer>
   );
 };

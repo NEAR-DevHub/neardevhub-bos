@@ -1,8 +1,4 @@
 const Card = styled.div`
-  border-radius: 16px;
-  border: 1px dashed #00ec97;
-  background: #fff;
-
   display: flex;
   width: 320px;
   height: 280px;
@@ -15,16 +11,16 @@ const Card = styled.div`
   h3 {
     color: #00ec97;
     text-align: center;
-    font-size: 36px;
+    font-size: 24px;
     font-style: normal;
     font-weight: 700;
-    line-height: 120%; /* 43.2px */
+    line-height: 120%; /* 28.8px */
   }
 
   p {
     color: #555;
     text-align: center;
-    font-size: 16px;
+    font-size: 20px;
     font-style: normal;
     font-weight: 400;
     line-height: 120%; /* 24px */
@@ -33,10 +29,10 @@ const Card = styled.div`
   a {
     color: #00ec97;
     text-align: center;
-    font-size: 24px;
+    font-size: 20px;
     font-style: normal;
     font-weight: 700;
-    line-height: 120%; /* 28.8px */
+    line-height: 120%; /* 24px */
   }
 `;
 
@@ -125,7 +121,7 @@ return (
     src="devhub.testnet/widget/home.components.Section.HomeSection"
     props={{
       title: "/explore",
-      desciption:
+      description:
         "NEAR Protocol is your fast, low-cost and reliable gateway to the Open Web",
       children: Content,
     }}
