@@ -186,6 +186,17 @@ const AdminPage = () => {
     path: [{ label: "Administration", pageId: "admin" }],
     viewer: Viewer,
 
+    banner: Viewer.role.isDevHubModerator ? null : (
+      <div
+        className="d-flex flex-column justify-content-center align-items-center"
+        style={{ height: 384 }}
+      >
+        <h2 className="alert alert-danger">
+          Your account does not have administration permissions.
+        </h2>
+      </div>
+    ),
+
     children: (
       <div className="d-flex flex-column gap-4 p-4">
         {widget("components.atom.spinner", {
@@ -194,7 +205,10 @@ const AdminPage = () => {
 
         {widget("components.molecule.tile", {
           heading: "Featured communities",
-          isHidden: featuredCommunities.isLoading,
+
+          isHidden:
+            featuredCommunities.isLoading || !Viewer.role.isDevHubModerator,
+
           noBorder: true,
           noFrame: true,
 
@@ -208,7 +222,6 @@ const AdminPage = () => {
                         {widget("components.molecule.button", {
                           classNames: { root: "btn-outline-danger vertical" },
                           icon: { type: "bootstrap_icon", variant: "bi-x-lg" },
-                          isHidden: !Viewer.role.isDevHubModerator,
                           title: "Remove from featured",
                           onClick: () => removeFeaturedCommunity(community),
                         })}
@@ -226,13 +239,11 @@ const AdminPage = () => {
                 heading: "Add featured community",
                 isActive: true,
 
-                isHidden: !(
-                  Viewer.role.isDevHubModerator &&
-                  featuredCommunityList.length <
-                    AdministrationSettings.communities.maxFeatured
-                ),
+                isHidden:
+                  featuredCommunityList.length >=
+                  AdministrationSettings.communities.maxFeatured,
 
-                isUnlocked: Viewer.role.isDevHubModerator,
+                isUnlocked: true,
                 schema: CommunityFeaturingSchema,
                 onSubmit: addFeaturedCommunity,
               })}
