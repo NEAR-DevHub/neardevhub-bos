@@ -37,9 +37,7 @@ const NavUnderline = styled.ul`
 
 const { tab, permissions, community } = props;
 
-const { href } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.utils"
-);
+const { href } = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.utils");
 
 if (!href) {
   return <></>;
@@ -68,16 +66,16 @@ const tabs = [
   },
 ];
 
-
 (community.addons || []).map((addon) => {
-  addon.enabled && tabs.push({
-    title: addon.display_name,
-    view: "${REPL_DEVHUB}/widget/DevHub.page.addon",
-    params: {
-      addon_id: addon.addon_id,
-      config: JSON.parse(addon.parameters),
-    },
-  });
+  addon.enabled &&
+    tabs.push({
+      title: addon.display_name,
+      view: "${REPL_DEVHUB}/widget/DevHub.page.addon",
+      params: {
+        addon_id: addon.addon_id,
+        config: JSON.parse(addon.parameters),
+      },
+    });
 });
 const onShareClick = () =>
   clipboard
@@ -167,7 +165,11 @@ return (
               <Link
                 to={href({
                   widgetSrc: "${REPL_DEVHUB}/widget/DevHub.App",
-                  params: { page: "community", handle: community.handle, tab: title },
+                  params: {
+                    page: "community",
+                    handle: community.handle,
+                    tab: title,
+                  },
                 })}
                 aria-current={tab === title && "page"}
                 className={[
@@ -181,8 +183,10 @@ return (
           )
       )}
     </NavUnderline>
-    <div className="d-flex w-100 h-100">
-      {currentTab && <Widget src={currentTab.view} props={currentTab.params} />}
-    </div>
+    {currentTab && (
+      <div className="d-flex w-100 h-100" key={currentTab.title}>
+        <Widget src={currentTab.view} props={currentTab.params} />
+      </div>
+    )}
   </div>
 );
