@@ -158,7 +158,10 @@ const AdministrationSettings = {
 };
 
 const CommunityFeaturingSchema = {
-  handle: { label: "Community handle", required: true },
+  handle: {
+    label: "Community handle",
+    inputProps: { min: 3, max: 40, required: true },
+  },
 };
 
 const AdminPage = () => {
@@ -169,13 +172,15 @@ const AdminPage = () => {
     ({ handle }) => handle
   );
 
-  const addFeaturedCommunity = ({ handle }) => {
-    console.log(handle);
-  };
+  const addFeaturedCommunity = ({ handle }) =>
+    Near.call(devHubAccountId, "set_featured_communities", {
+      handles: new Set(featuredCommunityHandles).add(handle).values().toArray(),
+    });
 
-  const removeFeaturedCommunity = ({ handle }) => {
-    console.log(handle);
-  };
+  const removeFeaturedCommunity = ({ handle: input }) =>
+    Near.call(devHubAccountId, "set_featured_communities", {
+      handles: featuredCommunityHandles.filter((handle) => handle !== input),
+    });
 
   return widget("components.template.app-layout", {
     path: [{ label: "Administration", pageId: "admin" }],
@@ -184,17 +189,12 @@ const AdminPage = () => {
     children: (
       <div className="d-flex flex-column gap-4 p-4">
         {widget("components.atom.spinner", {
-          isHidden: !(
-            featuredCommunities.data === null && featuredCommunities.isLoading
-          ),
+          isHidden: !featuredCommunities.isLoading,
         })}
 
         {widget("components.molecule.tile", {
           heading: "Featured communities",
-
-          isHidden:
-            featuredCommunities.data === null && featuredCommunities.isLoading,
-
+          isHidden: featuredCommunities.isLoading,
           noBorder: true,
           noFrame: true,
 
@@ -233,7 +233,7 @@ const AdminPage = () => {
 
                 isUnlocked: true, // Viewer.role.isDevHubModerator,
                 schema: CommunityFeaturingSchema,
-                onClick: addFeaturedCommunity,
+                onSubmit: addFeaturedCommunity,
               })}
             </>
           ),
