@@ -81,17 +81,23 @@ function fetchGraphQL(operationsDoc, operationName, variables) {
   });
 }
 
-function search() {
+function search({ author, tag }) {
   State.update({ loading: true });
   let where = {};
-  if (props.authorQuery && props.authorQuery.author) {
-    where = { author_id: { _eq: props.authorQuery.author }, ...where };
+  let authorId = author || state.author;
+  let label = tag || state.tag;
+  if (authorId) {
+    where = { author_id: { _eq: authorId }, ...where };
   }
   if (state.term) {
     where = { description: { _ilike: `%${state.term}%` }, ...where };
   }
-  if (props.tagQuery && props.tagQuery.tag) {
-    where = { labels: { _contains: props.tagQuery.tag }, ...where };
+  if (label) {
+    where = { labels: { _contains: label }, ...where };
+  }
+  if (!authorId && !state.term && !label) {
+    State.update({ loading: false, searchResult: null });
+    return;
   }
   console.log("searching for", where);
   fetchGraphQL(query, "DevhubPostsQuery", {
@@ -135,14 +141,20 @@ return (
     <div className="d-flex flex-row gap-4">
       <div class="dropdown">
         {widget("feature.post-search.by-author", {
-          authorQuery: props.authorQuery,
-          onAuthorSearch: props.onAuthorSearch,
+          author: state.author,
+          onAuthorSearch: (author) => {
+            State.update({ author });
+            search({ author });
+          },
         })}
       </div>
       <div>
         {widget("feature.post-search.by-tag", {
-          tagQuery: props.tagQuery,
-          onTagSearch: props.onTagSearch,
+          tag: state.tag,
+          onTagSearch: (tag) => {
+            State.update({ tag });
+            search({ tag });
+          },
         })}
       </div>
       <div className="d-flex flex-row position-relative w-25">
@@ -151,27 +163,23 @@ return (
           className="form-control border border-0 bg-light"
           value={state.term ?? ""}
           onChange={(e) => updateInput(e.target.value)}
+          onKeyDown={(e) => e.key == "Enter" && search()}
           placeholder={props.placeholder ?? `Search by content`}
         />
       </div>
-      <button class="btn btn-light" style={buttonStyle} onClick={search}>
-        {state.loading ? (
-          <span
-            className="spinner-grow spinner-grow-sm m-auto"
-            role="status"
-            aria-hidden="true"
-          />
-        ) : (
-          <i class="bi bi-search m-auto"></i>
-        )}{" "}
-        Search
-      </button>
       {state.searchResult ? (
         <button
           class="btn btn-light"
-          onClick={() => State.update({ searchResult: null })}
+          onClick={() =>
+            State.update({
+              searchResult: null,
+              author: null,
+              tag: null,
+              term: null,
+            })
+          }
         >
-          Clear Result
+          Clear Search
         </button>
       ) : (
         ""
@@ -182,10 +190,12 @@ return (
     </div>
     {state.searchResult
       ? widget("entity.post.List", {
+          loading: state.loading,
           searchResult: state.searchResult,
           recency: props.recency,
         })
       : widget("entity.post.List", {
+          loading: state.loading,
           recency: props.recency,
           transactionHashes: props.transactionHashes,
         })}
