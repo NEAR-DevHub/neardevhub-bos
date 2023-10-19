@@ -3,26 +3,29 @@ const Container = styled.div`
   flex-direction: column;
   height: 100%;
   width: 100%;
+  position: relative;
 `;
 
 const Header = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  background-color: #fff;
   padding: 10px;
+  z-index: 10;
 `;
 
 const Content = styled.div`
   flex: 1;
-  background-color: #f0f0f0;
   padding: 20px;
   overflow: auto;
 `;
 
 const Button = styled.button`
-  background: ${({ isSelected }) =>
-    isSelected ? "blue" : "rgba(129, 129, 129, 0)"};
+  background-color: #fff;
   display: flex;
   padding: 14px 16px;
   align-items: center;
@@ -36,7 +39,7 @@ const SettingsIcon = styled.div`
   cursor: pointer;
 `;
 
-const { addon_id, config } = props;
+const { addon_id, config, view, canConfigure } = props;
 
 const { getAvailableAddons } = VM.require(
   "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
@@ -48,49 +51,40 @@ if (!getAvailableAddons) {
 
 const availableAddons = getAvailableAddons();
 const addon = availableAddons.find((it) => it.id === addon_id);
-
 const ButtonRow = styled.div`
   display: flex;
   justify-content: space-between;
 `;
 
-const [showConfigure, setShowConfigure] = useState(false);
-
-const parameters = (config.parameters && JSON.parse(config.parameters)) || {};
-
-const [tempParameters, setTempParameters] = useState(parameters); // this is just for demonstrative purposes
+const [showConfigure, setShowConfigure] = useState(
+  view === "configure" || false
+);
 
 return (
   <Container>
-    {/* Need to check permissions */}
+    {/* Need to either isolate the button, or push everything down. I vote isolate the button. */}
     <Header>
-      <Button>
-        <SettingsIcon onClick={() => setShowConfigure(!showConfigure)}>
-          <span className="bi bi-gear"></span>
-        </SettingsIcon>
-      </Button>
+      {canConfigure && (
+        <Button onClick={() => setShowConfigure(!showConfigure)}>
+          <SettingsIcon>
+            <span className="bi bi-gear"></span>
+          </SettingsIcon>
+        </Button>
+      )}
     </Header>
     <Content>
       {showConfigure ? (
-        <div>
-          <h2>Settings Configuration</h2>
-          {/* This may want to point to a new configuration "page", this can have it's own provider */}
-          <Widget
-            src={addon.configurator_widget}
-            props={{
-              data: parameters,
-              onSubmit: (data) => {
-                console.log("data", data);
-                setTempParameters(data);
-              },
-            }}
-          />
-        </div>
+        <Widget
+          src={addon.configurator_widget}
+          props={{
+            data: config,
+            onSubmit: (data) => {
+              console.log("data", data);
+            },
+          }}
+        />
       ) : (
-        <div>
-          <h2>View Content</h2>
-          <Widget src={addon.view_widget} props={tempParameters} />
-        </div>
+        <Widget src={addon.view_widget} props={config} />
       )}
     </Content>
   </Container>

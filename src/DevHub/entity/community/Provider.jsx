@@ -98,7 +98,7 @@ community.addons = [
     addon_id: "telegram",
     display_name: "Telegram",
     enabled: true,
-    parameters: '["NEARBuilders"]',
+    parameters: '{"telegram_handle": ["NEAR_Tools_Community_Group"]}',
   },
 ];
 

@@ -35,7 +35,7 @@ const NavUnderline = styled.ul`
   }
 `;
 
-const { tab, permissions, community } = props;
+const { tab, permissions, community, view } = props;
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.utils");
 
@@ -185,7 +185,14 @@ return (
     </NavUnderline>
     {currentTab && (
       <div className="d-flex w-100 h-100" key={currentTab.title}>
-        <Widget src={currentTab.view} props={currentTab.params} />
+        <Widget
+          src={currentTab.view}
+          props={{
+            ...currentTab.params,
+            canConfigure: permissions.can_configure,
+            view
+          }}
+        />
       </div>
     )}
   </div>

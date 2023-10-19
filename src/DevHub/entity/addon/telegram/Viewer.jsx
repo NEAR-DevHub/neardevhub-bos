@@ -1,11 +1,22 @@
-const { telegram_handles } = props;
+const { telegram_handle } = props;
 
-if (!telegram_handles || telegram_handles.length === 0) {
-  return <p>No telegram configured!</p>; // Link to configuration
+const CenteredMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: ${(p) => p.height ?? "100%"};
+`;
+
+if (!telegram_handle || telegram_handle.length === 0) {
+  return (<CenteredMessage height={"384px"}>
+    <h2>No Telegram Configured</h2>
+  </CenteredMessage>);
 } else {
   return (
     <div>
-      {(telegram_handles || []).map((tg) => (
+      {(telegram_handle || []).map((tg) => (
         <>
           <iframe
             iframeResizer
