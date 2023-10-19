@@ -522,7 +522,13 @@ const isDraft =
   (draftState?.edit_post_id === postId &&
     draftState?.post_type === state.post_type);
 
-function Editor() {
+const Editor = () => {
+  const onCancel = () =>
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      showEditor: false,
+    }));
+
   return (
     <div className="row" id={`accordion${postId}`} key="editors-footer">
       <div
@@ -540,6 +546,7 @@ function Editor() {
                     : undefined,
 
                 mode: "Create",
+                onCancel,
                 parent_id: postId,
                 post_type: state.post_type,
               }
@@ -552,6 +559,7 @@ function Editor() {
                   draftState?.edit_post_id === postId ? draftState : undefined,
 
                 mode: "Edit",
+                onCancel,
                 post_type: state.post_type,
 
                 sponsorship_token: tokenResolver(
@@ -562,7 +570,7 @@ function Editor() {
       </div>
     </div>
   );
-}
+};
 
 const tags = (
   <div className="card-title" style={{ margin: "20px 0" }} key="post-labels">

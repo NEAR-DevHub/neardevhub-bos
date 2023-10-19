@@ -235,7 +235,7 @@ const PostEditor = ({
     supervisor: requested_sponsor ?? supervisor ?? "",
     github_link: github_link ?? "",
     draftStateApplied: false,
-    waitForDraftStateRestore: true,
+    waitForDraftRecover: true,
     warning: "",
   };
 
@@ -243,40 +243,38 @@ const PostEditor = ({
 
   const stateReset = () => {
     Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
-    State.update({ ...initialState, waitForDraftStateRestore: false });
+    State.update({ ...initialState, waitForDraftRecover: false });
   };
 
-  if (state.waitForDraftStateRestore) {
-    const draftstatestring =
-      Storage.privateGet(DRAFT_STATE_STORAGE_KEY) ?? null;
+  if (state.waitForDraftRecover) {
+    const recoveredDraft = JSON.parse(
+      Storage.privateGet(DRAFT_STATE_STORAGE_KEY) ?? null
+    );
 
-    if (draftstatestring !== null) {
-      if (transactionHashes) {
+    const isDraft =
+      (recoveredDraft?.parent_post_id === id &&
+        recoveredDraft?.post_type === post_type) ||
+      (recoveredDraft?.edit_post_id === id &&
+        recoveredDraft?.post_type === post_type);
+
+    if (recoveredDraft !== null && isDraft) {
+      if (typeof transactionHashes === "string") {
         stateReset();
       } else {
-        try {
-          const recoveredDraft = JSON.parse(draftstatestring);
+        State.update((lastKnownState) => ({
+          ...lastKnownState,
+          ...recoveredDraft,
 
-          State.update((lastKnownState) => ({
-            ...lastKnownState,
-            ...recoveredDraft,
+          ...{
+            tags: (lastKnownState.tags.length > 0
+              ? lastKnownState
+              : recoveredDraft
+            ).tags,
+          },
 
-            ...{
-              tags: (lastKnownState.tags.length > 0
-                ? lastKnownState
-                : recoveredDraft
-              ).tags,
-            },
-          }));
-        } catch (error) {
-          console.error("error restoring draft", draftstatestring);
-        }
+          waitForDraftRecover: false,
+        }));
       }
-
-      State.update((lastKnownState) => ({
-        ...lastKnownState,
-        waitForDraftStateRestore: false,
-      }));
     }
   }
 
