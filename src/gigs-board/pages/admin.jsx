@@ -208,6 +208,7 @@ const AdminPage = () => {
                         {widget("components.molecule.button", {
                           classNames: { root: "btn-outline-danger vertical" },
                           icon: { type: "bootstrap_icon", variant: "bi-x-lg" },
+                          isHidden: !Viewer.role.isDevHubModerator,
                           title: "Remove from featured",
                           onClick: () => removeFeaturedCommunity(community),
                         })}
@@ -225,13 +226,13 @@ const AdminPage = () => {
                 heading: "Add featured community",
                 isActive: true,
 
-                // isHidden: !(
-                //   Viewer.role.isDevHubModerator &&
-                //   featuredCommunityList.length <
-                //     AdministrationSettings.communities.maxFeatured
-                // ),
+                isHidden: !(
+                  Viewer.role.isDevHubModerator &&
+                  featuredCommunityList.length <
+                    AdministrationSettings.communities.maxFeatured
+                ),
 
-                isUnlocked: true, // Viewer.role.isDevHubModerator,
+                isUnlocked: Viewer.role.isDevHubModerator,
                 schema: CommunityFeaturingSchema,
                 onSubmit: addFeaturedCommunity,
               })}
