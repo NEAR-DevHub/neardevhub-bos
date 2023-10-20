@@ -132,7 +132,7 @@ return (
         children: (
           <Widget
             src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.configuration.community.ConfigurationSection"
+              "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
             }
             props={{
               title: "About",
