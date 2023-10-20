@@ -13,7 +13,8 @@ if (!AppLayout) {
   return <p>Loading modules...</p>;
 }
 
-// Define our Theme
+// CSS styles to be used across the app.
+// Define fonts here, as well as any other global styles.
 const Theme = styled.div`
   a {
     color: inherit;
@@ -54,11 +55,14 @@ function Page() {
     // ?page=community
     case "community": {
       return (
+        // Considering consolidating this into a single widget,
+        // where each level handles its own routing.
+        // Modularizing a page just like we do with addons
         <Widget
           src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Provider"}
           props={{
             ...passProps,
-            Children: (p) => {
+            Children: (p) => { // passing props from the Provider into the Children
               switch (routes[1]) {
                 // ?page=community.configuration
                 case "configuration": {
@@ -74,17 +78,19 @@ function Page() {
                     />
                   );
                 }
+                // ?page=community
+                default: {
+                  return (
+                    <Widget
+                      src={"${REPL_DEVHUB}/widget/DevHub.page.community.index"}
+                      props={{
+                        ...passProps,
+                        ...p,
+                      }}
+                    />
+                  );
+                }
               }
-              // ?page=community
-              return (
-                <Widget
-                  src={"${REPL_DEVHUB}/widget/DevHub.page.community.index"}
-                  props={{
-                    ...passProps,
-                    ...p,
-                  }}
-                />
-              );
             },
           }}
         />
@@ -92,7 +98,8 @@ function Page() {
     }
     // ?page=feed
     case "feed": {
-      // TODO: This needs to be updated, old widget has the header attached
+      // TODO: This still needs to be fully migrated
+      // should be redone with the rebrand
       return (
         <Widget
           src={"${REPL_DEVHUB}/widget/DevHub.page.feed"}
@@ -103,6 +110,7 @@ function Page() {
       );
     }
     default: {
+      // TODO: 404 page
       return <p>404</p>;
     }
   }

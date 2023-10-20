@@ -1,4 +1,4 @@
-const { href } = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.utils");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 href || (href = () => {});
 
@@ -10,7 +10,7 @@ const CommunityBoardPage = ({ handle, permissions }) => {
         communityHandle: handle,
         link: href({
           gateway: "near.org",
-          widgetSrc: "DevHub.App",
+          "${REPL_DEVHUB}/widget/app",
           params: { page: "community", handle },
         }),
         permissions,

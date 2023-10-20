@@ -37,7 +37,7 @@ const NavUnderline = styled.ul`
 
 const { tab, permissions, community, view } = props;
 
-const { href } = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.utils");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 if (!href) {
   return <></>;
@@ -82,7 +82,7 @@ const onShareClick = () =>
     .writeText(
       href({
         gateway: "near.org",
-        widgetSrc: "${REPL_DEVHUB}/widget/DevHub.App",
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: { page: "community", handle: community.handle },
       })
     )
@@ -123,7 +123,7 @@ return (
       <div className="d-flex align-items-end gap-3 ms-auto">
         {permissions.can_configure && (
           <Link
-            to={`/${REPL_DEVHUB}/widget/DevHub.App?page=community.configuration&handle=${community.handle}`}
+            to={`/${REPL_DEVHUB}/widget/app?page=community.configuration&handle=${community.handle}`}
           >
             <Widget
               src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
@@ -164,7 +164,7 @@ return (
             <li className="nav-item" key={title}>
               <Link
                 to={href({
-                  widgetSrc: "${REPL_DEVHUB}/widget/DevHub.App",
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
                   params: {
                     page: "community",
                     handle: community.handle,

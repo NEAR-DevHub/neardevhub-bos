@@ -3,16 +3,16 @@ const { Tile } =
   (() => <></>);
 
 const { getAllCommunitiesMetadata, createCommunity } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 if (!getAllCommunitiesMetadata || !createCommunity) {
   return <p>Loading modules...</p>;
 }
 
-const { Struct } = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.utils");
+const { typeMatch } = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 
-if (!Struct) {
+if (!typeMatch) {
   return <p>Loading modules...</p>;
 }
 
@@ -83,7 +83,7 @@ const CommunityInputsPartialSchema = {
 };
 
 const communityInputsValidator = (formValues) =>
-  Struct.typeMatch(formValues) &&
+  typeMatch(formValues) &&
   Object.values(formValues).every(
     (value) => typeof value === "string" && value.length > 0
   );
@@ -145,7 +145,7 @@ function CommunityCard({ format, isBannerEnabled, metadata }) {
   const formatSmall = (
     <Link
       to={
-        "/${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=" +
+        "/${REPL_DEVHUB}/widget/app?page=community&handle=" +
         metadata.handle
       }
     >
@@ -238,7 +238,7 @@ return (
       <div className="d-flex flex-column gap-3">
         <h1 className="m-0 fs-4">
           <Link
-            to={"${REPL_DEVHUB}/widget/DevHub.App?page=communities"}
+            to={"${REPL_DEVHUB}/widget/app?page=communities"}
             className="text-white"
           >
             Communities

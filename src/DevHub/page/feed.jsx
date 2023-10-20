@@ -1,10 +1,10 @@
 const { author, recency, tag } = props;
 
 const { getFeaturedCommunities } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
-const { href } = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.utils");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 if (!getFeaturedCommunities || !href) {
   return <p>Loading modules...</p>;

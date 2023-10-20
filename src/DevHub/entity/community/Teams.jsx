@@ -5,7 +5,7 @@ const { Tile } =
   (() => <></>);
 
 const { getCommunity } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 const communityData = getCommunity({ handle });

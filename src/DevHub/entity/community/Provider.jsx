@@ -7,7 +7,7 @@ const {
   deleteCommunity,
   getCommunity,
   setCommunityAddons,
-} = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk");
+} = VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract");
 
 if (
   !getCommunity ||

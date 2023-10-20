@@ -48,10 +48,10 @@ const CenteredMessage = styled.div`
   height: ${(p) => p.height ?? "100%"};
 `;
 
-const { addon_id, config, view, permissions, handle } = props;
+const { addon_id, config, permissions, handle } = props;
 
 const { getAvailableAddons } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 if (!getAvailableAddons) {
@@ -74,9 +74,7 @@ const ButtonRow = styled.div`
   justify-content: space-between;
 `;
 
-const [showConfigure, setShowConfigure] = useState(
-  view === "configure" || false
-);
+const [view, setView] = useState(props.view || "viewer");
 
 const checkFullyRefactored = (addon_id) => {
   switch (addon_id) {
@@ -93,12 +91,11 @@ const isFullyRefactored = checkFullyRefactored(addon_id);
 
 return (
   <Container>
-    {isFullyRefactored && ( // TODO: Unfully refactored addons have the configurator built in.
+    {isFullyRefactored && ( // Unfully refactored addons have the configurator built in.
       // So we hide the header
       <Header>
         {permissions.can_configure && (
-          // TODO: Isolate this button, remove from header.
-          <Button onClick={() => setShowConfigure(!showConfigure)}>
+          <Button onClick={() => setView("configure")}>
             <SettingsIcon>
               <span className="bi bi-gear"></span>
             </SettingsIcon>
@@ -107,7 +104,7 @@ return (
       </Header>
     )}
     <Content>
-      {showConfigure ? ( // And showConfigure will always be false
+      {view === "configure" ? (
         <Widget
           src={addon.configurator_widget}
           props={{

@@ -1,7 +1,7 @@
 const { handle } = props;
 
 const { getCommunity } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 if (!getCommunity) {

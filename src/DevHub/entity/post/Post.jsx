@@ -1,6 +1,6 @@
 // Ideally, this would be a page
 
-const { href } = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.utils");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 href || (href = () => {});
 
