@@ -1,7 +1,11 @@
 const { handle } = props;
 
+const { Tile } =
+  VM.require("${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile") ||
+  (() => <></>);
+
 const { getCommunity } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 const communityData = getCommunity({ handle });
@@ -25,7 +29,7 @@ const UserList = ({ name, users }) => (
             style={{ fontWeight: 500 }}
           >
             <Widget
-              src="mob.near/widget/ProfileLine"
+              src="${REPL_MOB}/widget/ProfileLine"
               props={{ accountId: user, hideAccountId: true, tooltip: true }}
             />
           </span>
@@ -37,25 +41,18 @@ const UserList = ({ name, users }) => (
 
 return (
   <div className="d-flex flex-column align-items-center gap-4 w-100">
-    <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
-      props={{
-        className: "p-3 w-100",
-        style: { maxWidth: 960 },
-        children: (
-          <div>
-            <div
-              className="d-flex align-items-center justify-content-between w-100 pb-3"
-              style={{ minHeight: 30 }}
-            >
-              <h5 className="h5 d-inline-flex gap-2 m-0">
-                <span>Admins</span>
-              </h5>
-            </div>
-            <UserList name="Admin" users={communityData.admins} />
-          </div>
-        ),
-      }}
-    />
+    <Tile className="p-3 w-100" style={{ maxWidth: 960 }}>
+      <div>
+        <div
+          className="d-flex align-items-center justify-content-between w-100 pb-3"
+          style={{ minHeight: 30 }}
+        >
+          <h5 className="h5 d-inline-flex gap-2 m-0">
+            <span>Admins</span>
+          </h5>
+        </div>
+        <UserList name="Admin" users={communityData.admins} />
+      </div>
+    </Tile>
   </div>
 );

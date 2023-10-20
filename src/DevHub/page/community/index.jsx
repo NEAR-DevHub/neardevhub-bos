@@ -35,11 +35,9 @@ const NavUnderline = styled.ul`
   }
 `;
 
-const { handle, tab, permissions, community } = props;
+const { tab, permissions, community, view } = props;
 
-const { href } = VM.require(
-  "${REPL_DEVHUB_CONTRACT}/widget/DevHub.modules.utils"
-);
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 if (!href) {
   return <></>;
@@ -54,42 +52,38 @@ const [isLinkCopied, setLinkCopied] = useState(false);
 const tabs = [
   {
     title: "Activity",
-    iconClass: "bi bi-house-door",
     view: "${REPL_DEVHUB}/widget/DevHub.entity.community.Activity",
     params: {
-      handle,
+      handle: community.handle,
     },
   },
   {
     title: "Teams",
-    iconClass: "bi bi-people-fill",
     view: "${REPL_DEVHUB}/widget/DevHub.entity.community.Teams",
     params: {
-      handle,
+      handle: community.handle,
     },
   },
 ];
 
 (community.addons || []).map((addon) => {
-  tabs.push({
-    id: addon.id,
-    title: addon.display_name,
-    iconClass: addon.icon,
-    view: "${REPL_DEVHUB}/widget/DevHub.pages.addon.index",
-    params: {
-      addon_id: addon.addon_id,
-      config: community.configs[addon.id],
-    },
-  });
+  addon.enabled &&
+    tabs.push({
+      title: addon.display_name,
+      view: "${REPL_DEVHUB}/widget/DevHub.page.addon",
+      params: {
+        addon_id: addon.addon_id,
+        config: JSON.parse(addon.parameters),
+      },
+    });
 });
-
 const onShareClick = () =>
   clipboard
     .writeText(
       href({
         gateway: "near.org",
-        widgetSrc: "${REPL_DEVHUB}/widget/DevHub.App",
-        params: { page: "community", handle },
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
+        params: { page: "community", handle: community.handle },
       })
     )
     .then(setLinkCopied(true));
@@ -127,9 +121,9 @@ return (
       </div>
 
       <div className="d-flex align-items-end gap-3 ms-auto">
-        {true && ( // TODO: Add back permissions check permissions.can_configure
+        {permissions.can_configure && (
           <Link
-            to={`/${REPL_DEVHUB}/widget/DevHub.App?page=community.configuration&handle=${handle}`}
+            to={`/${REPL_DEVHUB}/widget/app?page=community.configuration&handle=${community.handle}`}
           >
             <Widget
               src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
@@ -170,8 +164,12 @@ return (
             <li className="nav-item" key={title}>
               <Link
                 to={href({
-                  widgetSrc: "${REPL_DEVHUB}/widget/DevHub.App",
-                  params: { page: "community", handle, tab: title },
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
+                  params: {
+                    page: "community",
+                    handle: community.handle,
+                    tab: title,
+                  },
                 })}
                 aria-current={tab === title && "page"}
                 className={[
@@ -185,8 +183,20 @@ return (
           )
       )}
     </NavUnderline>
-    <div className="d-flex w-100 h-100">
-      {currentTab && <Widget src={currentTab.view} props={currentTab.params} />}
-    </div>
+    {currentTab && (
+      <div className="d-flex w-100 h-100" key={currentTab.title}>
+        <Widget
+          src={currentTab.view}
+          props={{
+            ...currentTab.params,
+            view, // default view for an addon, can come as a prop from a community or from a direct link to page.addon
+            
+            // below is temporary prop drilling until kanban and github are migrated
+            permissions,
+            handle: community.handle
+          }}
+        />
+      </div>
+    )}
   </div>
 );

@@ -13,7 +13,8 @@ if (!AppLayout) {
   return <p>Loading modules...</p>;
 }
 
-// Define our Theme
+// CSS styles to be used across the app.
+// Define fonts here, as well as any other global styles.
 const Theme = styled.div`
   a {
     color: inherit;
@@ -31,7 +32,7 @@ const Theme = styled.div`
 
 if (!page) {
   // If no page is specified, we default to the home page
-  page = "feed";
+  page = "home";
 }
 
 // This is our navigation, rendering the page based on the page parameter
@@ -46,7 +47,7 @@ function Page() {
     case "communities": {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.pages.communities"}
+          src={"${REPL_DEVHUB}/widget/DevHub.page.communities"}
           props={passProps}
         />
       );
@@ -54,18 +55,21 @@ function Page() {
     // ?page=community
     case "community": {
       return (
+        // Considering consolidating this into a single widget,
+        // where each level handles its own routing.
+        // Modularizing a page just like we do with addons
         <Widget
           src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Provider"}
           props={{
             ...passProps,
-            Children: (p) => {
+            Children: (p) => { // passing props from the Provider into the Children
               switch (routes[1]) {
                 // ?page=community.configuration
                 case "configuration": {
                   return (
                     <Widget
                       src={
-                        "${REPL_DEVHUB}/widget/DevHub.pages.community.configuration"
+                        "${REPL_DEVHUB}/widget/DevHub.page.community.configuration"
                       }
                       props={{
                         ...passProps,
@@ -74,17 +78,19 @@ function Page() {
                     />
                   );
                 }
+                // ?page=community
+                default: {
+                  return (
+                    <Widget
+                      src={"${REPL_DEVHUB}/widget/DevHub.page.community.index"}
+                      props={{
+                        ...passProps,
+                        ...p,
+                      }}
+                    />
+                  );
+                }
               }
-              // ?page=community
-              return (
-                <Widget
-                  src={"${REPL_DEVHUB}/widget/DevHub.pages.community.index"}
-                  props={{
-                    ...passProps,
-                    ...p,
-                  }}
-                />
-              );
             },
           }}
         />
@@ -92,19 +98,22 @@ function Page() {
     }
     // ?page=feed
     case "feed": {
-      // TODO: This needs to be updated, old widget has the header attached
+      // TODO: This still needs to be fully migrated
+      // should be redone with the rebrand
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.pages.feed"}
+          src={"${REPL_DEVHUB}/widget/DevHub.page.feed"}
           props={{
             ...passProps,
           }}
         />
       );
     }
-  } // default case does not work in VM
-  // If no page is found, we return a 404
-  return <p>404</p>;
+    default: {
+      // TODO: 404 page
+      return <p>404</p>;
+    }
+  }
 }
 
 return (

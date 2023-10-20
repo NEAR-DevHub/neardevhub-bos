@@ -59,24 +59,10 @@ function updateCommunityGithub({ handle, github }) {
   });
 }
 
-function addCommunityAddon({ handle, config }) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "add_community_addon", {
-    community_handle: handle,
-    addon_config: config,
-  });
-}
-
-function updateCommunityAddon({ handle, config }) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community_addon", {
-    community_handle: handle,
-    addon_config: config,
-  });
-}
-
-function removeCommunityAddon({ handle, config_id }) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "remove_community_addon", {
-    community_handle: handle,
-    config_id,
+function setCommunityAddons({ handle, addons }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "set_community_addons", {
+    handle,
+    addons,
   });
 }
 
@@ -97,7 +83,49 @@ function getAllCommunitiesMetadata() {
 }
 
 function getAvailableAddons() {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_available_addons") ?? null;
+  return [
+    {
+      id: "wiki",
+      title: "Wiki",
+      description: "Create a wiki for your community",
+      view_widget: "devhub.testnet/widget/DevHub.entity.addon.wiki.Viewer",
+      configurator_widget:
+        "devhub.testnet/widget/DevHub.entity.addon.wiki.Configurator",
+    },
+    {
+      id: "telegram",
+      title: "Telegram",
+      description: "Connect your telegram",
+      view_widget: "devhub.testnet/widget/DevHub.entity.addon.telegram.Viewer",
+      configurator_widget:
+        "devhub.testnet/widget/DevHub.entity.addon.telegram.Configurator",
+    },
+    {
+      id: "github",
+      title: "Github",
+      description: "Connect your github",
+      view_widget: "devhub.testnet/widget/DevHub.entity.addon.github.Viewer",
+      configurator_widget:
+        "devhub.testnet/widget/DevHub.entity.addon.github.Configurator",
+    },
+    {
+      id: "kanban",
+      title: "Kanban",
+      description: "Connect your github kanban board",
+      view_widget: "devhub.testnet/widget/DevHub.entity.addon.kanban.Viewer",
+      configurator_widget:
+        "devhub.testnet/widget/DevHub.entity.addon.kanban.Configurator",
+    },
+    {
+      id: "blog",
+      title: "Blog",
+      description: "Create a blog for your community",
+      view_widget: "devhub.testnet/widget/DevHub.entity.addon.blog.Viewer",
+      configurator_widget:
+        "devhub.testnet/widget/DevHub.entity.addon.blog.Configurator",
+    },
+  ];
+  // return Near.view("${REPL_DEVHUB_CONTRACT}", "get_available_addons") ?? null;
 }
 
 function getCommunityAddons({ handle }) {
@@ -201,9 +229,7 @@ return {
   deleteCommunity,
   updateCommunityBoard,
   updateCommunityGithub,
-  addCommunityAddon,
-  updateCommunityAddon,
-  removeCommunityAddon,
+  setCommunityAddons,
   getAccessControlInfo,
   getAllAuthors,
   getAllCommunitiesMetadata,

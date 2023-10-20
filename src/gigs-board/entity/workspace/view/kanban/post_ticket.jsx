@@ -133,12 +133,12 @@ const KanbanPostTicket = ({ metadata }) => {
   const header = (
     <div className="card-header d-flex justify-content-between gap-3">
       <a
-        href={`https://near.org/mob.near/widget/ProfilePage?accountId=${data.author_id}`}
+        href={`https://near.org/${REPL_MOB}/widget/ProfilePage?accountId=${data.author_id}`}
         className="d-flex gap-2 link-dark text-truncate"
       >
         {features.author ? (
           <Widget
-            src="mob.near/widget/ProfileImage"
+            src="${REPL_MOB}/widget/ProfileImage"
             props={{
               metadata,
               accountId: data.author_id,

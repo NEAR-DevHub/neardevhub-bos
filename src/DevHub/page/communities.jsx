@@ -1,14 +1,18 @@
+const { Tile } =
+  VM.require("${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile") ||
+  (() => <></>);
+
 const { getAllCommunitiesMetadata, createCommunity } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 if (!getAllCommunitiesMetadata || !createCommunity) {
   return <p>Loading modules...</p>;
 }
 
-const { Struct } = VM.require("${REPL_DEVHUB}/widget/DevHub.modules.utils");
+const { typeMatch } = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 
-if (!Struct) {
+if (!typeMatch) {
   return <p>Loading modules...</p>;
 }
 
@@ -79,7 +83,7 @@ const CommunityInputsPartialSchema = {
 };
 
 const communityInputsValidator = (formValues) =>
-  Struct.typeMatch(formValues) &&
+  typeMatch(formValues) &&
   Object.values(formValues).every(
     (value) => typeof value === "string" && value.length > 0
   );
@@ -105,33 +109,27 @@ const onCommunitySubmit = (inputs) =>
 const [showSpawner, setShowSpawner] = useState(false);
 
 const CommunitySpawner = () => (
-  <Widget
-    src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
-    props={{
-      className: "p-3",
-      children: (
-        <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.components.organism.Configurator"}
-          props={{
-            heading: "Community information",
-            externalState: CommunityInputsDefaults,
-            fullWidth: true,
-            isActive: true,
-            isUnlocked: true,
-            isValid: communityInputsValidator,
-            onSubmit: onCommunitySubmit,
-            schema: CommunityInputsPartialSchema,
-            submitIcon: {
-              type: "bootstrap_icon",
-              variant: "bi-rocket-takeoff-fill",
-            },
-            submitLabel: "Launch",
-            onCancel: () => setShowSpawner(false),
-          }}
-        />
-      ),
-    }}
-  />
+  <Tile className="p-3">
+    <Widget
+      src={"${REPL_DEVHUB}/widget/DevHub.components.organism.Configurator"}
+      props={{
+        heading: "Community information",
+        externalState: CommunityInputsDefaults,
+        fullWidth: true,
+        isActive: true,
+        isUnlocked: true,
+        isValid: communityInputsValidator,
+        onSubmit: onCommunitySubmit,
+        schema: CommunityInputsPartialSchema,
+        submitIcon: {
+          type: "bootstrap_icon",
+          variant: "bi-rocket-takeoff-fill",
+        },
+        submitLabel: "Launch",
+        onCancel: () => setShowSpawner(false),
+      }}
+    />
+  </Tile>
 );
 
 const communitiesMetadata = getAllCommunitiesMetadata();
@@ -146,7 +144,10 @@ function CommunityCard({ format, isBannerEnabled, metadata }) {
 
   const formatSmall = (
     <Link
-      to={`${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=${metadata.handle}`}
+      to={
+        "/${REPL_DEVHUB}/widget/app?page=community&handle=" +
+        metadata.handle
+      }
     >
       <div
         {...otherProps}
@@ -237,7 +238,7 @@ return (
       <div className="d-flex flex-column gap-3">
         <h1 className="m-0 fs-4">
           <Link
-            to={`${REPL_DEVHUB}/widget/DevHub.App?page=communities`}
+            to={"${REPL_DEVHUB}/widget/app?page=communities"}
             className="text-white"
           >
             Communities

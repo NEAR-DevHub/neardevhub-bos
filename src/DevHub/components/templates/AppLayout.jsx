@@ -82,7 +82,7 @@ function QuestionButton() {
 const AppHeader = ({ page }) => {
   return (
     <StyledHeader>
-      <Link to={`/${REPL_DEVHUB}/widget/DevHub.App?page=home`}>
+      <Link to={`/${REPL_DEVHUB}/widget/app?page=home`}>
         <Logo
           src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"
           alt="DevHub"
@@ -91,7 +91,7 @@ const AppHeader = ({ page }) => {
 
       <HeaderActions>
         {page !== "communities" && (
-          <Link to={`/${REPL_DEVHUB}/widget/DevHub.App?page=communities`}>
+          <Link to={`/${REPL_DEVHUB}/widget/app?page=communities`}>
             Communities
           </Link>
         )}

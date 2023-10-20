@@ -1,13 +1,3 @@
-function href(widgetName, linkProps) {
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/#/${REPL_DEVHUB}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
 //////////////////////////////////////////////////////////////////////
 ///STOPWORDS//////////////////////////////////////////////////////////
 const stopWords = [
@@ -531,7 +521,7 @@ const search = (processedQueryArray, index) => {
 const amountOfResultsToShowFirst = 5;
 
 const buildPostsIndex = () => {
-  return Near.asyncView("devgovgigs.near", "get_posts").then((posts) => {
+  return Near.asyncView("${REPL_DEVHUB_CONTRACT", "get_posts").then((posts) => {
     const index = buildIndex(posts);
     const data = posts.reduce((acc, post) => {
       acc[post.id] = post;
@@ -666,7 +656,6 @@ return (
             <a
               style={{ borderRadius: "5px" }}
               class="dropdown-item link-underline link-underline-opacity-0"
-              href={href("Feed")}
             >
               Latest
             </a>
@@ -675,7 +664,6 @@ return (
             <a
               style={{ borderRadius: "5px" }}
               class="dropdown-item link-underline link-underline-opacity-0"
-              href={href("Feed", { recency: "hot" })}
             >
               Hottest
             </a>
@@ -684,7 +672,6 @@ return (
             <a
               style={{ borderRadius: "5px" }}
               class="dropdown-item link-underline link-underline-opacity-0"
-              href={href("Feed", { recency: "all" })}
             >
               All replies
             </a>
@@ -697,6 +684,8 @@ return (
           props={{
             authorQuery: props.authorQuery,
             onAuthorSearch: props.onAuthorSearch,
+            nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId,
+            nearDevGovGigsContractAccountId: nearDevGovGigsContractAccountId,
           }}
         />
       </div>
@@ -706,6 +695,8 @@ return (
           props={{
             tagQuery: props.tagQuery,
             onTagSearch: props.onTagSearch,
+            nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId,
+            nearDevGovGigsContractAccountId: nearDevGovGigsContractAccountId,
           }}
         />
       </div>

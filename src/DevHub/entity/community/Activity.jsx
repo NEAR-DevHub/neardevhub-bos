@@ -1,9 +1,12 @@
 const { handle } = props;
 
 const { getCommunity } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
+if (!getCommunity) {
+  return <p>Loading modules...</p>
+}
 const communityData = getCommunity({ handle });
 
 if (communityData === null) {
@@ -11,7 +14,7 @@ if (communityData === null) {
 }
 
 return (
-  <div class="row">
+  <div class="row w-100">
     <div class="col-md-9">
       <div class="d-flex align-items-center justify-content-between mb-2">
         <small class="text-muted">
@@ -38,10 +41,8 @@ return (
     </div>
     <div class="col-md-3 container-fluid">
       <Widget
-        src={"${REPL_DEVHUB}/widget/gigs-board.entity.community.sidebar"}
-        props={{
-          handle: communityData.handle,
-        }}
+        src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Sidebar"}
+        props={{ community: communityData }}
       />
     </div>
   </div>
