@@ -1,3 +1,7 @@
+const { Tile } =
+  VM.require("${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile") ||
+  (() => <></>);
+
 const {
   permissions,
   handle,
@@ -34,170 +38,106 @@ const sectionSubmit = (sectionData) => {
 const hasConfigurePermissions = permissions.can_configure;
 const hasDeletePermissions = permissions.can_delete;
 
-function CommunityAddonConfigurator({ addonConfig }) {
-  // TODO: Simplify this. Tile should be module.
-  const match = availableAddons.find((it) => it.id === addonConfig.addon_id);
-  return (
-    <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
-      props={{
-        className: "p-3",
-        children: (
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
-            }
-            props={{
-              title: addonConfig.name,
-              hasConfigurePermissions: hasConfigurePermissions,
-              Configurator: () =>
-                match ? (
-                  <Widget
-                    src={
-                      "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.AddonConfigurator"
-                    }
-                    props={{
-                      addon: match,
-                      data: addonConfig,
-                      onSubmit: (v) => console.log(v),
-                    }}
-                  />
-                ) : (
-                  <p>{"Unknown addon with addon ID: " + addon.id}</p>
-                ),
-            }}
-          />
-        ),
-      }}
-    />
-  );
-}
-
 return (
   <div
     className="d-flex flex-column align-items-center gap-4 w-100 p-4"
     style={{ maxWidth: 960 }}
   >
-    <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
-      props={{
-        children: (
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.BrandingConfigurator"
-            }
-            props={{
-              onSubmit: sectionSubmit,
-              data: communityData,
-              hasConfigurePermissions,
-              link: `/${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=${handle}`,
-            }}
-          />
-        ),
-      }}
-    />
-    <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
-      props={{
-        className: "p-3",
-        children: (
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
-            }
-            props={{
-              title: "Community Information",
-              hasConfigurePermissions,
-              Configurator: (p) => (
-                <Widget
-                  src={
-                    "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.InformationConfigurator"
-                  }
-                  props={{
-                    data: communityData,
-                    onSubmit: sectionSubmit,
-                    ...p,
-                  }}
-                />
-              ),
-            }}
-          />
-        ),
-      }}
-    />
-    <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
-      props={{
-        className: "p-3",
-        children: (
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
-            }
-            props={{
-              title: "About",
-              hasConfigurePermissions,
-              Configurator: (p) => (
-                <Widget
-                  src={
-                    "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.AboutConfigurator"
-                  }
-                  props={{
-                    data: communityData,
-                    onSubmit: sectionSubmit,
-                    ...p,
-                  }}
-                />
-              ),
-            }}
-          />
-        ),
-      }}
-    />
-    <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
-      props={{
-        className: "p-3",
-        children: (
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
-            }
-            props={{
-              title: "Access Control",
-              hasConfigurePermissions,
-              Configurator: (p) => (
-                <Widget
-                  src={
-                    "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.AccessControlConfigurator"
-                  }
-                  props={{
-                    data: communityData,
-                    onSubmit: sectionSubmit,
-                    ...p,
-                  }}
-                />
-              ),
-            }}
-          />
-        ),
-      }}
-    />
-    {hasConfigurePermissions && <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
-      props={{
-        className: "p-3",
-        children: (
-          <Widget
-            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.Addons"}
-            props={{
-              data: communityData.addons || [],
-              onSubmit: (v) => setCommunityAddons({ handle, addons: v }),
-            }}
-          />
-        ),
-      }}
-    />}
+    <Tile>
+      <Widget
+        src={
+          "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.BrandingConfigurator"
+        }
+        props={{
+          onSubmit: sectionSubmit,
+          data: communityData,
+          hasConfigurePermissions,
+          link: `/${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=${handle}`,
+        }}
+      />
+    </Tile>
+    <Tile className={"p-3"}>
+      <Widget
+        src={
+          "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
+        }
+        props={{
+          title: "Community Information",
+          hasConfigurePermissions,
+          Configurator: (p) => (
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.InformationConfigurator"
+              }
+              props={{
+                data: communityData,
+                onSubmit: sectionSubmit,
+                ...p,
+              }}
+            />
+          ),
+        }}
+      />
+    </Tile>
+    <Tile className={"p-3"}>
+      <Widget
+        src={
+          "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
+        }
+        props={{
+          title: "About",
+          hasConfigurePermissions,
+          Configurator: (p) => (
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.AboutConfigurator"
+              }
+              props={{
+                data: communityData,
+                onSubmit: sectionSubmit,
+                ...p,
+              }}
+            />
+          ),
+        }}
+      />
+    </Tile>
+    <Tile className={"p-3"}>
+      <Widget
+        src={
+          "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
+        }
+        props={{
+          title: "Access Control",
+          hasConfigurePermissions,
+          Configurator: (p) => (
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.AccessControlConfigurator"
+              }
+              props={{
+                data: communityData,
+                onSubmit: sectionSubmit,
+                ...p,
+              }}
+            />
+          ),
+        }}
+      />
+    </Tile>
+    {hasConfigurePermissions && (
+      <Tile className={"p-3"}>
+        <Widget
+          src={
+            "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.Addons"
+          }
+          props={{
+            data: communityData.addons || [],
+            onSubmit: (v) => setCommunityAddons({ handle, addons: v }),
+          }}
+        />
+      </Tile>
+    )}
     {hasDeletePermissions && (
       <div
         className="d-flex justify-content-center gap-4 p-4 w-100"

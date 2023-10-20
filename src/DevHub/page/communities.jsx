@@ -1,3 +1,7 @@
+const { Tile } =
+  VM.require("${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile") ||
+  (() => <></>);
+
 const { getAllCommunitiesMetadata, createCommunity } = VM.require(
   "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
 );
@@ -105,33 +109,27 @@ const onCommunitySubmit = (inputs) =>
 const [showSpawner, setShowSpawner] = useState(false);
 
 const CommunitySpawner = () => (
-  <Widget
-    src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile"}
-    props={{
-      className: "p-3",
-      children: (
-        <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.components.organism.Configurator"}
-          props={{
-            heading: "Community information",
-            externalState: CommunityInputsDefaults,
-            fullWidth: true,
-            isActive: true,
-            isUnlocked: true,
-            isValid: communityInputsValidator,
-            onSubmit: onCommunitySubmit,
-            schema: CommunityInputsPartialSchema,
-            submitIcon: {
-              type: "bootstrap_icon",
-              variant: "bi-rocket-takeoff-fill",
-            },
-            submitLabel: "Launch",
-            onCancel: () => setShowSpawner(false),
-          }}
-        />
-      ),
-    }}
-  />
+  <Tile className="p-3">
+    <Widget
+      src={"${REPL_DEVHUB}/widget/DevHub.components.organism.Configurator"}
+      props={{
+        heading: "Community information",
+        externalState: CommunityInputsDefaults,
+        fullWidth: true,
+        isActive: true,
+        isUnlocked: true,
+        isValid: communityInputsValidator,
+        onSubmit: onCommunitySubmit,
+        schema: CommunityInputsPartialSchema,
+        submitIcon: {
+          type: "bootstrap_icon",
+          variant: "bi-rocket-takeoff-fill",
+        },
+        submitLabel: "Launch",
+        onCancel: () => setShowSpawner(false),
+      }}
+    />
+  </Tile>
 );
 
 const communitiesMetadata = getAllCommunitiesMetadata();
@@ -146,7 +144,10 @@ function CommunityCard({ format, isBannerEnabled, metadata }) {
 
   const formatSmall = (
     <Link
-      to={"/${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=" + metadata.handle}
+      to={
+        "/${REPL_DEVHUB}/widget/DevHub.App?page=community&handle=" +
+        metadata.handle
+      }
     >
       <div
         {...otherProps}

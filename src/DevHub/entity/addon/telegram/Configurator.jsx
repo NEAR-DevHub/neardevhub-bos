@@ -1,6 +1,8 @@
-const { data, onSubmit } = props;
+const { Tile } =
+  VM.require("${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile") ||
+  (() => <></>);
 
-// TODO: Convert into a nice tile, the ability to add and remove items, then calls submit
+const { data, onSubmit } = props;
 
 const Container = styled.div`
   display: flex;
@@ -13,14 +15,15 @@ const Item = styled.div`
   margin: 5px;
   display: flex;
   align-items: center;
+  flex-direction: row;
   gap: 10px;
 `;
 
 const EditableField = styled.input`
   flex: 1;
 `;
-
-const [handles, setHandles] = useState(data.telegram_handle || []);
+const initialData = data.telegram_handle;
+const [handles, setHandles] = useState(initialData || []);
 const [newItem, setNewItem] = useState("");
 
 const handleAddItem = () => {
@@ -41,21 +44,72 @@ const handleSubmit = () => {
 };
 
 return (
-  <Container>
-    {handles.map((item, index) => (
-      <Item key={index}>
-        {item}
-        <button onClick={() => handleDeleteItem(index)}>Delete</button>
+  <Tile className="p-3">
+    <Container>
+      {handles.map((item, index) => (
+        <Item key={index}>
+          <div className="flex-grow-1">
+            <Widget
+              src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+              props={{
+                className: "flex-grow-1",
+                value: item,
+                placeholder: "Telegram Handle",
+                inputProps: {
+                  prefix: "https://twitter.com/",
+                  disabled: true,
+                },
+              }}
+            />
+          </div>
+          <button
+            className="btn btn-outline-danger"
+            onClick={() => handleDeleteItem(index)}
+          >
+            <i className="bi bi-trash-fill" />
+          </button>
+        </Item>
+      ))}
+      <Item>
+        <div className="flex-grow-1">
+          <Widget
+            src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+            props={{
+              className: "flex-grow-1",
+              onChange: (e) => setNewItem(e.target.value),
+              value: newItem,
+              placeholder: "Telegram Handle",
+              inputProps: {
+                prefix: "https://twitter.com/",
+              },
+            }}
+          />
+        </div>
+        <button
+          className="btn btn-success"
+          onClick={handleAddItem}
+          disabled={newItem === ""}
+        >
+          <i className="bi bi-plus" />
+        </button>
       </Item>
-    ))}
-    <div>
-      <EditableField
-        type="text"
-        value={newItem}
-        onChange={(e) => setNewItem(e.target.value)}
-      />
-      <button onClick={handleAddItem}>Add</button>
-    </div>
-    <button onClick={handleSubmit}>Submit</button>
-  </Container>
+      <div
+        className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
+      >
+        <Widget
+          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+          props={{
+            classNames: { root: "btn-success" },
+            disabled: initialData === handles,
+            icon: {
+              type: "bootstrap_icon",
+              variant: "bi-check-circle-fill",
+            },
+            label: "Submit",
+            onClick: handleSubmit,
+          }}
+        />
+      </div>
+    </Container>
+  </Tile>
 );

@@ -81,15 +81,18 @@ function generateRandom6CharUUID() {
   return "xxxxxx".replace(/x/g, gen());
 }
 
-const AddonItem = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
+const AddonItem = ({
+  data,
+  onUpdate,
+  onMove,
+  onRemove,
+  index,
+  isTop,
+  isBottom,
+}) => {
   const handleNameChange = (event) => {
     const newName = event.target.value;
     onUpdate({ ...data, display_name: newName });
-  };
-
-  const handleIconChange = (event) => {
-    const newIcon = event.target.value;
-    onUpdate({ ...data, icon: newIcon });
   };
 
   const handleEnableChange = () => {
@@ -106,6 +109,10 @@ const AddonItem = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
     if (!isBottom) {
       onMove(index, index + 1);
     }
+  };
+
+  const removeItem = () => {
+    onRemove(data.id);
   };
 
   return (
@@ -133,6 +140,7 @@ const AddonItem = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
           className="form-control border border-2"
           type="text"
           value={data.display_name}
+          disabled={!data.enabled}
           onChange={handleNameChange}
         />
         <Widget
@@ -143,6 +151,9 @@ const AddonItem = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
             onChange: handleEnableChange,
           }}
         />
+        <button className="btn btn-outline-danger" onClick={removeItem}>
+          <i className="bi bi-trash-fill" />
+        </button>
       </Item>
     </div>
   );
@@ -199,9 +210,16 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
       addon_id: selectedAddon.id,
       display_name: selectedAddon.title,
       enabled: true,
-      parameters: "{}"
+      parameters: "{}",
     };
     const updatedList = [...list, newItem];
+    setList(updatedList);
+    setChangesMade(!arraysAreEqual(originalList, updatedList));
+  };
+
+  const removeItem = (id) => {
+    console.log(id);
+    const updatedList = list.filter((item) => item.id !== id);
     setList(updatedList);
     setChangesMade(!arraysAreEqual(originalList, updatedList));
   };
@@ -214,6 +232,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
           data={item}
           onUpdate={updateItem}
           onMove={moveItem}
+          onRemove={removeItem}
           index={index}
           isTop={index === 0}
           isBottom={index === list.length - 1}
@@ -221,7 +240,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
       ))}
       {availableAddons && list.length < 7 && (
         <div className="d-flex justify-content-center">
-          <div className="d-flex gap-2" >
+          <div className="d-flex gap-2 flex-grow-1 px-4">
             <Widget
               src={"${REPL_NEAR}/widget/DIG.InputSelect"}
               props={{
@@ -244,11 +263,11 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
               }}
             />
             <button
-              className="btn btn-sm btn-secondary"
+              className="btn btn-success"
               onClick={handleAddItem}
               disabled={!selectedAddon}
             >
-              Add
+              <i className="bi bi-plus" />
             </button>
           </div>
         </div>

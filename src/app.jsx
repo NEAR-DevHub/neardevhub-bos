@@ -31,7 +31,7 @@ const Theme = styled.div`
 
 if (!page) {
   // If no page is specified, we default to the home page
-  page = "feed";
+  page = "home";
 }
 
 // This is our navigation, rendering the page based on the page parameter
@@ -102,9 +102,10 @@ function Page() {
         />
       );
     }
-  } // default case does not work in VM
-  // If no page is found, we return a 404
-  return <p>404</p>;
+    default: {
+      return <p>404</p>;
+    }
+  }
 }
 
 return (

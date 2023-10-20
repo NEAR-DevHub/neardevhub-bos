@@ -14,7 +14,7 @@ if (communityData === null) {
 }
 
 return (
-  <div class="row">
+  <div class="row w-100">
     <div class="col-md-9">
       <div class="d-flex align-items-center justify-content-between mb-2">
         <small class="text-muted">

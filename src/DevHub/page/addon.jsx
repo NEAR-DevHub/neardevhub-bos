@@ -78,7 +78,7 @@ const [showConfigure, setShowConfigure] = useState(
   view === "configure" || false
 );
 
-const isFullyRefactored = () => {
+const checkFullyRefactored = (addon_id) => {
   switch (addon_id) {
     case "kanban":
     case "github":
@@ -89,9 +89,11 @@ const isFullyRefactored = () => {
   }
 };
 
+const isFullyRefactored = checkFullyRefactored(addon_id);
+
 return (
   <Container>
-    {isFullyRefactored() && ( // TODO: Unfully refactored addons have the configurator built in.
+    {isFullyRefactored && ( // TODO: Unfully refactored addons have the configurator built in.
       // So we hide the header
       <Header>
         {permissions.can_configure && (
@@ -111,6 +113,7 @@ return (
           props={{
             data: config,
             onSubmit: (data) => {
+              // TODO: Method from new contract to update a specific addon's config
               console.log("data", data);
             },
 
