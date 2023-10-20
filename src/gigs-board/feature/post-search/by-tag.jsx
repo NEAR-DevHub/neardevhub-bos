@@ -134,7 +134,7 @@ const DevHub = {
 };
 /* END_INCLUDE: "core/adapter/dev-hub" */
 
-const selectedTags = props.tagQuery?.tag ? [{ name: props.tagQuery.tag }] : [];
+const selectedTags = props.tag ? [{ name: props.tag }] : [];
 
 const tags = DevHub.get_all_labels();
 
