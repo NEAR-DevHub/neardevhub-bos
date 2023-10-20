@@ -52,16 +52,19 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const HomeSections = ["hero", "explore", "connect", "contribute", "support"];
-
-const Content = HomeSections.map((it) => (
+const header = (
   <Widget
-    src={`${REPL_DEVHUB}/widget/devhub-components.${it}`}
+    src={`${REPL_DEVHUB}/widget/devhub-components.layout.navbar`}
     props={{ ...props }}
   />
-));
+);
 
-return widget("template.app-layout", {
-  children: Content,
-  ...props,
-});
+const AppLayout = ({ banner, children }) => (
+  <div className="d-flex flex-column w-100 h-100" style={{ minHeight: "86vh" }}>
+    {header}
+    {banner}
+    <div className="w-100 h-100">{children}</div>
+  </div>
+);
+
+return AppLayout(props);
