@@ -351,6 +351,7 @@ const Head =
 return (
   <>
     {Head}
+    {props.loading ? loader : null}
     {is_edit_or_add_post_transaction ? (
       <p class="text-secondary mt-4">
         Post {transaction_method_name == "edit_post" ? "edited" : "added"}{" "}
