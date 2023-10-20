@@ -10,7 +10,7 @@ const CommunityBoardPage = ({ handle, permissions }) => {
         communityHandle: handle,
         link: href({
           gateway: "near.org",
-          "${REPL_DEVHUB}/widget/app",
+          widgetSrc: "${REPL_DEVHUB}/widget/app",
           params: { page: "community", handle },
         }),
         permissions,

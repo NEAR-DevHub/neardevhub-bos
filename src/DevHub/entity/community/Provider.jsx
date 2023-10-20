@@ -31,12 +31,8 @@ const CenteredMessage = styled.div`
 
 const [isLoading, setIsLoading] = useState(false);
 const [error, setError] = useState(null);
-// const [community, setCommunity] = useState(null);
 
-// TODO: This doesn't work as expected, it does not catch the error
-const community = Near.view("${REPL_DEVHUB_CONTRACT}", "get_community", {
-  handle: handle,
-});
+const community = getCommunity({ handle });
 
 const permissions = getAccountCommunityPermissions({
   account_id: context.accountId,

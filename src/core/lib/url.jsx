@@ -17,13 +17,14 @@ function href({ gateway, widgetSrc, params }) {
   }
 
   // Check if the gateway already includes "https://" and construct the final URL accordingly
-  if (
-    (gateway && gateway.startsWith("https://")) ||
-    gateway.startsWith("http://")
-  ) {
-    return `${gateway}/${widgetSrc}/${params ? `?${params}` : ""}`;
+  if (gateway) {
+    if (/(^https:\/\/)|(^http:\/\/)/.test(gateway)) {
+      return `/${gateway}/${widgetSrc}${params && `?${params}`}`;
+    } else {
+      return `https://${gateway}/${widgetSrc}${params && `?${params}`}`;
+    }
   } else {
-    return `https://${gateway}/${widgetSrc}/${params ? `?${params}` : ""}`;
+    return `/${widgetSrc}${params && `?${params}`}`;
   }
 }
 
