@@ -1,7 +1,59 @@
-State.init({
-  startIndex: 0,
-  endIndex: 2,
-});
+/* INCLUDE: "common.jsx" */
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+function widget(widgetName, widgetProps, key) {
+  widgetProps = {
+    ...widgetProps,
+    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
+    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+    referral: props.referral,
+  };
+
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/devhub-components.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
+}
+
+function href(widgetName, linkProps) {
+  linkProps = { ...linkProps };
+
+  if (props.nearDevGovGigsContractAccountId) {
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
+  }
+
+  if (props.nearDevGovGigsWidgetsAccountId) {
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
+  }
+
+  if (props.referral) {
+    linkProps.referral = props.referral;
+  }
+
+  const linkPropsQuery = Object.entries(linkProps)
+    .filter(([_key, nullable]) => (nullable ?? null) !== null)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
+}
+/* END_INCLUDE: "common.jsx" */
+
+const [startIndex, setStartIndex] = useState(0);
+const [endIndex, setEndIndex] = useState(2);
 
 const DescriptionHeader = styled.h2`
   color: #f4f4f4;
@@ -21,7 +73,7 @@ const Description = styled.p`
 `;
 
 const imageSource =
-  "https://s3-alpha-sig.figma.com/img/3b54/e4fa/1508a7cf222faf5f331f489d224e4fd6?Expires=1698624000&Signature=gIhYLppLobWi6QMrBzxH-SQFd5JGKJrah~PHlxUYgOOoYPxOTTQ9qOEB8xqHX8pGuaJqTre7Fn~FdI~jWK0WdPrvev8OJDIKWF1zSLSLYG20ztuMR8K8hu4~N1k-Fomyp34H6GalsbWM6p~J5QS0G5L-Wkc2am24-Ys8c4BwqH-CdPAvehTNxgwgGq77aLkf1HqfRaUW5uLcLBhzOavk03lXSxSTmUo5KZX5SOxYTpktmLozASkkFR4-SAVQkxEwlN8s3JG8eX7dsUohsfiE-jYFjuKxfwU~f0OfyvNCvdyvEg335qIMRvD5NCrmQTnm0ZJRxOX~imYi6GV74U8p8w__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4";
+  "https://ipfs.near.social/ipfs/bafkreidwtqu7wrppkvwb2criwgk6u7bfx7ojyaempio7pnkhvspxxeujke";
 
 const CardBody = styled.div`
   border-radius: 16px;
@@ -116,20 +168,16 @@ const ForwardButton = styled.button`
     outline: none;
   }
 
-  ${state.endIndex >= Cards.length - 1 && "svg {transform: rotate(180deg);}"}
+  ${endIndex >= Cards.length - 1 && "svg {transform: rotate(180deg);}"}
 `;
 
 const handleForward = () => {
-  if (state.endIndex <= Cards.length - 1) {
-    State.update({
-      startIndex: state.endIndex + 1,
-      endIndex: state.endIndex + 3,
-    });
+  if (endIndex <= Cards.length - 1) {
+    setStartIndex(endIndex + 1);
+    setEndIndex(endIndex + 3);
   } else {
-    State.update({
-      startIndex: 0,
-      endIndex: 2,
-    });
+    setStartIndex(0);
+    setEndIndex(2);
   }
 };
 
@@ -155,7 +203,7 @@ const Subheading = styled.h3`
 const Content = (
   <>
     <div className="w-100 d-flex position-relative align-items-center">
-      <div style={{ padding: 48, width: "60%" }}>
+      <div style={{ padding: 48, width: "55%" }}>
         <DescriptionHeader>
           Communities are the lifeblood of /dev/hub
         </DescriptionHeader>
@@ -186,7 +234,7 @@ const Content = (
       style={{ padding: 48, paddingTop: 0 }}
       className="position-relative d-flex flex-row gap-3 w-100 align-items-center justify-content-center"
     >
-      {Cards.slice(state.startIndex, state.endIndex + 1).map((card, idx) => (
+      {Cards.slice(startIndex, endIndex + 1).map((card, idx) => (
         <Card
           title={card.title}
           description={card.description}
@@ -220,13 +268,8 @@ const Content = (
   </>
 );
 
-return (
-  <Widget
-    src="devhub.testnet/widget/home.components.Section.HomeSection"
-    props={{
-      title: "/connect",
-      children: Content,
-      background: true,
-    }}
-  />
-);
+return widget("section.home-section", {
+  title: "/connect",
+  children: Content,
+  background: true,
+});

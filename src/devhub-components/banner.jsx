@@ -1,5 +1,5 @@
 const imageLink =
-  "https://s3-alpha-sig.figma.com/img/b1f8/9258/16e820ecd12b0c541cdd7177d0b53a24?Expires=1698624000&Signature=owRGoRIMd35cUHfLyMvuYirlRCAdUoTn801J3ozXJRgFp~Pfy9yLCklGK~wigQK32HTJ6YET6QbAjeP20YEO5NE5ymAL9V3LBJGkVA-X-AcnZATk3QAEzM5S5cmmlFlzf~r4DLiKs5vFKPYYVUptoYlSFqmBIGGDNaBfdl5WvTLQqCXUyw62oHlsEi8RX3mO99L-UdttIpZHeJvJBBCj21HUzM461rULCxwkXBp6mvqmBq6kF0lhXDH4PcwVkiuzqRDSu0myL2hcaUY5QpFtm8tOuh0z-FMNtdImxqVtbH3CbD9J7xsOeFcpkAvQZFDRgtAAlnto0-lfASsWaioXSQ__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4";
+  "https://ipfs.near.social/ipfs/bafybeiap2mzwsly4apaldxguiunx4rjwqyadksj5yxuzwrww3kue3ao5qe";
 
 const HeroSection = styled.div`
   background: #00ec97;

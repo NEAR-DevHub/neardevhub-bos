@@ -1,3 +1,57 @@
+/* INCLUDE: "common.jsx" */
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+function widget(widgetName, widgetProps, key) {
+  widgetProps = {
+    ...widgetProps,
+    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
+    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+    referral: props.referral,
+  };
+
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/devhub-components.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
+}
+
+function href(widgetName, linkProps) {
+  linkProps = { ...linkProps };
+
+  if (props.nearDevGovGigsContractAccountId) {
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
+  }
+
+  if (props.nearDevGovGigsWidgetsAccountId) {
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
+  }
+
+  if (props.referral) {
+    linkProps.referral = props.referral;
+  }
+
+  const linkPropsQuery = Object.entries(linkProps)
+    .filter(([_key, nullable]) => (nullable ?? null) !== null)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
+}
+/* END_INCLUDE: "common.jsx" */
+
 const Logo = () => {
   return (
     <a href="/">
@@ -79,16 +133,13 @@ return (
   <Navbar>
     <Logo />
     <LinksContainer>
-      {links.map((link) => (
-        <Widget
-          src="devhub.testnet/widget/home.components.Navbar.DropdownMenu"
-          props={{
-            title: link.title,
-            href: link.href,
-            links: link.links,
-          }}
-        />
-      ))}
+      {links.map((link) =>
+        widget("layout.dropdown-menu", {
+          title: link.title,
+          href: link.href,
+          links: link.links,
+        })
+      )}
     </LinksContainer>
   </Navbar>
 );

@@ -2,9 +2,7 @@ const title = props.title;
 const links = props.links;
 const href = props.href;
 
-State.init({
-  showMenu: false,
-});
+const [showMenu, setShowMenu] = useState(false);
 
 const Dropdown = styled.div`
   display: flex;
@@ -45,19 +43,19 @@ const DropdownMenu = styled.div`
 return (
   <Dropdown
     className="position-relative"
-    onMouseEnter={() => State.update({ showMenu: true })}
-    onMouseLeave={() => State.update({ showMenu: false })}
+    onMouseEnter={() => setShowMenu(true)}
+    onMouseLeave={() => setShowMenu(false)}
   >
     {href ? (
       <a style={{ color: "inherit", textDecoration: "none" }} href={href}>
         {title}
       </a>
     ) : (
-      <p className={`m-0 ${state.showMenu && "active"}`}>{title}</p>
+      <p className={`m-0 ${showMenu && "active"}`}>{title}</p>
     )}
-    {state.showMenu && links.length !== 0 && (
+    {showMenu && links.length !== 0 && (
       <DropdownMenu
-        className={`${state.showMenu && "active"} position-absolute`}
+        className={`${showMenu && "active"} position-absolute`}
         style={{ top: -15 }}
       >
         <p style={{ color: "#00ec97" }}>{title}</p>
