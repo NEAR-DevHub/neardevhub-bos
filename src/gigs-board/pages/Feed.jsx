@@ -224,29 +224,15 @@ const FeedPage = ({ author, recency, tag }) => {
     }));
   }
 
-  const onTagSearch = (tag) => {
-    State.update((lastKnownState) => ({ ...lastKnownState, tag }));
-  };
-
-  const onAuthorSearch = (author) => {
-    State.update((lastKnownState) => ({ ...lastKnownState, author }));
-  };
-
   return widget("components.template.app-layout", {
     banner,
 
     children: widget("feature.post-search.panel", {
-      author: state.author,
-      authorQuery: { author: state.author },
       children: widget("components.layout.Controls", {
         title: "Post",
         href: href("Create"),
       }),
-      onAuthorSearch,
-      onTagSearch,
       recency,
-      tag: state.tag,
-      tagQuery: { tag: state.tag },
       transactionHashes: props.transactionHashes,
     }),
   });
