@@ -45,7 +45,7 @@ function CommunityAddonConfigurator({ addonConfig }) {
         children: (
           <Widget
             src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"
+              "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
             }
             props={{
               title: addonConfig.name,
@@ -54,7 +54,7 @@ function CommunityAddonConfigurator({ addonConfig }) {
                 match ? (
                   <Widget
                     src={
-                      "${REPL_DEVHUB}/widget/DevHub.entity.community.AddonConfigurator"
+                      "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.AddonConfigurator"
                     }
                     props={{
                       addon: match,
@@ -84,7 +84,7 @@ return (
         children: (
           <Widget
             src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.community.BrandingConfigurator"
+              "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.BrandingConfigurator"
             }
             props={{
               onSubmit: sectionSubmit,
@@ -103,7 +103,7 @@ return (
         children: (
           <Widget
             src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"
+              "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
             }
             props={{
               title: "Community Information",
@@ -111,7 +111,7 @@ return (
               Configurator: (p) => (
                 <Widget
                   src={
-                    "${REPL_DEVHUB}/widget/DevHub.entity.community.InformationConfigurator"
+                    "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.InformationConfigurator"
                   }
                   props={{
                     data: communityData,
@@ -132,7 +132,7 @@ return (
         children: (
           <Widget
             src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"
+              "${REPL_DEVHUB}/widget/DevHub.entity.configuration.community.ConfigurationSection"
             }
             props={{
               title: "About",
@@ -140,7 +140,7 @@ return (
               Configurator: (p) => (
                 <Widget
                   src={
-                    "${REPL_DEVHUB}/widget/DevHub.entity.community.AboutConfigurator"
+                    "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.AboutConfigurator"
                   }
                   props={{
                     data: communityData,
@@ -161,7 +161,7 @@ return (
         children: (
           <Widget
             src={
-              "${REPL_DEVHUB}/widget/DevHub.entity.community.ConfigurationSection"
+              "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.ConfigurationSection"
             }
             props={{
               title: "Access Control",
@@ -169,7 +169,7 @@ return (
               Configurator: (p) => (
                 <Widget
                   src={
-                    "${REPL_DEVHUB}/widget/DevHub.entity.community.AccessControlConfigurator"
+                    "${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.AccessControlConfigurator"
                   }
                   props={{
                     data: communityData,
@@ -189,7 +189,7 @@ return (
         className: "p-3",
         children: (
           <Widget
-            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Addons"}
+            src={"${REPL_DEVHUB}/widget/DevHub.entity.community.configuration.Addons"}
             props={{
               data: communityData.addons || [],
               onSubmit: (v) => setCommunityAddons({ handle, addons: v }),

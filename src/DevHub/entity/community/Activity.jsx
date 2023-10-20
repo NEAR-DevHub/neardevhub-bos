@@ -4,6 +4,9 @@ const { getCommunity } = VM.require(
   "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
 );
 
+if (!getCommunity) {
+  return <p>Loading modules...</p>
+}
 const communityData = getCommunity({ handle });
 
 if (communityData === null) {

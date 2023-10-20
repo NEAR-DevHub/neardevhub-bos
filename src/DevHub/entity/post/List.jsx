@@ -2,17 +2,6 @@
 // While this component uses InfiniteScroll, it still loads the whole list of Post IDs in one view call.
 // The contract will need to be extended with pagination support, yet, even in the current state the page loads much faster.
 // [IndexFeed]: https://near.social/#/mob.near/widget/WidgetSource?src=mob.near/widget/IndexFeed
-
-function href(widgetName, linkProps) {
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/#/${REPL_DEVHUB}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
 /* INCLUDE: "core/lib/draftstate" */
 const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
 let is_edit_or_add_post_transaction = false;
@@ -63,7 +52,7 @@ function defaultRenderItem(postId, additionalProps) {
   return (
     <div className="py-2" style={{ minHeight: "150px" }}>
       <Widget
-        src={"${REPL_DEVHUB}/widget/gigs-board.pages.Post"}
+        src={"${REPL_DEVHUB}/widget/DevHub.entity.post.Post"}
         props={{
           id: postId,
           expandable: true,
@@ -419,7 +408,6 @@ return (
             color: "#3252A6",
           }}
           className="fw-bold"
-          href={href("Feed")}
         >
           feed
         </a>

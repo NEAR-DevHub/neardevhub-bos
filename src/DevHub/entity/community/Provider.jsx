@@ -100,6 +100,13 @@ community.addons = [
     enabled: true,
     parameters: '{"telegram_handle": ["NEAR_Tools_Community_Group"]}',
   },
+  {
+    // id: `${handle}-wiki-1`,
+    addon_id: "blog",
+    display_name: "Blog",
+    enabled: true,
+    parameters: '{"telegram_handle": ["NEAR_Tools_Community_Group"]}',
+  },
 ];
 
 return (

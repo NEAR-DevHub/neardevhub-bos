@@ -193,7 +193,7 @@ return (
             
             // below is temporary prop drilling until kanban and github are migrated
             permissions,
-            handle
+            handle: community.handle
           }}
         />
       </div>

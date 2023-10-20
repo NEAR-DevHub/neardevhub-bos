@@ -39,6 +39,15 @@ const SettingsIcon = styled.div`
   cursor: pointer;
 `;
 
+const CenteredMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: ${(p) => p.height ?? "100%"};
+`;
+
 const { addon_id, config, view, permissions, handle } = props;
 
 const { getAvailableAddons } = VM.require(
@@ -51,6 +60,15 @@ if (!getAvailableAddons) {
 
 const availableAddons = getAvailableAddons();
 const addon = availableAddons.find((it) => it.id === addon_id);
+
+if (!addon) {
+  return (
+    <CenteredMessage height={"384px"}>
+      <h2>Addon with id: "{addon_id}" not found.</h2>
+    </CenteredMessage>
+  );
+}
+
 const ButtonRow = styled.div`
   display: flex;
   justify-content: space-between;
@@ -64,6 +82,7 @@ const isFullyRefactored = () => {
   switch (addon_id) {
     case "kanban":
     case "github":
+    case "blog":
       return false;
     default:
       return true;

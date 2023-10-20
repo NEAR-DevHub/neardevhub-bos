@@ -15,7 +15,7 @@ return (
   <Container>
     <Widget
       src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.MarkdownEditor"}
-      props={{ data: content, onChange: setContent }}
+      props={{ data: { content }, onChange: setContent }}
     />
   </Container>
 );
