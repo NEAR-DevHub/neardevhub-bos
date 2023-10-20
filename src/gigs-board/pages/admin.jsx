@@ -160,6 +160,11 @@ const AdministrationSettings = {
 const CommunityFeaturingSchema = {
   handle: {
     label: "Community handle",
+
+    hints: {
+      disabled: `You can only add ${AdministrationSettings.communities.maxFeatured} communities at a time`,
+    },
+
     inputProps: { min: 3, max: 40, required: true },
   },
 };
@@ -174,7 +179,9 @@ const AdminPage = () => {
 
   const addFeaturedCommunity = ({ handle }) =>
     Near.call(devHubAccountId, "set_featured_communities", {
-      handles: new Set(featuredCommunityHandles).add(handle).values().toArray(),
+      handles: Array.from(
+        new Set(featuredCommunityHandles).add(handle).values()
+      ),
     });
 
   const removeFeaturedCommunity = ({ handle: input }) =>
@@ -239,11 +246,10 @@ const AdminPage = () => {
                 heading: "Add featured community",
                 isActive: true,
 
-                isHidden:
-                  featuredCommunityList.length >=
+                isUnlocked:
+                  featuredCommunityList.length <
                   AdministrationSettings.communities.maxFeatured,
 
-                isUnlocked: true,
                 schema: CommunityFeaturingSchema,
                 onSubmit: addFeaturedCommunity,
               })}
