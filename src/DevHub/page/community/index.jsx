@@ -189,8 +189,11 @@ return (
           src={currentTab.view}
           props={{
             ...currentTab.params,
-            canConfigure: permissions.can_configure,
-            view
+            view, // default view for an addon, can come as a prop from a community or from a direct link to page.addon
+            
+            // below is temporary prop drilling until kanban and github are migrated
+            permissions,
+            handle
           }}
         />
       </div>

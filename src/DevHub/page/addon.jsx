@@ -39,7 +39,7 @@ const SettingsIcon = styled.div`
   cursor: pointer;
 `;
 
-const { addon_id, config, view, canConfigure } = props;
+const { addon_id, config, view, permissions, handle } = props;
 
 const { getAvailableAddons } = VM.require(
   "${REPL_DEVHUB}/widget/DevHub.modules.contract-sdk"
@@ -60,20 +60,33 @@ const [showConfigure, setShowConfigure] = useState(
   view === "configure" || false
 );
 
+const isFullyRefactored = () => {
+  switch (addon_id) {
+    case "kanban":
+    case "github":
+      return false;
+    default:
+      return true;
+  }
+};
+
 return (
   <Container>
-    {/* Need to either isolate the button, or push everything down. I vote isolate the button. */}
-    <Header>
-      {canConfigure && (
-        <Button onClick={() => setShowConfigure(!showConfigure)}>
-          <SettingsIcon>
-            <span className="bi bi-gear"></span>
-          </SettingsIcon>
-        </Button>
-      )}
-    </Header>
+    {isFullyRefactored() && ( // TODO: Unfully refactored addons have the configurator built in.
+      // So we hide the header
+      <Header>
+        {permissions.can_configure && (
+          // TODO: Isolate this button, remove from header.
+          <Button onClick={() => setShowConfigure(!showConfigure)}>
+            <SettingsIcon>
+              <span className="bi bi-gear"></span>
+            </SettingsIcon>
+          </Button>
+        )}
+      </Header>
+    )}
     <Content>
-      {showConfigure ? (
+      {showConfigure ? ( // And showConfigure will always be false
         <Widget
           src={addon.configurator_widget}
           props={{
@@ -81,10 +94,12 @@ return (
             onSubmit: (data) => {
               console.log("data", data);
             },
+
+            handle, // this is temporary prop drilling until kanban and github are migrated
           }}
         />
       ) : (
-        <Widget src={addon.view_widget} props={config} />
+        <Widget src={addon.view_widget} props={{ ...config, handle }} />
       )}
     </Content>
   </Container>
