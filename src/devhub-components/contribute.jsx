@@ -53,7 +53,7 @@ function href(widgetName, linkProps) {
 /* END_INCLUDE: "common.jsx" */
 
 const Container = styled.div`
-  margin-top: 36px;
+  margin-top: 2.25rem;
 
   display: flex;
   flex-direction: row;
@@ -63,7 +63,7 @@ const Container = styled.div`
 
 const LinkItem = styled.a`
   color: #00ec97;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-style: normal;
   font-weight: 400;
   line-height: 120%; /* 28.8px */
@@ -96,29 +96,38 @@ const Links = [
 
 const CTA = styled.a`
   display: flex;
-  padding: 14px 16px;
+  padding: 0.875rem 1rem;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 
-  border-radius: 16px;
+  border-radius: 1rem;
   background: #00ec97;
 
   color: #f4f4f4;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 28.8px */
-  letter-spacing: -0.48px;
+  letter-spacing: -0.03rem;
 
   width: max-content;
-  margin-top: 24px;
+  margin-top: 1.5rem;
+`;
+
+const SectionPadding = styled.div`
+  padding: 3rem;
+  padding-top: 0;
+`;
+
+const LinksContainer = styled.div`
+  width: 30%;
 `;
 
 const Content = (
-  <div style={{ padding: 48, paddingTop: 0 }}>
+  <SectionPadding>
     <Container>
       {Links.map((it) => (
-        <div key={Math.random()} style={{ width: "30%" }}>
+        <LinksContainer key={Math.random()}>
           <div className="d-flex flex-column gap-2">
             {it.links.map((link) => (
               <LinkItem href={link.href}>
@@ -139,11 +148,11 @@ const Content = (
               </LinkItem>
             ))}
           </div>
-        </div>
+        </LinksContainer>
       ))}
     </Container>
     <CTA href="#">Learn more →</CTA>
-  </div>
+  </SectionPadding>
 );
 
 return widget("section.home-section", {

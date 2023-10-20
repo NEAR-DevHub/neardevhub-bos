@@ -83,20 +83,20 @@ const Logo = () => {
 };
 
 const Navbar = styled.div`
-  padding: 24px 48px;
+  padding: 1.5rem 3rem;
 
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
 `;
 
 const LinksContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 24px;
+  gap: 1.5rem;
 `;
 
 const links = [

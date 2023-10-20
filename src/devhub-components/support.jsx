@@ -94,23 +94,23 @@ const Items = [
 
 const Circle = styled.div`
   display: flex;
-  width: 300px;
-  height: 300px;
-  padding: 36px;
+  width: 18.75rem;
+  height: 18.75rem;
+  padding: 2.25rem;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 1rem;
   flex-shrink: 0;
 
-  border-radius: 360px;
+  border-radius: 22.5rem;
   border: 1px solid #00ec97;
   background: #f4f4f4;
 
   h3 {
     color: #101820;
     text-align: center;
-    font-size: 28px;
+    font-size: 1.75rem;
     font-style: normal;
     font-weight: 700;
     line-height: 100%; /* 36px */
@@ -119,7 +119,7 @@ const Circle = styled.div`
   p {
     color: #101820;
     text-align: center;
-    font-size: 18px;
+    font-size: 1.125rem;
     font-style: normal;
     font-weight: 400;
     line-height: 120%; /* 28.8px */
@@ -128,16 +128,30 @@ const Circle = styled.div`
 
   a {
     color: #00ec97;
-    font-size: 18px;
+    font-size: 1.125rem;
     font-style: normal;
     font-weight: 700;
     line-height: 120%; /* 28.8px */
   }
 `;
 
+const Container = styled.div`
+  padding: 3rem;
+  padding-top: 0;
+  margin-top: 1.5rem;
+`;
+
+const ItemsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
 const Content = (
-  <div style={{ padding: 48, paddingTop: 0, marginTop: 24 }}>
-    <div className="d-flex flex-row justify-content-between align-items-center w-100">
+  <Container>
+    <ItemsContainer>
       {Items.map((it) => (
         <Circle key={Math.random()}>
           <h3>{it.heading}</h3>
@@ -145,8 +159,8 @@ const Content = (
           <a href={it.cta.href}>{it.cta.title}</a>
         </Circle>
       ))}
-    </div>
-  </div>
+    </ItemsContainer>
+  </Container>
 );
 
 return widget("section.home-section", {

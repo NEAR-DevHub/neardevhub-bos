@@ -54,18 +54,18 @@ function href(widgetName, linkProps) {
 
 const Card = styled.div`
   display: flex;
-  width: 320px;
-  height: 280px;
-  padding: 24px;
+  width: 20rem;
+  height: 17.5rem;
+  padding: 1.5rem;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
+  padding: 1.5rem;
 
   h3 {
     color: #00ec97;
     text-align: center;
-    font-size: 24px;
+    font-size: 1.5rem;
     font-style: normal;
     font-weight: 700;
     line-height: 120%; /* 28.8px */
@@ -74,7 +74,7 @@ const Card = styled.div`
   p {
     color: #555;
     text-align: center;
-    font-size: 20px;
+    font-size: 1.25rem;
     font-style: normal;
     font-weight: 400;
     line-height: 120%; /* 24px */
@@ -83,7 +83,7 @@ const Card = styled.div`
   a {
     color: #00ec97;
     text-align: center;
-    font-size: 20px;
+    font-size: 1.25rem;
     font-style: normal;
     font-weight: 700;
     line-height: 120%; /* 24px */
@@ -129,19 +129,19 @@ const Cards = [
 
 const CTA = styled.a`
   display: flex;
-  padding: 14px 16px;
+  padding: 0.875rem 1rem;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 
-  border-radius: 16px;
+  border-radius: 1rem;
   background: #00ec97;
 
   color: #f4f4f4;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 28.8px */
-  letter-spacing: -0.48px;
+  letter-spacing: -0.03rem;
 
   width: max-content;
   text-decoration: none;
@@ -151,12 +151,25 @@ const CTA = styled.a`
   }
 `;
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+
+  padding: 3rem;
+  padding-top: 0;
+`;
+
+const CardsContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  justify-content: center;
+`;
+
 const Content = (
-  <div
-    style={{ padding: 48, paddingTop: 0 }}
-    className="d-flex flex-column gap-5"
-  >
-    <div className="d-flex justify-content-between gap-4 justify-content-center">
+  <Container>
+    <CardsContainer>
       {Cards.map((card) => (
         <SectionCard
           title={card.title}
@@ -165,9 +178,9 @@ const Content = (
           key={Math.random()}
         />
       ))}
-    </div>
+    </CardsContainer>
     <CTA href="#">Explore the Open Web on NEAR →</CTA>
-  </div>
+  </Container>
 );
 
 return widget("section.home-section", {

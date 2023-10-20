@@ -5,14 +5,26 @@ const HeroSection = styled.div`
   background: #00ec97;
   clip-path: polygon(0 0, 100% 0%, 75% 100%, 0% 100%);
 
-  padding-top: 32px;
-  padding-bottom: 32px;
-  padding-left: 54px;
+  height: auto;
+  z-index: 3;
+  width: 70%;
+
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  padding-left: 3.375rem;
+`;
+
+const Image = styled.img`
+  margin-left: 400px;
+  height: 100%;
+  width: 100%;
+  filter: grayscale(100%);
+  object-fit: cover;
 `;
 
 const Title = styled.h1`
   color: #f4f4f4;
-  font-size: 64px;
+  font-size: 4rem;
   font-style: normal;
   font-weight: 700;
   line-height: 100%; /* 88px */
@@ -21,7 +33,7 @@ const Title = styled.h1`
 
 const Lead = styled.p`
   color: #151515;
-  font-size: 28px;
+  font-size: 1.75rem;
   font-style: normal;
   font-weight: 400;
   line-height: 110%; /* 39.6px */
@@ -31,15 +43,15 @@ const Lead = styled.p`
 
 const CTA = styled.a`
   display: inline-flex;
-  padding: 14px 16px;
+  padding: 0.875rem 1rem;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 
-  border-radius: 16px;
+  border-radius: 1rem;
   border: 1px solid #151515;
 
   color: #151515;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 28.8px */
@@ -51,27 +63,15 @@ return (
     className="position-relative w-100 overflow-hidden"
     style={{ height: "max-content" }}
   >
-    <HeroSection className="h-auto z-3" style={{ width: "70%" }}>
+    <HeroSection>
       <Title>
         The decentralized <br />{" "}
         <span style={{ color: "#101820" }}>home base</span> <br />
         for NEAR builders
       </Title>
     </HeroSection>
-    <div
-      className="position-absolute top-0 z-n1 end-0 h-100"
-      style={{ width: "100%" }}
-    >
-      <img
-        src={imageLink}
-        style={{
-          marginLeft: "400px",
-          height: "100%",
-          width: "100%",
-          filter: "grayscale(100%)",
-          objectFit: "cover",
-        }}
-      />
+    <div className="position-absolute top-0 z-n1 end-0 h-100 w-100">
+      <Image src={imageLink} />
     </div>
   </div>
 );

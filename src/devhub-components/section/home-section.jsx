@@ -10,7 +10,7 @@ const Section = styled.div`
 
 const SectionHeader = styled.h2`
   color: #00ec97;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-style: normal;
   font-weight: 400;
   line-height: 120%; /* 28.8px */
@@ -19,24 +19,29 @@ const SectionHeader = styled.h2`
 
 const SectionDescription = styled.h3`
   color: #151515;
-  font-size: 36px;
+  font-size: 2.25rem;
   font-style: normal;
   font-weight: 700;
   line-height: 110%; /* 39.6px */
   letter-spacing: -0.72px;
 
-  margin-bottom: 48px;
-  margin-top: 48px;
+  margin-bottom: 3rem;
+  margin-top: 3rem;
 
-  max-width: 640px;
+  max-width: 40rem;
+`;
+
+const Container = styled.div`
+  padding: 3rem;
+  padding-bottom: 0;
 `;
 
 return (
   <Section>
-    <div style={{ padding: 48, paddingBottom: 0 }}>
+    <Container>
       <SectionHeader>{title}</SectionHeader>
       {description && <SectionDescription>{description}</SectionDescription>}
-    </div>
+    </Container>
     {children}
   </Section>
 );

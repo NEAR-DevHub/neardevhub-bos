@@ -5,6 +5,7 @@ const href = props.href;
 const [showMenu, setShowMenu] = useState(false);
 
 const Dropdown = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,11 +19,13 @@ const Dropdown = styled.div`
 
 const DropdownMenu = styled.div`
   z-index: 50;
+  position: absolute;
+  top: -1rem;
 
   &.active {
     padding: 0.5rem 1rem;
     padding-top: 1rem;
-    border-radius: 16px;
+    border-radius: 1rem;
     background: rgba(217, 217, 217, 0.7);
     backdrop-filter: blur(5px);
     width: max-content;
@@ -42,7 +45,6 @@ const DropdownMenu = styled.div`
 
 return (
   <Dropdown
-    className="position-relative"
     onMouseEnter={() => setShowMenu(true)}
     onMouseLeave={() => setShowMenu(false)}
   >
@@ -54,10 +56,7 @@ return (
       <p className={`m-0 ${showMenu && "active"}`}>{title}</p>
     )}
     {showMenu && links.length !== 0 && (
-      <DropdownMenu
-        className={`${showMenu && "active"} position-absolute`}
-        style={{ top: -15 }}
-      >
+      <DropdownMenu className={`${showMenu && "active"}`}>
         <p style={{ color: "#00ec97" }}>{title}</p>
         <div className="d-flex flex-column gap-3">
           {links.map((link) => (
