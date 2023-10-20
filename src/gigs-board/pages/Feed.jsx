@@ -207,23 +207,7 @@ const banner = (
   </div>
 );
 
-const FeedPage = ({ author, recency, tag }) => {
-  State.init({
-    initial: { author, tag },
-    author,
-    tag,
-  });
-
-  // When rerendered with different props, State will be preserved, so we need to update the state when we detect that the props have changed.
-  if (tag !== state.initial.tag || author !== state.initial.author) {
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      initial: { author, tag },
-      author,
-      tag,
-    }));
-  }
-
+const FeedPage = ({ recency }) => {
   return widget("components.template.app-layout", {
     banner,
 
