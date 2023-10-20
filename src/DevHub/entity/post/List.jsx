@@ -1,7 +1,7 @@
 // This component implementation was forked from [IndexFeed], but it does not fully implement lazy loading.
 // While this component uses InfiniteScroll, it still loads the whole list of Post IDs in one view call.
 // The contract will need to be extended with pagination support, yet, even in the current state the page loads much faster.
-// [IndexFeed]: https://near.social/#/mob.near/widget/WidgetSource?src=mob.near/widget/IndexFeed
+// [IndexFeed]: https://near.social/#/${REPL_MOB}/widget/WidgetSource?src=${REPL_MOB}/widget/IndexFeed
 /* INCLUDE: "core/lib/draftstate" */
 const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
 let is_edit_or_add_post_transaction = false;

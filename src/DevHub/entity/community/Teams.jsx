@@ -25,7 +25,7 @@ const UserList = ({ name, users }) => (
             style={{ fontWeight: 500 }}
           >
             <Widget
-              src="mob.near/widget/ProfileLine"
+              src="${REPL_MOB}/widget/ProfileLine"
               props={{ accountId: user, hideAccountId: true, tooltip: true }}
             />
           </span>

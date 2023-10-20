@@ -34,7 +34,7 @@ const renderedBadgesList = badges.map(({ token_id: tokenId, metadata }) => (
     title={`NEAR DevGov Badge - ${metadata.title}`}
   >
     <Widget
-      src="mob.near/widget/NftImage"
+      src="${REPL_MOB}/widget/NftImage"
       props={{
         style,
         nft: {
