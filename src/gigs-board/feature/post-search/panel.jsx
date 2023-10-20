@@ -66,27 +66,10 @@ const buttonStyle = {
 return (
   <>
     <div className="d-flex flex-row gap-4">
-      <div class="dropdown">
-        {widget("feature.post-search.by-author", {
-          author: state.author,
-          onAuthorSearch: (author) => {
-            State.update({ author });
-          },
-        })}
-      </div>
-      <div>
-        {widget("feature.post-search.by-tag", {
-          tag: state.tag,
-          onTagSearch: (tag) => {
-            State.update({ tag });
-          },
-        })}
-      </div>
       <div className="d-flex flex-row position-relative w-25">
         <div className="position-absolute d-flex ps-3 flex-column h-100 justify-center">
           <i class="bi bi-search m-auto"></i>
         </div>
-
         <input
           type="search"
           className="ps-5 form-control border border-0 bg-light"
@@ -134,6 +117,22 @@ return (
             </a>
           </li>
         </ul>
+      </div>
+      <div class="dropdown">
+        {widget("feature.post-search.by-author", {
+          author: state.author,
+          onAuthorSearch: (author) => {
+            State.update({ author });
+          },
+        })}
+      </div>
+      <div>
+        {widget("feature.post-search.by-tag", {
+          tag: state.tag,
+          onTagSearch: (tag) => {
+            State.update({ tag });
+          },
+        })}
       </div>
       <div className="d-flex flex-row-reverse flex-grow-1">
         {props.children}

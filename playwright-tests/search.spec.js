@@ -9,7 +9,6 @@ test("should show post history for posts in the feed", async ({ page }) => {
     state: "visible",
   });
   await searchInput.fill("zero knowledge");
-  await searchInput.press("Enter");
 
   await page.waitForSelector('span:has-text("zero knowledge")', {
     state: "visible",
