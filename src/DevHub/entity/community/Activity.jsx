@@ -5,7 +5,7 @@ const { getCommunity } = VM.require(
 );
 
 if (!getCommunity) {
-  return <p>Loading modules...</p>
+  return <p>Loading modules...</p>;
 }
 const communityData = getCommunity({ handle });
 

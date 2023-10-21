@@ -221,11 +221,10 @@ const setLabels = (labels) => {
       oldLabels.delete(label.name);
     }
     let removed = oldLabels.values().next().value;
-    Near.asyncView(
-      "${REPL_DEVHUB_CONTRACT}",
-      "is_allowed_to_use_labels",
-      { editor: context.accountId, labels: [removed] }
-    ).then((allowed) => {
+    Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+      editor: context.accountId,
+      labels: [removed],
+    }).then((allowed) => {
       if (allowed) {
         let labelStrings = labels.map(({ name }) => name);
         State.update({ labels, labelStrings });
@@ -272,11 +271,10 @@ const labelEditor = (
           !existingLabelSet.has(props.text) &&
           props.selected.filter((selected) => selected.name === props.text)
             .length == 0 &&
-          Near.view(
-            "${REPL_DEVHUB_CONTRACT}",
-            "is_allowed_to_use_labels",
-            { editor: context.accountId, labels: [props.text] }
-          )
+          Near.view("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+            editor: context.accountId,
+            labels: [props.text],
+          })
         );
       }}
     />

@@ -62,7 +62,8 @@ function Page() {
           src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Provider"}
           props={{
             ...passProps,
-            Children: (p) => { // passing props from the Provider into the Children
+            Children: (p) => {
+              // passing props from the Provider into the Children
               switch (routes[1]) {
                 // ?page=community.configuration
                 case "configuration": {

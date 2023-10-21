@@ -10,9 +10,11 @@ const CenteredMessage = styled.div`
 `;
 
 if (!telegram_handle || telegram_handle.length === 0) {
-  return (<CenteredMessage height={"384px"}>
-    <h2>No Telegram Configured</h2>
-  </CenteredMessage>);
+  return (
+    <CenteredMessage height={"384px"}>
+      <h2>No Telegram Configured</h2>
+    </CenteredMessage>
+  );
 } else {
   return (
     <div>

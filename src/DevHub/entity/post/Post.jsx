@@ -159,10 +159,12 @@ const header = (
       <div class="row justify-content-between">
         <div class="col-4">
           <Widget
-            src={"${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"}
+            src={
+              "${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"
+            }
             props={{
               accountId: post.author_id,
-              nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}"
+              nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
             }}
           />
         </div>
@@ -548,7 +550,11 @@ const tags = post.snapshot.labels ? (
     {post.snapshot.labels.map((tag) => (
       <Widget
         src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.tag"}
-        props={{ linkTo: "Feed", tag, nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}" }}
+        props={{
+          linkTo: "Feed",
+          tag,
+          nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+        }}
       />
     ))}
   </div>

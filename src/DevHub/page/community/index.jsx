@@ -190,10 +190,10 @@ return (
           props={{
             ...currentTab.params,
             view, // default view for an addon, can come as a prop from a community or from a direct link to page.addon
-            
+
             // below is temporary prop drilling until kanban and github are migrated
             permissions,
-            handle: community.handle
+            handle: community.handle,
           }}
         />
       </div>
