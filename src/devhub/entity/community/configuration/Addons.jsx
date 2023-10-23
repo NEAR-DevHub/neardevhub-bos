@@ -74,11 +74,15 @@ const ToggleButton = styled.input`
 `;
 
 function generateRandom6CharUUID() {
-  const gen = () => {
-    const r = (Math.random() * 36) | 0;
-    return r.toString(36);
-  };
-  return "xxxxxx".replace(/x/g, gen());
+  const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+  let result = "";
+
+  for (let i = 0; i < 6; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
+  }
+
+  return result;
 }
 
 const AddonItem = ({
@@ -172,14 +176,8 @@ function arraysAreEqual(arr1, arr2) {
 }
 
 const AddonsConfigurator = ({ data, onSubmit }) => {
-  // This is a workaround because no identifier in the data
-  const initialList = data.map((item) => ({
-    ...item,
-    id: generateRandom6CharUUID(),
-  }));
-
-  const [originalList, setOriginalList] = useState(initialList);
-  const [list, setList] = useState(initialList);
+  const [originalList, setOriginalList] = useState(data);
+  const [list, setList] = useState(data);
   const [changesMade, setChangesMade] = useState(false);
 
   useEffect(() => {
@@ -218,7 +216,6 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
   };
 
   const removeItem = (id) => {
-    console.log(id);
     const updatedList = list.filter((item) => item.id !== id);
     setList(updatedList);
     setChangesMade(!arraysAreEqual(originalList, updatedList));

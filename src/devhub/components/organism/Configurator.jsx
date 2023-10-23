@@ -75,14 +75,11 @@ const useForm = ({ initialValues, onUpdate, stateKey }) => {
           });
         }
       };
-      console.log("form values", initialFormState);
-      console.log("form values", formState?.values ?? {});
       const updatedValues = Struct.deepFieldUpdate(
         formState?.values ?? {},
         path,
         (node) => transformFn(node)
       );
-      console.log("updated values", updatedValues);
       State.update((lastKnownComponentState) => ({
         ...lastKnownComponentState,
         [stateKey]: {

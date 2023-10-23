@@ -264,7 +264,7 @@ return (
             src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Creator"}
             props={{
               data,
-              handle
+              handle,
             }}
           />
         </Container>

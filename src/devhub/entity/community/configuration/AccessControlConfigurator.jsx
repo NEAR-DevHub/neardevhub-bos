@@ -7,14 +7,12 @@ const CommunityAccessControlSchema = {
   },
 };
 
-const communityAccessControlFormatter = ({ admins, ...otherFields }) => ({
-  ...otherFields,
-  admins: admins.filter((string) => string.length > 0),
-});
-
 const { data, onSubmit, onCancel, setIsActive, isActive } = props;
 
 function handleOnSubmit(v) {
+  if (v.admins) {
+    v.admins = v.admins.split(",").map((admin) => admin.trim());
+  }
   onSubmit(v);
   setIsActive(false);
 }
@@ -24,7 +22,6 @@ return (
     src={"${REPL_DEVHUB}/widget/devhub.components.organism.Configurator"}
     props={{
       externalState: data,
-      formatter: communityAccessControlFormatter,
       schema: CommunityAccessControlSchema,
       onSubmit: handleOnSubmit,
       isActive,

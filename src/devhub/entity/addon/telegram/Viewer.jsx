@@ -1,4 +1,4 @@
-const { telegram_handle } = props;
+const { handles } = props;
 
 const CenteredMessage = styled.div`
   display: flex;
@@ -9,7 +9,7 @@ const CenteredMessage = styled.div`
   height: ${(p) => p.height ?? "100%"};
 `;
 
-if (!telegram_handle || telegram_handle.length === 0) {
+if (!handles || handles.length === 0) {
   return (
     <CenteredMessage height={"384px"}>
       <h2>No Telegram Configured</h2>
@@ -18,7 +18,7 @@ if (!telegram_handle || telegram_handle.length === 0) {
 } else {
   return (
     <div>
-      {(telegram_handle || []).map((tg) => (
+      {(handles || []).map((tg) => (
         <>
           <iframe
             iframeResizer

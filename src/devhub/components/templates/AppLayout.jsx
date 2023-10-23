@@ -109,6 +109,7 @@ const AppHeader = ({ page }) => {
 };
 
 function AppLayout({ page, children }) {
+  console.log("page", page);
   return (
     <Container>
       <AppHeader page={page} />
