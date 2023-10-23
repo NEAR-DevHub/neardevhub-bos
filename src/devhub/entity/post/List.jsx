@@ -45,7 +45,115 @@ try {
 } catch (e) {}
 /* END_INCLUDE: "core/lib/draftstate" */
 
-initState({
+const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
+
+const queryName =
+  props.queryName ?? `bo_near_devhub_v17_posts_with_latest_snapshot`;
+
+const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $where: ${queryName}_bool_exp = {}) {
+    ${queryName}(
+      limit: $limit
+      offset: $offset
+      order_by: {block_height: desc}
+      where: $where
+    ) {
+      post_id
+    }
+  }
+`;
+
+function fetchGraphQL(operationsDoc, operationName, variables) {
+  return asyncFetch(QUERYAPI_ENDPOINT, {
+    method: "POST",
+    headers: { "x-hasura-role": `bo_near` },
+    body: JSON.stringify({
+      query: operationsDoc,
+      variables: variables,
+      operationName: operationName,
+    }),
+  });
+}
+
+function searchConditionChanged() {
+  if (
+    props.author != state.author ||
+    props.term != state.term ||
+    props.tag != state.tag ||
+    props.recency != state.recency
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function updateSearchCondition() {
+  State.update({
+    author: props.author,
+    term: props.term,
+    tag: props.tag,
+    recency: props.recency,
+    loading: true,
+  });
+}
+
+function getPostIds() {
+  if (searchConditionChanged()) {
+    updateSearchCondition();
+    return;
+  }
+  let where = {};
+  let authorId = props.author;
+  let label = props.tag;
+  if (authorId) {
+    where = { author_id: { _eq: authorId }, ...where };
+  }
+  if (props.term) {
+    where = { description: { _ilike: `%${props.term}%` }, ...where };
+  }
+  if (label) {
+    if (typeof label === "string") {
+      // Handle a single label
+      where = { labels: { _contains: label }, ...where };
+    } else if (Array.isArray(label)) {
+      // Handle an array of labels
+      where = {
+        labels: {
+          _containsAny: label,
+        },
+        ...where,
+      };
+    }
+  }
+  if (!props.recency) {
+    // show only top level posts
+    where = { parent_id: { _is_null: true }, ...where };
+  }
+
+  console.log("searching for", where);
+  fetchGraphQL(query, "DevhubPostsQuery", {
+    limit: 100,
+    offset: 0,
+    where,
+  }).then((result) => {
+    if (result.status === 200) {
+      console.log("search success");
+      if (result.body.data) {
+        const data = result.body.data[queryName];
+        State.update({
+          postIds: data.map((p) => p.post_id),
+          loading: false,
+        });
+        console.log("found:");
+        console.log(data);
+      }
+    } else {
+      console.error("error:", result.body);
+      State.update({ loading: false });
+    }
+  });
+}
+
+State.init({
   period: "week",
 });
 
@@ -76,9 +184,9 @@ function defaultRenderItem(postId, additionalProps) {
 const renderItem = props.renderItem ?? defaultRenderItem;
 
 const cachedRenderItem = (item, i) => {
-  if (props.searchResult && props.searchResult.keywords) {
+  if (props.term) {
     return renderItem(item, {
-      searchKeywords: props.searchResult.keywords,
+      searchKeywords: [props.term],
     });
   }
 
@@ -120,7 +228,7 @@ const getPeriodText = (period) => {
   return text;
 };
 
-let postIds;
+let postIds = state.postIds ?? null;
 if (props.searchResult) {
   postIds = props.searchResult.postIds;
 } else {
@@ -301,7 +409,7 @@ const Head =
 return (
   <>
     {Head}
-    {props.loading ? loader : null}
+    {state.loading ? loader : null}
     {is_edit_or_add_post_transaction ? (
       <p class="text-secondary mt-4">
         Post {transaction_method_name == "edit_post" ? "edited" : "added"}{" "}
@@ -330,7 +438,8 @@ return (
       </InfiniteScroll>
     ) : (
       <p class="text-secondary">
-        No posts {props.searchResult ? "matches search" : ""}
+        No posts{" "}
+        {props.term || props.tag || props.author ? "matches search" : ""}
         {props.recency === "hot"
           ? " in " + getPeriodText(state.period).toLowerCase()
           : ""}

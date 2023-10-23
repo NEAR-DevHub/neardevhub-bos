@@ -85,36 +85,48 @@ function Banner() {
   );
 }
 
-return (
-  <div className="w-100">
-    <Banner />
-    <Widget
-      // TODO: LEGACY.
-      src={"${REPL_DEVHUB}/widget/gigs-board.feature.post-search.panel"}
-      props={{
-        children: (
-          <Widget
-            // TODO: LEGACY.
-            src={"${REPL_DEVHUB}/widget/gigs-board.components.layout.Controls"}
-            props={{
-              title: "Post",
-              href: href({
-                // TODO: LEGACY.
-                widgetSrc: "${REPL_DEVHUB}/widget/gigs-board.pages.Create",
-                params: {
-                  labels: [searchTag],
-                  nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
-                  nearDevGovGigsContractAccountId: "${REPL_DEVHUB_CONTRACT}",
-                },
-              }),
-            }}
-          />
-        ),
-        recency,
-        transactionHashes: props.transactionHashes,
-        nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
-        nearDevGovGigsContractAccountId: "${REPL_DEVHUB_CONTRACT}",
-      }}
-    />
-  </div>
-);
+const FeedPage = ({ author, recency, tag }) => {
+  State.init({
+    initial: { author, tag },
+    author,
+    tag,
+  });
+
+  // When rerendered with different props, State will be preserved, so we need to update the state when we detect that the props have changed.
+  if (tag !== state.initial.tag || author !== state.initial.author) {
+    State.update({
+      initial: { author, tag },
+      author,
+      tag,
+    });
+  }
+
+  return (
+    <div className="w-100">
+      <Banner />
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.feature.post-search.panel"}
+        props={{
+          children: (
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
+              }
+              props={{
+                title: "Post",
+                href: href({
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
+                  params: { page: "create" },
+                }),
+              }}
+            />
+          ),
+          recency,
+          transactionHashes: props.transactionHashes,
+        }}
+      />
+    </div>
+  );
+};
+
+return FeedPage(props);

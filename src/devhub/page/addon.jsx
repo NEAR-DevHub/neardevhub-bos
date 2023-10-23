@@ -6,37 +6,41 @@ const Container = styled.div`
   position: relative;
 `;
 
-const Header = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 10px;
-  z-index: 10;
-`;
-
 const Content = styled.div`
   flex: 1;
   padding: 20px;
   overflow: auto;
 `;
 
-const Button = styled.button`
+const SettingsButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
   background-color: #fff;
   display: flex;
   padding: 14px 16px;
   align-items: center;
   gap: 16px;
+  width: 50px;
+  height: 50px;
 
   border-radius: 4px;
   border: 1px solid #00ec97;
-`;
 
-const SettingsIcon = styled.div`
-  cursor: pointer;
+  z-index: 10;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    transform: translateY(2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
 `;
 
 const CenteredMessage = styled.div`
@@ -91,20 +95,22 @@ const isFullyRefactored = checkFullyRefactored(addon_id);
 
 return (
   <Container>
-    {isFullyRefactored && ( // Unfully refactored addons have the configurator built in.
+    {isFullyRefactored && // Unfully refactored addons have the configurator built in.
       // So we hide the header
-      <Header>
-        {permissions.can_configure && (
-          <Button onClick={() => setView("configure")}>
-            <SettingsIcon>
-              <span className="bi bi-gear"></span>
-            </SettingsIcon>
-          </Button>
-        )}
-      </Header>
-    )}
+      permissions.can_configure && (
+        <SettingsButton
+          onClick={() => setView(view === "configure" ? "view" : "configure")}
+        >
+          {view === "configure" ? (
+            <span className="bi bi-x"></span>
+          ) : (
+            <span className="bi bi-gear"></span>
+          )}
+        </SettingsButton>
+      )}
     <Content>
-      {view === "configure" ? (
+      {/* We hide in order to prevent a reload when we switch between two views */}
+      <div className={`${view !== "configure" ? "d-none" : ""}`}>
         <Widget
           src={addon.configurator_widget}
           props={{
@@ -115,9 +121,11 @@ return (
             },
 
             handle, // this is temporary prop drilling until kanban and github are migrated
+            permissions,
           }}
         />
-      ) : (
+      </div>
+      <div className={`${view === "configure" ? "d-none" : ""}`}>
         <Widget
           src={addon.view_widget}
           props={{
@@ -127,7 +135,7 @@ return (
             permissions,
           }}
         />
-      )}
+      </div>
     </Content>
   </Container>
 );
