@@ -1,61 +1,11 @@
 // This component implementation was forked from [IndexFeed], but it does not fully implement lazy loading.
 // While this component uses InfiniteScroll, it still loads the whole list of Post IDs in one view call.
 // The contract will need to be extended with pagination support, yet, even in the current state the page loads much faster.
-// [IndexFeed]: https://near.social/#/${REPL_MOB}/widget/WidgetSource?src=${REPL_MOB}/widget/IndexFeed
+// [IndexFeed]: https://near.social/#/mob.near/widget/WidgetSource?src=mob.near/widget/IndexFeed
 
-/* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-function widget(widgetName, widgetProps, key) {
-  widgetProps = {
-    ...widgetProps,
-    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
-    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    referral: props.referral,
-  };
-
-  return (
-    <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
-      props={widgetProps}
-      key={key}
-    />
-  );
-}
-
-function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-
-  if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId =
-      props.nearDevGovGigsContractAccountId;
-  }
-
-  if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId =
-      props.nearDevGovGigsWidgetsAccountId;
-  }
-
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
-/* END_INCLUDE: "common.jsx" */
+href || (href = () => {});
 
 /* INCLUDE: "core/lib/draftstate" */
 const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
@@ -106,9 +56,9 @@ function defaultRenderItem(postId, additionalProps) {
   // It is important to have a non-zero-height element as otherwise InfiniteScroll loads too many items on initial load
   return (
     <div className="py-2" style={{ minHeight: "150px" }}>
-      {widget(
-        `entity.post.Post`,
-        {
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.Post"}
+        props={{
           id: postId,
           expandable: true,
           defaultExpanded: false,
@@ -116,9 +66,9 @@ function defaultRenderItem(postId, additionalProps) {
           draftState,
           onDraftStateChange,
           ...additionalProps,
-        },
-        postId
-      )}
+          referral: postId,
+        }}
+      />
     </div>
   );
 }
@@ -174,7 +124,7 @@ let postIds;
 if (props.searchResult) {
   postIds = props.searchResult.postIds;
 } else {
-  postIds = Near.view(nearDevGovGigsContractAccountId, "get_children_ids");
+  postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
   if (postIds) {
     postIds.reverse();
   }
@@ -361,7 +311,10 @@ return (
             color: "#3252A6",
           }}
           className="fw-bold"
-          href={href("Feed")}
+          href={href({
+            widgetSrc: "${REPL_DEVHUB}/widget/app",
+            params: { page: "feed" },
+          })}
         >
           feed
         </a>

@@ -7,8 +7,9 @@ const { page, ...passProps } = props;
 
 // Import our modules
 const { AppLayout } = VM.require(
-  "${REPL_DEVHUB}/widget/DevHub.components.templates.AppLayout"
+  "${REPL_DEVHUB}/widget/devhub.components.templates.AppLayout"
 );
+
 if (!AppLayout) {
   return <p>Loading modules...</p>;
 }
@@ -47,7 +48,7 @@ function Page() {
     case "communities": {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.page.communities"}
+          src={"${REPL_DEVHUB}/widget/devhub.page.communities"}
           props={passProps}
         />
       );
@@ -59,17 +60,18 @@ function Page() {
         // where each level handles its own routing.
         // Modularizing a page just like we do with addons
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Provider"}
+          src={"${REPL_DEVHUB}/widget/devhub.entity.community.Provider"}
           props={{
             ...passProps,
-            Children: (p) => { // passing props from the Provider into the Children
+            Children: (p) => {
+              // passing props from the Provider into the Children
               switch (routes[1]) {
                 // ?page=community.configuration
                 case "configuration": {
                   return (
                     <Widget
                       src={
-                        "${REPL_DEVHUB}/widget/DevHub.page.community.configuration"
+                        "${REPL_DEVHUB}/widget/devhub.page.community.configuration"
                       }
                       props={{
                         ...passProps,
@@ -82,7 +84,7 @@ function Page() {
                 default: {
                   return (
                     <Widget
-                      src={"${REPL_DEVHUB}/widget/DevHub.page.community.index"}
+                      src={"${REPL_DEVHUB}/widget/devhub.page.community.index"}
                       props={{
                         ...passProps,
                         ...p,
@@ -102,7 +104,7 @@ function Page() {
       // should be redone with the rebrand
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.page.feed"}
+          src={"${REPL_DEVHUB}/widget/devhub.page.feed"}
           props={{
             ...passProps,
           }}
