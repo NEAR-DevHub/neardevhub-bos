@@ -207,7 +207,7 @@ const banner = (
   </div>
 );
 
-const FeedPage = ({ recency }) => {
+const FeedPage = ({ recency, tag }) => {
   return widget("components.template.app-layout", {
     banner,
 
@@ -217,6 +217,7 @@ const FeedPage = ({ recency }) => {
         href: href("Create"),
       }),
       recency,
+      tag,
       transactionHashes: props.transactionHashes,
     }),
   });
