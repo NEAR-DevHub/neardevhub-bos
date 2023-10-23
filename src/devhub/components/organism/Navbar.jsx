@@ -86,7 +86,7 @@ return (
     <LinksContainer>
       {links.map((link) => (
         <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.NavbarDropdown"
+          src="${REPL_DEVHUB}/widget/devhub.components.organism.NavbarDropdown"
           props={{
             title: link.title,
             href: link.href,
