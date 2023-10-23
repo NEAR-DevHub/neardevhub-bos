@@ -99,7 +99,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run dev",
+    command: "npm run dev -- -a devgovgigs.near -n mainnet -c devgovgigs.near",
     port: 3030,
     reuseExistingServer: !process.env.CI,
   },

@@ -71,7 +71,7 @@ const ProfileCard = (props) => {
       {!hideImage && (
         <Widget
           key="image"
-          src="mob.near/widget/ProfileImage"
+          src="${REPL_MOB}/widget/ProfileImage"
           props={{
             style: { width: "3em", height: "3em", marginRight: "0.3em" },
             profile,
@@ -101,7 +101,7 @@ const ProfileCard = (props) => {
       href={
         link !== true
           ? link
-          : `#/mob.near/widget/ProfilePage?accountId=${accountId}`
+          : `#/${REPL_MOB}/widget/ProfilePage?accountId=${accountId}`
       }
       className="link-dark text-truncate d-inline-flex"
     >
@@ -114,7 +114,7 @@ const ProfileCard = (props) => {
   if (props.tooltip === true) {
     return (
       <Widget
-        src="mob.near/widget/Profile.OverlayTrigger"
+        src="${REPL_MOB}/widget/Profile.OverlayTrigger"
         props={{ accountId, children: inner }}
       />
     );
@@ -130,7 +130,7 @@ const ProfileCard = (props) => {
     <div className="d-flex flex-row align-items-center">
       {inner}
       <Widget
-        src="neardevgov.near/widget/BadgesList"
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.BadgesList"
         props={{
           accountId,
           mode: "compact",

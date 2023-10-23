@@ -1,15 +1,27 @@
 #!/bin/bash
 
+# Function to check if a command is available
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# Check if jq is installed
+if ! command_exists jq; then
+  echo "jq is not installed. Installing..."
+  sudo apt-get update
+  sudo apt-get install -y jq
+fi
+
 # Check if bos-loader is installed
-if ! command -v bos-loader &> /dev/null; then
+if ! command_exists bos-loader; then
     # Install bos-loader
     echo "bos-loader is not installed. Installing..."
     curl --proto '=https' --tlsv1.2 -LsSf https://github.com/mpeterdev/bos-loader/releases/download/v0.7.1/bos-loader-v0.7.1-installer.sh | sh
 fi
 
 # Define default values
-ACCOUNT_ID="devhub.testnet"
-CONTRACT_ID="devhub.testnet"
+ACCOUNT_ID="devhubtest.testnet"
+CONTRACT_ID="devhubtest.testnet"
 NETWORK_ENV="testnet"
 CREATOR_REPL="REPL_DEVHUB"
 CONTRACT_REPL="REPL_DEVHUB_CONTRACT"
@@ -58,4 +70,4 @@ else
 fi
 
 # Run bos-loader with updated replacements
-bos-loader "$ACCOUNT_ID" --path src -r "$REPLACEMENTS_JSON"
+~/.cargo/bin/bos-loader "$ACCOUNT_ID" --path src -r "$REPLACEMENTS_JSON.tmp"
