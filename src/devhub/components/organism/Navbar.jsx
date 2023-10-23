@@ -1,3 +1,5 @@
+const page = props.page;
+
 const Logo = () => {
   return (
     <a href="/${REPL_DEVHUB}/widget/app?page=home">
@@ -52,7 +54,7 @@ const links = [
     links: [],
   },
   {
-    title: "/contribute ↓",
+    title: "/contribute",
     links: [
       { title: "/contribute", href: "contribute" },
       { title: "/activity feed", href: "feed" },
@@ -60,7 +62,7 @@ const links = [
     ],
   },
   {
-    title: "/discover ↓",
+    title: "/discover",
     links: [
       { title: "/discover", href: "discover" },
       { title: "/events", href: "events" },
@@ -68,7 +70,7 @@ const links = [
     ],
   },
   {
-    title: "/about ↓",
+    title: "/about",
     links: [
       { title: "/about", href: "about" },
       { title: "/mission", href: "mission" },
@@ -89,6 +91,7 @@ return (
             title: link.title,
             href: link.href,
             links: link.links,
+            page: page,
           }}
         />
       ))}

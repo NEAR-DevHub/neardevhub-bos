@@ -48,6 +48,10 @@ const DropdownLink = styled.a`
   text-decoration: none;
   transition: all 300ms;
 
+  &.active {
+    color: #00ec97;
+  }
+
   &:hover {
     color: #00ec97;
   }
@@ -59,15 +63,26 @@ return (
     onMouseLeave={() => setShowMenu(false)}
   >
     {href ? (
-      <DropdownLink href={href}>{title}</DropdownLink>
+      <DropdownLink className={href === props.page && "active"} href={href}>
+        {title}
+      </DropdownLink>
     ) : (
-      <p className={`m-0 ${showMenu && "active"}`}>{title}</p>
+      <p
+        style={{ color: `${links[0].href === props.page && "#00ec97"}` }}
+        className={`m-0 ${showMenu && "active"}`}
+      >
+        {title} ↓
+      </p>
     )}
     {showMenu && links.length !== 0 && (
       <DropdownMenu className={`${showMenu && "active"}`}>
         <div className="d-flex flex-column gap-3">
           {links.map((link) => (
-            <DropdownLink href={link.href} key={`${link.title}-${link.href}`}>
+            <DropdownLink
+              className={link.href === props.page && "active"}
+              href={`/${REPL_DEVHUB}/widget/app?page=${link.href}`}
+              key={`${link.title}-${link.href}`}
+            >
               {link.title}
             </DropdownLink>
           ))}
