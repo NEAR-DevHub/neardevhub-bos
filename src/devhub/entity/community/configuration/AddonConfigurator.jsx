@@ -23,7 +23,7 @@ return (
       onChange={(e) => setName(e.target.value)}
     />
     <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.atom.Toggle"}
+      src={"${REPL_DEVHUB}/widget/devhub.components.atom.Toggle"}
       props={{
         label: "Enabled",
         value: enabled,

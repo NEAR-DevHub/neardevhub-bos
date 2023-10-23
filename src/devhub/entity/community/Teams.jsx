@@ -1,7 +1,7 @@
 const { handle } = props;
 
 const { Tile } =
-  VM.require("${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
   (() => <></>);
 
 const { getCommunity } = VM.require(

@@ -8,8 +8,8 @@ if ! command -v bos-loader &> /dev/null; then
 fi
 
 # Define default values
-ACCOUNT_ID="devhub.testnet"
-CONTRACT_ID="devhub.testnet"
+ACCOUNT_ID="devhubtest.testnet"
+CONTRACT_ID="devhubtest.testnet"
 NETWORK_ENV="testnet"
 CREATOR_REPL="REPL_DEVHUB"
 CONTRACT_REPL="REPL_DEVHUB_CONTRACT"

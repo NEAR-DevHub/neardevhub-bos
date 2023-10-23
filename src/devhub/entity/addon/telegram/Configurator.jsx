@@ -1,5 +1,5 @@
 const { Tile } =
-  VM.require("${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
   (() => <></>);
 
 const { data, onSubmit } = props;
@@ -97,7 +97,7 @@ return (
         className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
       >
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-success" },
             disabled: initialData === handles,

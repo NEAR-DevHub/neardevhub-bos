@@ -52,14 +52,14 @@ const [isLinkCopied, setLinkCopied] = useState(false);
 const tabs = [
   {
     title: "Activity",
-    view: "${REPL_DEVHUB}/widget/DevHub.entity.community.Activity",
+    view: "${REPL_DEVHUB}/widget/devhub.entity.community.Activity",
     params: {
       handle: community.handle,
     },
   },
   {
     title: "Teams",
-    view: "${REPL_DEVHUB}/widget/DevHub.entity.community.Teams",
+    view: "${REPL_DEVHUB}/widget/devhub.entity.community.Teams",
     params: {
       handle: community.handle,
     },
@@ -70,7 +70,7 @@ const tabs = [
   addon.enabled &&
     tabs.push({
       title: addon.display_name,
-      view: "${REPL_DEVHUB}/widget/DevHub.page.addon",
+      view: "${REPL_DEVHUB}/widget/devhub.page.addon",
       params: {
         addon_id: addon.addon_id,
         config: JSON.parse(addon.parameters),
@@ -126,7 +126,7 @@ return (
             to={`/${REPL_DEVHUB}/widget/app?page=community.configuration&handle=${community.handle}`}
           >
             <Widget
-              src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
                 classNames: { root: "btn-outline-light text-dark" },
                 icon: {
@@ -140,7 +140,7 @@ return (
         )}
 
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-outline-light text-dark" },
 

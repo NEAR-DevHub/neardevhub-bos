@@ -375,7 +375,7 @@ const Configurator = ({
         ) : null}
 
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-outline-danger shadow-none border-0" },
 
@@ -384,7 +384,7 @@ const Configurator = ({
           }}
         />
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: classNames.submit ?? "btn-success" },
             disabled: !form.hasUnsubmittedChanges || !isFormValid,

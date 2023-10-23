@@ -37,7 +37,7 @@ if (!telegram_handle || telegram_handle.length === 0) {
 
           <a href={"https://t.me/" + tg} target="_blank">
             <Widget
-              src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
                 classNames: { root: "btn-primary" },
                 label: "View More",

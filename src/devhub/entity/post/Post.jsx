@@ -141,7 +141,7 @@ const shareButton = props.isPreview ? (
     class="card-link text-dark"
     href={href({
       gateway: "near.org",
-      widgetSrc: "${REPL_DEVHUB}/widget/DevHub.entity.post.Post",
+      widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
       params: { id: postId },
     })}
     role="button"
@@ -376,7 +376,7 @@ const buttonsFooter = props.isPreview ? null : (
           <a
             href={href({
               gateway: "near.org",
-              widgetSrc: "${REPL_DEVHUB}/widget/DevHub.entity.post.Post",
+              widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
               params: { id: parentId },
             })}
           >
@@ -407,7 +407,7 @@ const CreatorWidget = (postType) => {
       data-bs-parent={`#accordion${postId}`}
     >
       <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.entity.post.PostEditor"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
         props={{
           postType,
           onDraftStateChange: props.onDraftStateChange,
@@ -465,7 +465,7 @@ const EditorWidget = (postType) => {
       data-bs-parent={`#accordion${postId}`}
     >
       <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.entity.post.PostEditor"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
         props={{
           postType,
           postId,
@@ -503,7 +503,7 @@ function Editor() {
         {state.editorType === "CREATE" ? (
           <>
             <Widget
-              src={"${REPL_DEVHUB}/widget/DevHub.entity.post.PostEditor"}
+              src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
               props={{
                 postType: state.postType,
                 onDraftStateChange: props.onDraftStateChange,
@@ -517,7 +517,7 @@ function Editor() {
         ) : (
           <>
             <Widget
-              src={"${REPL_DEVHUB}/widget/DevHub.entity.post.PostEditor"}
+              src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
               props={{
                 postType: state.postType,
                 postId,
@@ -623,7 +623,7 @@ const postsList =
       >
         {childPostIds.map((childId) => (
           <Widget
-            src="${REPL_DEVHUB}/widget/DevHub.entity.post.Post"
+            src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
             props={{
               id: childId,
               isUnderPost: true,
@@ -663,7 +663,7 @@ const descriptionArea = isUnderPost ? (
       text: snapshot.description,
     })} */}
     <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.MarkdownViewer"}
+      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
       props={{
         text: snapshot.description,
       }}
@@ -676,7 +676,7 @@ const descriptionArea = isUnderPost ? (
         text: state.clamp ? clampedContent : snapshot.description,
       })} */}
       <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.MarkdownViewer"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
         props={{
           text: state.clamp ? clampedContent : snapshot.description,
         }}
@@ -703,7 +703,7 @@ const timestampElement = (_snapshot) => {
       class="text-muted"
       href={href({
         gateway: "near.org",
-        widgetSrc: "${REPL_DEVHUB}/widget/DevHub.entity.post.Post",
+        widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
         params: {
           id: postId,
           timestamp: _snapshot.timestamp,

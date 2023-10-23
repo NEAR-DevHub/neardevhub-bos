@@ -347,7 +347,7 @@ const callDescriptionDiv = () => {
       Description:
       <br />
       <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.MarkdownEditor"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"}
         props={{
           data: { handler: state.handler, content: state.description },
           onChange: (content) => {
@@ -557,7 +557,7 @@ return (
     <div class="card-footer">
       Preview:
       <Widget
-        src="${REPL_DEVHUB}/widget/DevHub.entity.post.Post"
+        src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
         props={{
           isPreview: true,
           id: 0, // irrelevant

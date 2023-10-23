@@ -28,12 +28,12 @@ return (
           />
         </small>
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.PostControls"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
           props={{ labels: communityData.tag }}
         />
       </div>
       <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.entity.post.List"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.List"}
         props={{
           tag: communityData.tag,
         }}
@@ -41,7 +41,7 @@ return (
     </div>
     <div class="col-md-3 container-fluid">
       <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.entity.community.Sidebar"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.community.Sidebar"}
         props={{ community: communityData }}
       />
     </div>

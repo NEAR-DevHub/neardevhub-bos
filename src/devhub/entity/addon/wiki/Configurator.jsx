@@ -14,7 +14,7 @@ const Container = styled.div`
 return (
   <Container>
     <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.MarkdownEditor"}
+      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"}
       props={{ data: { content }, onChange: setContent }}
     />
   </Container>

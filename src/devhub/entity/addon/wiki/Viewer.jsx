@@ -29,7 +29,7 @@ return (
     <Description>{description}</Description>
     <Content>
       <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.MarkdownViewer"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
         props={{ text: content }}
       />
     </Content>

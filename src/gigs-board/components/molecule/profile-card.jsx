@@ -130,7 +130,7 @@ const ProfileCard = (props) => {
     <div className="d-flex flex-row align-items-center">
       {inner}
       <Widget
-        src="${REPL_DEVHUB}/widget/DevHub.components.molecule.BadgesList"
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.BadgesList"
         props={{
           accountId,
           mode: "compact",

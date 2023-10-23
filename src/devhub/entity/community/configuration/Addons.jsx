@@ -4,9 +4,9 @@ const availableAddons = [
     title: "Wiki",
     icon: "bi bi-book",
     description: "Create a wiki for your community",
-    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.wiki.Viewer",
+    view_widget: "devhub-dev.testnet/widget/devhub.entity.addon.wiki.Viewer",
     configurator_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.wiki.Configurator",
+      "devhub-dev.testnet/widget/devhub.entity.addon.wiki.Configurator",
   },
   {
     id: "telegram",
@@ -14,36 +14,36 @@ const availableAddons = [
     icon: "bi bi-telegram",
     description: "Connect your telegram",
     view_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.telegram.Viewer",
+      "devhub-dev.testnet/widget/devhub.entity.addon.telegram.Viewer",
     configurator_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.telegram.Configurator",
+      "devhub-dev.testnet/widget/devhub.entity.addon.telegram.Configurator",
   },
   {
     id: "github",
     title: "Github",
     icon: "bi bi-github",
     description: "Connect your github",
-    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.github.Viewer",
+    view_widget: "devhub-dev.testnet/widget/devhub.entity.addon.github.Viewer",
     configurator_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.github.Configurator",
+      "devhub-dev.testnet/widget/devhub.entity.addon.github.Configurator",
   },
   {
     id: "kanban",
     title: "Kanban",
     icon: "bi bi-columns-gap",
     description: "Connect your github kanban board",
-    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.kanban.Viewer",
+    view_widget: "devhub-dev.testnet/widget/devhub.entity.addon.kanban.Viewer",
     configurator_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.kanban.Configurator",
+      "devhub-dev.testnet/widget/devhub.entity.addon.kanban.Configurator",
   },
   {
     id: "blog",
     title: "Blog",
     icon: "bi bi-newspaper",
     description: "Create a blog for your community",
-    view_widget: "devhub-dev.testnet/widget/DevHub.entity.addon.blog.Viewer",
+    view_widget: "devhub-dev.testnet/widget/devhub.entity.addon.blog.Viewer",
     configurator_widget:
-      "devhub-dev.testnet/widget/DevHub.entity.addon.blog.Configurator",
+      "devhub-dev.testnet/widget/devhub.entity.addon.blog.Configurator",
   },
 ];
 
@@ -144,7 +144,7 @@ const AddonItem = ({
           onChange={handleNameChange}
         />
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.components.atom.Toggle"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.atom.Toggle"}
           props={{
             label: "Enabled:",
             value: data.enabled,
@@ -276,7 +276,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
         className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
       >
         <Widget
-          src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-success" },
             disabled: !changesMade,

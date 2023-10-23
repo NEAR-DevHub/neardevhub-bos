@@ -1,5 +1,5 @@
 const { Tile } =
-  VM.require("${REPL_DEVHUB}/widget/DevHub.components.molecule.Tile") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
   (() => <></>);
 
 const { getAllCommunitiesMetadata, createCommunity } = VM.require(
@@ -111,7 +111,7 @@ const [showSpawner, setShowSpawner] = useState(false);
 const CommunitySpawner = () => (
   <Tile className="p-3">
     <Widget
-      src={"${REPL_DEVHUB}/widget/DevHub.components.organism.Configurator"}
+      src={"${REPL_DEVHUB}/widget/devhub.components.organism.Configurator"}
       props={{
         heading: "Community information",
         externalState: CommunityInputsDefaults,
@@ -249,7 +249,7 @@ return (
       {context.accountId && (
         <div className="d-flex flex-column justify-content-center">
           <Widget
-            src={"${REPL_DEVHUB}/widget/DevHub.components.molecule.Button"}
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
             props={{
               icon: { type: "bootstrap_icon", variant: "bi-people-fill" },
               onClick: () => setShowSpawner(!showSpawner),

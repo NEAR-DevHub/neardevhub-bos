@@ -714,7 +714,7 @@ return (
       )}
     {state.term && state.term.length > 1 && state.searchResult ? (
       <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.entity.post.List"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.List"}
         props={{
           searchResult: {
             postIds: state.searchResult,
@@ -732,7 +732,7 @@ return (
       />
     ) : (
       <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.entity.post.List"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.List"}
         props={{
           recency: props.recency,
           tag: props.tag,

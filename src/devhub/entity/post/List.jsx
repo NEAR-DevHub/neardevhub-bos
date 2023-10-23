@@ -1,7 +1,62 @@
 // This component implementation was forked from [IndexFeed], but it does not fully implement lazy loading.
 // While this component uses InfiniteScroll, it still loads the whole list of Post IDs in one view call.
 // The contract will need to be extended with pagination support, yet, even in the current state the page loads much faster.
-// [IndexFeed]: https://near.social/#/${REPL_MOB}/widget/WidgetSource?src=${REPL_MOB}/widget/IndexFeed
+// [IndexFeed]: https://near.social/#/mob.near/widget/WidgetSource?src=mob.near/widget/IndexFeed
+
+/* INCLUDE: "common.jsx" */
+const nearDevGovGigsContractAccountId =
+  props.nearDevGovGigsContractAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+const nearDevGovGigsWidgetsAccountId =
+  props.nearDevGovGigsWidgetsAccountId ||
+  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+
+function widget(widgetName, widgetProps, key) {
+  widgetProps = {
+    ...widgetProps,
+    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
+    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
+    referral: props.referral,
+  };
+
+  return (
+    <Widget
+      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
+}
+
+function href(widgetName, linkProps) {
+  linkProps = { ...linkProps };
+
+  if (props.nearDevGovGigsContractAccountId) {
+    linkProps.nearDevGovGigsContractAccountId =
+      props.nearDevGovGigsContractAccountId;
+  }
+
+  if (props.nearDevGovGigsWidgetsAccountId) {
+    linkProps.nearDevGovGigsWidgetsAccountId =
+      props.nearDevGovGigsWidgetsAccountId;
+  }
+
+  if (props.referral) {
+    linkProps.referral = props.referral;
+  }
+
+  const linkPropsQuery = Object.entries(linkProps)
+    .filter(([_key, nullable]) => (nullable ?? null) !== null)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
+    linkPropsQuery ? "?" : ""
+  }${linkPropsQuery}`;
+}
+/* END_INCLUDE: "common.jsx" */
+
 /* INCLUDE: "core/lib/draftstate" */
 const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
 let is_edit_or_add_post_transaction = false;
@@ -52,7 +107,7 @@ function defaultRenderItem(postId, additionalProps) {
   return (
     <div className="py-2" style={{ minHeight: "150px" }}>
       <Widget
-        src={"${REPL_DEVHUB}/widget/DevHub.entity.post.Post"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.Post"}
         props={{
           id: postId,
           expandable: true,
@@ -61,8 +116,8 @@ function defaultRenderItem(postId, additionalProps) {
           draftState,
           onDraftStateChange,
           ...additionalProps,
+          referral: postId,
         }}
-        postId={postId}
       />
     </div>
   );
@@ -71,9 +126,9 @@ function defaultRenderItem(postId, additionalProps) {
 const renderItem = props.renderItem ?? defaultRenderItem;
 
 const cachedRenderItem = (item, i) => {
-  if (props.searchResult && props.searchResult.keywords[item]) {
+  if (props.searchResult && props.searchResult.keywords) {
     return renderItem(item, {
-      searchKeywords: props.searchResult.keywords[item],
+      searchKeywords: props.searchResult.keywords,
     });
   }
 
@@ -88,53 +143,6 @@ const cachedRenderItem = (item, i) => {
 
 const initialRenderLimit = props.initialRenderLimit ?? 3;
 const addDisplayCount = props.nextLimit ?? initialRenderLimit;
-
-function getPostsByLabel() {
-  let postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_label", {
-    label: props.tag,
-  });
-  if (postIds) {
-    postIds.reverse();
-  }
-  return postIds;
-}
-
-function getPostsByAuthor() {
-  let postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_author", {
-    author: props.author,
-  });
-  if (postIds) {
-    postIds.reverse();
-  }
-  return postIds;
-}
-
-function intersectPostsWithLabel(postIds) {
-  if (props.tag) {
-    let postIdLabels = getPostsByLabel();
-    if (postIdLabels === null) {
-      // wait until postIdLabels are loaded
-      return null;
-    }
-    postIdLabels = new Set(postIdLabels);
-    return postIds.filter((id) => postIdLabels.has(id));
-  }
-  return postIds;
-}
-
-function intersectPostsWithAuthor(postIds) {
-  if (props.author) {
-    let postIdsByAuthor = getPostsByAuthor();
-    if (postIdsByAuthor == null) {
-      // wait until postIdsByAuthor are loaded
-      return null;
-    } else {
-      postIdsByAuthor = new Set(postIdsByAuthor);
-      return postIds.filter((id) => postIdsByAuthor.has(id));
-    }
-  }
-  return postIds;
-}
 
 const ONE_DAY = 60 * 60 * 24 * 1000;
 const ONE_WEEK = 60 * 60 * 24 * 1000 * 7;
@@ -162,70 +170,14 @@ const getPeriodText = (period) => {
   return text;
 };
 
-const findHottestsPosts = (postIds, period) => {
-  let allPosts;
-  if (!state.allPosts) {
-    allPosts = Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts");
-    if (!allPosts) {
-      return [];
-    }
-    State.update({ allPosts });
-  } else {
-    allPosts = state.allPosts;
-  }
-  let postIdsSet = new Set(postIds);
-  let posts = allPosts.filter((post) => postIdsSet.has(post.id));
-
-  let periodTime = ONE_DAY;
-  if (period === "week") {
-    periodTime = ONE_WEEK;
-  }
-  if (period === "month") {
-    periodTime = ONE_MONTH;
-  }
-  const periodLimitedPosts = posts.filter((post) => {
-    const timestamp = post.snapshot.timestamp / 1000000;
-    return Date.now() - timestamp < periodTime;
-  });
-  const modifiedPosts = periodLimitedPosts.map((post) => {
-    const comments =
-      Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids", {
-        post_id: post.id,
-      }) || [];
-    post = { ...post, comments };
-    return {
-      ...post,
-      postScore: getHotnessScore(post),
-    };
-  });
-  modifiedPosts.sort((a, b) => b.postScore - a.postScore);
-  return modifiedPosts.map((post) => post.id);
-};
-
 let postIds;
 if (props.searchResult) {
   postIds = props.searchResult.postIds;
-  postIds = intersectPostsWithLabel(postIds);
-  postIds = intersectPostsWithAuthor(postIds);
-} else if (props.tag) {
-  postIds = getPostsByLabel();
-  postIds = intersectPostsWithAuthor(postIds);
-} else if (props.author) {
-  postIds = getPostsByAuthor();
-} else if (props.recency == "all") {
-  postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_post_ids");
-  if (postIds) {
-    postIds.reverse();
-  }
 } else {
   postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
   if (postIds) {
     postIds.reverse();
   }
-}
-
-if (props.recency == "hot") {
-  postIds = findHottestsPosts(postIds, state.period);
 }
 
 const loader = (
@@ -408,6 +360,7 @@ return (
             color: "#3252A6",
           }}
           className="fw-bold"
+          href={href("Feed")}
         >
           feed
         </a>
