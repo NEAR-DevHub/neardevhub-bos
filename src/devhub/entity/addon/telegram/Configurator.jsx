@@ -50,7 +50,7 @@ return (
         <Item key={index}>
           <div className="flex-grow-1">
             <Widget
-            // TODO: LEGACY.
+              // TODO: LEGACY.
               src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
               props={{
                 className: "flex-grow-1",
@@ -74,7 +74,7 @@ return (
       <Item>
         <div className="flex-grow-1">
           <Widget
-          // TODO: LEGACY.
+            // TODO: LEGACY.
             src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
             props={{
               className: "flex-grow-1",

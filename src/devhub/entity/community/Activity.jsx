@@ -22,7 +22,7 @@ return (
         <small class="text-muted">
           <span>Required tags:</span>
           <Widget
-          // TODO: LEGACY.
+            // TODO: LEGACY.
             src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.tag"}
             props={{
               linkTo: "Feed",

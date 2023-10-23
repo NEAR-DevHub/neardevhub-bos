@@ -9,16 +9,16 @@ return (
   <div className={`d-flex flex-row-reverse ${props.className}`}>
     {props.href ? (
       <a className="btn btn-light" style={buttonStyle} href={props.href}>
-        <i
-          className={props.icon ? props.icon : "bi bi-plus-circle-fill"}
-        ></i>
+        <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
         {props.title}
       </a>
     ) : (
-      <button className="btn btn-light" style={buttonStyle} onClick={props.onClick}>
-        <i
-          className={props.icon ? props.icon : "bi bi-plus-circle-fill"}
-        ></i>
+      <button
+        className="btn btn-light"
+        style={buttonStyle}
+        onClick={props.onClick}
+      >
+        <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
         {props.title || "Post"}
       </button>
     )}

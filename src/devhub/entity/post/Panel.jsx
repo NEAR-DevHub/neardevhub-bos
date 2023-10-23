@@ -521,14 +521,16 @@ const search = (processedQueryArray, index) => {
 const amountOfResultsToShowFirst = 5;
 
 const buildPostsIndex = () => {
-  return Near.asyncView("${REPL_DEVHUB_CONTRACT}", "get_posts").then((posts) => {
-    const index = buildIndex(posts);
-    const data = posts.reduce((acc, post) => {
-      acc[post.id] = post;
-      return acc;
-    }, {});
-    return { index, data };
-  });
+  return Near.asyncView("${REPL_DEVHUB_CONTRACT}", "get_posts").then(
+    (posts) => {
+      const index = buildIndex(posts);
+      const data = posts.reduce((acc, post) => {
+        acc[post.id] = post;
+        return acc;
+      }, {});
+      return { index, data };
+    }
+  );
 };
 
 const getProcessedPostsCached = () => {
@@ -692,7 +694,7 @@ return (
       </div>
       <div>
         <Widget
-        // TODO: LEGACY.
+          // TODO: LEGACY.
           src={"${REPL_DEVHUB}/widget/gigs-board.feature.post-search.by-tag"}
           props={{
             tagQuery: props.tagQuery,

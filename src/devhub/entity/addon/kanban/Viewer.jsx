@@ -5,7 +5,7 @@ href || (href = () => {});
 const CommunityBoardPage = ({ handle, permissions }) => {
   return (
     <Widget
-    // TODO: LEGACY.
+      // TODO: LEGACY.
       src="${REPL_DEVHUB}/widget/gigs-board.entity.workspace.view.kanban.configurator"
       props={{
         communityHandle: handle,

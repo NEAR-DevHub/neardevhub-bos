@@ -70,7 +70,7 @@ const postSearchKeywords = props.searchKeywords ? (
     <span>Found keywords: </span>
     {props.searchKeywords.map((tag) => (
       <Widget
-      // TODO: LEGACY.
+        // TODO: LEGACY.
         src={"${REPL_DEVHUB}/widget/gigs-board..components.atom.Tag"}
         props={{ linkTo: "Feed", tag }}
       />
@@ -160,7 +160,7 @@ const header = (
       <div class="row justify-content-between">
         <div class="col-4">
           <Widget
-          // TODO: LEGACY.
+            // TODO: LEGACY.
             src={
               "${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"
             }
@@ -175,7 +175,7 @@ const header = (
             {editControl}
             {timestamp}
             <Widget
-            // TODO: LEGACY.
+              // TODO: LEGACY.
               src={"${REPL_DEVHUB}/widget/gigs-board.entity.post.History"}
               props={{
                 post,
@@ -305,7 +305,7 @@ const buttonsFooter = props.isPreview ? null : (
             "Like"
           ) : (
             <Widget
-            // TODO: LEGACY.
+              // TODO: LEGACY.
               src="${REPL_DEVHUB}/widget/gigs-board.components.layout.LikeButton.Faces"
               props={{
                 likesByUsers: Object.fromEntries(
@@ -553,7 +553,7 @@ const tags = post.snapshot.labels ? (
   <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
     {post.snapshot.labels.map((tag) => (
       <Widget
-      // TODO: LEGACY.
+        // TODO: LEGACY.
         src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.tag"}
         props={{
           linkTo: "Feed",

@@ -2,10 +2,12 @@ const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 href || (href = () => {});
 
+return <p>{JSON.stringify(props)}</p>;
+
 const CommunityBoardPage = ({ handle, permissions }) => {
   return (
     <Widget
-    // TODO: LEGACY.
+      // TODO: LEGACY.
       src="${REPL_DEVHUB}/widget/gigs-board.entity.workspace.view.kanban.configurator"
       props={{
         communityHandle: handle,
