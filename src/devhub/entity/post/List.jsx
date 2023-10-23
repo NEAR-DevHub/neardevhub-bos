@@ -3,59 +3,9 @@
 // The contract will need to be extended with pagination support, yet, even in the current state the page loads much faster.
 // [IndexFeed]: https://near.social/#/mob.near/widget/WidgetSource?src=mob.near/widget/IndexFeed
 
-/* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-function widget(widgetName, widgetProps, key) {
-  widgetProps = {
-    ...widgetProps,
-    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
-    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    referral: props.referral,
-  };
-
-  return (
-    <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
-      props={widgetProps}
-      key={key}
-    />
-  );
-}
-
-function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-
-  if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId =
-      props.nearDevGovGigsContractAccountId;
-  }
-
-  if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId =
-      props.nearDevGovGigsWidgetsAccountId;
-  }
-
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
-/* END_INCLUDE: "common.jsx" */
+href || (href = () => {});
 
 /* INCLUDE: "core/lib/draftstate" */
 const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
@@ -351,6 +301,7 @@ const Head =
 return (
   <>
     {Head}
+    {props.loading ? loader : null}
     {is_edit_or_add_post_transaction ? (
       <p class="text-secondary mt-4">
         Post {transaction_method_name == "edit_post" ? "edited" : "added"}{" "}
@@ -360,7 +311,10 @@ return (
             color: "#3252A6",
           }}
           className="fw-bold"
-          href={href("Feed")}
+          href={href({
+            widgetSrc: "${REPL_DEVHUB}/widget/app",
+            params: { page: "feed" },
+          })}
         >
           feed
         </a>

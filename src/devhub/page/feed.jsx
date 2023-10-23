@@ -85,16 +85,6 @@ function Banner() {
   );
 }
 
-const [searchTag, setSearchTag] = useState(tag || "");
-const [searchAuthor, setSearchAthor] = useState(author || "");
-
-const onTagSearch = (tag) => {
-  setSearchTag(tag);
-};
-
-const onAuthorSearch = (author) => {
-  setSearchAthor(author);
-};
 return (
   <div className="w-100">
     <Banner />
@@ -102,8 +92,6 @@ return (
       // TODO: LEGACY.
       src={"${REPL_DEVHUB}/widget/gigs-board.feature.post-search.panel"}
       props={{
-        author: searchAuthor,
-        authorQuery: { author: searchAuthor },
         children: (
           <Widget
             // TODO: LEGACY.
@@ -122,11 +110,7 @@ return (
             }}
           />
         ),
-        onAuthorSearch,
-        onTagSearch,
         recency,
-        tag: searchTag,
-        tagQuery: { tag: searchTag },
         transactionHashes: props.transactionHashes,
         nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
         nearDevGovGigsContractAccountId: "${REPL_DEVHUB_CONTRACT}",
