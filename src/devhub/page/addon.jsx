@@ -118,7 +118,15 @@ return (
           }}
         />
       ) : (
-        <Widget src={addon.view_widget} props={{ ...config, handle }} />
+        <Widget
+          src={addon.view_widget}
+          props={{
+            ...config,
+            // temporary prop drilling
+            handle,
+            permissions,
+          }}
+        />
       )}
     </Content>
   </Container>

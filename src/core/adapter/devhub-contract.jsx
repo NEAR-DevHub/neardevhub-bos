@@ -88,41 +88,41 @@ function getAvailableAddons() {
       id: "wiki",
       title: "Wiki",
       description: "Create a wiki for your community",
-      view_widget: "devhub.testnet/widget/DevHub.entity.addon.wiki.Viewer",
+      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.wiki.Viewer",
       configurator_widget:
-        "devhub.testnet/widget/DevHub.entity.addon.wiki.Configurator",
+        "${REPL_DEVHUB}/widget/devhub.entity.addon.wiki.Configurator",
     },
     {
       id: "telegram",
       title: "Telegram",
       description: "Connect your telegram",
-      view_widget: "devhub.testnet/widget/DevHub.entity.addon.telegram.Viewer",
+      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.telegram.Viewer",
       configurator_widget:
-        "devhub.testnet/widget/DevHub.entity.addon.telegram.Configurator",
+        "${REPL_DEVHUB}/widget/devhub.entity.addon.telegram.Configurator",
     },
     {
       id: "github",
       title: "Github",
       description: "Connect your github",
-      view_widget: "devhub.testnet/widget/DevHub.entity.addon.github.Viewer",
+      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.github.Viewer",
       configurator_widget:
-        "devhub.testnet/widget/DevHub.entity.addon.github.Configurator",
+        "${REPL_DEVHUB}/widget/devhub.entity.addon.github.Configurator",
     },
     {
       id: "kanban",
       title: "Kanban",
       description: "Connect your github kanban board",
-      view_widget: "devhub.testnet/widget/DevHub.entity.addon.kanban.Viewer",
+      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Viewer",
       configurator_widget:
-        "devhub.testnet/widget/DevHub.entity.addon.kanban.Configurator",
+        "${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Configurator",
     },
     {
       id: "blog",
       title: "Blog",
       description: "Create a blog for your community",
-      view_widget: "devhub.testnet/widget/DevHub.entity.addon.blog.Viewer",
+      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Viewer",
       configurator_widget:
-        "devhub.testnet/widget/DevHub.entity.addon.blog.Configurator",
+        "${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator",
     },
   ];
   // return Near.view("${REPL_DEVHUB_CONTRACT}", "get_available_addons") ?? null;
