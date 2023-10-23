@@ -35,78 +35,88 @@ const ContentContainer = styled.div`
   width: 100%;
 `;
 
-function QuestionButton() {
-  return (
-    <div className="btn-group" role="group">
-      <button
-        type="button"
-        className="btn btn-outline-light border-opacity-75 rounded-circle"
-        style={{
-          width: "30px",
-          height: "30px",
-          padding: "6px 0px",
-          borderWidth: "2px",
-          lineHeight: "0px",
-        }}
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
-      >
-        <i className="bi bi-question-lg"></i>
-      </button>
+// function QuestionButton() {
+//   return (
+//     <div className="btn-group" role="group">
+//       <button
+//         type="button"
+//         className="btn btn-outline-light border-opacity-75 rounded-circle"
+//         style={{
+//           width: "30px",
+//           height: "30px",
+//           padding: "6px 0px",
+//           borderWidth: "2px",
+//           lineHeight: "0px",
+//         }}
+//         data-bs-toggle="dropdown"
+//         aria-expanded="false"
+//       >
+//         <i className="bi bi-question-lg"></i>
+//       </button>
 
-      <ul className="dropdown-menu dropdown-menu-end">
-        <li>
-          <a
-            target="_blank"
-            className="dropdown-item"
-            href="https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=bug&template=bug_report.md&title="
-          >
-            Report a bug
-          </a>
-        </li>
+//       <ul className="dropdown-menu dropdown-menu-end">
+//         <li>
+//           <a
+//             target="_blank"
+//             className="dropdown-item"
+//             href="https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=bug&template=bug_report.md&title="
+//           >
+//             Report a bug
+//           </a>
+//         </li>
 
-        <li>
-          <a
-            target="_blank"
-            className="dropdown-item"
-            href="https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=enhancement&template=feature-request.md&title="
-          >
-            Suggest an improvement
-          </a>
-        </li>
-      </ul>
-    </div>
-  );
-}
+//         <li>
+//           <a
+//             target="_blank"
+//             className="dropdown-item"
+//             href="https://github.com/near/devgigsboard-widgets/issues/new?assignees=&labels=enhancement&template=feature-request.md&title="
+//           >
+//             Suggest an improvement
+//           </a>
+//         </li>
+//       </ul>
+//     </div>
+//   );
+// }
 
-const AppHeader = ({ page }) => {
-  return (
-    <StyledHeader>
-      <Link to={`/${REPL_DEVHUB}/widget/app?page=home`}>
-        <Logo
-          src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"
-          alt="DevHub"
-        />
-      </Link>
+// const AppHeader = ({ page }) => {
+//   return (
+//     <StyledHeader>
+//       <Link to={`/${REPL_DEVHUB}/widget/app?page=home`}>
+//         <Logo
+//           src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"
+//           alt="DevHub"
+//         />
+//       </Link>
 
-      <HeaderActions>
-        {page !== "communities" && (
-          <Link to={`/${REPL_DEVHUB}/widget/app?page=communities`}>
-            Communities
-          </Link>
-        )}
+//       <HeaderActions>
+//         {page !== "communities" && (
+//           <Link to={`/${REPL_DEVHUB}/widget/app?page=communities`}>
+//             Communities
+//           </Link>
+//         )}
 
-        <a
-          href="https://www.neardevgov.org/blog/near-developer-dao"
-          target="_blank"
-        >
-          Developer DAO
-        </a>
-        <QuestionButton />
-      </HeaderActions>
-    </StyledHeader>
-  );
-};
+//         <a
+//           href="https://www.neardevgov.org/blog/near-developer-dao"
+//           target="_blank"
+//         >
+//           Developer DAO
+//         </a>
+//         <QuestionButton />
+//       </HeaderActions>
+//     </StyledHeader>
+//   );
+// };
+
+const AppHeader = ({ page }) => (
+  <Widget
+    src="${REPL_DEVHUB}/widget/devhub.components.organism.Navbar"
+    props={{
+      page: page,
+      ...props,
+    }}
+  />
+);
 
 function AppLayout({ page, children }) {
   return (
