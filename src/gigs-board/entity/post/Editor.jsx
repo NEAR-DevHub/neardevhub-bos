@@ -251,13 +251,14 @@ const PostEditor = ({
       Storage.privateGet(DRAFT_STATE_STORAGE_KEY) ?? null
     );
 
-    const isDraft =
-      (recoveredDraft?.parent_post_id === id &&
+    const isRelevantDraftDetected =
+      recoveredDraft !== null &&
+      ((recoveredDraft?.parent_post_id === id &&
         recoveredDraft?.post_type === post_type) ||
-      (recoveredDraft?.edit_post_id === id &&
-        recoveredDraft?.post_type === post_type);
+        (recoveredDraft?.edit_post_id === id &&
+          recoveredDraft?.post_type === post_type));
 
-    if (recoveredDraft !== null && isDraft) {
+    if (isRelevantDraftDetected) {
       if (typeof transactionHashes === "string") {
         stateReset();
       } else {
