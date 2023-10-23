@@ -111,7 +111,7 @@ const Content = (
 
 return (
   <Widget
-    src="${REPL_DEVHUB}/widget/devhub.entity.home.home-section"
+    src="${REPL_DEVHUB}/widget/devhub.components.island.home-section"
     props={{
       title: "/get support",
       children: Content,
