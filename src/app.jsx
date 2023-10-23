@@ -42,7 +42,12 @@ function Page() {
   switch (routes[0]) {
     // ?page=home
     case "home": {
-      return <p>Homepage</p>;
+      return (
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.page.home"
+          props={passProps}
+        />
+      );
     }
     // ?page=communities
     case "communities": {
