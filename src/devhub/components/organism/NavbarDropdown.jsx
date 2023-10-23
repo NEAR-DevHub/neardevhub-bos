@@ -59,7 +59,9 @@ return (
     onMouseLeave={() => setShowMenu(false)}
   >
     {href ? (
-      <DropdownLink href={href}>{title}</DropdownLink>
+      <DropdownLink href={`/${REPL_DEVHUB}/widget/app?page=${href}`}>
+        {title}
+      </DropdownLink>
     ) : (
       <p className={`m-0 ${showMenu && "active"}`}>{title}</p>
     )}
@@ -67,7 +69,10 @@ return (
       <DropdownMenu className={`${showMenu && "active"}`}>
         <div className="d-flex flex-column gap-3">
           {links.map((link) => (
-            <DropdownLink href={link.href} key={`${link.title}-${link.href}`}>
+            <DropdownLink
+              href={`/${REPL_DEVHUB}/widget/app?page=${link.href}`}
+              key={`${link.title}-${link.href}`}
+            >
               {link.title}
             </DropdownLink>
           ))}

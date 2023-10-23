@@ -1,6 +1,6 @@
 const Logo = () => {
   return (
-    <a href="/">
+    <a href="/${REPL_DEVHUB}/widget/app?page=home">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="180"
@@ -54,26 +54,26 @@ const links = [
   {
     title: "/contribute ↓",
     links: [
-      { title: "/contribute", href: "#" },
-      { title: "/activity feed", href: "#" },
-      { title: "/communities", href: "#" },
+      { title: "/contribute", href: "contribute" },
+      { title: "/activity feed", href: "feed" },
+      { title: "/communities", href: "communities" },
     ],
   },
   {
     title: "/discover ↓",
     links: [
-      { title: "/discover", href: "#" },
-      { title: "/events", href: "#" },
-      { title: "/newsletter", href: "#" },
+      { title: "/discover", href: "discover" },
+      { title: "/events", href: "events" },
+      { title: "/newsletter", href: "newsletter" },
     ],
   },
   {
     title: "/about ↓",
     links: [
-      { title: "/about", href: "#" },
-      { title: "/mission", href: "#" },
-      { title: "/blog", href: "#" },
-      { title: "/brand kit", href: "#" },
+      { title: "/about", href: "about" },
+      { title: "/mission", href: "mission" },
+      { title: "/blog", href: "blog" },
+      { title: "/brand kit", href: "brand-kit" },
     ],
   },
 ];
