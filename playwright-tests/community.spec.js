@@ -37,7 +37,9 @@ test("should load metadata on the communities page", async ({ page }) => {
 // });
 
 test("should load a community page if handle exists", async ({ page }) => {
-  await page.goto("/devgovgigs.near/widget/app?page=community&handle=devhub-test");
+  await page.goto(
+    "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
+  );
 
   // Using the <Link> that wraps the tabs to identify a community page loaded
   const communityTabSelector = `a[href^="/devgovgigs.near/widget/app?page=community&handle=devhub-test&tab="]`;
@@ -55,14 +57,16 @@ test("should load a community page if handle exists", async ({ page }) => {
 });
 
 test("should load an error page if handle does not exist", async ({ page }) => {
-  await page.goto("/devgovgigs.near/widget/app?page=community&handle=devhub-faketest");
+  await page.goto(
+    "/devgovgigs.near/widget/app?page=community&handle=devhub-faketest"
+  );
 
   // Using the <Link> that wraps the card to identify a community
-  const communityNotFoundSelector = 'h2:has-text("Community with handle devhub-faketest not found.")';;
+  const communityNotFoundSelector =
+    'h2:has-text("Community with handle devhub-faketest not found.")';
 
   // Find the matching element
   const communityNotFound = await page.$$(communityNotFoundSelector);
 
   expect(communityNotFound).not.toBeNull();
 });
-
