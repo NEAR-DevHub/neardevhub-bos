@@ -4,6 +4,7 @@ function href(widgetName, linkProps) {
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
+    // TODO: LEGACY.
   return `/#/${REPL_DEVHUB}/widget/gigs-board.pages.${widgetName}${
     linkPropsQuery ? "?" : ""
   }${linkPropsQuery}`;
@@ -237,6 +238,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                   </span>
                 ) : (fieldValue?.length ?? 0) > 0 ? (
                   <Widget
+                  // TODO: LEGACY.
                     src={
                       "${REPL_DEVHUB}/widget/gigs-board.components.molecule.markdown-viewer"
                     }
@@ -250,6 +252,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
               </ValueView>
             </div>
             <Widget
+            // TODO: LEGACY.
               src={`${REPL_DEVHUB}/widget/gigs-board.${fieldParamsByType[fieldType].name}`}
               props={{
                 ...fieldProps,

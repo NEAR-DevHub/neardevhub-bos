@@ -99,17 +99,25 @@ return (
   <div className="w-100">
     <Banner />
     <Widget
+      // TODO: LEGACY.
       src={"${REPL_DEVHUB}/widget/gigs-board.feature.post-search.panel"}
       props={{
         author: searchAuthor,
         authorQuery: { author: searchAuthor },
         children: (
           <Widget
+            // TODO: LEGACY.
             src={"${REPL_DEVHUB}/widget/gigs-board.components.layout.Controls"}
             props={{
               title: "Post",
               href: href({
+                // TODO: LEGACY.
                 widgetSrc: "${REPL_DEVHUB}/widget/gigs-board.pages.Create",
+                params: {
+                  labels: [searchTag],
+                  nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+                  nearDevGovGigsContractAccountId: "${REPL_DEVHUB_CONTRACT}",
+                },
               }),
             }}
           />
@@ -120,6 +128,8 @@ return (
         tag: searchTag,
         tagQuery: { tag: searchTag },
         transactionHashes: props.transactionHashes,
+        nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+        nearDevGovGigsContractAccountId: "${REPL_DEVHUB_CONTRACT}",
       }}
     />
   </div>

@@ -4,7 +4,9 @@ const { getCommunity } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
-if (!getCommunity) {
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+
+if (!getCommunity || !href) {
   return <p>Loading modules...</p>;
 }
 const communityData = getCommunity({ handle });
@@ -20,6 +22,7 @@ return (
         <small class="text-muted">
           <span>Required tags:</span>
           <Widget
+          // TODO: LEGACY.
             src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.tag"}
             props={{
               linkTo: "Feed",
@@ -29,7 +32,18 @@ return (
         </small>
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
-          props={{ labels: communityData.tag }}
+          props={{
+            title: "Post",
+            href: href({
+              // TODO: LEGACY.
+              widgetSrc: "${REPL_DEVHUB}/widget/gigs-board.pages.Create",
+              params: {
+                labels: [communityData.tag],
+                nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+                nearDevGovGigsContractAccountId: "${REPL_DEVHUB_CONTRACT}",
+              },
+            }),
+          }}
         />
       </div>
       <Widget

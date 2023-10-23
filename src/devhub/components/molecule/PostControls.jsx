@@ -6,20 +6,18 @@ const buttonStyle = {
 };
 
 return (
-  <div class="d-flex flex-row-reverse" className={props.className}>
+  <div className={`d-flex flex-row-reverse ${props.className}`}>
     {props.href ? (
-      <a class="btn btn-light" style={buttonStyle} href={props.href}>
+      <a className="btn btn-light" style={buttonStyle} href={props.href}>
         <i
-          class="bi"
-          className={props.icon ? props.icon : "bi-plus-circle-fill"}
+          className={props.icon ? props.icon : "bi bi-plus-circle-fill"}
         ></i>
         {props.title}
       </a>
     ) : (
-      <button class="btn btn-light" style={buttonStyle} onClick={props.onClick}>
+      <button className="btn btn-light" style={buttonStyle} onClick={props.onClick}>
         <i
-          class="bi"
-          className={props.icon ? props.icon : "bi-plus-circle-fill"}
+          className={props.icon ? props.icon : "bi bi-plus-circle-fill"}
         ></i>
         {props.title || "Post"}
       </button>

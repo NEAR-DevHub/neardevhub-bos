@@ -25,7 +25,7 @@ test("LEGACY: should show post history for posts in the feed", async ({
 });
 
 test("should show post history for posts in the feed", async ({ page }) => {
-  await page.goto("/devgovgigs.near/widget/devhub.page.feed");
+  await page.goto("/devgovgigs.near/widget/app?page=feed");
 
   const firstPostHistoryButtonSelector = 'a.card-link[title="Post History"]';
   // Wait for the first post history button to be visible

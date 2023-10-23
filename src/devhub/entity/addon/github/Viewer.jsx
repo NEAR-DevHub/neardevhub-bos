@@ -5,6 +5,7 @@ href || (href = () => {});
 const CommunityBoardPage = ({ handle, permissions }) => {
   return (
     <Widget
+    // TODO: LEGACY.
       src="${REPL_DEVHUB}/widget/gigs-board.entity.workspace.view.kanban.configurator"
       props={{
         communityHandle: handle,
@@ -14,7 +15,7 @@ const CommunityBoardPage = ({ handle, permissions }) => {
           params: { page: "community", handle },
         }),
         permissions,
-
+        // TODO: REMOVE AFTER MIGRATION.
         nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
         nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB_CONTRACT}",
       }}

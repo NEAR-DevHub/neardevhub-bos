@@ -521,7 +521,7 @@ const search = (processedQueryArray, index) => {
 const amountOfResultsToShowFirst = 5;
 
 const buildPostsIndex = () => {
-  return Near.asyncView("${REPL_DEVHUB_CONTRACT", "get_posts").then((posts) => {
+  return Near.asyncView("${REPL_DEVHUB_CONTRACT}", "get_posts").then((posts) => {
     const index = buildIndex(posts);
     const data = posts.reduce((acc, post) => {
       acc[post.id] = post;
@@ -680,6 +680,7 @@ return (
       </div>
       <div class="dropdown">
         <Widget
+          // TODO: LEGACY.
           src={"${REPL_DEVHUB}/widget/gigs-board.feature.post-search.by-author"}
           props={{
             authorQuery: props.authorQuery,
@@ -691,6 +692,7 @@ return (
       </div>
       <div>
         <Widget
+        // TODO: LEGACY.
           src={"${REPL_DEVHUB}/widget/gigs-board.feature.post-search.by-tag"}
           props={{
             tagQuery: props.tagQuery,

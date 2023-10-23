@@ -51,6 +51,7 @@ const CommunitySummary = () => {
   return (
     <>
       <Widget
+      // TODO: LEGACY.
         src={
           "${REPL_DEVHUB}/widget/gigs-board.components.molecule.markdown-viewer"
         }
@@ -60,6 +61,7 @@ const CommunitySummary = () => {
       />
       <small class="text-muted mb-3">
         <Widget
+        // TODO: LEGACY.
           src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.tag"}
           props={{ linkTo: "Feed", ...community }}
         />
@@ -97,6 +99,7 @@ return community === null ? (
 ) : (
   <div class="d-flex flex-column align-items-end">
     <Widget
+    // TODO: LEGACY.
       src={"${REPL_DEVHUB}/widget/gigs-board.components.molecule.tile"}
       props={{
         fullWidth: true,
@@ -109,6 +112,7 @@ return community === null ? (
     <hr style={{ width: "100%", borderTop: "1px solid #00000033" }} />
 
     <Widget
+      // TODO: LEGACY.
       src={"${REPL_DEVHUB}/widget/gigs-board.components.molecule.tile"}
       props={{
         heading: "Admins",
@@ -116,6 +120,7 @@ return community === null ? (
         children: (community?.admins ?? []).map((accountId) => (
           <div key={accountId} className="d-flex" style={{ fontWeight: 500 }}>
             <Widget
+            // TODO: LEGACY.
               src={
                 "${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"
               }
