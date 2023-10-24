@@ -30,7 +30,7 @@ jobs:
 
       - name: Install bos CLI
         run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.5/bos-cli-v0.3.1-installer.sh | sh
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.1/bos-cli-installer.sh | sh
       
       - name: Deploy widgets
         run: |
