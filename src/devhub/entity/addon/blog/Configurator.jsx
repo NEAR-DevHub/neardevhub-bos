@@ -1,4 +1,3 @@
-// TODO
 const { data, onSubmit } = props;
 
 const { Tile } =
