@@ -107,6 +107,15 @@ const AppHeader = ({ page }) => {
     </StyledHeader>
   );
 };
+// const AppHeader = ({ page }) => (
+//   <Widget
+//     src="${REPL_DEVHUB}/widget/devhub.components.organism.Navbar"
+//     props={{
+//       page: page,
+//       ...props,
+//     }}
+//   />
+// );
 
 function AppLayout({ page, children }) {
   return (
