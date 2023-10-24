@@ -185,7 +185,7 @@ const CommunityActivityPage = ({ handle, transactionHashes }) => {
             </div>
 
             <div class="col">
-              {widget("entity.post.spawner", {
+              {widget("entity.post.Spawner", {
                 isHidden: state.isSpawnerHidden,
                 onCancel: () => spawnerToggle(false),
                 tags: [communityData.tag],
