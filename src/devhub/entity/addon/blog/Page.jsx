@@ -15,15 +15,16 @@ return (
     )}
     <h1 className="mb-3">{title}</h1>
     <p className="text-muted mb-4">
-      Written by <strong>{author || "AUTHOR"}</strong> in <strong>{community || "COMMUNITY"}</strong>
+      Written by <strong>{author || "AUTHOR"}</strong> in{" "}
+      <strong>{community || "COMMUNITY"}</strong>
     </p>
     <div className="mb-4">
-      {tags &&
-        tags.map((tag, index) => (
-          <span key={index} className="badge bg-secondary me-2">
-            {tag}
-          </span>
-        ))}
+      {(tags || []).map((tag) => (
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.components.atom.Tag"
+          props={{ tag }}
+        />
+      ))}
     </div>
     <div className="mb-5">
       <Widget

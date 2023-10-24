@@ -22,7 +22,7 @@ return (
       <div>
         {(tags || []).map((tag) => (
           <Widget
-            src="${REPL_DEVHUB}/widget/devhub.components.molecule.Tag"
+            src="${REPL_DEVHUB}/widget/devhub.components.atom.Tag"
             props={{ tag }}
           />
         ))}

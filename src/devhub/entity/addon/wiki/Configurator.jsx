@@ -21,7 +21,7 @@ const hasDataChanged = () => {
 };
 
 const handleSubmit = () => {
-  onSubmit({ content });
+  onSubmit({ title, description, content });
 };
 
 return (
