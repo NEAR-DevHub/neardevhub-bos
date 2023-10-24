@@ -12,7 +12,19 @@ function href({ gateway, widgetSrc, params }) {
   if (params) {
     params = (Object.entries(params) || [])
       .filter(([_key, nullable]) => (nullable ?? null) !== null)
-      .map(([key, value]) => `${key}=${value}`)
+      .map(([key, value]) => {
+        // Omit the parameter if the value is null or the array is empty
+        if (value === null || (Array.isArray(value) && value.length === 0)) {
+          return null;
+        }
+
+        // Convert array values to a comma-separated string with no spaces
+        if (Array.isArray(value)) {
+          return `${key}=${value.join(",")}`;
+        } else {
+          return `${key}=${value}`;
+        }
+      })
       .join("&");
   }
 

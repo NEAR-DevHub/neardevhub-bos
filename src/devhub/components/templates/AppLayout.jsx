@@ -82,7 +82,7 @@ function QuestionButton() {
 const AppHeader = ({ page }) => {
   return (
     <StyledHeader>
-      <Link to={`/${REPL_DEVHUB}/widget/app?page=home`}>
+      <Link to={`/${REPL_DEVHUB}/widget/app`}>
         <Logo
           src="https://ipfs.near.social/ipfs/bafkreibjsn3gswlcc5mvgkfv7ady2lzkd2htm55l472suarbd34qryh2uy"
           alt="DevHub"

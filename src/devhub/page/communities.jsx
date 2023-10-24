@@ -1,7 +1,3 @@
-const { Tile } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
-  (() => <></>);
-
 const { getAllCommunitiesMetadata, createCommunity } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
@@ -9,84 +5,6 @@ const { getAllCommunitiesMetadata, createCommunity } = VM.require(
 if (!getAllCommunitiesMetadata || !createCommunity) {
   return <p>Loading modules...</p>;
 }
-
-const { typeMatch } = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
-
-if (!typeMatch) {
-  return <p>Loading modules...</p>;
-}
-
-State.init({
-  handle: "",
-  name: "",
-  tag: "",
-  description: "",
-});
-
-const CommunityInputsPartialSchema = {
-  handle: {
-    inputProps: {
-      min: 2,
-      max: 40,
-
-      placeholder:
-        "Choose unique URL handle for your community. Example: zero-knowledge.",
-
-      required: true,
-    },
-
-    label: "URL handle",
-    order: 3,
-  },
-
-  name: {
-    inputProps: {
-      min: 2,
-      max: 30,
-      placeholder: "Community name.",
-      required: true,
-    },
-
-    label: "Name",
-    order: 1,
-  },
-
-  tag: {
-    inputProps: {
-      min: 2,
-      max: 30,
-
-      placeholder:
-        "Any posts with this tag will show up in your community feed.",
-
-      required: true,
-    },
-
-    label: "Tag",
-    order: 4,
-  },
-
-  description: {
-    inputProps: {
-      min: 2,
-      max: 60,
-
-      placeholder:
-        "Describe your community in one short sentence that will appear in the communities discovery page.",
-
-      required: true,
-    },
-
-    label: "Description",
-    order: 2,
-  },
-};
-
-const communityInputsValidator = (formValues) =>
-  typeMatch(formValues) &&
-  Object.values(formValues).every(
-    (value) => typeof value === "string" && value.length > 0
-  );
 
 const onCommunitySubmit = (inputs) =>
   createCommunity({
@@ -108,124 +26,11 @@ const onCommunitySubmit = (inputs) =>
 
 const [showSpawner, setShowSpawner] = useState(false);
 
-const CommunitySpawner = () => (
-  <Tile className="p-3">
-    <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.components.organism.Configurator"}
-      props={{
-        heading: "Community information",
-        externalState: CommunityInputsDefaults,
-        fullWidth: true,
-        isActive: true,
-        isUnlocked: true,
-        isValid: communityInputsValidator,
-        onSubmit: onCommunitySubmit,
-        schema: CommunityInputsPartialSchema,
-        submitIcon: {
-          type: "bootstrap_icon",
-          variant: "bi-rocket-takeoff-fill",
-        },
-        submitLabel: "Launch",
-        onCancel: () => setShowSpawner(false),
-      }}
-    />
-  </Tile>
-);
-
 const communitiesMetadata = getAllCommunitiesMetadata();
 
 if (!communitiesMetadata) {
   return <p>Loading...</p>;
 }
-
-function CommunityCard({ format, isBannerEnabled, metadata }) {
-  const renderFormat =
-    format === "small" || format === "medium" ? format : "small";
-
-  const formatSmall = (
-    <Link
-      to={"/${REPL_DEVHUB}/widget/app?page=community&handle=" + metadata.handle}
-    >
-      <div
-        {...otherProps}
-        className={[
-          "d-flex flex-shrink-0 p-3",
-          "rounded-4 border border-2",
-          "text-black text-decoration-none",
-          "attractable",
-        ].join(" ")}
-        style={{
-          background:
-            isBannerEnabled ?? false
-              ? `center / cover no-repeat url(${metadata.banner_url})`
-              : "#ffffff",
-
-          width: 400,
-          height: 110,
-        }}
-      >
-        <div
-          className="d-flex align-items-center gap-3 rounded-4 w-100 h-100"
-          style={{
-            background: "rgba(255, 255, 255, 0.9)",
-            backdropFilter: "blur(4px)",
-          }}
-        >
-          <img
-            alt="Community logo"
-            className="flex-shrink-0 rounded-circle attractable"
-            height={70}
-            src={metadata.logo_url}
-            width={70}
-          />
-
-          <div className="d-flex flex-column justify-content-center gap-1 w-100">
-            <h5
-              className="h5 m-0 text-nowrap overflow-hidden"
-              style={{ textOverflow: "ellipsis" }}
-            >
-              {metadata.name}
-            </h5>
-
-            <p
-              className="card-text text-secondary overflow-hidden"
-              style={{ fontSize: 12, textOverflow: "ellipsis" }}
-            >
-              {metadata.description}
-            </p>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-
-  const formatMedium = (
-    <div
-      className="card d-flex flex-column flex-shrink-0 text-decoration-none text-reset attractable"
-      href={link}
-      style={{ width: "23%", maxWidth: 304 }}
-    >
-      <div
-        className="card-img-top w-100"
-        style={{
-          background: `center / cover no-repeat url(${metadata.banner_url})`,
-          height: 164,
-        }}
-      />
-
-      <div className="d-flex flex-column gap-2 p-3 card-text">
-        <h5 class="h5 m-0">{metadata.name}</h5>
-        <span class="text-secondary text-wrap">{metadata.description}</span>
-      </div>
-    </div>
-  );
-
-  return {
-    small: formatSmall,
-    medium: formatMedium,
-  }[renderFormat];
-}
-
 return (
   <div className="w-100">
     <div
@@ -260,11 +65,22 @@ return (
         </div>
       )}
     </div>
-    {/* // TODO: Align centers */}
     <div className="d-flex flex-wrap align-content-start gap-4 p-4 w-100 h-100">
-      {showSpawner && <CommunitySpawner />}
+      {showSpawner && (
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.entity.community.Spawner"
+          props={{ data: null, onSubmit: onCommunitySubmit, onCancel: () => setShowSpawner(false) }}
+        />
+      )}
       {(communitiesMetadata ?? []).reverse().map((communityMetadata) => (
-        <CommunityCard metadata={communityMetadata} />
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.entity.community.Card"
+          props={{
+            format: "small",
+            isBannerEnabled: false,
+            metadata: communityMetadata,
+          }}
+        />
       ))}
     </div>
   </div>

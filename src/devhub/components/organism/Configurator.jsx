@@ -1,65 +1,8 @@
-function href(widgetName, linkProps) {
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
+const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 
-  // TODO: LEGACY.
-  return `/#/${REPL_DEVHUB}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
+if (!Struct) {
+  return <p>Loading modules...</p>;
 }
-/* INCLUDE: "core/lib/struct" */
-const Struct = {
-  deepFieldUpdate: (
-    node,
-    { input, params, path: [nextNodeKey, ...remainingPath], via: toFieldValue }
-  ) => ({
-    ...node,
-
-    [nextNodeKey]:
-      remainingPath.length > 0
-        ? Struct.deepFieldUpdate(
-            Struct.typeMatch(node[nextNodeKey]) ||
-              Array.isArray(node[nextNodeKey])
-              ? node[nextNodeKey]
-              : {
-                  ...((node[nextNodeKey] ?? null) !== null
-                    ? { __archivedLeaf__: node[nextNodeKey] }
-                    : {}),
-                },
-
-            { input, path: remainingPath, via: toFieldValue }
-          )
-        : toFieldValue({
-            input,
-            lastKnownValue: node[nextNodeKey],
-            params,
-          }),
-  }),
-
-  isEqual: (input1, input2) =>
-    Struct.typeMatch(input1) && Struct.typeMatch(input2)
-      ? JSON.stringify(Struct.toOrdered(input1)) ===
-        JSON.stringify(Struct.toOrdered(input2))
-      : false,
-
-  toOrdered: (input) =>
-    Object.keys(input)
-      .sort()
-      .reduce((output, key) => ({ ...output, [key]: input[key] }), {}),
-
-  pick: (object, subsetKeys) =>
-    Object.fromEntries(
-      Object.entries(object ?? {}).filter(([key, _]) =>
-        subsetKeys.includes(key)
-      )
-    ),
-
-  typeMatch: (input) =>
-    input !== null && typeof input === "object" && !Array.isArray(input),
-};
-/* END_INCLUDE: "core/lib/struct" */
 /* INCLUDE: "core/lib/gui/form" */
 const defaultFieldUpdate = ({
   input,
@@ -99,14 +42,13 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
+const useForm = ({ initialValues, onUpdate, stateKey }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
   };
 
-  const formState = state[stateKey] ?? null,
-    isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
+  const formState = state[stateKey] ?? null;
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
@@ -118,52 +60,51 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
   const formUpdate =
     ({ path, via: customFieldUpdate, ...params }) =>
     (fieldInput) => {
+      const transformFn = (node) => {
+        if (typeof customFieldUpdate === "function") {
+          return customFieldUpdate({
+            input: fieldInput?.target?.value ?? fieldInput,
+            lastKnownValue: node,
+            params,
+          });
+        } else {
+          return defaultFieldUpdate({
+            input: fieldInput?.target?.value ?? fieldInput,
+            lastKnownValue: node,
+            params,
+          });
+        }
+      };
+      console.log("form values", initialFormState);
+      console.log("form values", formState?.values ?? {});
       const updatedValues = Struct.deepFieldUpdate(
         formState?.values ?? {},
-
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
-
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
+        path,
+        (node) => transformFn(node)
       );
-
+      console.log("updated values", updatedValues);
       State.update((lastKnownComponentState) => ({
         ...lastKnownComponentState,
-
         [stateKey]: {
           hasUnsubmittedChanges: !Struct.isEqual(
             updatedValues,
             initialFormState.values
           ),
-
           values: updatedValues,
         },
       }));
 
-      if (
-        typeof onUpdate === "function" &&
-        !Struct.isEqual(updatedValues, initialFormState.values)
-      ) {
+      if (typeof onUpdate === "function") {
         onUpdate(updatedValues);
       }
     };
 
-  if (
-    !uninitialized &&
-    (formState === null || (!formState.hasUnsubmittedChanges && !isSynced))
-  ) {
-    formReset();
-  }
-
   return {
-    ...(formState ?? initialFormState),
-    isSynced,
+    hasUnsubmittedChanges: formState?.hasUnsubmittedChanges ?? false,
+    values: {
+      ...(initialValues ?? {}),
+      ...(formState?.values ?? {}),
+    },
     reset: formReset,
     stateKey,
     update: formUpdate,
@@ -240,7 +181,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                   <Widget
                     // TODO: LEGACY.
                     src={
-                      "${REPL_DEVHUB}/widget/gigs-board.components.molecule.markdown-viewer"
+                      "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
                     }
                     props={{
                       text: fieldValue,
@@ -303,26 +244,16 @@ const Configurator = ({
   externalState,
   fieldsRender: customFieldsRender,
   formatter: toFormatted,
-  isEmbedded,
   isValid,
+  isActive,
   onCancel,
   onChange,
   onSubmit,
   schema,
   submitIcon,
   submitLabel,
-  ...otherProps
 }) => {
-  const fieldsRender =
-    typeof customFieldsRender === "function"
-      ? customFieldsRender
-      : defaultFieldsRender;
-
-  State.init({
-    isActive: otherProps.isActive ?? false,
-  });
-
-  const isActive = otherProps.isActive ?? state.isActive;
+  const fieldsRender = customFieldsRender || defaultFieldsRender;
 
   const initialValues = Struct.typeMatch(schema)
     ? Struct.pick(externalState ?? {}, Object.keys(schema))
@@ -330,31 +261,21 @@ const Configurator = ({
 
   const form = useForm({ initialValues, onUpdate: onChange, stateKey: "form" });
 
-  const formFormattedValues =
-    typeof toFormatted === "function" ? toFormatted(form.values) : form.values;
+  const formFormattedValues = toFormatted
+    ? toFormatted(form.values)
+    : form.values;
 
-  const isFormValid =
-    typeof isValid === "function" ? isValid(formFormattedValues) : true;
-
-  const formToggle = (forcedState) =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      isActive: forcedState ?? !lastKnownState.isActive,
-    }));
+  const isFormValid = isValid ? isValid(formFormattedValues) : true;
 
   const onCancelClick = () => {
-    if (!isActive) formToggle(false);
     form.reset();
-    if (isEmbedded && typeof onSubmit === "function") onSubmit(initialValues);
-    if (typeof onCancel === "function") onCancel();
+    if (onCancel) onCancel();
   };
 
   const onSubmitClick = () => {
-    if (typeof onSubmit === "function" && isFormValid) {
+    if (onSubmit && isFormValid) {
       onSubmit(formFormattedValues);
     }
-
-    formToggle(false);
   };
 
   return (
@@ -366,40 +287,35 @@ const Configurator = ({
           schema,
         })}
       </div>
+      {isActive && (
+        <div className="d-flex align-items-center justify-content-end gap-3 mt-auto">
+          {actionsAdditional ? (
+            <div className="me-auto">{actionsAdditional}</div>
+          ) : null}
 
-      <div
-        className={[
-          "d-flex align-items-center justify-content-end gap-3 mt-auto",
-          isActive && typeof onChange !== "function" ? "" : "d-none",
-        ].join(" ")}
-      >
-        {actionsAdditional ? (
-          <div className="me-auto">{actionsAdditional}</div>
-        ) : null}
-
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-          props={{
-            classNames: { root: "btn-outline-danger shadow-none border-0" },
-
-            label: cancelLabel ?? "Cancel",
-            onClick: onCancelClick,
-          }}
-        />
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-          props={{
-            classNames: { root: classNames.submit ?? "btn-success" },
-            disabled: !form.hasUnsubmittedChanges || !isFormValid,
-            icon: submitIcon ?? {
-              type: "bootstrap_icon",
-              variant: "bi-check-circle-fill",
-            },
-            label: submitLabel ?? "Submit",
-            onClick: onSubmitClick,
-          }}
-        />
-      </div>
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+            props={{
+              classNames: { root: "btn-outline-danger shadow-none border-0" },
+              label: cancelLabel || "Cancel",
+              onClick: onCancelClick,
+            }}
+          />
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+            props={{
+              classNames: { root: classNames.submit || "btn-success" },
+              disabled: !form.hasUnsubmittedChanges || !isFormValid,
+              icon: submitIcon || {
+                type: "bootstrap_icon",
+                variant: "bi-check-circle-fill",
+              },
+              label: submitLabel || "Submit",
+              onClick: onSubmitClick,
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
