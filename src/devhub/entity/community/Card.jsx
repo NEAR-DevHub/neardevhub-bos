@@ -15,7 +15,7 @@ const CommunityCard = ({
 
   const link = href({
     widgetSrc: "${REPL_DEVHUB}/widget/app",
-    params: { page: "community", tab: "Activity", handle: metadata.handle },
+    params: { page: "community", handle: metadata.handle },
   });
 
   const formatSmall = (
