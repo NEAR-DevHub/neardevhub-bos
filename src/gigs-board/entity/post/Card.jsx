@@ -242,7 +242,7 @@ const header = (
             {editControl}
             {timestamp}
 
-            {widget("entity.post.history", {
+            {widget("entity.post.History", {
               post,
               timestamp: currentTimestamp,
             })}
