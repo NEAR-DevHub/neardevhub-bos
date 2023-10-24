@@ -20,9 +20,9 @@ if ! command_exists bos-loader; then
 fi
 
 # Define default values
-ACCOUNT_ID="devhubtest.testnet"
-CONTRACT_ID="devhubtest.testnet"
-NETWORK_ENV="testnet"
+ACCOUNT_ID="devgovgigs.near"
+CONTRACT_ID="devgovgigs.near"
+NETWORK_ENV="mainnet"
 CREATOR_REPL="REPL_DEVHUB"
 CONTRACT_REPL="REPL_DEVHUB_CONTRACT"
 
