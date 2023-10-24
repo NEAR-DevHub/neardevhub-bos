@@ -83,6 +83,7 @@ const AppHeader = ({ path, viewer }) => {
         <a
           className={[
             "text-white me-2",
+
             (path ?? []).some(({ pageId }) => pageId === "communities")
               ? "d-none"
               : "",
@@ -95,6 +96,7 @@ const AppHeader = ({ path, viewer }) => {
         <a
           className={[
             "text-white me-2",
+
             !(path ?? []).some(({ pageId }) => pageId === "admin") &&
             viewer.role.isDevHubModerator
               ? ""
