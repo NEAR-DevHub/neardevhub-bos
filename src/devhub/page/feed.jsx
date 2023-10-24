@@ -73,7 +73,7 @@ function Banner() {
         <div className="d-flex gap-4 justify-content-between">
           {featuredCommunities.map((community) => (
             <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.entity.community.card"}
+              src={"${REPL_DEVHUB}/widget/devhub.entity.community.Card"}
               props={{ metadata: community, format: "medium" }}
             />
           ))}

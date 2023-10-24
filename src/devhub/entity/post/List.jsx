@@ -414,18 +414,18 @@ return (
       <p class="text-secondary mt-4">
         Post {transaction_method_name == "edit_post" ? "edited" : "added"}{" "}
         successfully. Back to{" "}
-        <a
+        <Link
           style={{
             color: "#3252A6",
           }}
           className="fw-bold"
-          href={href({
+          to={href({
             widgetSrc: "${REPL_DEVHUB}/widget/app",
             params: { page: "feed" },
           })}
         >
           feed
-        </a>
+        </Link>
       </p>
     ) : state.items.length > 0 ? (
       <InfiniteScroll

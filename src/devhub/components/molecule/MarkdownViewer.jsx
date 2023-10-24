@@ -39,7 +39,7 @@ const renderMention =
   ((accountId) => (
     <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
       <Widget
-        src="${REPL_DEVHUB}/widget/ProfileLine"
+        src="neardevgov.near/widget/ProfileLine"
         props={{
           accountId: accountId.toLowerCase(),
           hideAccountId: true,

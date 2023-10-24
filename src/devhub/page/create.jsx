@@ -420,23 +420,23 @@ function generateDescription(text, amount, token, supervisor, seekingFunding) {
 }
 
 return (
-  <div class="bg-light d-flex flex-column flex-grow-1">
+  <div class="bg-light d-flex flex-column flex-grow-1 w-100">
     <div class="mx-5 mb-5">
       <div aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-            <a
+            <Link
               style={{
                 color: "#3252A6",
               }}
               className="fw-bold"
-              href={href({
+              to={href({
                 widgetSrc: "${REPL_DEVHUB}/widget/app",
                 params: { page: "feed" },
               })}
             >
               DevHub
-            </a>
+            </Link>
           </li>
           <li class="breadcrumb-item active" aria-current="page">
             Create new
@@ -446,18 +446,18 @@ return (
       {props.transactionHashes ? (
         <>
           Post created successfully. Back to{" "}
-          <a
+          <Link
             style={{
               color: "#3252A6",
             }}
             className="fw-bold"
-            href={href({
+            to={href({
               widgetSrc: "${REPL_DEVHUB}/widget/app",
               params: { page: "feed" },
             })}
           >
             feed
-          </a>
+          </Link>
         </>
       ) : (
         <>

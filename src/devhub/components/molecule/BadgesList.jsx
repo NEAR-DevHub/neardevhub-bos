@@ -1,3 +1,5 @@
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+
 const nearDevGovBadgesContractId = "neardevgov.near";
 
 let badges = props.badges;
@@ -29,8 +31,8 @@ if (props.style) {
 }
 
 const renderedBadgesList = badges.map(({ token_id: tokenId, metadata }) => (
-  <a
-    href={`#/neardevgov.near/widget/BadgeDetails?tokenId=${tokenId}`}
+  <Link
+    to={`/neardevgov.near/widget/BadgeDetails?tokenId=${tokenId}`}
     title={`NEAR DevGov Badge - ${metadata.title}`}
   >
     <Widget
@@ -45,7 +47,7 @@ const renderedBadgesList = badges.map(({ token_id: tokenId, metadata }) => (
       }}
     />
     {mode === "compact" ? null : metadata.title}
-  </a>
+  </Link>
 ));
 
 if (mode === "compact") {

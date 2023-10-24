@@ -138,11 +138,11 @@ const editControl = allowedToEdit ? (
 const shareButton = props.isPreview ? (
   <div></div>
 ) : (
-  <a
+  <Link
     class="card-link text-dark"
-    href={href({
+    to={href({
       gateway: "near.org",
-      widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
+      widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post", // TODO: Convert to page?
       params: { id: postId },
     })}
     role="button"
@@ -150,7 +150,7 @@ const shareButton = props.isPreview ? (
     title="Open in new tab"
   >
     <div class="bi bi-share"></div>
-  </a>
+  </Link>
 );
 
 // card-header
@@ -377,8 +377,8 @@ const buttonsFooter = props.isPreview ? null : (
         {isUnderPost || !parentId ? (
           <div key="link-to-parent"></div>
         ) : (
-          <a
-            href={href({
+          <Link
+            to={href({
               gateway: "near.org",
               widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
               params: { id: parentId },
@@ -392,7 +392,7 @@ const buttonsFooter = props.isPreview ? null : (
             >
               <i class="bi bi-arrow-90deg-up"></i>Go to parent
             </ButtonWithHover>
-          </a>
+          </Link>
         )}
       </div>
     </div>
@@ -704,7 +704,7 @@ const descriptionArea = isUnderPost ? (
 
 const timestampElement = (_snapshot) => {
   return (
-    <a
+    <Link
       class="text-muted"
       href={href({
         gateway: "near.org",
@@ -733,7 +733,7 @@ const timestampElement = (_snapshot) => {
         }}
       />
       {_snapshot.editor_id.substring(0, 8)}
-    </a>
+    </Link>
   );
 };
 

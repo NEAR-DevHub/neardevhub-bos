@@ -3,7 +3,6 @@ const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 if (!Struct) {
   return <p>Loading modules...</p>;
 }
-
 /* INCLUDE: "core/lib/gui/form" */
 const defaultFieldUpdate = ({
   input,
