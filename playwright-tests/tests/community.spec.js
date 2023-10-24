@@ -72,14 +72,13 @@ test.describe("Wallet is connected", () => {
 
     // Wait for prepoluated label to appear.
     await page.waitForSelector(typeaheadValueSelector, { state: "visible" });
-    
+
     // Fetch the element and its text content.
     const element = await page.$(typeaheadValueSelector);
     const elementText = await element.textContent();
-    
+
     expect(element).toBeTruthy();
-    expect(elementText).toBe('devhub-test');
-    
+    expect(elementText).toBe("devhub-test");
   });
 });
 
