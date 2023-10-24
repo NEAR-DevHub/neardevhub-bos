@@ -1,4 +1,4 @@
-const { data, onSubmit } = props;
+const { data, handle, onSubmit } = props;
 
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
@@ -8,6 +8,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  padding: 20px;
 `;
 
 const Item = styled.div`
@@ -28,9 +29,7 @@ const [includeTags, setIncludeTags] = useState(initialData.includeTags || []);
 const [excludeTags, setExcludeTags] = useState(initialData.excludeTags || []);
 const [newIncludeTag, setNewIncludeTag] = useState("");
 const [newExcludeTag, setNewExcludeTag] = useState("");
-const [displayType, setDisplayType] = useState(
-  initialData.displayType || "feed"
-); // "feed" or "grid"
+const [layout, setLayout] = useState(initialData.layout || "feed"); // "feed" or "grid"
 
 const handleAddIncludeTag = () => {
   if (newIncludeTag) {
@@ -62,153 +61,214 @@ const hasDataChanged = () => {
   return (
     JSON.stringify(includeTags) !== JSON.stringify(initialData.includeTags) ||
     JSON.stringify(excludeTags) !== JSON.stringify(initialData.excludeTags) ||
-    displayType !== initialData.displayType
+    layout !== initialData.layout
   );
 };
 
 const handleSubmit = () => {
-  onSubmit({ includeTags, excludeTags, displayType });
+  onSubmit({ includeTags, excludeTags, layout });
 };
 
 return (
   <Tile className="p-3">
-    <Container>
-      <h3>Include Tags</h3>
-      {includeTags.map((item, index) => (
-        <Item key={index}>
+    <ul className="nav nav-tabs" id="blogConfiguratorTabs" role="tablist">
+      <li className="nav-item" role="presentation">
+        <button
+          className="nav-link active"
+          id="settings-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#settings"
+          type="button"
+          role="tab"
+          aria-controls="settings"
+          aria-selected="true"
+        >
+          Settings
+        </button>
+      </li>
+      <li className="nav-item" role="presentation">
+        <button
+          className="nav-link"
+          id="editor-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#editor"
+          type="button"
+          role="tab"
+          aria-controls="editor"
+          aria-selected="false"
+        >
+          Editor
+        </button>
+      </li>
+    </ul>
+
+    <div className="tab-content" id="blogConfiguratorTabsContent">
+      {/* Settings Tab */}
+      <div
+        className="tab-pane show active"
+        id="settings"
+        role="tabpanel"
+        aria-labelledby="settings-tab"
+      >
+        <Container>
+          <h3>Include Tags</h3>
+          {includeTags.map((item, index) => (
+            <Item key={index}>
+              <div className="flex-grow-1">
+                <Widget
+                  // TODO: LEGACY.
+                  src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+                  props={{
+                    className: "flex-grow-1",
+                    value: item,
+                    placeholder: "",
+                    inputProps: {
+                      disabled: true,
+                    },
+                  }}
+                />
+              </div>
+              <button
+                className="btn btn-outline-danger"
+                onClick={() => handleDeleteIncludeTag(index)}
+              >
+                <i className="bi bi-trash-fill" />
+              </button>
+            </Item>
+          ))}
+          <Item>
+            <div className="flex-grow-1">
+              <Widget
+                // TODO: LEGACY.
+                src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+                props={{
+                  className: "flex-grow-1",
+                  onChange: (e) => setNewIncludeTag(e.target.value),
+                  value: newIncludeTag,
+                  placeholder: "tag",
+                }}
+              />
+            </div>
+            <button
+              className="btn btn-success"
+              onClick={() => handleAddIncludeTag()}
+              disabled={newIncludeTag === ""}
+            >
+              <i className="bi bi-plus" />
+            </button>
+          </Item>
+          <h3>Exclude Tags</h3>
+          {excludeTags.map((item, index) => (
+            <Item key={index}>
+              <div className="flex-grow-1">
+                <Widget
+                  // TODO: LEGACY.
+                  src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+                  props={{
+                    className: "flex-grow-1",
+                    value: item,
+                    placeholder: "",
+                    inputProps: {
+                      disabled: true,
+                    },
+                  }}
+                />
+              </div>
+              <button
+                className="btn btn-outline-danger"
+                onClick={() => handleDeleteExcludeTag(index)}
+              >
+                <i className="bi bi-trash-fill" />
+              </button>
+            </Item>
+          ))}
+          <Item>
+            <div className="flex-grow-1">
+              <Widget
+                // TODO: LEGACY.
+                src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+                props={{
+                  className: "flex-grow-1",
+                  onChange: (e) => setNewExcludeTag(e.target.value),
+                  value: newExcludeTag,
+                  placeholder: "tag",
+                }}
+              />
+            </div>
+            <button
+              className="btn btn-success"
+              onClick={() => handleAddExcludeTag()}
+              disabled={newExcludeTag === ""}
+            >
+              <i className="bi bi-plus" />
+            </button>
+          </Item>
+          <h3>Layout</h3>
           <div className="flex-grow-1">
             <Widget
-              // TODO: LEGACY.
-              src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+              src={"${REPL_NEAR}/widget/DIG.InputSelect"}
               props={{
-                className: "flex-grow-1",
-                value: item,
-                placeholder: "",
-                inputProps: {
-                  disabled: true,
-                },
-              }}
-            />
-          </div>
-          <button
-            className="btn btn-outline-danger"
-            onClick={() => handleDeleteIncludeTag(index)}
-          >
-            <i className="bi bi-trash-fill" />
-          </button>
-        </Item>
-      ))}
-      <Item>
-        <div className="flex-grow-1">
-          <Widget
-            // TODO: LEGACY.
-            src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
-            props={{
-              className: "flex-grow-1",
-              onChange: (e) => setNewIncludeTag(e.target.value),
-              value: newIncludeTag,
-              placeholder: "tag",
-            }}
-          />
-        </div>
-        <button
-          className="btn btn-success"
-          onClick={() => handleAddIncludeTag()}
-          disabled={newIncludeTag === ""}
-        >
-          <i className="bi bi-plus" />
-        </button>
-      </Item>
-      <h3>Exclude Tags</h3>
-      {excludeTags.map((item, index) => (
-        <Item key={index}>
-          <div className="flex-grow-1">
-            <Widget
-              // TODO: LEGACY.
-              src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
-              props={{
-                className: "flex-grow-1",
-                value: item,
-                placeholder: "",
-                inputProps: {
-                  disabled: true,
-                },
-              }}
-            />
-          </div>
-          <button
-            className="btn btn-outline-danger"
-            onClick={() => handleDeleteExcludeTag(index)}
-          >
-            <i className="bi bi-trash-fill" />
-          </button>
-        </Item>
-      ))}
-      <Item>
-        <div className="flex-grow-1">
-          <Widget
-            // TODO: LEGACY.
-            src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
-            props={{
-              className: "flex-grow-1",
-              onChange: (e) => setNewExcludeTag(e.target.value),
-              value: newExcludeTag,
-              placeholder: "tag",
-            }}
-          />
-        </div>
-        <button
-          className="btn btn-success"
-          onClick={() => handleAddExcludeTag()}
-          disabled={newExcludeTag === ""}
-        >
-          <i className="bi bi-plus" />
-        </button>
-      </Item>
-      <h3>Layout</h3>
-      <div className="flex-grow-1">
-        <Widget
-          src={"${REPL_NEAR}/widget/DIG.InputSelect"}
-          props={{
-            groups: [
-              {
-                items: [
+                groups: [
                   {
-                    label: "Grid",
-                    value: "grid",
-                  },
-                  {
-                    label: "Feed",
-                    value: "feed",
+                    items: [
+                      {
+                        label: "Grid",
+                        value: "grid",
+                      },
+                      {
+                        label: "Feed",
+                        value: "feed",
+                      },
+                    ],
                   },
                 ],
-              },
-            ],
-            rootProps: {
-              value: displayType || "",
-              placeholder: "Select an Display Type",
-              onValueChange: (value) => setDisplayType(value),
-            },
-          }}
-        />
+                rootProps: {
+                  value: layout || "",
+                  placeholder: "Select a Layout",
+                  onValueChange: (value) => setLayout(value),
+                },
+              }}
+            />
+          </div>
+          <div
+            className={
+              "d-flex align-items-center justify-content-end gap-3 mt-4"
+            }
+          >
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+              props={{
+                classNames: { root: "btn-success" },
+                disabled: !hasDataChanged(),
+                icon: {
+                  type: "bootstrap_icon",
+                  variant: "bi-check-circle-fill",
+                },
+                label: "Submit",
+                onClick: handleSubmit,
+              }}
+            />
+          </div>
+        </Container>
       </div>
+
+      {/* Editor Tab */}
       <div
-        className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
+        className="tab-pane"
+        id="editor"
+        role="tabpanel"
+        aria-labelledby="editor-tab"
       >
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-          props={{
-            classNames: { root: "btn-success" },
-            disabled: !hasDataChanged(),
-            icon: {
-              type: "bootstrap_icon",
-              variant: "bi-check-circle-fill",
-            },
-            label: "Submit",
-            onClick: handleSubmit,
-          }}
-        />
+        <Container>
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Creator"}
+            props={{
+              data,
+              handle
+            }}
+          />
+        </Container>
       </div>
-    </Container>
+    </div>
   </Tile>
 );

@@ -1,4 +1,4 @@
-const { tags } = props;
+const { includeTags, excludeTags, layout } = props;
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
