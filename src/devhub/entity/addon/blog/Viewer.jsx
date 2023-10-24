@@ -1,32 +1,23 @@
-const [author, setAuthor] = useState(props.author || "");
-const [tag, setTag] = useState(props.tag || "");
+const { includeTags, excludeTags, layout } = props;
 
-const onTagSearch = (tag) => {
-  setTag(tag);
-};
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-const onAuthorSearch = (author) => {
-  setAuthor(author);
-};
+if (!href) {
+  return <p>Loading modules...</p>;
+}
 
+// I want a different post item.
+// Ability to switch between grid and list view
+
+// And so I want a different feed...
 return (
-  <Widget
-    src={"${REPL_DEVHUB}/widget/devhub.entity.post.Panel"}
-    props={{
-      author: author,
-      authorQuery: { author },
-      children: (
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
-          props={{ title: "Post", link: "Create" }}
-        />
-      ),
-      onAuthorSearch,
-      onTagSearch,
-      recency,
-      tag: tag,
-      tagQuery: { tag },
-      transactionHashes: props.transactionHashes,
-    }}
-  />
+  <div class="row w-100">
+    <Widget
+      src={"${REPL_DEVHUB}/widget/devhub.entity.post.List"}
+      // TODO: This needs to filter by more labels
+      props={{
+        tag: "blog", // ["blog", ...tags]
+      }}
+    />
+  </div>
 );

@@ -71,10 +71,7 @@ const tabs = [
     tabs.push({
       title: addon.display_name,
       view: "${REPL_DEVHUB}/widget/devhub.page.addon",
-      params: {
-        addon_id: addon.addon_id,
-        config: JSON.parse(addon.parameters),
-      },
+      params: { addon },
     });
 });
 const onShareClick = () =>

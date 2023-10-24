@@ -32,8 +32,8 @@ const Theme = styled.div`
 `;
 
 if (!page) {
-  // If no page is specified, we default to the home page
-  page = "home";
+  // If no page is specified, we default to the feed page TEMP
+  page = "feed";
 }
 
 // This is our navigation, rendering the page based on the page parameter
@@ -61,7 +61,7 @@ function Page() {
     // ?page=community
     case "community": {
       return (
-        // Considering consolidating this into a single widget,
+        // Considering to consolsidate this into a single widget,
         // where each level handles its own routing.
         // Modularizing a page just like we do with addons
         <Widget
@@ -105,14 +105,19 @@ function Page() {
     }
     // ?page=feed
     case "feed": {
-      // TODO: This still needs to be fully migrated
-      // should be redone with the rebrand
       return (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.page.feed"}
-          props={{
-            ...passProps,
-          }}
+          props={passProps}
+        />
+      );
+    }
+    // ?page=create
+    case "create": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.page.create"}
+          props={passProps}
         />
       );
     }

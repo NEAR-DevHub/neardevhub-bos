@@ -8,10 +8,10 @@ const buttonStyle = {
 return (
   <div className={`d-flex flex-row-reverse ${props.className}`}>
     {props.href ? (
-      <a className="btn btn-light" style={buttonStyle} href={props.href}>
+      <Link className="btn btn-light" style={buttonStyle} to={props.href}>
         <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
         {props.title}
-      </a>
+      </Link>
     ) : (
       <button
         className="btn btn-light"

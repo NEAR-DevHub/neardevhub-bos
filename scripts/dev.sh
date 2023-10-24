@@ -20,11 +20,11 @@ if ! command_exists bos-loader; then
 fi
 
 # Define default values
-ACCOUNT_ID="devhubtest.testnet"
-CONTRACT_ID="devhubtest.testnet"
 NETWORK_ENV="testnet"
 CREATOR_REPL="REPL_DEVHUB"
 CONTRACT_REPL="REPL_DEVHUB_CONTRACT"
+REPLACE_ACCOUNT=false
+REPLACE_CONTRACT=false
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -32,11 +32,13 @@ while [[ $# -gt 0 ]]; do
     case $key in
         -a|--account)
             ACCOUNT_ID="$2"
+            REPLACE_ACCOUNT=true
             shift
             shift
             ;;
         -c|--contract)
             CONTRACT_ID="$2"
+            REPLACE_CONTRACT=true
             shift
             shift
             ;;
@@ -61,9 +63,22 @@ echo "NETWORK_ENV: $NETWORK_ENV"
 REPLACEMENTS_JSON="replacements.$NETWORK_ENV.json"
 
 if [ -f "$REPLACEMENTS_JSON" ]; then
-    # Replace the value in the JSON file
+    # Copy the content of the original JSON file to a temp one
+    cp "$REPLACEMENTS_JSON" "$REPLACEMENTS_JSON.tmp"
 
-     jq --arg ACCOUNT_ID "$ACCOUNT_ID" --arg CONTRACT_ID "$CONTRACT_ID" ".[\"$CREATOR_REPL\"] = \"$ACCOUNT_ID\" | .[\"$CONTRACT_REPL\"] = \"$CONTRACT_ID\"" "$REPLACEMENTS_JSON" > "$REPLACEMENTS_JSON.tmp"
+    # If ACCOUNT_ID is not provided as an argument, get it from the replacements file
+    if [ "$REPLACE_ACCOUNT" != true ]; then
+        ACCOUNT_ID=$(jq -r ".[\"$CREATOR_REPL\"]" "$REPLACEMENTS_JSON")
+    fi
+
+    # Replace the value in the JSON file only if the arguments are provided
+    if [ "$REPLACE_ACCOUNT" = true ]; then
+        jq --arg ACCOUNT_ID "$ACCOUNT_ID" ".[\"$CREATOR_REPL\"] = \"$ACCOUNT_ID\"" "$REPLACEMENTS_JSON.tmp" > temp.json && mv temp.json "$REPLACEMENTS_JSON.tmp"
+    fi
+
+    if [ "$REPLACE_CONTRACT" = true ]; then
+        jq --arg CONTRACT_ID "$CONTRACT_ID" ".[\"$CONTRACT_REPL\"] = \"$CONTRACT_ID\"" "$REPLACEMENTS_JSON.tmp" > temp.json && mv temp.json "$REPLACEMENTS_JSON.tmp"
+    fi
 else
     echo "Error: $REPLACEMENTS_JSON file not found."
     exit 1

@@ -1,3 +1,9 @@
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+
+if (!href) {
+  return <p>Loading modules...</p>;
+}
+
 const { community } = props;
 
 function trimHttps(url) {
@@ -51,20 +57,23 @@ const CommunitySummary = () => {
   return (
     <>
       <Widget
-        // TODO: LEGACY.
-        src={
-          "${REPL_DEVHUB}/widget/gigs-board.components.molecule.markdown-viewer"
-        }
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
         props={{
           text: community.bio_markdown,
         }}
       />
       <small class="text-muted mb-3">
-        <Widget
-          // TODO: LEGACY.
-          src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.tag"}
-          props={{ linkTo: "Feed", ...community }}
-        />
+        <Link
+          to={href({
+            widgetSrc: "${REPL_DEVHUB}/widget/app",
+            params: { page: "feed", tag: communityData.tag },
+          })}
+        >
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+            props={{ tag: community.tag }}
+          />
+        </Link>
       </small>
 
       <div className="mt-3">
