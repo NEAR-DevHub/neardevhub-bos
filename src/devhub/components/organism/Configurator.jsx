@@ -179,6 +179,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                   </span>
                 ) : (fieldValue?.length ?? 0) > 0 ? (
                   <Widget
+                    // TODO: LEGACY.
                     src={
                       "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
                     }
