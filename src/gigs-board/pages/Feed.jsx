@@ -192,13 +192,14 @@ const banner = (
         <h5 className="h5 m-0">Featured Communities</h5>
       </div>
       <div className="d-flex gap-4 justify-content-between">
-        {(Near.view(devHubAccountId, "get_featured_communities") ?? []).map(
-          (community) =>
-            widget(
-              "entity.community.card",
-              { metadata: community, format: "medium" },
-              community.handle
-            )
+        {(
+          Near.view(devHubAccountId, "get_featured_communities") ?? []
+        ).map((community) =>
+          widget(
+            "entity.community.card",
+            { metadata: community, format: "medium" },
+            community.handle
+          )
         )}
       </div>
     </div>
@@ -224,33 +225,15 @@ const FeedPage = ({ author, recency, tag }) => {
     }));
   }
 
-  const onTagSearch = (tag) => {
-    State.update((lastKnownState) => ({ ...lastKnownState, tag }));
-  };
-
-  const onAuthorSearch = (author) => {
-    State.update((lastKnownState) => ({ ...lastKnownState, author }));
-  };
-
   return widget("components.template.app-layout", {
     banner,
 
     children: widget("entity.post.SearchPanel", {
-      author: state.author,
-      authorQuery: { author: state.author },
-
-      children: widget("components.molecule.button", {
-        type: "link",
+      children: widget("components.layout.Controls", {
+        title: "Post",
         href: href("new-post"),
-        icon: { type: "bootstrap_icon", variant: "bi-plus-circle-fill" },
-        label: "Post",
       }),
-
-      onAuthorSearch,
-      onTagSearch,
       recency,
-      tag: state.tag,
-      tagQuery: { tag: state.tag },
       transactionHashes: props.transactionHashes,
     }),
   });
