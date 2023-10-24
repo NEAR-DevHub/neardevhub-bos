@@ -16,7 +16,6 @@ const [selectedAddon, setSelectedAddon] = useState(null);
 const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
 const sectionSubmit = (sectionData) => {
-  console.log(sectionData);
   const updatedCommunityData = {
     ...Object.entries(sectionData).reduce(
       (update, [propertyKey, propertyValue]) => ({

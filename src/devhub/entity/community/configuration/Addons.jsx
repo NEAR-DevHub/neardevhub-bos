@@ -218,7 +218,6 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
   };
 
   const removeItem = (id) => {
-    console.log(id);
     const updatedList = list.filter((item) => item.id !== id);
     setList(updatedList);
     setChangesMade(!arraysAreEqual(originalList, updatedList));

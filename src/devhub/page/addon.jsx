@@ -117,13 +117,6 @@ return (
           props={{
             data: config,
             onSubmit: (data) => {
-              console.log("onSubmit", {
-                handle,
-                addon: {
-                  ...config,
-                  params: JSON.stringify(data),
-                },
-              });
               setCommunityAddon({
                 handle,
                 addon: {
