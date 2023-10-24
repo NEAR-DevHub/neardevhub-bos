@@ -23,8 +23,6 @@ const deepFieldUpdate = (target, path, transform) => {
   };
 };
 
-
-
 /**
  * Checks if two inputs (objects or arrays) are deeply equal.
  *

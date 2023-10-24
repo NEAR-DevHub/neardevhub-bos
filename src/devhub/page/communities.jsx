@@ -69,7 +69,11 @@ return (
       {showSpawner && (
         <Widget
           src="${REPL_DEVHUB}/widget/devhub.entity.community.Spawner"
-          props={{ data: null, onSubmit: onCommunitySubmit, onCancel: () => setShowSpawner(false) }}
+          props={{
+            data: null,
+            onSubmit: onCommunitySubmit,
+            onCancel: () => setShowSpawner(false),
+          }}
         />
       )}
       {(communitiesMetadata ?? []).reverse().map((communityMetadata) => (
