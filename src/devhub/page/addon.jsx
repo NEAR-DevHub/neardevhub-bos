@@ -84,7 +84,6 @@ const checkFullyRefactored = (addon_id) => {
   switch (addon_id) {
     case "kanban":
     case "github":
-    case "blog":
       return false;
     default:
       return true;

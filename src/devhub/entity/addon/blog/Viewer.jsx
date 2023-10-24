@@ -17,7 +17,7 @@ return (
       src={"${REPL_DEVHUB}/widget/devhub.entity.post.List"}
       // TODO: This needs to filter by more labels
       props={{
-        tag: "test", // ["blog", ...tags]
+        tag: "blog", // ["blog", ...tags]
       }}
     />
   </div>

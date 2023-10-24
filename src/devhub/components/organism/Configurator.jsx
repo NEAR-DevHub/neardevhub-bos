@@ -75,11 +75,14 @@ const useForm = ({ initialValues, onUpdate, stateKey }) => {
           });
         }
       };
+      console.log("form values", initialFormState);
+      console.log("form values", formState?.values ?? {});
       const updatedValues = Struct.deepFieldUpdate(
         formState?.values ?? {},
         path,
         (node) => transformFn(node)
       );
+      console.log("updated values", updatedValues);
       State.update((lastKnownComponentState) => ({
         ...lastKnownComponentState,
         [stateKey]: {
@@ -97,7 +100,11 @@ const useForm = ({ initialValues, onUpdate, stateKey }) => {
     };
 
   return {
-    ...(formState ?? initialFormState),
+    hasUnsubmittedChanges: formState?.hasUnsubmittedChanges ?? false,
+    values: {
+      ...(initialValues ?? {}),
+      ...(formState?.values ?? {}),
+    },
     reset: formReset,
     stateKey,
     update: formUpdate,
@@ -261,7 +268,6 @@ const Configurator = ({
 
   const onCancelClick = () => {
     form.reset();
-    if (onSubmit) onSubmit(initialValues);
     if (onCancel) onCancel();
   };
 
