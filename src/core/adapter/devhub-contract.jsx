@@ -59,10 +59,23 @@ function updateCommunityGithub({ handle, github }) {
   });
 }
 
+/**
+ * Sets all addons, for configurating tabs
+ */
 function setCommunityAddons({ handle, addons }) {
   return Near.call("${REPL_DEVHUB_CONTRACT}", "set_community_addons", {
     handle,
     addons,
+  });
+}
+
+/**
+ * Sets specific addon, for configuring params
+ */
+function setCommunityAddon({ handle, addon }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "set_community_addon", {
+    handle,
+    community_addon: addon,
   });
 }
 
@@ -230,6 +243,7 @@ return {
   updateCommunityBoard,
   updateCommunityGithub,
   setCommunityAddons,
+  setCommunityAddon,
   getAccessControlInfo,
   getAllAuthors,
   getAllCommunitiesMetadata,

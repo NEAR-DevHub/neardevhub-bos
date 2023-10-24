@@ -52,26 +52,28 @@ const CenteredMessage = styled.div`
   height: ${(p) => p.height ?? "100%"};
 `;
 
-const { addon_id, config, permissions, handle } = props;
+const { addon, permissions, handle } = props;
 
-const { getAvailableAddons } = VM.require(
+const { getAvailableAddons, setCommunityAddon } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
-if (!getAvailableAddons) {
+if (!getAvailableAddons || !setCommunityAddon) {
   return <p>Loading modules...</p>;
 }
 
 const availableAddons = getAvailableAddons();
-const addon = availableAddons.find((it) => it.id === addon_id);
+const addonMatch = availableAddons.find((it) => it.id === addon.addon_id);
 
-if (!addon) {
+if (!addonMatch) {
   return (
     <CenteredMessage height={"384px"}>
-      <h2>Addon with id: "{addon_id}" not found.</h2>
+      <h2>Addon with id: "{addon.addon_id}" not found.</h2>
     </CenteredMessage>
   );
 }
+
+const config = JSON.parse(addon.parameters || "null");
 
 const ButtonRow = styled.div`
   display: flex;
@@ -90,7 +92,7 @@ const checkFullyRefactored = (addon_id) => {
   }
 };
 
-const isFullyRefactored = checkFullyRefactored(addon_id);
+const isFullyRefactored = checkFullyRefactored(addon.addon_id);
 
 return (
   <Container>
@@ -111,12 +113,24 @@ return (
       {/* We hide in order to prevent a reload when we switch between two views */}
       <div className={`${view !== "configure" ? "d-none" : ""}`}>
         <Widget
-          src={addon.configurator_widget}
+          src={addonMatch.configurator_widget}
           props={{
             data: config,
             onSubmit: (data) => {
-              // TODO: Method from new contract to update a specific addon's config
-              console.log("data", data);
+              console.log("onSubmit", {
+                handle,
+                addon: {
+                  ...config,
+                  params: JSON.stringify(data),
+                },
+              });
+              setCommunityAddon({
+                handle,
+                addon: {
+                  ...addon,
+                  parameters: JSON.stringify(data),
+                },
+              });
             },
 
             handle, // this is temporary prop drilling until kanban and github are migrated
@@ -126,7 +140,7 @@ return (
       </div>
       <div className={`${view === "configure" ? "d-none" : ""}`}>
         <Widget
-          src={addon.view_widget}
+          src={addonMatch.view_widget}
           props={{
             ...config,
             // temporary prop drilling
