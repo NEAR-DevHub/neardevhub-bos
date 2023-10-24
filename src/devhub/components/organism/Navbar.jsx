@@ -1,5 +1,7 @@
 const page = props.page;
 
+const [showMenu, setShowMenu] = useState(false);
+
 const Logo = () => {
   const Wrapper = styled.a`
     @media screen and (max-width: 768px) {
@@ -9,6 +11,7 @@ const Logo = () => {
       }
     }
   `;
+
   return (
     <Wrapper href="/${REPL_DEVHUB}/widget/app?page=home">
       <svg
@@ -34,6 +37,37 @@ const Logo = () => {
           </clipPath>
         </defs>
       </svg>
+    </Wrapper>
+  );
+};
+
+const ProfileIcon = () => {
+  const Wrapper = styled.svg`
+    padding: 0.25rem;
+    @media screen and (max-width: 768px) {
+      display: none;
+    }
+  `;
+  return (
+    <Wrapper
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+      style={{
+        background: "#00EC97",
+        width: 24,
+        height: 24,
+        borderRadius: "50rem",
+      }}
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M9 2.25C10.5533 2.25 11.8125 3.5092 11.8125 5.0625C11.8125 6.6158 10.5533 7.875 9 7.875C7.4467 7.875 6.1875 6.6158 6.1875 5.0625C6.1875 3.5092 7.4467 2.25 9 2.25ZM9 1.125C6.82538 1.125 5.0625 2.88788 5.0625 5.0625C5.0625 7.23712 6.82538 9 9 9C11.1746 9 12.9375 7.23712 12.9375 5.0625C12.9375 2.88788 11.1746 1.125 9 1.125ZM14.625 16.875H13.5V14.0625C13.5 13.3166 13.2037 12.6012 12.6762 12.0738C12.1488 11.5463 11.4334 11.25 10.6875 11.25H7.3125C5.7592 11.25 4.5 12.5092 4.5 14.0625V16.875H3.375V14.0625C3.375 11.8879 5.13788 10.125 7.3125 10.125H10.6875C12.8621 10.125 14.625 11.8879 14.625 14.0625V16.875Z"
+        fill="#151515"
+      />
     </Wrapper>
   );
 };
@@ -91,41 +125,71 @@ const MobileMenu = styled.button`
 
 const links = [
   {
-    title: "/docs",
-    href: "/docs",
+    title: "/communities",
+    href: "communities",
     links: [],
   },
   {
-    title: "/contribute",
-    links: [
-      { title: "/contribute", href: "contribute" },
-      { title: "/activity feed", href: "feed" },
-      { title: "/communities", href: "communities" },
-    ],
-  },
-  {
-    title: "/discover",
-    links: [
-      { title: "/discover", href: "discover" },
-      { title: "/events", href: "events" },
-      { title: "/newsletter", href: "newsletter" },
-    ],
+    title: "/activity feed",
+    href: "feed",
+    links: [],
   },
   {
     title: "/about",
     links: [
       { title: "/about", href: "about" },
-      { title: "/mission", href: "mission" },
-      { title: "/blog", href: "blog" },
-      { title: "/brand kit", href: "brand-kit" },
+      { title: "mission", href: "mission" },
+      { title: "blog", href: "blog" },
+      { title: "newsletter", href: "newsletter" },
+      { title: "calendar", href: "calendar" },
+      { title: "brand kit", href: "brand-kit" },
     ],
   },
 ];
 
+const MobileNav = styled.div`
+  display: none;
+
+  @media screen and (max-width: 768px) {
+    display: flex;
+  }
+
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 207px;
+
+  padding: 24px 36px 36px 16px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2.5rem;
+  flex-shrink: 0;
+
+  border-radius: 0px 0px 0px 16px;
+  background: rgba(41, 41, 41, 0.6);
+  backdrop-filter: blur(5px);
+
+  z-index: 50;
+`;
+
+const MobileLink = styled.a`
+  color: #f4f4f4 !important;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px; /* 100% */
+  margin-bottom: 1rem;
+
+  &.active {
+    color: #00ec97 !important;
+  }
+`;
+
 return (
-  <Navbar>
+  <Navbar className="position-relative">
     <Logo />
-    <div>
+    <div className="d-flex gap-3">
       <LinksContainer>
         {links.map((link) => (
           <Widget
@@ -139,9 +203,43 @@ return (
           />
         ))}
       </LinksContainer>
-      <MobileMenu>
+      <ProfileIcon />
+      <MobileMenu onClick={() => setShowMenu(!showMenu)}>
         <MenuIcon />
       </MobileMenu>
     </div>
+    {showMenu && (
+      <MobileNav>
+        <div
+          onClick={() => setShowMenu(!showMenu)}
+          style={{ cursor: "pointer" }}
+        >
+          <i className="bi bi-x" style={{ fontSize: 20, color: "#F4F4F4" }}></i>
+        </div>
+        <div className="d-flex flex-column gap-2">
+          {links.map((link, idx) =>
+            link.href ? (
+              <MobileLink
+                key={`mobile-link-${idx}`}
+                className={link.href === props.page && "active"}
+                href={`/${REPL_DEVHUB}/widget/app?page=${link.href}`}
+              >
+                {link.title}
+              </MobileLink>
+            ) : (
+              link.links.map((it, idx) => (
+                <MobileLink
+                  key={`nested-link-${idx}`}
+                  className={link.href === props.page && "active"}
+                  href={`/${REPL_DEVHUB}/widget/app?page=${it.href}`}
+                >
+                  {it.title}
+                </MobileLink>
+              ))
+            )
+          )}
+        </div>
+      </MobileNav>
+    )}
   </Navbar>
 );
