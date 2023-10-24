@@ -22,7 +22,7 @@ const Item = styled.div`
 const EditableField = styled.input`
   flex: 1;
 `;
-const initialData = data.telegram_handle;
+const initialData = data.handles;
 const [handles, setHandles] = useState(initialData || []);
 const [newItem, setNewItem] = useState("");
 
@@ -40,7 +40,7 @@ const handleDeleteItem = (index) => {
 };
 
 const handleSubmit = () => {
-  onSubmit(handles);
+  onSubmit({ handles: handles.map((handle) => handle.trim()) });
 };
 
 return (
@@ -57,7 +57,7 @@ return (
                 value: item,
                 placeholder: "Telegram Handle",
                 inputProps: {
-                  prefix: "https://twitter.com/",
+                  prefix: "https://t.me/",
                   disabled: true,
                 },
               }}
@@ -82,7 +82,7 @@ return (
               value: newItem,
               placeholder: "Telegram Handle",
               inputProps: {
-                prefix: "https://twitter.com/",
+                prefix: "https://t.me/",
               },
             }}
           />
