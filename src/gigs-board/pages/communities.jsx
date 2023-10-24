@@ -184,7 +184,7 @@ const CommunitiesPage = () => {
           ),
         })}
 
-        {widget("entity.community.Spawner", {
+        {widget("entity.community.spawner", {
           isHidden: state.isSpawnerHidden,
           onCancel: () => spawnerToggle(false),
         })}
