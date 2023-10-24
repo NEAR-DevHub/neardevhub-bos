@@ -1,4 +1,4 @@
-const HomeSections = ["hero", "explore", "connect", "contribute", "support"];
+const HomeSections = ["hero", "explore", "connect", "participate", "support"];
 
 return (
   <>

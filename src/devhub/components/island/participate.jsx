@@ -5,6 +5,11 @@ const Container = styled.div`
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    margin-top: 0;
+  }
 `;
 
 const LinkItem = styled.a`
@@ -49,7 +54,7 @@ const CTA = styled.a`
   border-radius: 1rem;
   background: #00ec97;
 
-  color: #f4f4f4;
+  color: #f4f4f4 !important;
   font-size: 1.5rem;
   font-style: normal;
   font-weight: 700;
@@ -63,10 +68,23 @@ const CTA = styled.a`
 const SectionPadding = styled.div`
   padding: 3rem;
   padding-top: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+    padding-top: 0;
+  }
 `;
 
 const LinksContainer = styled.div`
   width: 30%;
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
 `;
 
 const Content = (
@@ -74,7 +92,7 @@ const Content = (
     <Container>
       {Links.map((it) => (
         <LinksContainer key={Math.random()}>
-          <div className="d-flex flex-column gap-2">
+          <div className="d-flex flex-column gap-3 gap-md-2">
             {it.links.map((link) => (
               <LinkItem href={link.href}>
                 <span
@@ -105,7 +123,7 @@ return (
   <Widget
     src="${REPL_DEVHUB}/widget/devhub.components.island.home-section"
     props={{
-      title: "/contribute",
+      title: "/participate",
       description:
         "There are many ways to start your contribution journey. You can:",
       children: Content,

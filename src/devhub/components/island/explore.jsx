@@ -1,66 +1,11 @@
-/* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-function widget(widgetName, widgetProps, key) {
-  widgetProps = {
-    ...widgetProps,
-    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
-    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    referral: props.referral,
-  };
-
-  return (
-    <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/devhub-components.${widgetName}`}
-      props={widgetProps}
-      key={key}
-    />
-  );
-}
-
-function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-
-  if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId =
-      props.nearDevGovGigsContractAccountId;
-  }
-
-  if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId =
-      props.nearDevGovGigsWidgetsAccountId;
-  }
-
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
-/* END_INCLUDE: "common.jsx" */
-
 const Card = styled.div`
   display: flex;
-  width: 20rem;
-  height: 17.5rem;
+  max-width: 20rem;
+  max-height: 17.5rem;
   padding: 1.5rem;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
 
   h3 {
     color: #00ec97;
@@ -87,6 +32,21 @@ const Card = styled.div`
     font-style: normal;
     font-weight: 700;
     line-height: 120%; /* 24px */
+  }
+
+  @media screen and (max-width: 768px) {
+    h3 {
+      font-size: 1.5rem;
+    }
+
+    p,
+    a {
+      font-size: 1rem;
+    }
+
+    padding: 1rem;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 `;
 
@@ -136,7 +96,7 @@ const CTA = styled.a`
   border-radius: 1rem;
   background: #00ec97;
 
-  color: #f4f4f4;
+  color: #f4f4f4 !important;
   font-size: 1.5rem;
   font-style: normal;
   font-weight: 700;
@@ -149,6 +109,28 @@ const CTA = styled.a`
   &:hover {
     text-decoration: none;
   }
+
+  @media screen and (max-width: 768px) {
+    color: #f4f4f4 !important;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 24px */
+    letter-spacing: -0.4px;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    display: flex;
+    padding: 14px 16px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 8px;
+
+    border-radius: 16px;
+    background: #00ec97;
+  }
 `;
 
 const Container = styled.div`
@@ -158,13 +140,23 @@ const Container = styled.div`
 
   padding: 3rem;
   padding-top: 0;
+
+  @media screen and (max-width: 768px) {
+    padding: 1.5rem;
+    padding-top: 0;
+  }
 `;
 
 const CardsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 1.5rem;
-  justify-content: center;
+
+  @media screen and (max-width: 768px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* gap: 2.25rem; */
+  }
 `;
 
 const Content = (

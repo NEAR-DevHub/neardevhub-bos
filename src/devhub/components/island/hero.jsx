@@ -11,6 +11,14 @@ const HeroSection = styled.div`
   padding-top: 2rem;
   padding-bottom: 2rem;
   padding-left: 3.375rem;
+
+  @media screen and (max-width: 768px) {
+    width: 95%;
+    padding-top: 0.625rem;
+    padding-left: 1.5rem;
+    padding-bottom: 1.5rem;
+    padding-right: 0;
+  }
 `;
 
 const Title = styled.h1`
@@ -20,6 +28,11 @@ const Title = styled.h1`
   font-weight: 700;
   line-height: 100%; /* 88px */
   letter-spacing: -1.76px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 2.25rem;
+    letter-spacing: -0.72px;
+  }
 `;
 
 const Lead = styled.p`
@@ -30,6 +43,11 @@ const Lead = styled.p`
   line-height: 110%; /* 39.6px */
 
   width: 70%;
+
+  @media screen and (max-width: 768px) {
+    font-size: 1.5rem;
+    width: 85%;
+  }
 `;
 
 const CTA = styled.a`
@@ -41,12 +59,31 @@ const CTA = styled.a`
   border-radius: 1rem;
   border: 1px solid #151515;
 
-  color: #151515;
+  color: #151515 !important;
   font-size: 1.25rem;
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 28.8px */
   letter-spacing: -0.48px;
+
+  @media screen and (max-width: 768px) {
+    display: inline-flex;
+    padding: 8px 16px;
+    align-items: center;
+    gap: 8px;
+
+    border-radius: 16px;
+    background: #00ec97;
+
+    border: none;
+
+    color: #f4f4f4 !important;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 19.2px */
+    letter-spacing: -0.32px;
+  }
 `;
 
 const Container = styled.div`
@@ -54,6 +91,10 @@ const Container = styled.div`
   width: 100%;
   height: max-content;
   overflow: hidden;
+
+  @media screen and (max-width: 768px) {
+    background: #f4f4f4;
+  }
 `;
 
 const ImageContainer = styled.div`
@@ -63,6 +104,10 @@ const ImageContainer = styled.div`
   top: 0;
   z-index: -1;
   right: 0;
+
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const Image = styled.img`
@@ -73,6 +118,41 @@ const Image = styled.img`
   object-fit: cover;
 `;
 
+const DesktopDescription = styled.div`
+  @media screen and (max-width: 786px) {
+    display: none;
+  }
+`;
+
+const MobileImage = styled.img`
+  display: none;
+
+  width: 356.187px;
+  height: 196px;
+
+  margin-left: -1.5rem;
+  margin-bottom: -1.5rem;
+  margin-right: 0;
+  width: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+
+  @media screen and (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const MobileDescription = styled.div`
+  display: none;
+  padding: 24px 16px;
+
+  width: 70%;
+
+  @media screen and (max-width: 768px) {
+    display: block;
+  }
+`;
+
 return (
   <Container>
     <HeroSection>
@@ -81,11 +161,20 @@ return (
         <span style={{ color: "#101820" }}>home base</span> <br />
         for NEAR builders
       </Title>
-      <Lead>Join a vibrant community of innovators shaping the open web.</Lead>
-      <CTA href="#">Read more →</CTA>
+      <MobileImage src={imageLink} />
+      <DesktopDescription>
+        <Lead>
+          Join a vibrant community of innovators shaping the open web.
+        </Lead>
+        <CTA href="#">Read more →</CTA>
+      </DesktopDescription>
     </HeroSection>
     <ImageContainer>
       <Image src={imageLink} />
     </ImageContainer>
+    <MobileDescription>
+      <Lead>Join a vibrant community of innovators shaping the open web.</Lead>
+      <CTA href="#">Read more →</CTA>
+    </MobileDescription>
   </Container>
 );

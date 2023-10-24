@@ -1,8 +1,16 @@
 const page = props.page;
 
 const Logo = () => {
+  const Wrapper = styled.a`
+    @media screen and (max-width: 768px) {
+      svg {
+        width: 90px;
+        height: 12px;
+      }
+    }
+  `;
   return (
-    <a href="/${REPL_DEVHUB}/widget/app?page=home">
+    <Wrapper href="/${REPL_DEVHUB}/widget/app?page=home">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="180"
@@ -26,9 +34,26 @@ const Logo = () => {
           </clipPath>
         </defs>
       </svg>
-    </a>
+    </Wrapper>
   );
 };
+
+const MenuIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+  >
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M2 12.2986H14V13.3732H2V12.2986ZM2 9.07471H14V10.1493H2V9.07471ZM2 5.85083H14V6.92546H2V5.85083ZM2 2.62695H14V3.70158H2V2.62695Z"
+      fill="#818181"
+    />
+  </svg>
+);
 
 const Navbar = styled.div`
   padding: 1.5rem 3rem;
@@ -38,6 +63,10 @@ const Navbar = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
+
+  @media screen and (max-width: 768px) {
+    padding: 1.875rem 1.375rem;
+  }
 `;
 
 const LinksContainer = styled.div`
@@ -45,6 +74,19 @@ const LinksContainer = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 1.5rem;
+
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileMenu = styled.button`
+  all: unset;
+  display: none;
+
+  @media screen and (max-width: 768px) {
+    display: block;
+  }
 `;
 
 const links = [
@@ -83,18 +125,23 @@ const links = [
 return (
   <Navbar>
     <Logo />
-    <LinksContainer>
-      {links.map((link) => (
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.NavbarDropdown"
-          props={{
-            title: link.title,
-            href: link.href,
-            links: link.links,
-            page: page,
-          }}
-        />
-      ))}
-    </LinksContainer>
+    <div>
+      <LinksContainer>
+        {links.map((link) => (
+          <Widget
+            src="${REPL_DEVHUB}/widget/devhub.components.molecule.NavbarDropdown"
+            props={{
+              title: link.title,
+              href: link.href,
+              links: link.links,
+              page: page,
+            }}
+          />
+        ))}
+      </LinksContainer>
+      <MobileMenu>
+        <MenuIcon />
+      </MobileMenu>
+    </div>
   </Navbar>
 );

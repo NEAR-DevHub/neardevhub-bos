@@ -7,6 +7,10 @@ const DescriptionHeader = styled.h2`
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 43.2px */
+
+  @media screen and (max-width: 786px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const Description = styled.p`
@@ -16,10 +20,14 @@ const Description = styled.p`
   font-style: normal;
   font-weight: 400;
   line-height: 120%; /* 28.8px */
+
+  @media screen and (max-width: 786px) {
+    font-size: 1rem;
+  }
 `;
 
 const imageSource =
-  "https://ipfs.near.social/ipfs/bafkreidwtqu7wrppkvwb2criwgk6u7bfx7ojyaempio7pnkhvspxxeujke";
+  "https://ipfs.near.social/ipfs/bafkreic7wxhocbnxoo63uh6n2ur3otykbzouymobt3ebgd2b4dmdiu3764";
 
 const CardBody = styled.div`
   border-radius: 1rem;
@@ -62,6 +70,10 @@ const CardBody = styled.div`
     &:hover {
       text-decoration: none;
     }
+  }
+
+  @media screen and (max-width: 768px) {
+    max-width: 80%;
   }
 `;
 
@@ -130,11 +142,15 @@ const handleForward = () => {
 };
 
 const CTA = styled.a`
-  color: #00ec97;
+  color: #00ec97 !important;
   font-size: 1.5rem;
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 28.8px */
+
+  @media screen and (max-width: 768px) {
+    font-size: 1.25rem;
+  }
 `;
 
 const Subheading = styled.h3`
@@ -146,6 +162,12 @@ const Subheading = styled.h3`
 
   padding: 3rem;
   padding-top: 0;
+
+  @media screen and (max-width: 786px) {
+    padding: 1rem;
+    padding-top: 0;
+    font-size: 1.5rem;
+  }
 `;
 
 const Container = styled.div`
@@ -153,11 +175,20 @@ const Container = styled.div`
   display: flex;
   position: relative;
   align-items: center;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const DescriptionContainer = styled.div`
   padding: 3rem;
   width: 55%;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+    width: 100%;
+  }
 `;
 
 const ImageContainer = styled.div`
@@ -167,6 +198,14 @@ const ImageContainer = styled.div`
 
   width: 50%;
   height: 65%;
+
+  @media screen and (max-width: 768px) {
+    position: relative;
+    padding: 0 1rem;
+
+    height: 225px;
+    width: 100%;
+  }
 `;
 
 const Image = styled.img`
@@ -175,6 +214,10 @@ const Image = styled.img`
   object-fit: cover;
   clip-path: polygon(15% 0, 100% 0%, 100% 100%, 0% 100%);
   object-position: center top;
+
+  @media screen and (max-width: 768px) {
+    clip-path: none;
+  }
 `;
 
 const CardsContainer = styled.div`
@@ -187,6 +230,10 @@ const CardsContainer = styled.div`
   gap: 1rem;
   width: 100%;
   align-items: center;
+
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const ArrowIcon = () => {
@@ -207,6 +254,28 @@ const ArrowIcon = () => {
     </svg>
   );
 };
+
+const CTAContainer = styled.div`
+  padding: 3rem;
+  padding-top: 0;
+
+  @media screen and (max-width: 786px) {
+    padding: 1rem;
+    padding-top: 0;
+  }
+`;
+
+const MobileCards = styled.div`
+  display: none;
+
+  @media screen and (max-width: 768px) {
+    display: flex;
+    padding: 1rem;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 1rem;
+  }
+`;
 
 const Content = (
   <>
@@ -239,9 +308,19 @@ const Content = (
         <ArrowIcon />
       </ForwardButton>
     </CardsContainer>
-    <div style={{ padding: 48, paddingTop: 0 }}>
+    <MobileCards>
+      {Cards.map((card, idx) => (
+        <Card
+          title={card.title}
+          description={card.description}
+          href={card.href}
+          key={`mobile-card-${idx}`}
+        />
+      ))}
+    </MobileCards>
+    <CTAContainer>
       <CTA href="#">Explore all communities →</CTA>
-    </div>
+    </CTAContainer>
   </>
 );
 
