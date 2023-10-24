@@ -517,10 +517,9 @@ function tokenResolver(token) {
 }
 
 const isDraft =
-  (draftState?.parent_post_id === postId &&
-    draftState?.post_type === state.post_type) ||
-  (draftState?.edit_post_id === postId &&
-    draftState?.post_type === state.post_type);
+  draftState?.post_type === state.post_type &&
+  (draftState?.parent_post_id === postId ||
+    draftState?.edit_post_id === postId);
 
 const Editor = () => {
   const onCancel = () =>

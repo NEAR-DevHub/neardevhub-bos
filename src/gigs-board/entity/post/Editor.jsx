@@ -197,7 +197,6 @@ const PostEditor = ({
   className,
   name,
   description,
-  draftState,
   github_link,
   onCancel,
   parent_id,
@@ -234,7 +233,6 @@ const PostEditor = ({
     sponsorship_token: availableTokenParameters[sponsorship_token] ?? "USDT",
     supervisor: requested_sponsor ?? supervisor ?? "",
     github_link: github_link ?? "",
-    draftStateApplied: false,
     waitForDraftRecover: true,
     warning: "",
   };
@@ -247,16 +245,14 @@ const PostEditor = ({
   };
 
   if (state.waitForDraftRecover) {
-    const recoveredDraft = JSON.parse(
-      Storage.privateGet(DRAFT_STATE_STORAGE_KEY) ?? null
-    );
+    const recoveredDraft =
+      otherProps.draftState ??
+      JSON.parse(Storage.privateGet(DRAFT_STATE_STORAGE_KEY) ?? null);
 
     const isRelevantDraftDetected =
-      recoveredDraft !== null &&
-      ((recoveredDraft?.parent_post_id === id &&
-        recoveredDraft?.post_type === post_type) ||
-        (recoveredDraft?.edit_post_id === id &&
-          recoveredDraft?.post_type === post_type));
+      recoveredDraft?.post_type === post_type &&
+      (recoveredDraft?.parent_post_id === id ||
+        recoveredDraft?.edit_post_id === id);
 
     if (isRelevantDraftDetected) {
       if (typeof transactionHashes === "string") {
@@ -302,14 +298,6 @@ const PostEditor = ({
 
   if (grantNotify === null) {
     return <p>Loading...</p>;
-  }
-
-  if (!state.draftStateApplied && draftState) {
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      ...draftState,
-      draftStateApplied: true,
-    }));
   }
 
   const fields = postSchemas[post_type];
@@ -361,7 +349,7 @@ const PostEditor = ({
     const transactions = [];
 
     if (mode === "Create") {
-      onDraftStateChange({ ...state, parent_post_id: id ?? null });
+      onDraftStateChange({ ...state, parent_post_id: id ?? null, post_type });
 
       transactions.push({
         contractName: nearDevGovGigsContractAccountId,
@@ -371,7 +359,7 @@ const PostEditor = ({
         gas: Big(10).pow(12).mul(100),
       });
     } else if (mode === "Edit") {
-      onDraftStateChange({ ...state, edit_post_id: id });
+      onDraftStateChange({ ...state, edit_post_id: id, post_type });
 
       transactions.push({
         contractName: nearDevGovGigsContractAccountId,
