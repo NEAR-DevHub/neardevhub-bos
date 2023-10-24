@@ -558,6 +558,8 @@ const Editor = () => {
                 draftState:
                   draftState?.edit_post_id === postId ? draftState : undefined,
 
+                tags: post.snapshot.labels ?? [],
+
                 mode: "Edit",
                 onCancel,
                 post_type: state.post_type,
