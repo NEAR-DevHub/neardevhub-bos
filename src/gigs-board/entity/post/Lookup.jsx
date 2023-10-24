@@ -81,6 +81,10 @@ function fetchGraphQL(operationsDoc, operationName, variables) {
   });
 }
 
+State.init({
+  tag: props.tag,
+});
+
 function search({ author, tag }) {
   State.update({ loading: true });
   let where = {};
@@ -138,7 +142,7 @@ const buttonStyle = {
 
 return (
   <>
-    <div className="d-flex flex-row gap-4">
+    <div className="d-flex justify-content-between align-items-baseline gap-4">
       <div class="dropdown">
         {widget("entity.post.AuthorSearch", {
           author: state.author,
@@ -171,7 +175,7 @@ return (
           placeholder={props.placeholder ?? `Search by content`}
         />
       </div>
-      {state.searchResult ? (
+      {state.searchResult && !props.noReset ? (
         <button
           class="btn btn-light"
           onClick={() =>
@@ -188,9 +192,7 @@ return (
       ) : (
         ""
       )}
-      <div className="d-flex flex-row-reverse flex-grow-1">
-        {props.children}
-      </div>
+      <div className="d-flex flex-row-reverse">{props.children}</div>
     </div>
     {state.searchResult
       ? widget("entity.post.List", {

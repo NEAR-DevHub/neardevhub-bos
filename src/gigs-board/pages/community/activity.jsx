@@ -158,32 +158,6 @@ const CommunityActivityPage = ({ handle, transactionHashes }) => {
       communityData !== null ? (
         <div class="row">
           <div class="col-md-9">
-            <div class="row mb-2">
-              <div class="col">
-                <div class="d-flex align-items-center justify-content-between">
-                  <small class="text-muted">
-                    <span>Required tags:</span>
-
-                    {widget("components.atom.tag", {
-                      tag: communityData.tag,
-                      linkTo: "Feed",
-                    })}
-                  </small>
-
-                  {widget("components.molecule.button", {
-                    icon: {
-                      type: "bootstrap_icon",
-                      variant: "bi-plus-circle-fill",
-                    },
-
-                    isHidden: !state.isSpawnerHidden,
-                    label: "Post",
-                    onClick: () => spawnerToggle(true),
-                  })}
-                </div>
-              </div>
-            </div>
-
             <div class="col">
               {widget("entity.post.Spawner", {
                 isHidden: state.isSpawnerHidden,
@@ -192,7 +166,21 @@ const CommunityActivityPage = ({ handle, transactionHashes }) => {
                 transactionHashes,
               })}
 
-              {widget("entity.post.Lookup", { tag: communityData.tag })}
+              {widget("entity.post.Lookup", {
+                noReset: true,
+                tag: communityData.tag,
+
+                children: widget("components.molecule.button", {
+                  icon: {
+                    type: "bootstrap_icon",
+                    variant: "bi-plus-circle-fill",
+                  },
+
+                  isHidden: !state.isSpawnerHidden,
+                  label: "Post",
+                  onClick: () => spawnerToggle(true),
+                }),
+              })}
             </div>
           </div>
 
