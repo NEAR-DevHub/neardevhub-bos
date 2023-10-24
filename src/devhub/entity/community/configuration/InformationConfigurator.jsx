@@ -71,7 +71,7 @@ return (
       externalState: data,
       schema: CommunityInformationSchema,
       onSubmit: handleOnSubmit,
-      isActive,
+      isActive: isActive,
       onCancel: onCancel,
     }}
   />

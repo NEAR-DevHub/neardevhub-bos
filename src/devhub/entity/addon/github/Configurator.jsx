@@ -68,16 +68,24 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
     (fieldInput) => {
       const updatedValues = Struct.deepFieldUpdate(
         formState?.values ?? {},
-
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
-
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
+        path, // Pass the path directly
+        (node) => {
+          return {
+            ...node,
+            // Update the last key in the path
+            [path[path.length - 1]]:
+              typeof customFieldUpdate === "function"
+                ? customFieldUpdate(
+                    fieldInput?.target?.value ?? fieldInput,
+                    node[path[path.length - 1]],
+                    params
+                  )
+                : defaultFieldUpdate(
+                    fieldInput?.target?.value ?? fieldInput,
+                    node[path[path.length - 1]],
+                    params
+                  ),
+          };
         }
       );
 
@@ -182,13 +190,11 @@ const toMigrated = ({ metadata, id, ...restParams }) => ({
 const [editingMode, setEditingMode] = useState("form");
 
 // This is a workaround because of how the data was decided to be saved.
-const dynamicKey = Object.keys(data).find(key => key !== 'metadata');
+const dynamicKey = Object.keys(data).find((key) => key !== "metadata");
 data = data[dynamicKey];
 
 const form = useForm({
-  initialValues: Struct.typeMatch(data)
-    ? toMigrated(data)
-    : {},
+  initialValues: Struct.typeMatch(data) ? toMigrated(data) : {},
   stateKey: "view",
   uninitialized: !Struct.typeMatch(data),
 });
