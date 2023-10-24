@@ -14,6 +14,7 @@
     "dev:testnet": "./scripts/dev.sh",
     "dev:mainnet": "./scripts/dev.sh -a devgovgigs.near -c devgovgigs.near -n mainnet",
     "dev": "npm run dev:mainnet",
+    "deploy": "./scripts/deploy.sh",
     "test": "npx playwright test"
   },
   "repository": {
