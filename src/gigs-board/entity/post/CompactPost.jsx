@@ -111,7 +111,7 @@ const header = (
             className="link-dark text-truncate"
           >
             <Widget
-              src="${REPL_MOB}/widget/ProfileImage"
+              src="mob.near/widget/ProfileImage"
               props={{
                 metadata,
                 accountId: post.author_id,

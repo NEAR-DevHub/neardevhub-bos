@@ -728,7 +728,7 @@ const timestampElement = (_snapshot) => {
       {readableDate(_snapshot.timestamp / 1000000).substring(4)}
 
       <Widget
-        src="${REPL_MOB}/widget/ProfileImage"
+        src="mob.near/widget/ProfileImage"
         props={{
           accountId: _snapshot.editor_id,
           style: {

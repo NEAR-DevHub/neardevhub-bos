@@ -107,7 +107,7 @@ NOTE: If you have [DevHub contract](https://github.com/near/neardevhub-contract)
 
 #### Deploy for Production
 
-There is GitHub Actions automation that deploys all the widgets to [`devgovgigs.near` account](https://near.social/#/${REPL_MOB}/widget/MyPage?accountId=devgovgigs.near) on mainnet on every push to the main branch.
+There is GitHub Actions automation that deploys all the widgets to [`devgovgigs.near` account](https://near.social/#/mob.near/widget/MyPage?accountId=devgovgigs.near) on mainnet on every push to the main branch.
 Thus, once a PR is merged, you should see the new version of the widgets on [DevHub](https://neardevhub.org) in less than 15 seconds.
 
 ### Before Publishing

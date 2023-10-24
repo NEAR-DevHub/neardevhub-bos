@@ -40,15 +40,6 @@ if (!page) {
 function Page() {
   const routes = page.split(".");
   switch (routes[0]) {
-    // ?page=home
-    case "home": {
-      return (
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.page.home"
-          props={passProps}
-        />
-      );
-    }
     // ?page=communities
     case "communities": {
       return (

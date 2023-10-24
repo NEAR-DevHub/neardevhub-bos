@@ -6,7 +6,6 @@ const {
   updateCommunity,
   deleteCommunity,
   getCommunity,
-  setCommunityAddons,
 } = VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract");
 
 if (
@@ -14,8 +13,7 @@ if (
   !getAccountCommunityPermissions ||
   !createCommunity ||
   !updateCommunity ||
-  !deleteCommunity ||
-  !setCommunityAddons
+  !deleteCommunity
 ) {
   return <p>Loading modules...</p>;
 }
@@ -64,7 +62,6 @@ return (
   <Children
     permissions={permissions}
     community={community}
-    setCommunityAddons={setCommunityAddons}
     createCommunity={createCommunity}
     updateCommunity={handleUpdateCommunity}
     deleteCommunity={deleteCommunity}
