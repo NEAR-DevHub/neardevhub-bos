@@ -33,13 +33,21 @@ const Theme = styled.div`
 
 if (!page) {
   // If no page is specified, we default to the feed page TEMP
-  page = "feed";
+  page = "home";
 }
 
 // This is our navigation, rendering the page based on the page parameter
 function Page() {
   const routes = page.split(".");
   switch (routes[0]) {
+    case "home": {
+      return (
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.page.home"
+          props={passProps}
+        />
+      );
+    }
     // ?page=communities
     case "communities": {
       return (
