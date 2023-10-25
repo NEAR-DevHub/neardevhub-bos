@@ -93,86 +93,115 @@ const buttonStyle = {
   color: "#f3f3f3",
 };
 
+const PageTitle = styled.h5`
+  color: #00ec97;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 120%; /* 28.8px */
+  letter-spacing: -0.24px;
+
+  margin: 0;
+  margin-bottom: 2.5rem;
+`;
+
+const Container = styled.div`
+  padding: 1rem 3.125rem;
+  background: #fff;
+  margin: 1.5rem 0;
+`;
+
+const PostContainer = styled.div`
+  margin: 0 1rem;
+`;
+
 return (
   <>
-    <div className="d-flex flex-row gap-4">
-      <div class="dropdown">
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-author"
-          props={{
-            author: state.author,
-            onAuthorSearch: (author) => {
-              State.update({ author });
-              search({ author });
-            },
-          }}
-        />
-      </div>
+    <Container>
       <div>
+        <PageTitle>Activity Feed</PageTitle>
+        <div className="d-flex flex-row gap-4">
+          <div className="d-flex flex-row position-relative w-25">
+            <div className="position-absolute d-flex ps-3 flex-column h-100 justify-center">
+              <i class="bi bi-search m-auto"></i>
+            </div>
+
+            <input
+              type="search"
+              className="ps-5 form-control border border-0 bg-light"
+              value={state.term ?? ""}
+              onChange={(e) => updateInput(e.target.value)}
+              onKeyDown={(e) => e.key == "Enter" && search()}
+              placeholder={props.placeholder ?? `Search Posts`}
+            />
+          </div>
+          <div class="dropdown">
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-author"
+              props={{
+                author: state.author,
+                onAuthorSearch: (author) => {
+                  State.update({ author });
+                  search({ author });
+                },
+              }}
+            />
+          </div>
+          <div>
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-tag"
+              props={{
+                tag: state.tag,
+                onTagSearch: (tag) => {
+                  State.update({ tag });
+                  search({ tag });
+                },
+              }}
+            />
+          </div>
+          {state.searchResult ? (
+            <button
+              class="btn btn-light"
+              onClick={() =>
+                State.update({
+                  searchResult: null,
+                  author: null,
+                  tag: null,
+                  term: null,
+                })
+              }
+            >
+              Clear Search
+            </button>
+          ) : (
+            ""
+          )}
+          <div className="d-flex flex-row-reverse flex-grow-1">
+            {props.children}
+          </div>
+        </div>
+      </div>
+    </Container>
+    <PostContainer>
+      {state.searchResult ? (
         <Widget
-          src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-tag"
+          src="${REPL_DEVHUB}/widget/devhub.entity.post.List"
           props={{
-            tag: state.tag,
-            onTagSearch: (tag) => {
-              State.update({ tag });
-              search({ tag });
-            },
+            loading: state.loading,
+            searchResult: state.searchResult,
+            recency: props.recency,
           }}
         />
-      </div>
-      <div className="d-flex flex-row position-relative w-25">
-        <div className="position-absolute d-flex ps-3 flex-column h-100 justify-center">
-          <i class="bi bi-search m-auto"></i>
-        </div>
-
-        <input
-          type="search"
-          className="ps-5 form-control border border-0 bg-light"
-          value={state.term ?? ""}
-          onChange={(e) => updateInput(e.target.value)}
-          onKeyDown={(e) => e.key == "Enter" && search()}
-          placeholder={props.placeholder ?? `Search by content`}
-        />
-      </div>
-      {state.searchResult ? (
-        <button
-          class="btn btn-light"
-          onClick={() =>
-            State.update({
-              searchResult: null,
-              author: null,
-              tag: null,
-              term: null,
-            })
-          }
-        >
-          Clear Search
-        </button>
       ) : (
-        ""
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.entity.post.List"
+          props={{
+            loading: state.loading,
+            recency: props.recency,
+            transactionHashes: props.transactionHashes,
+          }}
+        />
       )}
-      <div className="d-flex flex-row-reverse flex-grow-1">
-        {props.children}
-      </div>
-    </div>
-    {state.searchResult ? (
-      <Widget
-        src="${REPL_DEVHUB}/widget/devhub.entity.post.List"
-        props={{
-          loading: state.loading,
-          searchResult: state.searchResult,
-          recency: props.recency,
-        }}
-      />
-    ) : (
-      <Widget
-        src="${REPL_DEVHUB}/widget/devhub.entity.post.List"
-        props={{
-          loading: state.loading,
-          recency: props.recency,
-          transactionHashes: props.transactionHashes,
-        }}
-      />
-    )}
+    </PostContainer>
   </>
 );

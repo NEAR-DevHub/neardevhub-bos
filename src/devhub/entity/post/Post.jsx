@@ -155,23 +155,19 @@ const shareButton = props.isPreview ? (
 
 // card-header
 const header = (
-  <div className="p-3 pt-4" key="header">
+  <div key="header">
     <small class="text-muted">
-      <div class="row justify-content-between">
-        <div class="col-4">
+      <div class="row justify-content-between align-items-center">
+        <div className="d-flex align-items-center gap-2">
           <Widget
-            // TODO: LEGACY.
-            src={
-              "${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"
-            }
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"}
             props={{
               accountId: post.author_id,
               nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
             }}
           />
-        </div>
-        <div class="col-5">
-          <div class="d-flex justify-content-end">
+          <span>•</span>
+          <div class="d-flex">
             {editControl}
             {timestamp}
             <Widget
@@ -567,18 +563,33 @@ const tags = post.snapshot.labels ? (
   <div key="post-labels"></div>
 );
 
+const Title = styled.h5`
+  margin: 2.25rem 0;
+
+  color: #151515;
+  font-size: 1.75rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.625rem; /* 55.556% */
+`;
+
 const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
   ) : (
-    <h5 class="card-title mb-4" key="post-title">
-      <div className="row justify-content-between">
+    <Title key="post-title">
+      <div className="row justify-content-between align-items-center position-relative">
         <div class="col-9">
-          <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
+          <i
+            class={`bi ${emptyIcons[snapshot.post_type]} position-absolute`}
+            style={{ left: "-1.5rem" }}
+          >
+            {" "}
+          </i>
           {renamedPostType}: {snapshot.name}
         </div>
       </div>
-    </h5>
+    </Title>
   );
 
 const postExtra =
@@ -690,6 +701,7 @@ const descriptionArea = isUnderPost ? (
     {state.clamp ? (
       <div class="d-flex justify-content-start">
         <a
+          style={{ cursor: "pointer" }}
           class="btn-link text-dark fw-bold text-decoration-none"
           onClick={() => State.update({ clamp: false })}
         >
@@ -748,10 +760,14 @@ function combineText(_snapshot) {
   );
 }
 
+const CardContainer = styled.div`
+  padding: 1.5rem 3rem;
+`;
+
 return (
-  <div className={`card ${borders[snapshot.post_type]} attractable`}>
+  <CardContainer className={`card ${borders[snapshot.post_type]} attractable`}>
     {header}
-    <div className="card-body">
+    <div className="card-body" style={{ padding: 0 }}>
       {searchKeywords}
       {compareSnapshot ? (
         <div
@@ -798,5 +814,5 @@ return (
       {!props.isPreview && (isDraft || state.showEditor) && <Editor />}
       {postsList}
     </div>
-  </div>
+  </CardContainer>
 );
