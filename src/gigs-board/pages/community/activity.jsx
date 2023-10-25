@@ -161,7 +161,8 @@ const CommunityActivityPage = ({ handle }) => {
                     })}
                   </small>
                   {widget("components.layout.Controls", {
-                    labels: communityData.tag,
+                    title: "Post",
+                    href: href("Create", { labels: [communityData.tag] }),
                   })}
                 </div>
               </div>
