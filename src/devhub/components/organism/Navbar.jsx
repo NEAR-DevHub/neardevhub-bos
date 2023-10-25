@@ -107,7 +107,6 @@ const Navbar = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
 
   background: #ebebeb;
 

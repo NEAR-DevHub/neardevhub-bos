@@ -186,23 +186,34 @@ const header = (
   </div>
 );
 
+// const emptyIcons = {
+//   Idea: "bi-lightbulb",
+//   Comment: "bi-chat",
+//   Submission: "bi-rocket",
+//   Attestation: "bi-check-circle",
+//   Sponsorship: "bi-cash-coin",
+//   Github: "bi-github",
+//   Like: "bi-heart",
+//   Reply: "bi-reply",
+// };
+
 const emptyIcons = {
-  Idea: "bi-lightbulb",
+  Idea: "💡",
   Comment: "bi-chat",
-  Submission: "bi-rocket",
-  Attestation: "bi-check-circle",
-  Sponsorship: "bi-cash-coin",
+  Submission: "🚀",
+  Attestation: "✅",
+  Sponsorship: "🪙",
   Github: "bi-github",
   Like: "bi-heart",
   Reply: "bi-reply",
 };
 
 const fillIcons = {
-  Idea: "bi-lightbulb-fill",
+  Idea: "💡",
   Comment: "bi-chat-fill",
-  Submission: "bi-rocket-fill",
-  Attestation: "bi-check-circle-fill",
-  Sponsorship: "bi-cash-coin",
+  Submission: "🚀",
+  Attestation: "✅",
+  Sponsorship: "🪙",
   Github: "bi-github",
   Like: "bi-heart-fill",
   Reply: "bi-reply-fill",
@@ -319,7 +330,7 @@ const buttonsFooter = props.isPreview ? null : (
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            <i class={`bi ${emptyIcons.Reply}`}> </i> Reply
+            ↪ Reply
           </ButtonWithHover>
           <ul class="dropdown-menu">
             {btnCreatorWidget(
@@ -366,7 +377,7 @@ const buttonsFooter = props.isPreview ? null : (
           aria-expanded={defaultExpanded}
           aria-controls={`collapseChildPosts${postId}`}
         >
-          <i class="bi bi-arrows-expand"> </i>{" "}
+          <i class="bi bi-chevron-down"> </i>{" "}
           {`Expand Replies (${childPostIds.length})`}
         </ButtonWithHover>
 
@@ -546,17 +557,22 @@ const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
 const tags = post.snapshot.labels ? (
-  <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
-    {post.snapshot.labels.map((tag) => (
-      <Widget
-        // TODO: LEGACY.
-        src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.tag"}
-        props={{
-          linkTo: "Feed",
-          tag,
-          nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
-        }}
-      />
+  <div
+    class="card-title d-flex flex-wrap"
+    style={{ margin: "20px 0" }}
+    key="post-labels"
+  >
+    {post.snapshot.labels.map((tag, idx) => (
+      <div className="d-flex gap-3 align-items-center my-3 me-3">
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+          props={{
+            tag,
+          }}
+        />
+
+        {idx !== post.snapshot.labels.length - 1 && "•"}
+      </div>
     ))}
   </div>
 ) : (
@@ -580,12 +596,9 @@ const postTitle =
     <Title key="post-title">
       <div className="row justify-content-between align-items-center position-relative">
         <div class="col-9">
-          <i
-            class={`bi ${emptyIcons[snapshot.post_type]} position-absolute`}
-            style={{ left: "-1.5rem" }}
-          >
-            {" "}
-          </i>
+          <span class={`position-absolute`} style={{ left: "-1.5rem" }}>
+            {emptyIcons[snapshot.post_type]}
+          </span>
           {renamedPostType}: {snapshot.name}
         </div>
       </div>
