@@ -66,6 +66,14 @@ const tabs = [
   },
 ];
 
+(community.addons || []).map((addon) => {
+  addon.enabled &&
+    tabs.push({
+      title: addon.display_name,
+      view: "${REPL_DEVHUB}/widget/devhub.page.addon",
+      params: { addon },
+    });
+});
 const onShareClick = () =>
   clipboard
     .writeText(
@@ -174,7 +182,17 @@ return (
     </NavUnderline>
     {currentTab && (
       <div className="d-flex w-100 h-100" key={currentTab.title}>
-        <Widget src={currentTab.view} props={currentTab.params} />
+        <Widget
+          src={currentTab.view}
+          props={{
+            ...currentTab.params,
+            view, // default view for an addon, can come as a prop from a community or from a direct link to page.addon
+
+            // below is temporary prop drilling until kanban and github are migrated
+            permissions,
+            handle: community.handle,
+          }}
+        />
       </div>
     )}
   </div>
