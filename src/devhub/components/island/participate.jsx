@@ -63,6 +63,22 @@ const CTA = styled.a`
 
   width: max-content;
   margin-top: 1.5rem;
+
+  @media screen and (max-width: 768px) {
+    color: #f4f4f4 !important;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 24px */
+
+    display: flex;
+    padding: 14px 16px;
+    align-items: center;
+    gap: 8px;
+
+    border-radius: 16px;
+    background: #00ec97;
+  }
 `;
 
 const SectionPadding = styled.div`

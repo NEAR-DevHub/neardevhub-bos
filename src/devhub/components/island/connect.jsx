@@ -36,6 +36,7 @@ const CardBody = styled.div`
 
   display: flex;
   max-width: 31.5%;
+  height: 18rem;
   padding: 1.5rem;
   flex-direction: column;
   justify-content: center;
@@ -213,7 +214,6 @@ const Image = styled.img`
   height: 90%;
   object-fit: cover;
   clip-path: polygon(15% 0, 100% 0%, 100% 100%, 0% 100%);
-  object-position: center top;
 
   @media screen and (max-width: 768px) {
     clip-path: none;

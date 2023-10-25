@@ -63,7 +63,10 @@ return (
     onMouseLeave={() => setShowMenu(false)}
   >
     {href ? (
-      <DropdownLink className={href === props.page && "active"} href={href}>
+      <DropdownLink
+        className={href === props.page && "active"}
+        href={`/${REPL_DEVHUB}/widget/app?page=${href}`}
+      >
         {title}
       </DropdownLink>
     ) : (
