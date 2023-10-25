@@ -31,7 +31,6 @@ test.describe("Wallet is connected", () => {
 // Radix select renders as an input and requires to be focused, then value inputted, before the option can be selected.
 // I was having trouble making this work.
 
-
 //     test('Can add an addon to the list', async ({ page }) => {
 //         await page.goto(baseUrl);
 
