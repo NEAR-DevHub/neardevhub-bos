@@ -18,21 +18,35 @@ const CommunityCard = ({
     params: { page: "community", handle: metadata.handle },
   });
 
+  const CommunityName = styled.h5`
+    color: #151515;
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 30px; /* 41.667% */
+  `;
+
+  const CommunityDescription = styled.p`
+    color: #818181;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%; /* 28.8px */
+  `;
+
   const formatSmall = (
     <Link
       {...otherProps}
       to={link}
       className={[
         "d-flex flex-shrink-0 p-3",
-        "rounded-4 border border-2",
+        "rounded-2 border border-2",
         "text-black text-decoration-none attractable",
       ].join(" ")}
       style={{
         background: isBannerEnabled
           ? `center / cover no-repeat url(${metadata.banner_url})`
           : "#ffffff",
-        width: 400,
-        height: 110,
       }}
     >
       <div
@@ -40,30 +54,25 @@ const CommunityCard = ({
         style={{
           background: "rgba(255, 255, 255, 0.9)",
           backdropFilter: "blur(4px)",
+          padding: "3rem 1rem",
         }}
       >
         <img
           alt="Community logo"
           className="flex-shrink-0 rounded-circle attractable"
-          height={70}
+          height={128}
           src={metadata.logo_url}
-          width={70}
+          width={128}
         />
 
         <div className="d-flex flex-column justify-content-center gap-1 w-100">
-          <h5
-            className="h5 m-0 text-nowrap overflow-hidden"
-            style={{ textOverflow: "ellipsis" }}
-          >
+          <CommunityName style={{ textOverflow: "ellipsis" }}>
             {metadata.name}
-          </h5>
+          </CommunityName>
 
-          <p
-            className="card-text text-secondary overflow-hidden"
-            style={{ fontSize: 12, textOverflow: "ellipsis" }}
-          >
+          <CommunityDescription style={{ textOverflow: "ellipsis" }}>
             {metadata.description}
-          </p>
+          </CommunityDescription>
         </div>
       </div>
     </Link>
