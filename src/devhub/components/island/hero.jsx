@@ -2,6 +2,7 @@ const imageLink =
   "https://ipfs.near.social/ipfs/bafybeiap2mzwsly4apaldxguiunx4rjwqyadksj5yxuzwrww3kue3ao5qe";
 
 const HeroSection = styled.div`
+  position: relative;
   height: auto;
   z-index: 3;
   width: 70%;
@@ -102,8 +103,9 @@ const ImageContainer = styled.div`
   height: 100%;
   position: absolute;
   top: 0;
-  z-index: -1;
   right: 0;
+  z-index: 1;
+  background: transparent;
 
   @media screen and (max-width: 768px) {
     display: none;

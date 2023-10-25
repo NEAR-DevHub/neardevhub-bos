@@ -98,6 +98,8 @@ const Navbar = styled.div`
   align-items: center;
   margin-bottom: 0.5rem;
 
+  background: #ebebeb;
+
   @media screen and (max-width: 768px) {
     padding: 1.875rem 1.375rem;
   }

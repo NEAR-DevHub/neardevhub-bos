@@ -7,6 +7,9 @@ const Card = styled.div`
   justify-content: space-between;
   align-items: center;
 
+  background: #fff;
+  border-radius: 1rem;
+
   h3 {
     color: #00ec97;
     text-align: center;
