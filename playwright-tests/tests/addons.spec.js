@@ -8,19 +8,22 @@ test.describe("Wallet is connected", () => {
   test.describe("AddonsConfigurator", () => {
     const baseUrl =
       "/devgovgigs.near/widget/app?page=community.configuration&handle=devhub-test";
-    const dropdownSelector =
-      'input[data-component="near/widget/DIG.InputSelect"]';
-    const addButtonSelector = "button.btn-success:has(i.bi.bi-plus)";
-    const toggleButtonSelector = 'button[role="switch"]';
-    const moveUpButtonSelector = "button.btn-secondary:has(i.bi.bi-arrow-up)";
-    const removeButtonSelector =
-      "button.btn-outline-danger:has(i.bi.bi-trash-fill)";
+    // const dropdownSelector =
+    //   'input[data-component="near/widget/DIG.InputSelect"]';
+    // const addButtonSelector = "button.btn-success:has(i.bi.bi-plus)";
+    // const toggleButtonSelector = 'button[role="switch"]';
+    // const moveUpButtonSelector = "button.btn-secondary:has(i.bi.bi-arrow-up)";
+    // const removeButtonSelector =
+    //   "button.btn-outline-danger:has(i.bi.bi-trash-fill)";
 
     test("Addons configuration section comes up on load", async ({ page }) => {
       await page.goto(baseUrl);
 
-      const addonsConfigurator = await page.$('span:has-text("Addons")');
-      expect(addonsConfigurator).toBeTruthy();
+      const addonsConfiguratorSelector = 'span:has-text("Addons")';
+
+      await page.waitForSelector(addonsConfiguratorSelector, {
+        state: "visible",
+      });
     });
   });
 });
