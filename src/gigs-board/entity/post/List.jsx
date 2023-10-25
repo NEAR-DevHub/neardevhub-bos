@@ -168,22 +168,18 @@ function getPostIds() {
     where = { parent_id: { _is_null: true }, ...where };
   }
 
-  console.log("searching for", where);
   fetchGraphQL(query, "DevhubPostsQuery", {
     limit: 100,
     offset: 0,
     where,
   }).then((result) => {
     if (result.status === 200) {
-      console.log("search success");
       if (result.body.data) {
         const data = result.body.data[queryName];
         State.update({
           postIds: data.map((p) => p.post_id),
           loading: false,
         });
-        console.log("found:");
-        console.log(data);
       }
     } else {
       console.error("error:", result.body);

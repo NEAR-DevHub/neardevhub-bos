@@ -67,8 +67,6 @@ const buttonStyle = {
   color: "#f3f3f3",
 };
 
-console.log(state.tag);
-
 return (
   <>
     <div className="d-flex flex-row gap-4">
