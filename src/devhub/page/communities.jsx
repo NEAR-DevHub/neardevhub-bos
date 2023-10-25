@@ -93,6 +93,12 @@ const CardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 3rem;
+
+  @media screen and (max-width: 1000px) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
 `;
 
 const SearchForm = styled.input`
@@ -162,7 +168,7 @@ return (
             </Link>
           </h1>
 
-          <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex flex-column-reverse flex-lg-row gap-3 justify-content-between align-items-center">
             <div className="d-flex align-items-center gap-3">
               <SearchForm
                 type="text"

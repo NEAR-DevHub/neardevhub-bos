@@ -34,14 +34,25 @@ const CommunityCard = ({
     line-height: 120%; /* 28.8px */
   `;
 
+  const Logo = styled.img`
+    width: 8rem;
+    height: 8rem;
+    object-fit: cover;
+
+    @media screen and (max-width: 768px) {
+      width: 4rem;
+      height: 4rem;
+    }
+  `;
+
   const formatSmall = (
     <Link
       {...otherProps}
       to={link}
       className={[
-        "d-flex flex-shrink-0 p-3",
+        "d-flex p-0 p-lg-3",
         "rounded-2 border border-2",
-        "text-black text-decoration-none attractable",
+        "text-black text-decoration-none attractable flex-grow-1",
       ].join(" ")}
       style={{
         background: isBannerEnabled
@@ -57,20 +68,22 @@ const CommunityCard = ({
           padding: "3rem 1rem",
         }}
       >
-        <img
+        <Logo
           alt="Community logo"
           className="flex-shrink-0 rounded-circle attractable"
-          height={128}
           src={metadata.logo_url}
-          width={128}
         />
 
         <div className="d-flex flex-column justify-content-center gap-1 w-100">
-          <CommunityName style={{ textOverflow: "ellipsis" }}>
+          <CommunityName
+            style={{ textOverflow: "ellipsis", wordWrap: "break-word" }}
+          >
             {metadata.name}
           </CommunityName>
 
-          <CommunityDescription style={{ textOverflow: "ellipsis" }}>
+          <CommunityDescription
+            style={{ textOverflow: "ellipsis", wordWrap: "break-word" }}
+          >
             {metadata.description}
           </CommunityDescription>
         </div>
