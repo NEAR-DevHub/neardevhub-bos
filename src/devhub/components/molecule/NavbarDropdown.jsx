@@ -4,6 +4,10 @@ const href = props.href;
 
 const [showMenu, setShowMenu] = useState(false);
 
+const { href: linkHref } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+
+linkHref || (linkHref = () => {});
+
 const Dropdown = styled.div`
   position: relative;
   display: flex;
@@ -43,7 +47,7 @@ const DropdownMenu = styled.div`
   }
 `;
 
-const DropdownLink = styled.a`
+const DropdownLink = styled.div`
   color: inherit;
   text-decoration: none;
   transition: all 300ms;
@@ -64,7 +68,14 @@ return (
   >
     {href ? (
       <DropdownLink className={href === props.page && "active"} href={href}>
-        {title}
+        <Link
+          to={linkHref({
+            widgetSrc: "${REPL_DEVHUB}/widget/app",
+            params: { page: href },
+          })}
+        >
+          {title}
+        </Link>
       </DropdownLink>
     ) : (
       <p
@@ -80,10 +91,16 @@ return (
           {links.map((link) => (
             <DropdownLink
               className={link.href === props.page && "active"}
-              href={`/${REPL_DEVHUB}/widget/app?page=${link.href}`}
               key={`${link.title}-${link.href}`}
             >
-              {link.title}
+              <Link
+                to={linkHref({
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
+                  params: { page: link.href },
+                })}
+              >
+                {link.title}
+              </Link>
             </DropdownLink>
           ))}
         </div>
