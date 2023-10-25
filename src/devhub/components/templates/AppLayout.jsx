@@ -6,6 +6,8 @@ const Container = styled.div`
   min-height: 100vh;
 
   background: #ebebeb;
+
+  margin-top: calc(-1 * var(--body-top-padding));
 `;
 
 const ContentContainer = styled.div`
