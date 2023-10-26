@@ -188,6 +188,7 @@ const NewPostPage = ({ transactionHashes }) => {
                         ? "primary"
                         : "outline-secondary"
                     }`}
+                    data-testid={`btn-${option.name.toLowerCase()}`}
                     key={option.name}
                     onClick={() => typeSwitch(option.name)}
                     style={

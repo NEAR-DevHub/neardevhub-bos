@@ -52,82 +52,9 @@ function href(widgetName, linkProps) {
 }
 /* END_INCLUDE: "common.jsx" */
 
-const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
-
-const queryName =
-  props.queryName ?? `bo_near_devhub_v17_posts_with_latest_snapshot`;
-
-const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $where: ${queryName}_bool_exp = {}) {
-    ${queryName}(
-      limit: $limit
-      offset: $offset
-      order_by: {block_height: desc}
-      where: $where
-    ) {
-      post_id
-    }
-  }
-`;
-
-function fetchGraphQL(operationsDoc, operationName, variables) {
-  return asyncFetch(QUERYAPI_ENDPOINT, {
-    method: "POST",
-    headers: { "x-hasura-role": `bo_near` },
-    body: JSON.stringify({
-      query: operationsDoc,
-      variables: variables,
-      operationName: operationName,
-    }),
-  });
-}
-
 State.init({
   tag: props.tag,
 });
-
-function search({ author, tag }) {
-  State.update({ loading: true });
-  let where = {};
-  let authorId = author || state.author;
-  let label = tag || state.tag;
-  if (authorId) {
-    where = { author_id: { _eq: authorId }, ...where };
-  }
-  if (state.term) {
-    where = { description: { _ilike: `%${state.term}%` }, ...where };
-  }
-  if (label) {
-    where = { labels: { _contains: label }, ...where };
-  }
-  if (!authorId && !state.term && !label) {
-    State.update({ loading: false, searchResult: null });
-    return;
-  }
-  console.log("searching for", where);
-  fetchGraphQL(query, "DevhubPostsQuery", {
-    limit: 100,
-    offset: 0,
-    where,
-  }).then((result) => {
-    if (result.status === 200) {
-      console.log("search success");
-      if (result.body.data) {
-        const data = result.body.data[queryName];
-        State.update({
-          searchResult: {
-            postIds: data.map((p) => p.post_id),
-            keywords: state.term ? [state.term] : undefined,
-          },
-        });
-        console.log("found:");
-        console.log(data);
-      }
-    } else {
-      console.error("error:", result.body);
-    }
-    State.update({ loading: false });
-  });
-}
 
 const updateInput = (term) => {
   State.update({
@@ -142,13 +69,64 @@ const buttonStyle = {
 
 return (
   <>
-    <div className="d-flex justify-content-between align-items-baseline gap-4">
+    <div className="d-flex flex-row gap-4">
+      <div className="d-flex flex-row position-relative w-25">
+        <div className="position-absolute d-flex ps-3 flex-column h-100 justify-center">
+          <i class="bi bi-search m-auto"></i>
+        </div>
+        <input
+          type="search"
+          className="ps-5 form-control border border-0 bg-light"
+          value={state.term ?? ""}
+          onChange={(e) => updateInput(e.target.value)}
+          placeholder={props.placeholder ?? `Search by content`}
+        />
+      </div>
+      <div class="dropdown">
+        <button
+          class="btn btn-light dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Sort{props.recency === "all" ? ": All replies" : ": Latest"}
+        </button>
+        <ul class="dropdown-menu px-2 shadow">
+          <li>
+            <a
+              style={{ borderRadius: "5px" }}
+              class="dropdown-item link-underline link-underline-opacity-0"
+              href={href("Feed")}
+            >
+              Latest
+            </a>
+          </li>
+          {/* Sort by hottest is not yet support on indexer side
+          <li>
+            <a
+              style={{ borderRadius: "5px" }}
+              class="dropdown-item link-underline link-underline-opacity-0"
+              href={href("Feed", { recency: "hot" })}
+            >
+              Hottest
+            </a>
+          </li> */}
+          <li>
+            <a
+              style={{ borderRadius: "5px" }}
+              class="dropdown-item link-underline link-underline-opacity-0"
+              href={href("Feed", { recency: "all" })}
+            >
+              All replies
+            </a>
+          </li>
+        </ul>
+      </div>
       <div class="dropdown">
         {widget("entity.post.AuthorSearch", {
           author: state.author,
           onAuthorSearch: (author) => {
             State.update({ author });
-            search({ author });
           },
         })}
       </div>
@@ -157,53 +135,18 @@ return (
           tag: state.tag,
           onTagSearch: (tag) => {
             State.update({ tag });
-            search({ tag });
           },
         })}
       </div>
-      <div className="d-flex flex-row position-relative w-25">
-        <div className="position-absolute d-flex ps-3 flex-column h-100 justify-center">
-          <i class="bi bi-search m-auto"></i>
-        </div>
-
-        <input
-          type="search"
-          className="ps-5 form-control border border-0 bg-light"
-          value={state.term ?? ""}
-          onChange={(e) => updateInput(e.target.value)}
-          onKeyDown={(e) => e.key == "Enter" && search()}
-          placeholder={props.placeholder ?? `Search by content`}
-        />
+      <div className="d-flex flex-row-reverse flex-grow-1">
+        {props.children}
       </div>
-      {state.searchResult && !props.noReset ? (
-        <button
-          class="btn btn-light"
-          onClick={() =>
-            State.update({
-              searchResult: null,
-              author: null,
-              tag: null,
-              term: null,
-            })
-          }
-        >
-          Clear Search
-        </button>
-      ) : (
-        ""
-      )}
-      <div className="d-flex flex-row-reverse">{props.children}</div>
     </div>
-    {state.searchResult
-      ? widget("entity.post.List", {
-          loading: state.loading,
-          searchResult: state.searchResult,
-          recency: props.recency,
-        })
-      : widget("entity.post.List", {
-          loading: state.loading,
-          recency: props.recency,
-          transactionHashes: props.transactionHashes,
-        })}
+    {widget("entity.post.List", {
+      author: state.author,
+      tag: state.tag,
+      term: state.term,
+      recency: props.recency,
+    })}
   </>
 );

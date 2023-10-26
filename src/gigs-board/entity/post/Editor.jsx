@@ -177,7 +177,7 @@ const availableTokenParameters = {
   USDC: {
     NEP141: {
       address:
-        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1.near",
+        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
     },
   },
 };
@@ -488,6 +488,7 @@ const PostEditor = ({
       <span>Title:</span>
 
       <input
+        data-testid="input-title"
         type="text"
         value={state.name}
         onChange={(event) =>
@@ -550,6 +551,7 @@ const PostEditor = ({
         <label className="form-check-label">
           <button
             className="btn btn-light p-0"
+            data-testid="btn-request-funding"
             style={{
               backgroundColor: state.fundraising ? "#0C7283" : "inherit",
               color: "#f3f3f3",
@@ -734,6 +736,7 @@ const PostEditor = ({
                   <span>Currency</span>
 
                   <select
+                    data-testid="select-currency"
                     onChange={(event) =>
                       State.update((lastKnownState) => ({
                         ...lastKnownState,
@@ -777,6 +780,7 @@ const PostEditor = ({
                   <span className="text-muted fw-normal">(Numbers only)</span>
 
                   <input
+                    data-testid="input-amount"
                     type="number"
                     value={parseInt(state.amount) > 0 ? state.amount : ""}
                     min={0}

@@ -3,59 +3,9 @@
 // The contract will need to be extended with pagination support, yet, even in the current state the page loads much faster.
 // [IndexFeed]: https://near.social/#/mob.near/widget/WidgetSource?src=mob.near/widget/IndexFeed
 
-/* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-function widget(widgetName, widgetProps, key) {
-  widgetProps = {
-    ...widgetProps,
-    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
-    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    referral: props.referral,
-  };
-
-  return (
-    <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
-      props={widgetProps}
-      key={key}
-    />
-  );
-}
-
-function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-
-  if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId =
-      props.nearDevGovGigsContractAccountId;
-  }
-
-  if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId =
-      props.nearDevGovGigsWidgetsAccountId;
-  }
-
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
-/* END_INCLUDE: "common.jsx" */
+href || (href = () => {});
 
 /* INCLUDE: "core/lib/draftstate" */
 const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
@@ -161,25 +111,40 @@ function getPostIds() {
     where = { description: { _ilike: `%${props.term}%` }, ...where };
   }
   if (label) {
-    where = { labels: { _contains: label }, ...where };
+    if (typeof label === "string") {
+      // Handle a single label
+      where = { labels: { _contains: label }, ...where };
+    } else if (Array.isArray(label)) {
+      // Handle an array of labels
+      where = {
+        labels: {
+          _containsAny: label,
+        },
+        ...where,
+      };
+    }
   }
   if (!props.recency) {
     // show only top level posts
     where = { parent_id: { _is_null: true }, ...where };
   }
 
+  console.log("searching for", where);
   fetchGraphQL(query, "DevhubPostsQuery", {
     limit: 100,
     offset: 0,
     where,
   }).then((result) => {
     if (result.status === 200) {
+      console.log("search success");
       if (result.body.data) {
         const data = result.body.data[queryName];
         State.update({
           postIds: data.map((p) => p.post_id),
           loading: false,
         });
+        console.log("found:");
+        console.log(data);
       }
     } else {
       console.error("error:", result.body);
@@ -192,8 +157,6 @@ State.init({
   period: "week",
 });
 
-getPostIds();
-
 function defaultRenderItem(postId, additionalProps) {
   if (!additionalProps) {
     additionalProps = {};
@@ -201,9 +164,9 @@ function defaultRenderItem(postId, additionalProps) {
   // It is important to have a non-zero-height element as otherwise InfiniteScroll loads too many items on initial load
   return (
     <div className="py-2" style={{ minHeight: "150px" }}>
-      {widget(
-        `entity.post.Card`,
-        {
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.Post"}
+        props={{
           id: postId,
           expandable: true,
           defaultExpanded: false,
@@ -211,9 +174,9 @@ function defaultRenderItem(postId, additionalProps) {
           draftState,
           onDraftStateChange,
           ...additionalProps,
-        },
-        postId
-      )}
+          referral: postId,
+        }}
+      />
     </div>
   );
 }
@@ -266,6 +229,14 @@ const getPeriodText = (period) => {
 };
 
 let postIds = state.postIds ?? null;
+if (props.searchResult) {
+  postIds = props.searchResult.postIds;
+} else {
+  postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
+  if (postIds) {
+    postIds.reverse();
+  }
+}
 
 const loader = (
   <div className="loader" key={"loader"}>
@@ -443,15 +414,18 @@ return (
       <p class="text-secondary mt-4">
         Post {transaction_method_name == "edit_post" ? "edited" : "added"}{" "}
         successfully. Back to{" "}
-        <a
+        <Link
           style={{
             color: "#3252A6",
           }}
           className="fw-bold"
-          href={href("Feed")}
+          to={href({
+            widgetSrc: "${REPL_DEVHUB}/widget/app",
+            params: { page: "feed" },
+          })}
         >
           feed
-        </a>
+        </Link>
       </p>
     ) : state.items.length > 0 ? (
       <InfiniteScroll
