@@ -124,6 +124,7 @@ return (
         }}
       />
     </Tile>
+
     {hasConfigurePermissions && (
       <Tile className={"p-3"}>
         <Widget

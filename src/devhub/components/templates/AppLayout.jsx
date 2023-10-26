@@ -1,3 +1,4 @@
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -15,6 +16,7 @@ const ContentContainer = styled.div`
   align-items: center;
   width: 100%;
 `;
+
 
 const AppHeader = ({ page }) => (
   <Widget
