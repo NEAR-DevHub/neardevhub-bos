@@ -474,6 +474,12 @@ const tokenMapping = {
       address: "usdt.tether-token.near",
     },
   },
+  USDC: {
+    NEP141: {
+      address:
+        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    },
+  },
   // Add more tokens here as needed
 };
 
@@ -564,7 +570,7 @@ function Editor() {
               name: post.snapshot.name,
               description: post.snapshot.description,
               amount: post.snapshot.amount,
-              token: post.snapshot.sponsorship_token,
+              token: tokenResolver(post.snapshot.sponsorship_token),
               supervisor: post.snapshot.supervisor,
               githubLink: post.snapshot.github_link,
               onDraftStateChange: props.onDraftStateChange,

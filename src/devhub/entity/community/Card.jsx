@@ -18,6 +18,7 @@ const CommunityCard = ({
     params: { page: "community", handle: metadata.handle },
   });
 
+
   const CommunityName = styled.h5`
     color: #151515;
     font-size: 2rem;
@@ -50,6 +51,7 @@ const CommunityCard = ({
       {...otherProps}
       to={link}
       className={[
+
         "d-flex p-0 p-lg-3",
         "rounded-2 border border-2",
         "text-black text-decoration-none attractable flex-grow-1",
