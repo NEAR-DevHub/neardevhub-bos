@@ -120,6 +120,15 @@ function Page() {
         />
       );
     }
+    // ?page=about
+    case "about": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.page.about"}
+          props={passProps}
+        />
+      );
+    }
     default: {
       // TODO: 404 page
       return <p>404</p>;
