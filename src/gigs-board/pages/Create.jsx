@@ -325,6 +325,7 @@ const nameDiv = (
   <div className="col-lg-6 mb-2">
     <p className="fs-6 fw-bold mb-1">Title</p>
     <input
+      data-testid="input-title"
       type="text"
       value={state.name}
       onChange={(event) => State.update({ name: event.target.value })}
@@ -369,6 +370,7 @@ const isFundraisingDiv = (
         <label class="form-check-label">
           <button
             className="btn btn-light p-0"
+            data-testid="btn-request-funding"
             style={{
               backgroundColor: state.seekingFunding ? "#0C7283" : "inherit",
               color: "#f3f3f3",
@@ -408,19 +410,21 @@ const fundraisingDiv = (
     <div className="col-lg-6  mb-2">
       Currency
       <select
+        data-testid="select-currency"
         onChange={(event) => State.update({ token: event.target.value })}
         class="form-select"
-        aria-label="Default select"
+        aria-label="Select currency"
+        value={state.token}
       >
-        <option selected value="USDT">
-          USDT
-        </option>
+        <option value="USDT">USDT</option>
         <option value="NEAR">NEAR</option>
+        <option value="USDC">USDC</option>
       </select>
     </div>
     <div className="col-lg-6 mb-2">
       Requested amount <span class="text-muted fw-normal">(Numbers Only)</span>
       <input
+        data-testid="input-amount"
         type="number"
         value={parseInt(state.amount) > 0 ? state.amount : ""}
         min={0}
@@ -446,6 +450,7 @@ const fundraisingDiv = (
           @
         </span>
         <input
+          data-testid="input-supervisor"
           type="text"
           class="form-control"
           placeholder="Enter username"
@@ -528,6 +533,7 @@ return (
                 <button
                   onClick={onSolutionClick}
                   type="button"
+                  data-testid="btn-solution"
                   class={`btn btn-outline-secondary`}
                   style={
                     state.postType !== "Idea"
@@ -570,6 +576,7 @@ return (
                 {state.seekingFunding && fundraisingDiv}
               </div>
               <button
+                data-testid="btn-submit"
                 style={{
                   width: "7rem",
                   backgroundColor: "#0C7283",
