@@ -105,6 +105,7 @@ const AddonItem = ({
           value={data.display_name}
           disabled={!data.enabled}
           onChange={handleNameChange}
+          maxLength={30}
         />
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.atom.Toggle"}
