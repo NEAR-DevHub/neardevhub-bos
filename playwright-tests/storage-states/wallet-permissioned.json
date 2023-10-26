@@ -1,0 +1,19 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "https://near.org",
+      "localStorage": [
+        {
+          "name": "near-social-vm:v01::accountId:",
+          "value": "ori.near"
+        },
+        {
+          "name": "flags",
+          "value": "{\"bosLoaderUrl\":\"http://127.0.0.1:3030\"}"
+        }
+      ]
+    }
+  ],
+  "sessionStorage": []
+}
