@@ -58,7 +58,7 @@ const ProfileCard = (props) => {
       href={
         link !== true
           ? link
-          : `#/mob.near/widget/ProfilePage?accountId=${accountId}`
+          : `${REPL_DEVHUB}/widget/ProfilePage?accountId=${accountId}`
       }
       className="link-dark text-truncate d-inline-flex"
     >
