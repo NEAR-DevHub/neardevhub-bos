@@ -1,84 +1,8 @@
-/* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+// Ideally, this would be a page
 
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-function widget(widgetName, widgetProps, key) {
-  widgetProps = {
-    ...widgetProps,
-    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
-    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    referral: props.referral,
-  };
-
-  return (
-    <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
-      props={widgetProps}
-      key={key}
-    />
-  );
-}
-
-function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-
-  if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId =
-      props.nearDevGovGigsContractAccountId;
-  }
-
-  if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId =
-      props.nearDevGovGigsWidgetsAccountId;
-  }
-
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
-/* END_INCLUDE: "common.jsx" */
-/* INCLUDE: "core/lib/gui/attractable" */
-const AttractableDiv = styled.div`
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-  transition: box-shadow 0.6s;
-
-  &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  }
-`;
-
-const AttractableLink = styled.a`
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-  transition: box-shadow 0.6s;
-
-  &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  }
-`;
-
-const AttractableImage = styled.img`
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-  transition: box-shadow 0.6s;
-
-  &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  }
-`;
-/* END_INCLUDE: "core/lib/gui/attractable" */
+href || (href = () => {});
 
 const ButtonWithHover = styled.button`
   background-color: #fff;
@@ -91,7 +15,7 @@ const ButtonWithHover = styled.button`
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
 const post =
   props.post ??
-  Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId });
+  Near.view("${REPL_DEVHUB_CONTRACT}", "get_post", { post_id: postId });
 if (!post) {
   return <div>Loading ...</div>;
 }
@@ -117,12 +41,12 @@ const compareSnapshot =
 
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
-const parentId = Near.view(nearDevGovGigsContractAccountId, "get_parent_id", {
+const parentId = Near.view("${REPL_DEVHUB_CONTRACT}", "get_parent_id", {
   post_id: postId,
 });
 
 const childPostIdsUnordered =
-  Near.view(nearDevGovGigsContractAccountId, "get_children_ids", {
+  Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids", {
     post_id: postId,
   }) ?? [];
 
@@ -144,9 +68,13 @@ const timestamp = readableDate(
 const postSearchKeywords = props.searchKeywords ? (
   <div style={{ "font-family": "monospace" }} key="post-search-keywords">
     <span>Found keywords: </span>
-    {props.searchKeywords.map((tag) => {
-      return widget("components.atom.tag", { linkTo: "Feed", tag });
-    })}
+    {props.searchKeywords.map((tag) => (
+      <Widget
+        // TODO: LEGACY.
+        src={"${REPL_DEVHUB}/widget/gigs-board..components.atom.Tag"}
+        props={{ linkTo: "Feed", tag }}
+      />
+    ))}
   </div>
 ) : (
   <div key="post-search-keywords"></div>
@@ -162,7 +90,7 @@ const searchKeywords = props.searchKeywords ? (
 
 const allowedToEdit =
   !props.isPreview &&
-  Near.view(nearDevGovGigsContractAccountId, "is_allowed_to_edit", {
+  Near.view("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_edit", {
     post_id: postId,
     editor: context.accountId,
   });
@@ -210,15 +138,19 @@ const editControl = allowedToEdit ? (
 const shareButton = props.isPreview ? (
   <div></div>
 ) : (
-  <a
+  <Link
     class="card-link text-dark"
-    href={href("Post", { id: postId })}
+    to={href({
+      gateway: "near.org",
+      widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post", // TODO: Convert to page?
+      params: { id: postId },
+    })}
     role="button"
     target="_blank"
     title="Open in new tab"
   >
     <div class="bi bi-share"></div>
-  </a>
+  </Link>
 );
 
 // card-header
@@ -227,18 +159,29 @@ const header = (
     <small class="text-muted">
       <div class="row justify-content-between">
         <div class="col-4">
-          {widget("components.molecule.profile-card", {
-            accountId: post.author_id,
-          })}
+          <Widget
+            // TODO: LEGACY.
+            src={
+              "${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"
+            }
+            props={{
+              accountId: post.author_id,
+              nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+            }}
+          />
         </div>
         <div class="col-5">
           <div class="d-flex justify-content-end">
             {editControl}
             {timestamp}
-            {widget("entity.post.History", {
-              post,
-              timestamp: currentTimestamp,
-            })}
+            <Widget
+              // TODO: LEGACY.
+              src={"${REPL_DEVHUB}/widget/gigs-board.entity.post.History"}
+              props={{
+                post,
+                timestamp: currentTimestamp,
+              }}
+            />
             {shareButton}
           </div>
         </div>
@@ -287,7 +230,7 @@ const likeBtnClass = containsLike ? fillIcons.Like : emptyIcons.Like;
 // This must be outside onLike, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onLike, it will give `null` and we cannot tell the result is true or false.
 let grantNotify = Near.view("social.near", "is_write_permission_granted", {
-  predecessor_id: nearDevGovGigsContractAccountId,
+  predecessor_id: "${REPL_DEVHUB_CONTRACT}",
   key: context.accountId + "/index/notify",
 });
 if (grantNotify === null) {
@@ -299,7 +242,7 @@ const onLike = () => {
   }
   let likeTxn = [
     {
-      contractName: nearDevGovGigsContractAccountId,
+      contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "add_like",
       args: {
         post_id: postId,
@@ -314,7 +257,7 @@ const onLike = () => {
       contractName: "social.near",
       methodName: "grant_write_permission",
       args: {
-        predecessor_id: nearDevGovGigsContractAccountId,
+        predecessor_id: "${REPL_DEVHUB_CONTRACT}",
         keys: [context.accountId + "/index/notify"],
       },
       deposit: Big(10).pow(23),
@@ -358,13 +301,19 @@ const buttonsFooter = props.isPreview ? null : (
           onClick={onLike}
         >
           <i class={`bi ${likeBtnClass}`}> </i>
-          {post.likes.length == 0
-            ? "Like"
-            : widget("components.layout.LikeButton.Faces", {
+          {post.likes.length == 0 ? (
+            "Like"
+          ) : (
+            <Widget
+              // TODO: LEGACY.
+              src="${REPL_DEVHUB}/widget/gigs-board.components.layout.LikeButton.Faces"
+              props={{
                 likesByUsers: Object.fromEntries(
                   post.likes.map(({ author_id }) => [author_id, ""])
                 ),
-              })}
+              }}
+            />
+          )}
         </ButtonWithHover>
         <div class="btn-group" role="group">
           <ButtonWithHover
@@ -428,7 +377,13 @@ const buttonsFooter = props.isPreview ? null : (
         {isUnderPost || !parentId ? (
           <div key="link-to-parent"></div>
         ) : (
-          <a href={href("Post", { id: parentId })}>
+          <Link
+            to={href({
+              gateway: "near.org",
+              widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
+              params: { id: parentId },
+            })}
+          >
             <ButtonWithHover
               type="button"
               style={{ border: "0px" }}
@@ -437,7 +392,7 @@ const buttonsFooter = props.isPreview ? null : (
             >
               <i class="bi bi-arrow-90deg-up"></i>Go to parent
             </ButtonWithHover>
-          </a>
+          </Link>
         )}
       </div>
     </div>
@@ -455,14 +410,17 @@ const CreatorWidget = (postType) => {
       id={`collapse${postType}Creator${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
-      {widget("entity.post.PostEditor", {
-        postType,
-        onDraftStateChange: props.onDraftStateChange,
-        draftState:
-          draftState?.parent_post_id == postId ? draftState : undefined,
-        parentId: postId,
-        mode: "Create",
-      })}
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
+        props={{
+          postType,
+          onDraftStateChange: props.onDraftStateChange,
+          draftState:
+            draftState?.parent_post_id == postId ? draftState : undefined,
+          parentId: postId,
+          mode: "Create",
+        }}
+      />
     </div>
   );
 };
@@ -472,12 +430,6 @@ const tokenMapping = {
   USDT: {
     NEP141: {
       address: "usdt.tether-token.near",
-    },
-  },
-  USDC: {
-    NEP141: {
-      address:
-        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
     },
   },
   // Add more tokens here as needed
@@ -516,21 +468,25 @@ const EditorWidget = (postType) => {
       id={`collapse${postType}Editor${postId}`}
       data-bs-parent={`#accordion${postId}`}
     >
-      {widget("entity.post.PostEditor", {
-        postType,
-        postId,
-        mode: "Edit",
-        author_id: post.author_id,
-        labels: post.snapshot.labels,
-        name: post.snapshot.name,
-        description: post.snapshot.description,
-        amount: post.snapshot.amount,
-        token: tokenResolver(post.snapshot.sponsorship_token),
-        supervisor: post.snapshot.supervisor,
-        githubLink: post.snapshot.github_link,
-        onDraftStateChange: props.onDraftStateChange,
-        draftState: draftState?.edit_post_id == postId ? draftState : undefined,
-      })}
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
+        props={{
+          postType,
+          postId,
+          mode: "Edit",
+          author_id: post.author_id,
+          labels: post.snapshot.labels,
+          name: post.snapshot.name,
+          description: post.snapshot.description,
+          amount: post.snapshot.amount,
+          token: tokenResolver(post.snapshot.sponsorship_token),
+          supervisor: post.snapshot.supervisor,
+          githubLink: post.snapshot.github_link,
+          onDraftStateChange: props.onDraftStateChange,
+          draftState:
+            draftState?.edit_post_id == postId ? draftState : undefined,
+        }}
+      />
     </div>
   );
 };
@@ -550,33 +506,39 @@ function Editor() {
       >
         {state.editorType === "CREATE" ? (
           <>
-            {widget("entity.post.PostEditor", {
-              postType: state.postType,
-              onDraftStateChange: props.onDraftStateChange,
-              draftState:
-                draftState?.parent_post_id == postId ? draftState : undefined,
-              parentId: postId,
-              mode: "Create",
-            })}
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
+              props={{
+                postType: state.postType,
+                onDraftStateChange: props.onDraftStateChange,
+                draftState:
+                  draftState?.parent_post_id == postId ? draftState : undefined,
+                parentId: postId,
+                mode: "Create",
+              }}
+            />
           </>
         ) : (
           <>
-            {widget("entity.post.PostEditor", {
-              postType: state.postType,
-              postId,
-              mode: "Edit",
-              author_id: post.author_id,
-              labels: post.snapshot.labels,
-              name: post.snapshot.name,
-              description: post.snapshot.description,
-              amount: post.snapshot.amount,
-              token: tokenResolver(post.snapshot.sponsorship_token),
-              supervisor: post.snapshot.supervisor,
-              githubLink: post.snapshot.github_link,
-              onDraftStateChange: props.onDraftStateChange,
-              draftState:
-                draftState?.edit_post_id == postId ? draftState : undefined,
-            })}
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
+              props={{
+                postType: state.postType,
+                postId,
+                mode: "Edit",
+                author_id: post.author_id,
+                labels: post.snapshot.labels,
+                name: post.snapshot.name,
+                description: post.snapshot.description,
+                amount: post.snapshot.amount,
+                token: post.snapshot.sponsorship_token,
+                supervisor: post.snapshot.supervisor,
+                githubLink: post.snapshot.github_link,
+                onDraftStateChange: props.onDraftStateChange,
+                draftState:
+                  draftState?.edit_post_id == postId ? draftState : undefined,
+              }}
+            />
           </>
         )}
       </div>
@@ -589,9 +551,17 @@ const renamedPostType =
 
 const tags = post.snapshot.labels ? (
   <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
-    {post.snapshot.labels.map((tag) => {
-      return widget("components.atom.tag", { linkTo: "Feed", tag });
-    })}
+    {post.snapshot.labels.map((tag) => (
+      <Widget
+        // TODO: LEGACY.
+        src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.tag"}
+        props={{
+          linkTo: "Feed",
+          tag,
+          nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+        }}
+      />
+    ))}
   </div>
 ) : (
   <div key="post-labels"></div>
@@ -621,7 +591,7 @@ const postExtra =
       <h6 class="card-subtitle mb-2 text-muted">
         Supervisor:{" "}
         <Widget
-          src={`neardevgov.near/widget/ProfileLine`}
+          src={"${REPL_DEVHUB}/widget/ProfileLine"}
           props={{ accountId: snapshot.supervisor }}
         />
       </h6>
@@ -656,20 +626,20 @@ const postsList =
         }`}
         id={`collapseChildPosts${postId}`}
       >
-        {childPostIds.map((childId) =>
-          widget(
-            "entity.post.Post",
-            {
+        {childPostIds.map((childId) => (
+          <Widget
+            src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
+            props={{
               id: childId,
               isUnderPost: true,
               onDraftStateChange: props.onDraftStateChange,
               draftState,
               expandParent: () =>
                 State.update({ childrenOfChildPostsHasDraft: true }),
-            },
-            `subpost${childId}of${postId}`
-          )
-        )}
+              referral: `subpost${childId}of${postId}`,
+            }}
+          />
+        ))}
       </div>
     </div>
   );
@@ -694,16 +664,28 @@ const clampedContent = needClamp
 // Should make sure the posts under the currently top viewed post are limited in size.
 const descriptionArea = isUnderPost ? (
   <LimitedMarkdown className="overflow-auto" key="description-area">
-    {widget("components.molecule.markdown-viewer", {
+    {/* {widget("components.molecule.markdown-viewer", {
       text: snapshot.description,
-    })}
+    })} */}
+    <Widget
+      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
+      props={{
+        text: snapshot.description,
+      }}
+    />
   </LimitedMarkdown>
 ) : (
   <div>
     <div class={state.clamp ? "clamp" : ""}>
-      {widget("components.molecule.markdown-viewer", {
+      {/* {widget("components.molecule.markdown-viewer", {
         text: state.clamp ? clampedContent : snapshot.description,
-      })}
+      })} */}
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
+        props={{
+          text: state.clamp ? clampedContent : snapshot.description,
+        }}
+      />
     </div>
     {state.clamp ? (
       <div class="d-flex justify-content-start">
@@ -722,19 +704,23 @@ const descriptionArea = isUnderPost ? (
 
 const timestampElement = (_snapshot) => {
   return (
-    <a
+    <Link
       class="text-muted"
-      href={href("Post", {
-        id: postId,
-        timestamp: _snapshot.timestamp,
-        compareTimestamp: null,
-        referral,
+      href={href({
+        gateway: "near.org",
+        widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
+        params: {
+          id: postId,
+          timestamp: _snapshot.timestamp,
+          compareTimestamp: null,
+          referral,
+        },
       })}
     >
       {readableDate(_snapshot.timestamp / 1000000).substring(4)}
 
       <Widget
-        src="mob.near/widget/ProfileImage"
+        src="${REPL_MOB}/widget/ProfileImage"
         props={{
           accountId: _snapshot.editor_id,
           style: {
@@ -747,7 +733,7 @@ const timestampElement = (_snapshot) => {
         }}
       />
       {_snapshot.editor_id.substring(0, 8)}
-    </a>
+    </Link>
   );
 };
 
@@ -763,7 +749,7 @@ function combineText(_snapshot) {
 }
 
 return (
-  <AttractableDiv className={`card ${borders[snapshot.post_type]}`}>
+  <div className={`card ${borders[snapshot.post_type]} attractable`}>
     {header}
     <div className="card-body">
       {searchKeywords}
@@ -812,5 +798,5 @@ return (
       {!props.isPreview && (isDraft || state.showEditor) && <Editor />}
       {postsList}
     </div>
-  </AttractableDiv>
+  </div>
 );

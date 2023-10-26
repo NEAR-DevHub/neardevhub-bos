@@ -1,56 +1,8 @@
-/* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-function widget(widgetName, widgetProps, key) {
-  widgetProps = {
-    ...widgetProps,
-    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
-    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    referral: props.referral,
-  };
-
-  return (
-    <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
-      props={widgetProps}
-      key={key}
-    />
-  );
+if (!href) {
+  return <p>Loading modules...</p>;
 }
-
-function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-
-  if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId =
-      props.nearDevGovGigsContractAccountId;
-  }
-
-  if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId =
-      props.nearDevGovGigsWidgetsAccountId;
-  }
-
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
-/* END_INCLUDE: "common.jsx" */
 
 /* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
@@ -87,7 +39,7 @@ const labels = labelStrings.map((s) => {
   return { name: s };
 });
 
-initState({
+State.init({
   seekingFunding: false,
 
   author_id: context.accountId,
@@ -128,7 +80,7 @@ if (state.waitForDraftStateRestore) {
 // This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onClick, it will give `null` and we cannot tell the result is true or false.
 let grantNotify = Near.view("social.near", "is_write_permission_granted", {
-  predecessor_id: nearDevGovGigsContractAccountId,
+  predecessor_id: "${REPL_DEVHUB_CONTRACT}",
   key: context.accountId + "/index/notify",
 });
 if (grantNotify === null) {
@@ -171,7 +123,7 @@ const onSubmit = () => {
   let txn = [];
   if (mode == "Create") {
     txn.push({
-      contractName: nearDevGovGigsContractAccountId,
+      contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "add_post",
       args: {
         parent_id: parentId,
@@ -183,7 +135,7 @@ const onSubmit = () => {
     });
   } else if (mode == "Edit") {
     txn.push({
-      contractName: nearDevGovGigsContractAccountId,
+      contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "edit_post",
       args: {
         id: postId,
@@ -200,7 +152,7 @@ const onSubmit = () => {
         contractName: "social.near",
         methodName: "grant_write_permission",
         args: {
-          predecessor_id: nearDevGovGigsContractAccountId,
+          predecessor_id: "${REPL_DEVHUB_CONTRACT}",
           keys: [context.accountId + "/index/notify"],
         },
         deposit: Big(10).pow(23),
@@ -230,7 +182,7 @@ const normalizeLabel = (label) =>
     .trim("-");
 
 const checkLabel = (label) => {
-  Near.asyncView(nearDevGovGigsContractAccountId, "is_allowed_to_use_labels", {
+  Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
     editor: context.accountId,
     labels: [label],
   }).then((allowed) => {
@@ -259,11 +211,10 @@ const setLabels = (labels) => {
       oldLabels.delete(label.name);
     }
     let removed = oldLabels.values().next().value;
-    Near.asyncView(
-      nearDevGovGigsContractAccountId,
-      "is_allowed_to_use_labels",
-      { editor: context.accountId, labels: [removed] }
-    ).then((allowed) => {
+    Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+      editor: context.accountId,
+      labels: [removed],
+    }).then((allowed) => {
       if (allowed) {
         let labelStrings = labels.map(({ name }) => name);
         State.update({ labels, labelStrings });
@@ -285,7 +236,7 @@ const setLabels = (labels) => {
   }
 };
 const existingLabelStrings =
-  Near.view(nearDevGovGigsContractAccountId, "get_all_allowed_labels", {
+  Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_allowed_labels", {
     editor: context.accountId,
   }) ?? [];
 const existingLabelSet = new Set(existingLabelStrings);
@@ -310,11 +261,10 @@ const labelEditor = (
           !existingLabelSet.has(props.text) &&
           props.selected.filter((selected) => selected.name === props.text)
             .length == 0 &&
-          Near.view(
-            nearDevGovGigsContractAccountId,
-            "is_allowed_to_use_labels",
-            { editor: context.accountId, labels: [props.text] }
-          )
+          Near.view("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+            editor: context.accountId,
+            labels: [props.text],
+          })
         );
       }}
     />
@@ -325,7 +275,6 @@ const nameDiv = (
   <div className="col-lg-6 mb-2">
     <p className="fs-6 fw-bold mb-1">Title</p>
     <input
-      data-testid="input-title"
       type="text"
       value={state.name}
       onChange={(event) => State.update({ name: event.target.value })}
@@ -336,17 +285,20 @@ const nameDiv = (
 const descriptionDiv = (
   <div className="col-lg-12 mb-2">
     <p className="fs-6 fw-bold mb-1">Description</p>
-    {widget("components.molecule.markdown-editor", {
-      data: { handler: state.handler, content: state.description },
-      onChange: (content) => {
-        State.update({ description: content, handler: "update" });
-        textareaInputHandler(content);
-      },
-    })}
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
+      props={{
+        data: { handler: state.handler, content: state.description },
+        onChange: (content) => {
+          State.update({ description: content, handler: "update" });
+          textareaInputHandler(content);
+        },
+      }}
+    />
     {autocompleteEnabled && state.showAccountAutocomplete && (
       <AutoComplete>
         <Widget
-          src="near/widget/AccountAutocomplete"
+          src="${REPL_NEAR}/widget/AccountAutocomplete"
           props={{
             term: state.text.split("@").pop(),
             onSelect: autoCompleteAccountId,
@@ -370,7 +322,6 @@ const isFundraisingDiv = (
         <label class="form-check-label">
           <button
             className="btn btn-light p-0"
-            data-testid="btn-request-funding"
             style={{
               backgroundColor: state.seekingFunding ? "#0C7283" : "inherit",
               color: "#f3f3f3",
@@ -410,21 +361,19 @@ const fundraisingDiv = (
     <div className="col-lg-6  mb-2">
       Currency
       <select
-        data-testid="select-currency"
         onChange={(event) => State.update({ token: event.target.value })}
         class="form-select"
-        aria-label="Select currency"
-        value={state.token}
+        aria-label="Default select"
       >
-        <option value="USDT">USDT</option>
+        <option selected value="USDT">
+          USDT
+        </option>
         <option value="NEAR">NEAR</option>
-        <option value="USDC">USDC</option>
       </select>
     </div>
     <div className="col-lg-6 mb-2">
       Requested amount <span class="text-muted fw-normal">(Numbers Only)</span>
       <input
-        data-testid="input-amount"
         type="number"
         value={parseInt(state.amount) > 0 ? state.amount : ""}
         min={0}
@@ -450,7 +399,6 @@ const fundraisingDiv = (
           @
         </span>
         <input
-          data-testid="input-supervisor"
           type="text"
           class="form-control"
           placeholder="Enter username"
@@ -472,21 +420,23 @@ function generateDescription(text, amount, token, supervisor, seekingFunding) {
 }
 
 return (
-  <div class="bg-light d-flex flex-column flex-grow-1">
-    {widget("components.organism.app-header")}
+  <div class="bg-light d-flex flex-column flex-grow-1 w-100">
     <div class="mx-5 mb-5">
       <div aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-            <a
+            <Link
               style={{
                 color: "#3252A6",
               }}
               className="fw-bold"
-              href={href("Feed")}
+              to={href({
+                widgetSrc: "${REPL_DEVHUB}/widget/app",
+                params: { page: "feed" },
+              })}
             >
               DevHub
-            </a>
+            </Link>
           </li>
           <li class="breadcrumb-item active" aria-current="page">
             Create new
@@ -496,15 +446,18 @@ return (
       {props.transactionHashes ? (
         <>
           Post created successfully. Back to{" "}
-          <a
+          <Link
             style={{
               color: "#3252A6",
             }}
             className="fw-bold"
-            href={href("Feed")}
+            to={href({
+              widgetSrc: "${REPL_DEVHUB}/widget/app",
+              params: { page: "feed" },
+            })}
           >
             feed
-          </a>
+          </Link>
         </>
       ) : (
         <>
@@ -533,7 +486,6 @@ return (
                 <button
                   onClick={onSolutionClick}
                   type="button"
-                  data-testid="btn-solution"
                   class={`btn btn-outline-secondary`}
                   style={
                     state.postType !== "Idea"
@@ -576,7 +528,6 @@ return (
                 {state.seekingFunding && fundraisingDiv}
               </div>
               <button
-                data-testid="btn-submit"
                 style={{
                   width: "7rem",
                   backgroundColor: "#0C7283",
@@ -595,28 +546,31 @@ return (
             <div class="card-body">
               <p class="text-muted m-0">Preview</p>
               <div>
-                {widget("entity.post.Post", {
-                  isPreview: true,
-                  id: 0, // irrelevant
-                  post: {
-                    author_id: state.author_id,
-                    likes: [],
-                    snapshot: {
-                      editor_id: state.editor_id,
-                      labels: state.labelStrings,
-                      post_type: state.postType,
-                      name: state.name,
-                      description: generateDescription(
-                        state.description,
-                        state.amount,
-                        state.token,
-                        state.supervisor,
-                        state.seekingFunding
-                      ),
-                      github_link: state.githubLink,
+                <Widget
+                  src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
+                  props={{
+                    isPreview: true,
+                    id: 0, // irrelevant
+                    post: {
+                      author_id: state.author_id,
+                      likes: [],
+                      snapshot: {
+                        editor_id: state.editor_id,
+                        labels: state.labelStrings,
+                        post_type: state.postType,
+                        name: state.name,
+                        description: generateDescription(
+                          state.description,
+                          state.amount,
+                          state.token,
+                          state.supervisor,
+                          state.seekingFunding
+                        ),
+                        github_link: state.githubLink,
+                      },
                     },
-                  },
-                })}
+                  }}
+                />
               </div>
             </div>
           </div>
