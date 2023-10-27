@@ -1,3 +1,8 @@
+const page = props.page;
+const small = page === "community";
+
+console.log(small);
+
 return (
   <iframe
     iframeResizer
@@ -7,10 +12,17 @@ return (
         <style type="text/css">
           body {
             margin: 0;
+
+            ${small && "height: 72px;"}
           }
           .container {
             max-width: 720px;
             margin: 0 auto;
+
+            ${
+              small &&
+              `max-width: 100%; display: flex; flex-direction: row-reverse; align-items: center; justify-content: space-between; padding: 0 1rem;`
+            }
           }
           .heading {
             color: #151515;
@@ -19,6 +31,8 @@ return (
             font-style: normal;
             font-weight: 700;
             line-height: 120%; /* 43.2px */
+
+            ${small && "display: none"}
           }
           .lead {
             color: #151515;
@@ -30,6 +44,8 @@ return (
             letter-spacing: -0.72px;
 
             margin: 0 auto;
+
+            ${small && "margin-bottom: 12px"}
           }
           #mc_embed_signup {
               background: #00EC97;
@@ -37,6 +53,8 @@ return (
               font: 14px Helvetica, Arial, sans-serif; 
               padding: 20px;
               text-align: center;
+
+              ${small && "padding: 0px"}
           }
           #mc_embed_signup h2 {
               font-size: 24px;
@@ -58,6 +76,8 @@ return (
             @media screen and (max-width: 768px) {
                 width: 96%;
             }
+
+            ${small && "height: 36px; !important; "}
           }
           #mce-responses {
             display: none !important;
@@ -68,6 +88,8 @@ return (
             @media screen and (max-width: 768px) {
                 flex-direction: column;
             }
+
+            ${small && "gap: 32px; !important;"}
           }
           .mc-field-group {
             padding: 0 !important;
@@ -87,11 +109,20 @@ return (
           .social-link:hover {
             text-decoration: none;
           }
+
+          #mce-EMAIL {
+            ${small && "width: 240px; height: 20px; !important; "}
+          }
         </style>
         <div id="mc_embed_signup">
           <div class="container">
-            <h2 class="heading">/dev/hub newsletter</h2>
-            <p class="lead">Stay in the loop. Get the latest updates, announcements, opportunities, and insights from the ecosystem in your inbox</p>
+          <div ${small && "style='display: flex; align-items: center;'"}>
+          <h2 class="heading">/dev/hub newsletter</h2>
+            <p class="lead">${
+              !small
+                ? "Stay in the loop. Get the latest updates, announcements, opportunities, and insights from the ecosystem in your inbox"
+                : "Subscribe to our newsletter"
+            }</p>
             <form action="https://gmail.us13.list-manage.com/subscribe/post?u=a52895422d000733a8dedc526&amp;id=5addef27c3&amp;f_id=00aa37e2f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate form-group" target="_blank">
                 <div class="mc-field-group">
                     <input type="email" name="EMAIL" placeholder="Type your email..." class="required email" id="mce-EMAIL" required="" value="">
@@ -109,6 +140,7 @@ return (
                 </div>
                 </div>
             </form>
+            </div>
             <div class="social-links">
                 <a href="#" class="social-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="16" viewBox="0 0 20 16" fill="none">

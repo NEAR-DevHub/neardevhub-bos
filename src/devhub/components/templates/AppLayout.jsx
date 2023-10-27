@@ -28,12 +28,11 @@ const AppHeader = ({ page }) => (
   />
 );
 
-const Footer = () => {
+const Footer = (props) => {
   return (
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.organism.NewsLetter"
       props={{
-        page: page,
         ...props,
       }}
     />
@@ -46,7 +45,7 @@ function AppLayout({ page, children }) {
       <Container>
         <AppHeader page={page} />
         <ContentContainer>{children}</ContentContainer>
-        <Footer />
+        <Footer page={page} />
       </Container>
     </>
   );
