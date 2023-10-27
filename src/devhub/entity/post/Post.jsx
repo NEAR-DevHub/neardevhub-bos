@@ -157,10 +157,13 @@ const shareButton = props.isPreview ? (
 const header = (
   <div key="header">
     <small class="text-muted">
-      <div class="row justify-content-between align-items-center">
-        <div className="d-flex align-items-center gap-2">
+      <div class="row justify-content-between">
+        <div class="col-4">
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"}
+            // TODO: LEGACY.
+            src={
+              "${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"
+            }
             props={{
               accountId: post.author_id,
               nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
