@@ -79,6 +79,13 @@ function setCommunityAddon({ handle, addon }) {
   });
 }
 
+/**
+ * Gets all available addons, these are controlled by devhub moderators
+ */
+function getAllAddons() {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_addons") ?? null;
+}
+
 function getAccessControlInfo() {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "get_access_control_info") ?? null
@@ -93,64 +100,6 @@ function getAllCommunitiesMetadata() {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_communities_metadata") ?? null
   );
-}
-
-function getAvailableAddons() {
-  return [
-    {
-      id: "wiki",
-      title: "Wiki",
-      description: "Create a wiki for your community",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.wiki.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.wiki.Configurator",
-    },
-    {
-      id: "telegram",
-      title: "Telegram",
-      description: "Connect your telegram",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.telegram.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.telegram.Configurator",
-    },
-    {
-      id: "github",
-      title: "Github",
-      description: "Connect your github",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.github.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.github.Configurator",
-    },
-    {
-      id: "kanban",
-      title: "Kanban",
-      description: "Connect your github kanban board",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Configurator",
-    },
-    // {
-    //   id: "blog",
-    //   title: "Blog",
-    //   description: "Create a blog for your community",
-    //   view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Viewer",
-    //   configurator_widget:
-    //     "${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator",
-    // },
-  ];
-  // return Near.view("${REPL_DEVHUB_CONTRACT}", "get_available_addons") ?? null;
-}
-
-function getCommunityAddons({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addons", {
-    handle,
-  });
-}
-
-function getCommunityAddonConfigs({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addon_configs", {
-    handle,
-  });
 }
 
 function getAllLabels() {
@@ -172,33 +121,6 @@ function getPostsByLabel({ label }) {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_label", {
       label,
-    }) ?? null
-  );
-}
-
-function getAddons({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_addons", { handle }) ?? null;
-}
-
-function setAddons({ handle, addons }) {
-  return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_addons", { handle, addons }) ??
-    null
-  );
-}
-
-function getConfig({ config_id }) {
-  return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_config", { config_id }) ?? null
-  );
-}
-
-function setConfig({ handle, config_id, config }) {
-  return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "set_config", {
-      handle,
-      config_id,
-      config,
     }) ?? null
   );
 }
@@ -247,7 +169,7 @@ return {
   getAccessControlInfo,
   getAllAuthors,
   getAllCommunitiesMetadata,
-  getAvailableAddons,
+  getAllAddons,
   getCommunityAddons,
   getCommunityAddonConfigs,
   getAllLabels,
