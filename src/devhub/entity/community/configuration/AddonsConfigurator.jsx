@@ -188,6 +188,12 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
 
   return (
     <Container>
+      <p>
+        Add or remove custom tabs, which will appear in your community's
+        navigation bar.
+        <br />
+        You can customize them on each page.
+      </p>
       {list.map((item, index) => (
         <AddonItem
           key={item.id}

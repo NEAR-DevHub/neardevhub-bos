@@ -131,7 +131,7 @@ return (
             "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
           }
           props={{
-            title: "Addons",
+            title: "Add-Ons",
             headerRight: <></>,
             hasConfigurePermissions,
             Configurator: (p) => (
