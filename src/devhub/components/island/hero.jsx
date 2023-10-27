@@ -1,3 +1,7 @@
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+
+href || (href = () => {});
+
 const imageLink =
   "https://ipfs.near.social/ipfs/bafybeiap2mzwsly4apaldxguiunx4rjwqyadksj5yxuzwrww3kue3ao5qe";
 
@@ -168,7 +172,16 @@ return (
         <Lead>
           Join a vibrant community of innovators shaping the open web.
         </Lead>
-        <CTA href="#">Read more →</CTA>
+        <Link
+          to={href({
+            widgetSrc: "${REPL_DEVHUB}/widget/app",
+            params: {
+              page: "about",
+            },
+          })}
+        >
+          <CTA href="#">Read more →</CTA>
+        </Link>
       </DesktopDescription>
     </HeroSection>
     <ImageContainer>
@@ -176,7 +189,16 @@ return (
     </ImageContainer>
     <MobileDescription>
       <Lead>Join a vibrant community of innovators shaping the open web.</Lead>
-      <CTA href="#">Read more →</CTA>
+      <Link
+        to={href({
+          widgetSrc: "${REPL_DEVHUB}/widget/app",
+          params: {
+            page: "about",
+          },
+        })}
+      >
+        <CTA href="#">Read more →</CTA>
+      </Link>
     </MobileDescription>
   </Container>
 );

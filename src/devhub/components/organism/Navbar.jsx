@@ -149,7 +149,6 @@ const links = [
   {
     title: "/about",
     links: [
-      { title: "/about", href: "about" },
       { title: "mission", href: "mission" },
       { title: "blog", href: "blog" },
       { title: "newsletter", href: "newsletter" },
@@ -201,7 +200,7 @@ const MobileLink = styled.a`
 return (
   <Navbar className="position-relative">
     <Logo />
-    <div className="d-flex gap-3">
+    <div className="d-flex gap-3 align-items-center">
       <LinksContainer>
         {links.map((link) => (
           <Widget

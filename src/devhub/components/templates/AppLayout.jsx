@@ -28,12 +28,27 @@ const AppHeader = ({ page }) => (
   />
 );
 
+const Footer = () => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.organism.NewsLetter"
+      props={{
+        page: page,
+        ...props,
+      }}
+    />
+  );
+};
+
 function AppLayout({ page, children }) {
   return (
-    <Container>
-      <AppHeader page={page} />
-      <ContentContainer>{children}</ContentContainer>
-    </Container>
+    <>
+      <Container>
+        <AppHeader page={page} />
+        <ContentContainer>{children}</ContentContainer>
+        <Footer />
+      </Container>
+    </>
   );
 }
 
