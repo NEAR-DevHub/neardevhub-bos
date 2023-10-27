@@ -162,7 +162,9 @@ const AddonItem = ({
             src="near/widget/DIG.Tooltip"
             props={{
               content: `${
-                addonMatch ? `${addonMatch.title}: ${addonMatch.description}` : "Unrecognized add-on"
+                addonMatch
+                  ? `${addonMatch.title}: ${addonMatch.description}`
+                  : "Unrecognized add-on"
               }`,
               trigger: (
                 <button className="btn btn-outline-secondary">

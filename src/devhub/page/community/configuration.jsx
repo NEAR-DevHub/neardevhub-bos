@@ -141,7 +141,7 @@ return (
                 props={{
                   data: communityData.addons || [],
                   onSubmit: (v) => setCommunityAddons({ handle, addons: v }),
-                  ...p
+                  ...p,
                 }}
               />
             ),

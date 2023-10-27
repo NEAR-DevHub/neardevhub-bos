@@ -25,7 +25,7 @@ const hasDataChanged = () => {
   return (
     content !== initialData.content ||
     title !== initialData.title ||
-    description !== initialData.description || 
+    description !== initialData.description ||
     textAlign !== initialData.textAlign
   );
 };
