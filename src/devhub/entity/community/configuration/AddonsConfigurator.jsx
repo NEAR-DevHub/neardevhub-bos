@@ -6,6 +6,8 @@ const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 const availableAddons = getAvailableAddons() || [];
 
+const isActive = props.isActive;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -30,6 +32,26 @@ const EditableField = styled.input`
 
 const ToggleButton = styled.input`
   margin-left: 10px;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+const Header = styled.thead`
+  background-color: #f0f0f0;
+`;
+
+const HeaderCell = styled.th`
+  padding: 10px;
+  text-align: left;
+`;
+
+const Row = styled.tr``;
+
+const Cell = styled.td`
+  padding: 10px;
 `;
 
 function generateRandom6CharUUID() {
@@ -78,53 +100,85 @@ const AddonItem = ({
     onRemove(data.id);
   };
 
+  const addonMatch =
+    availableAddons.find((it) => it.id === data.addon_id) ?? null;
+
   return (
-    <div>
-      <Item>
-        <div>
-          <div style={{ display: "flex", gap: "0" }}>
-            <button
-              className="btn btn-sm btn-secondary rounded-0"
-              onClick={moveItemUp}
-              disabled={isTop}
-            >
-              <i className="bi bi-arrow-up"></i>
-            </button>
-            <button
-              className="btn btn-sm btn-secondary rounded-0"
-              onClick={moveItemDown}
-              disabled={isBottom}
-            >
-              <i className="bi bi-arrow-down"></i>
-            </button>
-          </div>
+    <Row>
+      <Cell>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+          <button
+            className="btn btn-sm btn-secondary rounded-0"
+            onClick={moveItemUp}
+            disabled={!isActive}
+            style={{ visibility: isTop ? "hidden" : "visible" }}
+          >
+            <i className="bi bi-arrow-up"></i>
+          </button>
+          <button
+            className="btn btn-sm btn-secondary rounded-0"
+            onClick={moveItemDown}
+            disabled={!isActive}
+            style={{ visibility: isBottom ? "hidden" : "visible" }}
+          >
+            <i className="bi bi-arrow-down"></i>
+          </button>
         </div>
-        <EditableField
-          className="form-control border border-2"
-          type="text"
-          value={data.display_name}
-          disabled={!data.enabled}
-          onChange={handleNameChange}
-          maxLength={30}
-        />
+      </Cell>
+      <Cell>
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.atom.Toggle"}
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
           props={{
-            label: "Enabled:",
-            value: data.enabled,
-            onChange: handleEnableChange,
+            label: " ",
+            value: data.display_name,
+            onChange: handleNameChange,
+            inputProps: {
+              min: 3,
+              max: 30,
+              disabled: !data.enabled || !isActive,
+            },
           }}
         />
-        {/* TODO: Redirects to the addon to configure there */}
-        {/* <button className="btn btn-outline-secondary">
-          Edit
-          <i className="bi bi-box-arrow-in-up-right" />
-        </button> */}
-        <button className="btn btn-outline-danger" onClick={removeItem}>
-          <i className="bi bi-trash-fill" />
-        </button>
-      </Item>
-    </div>
+      </Cell>
+      <Cell>
+        <div
+          className={
+            "d-flex flex-column flex-1 align-items-start justify-content-evenly"
+          }
+        >
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.components.atom.Toggle"}
+            props={{
+              value: data.enabled,
+              onChange: handleEnableChange,
+              disabled: !isActive,
+            }}
+          />
+        </div>
+      </Cell>
+      <Cell>
+        <div style={{ display: "flex", gap: "2px" }}>
+          <Widget
+            src="near/widget/DIG.Tooltip"
+            props={{
+              content: `${
+                addonMatch ? `${addonMatch.title}: ${addonMatch.description}` : "Unrecognized add-on"
+              }`,
+              trigger: (
+                <button className="btn btn-outline-secondary">
+                  <i className="bi bi-question-circle"></i>
+                </button>
+              ),
+            }}
+          />
+          {isActive && (
+            <button className="btn btn-outline-danger" onClick={removeItem}>
+              <i className="bi bi-trash-fill" />
+            </button>
+          )}
+        </div>
+      </Cell>
+    </Row>
   );
 };
 
@@ -194,19 +248,31 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
         <br />
         You can customize them on each page.
       </p>
-      {list.map((item, index) => (
-        <AddonItem
-          key={item.id}
-          data={item}
-          onUpdate={updateItem}
-          onMove={moveItem}
-          onRemove={removeItem}
-          index={index}
-          isTop={index === 0}
-          isBottom={index === list.length - 1}
-        />
-      ))}
-      {availableAddons && list.length < 7 && (
+      <Table>
+        <Header>
+          <Row>
+            <HeaderCell style={{ width: "30px" }}>Order</HeaderCell>
+            <HeaderCell>Tab Name</HeaderCell>
+            <HeaderCell style={{ width: "45px" }}>Enabled</HeaderCell>
+            <HeaderCell style={{ width: "40px" }}>Actions</HeaderCell>
+          </Row>
+        </Header>
+        <tbody>
+          {list.map((item, index) => (
+            <AddonItem
+              key={item.id}
+              data={item}
+              onUpdate={updateItem}
+              onMove={moveItem}
+              onRemove={removeItem}
+              index={index}
+              isTop={index === 0}
+              isBottom={index === list.length - 1}
+            />
+          ))}
+        </tbody>
+      </Table>
+      {isActive && availableAddons && list.length < 7 && (
         <div className="d-flex justify-content-center">
           <div className="d-flex gap-2 flex-grow-1 px-4">
             <Widget
@@ -240,23 +306,25 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
           </div>
         </div>
       )}
-      <div
-        className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
-      >
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-          props={{
-            classNames: { root: "btn-success" },
-            disabled: !changesMade,
-            icon: {
-              type: "bootstrap_icon",
-              variant: "bi-check-circle-fill",
-            },
-            label: "Submit",
-            onClick: () => onSubmit(list),
-          }}
-        />
-      </div>
+      {isActive && (
+        <div
+          className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
+        >
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+            props={{
+              classNames: { root: "btn-success" },
+              disabled: !changesMade,
+              icon: {
+                type: "bootstrap_icon",
+                variant: "bi-check-circle-fill",
+              },
+              label: "Submit",
+              onClick: () => onSubmit(list),
+            }}
+          />
+        </div>
+      )}
     </Container>
   );
 };

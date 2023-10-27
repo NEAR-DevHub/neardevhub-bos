@@ -132,7 +132,6 @@ return (
           }
           props={{
             title: "Add-Ons",
-            headerRight: <></>,
             hasConfigurePermissions,
             Configurator: (p) => (
               <Widget
@@ -142,6 +141,7 @@ return (
                 props={{
                   data: communityData.addons || [],
                   onSubmit: (v) => setCommunityAddons({ handle, addons: v }),
+                  ...p
                 }}
               />
             ),
