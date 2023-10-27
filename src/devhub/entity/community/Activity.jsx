@@ -25,7 +25,7 @@ return (
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.feature.post-search.panel"}
             props={{
-              showHeader: false,
+              hideHeader: true,
               children: (
                 <Widget
                   src={

@@ -86,6 +86,7 @@ const FeedPage = ({ author, recency, tag }) => {
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.feature.post-search.panel"}
         props={{
+          hideHeader: false,
           children: (
             <Widget
               src={
