@@ -1,4 +1,3 @@
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -7,6 +6,8 @@ const Container = styled.div`
   min-height: 100vh;
 
   background: #ebebeb;
+
+  margin-top: calc(-1 * var(--body-top-padding));
 `;
 
 const ContentContainer = styled.div`
@@ -16,7 +17,6 @@ const ContentContainer = styled.div`
   align-items: center;
   width: 100%;
 `;
-
 
 const AppHeader = ({ page }) => (
   <Widget

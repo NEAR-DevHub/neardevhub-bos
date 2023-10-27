@@ -1,6 +1,5 @@
 const page = props.page;
 
-
 const [showMenu, setShowMenu] = useState(false);
 
 const { href: linkHref } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
@@ -108,8 +107,6 @@ const Navbar = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
-
 
   background: #ebebeb;
 

@@ -1,26 +1,39 @@
 const { className, title, icon, href, onClick } = props;
 
-const buttonStyle = {
-  backgroundColor: "#0C7283",
-  color: "#f3f3f3",
-};
+const Button = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  border-radius: 4px;
+  background: #00ec97;
+
+  color: #f4f4f4;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 125% */
+
+  padding: 0.5rem 1rem;
+
+  outline: none;
+  border: none;
+`;
 
 return (
   <div className={`d-flex flex-row-reverse ${props.className}`}>
     {props.href ? (
-      <Link className="btn btn-light" style={buttonStyle} to={props.href}>
-        <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
-        {props.title}
+      <Link to={props.href}>
+        <Button>
+          <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
+          {props.title}
+        </Button>
       </Link>
     ) : (
-      <button
-        className="btn btn-light"
-        style={buttonStyle}
-        onClick={props.onClick}
-      >
+      <Button onClick={props.onClick}>
         <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
         {props.title || "Post"}
-      </button>
+      </Button>
     )}
   </div>
 );
