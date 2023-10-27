@@ -1,5 +1,5 @@
 const Span = styled.span`
-  color: #818181;
+  color: #00ec97;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;

@@ -109,6 +109,8 @@ const Container = styled.div`
   padding: 1rem 3.125rem;
   background: #fff;
   margin: 1.5rem 0;
+
+  ${props.hideHeader ? "display: none;" : "display: block;"}
 `;
 
 const PostContainer = styled.div`

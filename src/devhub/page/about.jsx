@@ -13,6 +13,10 @@ const PageHeader = styled.h2`
 
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
+
+  @media screen and (max-width: 786px) {
+    padding: 1rem;
+  }
 `;
 
 const Section = styled.div`
@@ -25,12 +29,16 @@ const Section = styled.div`
 
   gap: 2rem;
 
+  @media screen and (max-width: 786px) {
+    padding: 1rem;
+  }
+
   h2 {
     color: #151515;
     font-size: 2rem;
     font-style: normal;
     font-weight: 700;
-    line-height: 20px; /* 55.556% */
+    line-height: 2rem; /* 55.556% */
 
     margin: 1rem;
     margin-left: 0;

@@ -157,10 +157,13 @@ const shareButton = props.isPreview ? (
 const header = (
   <div key="header">
     <small class="text-muted">
-      <div class="row justify-content-between align-items-center">
-        <div className="d-flex align-items-center gap-2">
+      <div class="row justify-content-between">
+        <div class="col-4">
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"}
+            // TODO: LEGACY.
+            src={
+              "${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"
+            }
             props={{
               accountId: post.author_id,
               nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
@@ -303,7 +306,7 @@ const buttonsFooter = props.isPreview ? null : (
       <div class="btn-group" role="group" aria-label="Basic outlined example">
         <ButtonWithHover
           type="button"
-          class="btn"
+          class="btn d-flex align-items-center"
           style={{ border: "0px" }}
           onClick={onLike}
         >
@@ -593,15 +596,11 @@ const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
   ) : (
-    <Title key="post-title">
-      <div className="row justify-content-between align-items-center position-relative">
-        <div class="col-9">
-          <span class={`position-absolute`} style={{ left: "-1.5rem" }}>
-            {emptyIcons[snapshot.post_type]}
-          </span>
-          {renamedPostType}: {snapshot.name}
-        </div>
-      </div>
+    <Title key="post-title d-flex justify-content-between align-items-center position-relative">
+      <span class={`position-absolute`} style={{ left: 10 }}>
+        {emptyIcons[snapshot.post_type]}
+      </span>
+      {renamedPostType}: {snapshot.name}
     </Title>
   );
 
@@ -774,7 +773,10 @@ function combineText(_snapshot) {
 }
 
 const CardContainer = styled.div`
-  padding: 1.5rem 3rem;
+  padding: 1.5rem 3rem !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(129, 129, 129, 0.3) !important;
+  background: #fffefe !important;
 `;
 
 return (

@@ -13,6 +13,11 @@ const AccountName = styled.span`
   font-style: normal;
   font-weight: 700;
   line-height: 20px;
+
+  max-width: 30ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const ProfileCard = (props) => {

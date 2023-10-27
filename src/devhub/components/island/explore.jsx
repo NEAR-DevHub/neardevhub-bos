@@ -68,25 +68,25 @@ const Cards = [
     title: "217 Validators",
     description:
       "to ensure security, liveness, and fault tolerance of the network",
-    href: "#",
+    href: "https://nearscope.net/",
   },
   {
     title: "<1s, <1¢",
     description:
       "Fast and cost-efficient transactions. 1s to update values with minimal fees",
-    href: "#",
+    href: "https://nearblocks.io/",
   },
   {
     title: "Awesome DevEx",
     description:
       "NEAR lets developers innovate with familiar tools: TypeScript, Rust, Solidity",
-    href: "#",
+    href: "https://docs.near.org/",
   },
   {
     title: "Horizontal Scaling",
     description:
       "Nightshade ensures maximum performance thanks to its sharded design",
-    href: "#",
+    href: "https://docs.near.org/concepts/advanced/papers",
   },
 ];
 
@@ -174,7 +174,9 @@ const Content = (
         />
       ))}
     </CardsContainer>
-    <CTA href="#">Explore the Open Web on NEAR →</CTA>
+    <CTA href="#" target="_blank">
+      Explore the Open Web on NEAR →
+    </CTA>
   </Container>
 );
 
