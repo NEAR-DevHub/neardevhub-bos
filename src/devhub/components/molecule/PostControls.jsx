@@ -16,6 +16,10 @@ const Button = styled.button`
 
   padding: 0.5rem 1rem;
 
+  &:hover {
+    text-decoration: none;
+  }
+
   outline: none;
   border: none;
 `;
