@@ -17,6 +17,8 @@ if (communityData === null) {
   return <div>Loading...</div>;
 }
 
+console.log(communityData.tag);
+
 return (
   <div>
     <div class="col">

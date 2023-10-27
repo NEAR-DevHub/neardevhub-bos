@@ -277,7 +277,7 @@ return (
               widgetSrc: "${REPL_DEVHUB}/widget/app",
               params: {
                 page: "create",
-                labels: [communityData.tag],
+                labels: [community.tag],
               },
             }),
           }}
