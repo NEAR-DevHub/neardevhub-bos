@@ -76,7 +76,27 @@ const hasDataChanged = () => {
 };
 
 const handlePublish = () => {
-  //
+  Near.call({
+    contractName: "${REPL_DEVHUB_CONTRACT}",
+    methodName: "add_post",
+    args: {
+      labels: ["blog", handle],
+      body: {
+        post_type: "Comment",
+        description: JSON.stringify({
+          title,
+          content,
+          author,
+          image: state.image.cid,
+          tags: data.includeTags,
+          community: handle,
+        }),
+        comment_version: "V2"
+      },
+    },
+    deposit: Big(10).pow(21).mul(2),
+    gas: Big(10).pow(12).mul(100),
+  });
 };
 
 function Preview() {
