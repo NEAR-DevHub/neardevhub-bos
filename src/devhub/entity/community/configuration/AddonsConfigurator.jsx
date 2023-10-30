@@ -102,7 +102,7 @@ const AddonItem = ({
 
   const addonMatch =
     availableAddons.find((it) => it.id === data.addon_id) ?? null;
-    
+
   return (
     <Row>
       <Cell>
