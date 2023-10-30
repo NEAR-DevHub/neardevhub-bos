@@ -78,12 +78,12 @@ const CardBody = styled.div`
   }
 `;
 
-const Card = ({ title, description, cta }) => {
+const Card = ({ title, description, href }) => {
   return (
     <CardBody>
       <h3>{title}</h3>
       <p>{description}</p>
-      <a href={cta}>Learn more →</a>
+      <a href={href}>Learn more →</a>
     </CardBody>
   );
 };
@@ -92,27 +92,27 @@ const Cards = [
   {
     title: "/dev/hub Hacks",
     description: "Host and support developer focused events around the globe.",
-    href: "#",
+    href: "/${REPL_DEVHUB}/widget/app?page=community&handle=hacks",
   },
   {
     title: "DevDAO Fellowship Program",
     description: "Improve the NEAR dev experience with guidance & funding.",
-    href: "#",
+    href: "/${REPL_DEVHUB}/widget/app?page=community&handle=fellowship",
   },
   {
     title: "Protocol",
     description: "Support the ongoing innovation of the NEAR protocol.",
-    href: "#",
+    href: "/${REPL_DEVHUB}/widget/app?page=community&handle=protocol",
   },
   {
     title: "Zero Knowledge",
     description: "Build a Zero Knowledge ecosystem on NEAR.",
-    href: "#",
+    href: "/${REPL_DEVHUB}/widget/app?page=community&handle=zero-knowledge",
   },
   {
     title: "Contract Standards",
     description: "Coordinate the contribution to the NEAR dapp standards.",
-    href: "#",
+    href: "/${REPL_DEVHUB}/widget/app?page=community&handle=contract-standards",
   },
 ];
 
@@ -319,7 +319,9 @@ const Content = (
       ))}
     </MobileCards>
     <CTAContainer>
-      <CTA href="#">Explore all communities →</CTA>
+      <CTA href="/${REPL_DEVHUB}/widget/app?page=communities">
+        Explore all communities →
+      </CTA>
     </CTAContainer>
   </>
 );

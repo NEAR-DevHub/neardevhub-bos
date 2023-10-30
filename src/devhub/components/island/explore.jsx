@@ -174,7 +174,7 @@ const Content = (
         />
       ))}
     </CardsContainer>
-    <CTA href="#" target="_blank">
+    <CTA href="https://near.org/ecosystem" target="_blank">
       Explore the Open Web on NEAR →
     </CTA>
   </Container>

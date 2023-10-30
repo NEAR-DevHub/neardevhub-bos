@@ -9,7 +9,7 @@ const Items = [
     ),
     description: "Learn the fundamentals of NEAR and build with confidence",
     cta: {
-      href: "#",
+      href: "https://docs.near.org",
       title: "Read ↗",
     },
   },
@@ -23,7 +23,7 @@ const Items = [
       </>
     ),
     cta: {
-      href: "#",
+      href: "https://bit.ly/DevHubOfficeHrs",
       title: "Book a meeting ↗",
     },
   },
@@ -32,7 +32,7 @@ const Items = [
     description:
       "Explore funding opportunities from DevHub to fuel your vision",
     cta: {
-      href: "#",
+      href: "https://www.neardevgov.org/blog/near-developer-governance-funding-guidelines",
       title: "Learn more ↗",
     },
   },
