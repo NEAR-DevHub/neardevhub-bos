@@ -131,8 +131,7 @@ return (
             "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
           }
           props={{
-            title: "Addons",
-            headerRight: <></>,
+            title: "Add-Ons",
             hasConfigurePermissions,
             Configurator: (p) => (
               <Widget
@@ -142,6 +141,7 @@ return (
                 props={{
                   data: communityData.addons || [],
                   onSubmit: (v) => setCommunityAddons({ handle, addons: v }),
+                  ...p,
                 }}
               />
             ),

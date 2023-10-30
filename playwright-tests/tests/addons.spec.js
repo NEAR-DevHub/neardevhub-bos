@@ -19,7 +19,7 @@ test.describe("Wallet is connected", () => {
     test("Addons configuration section comes up on load", async ({ page }) => {
       await page.goto(baseUrl);
 
-      const addonsConfiguratorSelector = 'span:has-text("Addons")';
+      const addonsConfiguratorSelector = 'span:has-text("Add-Ons")';
 
       await page.waitForSelector(addonsConfiguratorSelector, {
         state: "visible",

@@ -74,6 +74,7 @@ const tabs = [
       params: { addon },
     });
 });
+
 const onShareClick = () =>
   clipboard
     .writeText(
