@@ -129,6 +129,22 @@ function Page() {
         />
       );
     }
+    case "contribute": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.page.contribute"}
+          props={passProps}
+        />
+      );
+    }
+    case "profile": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.page.profile"}
+          props={passProps}
+        />
+      );
+    }
     default: {
       // TODO: 404 page
       return <p>404</p>;

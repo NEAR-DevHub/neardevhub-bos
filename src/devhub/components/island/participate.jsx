@@ -1,3 +1,7 @@
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+
+href || (href = () => {});
+
 const Container = styled.div`
   margin-top: 2.25rem;
 
@@ -131,7 +135,14 @@ const Content = (
         </LinksContainer>
       ))}
     </Container>
-    <CTA href="#">Learn more →</CTA>
+    <Link
+      to={href({
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
+        params: { page: "contribute" },
+      })}
+    >
+      <CTA href="#">Learn more →</CTA>
+    </Link>
   </SectionPadding>
 );
 
