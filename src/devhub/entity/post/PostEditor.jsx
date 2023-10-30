@@ -1,57 +1,3 @@
-/* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-function widget(widgetName, widgetProps, key) {
-  widgetProps = {
-    ...widgetProps,
-    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
-    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    referral: props.referral,
-  };
-
-  return (
-    <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
-      props={widgetProps}
-      key={key}
-    />
-  );
-}
-
-function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-
-  if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId =
-      props.nearDevGovGigsContractAccountId;
-  }
-
-  if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId =
-      props.nearDevGovGigsWidgetsAccountId;
-  }
-
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
-/* END_INCLUDE: "common.jsx" */
-
 /* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
 const AutoComplete = styled.div`
@@ -97,7 +43,7 @@ initState({
   name: props.name ?? "",
   description: props.description ?? "",
   amount: props.amount ?? "0",
-  token: props.token ?? "USDT",
+  token: tokenMapping[props.token] ?? "USDT",
   supervisor: props.supervisor ?? "",
   githubLink: props.githubLink ?? "",
   warning: "",
@@ -126,7 +72,7 @@ let fields = {
 // This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onClick, it will give `null` and we cannot tell the result is true or false.
 let grantNotify = Near.view("social.near", "is_write_permission_granted", {
-  predecessor_id: nearDevGovGigsContractAccountId,
+  predecessor_id: "${REPL_DEVHUB_CONTRACT}",
   key: context.accountId + "/index/notify",
 });
 if (grantNotify === null) {
@@ -138,12 +84,6 @@ const tokenMapping = {
   USDT: {
     NEP141: {
       address: "usdt.tether-token.near",
-    },
-  },
-  USDC: {
-    NEP141: {
-      address:
-        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
     },
   },
 };
@@ -198,7 +138,7 @@ const onSubmit = () => {
       Object.assign({}, state, { parent_post_id: parentId })
     );
     txn.push({
-      contractName: nearDevGovGigsContractAccountId,
+      contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "add_post",
       args: {
         parent_id: parentId,
@@ -213,7 +153,7 @@ const onSubmit = () => {
       Object.assign({}, state, { edit_post_id: postId })
     );
     txn.push({
-      contractName: nearDevGovGigsContractAccountId,
+      contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "edit_post",
       args: {
         id: postId,
@@ -230,7 +170,7 @@ const onSubmit = () => {
         contractName: "social.near",
         methodName: "grant_write_permission",
         args: {
-          predecessor_id: nearDevGovGigsContractAccountId,
+          predecessor_id: "${REPL_DEVHUB_CONTRACT}",
           keys: [context.accountId + "/index/notify"],
         },
         deposit: Big(10).pow(23),
@@ -252,7 +192,7 @@ const normalizeLabel = (label) =>
     .trim("-");
 
 const checkLabel = (label) => {
-  Near.asyncView(nearDevGovGigsContractAccountId, "is_allowed_to_use_labels", {
+  Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
     editor: context.accountId,
     labels: [label],
   }).then((allowed) => {
@@ -281,11 +221,10 @@ const setLabels = (labels) => {
       oldLabels.delete(label.name);
     }
     let removed = oldLabels.values().next().value;
-    Near.asyncView(
-      nearDevGovGigsContractAccountId,
-      "is_allowed_to_use_labels",
-      { editor: context.accountId, labels: [removed] }
-    ).then((allowed) => {
+    Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+      editor: context.accountId,
+      labels: [removed],
+    }).then((allowed) => {
       if (allowed) {
         let labelStrings = labels.map(({ name }) => name);
         State.update({ labels, labelStrings });
@@ -307,7 +246,7 @@ const setLabels = (labels) => {
   }
 };
 const existingLabelStrings =
-  Near.view(nearDevGovGigsContractAccountId, "get_all_allowed_labels", {
+  Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_allowed_labels", {
     editor: context.accountId,
   }) ?? [];
 const existingLabelSet = new Set(existingLabelStrings);
@@ -332,11 +271,10 @@ const labelEditor = (
           !existingLabelSet.has(props.text) &&
           props.selected.filter((selected) => selected.name === props.text)
             .length == 0 &&
-          Near.view(
-            nearDevGovGigsContractAccountId,
-            "is_allowed_to_use_labels",
-            { editor: context.accountId, labels: [props.text] }
-          )
+          Near.view("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+            editor: context.accountId,
+            labels: [props.text],
+          })
         );
       }}
     />
@@ -377,17 +315,17 @@ const amountDiv = (
 );
 
 const tokenDiv = (
-  <div className="col-lg-6 mb-2">
+  <div className="col-lg-6  mb-2">
     Currency
     <select
       onChange={(event) => State.update({ token: event.target.value })}
       class="form-select"
-      aria-label="Select currency"
-      value={state.token}
+      aria-label="Default select"
     >
-      <option value="USDT">USDT</option>
+      <option selected value={"USDT"}>
+        USDT
+      </option>
       <option value="NEAR">NEAR</option>
-      <option value="USDC">USDC</option>
     </select>
   </div>
 );
@@ -408,13 +346,16 @@ const callDescriptionDiv = () => {
     <div className="col-lg-12  mb-2">
       Description:
       <br />
-      {widget("components.molecule.markdown-editor", {
-        data: { handler: state.handler, content: state.description },
-        onChange: (content) => {
-          State.update({ description: content, handler: "update" });
-          textareaInputHandler(content);
-        },
-      })}
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"}
+        props={{
+          data: { handler: state.handler, content: state.description },
+          onChange: (content) => {
+            State.update({ description: content, handler: "update" });
+            textareaInputHandler(content);
+          },
+        }}
+      />
       {autocompleteEnabled && state.showAccountAutocomplete && (
         <AutoComplete>
           <Widget
@@ -488,17 +429,17 @@ const isFundraisingDiv = (
 
 const fundraisingDiv = (
   <div class="d-flex flex-column mb-2">
-    <div className="col-lg-6 mb-2">
+    <div className="col-lg-6  mb-2">
       Currency
       <select
         onChange={(event) => State.update({ token: event.target.value })}
         class="form-select"
-        aria-label="Select currency"
-        value={state.token}
+        aria-label="Default select example"
       >
-        <option value="USDT">USDT</option>
-        <option value="NEAR">NEAR</option>
-        <option value="USDC">USDC</option>
+        <option selected value="NEAR">
+          NEAR
+        </option>
+        <option value={"USDT"}>USDT</option>
       </select>
     </div>
     <div className="col-lg-6 mb-2">
@@ -615,34 +556,37 @@ return (
     </div>
     <div class="card-footer">
       Preview:
-      {widget("entity.post.Post", {
-        isPreview: true,
-        id: 0, // irrelevant
-        post: {
-          author_id: state.author_id,
-          likes: [],
-          snapshot: {
-            editor_id: state.editor_id,
-            labels: state.labelStrings,
-            post_type: postType,
-            name: state.name,
-            description:
-              postType == "Submission"
-                ? generateDescription(
-                    state.description,
-                    state.amount,
-                    state.token,
-                    state.supervisor,
-                    state.seekingFunding
-                  )
-                : state.description,
-            amount: state.amount,
-            sponsorship_token: state.token,
-            supervisor: state.supervisor,
-            github_link: state.githubLink,
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
+        props={{
+          isPreview: true,
+          id: 0, // irrelevant
+          post: {
+            author_id: state.author_id,
+            likes: [],
+            snapshot: {
+              editor_id: state.editor_id,
+              labels: state.labelStrings,
+              post_type: postType,
+              name: state.name,
+              description:
+                postType == "Submission"
+                  ? generateDescription(
+                      state.description,
+                      state.amount,
+                      state.token,
+                      state.supervisor,
+                      state.seekingFunding
+                    )
+                  : state.description,
+              amount: state.amount,
+              sponsorship_token: state.token,
+              supervisor: state.supervisor,
+              github_link: state.githubLink,
+            },
           },
-        },
-      })}
+        }}
+      />
     </div>
   </div>
 );
