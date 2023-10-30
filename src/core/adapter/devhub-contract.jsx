@@ -113,30 +113,30 @@ function getAvailableAddons() {
       configurator_widget:
         "${REPL_DEVHUB}/widget/devhub.entity.addon.telegram.Configurator",
     },
-    {
-      id: "github",
-      title: "Github",
-      description: "Connect your github",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.github.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.github.Configurator",
-    },
-    {
-      id: "kanban",
-      title: "Kanban",
-      description: "Connect your github kanban board",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Configurator",
-    },
-    {
-      id: "blog",
-      title: "Blog",
-      description: "Create a blog for your community",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator",
-    },
+    // {
+    //   id: "github",
+    //   title: "Github",
+    //   description: "Connect your github",
+    //   view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.github.Viewer",
+    //   configurator_widget:
+    //     "${REPL_DEVHUB}/widget/devhub.entity.addon.github.Configurator",
+    // },
+    // {
+    //   id: "kanban",
+    //   title: "Kanban",
+    //   description: "Connect your github kanban board",
+    //   view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Viewer",
+    //   configurator_widget:
+    //     "${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Configurator",
+    // },
+    // {
+    //   id: "blog",
+    //   title: "Blog",
+    //   description: "Create a blog for your community",
+    //   view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Viewer",
+    //   configurator_widget:
+    //     "${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator",
+    // },
   ];
   // return Near.view("${REPL_DEVHUB_CONTRACT}", "get_available_addons") ?? null;
 }
