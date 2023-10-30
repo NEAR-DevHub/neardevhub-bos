@@ -1,10 +1,10 @@
-const { getAvailableAddons } =
+const { getAllAddons } =
   VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
   (() => {});
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
-const availableAddons = getAvailableAddons() || [];
+const availableAddons = getAllAddons() || [];
 
 const isActive = props.isActive;
 
