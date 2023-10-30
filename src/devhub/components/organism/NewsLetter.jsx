@@ -1,5 +1,6 @@
 const page = props.page;
-const small = page === "community";
+const small = page === "community" || "communities" || "feed";
+console.log(props);
 
 console.log(small);
 

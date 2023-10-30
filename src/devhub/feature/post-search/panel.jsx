@@ -31,7 +31,7 @@ function search({ author, tag }) {
   State.update({ loading: true });
   let where = {};
   let authorId = author || state.author;
-  let label = tag || state.tag;
+  let label = tag || state.tag || props.tag;
   if (authorId) {
     where = { author_id: { _eq: authorId }, ...where };
   }

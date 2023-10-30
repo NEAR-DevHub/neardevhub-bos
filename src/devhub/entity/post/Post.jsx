@@ -171,8 +171,7 @@ const header = (
             {editControl}
             {timestamp}
             <Widget
-              // TODO: LEGACY.
-              src={"${REPL_DEVHUB}/widget/gigs-board.entity.post.History"}
+              src={"${REPL_DEVHUB}/widget/devhub.entity.post.History"}
               props={{
                 post,
                 timestamp: currentTimestamp,

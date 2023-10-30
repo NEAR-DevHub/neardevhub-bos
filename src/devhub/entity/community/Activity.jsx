@@ -20,7 +20,7 @@ if (communityData === null) {
 console.log(communityData.tag);
 
 return (
-  <div>
+  <div style={{ maxWidth: "100%" }}>
     <div class="col">
       <div class="d-flex w-100">
         <div className="col-md-9" style={{ maxWidth: "75%" }}>
@@ -28,6 +28,7 @@ return (
             src={"${REPL_DEVHUB}/widget/devhub.feature.post-search.panel"}
             props={{
               hideHeader: true,
+              tag: communityData.tag,
               children: (
                 <Widget
                   src={
