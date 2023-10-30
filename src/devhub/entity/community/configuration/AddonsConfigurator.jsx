@@ -102,7 +102,7 @@ const AddonItem = ({
 
   const addonMatch =
     availableAddons.find((it) => it.id === data.addon_id) ?? null;
-
+    
   return (
     <Row>
       <Cell>
@@ -124,6 +124,9 @@ const AddonItem = ({
             <i className="bi bi-arrow-down"></i>
           </button>
         </div>
+      </Cell>
+      <Cell>
+        <div>{addonMatch.title}</div>
       </Cell>
       <Cell>
         <Widget
@@ -158,21 +161,6 @@ const AddonItem = ({
       </Cell>
       <Cell>
         <div style={{ display: "flex", gap: "2px" }}>
-          <Widget
-            src="near/widget/DIG.Tooltip"
-            props={{
-              content: `${
-                addonMatch
-                  ? `${addonMatch.title}: ${addonMatch.description}`
-                  : "Unrecognized add-on"
-              }`,
-              trigger: (
-                <button className="btn btn-outline-secondary">
-                  <i className="bi bi-question-circle"></i>
-                </button>
-              ),
-            }}
-          />
           {isActive && (
             <button className="btn btn-outline-danger" onClick={removeItem}>
               <i className="bi bi-trash-fill" />
@@ -254,6 +242,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
         <Header>
           <Row>
             <HeaderCell style={{ width: "30px" }}>Order</HeaderCell>
+            <HeaderCell>Tab Type</HeaderCell>
             <HeaderCell>Tab Name</HeaderCell>
             <HeaderCell style={{ width: "45px" }}>Enabled</HeaderCell>
             <HeaderCell style={{ width: "40px" }}>Actions</HeaderCell>

@@ -3,7 +3,6 @@ const { content, title, description, textAlign } = props;
 const Container = styled.div`
   width: 100%;
   margin: 0 auto;
-  padding: 20px;
   text-align: ${(p) => p.textAlign ?? "left"};
 `;
 

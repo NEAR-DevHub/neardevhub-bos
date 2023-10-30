@@ -66,33 +66,30 @@ return (
         </button>
       </li>
     </ul>
-    <div
-      className="tab-content"
-      id="editPreviewTabsContent"
-      style={{ position: "relative" }}
-    >
-      <div style={{ position: "absolute", top: 10, right: 0 }}>
-        <Widget
-          // LEGACY
-          src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.button-switch"
-          props={{
-            currentValue: textAlign,
-            key: "textAlign",
-            onChange: (e) => setTextAlign(e.target.value),
-            options: [
-              { label: "Left", value: "left" },
-              { label: "Center", value: "center" },
-              { label: "Right", value: "right" },
-            ],
-          }}
-        />
-      </div>
+    <div className="tab-content" id="editPreviewTabsContent">
       <div
         className="tab-pane show active p-4"
         id="edit"
         role="tabpanel"
         aria-labelledby="edit-tab"
+        style={{ position: "relative" }}
       >
+        <div style={{ position: "absolute", top: 10, right: 0 }}>
+          <Widget
+            // LEGACY
+            src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.button-switch"
+            props={{
+              currentValue: textAlign,
+              key: "textAlign",
+              onChange: (e) => setTextAlign(e.target.value),
+              options: [
+                { label: "Left", value: "left" },
+                { label: "Center", value: "center" },
+                { label: "Right", value: "right" },
+              ],
+            }}
+          />
+        </div>
         <FormContainer>
           <div className="flex-grow-1">
             <Widget
