@@ -91,7 +91,7 @@ const handlePublish = () => {
           tags: data.includeTags,
           community: handle,
         }),
-        comment_version: "V2"
+        comment_version: "V2",
       },
     },
     deposit: Big(10).pow(21).mul(2),
