@@ -2,6 +2,17 @@ const { Card } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Card") ||
   (() => <></>);
 
+const categories = [
+  {
+    label: "Guide",
+    value: "guide",
+  },
+  {
+    label: "News",
+    value: "news",
+  },
+];
+
 const Banner = styled.div`
   border-radius: var(--bs-border-radius-xl) !important;
   height: 100%;
@@ -52,8 +63,12 @@ const initialData = data; // TODO: Check Storage API
 
 const [content, setContent] = useState(initialData.content || "");
 const [title, setTitle] = useState(initialData.title || "");
+const [subtitle, setSubtitle] = useState(initialData.subtitle || "");
+const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || "");
 const [previewMode, setPreviewMode] = useState("card"); // "card" or "page"
+const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+const [category, setCategory] = useState("guide");
 
 // Legacy State.init for IpfsUploader
 State.init({
@@ -89,6 +104,9 @@ const handlePublish = () => {
         post_type: "Comment",
         description: JSON.stringify({
           title,
+          subtitle,
+          description,
+          date,
           content,
           author,
           image: state.image.cid,
@@ -109,10 +127,13 @@ function Preview() {
       return (
         <Card
           title={title}
+          subtitle={subtitle}
+          description={description}
+          date={date}
           content={content}
           author={author}
           image={state.image}
-          tags={data.includeLabels}
+          tags={data.includeLabels} // filter out "blog" and community handle?
           community={handle}
         />
       );
@@ -123,10 +144,13 @@ function Preview() {
           src="${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Page"
           props={{
             title,
+            subtitle,
+            description,
+            date,
             content,
             author,
             image: state.image,
-            tags: data.includeLabels,
+            tags: data.includeLabels, // filter out "blog" and community handle?
             community: handle,
           }}
         />
@@ -192,8 +216,7 @@ return (
             <h5>Title</h5>
             <div className="flex-grow-1">
               <Widget
-                // TODO: LEGACY.
-                src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
                 props={{
                   className: "flex-grow-1",
                   onChange: (e) => setTitle(e.target.value),
@@ -204,11 +227,61 @@ return (
             </div>
           </div>
           <div>
+            <h5>Subtitle</h5>
+            <div className="flex-grow-1">
+              <Widget
+                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                props={{
+                  className: "flex-grow-1",
+                  onChange: (e) => setSubtitle(e.target.value),
+                  value: subtitle,
+                  placeholder: "Subtitle",
+                }}
+              />
+            </div>
+          </div>
+          <div>
+            <h5>Category</h5>
+            <div className="flex-grow-1">
+              <Widget
+                src={"${REPL_NEAR}/widget/DIG.InputSelect"}
+                props={{
+                  groups: [
+                    {
+                      items: categories.map((it) => ({
+                        label: it.label,
+                        value: it.value,
+                      })),
+                    },
+                  ],
+                  rootProps: {
+                    value: category,
+                    placeholder: "Select a category",
+                    onValueChange: (v) => setCategory(v),
+                  },
+                }}
+              />
+            </div>
+          </div>
+          <div>
+            <h5>Description</h5>
+            <div className="flex-grow-1">
+              <Widget
+                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                props={{
+                  className: "flex-grow-1",
+                  onChange: (e) => setDescription(e.target.value),
+                  value: description,
+                  placeholder: "Description",
+                }}
+              />
+            </div>
+          </div>
+          <div>
             <h5>Author</h5>
             <div className="flex-grow-1">
               <Widget
-                // TODO: LEGACY.
-                src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
                 props={{
                   className: "flex-grow-1",
                   onChange: (e) => setAuthor(e.target.value),
@@ -223,6 +296,14 @@ return (
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
               props={{ data: { content }, onChange: setContent }}
+            />
+          </div>
+          <div>
+            <h5>Date</h5>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
             />
           </div>
         </FormContainer>

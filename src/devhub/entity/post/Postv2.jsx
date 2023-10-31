@@ -4,7 +4,7 @@ const { getPost } =
 
 const { postKey, template } = props;
 
-const post = getPost({ post_id: postKey });
+const post = getPost({ post_id: parseInt(postKey) });
 
 if (!post) {
   return <div>Loading ...</div>;
@@ -12,4 +12,4 @@ if (!post) {
 
 const Template = template || (() => <></>);
 
-return <Template {...(post || {})} />;
+return <Template labels={post.snapshot.labels} data={JSON.parse(post.snapshot.description || "null") || {}} />;
