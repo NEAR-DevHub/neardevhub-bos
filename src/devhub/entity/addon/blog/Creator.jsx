@@ -1,6 +1,9 @@
 const { Card } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Card") ||
   (() => <></>);
+const { Page } =
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Page") ||
+  (() => <></>);
 
 const categories = [
   {
@@ -140,19 +143,16 @@ function Preview() {
     }
     case "page": {
       return (
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Page"
-          props={{
-            title,
-            subtitle,
-            description,
-            date,
-            content,
-            author,
-            image: state.image,
-            tags: data.includeLabels, // filter out "blog" and community handle?
-            community: handle,
-          }}
+        <Page
+          title={title}
+          subtitle={subtitle}
+          description={description}
+          date={date}
+          content={content}
+          author={author}
+          image={state.image}
+          tags={data.includeLabels} // filter out "blog" and community handle?
+          community={handle}
         />
       );
     }
