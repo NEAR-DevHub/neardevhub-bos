@@ -7,10 +7,13 @@ const { includeTags, excludeTags, layout } = props;
 return (
   <div class="row w-100">
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.post.List"}
+      src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Feed"}
       // TODO: This needs to filter by more labels
       props={{
-        tag: "blog", // ["blog", ...tags]
+        // includeTags: ["blog", ...includeTags], // make sure this has the community handle
+        // excludeTags,
+        // tag: "devhub-test", // ["blog", ...tags]
+        renderItem: (item) => <p>{JSON.stringify(item)}</p>
       }}
     />
   </div>
