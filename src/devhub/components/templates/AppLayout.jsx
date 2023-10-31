@@ -96,6 +96,11 @@ const AppHeader = ({ page }) => {
           </Link>
         )}
 
+        {(page !== "admin" && viewer.role.isDevHubModerator) ||
+          (true && (
+            <Link to={`/${REPL_DEVHUB}/widget/app?page=admin`}>Admin</Link>
+          ))}
+
         <a
           href="https://www.neardevgov.org/blog/near-developer-dao"
           target="_blank"

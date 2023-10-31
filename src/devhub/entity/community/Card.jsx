@@ -8,6 +8,7 @@ const CommunityCard = ({
   format,
   isBannerEnabled,
   metadata,
+  actions,
   ...otherProps
 }) => {
   const renderFormat =
@@ -19,12 +20,10 @@ const CommunityCard = ({
   });
 
   const formatSmall = (
-    <Link
+    <div
       {...otherProps}
-      to={link}
       className={[
-        "d-flex flex-shrink-0 p-3",
-        "rounded-4 border border-2",
+        "d-flex flex-shrink-0 gap-3 p-3 rounded-4 border border-2",
         "text-black text-decoration-none attractable",
       ].join(" ")}
       style={{
@@ -35,12 +34,13 @@ const CommunityCard = ({
         height: 110,
       }}
     >
-      <div
-        className="d-flex align-items-center gap-3 rounded-4 w-100 h-100"
+      <Link
+        className="d-flex align-items-center gap-3 rounded-4 w-100 h-100 text-dark text-decoration-none"
         style={{
           background: "rgba(255, 255, 255, 0.9)",
           backdropFilter: "blur(4px)",
         }}
+        to={link}
       >
         <img
           alt="Community logo"
@@ -65,8 +65,9 @@ const CommunityCard = ({
             {metadata.description}
           </p>
         </div>
-      </div>
-    </Link>
+      </Link>
+      {actions}
+    </div>
   );
 
   const formatMedium = (
