@@ -25,6 +25,9 @@ function getFeaturedCommunities() {
   );
 }
 
+const setFeaturedCommunities = ({ handles }) =>
+  Near.call(devHubAccountId, "set_featured_communities", { handles });
+
 function getAccountCommunityPermissions({ account_id, community_handle }) {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "get_account_community_permissions", {
@@ -237,6 +240,7 @@ return {
   createCommunity,
   getCommunity,
   getFeaturedCommunities,
+  setFeaturedCommunities,
   getAccountCommunityPermissions,
   updateCommunity,
   deleteCommunity,

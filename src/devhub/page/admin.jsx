@@ -1,4 +1,4 @@
-const { useQuery, hasModerator } = VM.require(
+const { useQuery, hasModerator, setFeaturedCommunities } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
@@ -56,12 +56,12 @@ const featuredCommunityHandles = featuredCommunityList.map(
 );
 
 const addFeaturedCommunity = ({ handle }) =>
-  Near.call(devHubAccountId, "set_featured_communities", {
+  setFeaturedCommunities({
     handles: Array.from(new Set(featuredCommunityHandles).add(handle).values()),
   });
 
 const removeFeaturedCommunity = ({ handle: input }) =>
-  Near.call(devHubAccountId, "set_featured_communities", {
+  setFeaturedCommunities({
     handles: featuredCommunityHandles.filter((handle) => handle !== input),
   });
 
