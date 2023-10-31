@@ -2,7 +2,7 @@ const Header = styled.div`
   //background: white;
   padding: 1rem 3.125rem;
   width: 100%;
-  margin: 24px; 
+  margin: 24px;
 
   @media screen and (max-width: 768px) {
     margin: 1rem 0;
