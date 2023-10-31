@@ -231,7 +231,7 @@ const PostEditor = ({
     description: description ?? "",
     amount: requested_sponsorship_amount ?? amount ?? "0",
     sponsorship_token: availableTokenParameters[sponsorship_token] ?? "USDT",
-    supervisor: requested_sponsor ?? supervisor ?? "",
+    supervisor: requested_sponsor ?? supervisor ?? "neardevdao.near",
     github_link: github_link ?? "",
     waitForDraftRecover: true,
     warning: "",
