@@ -53,7 +53,7 @@ State.init({
   description: props.description ?? "",
   amount: props.amount ?? "",
   token: props.token ?? "USDT",
-  supervisor: props.supervisor ?? "neardevgov.near",
+  supervisor: props.supervisor ?? "neardevdao.near",
   githubLink: props.githubLink ?? "",
   warning: "",
   waitForDraftStateRestore: true,
