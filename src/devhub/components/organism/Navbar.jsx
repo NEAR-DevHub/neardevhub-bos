@@ -156,7 +156,7 @@ const links = [
   {
     title: "/about",
     links: [
-      { title: "mission", href: "mission" },
+      { title: "mission", href: "about" },
       { title: "blog", href: "blog" },
       { title: "newsletter", href: "newsletter" },
       { title: "calendar", href: "calendar" },

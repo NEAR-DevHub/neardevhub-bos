@@ -102,13 +102,14 @@ const PageTitle = styled.h5`
   letter-spacing: -0.24px;
 
   margin: 0;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1rem;
 `;
 
 const Container = styled.div`
-  padding: 1rem 3.125rem;
-  background: #fff;
-  margin: 1.5rem 0;
+  //padding: 1rem 2.125rem;
+  padding: 24px;
+  //background: #fff;
+  //margin: 1.5rem 0;
 
   ${props.hideHeader ? "display: none;" : "display: block;"}
 `;
@@ -130,7 +131,7 @@ return (
 
             <input
               type="search"
-              className="ps-5 form-control border border-0 bg-light"
+              className="ps-5 form-control border border-0"
               value={state.term ?? ""}
               onChange={(e) => updateInput(e.target.value)}
               onKeyDown={(e) => e.key == "Enter" && search()}

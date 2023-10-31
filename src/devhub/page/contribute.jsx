@@ -1,8 +1,8 @@
 const Header = styled.div`
-  background: white;
+  //background: white;
   padding: 1rem 3.125rem;
   width: 100%;
-  margin: 2.25rem 0;
+  margin: 24px;
 
   @media screen and (max-width: 768px) {
     margin: 1rem 0;
@@ -39,7 +39,7 @@ const Lead = styled.h5`
 const Container = styled.div`
   padding: 2.25rem 8rem;
   width: 100%;
-  background-color: white;
+  //background-color: white;
 
   @media screen and (max-width: 768px) {
     padding: 1rem;

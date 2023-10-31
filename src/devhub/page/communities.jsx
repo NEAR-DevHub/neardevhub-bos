@@ -109,7 +109,7 @@ const SearchForm = styled.input`
   gap: 16px;
 
   border-radius: 4px;
-  background: rgba(129, 129, 129, 0.15);
+  //background: rgba(129, 129, 129, 0.15);
 
   color: #818181;
   font-size: 16px;
@@ -124,7 +124,7 @@ const Sort = styled.select`
   padding: 14px 16px;
 
   border-radius: 4px;
-  background: rgba(129, 129, 129, 0.15);
+  //background: rgba(129, 129, 129, 0.15);
 
   color: #818181;
   font-size: 16px;
@@ -154,10 +154,10 @@ return (
           "https://ipfs.near.social/ipfs/bafkreigtpjmgt3aphd3plbcremtvazeo7qsjvguw44m74zthyxbhj4toqe",
       }}
     />
-    <div style={{ background: "#F4F4F4" }}>
+    <div style={{ background: "#EBEBEB" }}>
       <div
         className="d-flex justify-content-between p-4"
-        style={{ backgroundColor: "#FFFEFE" }}
+        style={{ backgroundColor: "" }}
       >
         <div className="d-flex flex-column gap-3 w-100">
           <h1 className="m-0 fs-4">

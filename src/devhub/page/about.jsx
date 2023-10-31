@@ -9,7 +9,7 @@ const PageHeader = styled.h2`
   width: 100%;
   padding: 1rem 3.125rem;
   margin-left: auto;
-  background: #fff;
+  //background: #fff;
 
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;

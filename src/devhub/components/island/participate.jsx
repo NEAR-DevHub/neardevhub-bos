@@ -114,7 +114,7 @@ const Content = (
         <LinksContainer key={Math.random()}>
           <div className="d-flex flex-column gap-3 gap-md-2">
             {it.links.map((link) => (
-              <LinkItem href={link.href}>
+              <div className="d-flex flex-row">
                 <span
                   style={{
                     color: "#00ec97",
@@ -128,21 +128,23 @@ const Content = (
                 >
                   {link.count}
                 </span>{" "}
-                {link.title}
-              </LinkItem>
+                <LinkItem href={link.href}>{link.title}</LinkItem>
+              </div>
             ))}
           </div>
         </LinksContainer>
       ))}
     </Container>
-    <Link
-      to={href({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "contribute" },
-      })}
-    >
-      <CTA href="#">Learn more →</CTA>
-    </Link>
+    <CTA>
+      <Link
+        to={href({
+          widgetSrc: "${REPL_DEVHUB}/widget/app",
+          params: { page: "contribute" },
+        })}
+      >
+        Learn more →
+      </Link>
+    </CTA>
   </SectionPadding>
 );
 
