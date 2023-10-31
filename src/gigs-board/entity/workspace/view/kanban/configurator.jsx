@@ -458,7 +458,11 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       : JSON.parse(community.data.board);
 
   const form = useForm({
-    initialValues: Struct.pick(toMigrated(data), ["metadata", "payload"]),
+    initialValues: Struct.pick(
+      data.metadata === undefined ? {} : toMigrated(data),
+      ["metadata", "payload"]
+    ),
+
     stateKey: "view",
     uninitialized: (data.metadata ?? null) === null,
   });

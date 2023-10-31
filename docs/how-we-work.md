@@ -86,8 +86,15 @@ Note: We expect you to complete your ticket within the number of days you commit
 
 Notes: We may reassign issues that are not in progress yet. So it is important to indicate once you start working on it. 
 
+### 3. **Implement tests**
 
-### 3. **Update Tickets**
+    1. As part of every development work, there should be tests that cover the functionality you have made, or the bug you have fixed
+    2. Implement tests to ensure that other developers will be warned if they break your code by accident
+    3. Also use tests to speed up your own development workflow. Writing tests during implementation should reduce the code-test iteration loop time.
+    4. Help the Pull Request reviewer, your tests should clearly describe what you have implemented. The better the test coverage, the better are the chances of getting your PR approved.
+    5. For more information about writing tests look into the [contribution guidelines](https://github.com/near/neardevhub-widgets/blob/main/CONTRIBUTING.md#writing-tests)
+    
+### 4. **Update Tickets**
 
     1. If your ticket blocked:
         1. Identify blocker: Add a comment specifying the blocker, what actions you have already taken to understand and mitigate the problem, and tag the appropriate people and specify what you need. Move the ticket to the blocked column.
@@ -98,24 +105,24 @@ Notes: We may reassign issues that are not in progress yet. So it is important t
         c. Add a daily comment to the ticket to indicate your progress.
 
 
-### 4. **Request Review** 
+### 5. **Request Review** 
 
     1. Deploy a preview version, see how to deploy a preview version below. Once you completed your work, and provide the link in the PR description.
     2. Test the preview version to ensure everything works and meets the acceptance criteria
     3. Change the PR from draft to “ready for review”
 
-### 5. **Review** 
+### 6. **Review** 
 
     1. Another team member should review your work within one day. If you do not get a response, escalate on our Telegram channel.
     2. For reviewers: If there are no reviews by the end of your work day, please leave your review. 
     3. We require one code owner review, and in the case the reviewer has questions about the UI/UX, a review from the PM, to approve the pull request.
 
-### 6. **Address Review** 
+### 7. **Address Review** 
     1. Address any new review comments within 2 business days
     2. Respond to each comment by either following the suggestion or providing a rationale for disagreement.
     3. Request further review from the same reviewer.
 
-### 7. **Completion**
+### 8. **Completion**
 
     1. If the PR is approved, a DevHub Tech Lead squash and merge the PR and the issue is considered done.
     2. Move the issue to the “Done” column in our project board
