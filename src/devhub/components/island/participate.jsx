@@ -107,7 +107,6 @@ const LinksContainer = styled.div`
   }
 `;
 
-
 const Content = (
   <SectionPadding>
     <Container>
@@ -116,35 +115,36 @@ const Content = (
           <div className="d-flex flex-column gap-3 gap-md-2">
             {it.links.map((link) => (
               <div className="d-flex flex-row">
-              <span
-              style={{
-                color: "#00ec97",
-                border: "2px #00ec97 solid",
-                fontSize: 12,
-                padding: 4,
-                width: 22,
-                height: 22,
-              }}
-              className="rounded-circle d-flex align-items-center justify-content-center me-1"
-            >
-            {link.count}
-            </span>{" "}
-              <LinkItem href={link.href}>
-                {link.title}
-              </LinkItem>
-            </div>
+                <span
+                  style={{
+                    color: "#00ec97",
+                    border: "2px #00ec97 solid",
+                    fontSize: 12,
+                    padding: 4,
+                    width: 22,
+                    height: 22,
+                  }}
+                  className="rounded-circle d-flex align-items-center justify-content-center me-1"
+                >
+                  {link.count}
+                </span>{" "}
+                <LinkItem href={link.href}>{link.title}</LinkItem>
+              </div>
             ))}
           </div>
         </LinksContainer>
       ))}
     </Container>
-    <CTA><Link
-      to={href({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "contribute" },
-      })}
-    >Learn more →
-    </Link></CTA>
+    <CTA>
+      <Link
+        to={href({
+          widgetSrc: "${REPL_DEVHUB}/widget/app",
+          params: { page: "contribute" },
+        })}
+      >
+        Learn more →
+      </Link>
+    </CTA>
   </SectionPadding>
 );
 
