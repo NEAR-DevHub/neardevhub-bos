@@ -120,11 +120,11 @@ function Page() {
         />
       );
     }
-    // ?page=about
-    case "about": {
+    // ?page=mission
+    case "mission": {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.page.about"}
+          src={"${REPL_DEVHUB}/widget/devhub.page.mission"}
           props={passProps}
         />
       );

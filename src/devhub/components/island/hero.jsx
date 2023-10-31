@@ -176,7 +176,7 @@ return (
           to={href({
             widgetSrc: "${REPL_DEVHUB}/widget/app",
             params: {
-              page: "about",
+              page: "mission",
             },
           })}
         >
