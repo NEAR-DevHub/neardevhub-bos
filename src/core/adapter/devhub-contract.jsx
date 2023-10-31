@@ -228,7 +228,7 @@ function useQuery(name, params) {
         })),
 
     JSON.stringify({ name, params }),
-    { subscribe: false } // NOTE: I'm turning off subscribe to stop the constant re-rendering
+    { subscribe: true }
   );
 
   return cacheState === null ? initialState : cacheState;
