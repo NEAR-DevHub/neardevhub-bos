@@ -1,3 +1,7 @@
+const { Card } =
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Card") ||
+  (() => <></>);
+
 const Banner = styled.div`
   border-radius: var(--bs-border-radius-xl) !important;
   height: 100%;
@@ -88,7 +92,7 @@ const handlePublish = () => {
           content,
           author,
           image: state.image.cid,
-          tags: data.includeTags,
+          tags: data.includeLabels,
           community: handle,
         }),
         comment_version: "V2",
@@ -103,16 +107,13 @@ function Preview() {
   switch (previewMode) {
     case "card": {
       return (
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Card"
-          props={{
-            title,
-            content,
-            author,
-            image: state.image,
-            tags: data.includeTags,
-            community: handle,
-          }}
+        <Card
+          title={title}
+          content={content}
+          author={author}
+          image={state.image}
+          tags={data.includeLabels}
+          community={handle}
         />
       );
     }
@@ -125,7 +126,7 @@ function Preview() {
             content,
             author,
             image: state.image,
-            tags: data.includeTags,
+            tags: data.includeLabels,
             community: handle,
           }}
         />

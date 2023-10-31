@@ -151,7 +151,7 @@ return (
                   className: "flex-grow-1",
                   onChange: (e) => setNewIncludeLabel(e.target.value),
                   value: newIncludeLabel,
-                  placeholder: "tag",
+                  placeholder: "label",
                 }}
               />
             </div>
@@ -173,7 +173,7 @@ return (
                   props={{
                     className: "flex-grow-1",
                     value: item,
-                    placeholder: "",
+                    placeholder: "label",
                     inputProps: {
                       disabled: true,
                     },
@@ -197,7 +197,7 @@ return (
                   className: "flex-grow-1",
                   onChange: (e) => setNewExcludeLabel(e.target.value),
                   value: newExcludeLabel,
-                  placeholder: "tag",
+                  placeholder: "label",
                 }}
               />
             </div>

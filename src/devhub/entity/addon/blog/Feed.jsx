@@ -3,6 +3,8 @@
 // renderItem
 // renderError
 
+const { Layout, Item } = props;
+
 const Container = styled.div``;
 
 const Loader = styled.div`
@@ -16,7 +18,7 @@ const Notification = styled.p`
 `;
 
 const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
-const DISPLAY_COUNT = 100;
+const DISPLAY_COUNT = 10;
 
 const fetchGraphQL = (operationsDoc, operationName, variables) => {
   return asyncFetch(QUERYAPI_ENDPOINT, {
@@ -105,14 +107,11 @@ const handleLoadMore = () => {
 
 const renderLoader = () => <Loader>Loading...</Loader>;
 
-const defaultRenderItem = (postId) => (
-  <div key={postId} style={{ minHeight: "150px" }}>
-    {/* Replace with your actual post component */}
-    <div>Post {postId}</div>
+const renderItem = (postId) => (
+  <div key={postId} style={{ minHeight: "400px" }}>
+    {(props.renderItem && props.renderItem(postId)) || <div>Post {postId}</div>}
   </div>
 );
-
-const renderItem = props.renderItem ?? defaultRenderItem;
 
 const cachedRenderItem = (postId) => {
   if (!(postId in cachedItems)) {
@@ -133,8 +132,10 @@ return (
         hasMore={hasNext}
         loader={renderLoader()}
       >
-        {/* Layout */}
-        {postIds.map(cachedRenderItem)}
+        <Layout>
+          {/* Layout */}
+          {postIds.map(cachedRenderItem)}
+        </Layout>
       </InfiniteScroll>
     ) : (
       <p class="text-secondary">No posts</p>
