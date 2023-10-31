@@ -12,7 +12,7 @@ return (
       props={{
         includeLabels: ["blog", ...(includeTags || [])], // make sure this has the community handle
         excludeLabels: excludeTags,
-        renderItem: (item) => <p>{JSON.stringify(item)}</p>
+        renderItem: (item) => <p>{JSON.stringify(item)}</p>,
       }}
     />
   </div>

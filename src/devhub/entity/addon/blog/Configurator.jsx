@@ -25,8 +25,12 @@ const EditableField = styled.input`
 `;
 
 const initialData = data;
-const [includeLabels, setIncludeLabels] = useState(initialData.includeLabels || []);
-const [excludeLabels, setExcludeLabels] = useState(initialData.excludeLabels || []);
+const [includeLabels, setIncludeLabels] = useState(
+  initialData.includeLabels || []
+);
+const [excludeLabels, setExcludeLabels] = useState(
+  initialData.excludeLabels || []
+);
 const [newIncludeLabel, setNewIncludeLabel] = useState("");
 const [newExcludeLabel, setNewExcludeLabel] = useState("");
 const [layout, setLayout] = useState(initialData.layout || "feed"); // "feed" or "grid"
@@ -59,8 +63,10 @@ const handleDeleteExcludeLabel = (index) => {
 
 const hasDataChanged = () => {
   return (
-    JSON.stringify(includeLabels) !== JSON.stringify(initialData.includeLabels) ||
-    JSON.stringify(excludeLabels) !== JSON.stringify(initialData.excludeLabels) ||
+    JSON.stringify(includeLabels) !==
+      JSON.stringify(initialData.includeLabels) ||
+    JSON.stringify(excludeLabels) !==
+      JSON.stringify(initialData.excludeLabels) ||
     layout !== initialData.layout
   );
 };
