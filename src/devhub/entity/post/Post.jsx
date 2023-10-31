@@ -70,8 +70,7 @@ const postSearchKeywords = props.searchKeywords ? (
     <span>Found keywords: </span>
     {props.searchKeywords.map((tag) => (
       <Widget
-        // TODO: LEGACY.
-        src={"${REPL_DEVHUB}/widget/gigs-board..components.atom.Tag"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
         props={{ linkTo: "Feed", tag }}
       />
     ))}
