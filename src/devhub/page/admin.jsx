@@ -1,5 +1,3 @@
-context.accountId = "theori.near"; // TODO
-
 const { useQuery, hasModerator } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
