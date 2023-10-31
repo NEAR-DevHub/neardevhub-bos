@@ -192,14 +192,13 @@ const banner = (
         <h5 className="h5 m-0">Featured Communities</h5>
       </div>
       <div className="d-flex gap-4 justify-content-between">
-        {(
-          Near.view(devHubAccountId, "get_featured_communities") ?? []
-        ).map((community) =>
-          widget(
-            "entity.community.card",
-            { metadata: community, format: "medium" },
-            community.handle
-          )
+        {(Near.view(devHubAccountId, "get_featured_communities") ?? []).map(
+          (community) =>
+            widget(
+              "entity.community.card",
+              { metadata: community, format: "medium" },
+              community.handle
+            )
         )}
       </div>
     </div>
