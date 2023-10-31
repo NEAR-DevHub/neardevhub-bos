@@ -101,7 +101,16 @@ const Separator = styled.div`
 `;
 
 function Card({ labels, data }) {
-  const { title, subtitle, description, category, author, image, community, date } = data;
+  const {
+    title,
+    subtitle,
+    description,
+    category,
+    author,
+    image,
+    community,
+    date,
+  } = data;
 
   function formatDate(date) {
     const options = {

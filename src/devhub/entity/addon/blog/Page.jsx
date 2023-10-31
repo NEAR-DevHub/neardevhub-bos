@@ -64,5 +64,4 @@ function Page({ labels, data }) {
   );
 }
 
-
 return { Page };

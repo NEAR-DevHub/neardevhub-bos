@@ -4,7 +4,9 @@
 // renderError
 
 // TEMP FOR TESTNET
-const { getPostsByLabel } = VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") || (() => {});
+const { getPostsByLabel } =
+  VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
+  (() => {});
 
 const { Layout, Item } = props;
 

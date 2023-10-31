@@ -14,7 +14,12 @@ const TextInput = ({
   ...otherProps
 }) => {
   const typeAttribute =
-    type === "text" || type === "password" || type === "number" || type === "date" ? type : "text";
+    type === "text" ||
+    type === "password" ||
+    type === "number" ||
+    type === "date"
+      ? type
+      : "text";
 
   const renderedLabels = [
     (label?.length ?? 0) > 0 ? (

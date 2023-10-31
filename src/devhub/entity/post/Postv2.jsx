@@ -12,4 +12,9 @@ if (!post) {
 
 const Template = template || (() => <></>);
 
-return <Template labels={post.snapshot.labels} data={JSON.parse(post.snapshot.description || "null") || {}} />;
+return (
+  <Template
+    labels={post.snapshot.labels}
+    data={JSON.parse(post.snapshot.description || "null") || {}}
+  />
+);
