@@ -103,6 +103,10 @@ const styles = `
   &.btn-outline-info {
     --bs-btn-disabled-color: #6c757d8f;
   }
+
+  &.vertical {
+		padding: 1.2rem 0.5rem !important;
+	}
 `;
 
 const rootElementByType = (type) =>
@@ -120,7 +124,7 @@ const Button = ({ classNames, icon: iconProps, label, type, ...restProps }) => {
   return (
     <ButtonRoot
       className={[
-        "btn d-inline-flex align-items-center gap-2 rounded-pill",
+        "btn d-inline-flex align-items-center rounded-pill",
         classNames?.root ?? "btn-primary",
       ].join(" ")}
       style={{ width: "fit-content" }}
@@ -134,7 +138,13 @@ const Button = ({ classNames, icon: iconProps, label, type, ...restProps }) => {
             props={iconProps}
           />
         )}
-      <span className={classNames?.label} style={{ lineHeight: "inherit" }}>
+      <span
+        className={[
+          classNames?.label,
+          typeof label === "string" ? "" : "d-none",
+        ]}
+        style={{ lineHeight: "inherit" }}
+      >
         {label}
       </span>
     </ButtonRoot>
