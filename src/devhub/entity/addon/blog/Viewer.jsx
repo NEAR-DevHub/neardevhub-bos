@@ -1,4 +1,4 @@
-const { includeTags, excludeTags, layout } = props;
+const { includeLabels, excludeLabels, layout } = props;
 
 // I want a different post item.
 // Ability to switch between grid and list view
@@ -10,9 +10,8 @@ return (
       src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Feed"}
       // TODO: This needs to filter by more labels
       props={{
-        // includeTags: ["blog", ...includeTags], // make sure this has the community handle
-        // excludeTags,
-        // tag: "devhub-test", // ["blog", ...tags]
+        includeLabels: ["blog", ...(includeTags || [])], // make sure this has the community handle
+        excludeLabels: excludeTags,
         renderItem: (item) => <p>{JSON.stringify(item)}</p>
       }}
     />

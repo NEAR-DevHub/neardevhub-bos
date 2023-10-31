@@ -25,48 +25,48 @@ const EditableField = styled.input`
 `;
 
 const initialData = data;
-const [includeTags, setIncludeTags] = useState(initialData.includeTags || []);
-const [excludeTags, setExcludeTags] = useState(initialData.excludeTags || []);
-const [newIncludeTag, setNewIncludeTag] = useState("");
-const [newExcludeTag, setNewExcludeTag] = useState("");
+const [includeLabels, setIncludeLabels] = useState(initialData.includeLabels || []);
+const [excludeLabels, setExcludeLabels] = useState(initialData.excludeLabels || []);
+const [newIncludeLabel, setNewIncludeLabel] = useState("");
+const [newExcludeLabel, setNewExcludeLabel] = useState("");
 const [layout, setLayout] = useState(initialData.layout || "feed"); // "feed" or "grid"
 
-const handleAddIncludeTag = () => {
-  if (newIncludeTag) {
-    setIncludeTags([...includeTags, newIncludeTag]);
-    setNewIncludeTag("");
+const handleAddIncludeLabel = () => {
+  if (newIncludeLabel) {
+    setIncludeLabels([...includeLabels, newIncludeLabel]);
+    setNewIncludeLabel("");
   }
 };
 
-const handleDeleteIncludeTag = (index) => {
-  const updatedIncludeTags = [...includeTags];
-  updatedIncludeTags.splice(index, 1);
-  setIncludeTags(updatedIncludeTags);
+const handleDeleteIncludeLabel = (index) => {
+  const updatedIncludeLabels = [...includeLabels];
+  updatedIncludeLabels.splice(index, 1);
+  setIncludeLabels(updatedIncludeLabels);
 };
 
-const handleAddExcludeTag = () => {
-  if (newExcludeTag) {
-    setExcludeTags([...excludeTags, newExcludeTag]);
-    setNewExcludeTag("");
+const handleAddExcludeLabel = () => {
+  if (newExcludeLabel) {
+    setExcludeLabels([...excludeLabels, newExcludeLabel]);
+    setNewExcludeLabel("");
   }
 };
 
-const handleDeleteExcludeTag = (index) => {
-  const updatedExcludeTags = [...excludeTags];
-  updatedExcludeTags.splice(index, 1);
-  setExcludeTags(updatedExcludeTags);
+const handleDeleteExcludeLabel = (index) => {
+  const updatedExcludeLabels = [...excludeLabels];
+  updatedExcludeLabels.splice(index, 1);
+  setExcludeLabels(updatedExcludeLabels);
 };
 
 const hasDataChanged = () => {
   return (
-    JSON.stringify(includeTags) !== JSON.stringify(initialData.includeTags) ||
-    JSON.stringify(excludeTags) !== JSON.stringify(initialData.excludeTags) ||
+    JSON.stringify(includeLabels) !== JSON.stringify(initialData.includeLabels) ||
+    JSON.stringify(excludeLabels) !== JSON.stringify(initialData.excludeLabels) ||
     layout !== initialData.layout
   );
 };
 
 const handleSubmit = () => {
-  onSubmit({ includeTags, excludeTags, layout });
+  onSubmit({ includeLabels, excludeLabels, layout });
 };
 
 return (
@@ -111,8 +111,8 @@ return (
         aria-labelledby="settings-tab"
       >
         <Container>
-          <h3>Include Tags</h3>
-          {includeTags.map((item, index) => (
+          <h3>Include Labels</h3>
+          {includeLabels.map((item, index) => (
             <Item key={index}>
               <div className="flex-grow-1">
                 <Widget
@@ -130,7 +130,7 @@ return (
               </div>
               <button
                 className="btn btn-outline-danger"
-                onClick={() => handleDeleteIncludeTag(index)}
+                onClick={() => handleDeleteIncludeLabel(index)}
               >
                 <i className="bi bi-trash-fill" />
               </button>
@@ -143,22 +143,22 @@ return (
                 src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
                 props={{
                   className: "flex-grow-1",
-                  onChange: (e) => setNewIncludeTag(e.target.value),
-                  value: newIncludeTag,
+                  onChange: (e) => setNewIncludeLabel(e.target.value),
+                  value: newIncludeLabel,
                   placeholder: "tag",
                 }}
               />
             </div>
             <button
               className="btn btn-success"
-              onClick={() => handleAddIncludeTag()}
-              disabled={newIncludeTag === ""}
+              onClick={() => handleAddIncludeLabel()}
+              disabled={newIncludeLabel === ""}
             >
               <i className="bi bi-plus" />
             </button>
           </Item>
-          <h3>Exclude Tags</h3>
-          {excludeTags.map((item, index) => (
+          <h3>Exclude Labels</h3>
+          {excludeLabels.map((item, index) => (
             <Item key={index}>
               <div className="flex-grow-1">
                 <Widget
@@ -176,7 +176,7 @@ return (
               </div>
               <button
                 className="btn btn-outline-danger"
-                onClick={() => handleDeleteExcludeTag(index)}
+                onClick={() => handleDeleteExcludeLabel(index)}
               >
                 <i className="bi bi-trash-fill" />
               </button>
@@ -189,16 +189,16 @@ return (
                 src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
                 props={{
                   className: "flex-grow-1",
-                  onChange: (e) => setNewExcludeTag(e.target.value),
-                  value: newExcludeTag,
+                  onChange: (e) => setNewExcludeLabel(e.target.value),
+                  value: newExcludeLabel,
                   placeholder: "tag",
                 }}
               />
             </div>
             <button
               className="btn btn-success"
-              onClick={() => handleAddExcludeTag()}
-              disabled={newExcludeTag === ""}
+              onClick={() => handleAddExcludeLabel()}
+              disabled={newExcludeLabel === ""}
             >
               <i className="bi bi-plus" />
             </button>

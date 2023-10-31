@@ -58,12 +58,11 @@ const buildWhereClause = () => {
   if (props.term) {
     where = { description: { _ilike: `%${props.term}%` }, ...where };
   }
-  if (props.tag) {
-    if (typeof props.tag === "string") {
-      where = { labels: { _contains: props.tag }, ...where };
-    } else if (Array.isArray(props.tag)) {
-      where = { labels: { _containsAny: props.tag }, ...where };
-    }
+  if (props.includeLabels && Array.isArray(props.includeLabels)) {
+    where = { labels: { _containsAny: props.includeLabels }, ...where };
+  }
+  if (props.excludeLabels && Array.isArray(props.excludeLabels)) {
+    where = { labels: { _nin: props.excludeLabels }, ...where };
   }
   if (!props.recency) {
     where = { parent_id: { _is_null: true }, ...where };
