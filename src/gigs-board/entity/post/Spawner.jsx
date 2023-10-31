@@ -183,7 +183,7 @@ const PostSpawner = ({ isHidden, onCancel, tags, transactionHashes }) => {
         </p>
       </div>
 
-      {widget("entity.post.Editor", {
+      {widget("entity.post.PostEditor", {
         mode: "Create",
         onCancel: onCancelClick,
         parent_id: null,

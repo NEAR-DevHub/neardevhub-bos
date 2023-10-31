@@ -112,7 +112,7 @@ const postTypeOptions = {
   },
 };
 
-const NewPostPage = ({ transactionHashes }) => {
+const CreatePage = ({ transactionHashes }) => {
   const recoveredPostType = Storage.privateGet("post_type");
 
   const initialState = {
@@ -168,7 +168,7 @@ const NewPostPage = ({ transactionHashes }) => {
               </a>
             </p>
 
-            {widget("entity.post.Editor", {
+            {widget("entity.post.PostEditor", {
               className: "d-none",
               transactionHashes,
             })}
@@ -207,7 +207,7 @@ const NewPostPage = ({ transactionHashes }) => {
               </p>
             </div>
 
-            {widget("entity.post.Editor", {
+            {widget("entity.post.PostEditor", {
               mode: "Create",
               onCancel: stateReset,
               parent_id: null,
@@ -221,4 +221,4 @@ const NewPostPage = ({ transactionHashes }) => {
   });
 };
 
-return NewPostPage(props);
+return CreatePage(props);

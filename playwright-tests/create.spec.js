@@ -4,7 +4,7 @@ import { setInputAndAssert, selectAndAssert } from "./testUtils";
 test("should be able to submit a solution with USDC as currency", async ({
   page,
 }) => {
-  await page.goto("/devgovgigs.near/widget/gigs-board.pages.new-post");
+  await page.goto("/devgovgigs.near/widget/gigs-board.pages.Create");
 
   await page.click('[data-testid="btn-solution"]');
   await setInputAndAssert(

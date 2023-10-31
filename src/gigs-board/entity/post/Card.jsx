@@ -536,7 +536,7 @@ const Editor = () => {
         key={`${state.post_type}${state.editorType}${postId}`}
       >
         {widget(
-          "entity.post.Editor",
+          "entity.post.PostEditor",
 
           state.editorType === "CREATE"
             ? {
