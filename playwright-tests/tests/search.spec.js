@@ -2,6 +2,7 @@ import { test } from "@playwright/test";
 
 test("should show post history for posts in the feed", async ({ page }) => {
   await page.goto("/devgovgigs.near/widget/gigs-board.pages.Feed");
+  // await page.goto("/devgovgigs.near/widget/app?page=Feed");
 
   // Fill the search by content by to
   const searchInputSelector = 'input.form-control[type="search"]';
