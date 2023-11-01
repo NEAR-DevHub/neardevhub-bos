@@ -17,8 +17,6 @@ if (communityData === null) {
   return <div>Loading...</div>;
 }
 
-console.log(communityData.tag);
-
 return (
   <div style={{ maxWidth: "100%" }}>
     <div class="col">
@@ -29,6 +27,7 @@ return (
             props={{
               hideHeader: true,
               tag: communityData.tag,
+              communityName: communityData.name,
               children: (
                 <Widget
                   src={

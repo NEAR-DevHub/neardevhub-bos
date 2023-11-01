@@ -175,6 +175,7 @@ function defaultRenderItem(postId, additionalProps) {
           onDraftStateChange,
           ...additionalProps,
           referral: postId,
+          communityName: props.communityName,
         }}
       />
     </div>

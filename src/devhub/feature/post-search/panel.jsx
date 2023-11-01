@@ -198,6 +198,7 @@ return (
             loading: state.loading,
             searchResult: state.searchResult,
             recency: props.recency,
+            communityName: props.communityName,
           }}
         />
       ) : (
@@ -207,6 +208,7 @@ return (
             loading: state.loading,
             recency: props.recency,
             transactionHashes: props.transactionHashes,
+            communityName: props.communityName,
           }}
         />
       )}
