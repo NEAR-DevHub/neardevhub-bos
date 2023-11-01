@@ -1,5 +1,7 @@
+const black = props.black;
+
 const Span = styled.span`
-  color: #00ec97;
+  color: ${black ? "#818181" : "#00ec97"};
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
