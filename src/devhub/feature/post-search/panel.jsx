@@ -43,81 +43,83 @@ const PostContainer = styled.div`
 
 return (
   <>
-    <Container>
-      <div>
-        <PageTitle>Activity Feed</PageTitle>
-        <div className="d-flex flex-row gap-4">
-          <div className="d-flex flex-row position-relative w-25">
-            <div className="position-absolute d-flex ps-3 flex-column h-100 justify-center">
-              <i class="bi bi-search m-auto"></i>
+    {!props.hideHeader && (
+      <Container>
+        <div>
+          <PageTitle>Activity Feed</PageTitle>
+          <div className="d-flex flex-row gap-4">
+            <div className="d-flex flex-row position-relative w-25">
+              <div className="position-absolute d-flex ps-3 flex-column h-100 justify-center">
+                <i class="bi bi-search m-auto"></i>
+              </div>
+              <input
+                type="search"
+                className="ps-5 form-control border border-0 bg-light"
+                value={state.term ?? ""}
+                onChange={(e) => updateInput(e.target.value)}
+                onKeyDown={(e) => e.key == "Enter" && search()}
+                placeholder={props.placeholder ?? `Search by content`}
+              />
             </div>
-            <input
-              type="search"
-              className="ps-5 form-control border border-0 bg-light"
-              value={state.term ?? ""}
-              onChange={(e) => updateInput(e.target.value)}
-              onKeyDown={(e) => e.key == "Enter" && search()}
-              placeholder={props.placeholder ?? `Search by content`}
-            />
-          </div>
-          <div class="dropdown">
-            <button
-              class="btn btn-light dropdown-toggle"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              Sort{props.recency === "all" ? ": All replies" : ": Latest"}
-            </button>
-            <ul class="dropdown-menu px-2 shadow">
-              <li>
-                <a
-                  style={{ borderRadius: "5px" }}
-                  class="dropdown-item link-underline link-underline-opacity-0"
-                  href={href("Feed")}
-                >
-                  Latest
-                </a>
-              </li>
-              <li>
-                <a
-                  style={{ borderRadius: "5px" }}
-                  class="dropdown-item link-underline link-underline-opacity-0"
-                  href={href("Feed", { recency: "all" })}
-                >
-                  All replies
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div class="dropdown">
-            <Widget
-              src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-author"
-              props={{
-                author: state.author,
-                onAuthorSearch: (author) => {
-                  State.update({ author });
-                },
-              }}
-            />
-          </div>
-          <div>
-            <Widget
-              src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-tag"
-              props={{
-                tag: state.tag,
-                onTagSearch: (tag) => {
-                  State.update({ tag });
-                },
-              }}
-            />
-          </div>
-          <div className="d-flex flex-row-reverse flex-grow-1">
-            {props.children}
+            <div class="dropdown">
+              <button
+                class="btn btn-light dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Sort{props.recency === "all" ? ": All replies" : ": Latest"}
+              </button>
+              <ul class="dropdown-menu px-2 shadow">
+                <li>
+                  <a
+                    style={{ borderRadius: "5px" }}
+                    class="dropdown-item link-underline link-underline-opacity-0"
+                    href={href("Feed")}
+                  >
+                    Latest
+                  </a>
+                </li>
+                <li>
+                  <a
+                    style={{ borderRadius: "5px" }}
+                    class="dropdown-item link-underline link-underline-opacity-0"
+                    href={href("Feed", { recency: "all" })}
+                  >
+                    All replies
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="dropdown">
+              <Widget
+                src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-author"
+                props={{
+                  author: state.author,
+                  onAuthorSearch: (author) => {
+                    State.update({ author });
+                  },
+                }}
+              />
+            </div>
+            <div>
+              <Widget
+                src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-tag"
+                props={{
+                  tag: state.tag,
+                  onTagSearch: (tag) => {
+                    State.update({ tag });
+                  },
+                }}
+              />
+            </div>
+            <div className="d-flex flex-row-reverse flex-grow-1">
+              {props.children}
+            </div>
           </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+    )}
     <PostContainer>
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.entity.post.List"
