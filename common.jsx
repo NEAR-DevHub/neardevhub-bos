@@ -45,7 +45,6 @@ function href(widgetName, linkProps) {
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
-  console.log("widgetName", widgetName);
   const widgetNameTranslation = {
     "community.activity": "community",
     "community.board": "community",

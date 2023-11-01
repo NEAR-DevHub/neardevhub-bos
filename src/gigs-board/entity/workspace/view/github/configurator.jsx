@@ -46,9 +46,24 @@ function href(widgetName, linkProps) {
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
-  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
+  const widgetNameTranslation = {
+    "community.activity": "community",
+    "community.board": "community",
+    "community.configuration": "community",
+    "community.github": "community",
+    "community.teams": "community",
+    "community.telegram": "community",
+    "community.wiki": "community",
+    communities: "communities",
+    Create: "create",
+    Feed: "feed",
+    Post: "post",
+    Teams: "admin",
+  };
+
+  return `/#/${nearDevGovGigsWidgetsAccountId}/widget/app?page=${
+    widgetNameTranslation[widgetName]
+  }${linkPropsQuery ? "&" : ""}${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
 /* INCLUDE: "core/lib/gui/form" */
