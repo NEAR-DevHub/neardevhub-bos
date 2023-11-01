@@ -66,10 +66,18 @@ const buildWhereClause = () => {
     where = { description: { _ilike: `%${props.term}%` }, ...where };
   }
   if (props.includeLabels && Array.isArray(props.includeLabels)) {
-    where = { labels: { _containsAny: props.includeLabels }, ...where };
+    const labelConditions = props.includeLabels.map((label) => ({
+      labels: { _contains: label },
+    }));
+
+    where = { _and: [...labelConditions, where] };
   }
   if (props.excludeLabels && Array.isArray(props.excludeLabels)) {
-    where = { labels: { _nin: props.excludeLabels }, ...where };
+    const labelConditions = props.excludeLabels.map((label) => ({
+      labels: { _nin: label },
+    }));
+
+    where = { _and: [...labelConditions, where] };
   }
   if (!props.recency) {
     where = { parent_id: { _is_null: true }, ...where };
@@ -83,6 +91,7 @@ const fetchPostIds = (offset) => {
   }
   if (loading) return;
   setLoading(true);
+<<<<<<< Updated upstream
   const variables = { limit: DISPLAY_COUNT, offset, where: buildWhereClause() };
   const result = fetchGraphQL(query, "DevhubPostsQuery", variables).then(
     (result) => {
@@ -96,6 +105,20 @@ const fetchPostIds = (offset) => {
           console.error("GraphQL Error:", result.errors);
         }
         setLoading(false);
+=======
+  const where = buildWhereClause();
+  console.log(where);
+  const variables = { limit: DISPLAY_COUNT, offset, where };
+  fetchGraphQL(query, "DevhubPostsQuery", variables).then((result) => {
+    if (result.status === 200) {
+      if (result.body.data) {
+        const data = result.body.data[queryName];
+        const newPostIds = data.map((p) => p.post_id);
+        setPostIds(offset === 0 ? newPostIds : [...postIds, ...newPostIds]);
+        setHasNext(data.length >= variables.limit);
+      } else {
+        console.error("GraphQL Error:", result.errors);
+>>>>>>> Stashed changes
       }
     }
   );
