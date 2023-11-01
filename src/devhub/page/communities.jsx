@@ -154,7 +154,7 @@ return (
           "https://ipfs.near.social/ipfs/bafkreigtpjmgt3aphd3plbcremtvazeo7qsjvguw44m74zthyxbhj4toqe",
       }}
     />
-    <div style={{ background: "#EBEBEB" }}>
+    <div style={{ background: "#f4f4f4" }}>
       <div
         className="d-flex justify-content-between p-4"
         style={{ backgroundColor: "" }}

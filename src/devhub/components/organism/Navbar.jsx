@@ -115,7 +115,7 @@ const Navbar = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  background: #ebebeb;
+  background: #f4f4f4;
 
   @media screen and (max-width: 768px) {
     padding: 1.875rem 1.375rem;
