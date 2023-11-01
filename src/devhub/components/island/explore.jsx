@@ -11,7 +11,7 @@ const Card = styled.div`
   border-radius: 1rem;
 
   h3 {
-    color:#04A46E; //#00ec97;
+    color: #04a46e; //#00ec97;
     text-align: center;
     font-size: 1.5rem;
     font-style: normal;
@@ -29,7 +29,7 @@ const Card = styled.div`
   }
 
   a {
-    color: #04A46E; //#00ec97;
+    color: #04a46e; //#00ec97;
     text-align: center;
     font-size: 1.25rem;
     font-style: normal;
@@ -111,7 +111,7 @@ const CTA = styled.a`
 
   &:hover {
     text-decoration: none;
-    background: #04A46E;;
+    background: #04a46e;
   }
 
   @media screen and (max-width: 768px) {

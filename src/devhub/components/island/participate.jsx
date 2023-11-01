@@ -26,9 +26,9 @@ const LinkItem = styled.a`
   display: flex;
   align-items: center;
 
-  &:hover{
+  &:hover {
     text-decoration: none;
-    color: #04146E;
+    color: #04146e;
   }
 `;
 
@@ -74,7 +74,7 @@ const CTA = styled.a`
   margin-top: 1.5rem;
 
   &:hover {
-    background: #04A46E;
+    background: #04a46e;
     text-decoration: none;
   }
 
@@ -91,7 +91,7 @@ const CTA = styled.a`
     gap: 8px;
 
     border-radius: 16px;
-    background: #04A46E;
+    background: #04a46e;
 
     &:hover {
       //background: #04A46E;
@@ -150,19 +150,18 @@ const Content = (
         </LinksContainer>
       ))}
     </Container>
-    
-      <CTA> <Link
+
+    <CTA>
+      {" "}
+      <Link
         to={href({
           widgetSrc: "${REPL_DEVHUB}/widget/app",
           params: { page: "contribute" },
         })}
       >
         Learn more →
-        </Link>
-      
-        </CTA>
-     
-    
+      </Link>
+    </CTA>
   </SectionPadding>
 );
 

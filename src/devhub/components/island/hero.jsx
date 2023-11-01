@@ -73,8 +73,8 @@ const CTA = styled.a`
 
   &:hover {
     background: #151515;
-    color: #f4f4f4 !important;;
-    text-decoration: none;  // Remove underline on hover
+    color: #f4f4f4 !important;
+    text-decoration: none; // Remove underline on hover
   }
 
   @media screen and (max-width: 768px) {
@@ -97,8 +97,8 @@ const CTA = styled.a`
 
     &:hover {
       background: #151515;
-      color: #F4F4F4;
-      text-decoration: none;  // Remove underline on hover
+      color: #f4f4f4;
+      text-decoration: none; // Remove underline on hover
     }
   }
 `;
