@@ -145,10 +145,6 @@ const CommunityActivityPage = ({ handle, transactionHashes }) => {
 
   const communityData = DevHub.get_community({ handle });
 
-  if (communityData === null) {
-    return <div>Loading...</div>;
-  }
-
   return widget("entity.community.layout", {
     path: [{ label: "Communities", pageId: "communities" }],
     title: "Activity",
