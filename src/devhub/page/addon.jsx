@@ -54,15 +54,15 @@ const CenteredMessage = styled.div`
 
 const { addon, permissions, handle } = props;
 
-const { getAvailableAddons, setCommunityAddon } = VM.require(
+const { getAllAddons, setCommunityAddon } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
-if (!getAvailableAddons || !setCommunityAddon) {
+if (!getAllAddons || !setCommunityAddon) {
   return <p>Loading modules...</p>;
 }
 
-const availableAddons = getAvailableAddons();
+const availableAddons = getAllAddons();
 const addonMatch = availableAddons.find((it) => it.id === addon.addon_id);
 
 if (!addonMatch) {
