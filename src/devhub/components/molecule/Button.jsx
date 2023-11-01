@@ -1,16 +1,12 @@
 const styles = `
   padding: 0.5rem 1.2rem !important;
-  min-height: 42px;
+  min-height: 36px;
   line-height: 1.5;
   text-decoration: none !important;
 
   &:not(.shadow-none) {
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
     transition: box-shadow 0.6s;
-  }
-
-  &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   }
 
   &.btn-sm {
@@ -114,14 +110,22 @@ const rootElementByType = (type) =>
         ${styles}
       `;
 
-const Button = ({ classNames, icon: iconProps, label, type, ...restProps }) => {
+const Button = ({
+  classNames,
+  icon: iconProps,
+  label,
+  type,
+  notRounded,
+  ...restProps
+}) => {
   const ButtonRoot = rootElementByType(type);
 
   return (
     <ButtonRoot
       className={[
-        "btn d-inline-flex align-items-center gap-2 rounded-pill",
+        "btn d-inline-flex align-items-center gap-2",
         classNames?.root ?? "btn-primary",
+        !notRounded ?? "rounded-pill",
       ].join(" ")}
       style={{ width: "fit-content" }}
       {...restProps}

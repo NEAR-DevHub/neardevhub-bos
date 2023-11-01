@@ -1,10 +1,11 @@
-const Tag = ({ tag }) => (
-  <span
-    class="badge me-1 text-dark fw-normal"
-    style={{ border: "1px solid #D0D5DD" }}
-  >
-    {tag}
-  </span>
-);
+const Span = styled.span`
+  color: #00ec97;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 125% */
+`;
+
+const Tag = ({ tag }) => <Span>{tag}</Span>;
 
 return Tag(props);

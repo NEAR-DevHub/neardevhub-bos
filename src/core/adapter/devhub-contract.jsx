@@ -79,6 +79,13 @@ function setCommunityAddon({ handle, addon }) {
   });
 }
 
+/**
+ * Gets all available addons, these are controlled by devhub moderators
+ */
+function getAllAddons() {
+  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_addons") ?? null;
+}
+
 function getAccessControlInfo() {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "get_access_control_info") ?? null
@@ -176,33 +183,6 @@ function getPostsByLabel({ label }) {
   );
 }
 
-function getAddons({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_addons", { handle }) ?? null;
-}
-
-function setAddons({ handle, addons }) {
-  return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_addons", { handle, addons }) ??
-    null
-  );
-}
-
-function getConfig({ config_id }) {
-  return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_config", { config_id }) ?? null
-  );
-}
-
-function setConfig({ handle, config_id, config }) {
-  return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "set_config", {
-      handle,
-      config_id,
-      config,
-    }) ?? null
-  );
-}
-
 function useQuery(name, params) {
   const initialState = { data: null, error: null, isLoading: true };
 
@@ -247,7 +227,7 @@ return {
   getAccessControlInfo,
   getAllAuthors,
   getAllCommunitiesMetadata,
-  getAvailableAddons,
+  getAllAddons,
   getCommunityAddons,
   getCommunityAddonConfigs,
   getAllLabels,
