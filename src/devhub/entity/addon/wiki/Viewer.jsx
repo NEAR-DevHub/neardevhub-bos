@@ -7,7 +7,7 @@ const CenteredMessage = styled.div`
   height: ${(p) => p.height ?? "100%"};
 `;
 
-const { content, title, description, textAlign } = props;
+const { content, title, subtitle, textAlign } = props;
 
 const Container = styled.div`
   width: 100%;
@@ -24,7 +24,7 @@ const Title = styled.h1`
   margin-bottom: 10px;
 `;
 
-const Description = styled.p`
+const Subtitle = styled.p`
   margin-bottom: 20px;
 `;
 
@@ -38,7 +38,7 @@ if (!content) {
   return (
     <Container textAlign={textAlign}>
       <Title>{title}</Title>
-      <Description>{description}</Description>
+      <Subtitle>{subtitle}</Subtitle>
       <Content>
         <Widget
           src={
