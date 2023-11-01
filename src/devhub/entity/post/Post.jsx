@@ -565,16 +565,26 @@ const tags = post.snapshot.labels ? (
     key="post-labels"
   >
     {post.snapshot.labels.map((tag, idx) => (
-      <div className="d-flex gap-3 align-items-center my-3 me-3">
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
-          props={{
-            tag,
-          }}
-        />
+      <Link
+        to={href({
+          widgetSrc: "${REPL_DEVHUB}/widget/app",
+          params: { page: "feed", tag: tag },
+        })}
+      >
+        <div
+          className="d-flex gap-3 align-items-center my-3 me-3"
+          style={{ cursor: "pointer", textDecoration: "none" }}
+        >
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+            props={{
+              tag,
+            }}
+          />
 
-        {idx !== post.snapshot.labels.length - 1 && "•"}
-      </div>
+          {idx !== post.snapshot.labels.length - 1 && "•"}
+        </div>
+      </Link>
     ))}
   </div>
 ) : (
