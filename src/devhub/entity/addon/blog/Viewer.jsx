@@ -12,7 +12,7 @@ const Grid = styled.div`
   gap: 16px;
 
   @media (min-width: 769px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 `;
 
@@ -35,6 +35,7 @@ function BlogCard(postId) {
 
 return (
   <div class="row w-100">
+    <h2>Latest Blog Posts</h2>
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Feed"}
       // TODO: This needs to filter by more labels

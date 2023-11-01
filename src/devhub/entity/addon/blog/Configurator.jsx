@@ -267,7 +267,7 @@ return (
       >
         <Container>
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Creator"}
+            src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Editor"}
             props={{
               data,
               handle,
