@@ -148,7 +148,7 @@ const postSchemas = {
     "name",
     "description",
     "requested_sponsorship_amount",
-    "sponsorship_token",
+    "requested_sponsorship_token",
     "requested_sponsor",
   ],
 
@@ -203,12 +203,13 @@ const PostEditor = ({
   referral,
   requested_sponsor,
   requested_sponsorship_amount,
-  selected,
+  requested_sponsorship_token,
+  sponsorship_token,
   supervisor,
+  selected,
   tags,
   text,
   transactionHashes,
-  sponsorship_token,
   ...otherProps
 }) => {
   const mode = otherProps.mode ?? "Create",
@@ -230,7 +231,12 @@ const PostEditor = ({
     name: name ?? "",
     description: description ?? "",
     amount: requested_sponsorship_amount ?? amount ?? "0",
-    sponsorship_token: availableTokenParameters[sponsorship_token] ?? "USDT",
+
+    sponsorship_token:
+      availableTokenParameters[
+        sponsorship_token ?? requested_sponsorship_token
+      ] ?? "USDT",
+
     supervisor: requested_sponsor ?? supervisor ?? "neardevdao.near",
     github_link: github_link ?? "",
     waitForDraftRecover: true,
@@ -317,7 +323,10 @@ const PostEditor = ({
         description: state.description,
         requested_sponsor: state.supervisor,
         requested_sponsorship_amount: state.amount,
-        sponsorship_token: availableTokenParameters[state.sponsorship_token],
+
+        requested_sponsorship_token:
+          availableTokenParameters[state.sponsorship_token],
+
         solution_version: "V2",
       },
 

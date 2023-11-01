@@ -100,11 +100,12 @@ const KanbanPostTicket = ({ metadata }) => {
     name,
     description,
     labels: tags,
-    requested_sponsor,
-    supervisor,
     requested_sponsorship_amount,
+    requested_sponsorship_token,
+    requested_sponsor,
     amount,
     sponsorship_token,
+    supervisor,
   } = data.snapshot;
 
   const isFundingRequested =
@@ -255,7 +256,7 @@ const KanbanPostTicket = ({ metadata }) => {
 
             <span className="d-flex flex-nowrap gap-1">
               <span>{requested_sponsorship_amount ?? amount}</span>
-              <span>{sponsorship_token}</span>
+              <span>{requested_sponsorship_token ?? sponsorship_token}</span>
             </span>
           </span>
         ) : null}

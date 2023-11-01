@@ -117,6 +117,9 @@ const fundingAmount = parseInt(
   snapshot.requested_sponsorship_amount ?? snapshot.amount
 );
 
+const sponsorshipToken =
+  snapshot.requested_sponsorship_token ?? snapshot.sponsorship_token;
+
 const compareSnapshot =
   compareTimestamp === post.snapshot.timestamp
     ? post.snapshot
@@ -563,10 +566,7 @@ const Editor = () => {
                 mode: "Edit",
                 onCancel,
                 post_type: state.post_type,
-
-                sponsorship_token: tokenResolver(
-                  post.snapshot.sponsorship_token
-                ),
+                sponsorship_token: tokenResolver(sponsorshipToken),
               }
         )}
       </div>
@@ -600,9 +600,7 @@ const postExtra =
   fundingAmount > 0 ? (
     <div key="post-extra">
       <h6 className="card-subtitle mb-2 text-muted">
-        {`Maximum amount: ${fundingAmount} ${tokenResolver(
-          snapshot.sponsorship_token
-        )}`}
+        {`Maximum amount: ${fundingAmount} ${tokenResolver(sponsorshipToken)}`}
       </h6>
 
       <h6 className="card-subtitle gap-2 mb-2 text-muted">
