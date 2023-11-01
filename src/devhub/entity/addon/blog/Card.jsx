@@ -1,156 +1,67 @@
-const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
+function Card({ data }) {
+  const { category, title, description, date } = data;
 
-const Container = styled.div`
-  width: 100%;
-  height: 100%;
-  padding: 24px;
-  background: #fffefe;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px rgba(129, 129, 129, 0.3) solid;
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 24px;
-`;
+  const Container = styled.div`
+    display: flex;
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-shrink: 0;
 
-const InfoContainer = styled.div`
-  padding-right: 16px;
-  display: inline-flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 16px;
-`;
+    border-radius: 1rem;
+    border: 1px solid rgba(129, 129, 129, 0.3);
+    background: #fffefe;
 
-const InfoText = styled.div`
-  color: ${(props) => props.color || "#818181"};
-  font-size: 16px;
-  font-family: ${(props) => props.fontFamily || "Aeonik Fono"};
-  font-weight: ${(props) => props.fontWeight || "400"};
-  line-height: 20px;
-  word-wrap: break-word;
-`;
+    h5 {
+      margin: 0;
+      color: #151515;
+      font-size: 1.5rem;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 110%; /* 39.6px */
+    }
 
-const TitleContainer = styled.div`
-  width: 344px;
-  padding-right: 16px;
-  display: inline-flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 8px;
-`;
+    span.category {
+      color: ${category.toLowerCase() === "news"
+        ? "#F40303"
+        : category.toLowerCase() === "guide"
+        ? "#004BE1"
+        : category.toLowerCase() === "reference" && "#FF7A00"};
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 20px; /* 125% */
+      text-transform: uppercase;
+    }
 
-const Title = styled.div`
-  width: 422px;
-  color: #151515;
-  font-size: 36px;
-  font-family: "Aeonik";
-  font-weight: 700;
-  line-height: 39.6px;
-  word-wrap: break-word;
-`;
+    span.date {
+      color: #818181;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px; /* 125% */
+    }
 
-const DescriptionContainer = styled.div`
-  align-self: stretch;
-  height: 155px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-`;
+    p {
+      margin: 0;
+      color: #151515;
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 120%; /* 28.8px */
+    }
+  `;
 
-const Description = styled.div`
-  align-self: stretch;
-  height: 103px;
-  padding-bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 16px;
-`;
-
-const DescriptionText = styled.div`
-  align-self: stretch;
-  color: #151515;
-  font-size: 24px;
-  font-family: "Aeonik";
-  font-weight: 400;
-  line-height: 28.8px;
-  word-wrap: break-word;
-`;
-
-const TagsContainer = styled.div`
-  padding: 16px;
-  border-radius: 360px;
-  overflow: hidden;
-  display: inline-flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 16px;
-`;
-
-const Separator = styled.div`
-  color: #8a8e93;
-  font-size: 16px;
-  font-family: "Circular Std";
-  font-weight: 400;
-  line-height: 19.2px;
-  word-wrap: break-word;
-`;
-
-function Card({ labels, data }) {
-  const {
-    title,
-    subtitle,
-    description,
-    category,
-    author,
-    image,
-    community,
-    date,
-  } = data;
-
-  function formatDate(date) {
-    const options = {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      timeZoneName: "short",
-    };
-    return date.toLocaleString("en-US", options).replace(",", "");
-  }
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  const formattedDate = new Date(date).toLocaleString("en-US", options);
 
   return (
     <Container>
-      <InfoContainer>
-        <InfoText color="#F40303" fontWeight="700">
-          {category && category.toUpperCase()}
-        </InfoText>
-        <Separator>·</Separator>
-        <InfoText>{date && formatDate(date)}</InfoText>
-      </InfoContainer>
-      <TitleContainer>
-        <Title>{title}</Title>
-      </TitleContainer>
-      <DescriptionContainer>
-        <Description>
-          <DescriptionText>{description}</DescriptionText>
-        </Description>
-        <TagsContainer>
-          {(labels || []).map((label, index) => (
-            <div key={label}>
-              {index > 0 && <Separator />}
-              <InfoText fontWeight="700">{label}</InfoText>
-            </div>
-          ))}
-        </TagsContainer>
-      </DescriptionContainer>
+      <span className="category">{category}</span>
+      <h5>{title}</h5>
+      <p>{description}</p>
+      <span className="date">{formattedDate}</span>
     </Container>
   );
 }
