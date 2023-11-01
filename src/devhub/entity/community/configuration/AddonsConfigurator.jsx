@@ -110,16 +110,16 @@ const AddonItem = ({
           <button
             className="btn btn-sm btn-secondary rounded-0"
             onClick={moveItemUp}
-            disabled={!isActive}
-            style={{ visibility: isTop ? "hidden" : "visible" }}
+            disabled={!isActive || isTop}
+            style={{ visibility: isTop && !isBottom ? "hidden" : "visible" }}
           >
             <i className="bi bi-arrow-up"></i>
           </button>
           <button
             className="btn btn-sm btn-secondary rounded-0"
             onClick={moveItemDown}
-            disabled={!isActive}
-            style={{ visibility: isBottom ? "hidden" : "visible" }}
+            disabled={!isActive || isBottom}
+            style={{ visibility: isBottom && !isTop ? "hidden" : "visible" }}
           >
             <i className="bi bi-arrow-down"></i>
           </button>
@@ -222,6 +222,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
     const updatedList = [...list, newItem];
     setList(updatedList);
     setChangesMade(!arraysAreEqual(originalList, updatedList));
+    setSelectedAddon(null);
   };
 
   const removeItem = (id) => {
@@ -238,53 +239,50 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
         <br />
         You can customize them on each page.
       </p>
-      <Table>
-        <Header>
-          <Row>
-            <HeaderCell style={{ width: "30px" }}>Order</HeaderCell>
-            <HeaderCell>Tab Type</HeaderCell>
-            <HeaderCell>Tab Name</HeaderCell>
-            <HeaderCell style={{ width: "45px" }}>Enabled</HeaderCell>
-            <HeaderCell style={{ width: "40px" }}>Actions</HeaderCell>
-          </Row>
-        </Header>
-        <tbody>
-          {list.map((item, index) => (
-            <AddonItem
-              key={item.id}
-              data={item}
-              onUpdate={updateItem}
-              onMove={moveItem}
-              onRemove={removeItem}
-              index={index}
-              isTop={index === 0}
-              isBottom={index === list.length - 1}
-            />
-          ))}
-        </tbody>
-      </Table>
+      {list.length > 0 && (
+        <Table>
+          <Header>
+            <Row>
+              <HeaderCell style={{ width: "30px" }}>Order</HeaderCell>
+              <HeaderCell>Tab Type</HeaderCell>
+              <HeaderCell>Tab Name</HeaderCell>
+              <HeaderCell style={{ width: "45px" }}>Enabled</HeaderCell>
+              <HeaderCell style={{ width: "40px" }}>Actions</HeaderCell>
+            </Row>
+          </Header>
+          <tbody>
+            {list.map((item, index) => (
+              <AddonItem
+                key={item.id}
+                data={item}
+                onUpdate={updateItem}
+                onMove={moveItem}
+                onRemove={removeItem}
+                index={index}
+                isTop={index === 0}
+                isBottom={index === list.length - 1}
+              />
+            ))}
+          </tbody>
+        </Table>
+      )}
       {isActive && availableAddons && list.length < 7 && (
-        <div className="d-flex justify-content-center">
+        <div className="d-flex justify-content-center pt-2">
           <div className="d-flex gap-2 flex-grow-1 px-4">
             <Widget
-              src={"${REPL_NEAR}/widget/DIG.InputSelect"}
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Select"}
               props={{
-                groups: [
-                  {
-                    items: (availableAddons || []).map((it) => ({
-                      label: it.title,
-                      value: it.id,
-                    })),
-                  },
-                ],
-                rootProps: {
-                  value: selectedAddon.id ?? null,
-                  placeholder: "Select an addon",
-                  onValueChange: (value) =>
-                    setSelectedAddon(
-                      (availableAddons || []).find((it) => it.id === value)
-                    ),
-                },
+                className: "flex-grow-1",
+                options: availableAddons.map((addon) => ({
+                  label: addon.title,
+                  value: addon.id,
+                })),
+                value: selectedAddon.id ?? "",
+                onChange: (e) =>
+                  setSelectedAddon(
+                    availableAddons.find((addon) => addon.id === e.target.value)
+                  ),
+                placeholder: "Select an addon",
               }}
             />
             <button
