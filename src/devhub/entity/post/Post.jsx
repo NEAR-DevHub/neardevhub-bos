@@ -71,7 +71,7 @@ const postSearchKeywords = props.searchKeywords ? (
     {props.searchKeywords.map((tag) => (
       <Widget
         // TODO: LEGACY.
-        src={"${REPL_DEVHUB}/widget/gigs-board..components.atom.Tag"}
+        src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.Tag"}
         props={{ linkTo: "Feed", tag }}
       />
     ))}
@@ -628,7 +628,7 @@ const postExtra =
       <h6 class="card-subtitle mb-2 text-muted">
         Supervisor:{" "}
         <Widget
-          src={"${REPL_DEVHUB}/widget/ProfileLine"}
+          src={"neardevgov.near/widget/ProfileLine"}
           props={{ accountId: snapshot.supervisor }}
         />
       </h6>
