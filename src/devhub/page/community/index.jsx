@@ -301,19 +301,23 @@ return (
             </Link>
           </small>
         </div>
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
-          props={{
-            title: "Post",
-            href: href({
-              widgetSrc: "${REPL_DEVHUB}/widget/app",
-              params: {
-                page: "create",
-                labels: [community.tag],
-              },
-            }),
-          }}
-        />
+        {context.accountId && (
+          <Widget
+            src={
+              "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
+            }
+            props={{
+              title: "Post",
+              href: href({
+                widgetSrc: "${REPL_DEVHUB}/widget/app",
+                params: {
+                  page: "create",
+                  labels: [community.tag],
+                },
+              }),
+            }}
+          />
+        )}
       </div>
     </div>
     {currentTab && (
