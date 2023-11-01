@@ -155,34 +155,30 @@ const shareButton = props.isPreview ? (
 
 // card-header
 const header = (
-  <div className="p-3 pt-4" key="header">
+  <div key="header">
     <small class="text-muted">
       <div class="row justify-content-between">
-        <div class="col-4">
+        <div class="d-flex align-items-center">
           <Widget
-            // TODO: LEGACY.
-            src={
-              "${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"
-            }
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"}
             props={{
               accountId: post.author_id,
               nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+              communityName: props.communityName,
             }}
           />
-        </div>
-        <div class="col-5">
-          <div class="d-flex justify-content-end">
+          <span className="fw-bold"> • </span>
+          <div class="d-flex">
             {editControl}
             {timestamp}
             <Widget
-              // TODO: LEGACY.
-              src={"${REPL_DEVHUB}/widget/gigs-board.entity.post.History"}
+              src={"${REPL_DEVHUB}/widget/devhub.entity.post.History"}
               props={{
                 post,
                 timestamp: currentTimestamp,
               }}
             />
-            {shareButton}
+            {/* {shareButton} */}
           </div>
         </div>
       </div>
@@ -190,23 +186,34 @@ const header = (
   </div>
 );
 
+// const emptyIcons = {
+//   Idea: "bi-lightbulb",
+//   Comment: "bi-chat",
+//   Submission: "bi-rocket",
+//   Attestation: "bi-check-circle",
+//   Sponsorship: "bi-cash-coin",
+//   Github: "bi-github",
+//   Like: "bi-heart",
+//   Reply: "bi-reply",
+// };
+
 const emptyIcons = {
-  Idea: "bi-lightbulb",
+  Idea: "💡",
   Comment: "bi-chat",
-  Submission: "bi-rocket",
-  Attestation: "bi-check-circle",
-  Sponsorship: "bi-cash-coin",
+  Submission: "🚀",
+  Attestation: "✅",
+  Sponsorship: "🪙",
   Github: "bi-github",
   Like: "bi-heart",
   Reply: "bi-reply",
 };
 
 const fillIcons = {
-  Idea: "bi-lightbulb-fill",
+  Idea: "💡",
   Comment: "bi-chat-fill",
-  Submission: "bi-rocket-fill",
-  Attestation: "bi-check-circle-fill",
-  Sponsorship: "bi-cash-coin",
+  Submission: "🚀",
+  Attestation: "✅",
+  Sponsorship: "🪙",
   Github: "bi-github",
   Like: "bi-heart-fill",
   Reply: "bi-reply-fill",
@@ -296,7 +303,7 @@ const buttonsFooter = props.isPreview ? null : (
       <div class="btn-group" role="group" aria-label="Basic outlined example">
         <ButtonWithHover
           type="button"
-          class="btn"
+          class="btn d-flex align-items-center"
           style={{ border: "0px" }}
           onClick={onLike}
         >
@@ -323,7 +330,7 @@ const buttonsFooter = props.isPreview ? null : (
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            <i class={`bi ${emptyIcons.Reply}`}> </i> Reply
+            ↪ Reply
           </ButtonWithHover>
           <ul class="dropdown-menu">
             {btnCreatorWidget(
@@ -370,7 +377,7 @@ const buttonsFooter = props.isPreview ? null : (
           aria-expanded={defaultExpanded}
           aria-controls={`collapseChildPosts${postId}`}
         >
-          <i class="bi bi-arrows-expand"> </i>{" "}
+          <i class="bi bi-chevron-down"> </i>{" "}
           {`Expand Replies (${childPostIds.length})`}
         </ButtonWithHover>
 
@@ -556,35 +563,59 @@ const renamedPostType =
   snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
 
 const tags = post.snapshot.labels ? (
-  <div class="card-title" style={{ margin: "20px 0" }} key="post-labels">
-    {post.snapshot.labels.map((tag) => (
-      <Widget
-        // TODO: LEGACY.
-        src={"${REPL_DEVHUB}/widget/gigs-board.components.atom.tag"}
-        props={{
-          linkTo: "Feed",
-          tag,
-          nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
-        }}
-      />
+  <div
+    class="card-title d-flex flex-wrap align-items-center"
+    style={{ margin: "20px 0" }}
+    key="post-labels"
+  >
+    {post.snapshot.labels.map((tag, idx) => (
+      <Link
+        to={href({
+          widgetSrc: "${REPL_DEVHUB}/widget/app",
+          params: { page: "feed", tag: tag },
+        })}
+      >
+        <div
+          className="d-flex gap-3 align-items-center my-3 me-3"
+          style={{ cursor: "pointer", textDecoration: "none" }}
+        >
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+            props={{
+              tag,
+              black: true,
+            }}
+          />
+
+          {idx !== post.snapshot.labels.length - 1 && "•"}
+        </div>
+      </Link>
     ))}
   </div>
 ) : (
   <div key="post-labels"></div>
 );
 
+const Title = styled.h5`
+  margin: 2.25rem 0;
+
+  color: #151515;
+  font-size: 1.75rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.625rem; /* 55.556% */
+`;
+
 const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
   ) : (
-    <h5 class="card-title mb-4" key="post-title">
-      <div className="row justify-content-between">
-        <div class="col-9">
-          <i class={`bi ${emptyIcons[snapshot.post_type]}`}> </i>
-          {renamedPostType}: {snapshot.name}
-        </div>
-      </div>
-    </h5>
+    <Title key="post-title d-flex justify-content-between align-items-center position-relative">
+      <span class={`position-absolute`} style={{ left: 10 }}>
+        {emptyIcons[snapshot.post_type]}
+      </span>
+      {renamedPostType}: {snapshot.name}
+    </Title>
   );
 
 const postExtra =
@@ -696,6 +727,7 @@ const descriptionArea = isUnderPost ? (
     {state.clamp ? (
       <div class="d-flex justify-content-start">
         <a
+          style={{ cursor: "pointer", color: "#00ec97" }}
           class="btn-link text-dark fw-bold text-decoration-none"
           onClick={() => State.update({ clamp: false })}
         >
@@ -754,10 +786,17 @@ function combineText(_snapshot) {
   );
 }
 
+const CardContainer = styled.div`
+  padding: 1.5rem 3rem !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(129, 129, 129, 0.3) !important;
+  background: #fffefe !important;
+`;
+
 return (
-  <div className={`card ${borders[snapshot.post_type]} attractable`}>
+  <CardContainer className={`card ${borders[snapshot.post_type]} attractable`}>
     {header}
-    <div className="card-body">
+    <div className="card-body" style={{ padding: 0 }}>
       {searchKeywords}
       {compareSnapshot ? (
         <div
@@ -804,5 +843,5 @@ return (
       {!props.isPreview && (isDraft || state.showEditor) && <Editor />}
       {postsList}
     </div>
-  </div>
+  </CardContainer>
 );
