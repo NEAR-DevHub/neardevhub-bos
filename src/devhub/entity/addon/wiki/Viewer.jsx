@@ -1,3 +1,24 @@
+const { content, title, description, textAlign } = props;
+
+const Container = styled.div`
+  width: 100%;
+  margin: 0 auto;
+  text-align: ${(p) => p.textAlign ?? "left"};
+`;
+
+const Content = styled.div`
+  margin: 20px 0;
+  text-align: left;
+`;
+
+const Title = styled.h1`
+  margin-bottom: 10px; /* Optional: Adjust margin as needed */
+`;
+
+const Description = styled.p`
+  margin-bottom: 20px; /* Optional: Adjust margin as needed */
+`;
+
 const CenteredMessage = styled.div`
   display: flex;
   flex-direction: column;
@@ -5,6 +26,27 @@ const CenteredMessage = styled.div`
   align-items: center;
   width: 100%;
   height: ${(p) => p.height ?? "100%"};
+`;
+
+const { content, title, subtitle, textAlign } = props;
+
+const Container = styled.div`
+  width: 100%;
+  margin: 0 auto;
+  text-align: ${(p) => p.textAlign ?? "left"};
+`;
+
+const Content = styled.div`
+  margin: 20px 0;
+  text-align: left;
+`;
+
+const Title = styled.h1`
+  margin-bottom: 10px;
+`;
+
+const Subtitle = styled.p`
+  margin-bottom: 20px;
 `;
 
 if (!content) {
@@ -17,7 +59,7 @@ if (!content) {
   return (
     <Container textAlign={textAlign}>
       <Title>{title}</Title>
-      <Description>{description}</Description>
+      <Subtitle>{subtitle}</Subtitle>
       <Content>
         <Widget
           src={

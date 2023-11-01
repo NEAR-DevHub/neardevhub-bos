@@ -1,13 +1,3 @@
-// I want this to be passed a query
-// renderLoading
-// renderItem
-// renderError
-
-// TEMP FOR TESTNET
-const { getPostsByLabel } =
-  VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
-  (() => {});
-
 const { Layout, Item } = props;
 
 const Container = styled.div``;
@@ -52,7 +42,7 @@ const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $wher
   }
 `;
 
-// const [postIds, setPostIds] = useState([]);
+const [postIds, setPostIds] = useState([]);
 const [loading, setLoading] = useState(false);
 const [cachedItems, setCachedItems] = useState({});
 const [hasNext, setHasNext] = useState(true);
@@ -66,10 +56,18 @@ const buildWhereClause = () => {
     where = { description: { _ilike: `%${props.term}%` }, ...where };
   }
   if (props.includeLabels && Array.isArray(props.includeLabels)) {
-    where = { labels: { _containsAny: props.includeLabels }, ...where };
+    const labelConditions = props.includeLabels.map((label) => ({
+      labels: { _contains: label },
+    }));
+
+    where = { _and: [...labelConditions, where] };
   }
   if (props.excludeLabels && Array.isArray(props.excludeLabels)) {
-    where = { labels: { _nin: props.excludeLabels }, ...where };
+    const labelConditions = props.excludeLabels.map((label) => ({
+      labels: { _nin: label },
+    }));
+
+    where = { _and: [...labelConditions, where] };
   }
   if (!props.recency) {
     where = { parent_id: { _is_null: true }, ...where };
@@ -101,9 +99,9 @@ const fetchPostIds = (offset) => {
   );
 };
 
-// useEffect(() => {
-//   fetchPostIds();
-// }, [props.author, props.term, props.tag, props.recency]);
+useEffect(() => {
+  fetchPostIds();
+}, [props.author, props.term, props.tag, props.recency]);
 
 const handleLoadMore = () => {
   if (!hasNext) return;
@@ -125,8 +123,6 @@ const cachedRenderItem = (postId) => {
   }
   return cachedItems[postId];
 };
-
-const postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
 
 return (
   <Container>

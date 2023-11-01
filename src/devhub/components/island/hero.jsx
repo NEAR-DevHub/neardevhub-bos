@@ -71,6 +71,12 @@ const CTA = styled.a`
   line-height: 120%; /* 28.8px */
   letter-spacing: -0.48px;
 
+  &:hover {
+    background: #151515;
+    color: #f4f4f4 !important;
+    text-decoration: none; // Remove underline on hover
+  }
+
   @media screen and (max-width: 768px) {
     display: inline-flex;
     padding: 8px 16px;
@@ -88,6 +94,12 @@ const CTA = styled.a`
     font-weight: 700;
     line-height: 120%; /* 19.2px */
     letter-spacing: -0.32px;
+
+    &:hover {
+      background: #151515;
+      color: #f4f4f4;
+      text-decoration: none; // Remove underline on hover
+    }
   }
 `;
 
