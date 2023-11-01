@@ -92,7 +92,7 @@ snapshotHistory.reverse();
 
 const history = (
   <div class="btn-group" role="group">
-    {/* <a
+    <a
       class="card-link"
       role="button"
       title="Post History"
@@ -101,7 +101,7 @@ const history = (
       type="button"
     >
       <div class="bi bi-clock-history px-2"></div>
-    </a> */}
+    </a>
     <ul class="dropdown-menu">
       <a
         class="d-flex text-muted"
