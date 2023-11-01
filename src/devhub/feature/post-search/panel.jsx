@@ -31,10 +31,7 @@ const PageTitle = styled.h5`
 `;
 
 const Container = styled.div`
-  //padding: 1rem 2.125rem;
   padding: 24px;
-  //background: #fff;
-  //margin: 1.5rem 0;
 `;
 
 const PostContainer = styled.div`
