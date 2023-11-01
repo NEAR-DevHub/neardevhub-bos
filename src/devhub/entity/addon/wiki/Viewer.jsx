@@ -1,24 +1,3 @@
-const { content, title, description, textAlign } = props;
-
-const Container = styled.div`
-  width: 100%;
-  margin: 0 auto;
-  text-align: ${(p) => p.textAlign ?? "left"};
-`;
-
-const Content = styled.div`
-  margin: 20px 0;
-  text-align: left;
-`;
-
-const Title = styled.h1`
-  margin-bottom: 10px; /* Optional: Adjust margin as needed */
-`;
-
-const Description = styled.p`
-  margin-bottom: 20px; /* Optional: Adjust margin as needed */
-`;
-
 const CenteredMessage = styled.div`
   display: flex;
   flex-direction: column;
