@@ -21,7 +21,7 @@ const Content = styled.div`
 `;
 
 const Title = styled.h1`
-  margin-bottom: 10px; 
+  margin-bottom: 10px;
 `;
 
 const Description = styled.p`

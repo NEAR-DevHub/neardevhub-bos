@@ -9,7 +9,8 @@ const SelectInput = ({
   style,
   ...otherProps
 }) => {
-  const renderedLabels = [(label?.length ?? 0) > 0 && <span>{label}</span>] || [];
+  const renderedLabels =
+    [(label?.length ?? 0) > 0 && <span>{label}</span>] || [];
 
   return (
     <div
