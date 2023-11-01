@@ -15,6 +15,11 @@ const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $wher
   }
 `;
 
+State.init({
+  tag: props.tag,
+  author: props.author,
+});
+
 function fetchGraphQL(operationsDoc, operationName, variables) {
   return asyncFetch(QUERYAPI_ENDPOINT, {
     method: "POST",

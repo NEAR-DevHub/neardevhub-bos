@@ -4,6 +4,7 @@ const initialData = data;
 const [content, setContent] = useState(data.content || "");
 const [title, setTitle] = useState(data.title || "");
 const [description, setDescription] = useState(data.description || "");
+
 const [textAlign, setTextAlign] = useState(data.textAlign || "left");
 
 const Container = styled.div`
