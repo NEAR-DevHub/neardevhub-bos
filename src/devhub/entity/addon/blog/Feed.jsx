@@ -10,6 +10,8 @@ const { getPostsByLabel } =
 
 const { Layout, Item } = props;
 
+Layout = Layout || (() => <></>);
+
 const Container = styled.div``;
 
 const Loader = styled.div`
@@ -52,7 +54,7 @@ const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $wher
   }
 `;
 
-// const [postIds, setPostIds] = useState([]);
+const [postIds, setPostIds] = useState([]);
 const [loading, setLoading] = useState(false);
 const [cachedItems, setCachedItems] = useState({});
 const [hasNext, setHasNext] = useState(true);
@@ -84,7 +86,7 @@ const fetchPostIds = (offset) => {
   if (loading) return;
   setLoading(true);
   const variables = { limit: DISPLAY_COUNT, offset, where: buildWhereClause() };
-  const result = fetchGraphQL(query, "DevhubPostsQuery", variables).then(
+  fetchGraphQL(query, "DevhubPostsQuery", variables).then(
     (result) => {
       if (result.status === 200) {
         if (result.body.data) {
@@ -101,9 +103,9 @@ const fetchPostIds = (offset) => {
   );
 };
 
-// useEffect(() => {
-//   fetchPostIds();
-// }, [props.author, props.term, props.tag, props.recency]);
+useEffect(() => {
+  fetchPostIds();
+}, [props.author, props.term, props.tag, props.recency]);
 
 const handleLoadMore = () => {
   if (!hasNext) return;
@@ -126,7 +128,7 @@ const cachedRenderItem = (postId) => {
   return cachedItems[postId];
 };
 
-const postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
+// const postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
 
 return (
   <Container>
