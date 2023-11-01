@@ -32,7 +32,7 @@ const Items = [
     description:
       "Explore funding opportunities from DevHub to fuel your vision",
     cta: {
-      href: "https://www.neardevgov.org/blog/near-developer-governance-funding-guidelines",
+      href: "https://near.social/devgovgigs.near/widget/app?page=community&handle=developer-dao&tab=Funding",
       title: "Learn more ↗",
     },
   },

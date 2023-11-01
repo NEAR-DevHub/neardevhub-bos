@@ -200,7 +200,7 @@ return (
         </div>
       </div>
 
-      <div className="d-flex align-items-end gap-3 ms-auto">
+      <div className="d-flex align-items-end gap-3 ms-auto mb-5">
         {permissions.can_configure && (
           <Link
             to={`/${REPL_DEVHUB}/widget/app?page=community.configuration&handle=${community.handle}`}
@@ -208,7 +208,18 @@ return (
             <Widget
               src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
-                classNames: { root: "btn-outline-light text-dark" },
+                classNames: { root: "btn-outline-light text-dark shadow-none" },
+                notRounded: true,
+                style: {
+                  display: "flex",
+                  padding: "0.75rem 1rem",
+                  alignItems: "center",
+                  gap: "16px",
+
+                  borderRadius: "4px",
+                  border: "1px solid #00EC97",
+                  background: "rgba(129, 129, 129, 0.00)",
+                },
                 icon: {
                   type: "bootstrap_icon",
                   variant: "bi-gear-wide-connected",
@@ -218,6 +229,27 @@ return (
             />
           </Link>
         )}
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+          props={{
+            classNames: { root: "btn-outline-light text-dark shadow-none" },
+            notRounded: true,
+            style: {
+              display: "flex",
+              padding: "0.75rem 1rem",
+              alignItems: "center",
+              gap: "16px",
+
+              borderRadius: "4px",
+              border: "1px solid #00EC97",
+              background: "rgba(129, 129, 129, 0.00)",
+            },
+            label: "Share ↗",
+            onClick: onShareClick,
+            onMouseLeave: () => setLinkCopied(false),
+            title: "Copy link to clipboard",
+          }}
+        />
       </div>
     </div>
     <div className="bg-white" style={{ padding: "0 3rem" }}>
@@ -247,41 +279,10 @@ return (
             )
         )}
       </NavUnderline>
-      <div className="my-4 d-flex align-items-center" style={{ gap: "2.5rem" }}>
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-          props={{
-            classNames: { root: "btn-outline-light text-dark shadow-none" },
-            notRounded: true,
-            style: {
-              display: "flex",
-              padding: "0.75rem 1rem",
-              alignItems: "center",
-              gap: "16px",
-
-              borderRadius: "4px",
-              border: "1px solid #00EC97",
-              background: "rgba(129, 129, 129, 0.00)",
-            },
-            label: "Share ↗",
-            onClick: onShareClick,
-            onMouseLeave: () => setLinkCopied(false),
-            title: "Copy link to clipboard",
-          }}
-        />
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
-          props={{
-            title: "Post",
-            href: href({
-              widgetSrc: "${REPL_DEVHUB}/widget/app",
-              params: {
-                page: "create",
-                labels: [community.tag],
-              },
-            }),
-          }}
-        />
+      <div
+        className="my-4 d-flex align-items-center justify-content-between"
+        style={{ gap: "2.5rem" }}
+      >
         <div class="d-flex align-items-center justify-content-between">
           <small class="text-muted">
             <span>Required tags:</span>
@@ -300,6 +301,23 @@ return (
             </Link>
           </small>
         </div>
+        {context.accountId && (
+          <Widget
+            src={
+              "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
+            }
+            props={{
+              title: "Post",
+              href: href({
+                widgetSrc: "${REPL_DEVHUB}/widget/app",
+                params: {
+                  page: "create",
+                  labels: [community.tag],
+                },
+              }),
+            }}
+          />
+        )}
       </div>
     </div>
     {currentTab && (

@@ -158,18 +158,16 @@ const header = (
   <div key="header">
     <small class="text-muted">
       <div class="row justify-content-between">
-        <div class="col-4">
+        <div class="d-flex align-items-center">
           <Widget
-            // TODO: LEGACY.
-            src={
-              "${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"
-            }
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"}
             props={{
               accountId: post.author_id,
               nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+              communityName: props.communityName,
             }}
           />
-          <span>•</span>
+          <span className="fw-bold"> • </span>
           <div class="d-flex">
             {editControl}
             {timestamp}
@@ -180,7 +178,7 @@ const header = (
                 timestamp: currentTimestamp,
               }}
             />
-            {shareButton}
+            {/* {shareButton} */}
           </div>
         </div>
       </div>
@@ -560,21 +558,32 @@ const renamedPostType =
 
 const tags = post.snapshot.labels ? (
   <div
-    class="card-title d-flex flex-wrap"
+    class="card-title d-flex flex-wrap align-items-center"
     style={{ margin: "20px 0" }}
     key="post-labels"
   >
     {post.snapshot.labels.map((tag, idx) => (
-      <div className="d-flex gap-3 align-items-center my-3 me-3">
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
-          props={{
-            tag,
-          }}
-        />
+      <Link
+        to={href({
+          widgetSrc: "${REPL_DEVHUB}/widget/app",
+          params: { page: "feed", tag: tag },
+        })}
+      >
+        <div
+          className="d-flex gap-3 align-items-center my-3 me-3"
+          style={{ cursor: "pointer", textDecoration: "none" }}
+        >
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+            props={{
+              tag,
+              black: true,
+            }}
+          />
 
-        {idx !== post.snapshot.labels.length - 1 && "•"}
-      </div>
+          {idx !== post.snapshot.labels.length - 1 && "•"}
+        </div>
+      </Link>
     ))}
   </div>
 ) : (
@@ -712,7 +721,7 @@ const descriptionArea = isUnderPost ? (
     {state.clamp ? (
       <div class="d-flex justify-content-start">
         <a
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", color: "#00ec97" }}
           class="btn-link text-dark fw-bold text-decoration-none"
           onClick={() => State.update({ clamp: false })}
         >

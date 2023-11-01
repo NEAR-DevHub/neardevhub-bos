@@ -36,18 +36,18 @@ const CardBody = styled.div`
 
   display: flex;
   max-width: 31.5%;
-  height: 18rem;
+  height: 12rem;
   padding: 1.5rem;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 1.5rem;
+  gap: 0.5rem;
   flex-shrink: 0;
   align-self: stretch;
 
   h3 {
     color: #00ec97;
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-style: normal;
     font-weight: 700;
     line-height: 100%; /* 40px */
@@ -90,12 +90,12 @@ const Card = ({ title, description, href }) => {
 
 const Cards = [
   {
-    title: "/dev/hub Hacks",
+    title: "Devhub Hacks",
     description: "Host and support developer focused events around the globe.",
     href: "/${REPL_DEVHUB}/widget/app?page=community&handle=hacks",
   },
   {
-    title: "DevDAO Fellowship Program",
+    title: "NEAR Platform Fellowship",
     description: "Improve the NEAR dev experience with guidance & funding.",
     href: "/${REPL_DEVHUB}/widget/app?page=community&handle=fellowship",
   },
