@@ -127,7 +127,14 @@ function getPostIds() {
   }
 
   // Don't show blog
-  where = { _not: { labels: { _contains: "blog" } }, ...where };
+  where = {
+    _not: {
+      labels: { _contains: "blog" },
+      parent_id: { _is_null: true },
+      post_type: { _eq: "Comment" },
+    },
+    ...where,
+  };
 
   console.log("searching for", where);
   fetchGraphQL(query, "DevhubPostsQuery", {
