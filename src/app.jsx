@@ -145,6 +145,15 @@ function Page() {
         />
       );
     }
+    // ?page=blog
+    case "blog": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.page.blog"}
+          props={passProps}
+        />
+      );
+    }
     default: {
       // TODO: 404 page
       return <p>404</p>;
