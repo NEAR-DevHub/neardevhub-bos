@@ -42,7 +42,7 @@ return (
     className="d-flex flex-column align-items-center gap-4 w-100 p-4"
     style={{ maxWidth: 960, marginBottom: "60px" }}
   >
-    <Tile>
+    <Tile className={"bg-white"}>
       <Widget
         src={
           "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.BrandingConfigurator"
@@ -55,7 +55,7 @@ return (
         }}
       />
     </Tile>
-    <Tile className={"p-3"}>
+    <Tile className={"p-3 bg-white"}>
       <Widget
         src={
           "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
@@ -78,7 +78,7 @@ return (
         }}
       />
     </Tile>
-    <Tile className={"p-3"}>
+    <Tile className={"p-3 bg-white"}>
       <Widget
         src={
           "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
@@ -101,7 +101,7 @@ return (
         }}
       />
     </Tile>
-    <Tile className={"p-3"}>
+    <Tile className={"p-3 bg-white"}>
       <Widget
         src={
           "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
@@ -125,7 +125,7 @@ return (
       />
     </Tile>
     {hasConfigurePermissions && (
-      <Tile className={"p-3"}>
+      <Tile className={"p-3 bg-white"}>
         <Widget
           src={
             "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
