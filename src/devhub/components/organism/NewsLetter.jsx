@@ -59,23 +59,6 @@ const SocialLinks = styled.div`
   gap: 1rem;
 `;
 
-const TwitterIcon = () => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="16"
-      viewBox="0 0 20 16"
-      fill="none"
-    >
-      <path
-        d="M19.7161 1.89418C19.0035 2.21575 18.2376 2.43232 17.4338 2.52994C18.2546 2.03035 18.8848 1.23872 19.181 0.295324C18.4136 0.757998 17.563 1.09434 16.6575 1.27564C15.9336 0.490566 14.8998 0 13.7571 0C11.1916 0 9.30636 2.43314 9.8858 4.95898C6.58429 4.79081 3.65643 3.18294 1.69618 0.73913C0.65513 2.55455 1.15629 4.92945 2.92527 6.13207C2.27481 6.11075 1.66148 5.92945 1.12643 5.62674C1.08285 7.49795 2.40232 9.24856 4.31334 9.63823C3.75408 9.79245 3.14155 9.82855 2.51853 9.70714C3.02373 11.3117 4.49088 12.4791 6.23081 12.5119C4.56029 13.8433 2.45559 14.4381 0.347656 14.1854C2.10615 15.3314 4.19552 16 6.43902 16C13.8168 16 17.985 9.66612 17.7332 3.98523C18.5096 3.41509 19.1834 2.70386 19.7161 1.89418Z"
-        fill="#151515"
-      />
-    </svg>
-  );
-};
-
 const XIcon = () => {
   return (
     <svg
@@ -143,10 +126,10 @@ const MidContent = () => {
         </Description>
         <CTA href="#">Subscribe</CTA>
         <SocialLinks>
-          <a href="https://twitter.com/neardevhub" target="_blank">
+          <a href="https://twitter.com/NEARDevHub" target="_blank">
             <XIcon />
           </a>
-          <a href="https://t.me/NEARDevGov" target="_blank">
+          <a href="https://t.me/NEARDevHub" target="_blank">
             <TelegramIcon />
           </a>
           <a href="https://www.youtube.com/@NEARDevHub" target="_blank">
@@ -169,13 +152,13 @@ const SmallContent = () => {
   return (
     <SmallContainer>
       <SocialLinks>
-        <a href="#" target="_blank">
-          <TwitterIcon />
+        <a href="https://twitter.com/NEARDevHub" target="_blank">
+          <XIcon />
         </a>
-        <a href="#" target="_blank">
+        <a href="https://t.me/NEARDevHub" target="_blank">
           <TelegramIcon />
         </a>
-        <a href="#" target="_blank">
+        <a href="https://www.youtube.com/@NEARDevHub" target="_blank">
           <YoutubeIcon />
         </a>
       </SocialLinks>
