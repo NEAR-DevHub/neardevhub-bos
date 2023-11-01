@@ -1,13 +1,3 @@
-// I want this to be passed a query
-// renderLoading
-// renderItem
-// renderError
-
-// TEMP FOR TESTNET
-const { getPostsByLabel } =
-  VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
-  (() => {});
-
 const { Layout, Item } = props;
 
 const Container = styled.div``;
@@ -52,7 +42,7 @@ const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $wher
   }
 `;
 
-// const [postIds, setPostIds] = useState([]);
+const [postIds, setPostIds] = useState([]);
 const [loading, setLoading] = useState(false);
 const [cachedItems, setCachedItems] = useState({});
 const [hasNext, setHasNext] = useState(true);
@@ -91,7 +81,6 @@ const fetchPostIds = (offset) => {
   }
   if (loading) return;
   setLoading(true);
-<<<<<<< Updated upstream
   const variables = { limit: DISPLAY_COUNT, offset, where: buildWhereClause() };
   const result = fetchGraphQL(query, "DevhubPostsQuery", variables).then(
     (result) => {
@@ -105,28 +94,14 @@ const fetchPostIds = (offset) => {
           console.error("GraphQL Error:", result.errors);
         }
         setLoading(false);
-=======
-  const where = buildWhereClause();
-  console.log(where);
-  const variables = { limit: DISPLAY_COUNT, offset, where };
-  fetchGraphQL(query, "DevhubPostsQuery", variables).then((result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const data = result.body.data[queryName];
-        const newPostIds = data.map((p) => p.post_id);
-        setPostIds(offset === 0 ? newPostIds : [...postIds, ...newPostIds]);
-        setHasNext(data.length >= variables.limit);
-      } else {
-        console.error("GraphQL Error:", result.errors);
->>>>>>> Stashed changes
       }
     }
   );
 };
 
-// useEffect(() => {
-//   fetchPostIds();
-// }, [props.author, props.term, props.tag, props.recency]);
+useEffect(() => {
+  fetchPostIds();
+}, [props.author, props.term, props.tag, props.recency]);
 
 const handleLoadMore = () => {
   if (!hasNext) return;
@@ -148,8 +123,6 @@ const cachedRenderItem = (postId) => {
   }
   return cachedItems[postId];
 };
-
-const postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
 
 return (
   <Container>
