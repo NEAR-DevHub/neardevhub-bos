@@ -75,15 +75,12 @@ function fetchGraphQL(operationsDoc, operationName, variables) {
 }
 
 function searchConditionChanged() {
-  if (
+  return (
     props.author != state.author ||
     props.term != state.term ||
     props.tag != state.tag ||
     props.recency != state.recency
-  ) {
-    return true;
-  }
-  return false;
+  );
 }
 
 function updateSearchCondition() {
@@ -156,6 +153,8 @@ function getPostIds() {
 State.init({
   period: "week",
 });
+
+getPostIds();
 
 function defaultRenderItem(postId, additionalProps) {
   if (!additionalProps) {
@@ -230,14 +229,6 @@ const getPeriodText = (period) => {
 };
 
 let postIds = state.postIds ?? null;
-if (props.searchResult) {
-  postIds = props.searchResult.postIds;
-} else {
-  postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
-  if (postIds) {
-    postIds.reverse();
-  }
-}
 
 const loader = (
   <div className="loader" key={"loader"}>
