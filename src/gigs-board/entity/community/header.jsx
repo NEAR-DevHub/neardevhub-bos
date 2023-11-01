@@ -395,7 +395,7 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
 
   return (
     <>
-      {hasOldData && (
+      {hasOldData && permissions.can_configure && (
         <div
           class="alert alert-primary d-flex justify-content-between align-items-center mb-0"
           role="alert"
