@@ -35,8 +35,6 @@ const Container = styled.div`
   padding: 24px;
   //background: #fff;
   //margin: 1.5rem 0;
-
-  ${props.hideHeader ? "display: none;" : "display: block;"}
 `;
 
 const PostContainer = styled.div`
