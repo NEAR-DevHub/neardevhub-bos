@@ -309,81 +309,183 @@ const CommunityHeader = ({ activeTabTitle, handle }) => {
       .writeText("https://near.org" + href("community.activity", { handle }))
       .then(linkCopyStateToggle(true));
 
+  const hasOldData =
+    community.telegram_handle.length > 0 ||
+    community.github !== null ||
+    community.board !== null ||
+    community.wiki1 !== null ||
+    community.wiki2 !== null;
+
+  function generateRandom6CharUUID() {
+    const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+    let result = "";
+
+    for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      result += chars[randomIndex];
+    }
+
+    return result;
+  }
+
+  const migrateData = () => {
+    const addons = [];
+
+    if (community.telegram_handle.length > 0) {
+      addons.push({
+        id: generateRandom6CharUUID(),
+        addon_id: "telegram",
+        display_name: "Telegram",
+        enabled: true,
+        parameters: JSON.stringify({ handles: community.telegram_handle }),
+      });
+    }
+
+    if (community.github) {
+      addons.push({
+        id: generateRandom6CharUUID(),
+        addon_id: "github",
+        display_name: "Github",
+        enabled: true,
+        parameters: community.github,
+      });
+    }
+
+    if (community.board) {
+      addons.push({
+        id: generateRandom6CharUUID(),
+        addon_id: "kanban",
+        display_name: "Board",
+        enabled: true,
+        parameters: community.board,
+      });
+    }
+
+    if (community.wiki1) {
+      addons.push({
+        id: generateRandom6CharUUID(),
+        addon_id: "wiki",
+        display_name: "Wiki 1",
+        enabled: true,
+        parameters: JSON.stringify({
+          title: community.wiki1.name,
+          content: community.wiki1.content_markdown,
+        }),
+      });
+    }
+
+    if (community.wiki2) {
+      addons.push({
+        id: generateRandom6CharUUID(),
+        addon_id: "wiki",
+        display_name: "Wiki 2",
+        enabled: true,
+        parameters: JSON.stringify({
+          title: community.wiki2.name,
+          content: community.wiki2.content_markdown,
+        }),
+      });
+    }
+
+    Near.call("${REPL_DEVHUB_CONTRACT}", "set_community_addons", {
+      handle: community.handle,
+      addons,
+    });
+  };
+
   return (
-    <div className="d-flex flex-column gap-3 bg-white">
+    <>
+      {hasOldData && permissions.can_configure && (
+        <div
+          class="alert alert-primary d-flex justify-content-between align-items-center mb-0"
+          role="alert"
+        >
+          <div>
+            <strong>Community Migration:</strong> Some features may need to be
+            migrated to the new addon framework.
+          </div>
+          <button onClick={migrateData} className="btn btn-success">
+            Migrate Community
+          </button>
+        </div>
+      )}
       <Banner
         className="object-fit-cover"
         style={{
           background: `center / cover no-repeat url(${community.banner_url})`,
         }}
       />
+      <div className="d-flex flex-column gap-3 bg-white">
+        <div className="container d-flex flex-wrap justify-content-between gap-4">
+          <div className="d-flex align-items-end">
+            <div className="position-relative">
+              <div style={{ width: 150, height: 100 }}>
+                <img
+                  alt="Loading logo..."
+                  className="border border-3 border-white rounded-circle shadow position-absolute"
+                  width="150"
+                  height="150"
+                  src={community.logo_url}
+                  style={{ top: -50 }}
+                />
+              </div>
+            </div>
 
-      <div className="container d-flex flex-wrap justify-content-between gap-4">
-        <div className="d-flex align-items-end">
-          <div className="position-relative">
-            <div style={{ width: 150, height: 100 }}>
-              <img
-                alt="Loading logo..."
-                className="border border-3 border-white rounded-circle shadow position-absolute"
-                width="150"
-                height="150"
-                src={community.logo_url}
-                style={{ top: -50 }}
-              />
+            <div className="d-flex flex-column ps-3 pt-3 pb-2">
+              <span className="h1 text-nowrap">{community.name}</span>
+              <span className="text-secondary">{community.description}</span>
             </div>
           </div>
 
-          <div className="d-flex flex-column ps-3 pt-3 pb-2">
-            <span className="h1 text-nowrap">{community.name}</span>
-            <span className="text-secondary">{community.description}</span>
+          <div className="d-flex align-items-end gap-3 ms-auto">
+            {widget("components.molecule.button", {
+              classNames: { root: "btn-outline-light text-dark" },
+              href: href("community.configuration", { handle }),
+              icon: {
+                type: "bootstrap_icon",
+                variant: "bi-gear-wide-connected",
+              },
+              isHidden: !permissions.can_configure,
+              label: "Configure community",
+              type: "link",
+            })}
+
+            {widget("components.molecule.button", {
+              classNames: { root: "btn-outline-light text-dark" },
+
+              icon: {
+                type: "bootstrap_icon",
+                variant: state.isLinkCopied ? "bi-check" : "bi-link-45deg",
+              },
+
+              label: "Share",
+              onClick: onShareClick,
+              onMouseLeave: () => linkCopyStateToggle(false),
+              title: "Copy link to clipboard",
+            })}
           </div>
         </div>
 
-        <div className="d-flex align-items-end gap-3 ms-auto">
-          {widget("components.molecule.button", {
-            classNames: { root: "btn-outline-light text-dark" },
-            href: href("community.configuration", { handle }),
-            icon: { type: "bootstrap_icon", variant: "bi-gear-wide-connected" },
-            isHidden: !permissions.can_configure,
-            label: "Configure community",
-            type: "link",
-          })}
-
-          {widget("components.molecule.button", {
-            classNames: { root: "btn-outline-light text-dark" },
-
-            icon: {
-              type: "bootstrap_icon",
-              variant: state.isLinkCopied ? "bi-check" : "bi-link-45deg",
-            },
-
-            label: "Share",
-            onClick: onShareClick,
-            onMouseLeave: () => linkCopyStateToggle(false),
-            title: "Copy link to clipboard",
-          })}
-        </div>
+        <NavUnderline className="nav">
+          {tabs.map(({ defaultActive, params, route, title }) =>
+            title ? (
+              <li className="nav-item" key={title}>
+                <a
+                  aria-current={defaultActive && "page"}
+                  className={[
+                    "d-inline-flex gap-2",
+                    activeTabTitle === title ? "nav-link active" : "nav-link",
+                  ].join(" ")}
+                  href={href(route, { handle, ...(params ?? {}) })}
+                >
+                  <span>{title}</span>
+                </a>
+              </li>
+            ) : null
+          )}
+        </NavUnderline>
       </div>
-
-      <NavUnderline className="nav">
-        {tabs.map(({ defaultActive, params, route, title }) =>
-          title ? (
-            <li className="nav-item" key={title}>
-              <a
-                aria-current={defaultActive && "page"}
-                className={[
-                  "d-inline-flex gap-2",
-                  activeTabTitle === title ? "nav-link active" : "nav-link",
-                ].join(" ")}
-                href={href(route, { handle, ...(params ?? {}) })}
-              >
-                <span>{title}</span>
-              </a>
-            </li>
-          ) : null
-        )}
-      </NavUnderline>
-    </div>
+    </>
   );
 };
 
