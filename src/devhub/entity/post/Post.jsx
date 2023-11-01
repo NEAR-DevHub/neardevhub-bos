@@ -387,8 +387,8 @@ const buttonsFooter = props.isPreview ? null : (
           <Link
             to={href({
               gateway: "near.org",
-              widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
-              params: { id: parentId },
+              widgetSrc: "${REPL_DEVHUB}/widget/app",
+              params: { page: "post", id: parentId },
             })}
           >
             <ButtonWithHover
@@ -746,8 +746,9 @@ const timestampElement = (_snapshot) => {
       class="text-muted"
       href={href({
         gateway: "near.org",
-        widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: {
+          page: "post",
           id: postId,
           timestamp: _snapshot.timestamp,
           compareTimestamp: null,
