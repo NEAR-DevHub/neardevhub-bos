@@ -25,6 +25,11 @@ const LinkItem = styled.a`
 
   display: flex;
   align-items: center;
+
+  &:hover{
+    text-decoration: none;
+    color: #04146E;
+  }
 `;
 
 const Links = [
@@ -68,6 +73,11 @@ const CTA = styled.a`
   width: max-content;
   margin-top: 1.5rem;
 
+  &:hover {
+    background: #04A46E;
+    text-decoration: none;
+  }
+
   @media screen and (max-width: 768px) {
     color: #f4f4f4 !important;
     font-size: 20px;
@@ -81,7 +91,12 @@ const CTA = styled.a`
     gap: 8px;
 
     border-radius: 16px;
-    background: #00ec97;
+    background: #04A46E;
+
+    &:hover {
+      //background: #04A46E;
+      text-decoration: none;
+    }
   }
 `;
 
@@ -117,8 +132,8 @@ const Content = (
               <div className="d-flex flex-row">
                 <span
                   style={{
-                    color: "#00ec97",
-                    border: "2px #00ec97 solid",
+                    color: "#04A46E",
+                    border: "2px #04A46E solid",
                     fontSize: 12,
                     padding: 4,
                     width: 22,
@@ -135,16 +150,19 @@ const Content = (
         </LinksContainer>
       ))}
     </Container>
-    <CTA>
-      <Link
+    
+      <CTA> <Link
         to={href({
           widgetSrc: "${REPL_DEVHUB}/widget/app",
           params: { page: "contribute" },
         })}
       >
         Learn more →
-      </Link>
-    </CTA>
+        </Link>
+      
+        </CTA>
+     
+    
   </SectionPadding>
 );
 
@@ -153,6 +171,7 @@ return (
     src="${REPL_DEVHUB}/widget/devhub.components.island.home-section"
     props={{
       title: "/participate",
+      titleColor: "#04A46E",
       description:
         "There are many ways to start your contribution journey. You can:",
       children: Content,

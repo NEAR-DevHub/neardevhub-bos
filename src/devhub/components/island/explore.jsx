@@ -11,7 +11,7 @@ const Card = styled.div`
   border-radius: 1rem;
 
   h3 {
-    color: #00ec97;
+    color:#04A46E; //#00ec97;
     text-align: center;
     font-size: 1.5rem;
     font-style: normal;
@@ -22,14 +22,14 @@ const Card = styled.div`
   p {
     color: #555;
     text-align: center;
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-style: normal;
     font-weight: 400;
     line-height: 120%; /* 24px */
   }
 
   a {
-    color: #00ec97;
+    color: #04A46E; //#00ec97;
     text-align: center;
     font-size: 1.25rem;
     font-style: normal;
@@ -111,6 +111,7 @@ const CTA = styled.a`
 
   &:hover {
     text-decoration: none;
+    background: #04A46E;;
   }
 
   @media screen and (max-width: 768px) {
@@ -185,6 +186,7 @@ return (
     src="${REPL_DEVHUB}/widget/devhub.components.island.home-section"
     props={{
       title: "/explore",
+      titleColor: "#04A46E",
       description:
         "NEAR Protocol is your fast, low-cost and reliable gateway to the Open Web",
       children: Content,
