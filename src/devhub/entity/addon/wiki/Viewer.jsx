@@ -19,7 +19,6 @@ const Subtitle = styled.p`
   margin-bottom: 20px;
 `;
 
-
 const CenteredMessage = styled.div`
   display: flex;
   flex-direction: column;
