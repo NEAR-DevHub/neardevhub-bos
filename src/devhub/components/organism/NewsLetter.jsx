@@ -1,3 +1,4 @@
+const page = props.page;
 const imageLink =
   "https://ipfs.near.social/ipfs/bafkreiatybj6g6i4b4azcu3zoutlcxobrzpg3k4taazhkyd7sk5tuwmb5q";
 
