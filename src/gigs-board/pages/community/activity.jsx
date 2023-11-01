@@ -158,29 +158,43 @@ const CommunityActivityPage = ({ handle, transactionHashes }) => {
       communityData !== null ? (
         <div class="row">
           <div class="col-md-9">
-            <div class="col">
-              {widget("entity.post.Spawner", {
-                isHidden: state.isSpawnerHidden,
-                onCancel: () => spawnerToggle(false),
-                tags: [communityData.tag],
-                transactionHashes,
-              })}
+            <div class="row mb-2">
+              <div class="col">
+                <div class="d-flex align-items-center justify-content-between">
+                  <small class="text-muted">
+                    <span>Required tags:</span>
 
-              {widget("entity.post.Lookup", {
-                noReset: true,
-                tag: communityData.tag,
+                    {widget("components.atom.tag", {
+                      linkTo: "Feed",
+                      ...communityData,
+                    })}
+                  </small>
 
-                children: widget("components.molecule.button", {
-                  icon: {
-                    type: "bootstrap_icon",
-                    variant: "bi-plus-circle-fill",
-                  },
+                  {widget("components.molecule.button", {
+                    icon: {
+                      type: "bootstrap_icon",
+                      variant: "bi-plus-circle-fill",
+                    },
 
-                  isHidden: !state.isSpawnerHidden,
-                  label: "Post",
-                  onClick: () => spawnerToggle(true),
-                }),
-              })}
+                    isHidden: !state.isSpawnerHidden,
+                    label: "Post",
+                    onClick: () => spawnerToggle(true),
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                {widget("entity.post.Spawner", {
+                  isHidden: state.isSpawnerHidden,
+                  onCancel: () => spawnerToggle(false),
+                  tags: [communityData.tag],
+                  transactionHashes,
+                })}
+
+                {widget("entity.post.List", { tag: communityData.tag })}
+              </div>
             </div>
           </div>
 
