@@ -1,4 +1,5 @@
 const title = props.title;
+const titleColor = props.titleColor;
 const description = props.description;
 const children = props.children;
 const background = props.background;
@@ -10,7 +11,7 @@ const Section = styled.div`
 `;
 
 const SectionHeader = styled.h2`
-  color: #00ec97;
+  color: ${titleColor || "#00ec97"};
   font-size: 1.5rem;
   font-style: normal;
   font-weight: 400;
