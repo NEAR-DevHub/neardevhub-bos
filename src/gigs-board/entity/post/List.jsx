@@ -168,7 +168,7 @@ function getPostIds() {
     where = { parent_id: { _is_null: true }, ...where };
   }
 
-  where = { _not: {labels: {_contains: "blog"}}, ...where};
+  where = { _not: { labels: { _contains: "blog" } }, ...where };
 
   fetchGraphQL(query, "DevhubPostsQuery", {
     limit: 100,
