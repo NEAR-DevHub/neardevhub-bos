@@ -142,8 +142,8 @@ const shareButton = props.isPreview ? (
     class="card-link text-dark"
     to={href({
       gateway: "near.org",
-      widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post", // TODO: Convert to page?
-      params: { id: postId },
+      widgetSrc: "${REPL_DEVHUB}/widget/app",
+      params: { page: "post", id: postId },
     })}
     role="button"
     target="_blank"
@@ -178,7 +178,7 @@ const header = (
                 timestamp: currentTimestamp,
               }}
             />
-            {/* {shareButton} */}
+            {shareButton}
           </div>
         </div>
       </div>

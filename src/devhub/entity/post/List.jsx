@@ -172,6 +172,7 @@ function defaultRenderItem(postId, additionalProps) {
           defaultExpanded: false,
           isInList: true,
           draftState,
+          isPreview: false,
           onDraftStateChange,
           ...additionalProps,
           referral: postId,
