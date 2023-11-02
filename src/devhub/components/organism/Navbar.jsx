@@ -193,7 +193,12 @@ const MobileLink = styled.a`
   margin-bottom: 1rem;
 
   &.active {
-    color: #00ec97 !important;
+    color: #04a46e !important;
+  }
+
+  &:hover {
+    text-decoration: none;
+    color: #096d50 !important;
   }
 `;
 
