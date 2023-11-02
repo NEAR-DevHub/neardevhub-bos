@@ -596,10 +596,10 @@ const tags = post.snapshot.labels ? (
 );
 
 const Title = styled.h5`
-  margin: 2.25rem 0;
+  margin: 1rem 0;
 
   color: #151515;
-  font-size: 1.75rem;
+  font-size: 1.15rem;
   font-style: normal;
   font-weight: 700;
   line-height: 1.625rem; /* 55.556% */
@@ -609,11 +609,8 @@ const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
   ) : (
-    <Title key="post-title d-flex justify-content-between align-items-center position-relative">
-      <span class={`position-absolute`} style={{ left: 10 }}>
-        {emptyIcons[snapshot.post_type]}
-      </span>
-      {renamedPostType}: {snapshot.name}
+    <Title key="post-title">
+      {emptyIcons[snapshot.post_type]} {renamedPostType}: {snapshot.name}
     </Title>
   );
 
