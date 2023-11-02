@@ -57,11 +57,6 @@ const SocialLinks = styled.div`
   display: flex;
   flex-direction: row;
   gap: 1rem;
-
-  @media screen and (max-width: 768px) {
-    margin-top: 1rem;
-    transform: scale(1.25);
-  }
 `;
 
 const XIcon = () => {
@@ -150,10 +145,15 @@ const SmallContainer = styled.div`
   display: none;
   ${(page === "communities" || page === "community" || page === "feed") &&
   "display: flex !important;"}
-  flex-direction: column-reverse;
-  justify-content: center;
-  gap: 1rem;
+  justify-content: space-between;
   align-items: center;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column-reverse;
+    justify-content: center;
+    gap: 1rem;
+    align-items: center;
+  }
 `;
 const SmallContent = () => {
   return (
