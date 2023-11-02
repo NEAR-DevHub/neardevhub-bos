@@ -16,6 +16,15 @@ const categories = [
   },
 ];
 
+const selectOptions = useMemo(
+  () =>
+    categories.map((it) => ({
+      label: it.label,
+      value: it.value,
+    })),
+  [categories]
+);
+
 const Banner = styled.div`
   border-radius: var(--bs-border-radius-xl) !important;
   height: 100%;
@@ -54,12 +63,6 @@ const Banner = styled.div`
   }
 `;
 
-const FormContainer = styled.div`
-  & > *:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-`;
-
 const { data, handle, onSubmit } = props;
 
 const initialData = data; // TODO: Check Storage API
@@ -81,16 +84,6 @@ State.init({
     cid: "bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
   },
 });
-
-let timeoutId;
-
-const debounce = (func, delay) => {
-  if (!delay) {
-    delay = 300;
-  }
-  clearTimeout(timeoutId);
-  timeoutId = setTimeout(func, delay);
-};
 
 const Container = styled.div`
   width: 100%;
@@ -140,6 +133,7 @@ function Preview() {
             date,
             content,
             author,
+            category,
             image: state.image,
             tags: data.includeLabels,
             community: handle,
@@ -157,6 +151,7 @@ function Preview() {
             date,
             content,
             author,
+            category,
             image: state.image,
             tags: data.includeLabels,
             community: handle,
@@ -206,115 +201,39 @@ return (
         role="tabpanel"
         aria-labelledby="edit-tab"
       >
-        <FormContainer>
-          <div style={{ height: 280 }}>
-            <Banner
-              alt="Blog background Preview"
-              className="card-img-top d-flex flex-column justify-content-end align-items-end p-4"
-              style={{
-                background: `center / cover no-repeat url(${cidToURL(
-                  state.image.cid
-                )})`,
-              }}
-            >
-              <IpfsImageUpload image={state.image} />
-            </Banner>
-          </div>
-          <div>
-            <h5>Title</h5>
-            <div className="flex-grow-1">
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                props={{
-                  className: "flex-grow-1",
-                  onChange: debounce((e) => setTitle(e.target.value)),
-                  value: title,
-                  placeholder: "Title",
-                }}
-              />
-            </div>
-          </div>
-          <div>
-            <h5>Subtitle</h5>
-            <div className="flex-grow-1">
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                props={{
-                  className: "flex-grow-1",
-                  onChange: debounce((e) => setSubtitle(e.target.value)),
-                  value: subtitle,
-                  placeholder: "Subtitle",
-                }}
-              />
-            </div>
-          </div>
-          <div>
-            <h5>Category</h5>
-            <div className="flex-grow-1">
-              <Widget
-                src={"${REPL_NEAR}/widget/DIG.InputSelect"}
-                props={{
-                  groups: [
-                    {
-                      items: categories.map((it) => ({
-                        label: it.label,
-                        value: it.value,
-                      })),
-                    },
-                  ],
-                  rootProps: {
-                    value: category,
-                    placeholder: "Select a category",
-                    onValueChange: (v) => setCategory(v),
-                  },
-                }}
-              />
-            </div>
-          </div>
-          <div>
-            <h5>Description</h5>
-            <div className="flex-grow-1">
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                props={{
-                  className: "flex-grow-1",
-                  onChange: debounce((e) => setDescription(e.target.value)),
-                  value: description,
-                  placeholder: "Description",
-                }}
-              />
-            </div>
-          </div>
-          <div>
-            <h5>Author</h5>
-            <div className="flex-grow-1">
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                props={{
-                  className: "flex-grow-1",
-                  onChange: debounce((e) => setAuthor(e.target.value)),
-                  value: author,
-                  placeholder: "Author",
-                }}
-              />
-            </div>
-          </div>
-          <div>
-            <h5>Date</h5>
-            <input
-              type="date"
-              value={date.toISOString().split("T")[0]}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
-          <div>
-            <h5>Content</h5>
-            <Widget
-              src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
-              props={{ data: { content }, onChange: setContent }}
-            />
-          </div>
-        </FormContainer>
+        <div style={{ height: 280, marginBottom: "1rem" }}>
+          <Banner
+            alt="Blog background Preview"
+            className="card-img-top d-flex flex-column justify-content-end align-items-end p-4"
+            style={{
+              background: `center / cover no-repeat url(${cidToURL(
+                state.image.cid
+              )})`,
+            }}
+          >
+            <IpfsImageUpload image={state.image} />
+          </Banner>
+        </div>
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.entity.addon.blog.editor.form"
+          props={{
+            title,
+            setTitle,
+            subtitle,
+            setSubtitle,
+            options: selectOptions,
+            category,
+            setCategory,
+            description,
+            setDescription,
+            author,
+            setAuthor,
+            date,
+            setDate,
+            content,
+            setContent,
+          }}
+        />
         <div
           className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
         >

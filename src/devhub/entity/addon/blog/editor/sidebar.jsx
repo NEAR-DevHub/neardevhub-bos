@@ -8,7 +8,7 @@ const SidebarContainer = styled.div`
   flex-direction: column;
   align-items: center;
   height: 100%;
-  gap: 2px;
+  gap: 4px;
 `;
 
 const SidebarButton = styled.button`
@@ -28,6 +28,7 @@ const SidebarButton = styled.button`
 
 return (
   <SidebarContainer>
+    <p>Blog posts</p>
     <SidebarButton onClick={() => handleItemClick(null)}>New</SidebarButton>
     {(items || []).map((it) => (
       <SidebarButton
