@@ -1,0 +1,101 @@
+const { getPost } =
+  VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
+  (() => {});
+
+const { Layout, handle } = props;
+
+const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
+
+const fetchGraphQL = (operationsDoc, operationName, variables) => {
+  return fetch(QUERYAPI_ENDPOINT, {
+    method: "POST",
+    headers: { "x-hasura-role": `bo_near` },
+    body: JSON.stringify({
+      query: operationsDoc,
+      variables: variables,
+      operationName: operationName,
+    }),
+  });
+};
+
+const queryName =
+  props.queryName ?? `bo_near_devhub_v17_posts_with_latest_snapshot`;
+
+const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $where: ${queryName}_bool_exp = {}) {
+    ${queryName}(
+      limit: $limit
+      offset: $offset
+      order_by: {block_height: desc}
+      where: $where
+    ) {
+      post_id
+    }
+  }
+`;
+
+const includeLabels = ["blog", handle];
+
+const buildWhereClause = () => {
+  let where = {};
+  if (props.author) {
+    where = { author_id: { _eq: props.author }, ...where };
+  }
+  if (props.term) {
+    where = { description: { _ilike: `%${props.term}%` }, ...where };
+  }
+  if (props.includeLabels && Array.isArray(props.includeLabels)) {
+    where = { labels: { _containsAny: props.includeLabels }, ...where };
+  }
+  if (props.excludeLabels && Array.isArray(props.excludeLabels)) {
+    where = { labels: { _nin: props.excludeLabels }, ...where };
+  }
+  if (!props.recency) {
+    where = { parent_id: { _is_null: true }, ...where };
+  }
+  return where;
+};
+
+const variables = { limit: DISPLAY_COUNT, offset, where: buildWhereClause() };
+
+const posts = fetch(QUERYAPI_ENDPOINT, {
+  method: "POST",
+  headers: { "x-hasura-role": `bo_near` },
+  body: JSON.stringify({
+    query: query,
+    variables: variables,
+    operationName: "DevhubPostsQuery",
+  }),
+});
+
+const handleOnChange = (v) => {
+  console.log("onChange", v);
+};
+
+const handleGetData = (v) => {
+  return getPost({ post_id: parseInt(v) });
+};
+
+const handleOnSubmit = (v) => {
+  console.log("onSubmit", v);
+  Near.call({
+    contractName: "${REPL_DEVHUB_CONTRACT}",
+    methodName: "add_post",
+    args: v,
+    deposit: Big(10).pow(21).mul(2),
+    gas: Big(10).pow(12).mul(100),
+  });
+};
+
+const handleOnCancel = (v) => {
+  console.log("onCancel", v);
+};
+
+return (
+  <Layout
+    data={posts.body.data.bo_near_devhub_v17_posts_with_latest_snapshot || []}
+    getData={handleGetData}
+    onChange={handleOnChange}
+    onSubmit={handleOnSubmit}
+    onCancel={handleOnCancel}
+  />
+);

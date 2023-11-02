@@ -76,7 +76,7 @@ const handleSubmit = () => {
 };
 
 return (
-  <Tile className="p-3">
+  <Tile className="p-3 bg-white">
     <ul className="nav nav-tabs" id="blogConfiguratorTabs" role="tablist">
       <li className="nav-item" role="presentation">
         <button
@@ -267,7 +267,7 @@ return (
       >
         <Container>
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Editor"}
+            src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.editor.index"}
             props={{
               data,
               handle,
