@@ -152,21 +152,31 @@ const shareButton = props.isPreview ? (
   </Link>
 );
 
+const ProfileCardContainer = styled.div`
+  @media screen and (max-width: 960px) {
+    width: 100%;
+  }
+`;
+
 // card-header
 const header = (
   <div key="header">
     <small class="text-muted">
       <div class="row justify-content-between">
-        <div class="d-flex align-items-center">
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"}
-            props={{
-              accountId: post.author_id,
-              nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
-            }}
-          />
-          <span className="fw-bold"> • </span>
+        <div class="d-flex align-items-center flex-wrap">
+          <ProfileCardContainer>
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
+              }
+              props={{
+                accountId: post.author_id,
+                nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+              }}
+            />
+          </ProfileCardContainer>
           <div class="d-flex">
+            <span className="fw-bold mx-1">•</span>
             {editControl}
             {timestamp}
             <Widget
@@ -295,9 +305,17 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
   );
 };
 
+const FooterButtonsContianer = styled.div`
+  width: 66.66666667%;
+
+  @media screen and (max-width: 960px) {
+    width: 100%;
+  }
+`;
+
 const buttonsFooter = props.isPreview ? null : (
   <div class="row" key="buttons-footer">
-    <div class="col-8">
+    <FooterButtonsContianer>
       <div class="btn-group" role="group" aria-label="Basic outlined example">
         <ButtonWithHover
           type="button"
@@ -400,7 +418,7 @@ const buttonsFooter = props.isPreview ? null : (
           </Link>
         )}
       </div>
-    </div>
+    </FooterButtonsContianer>
   </div>
 );
 
@@ -787,6 +805,10 @@ const CardContainer = styled.div`
   border-radius: 16px !important;
   border: 1px solid rgba(129, 129, 129, 0.3) !important;
   background: #fffefe !important;
+
+  @media screen and (max-width: 960px) {
+    padding: 1rem !important;
+  }
 `;
 
 return (

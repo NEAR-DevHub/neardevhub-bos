@@ -44,7 +44,7 @@ const ProfileCard = (props) => {
             style: { width: "3em", height: "3em", marginRight: "0.3em" },
             profile,
             accountId,
-            className: "d-inline-block",
+            className: "d-inline-block flex-shrink-0",
             imageClassName: "rounded-circle w-100 h-100 align-top",
           }}
         />
@@ -52,7 +52,7 @@ const ProfileCard = (props) => {
       <div className="d-flex gap-1">
         <MutedText key="name">Posted by</MutedText>
         <AccountName key="accountId">
-          {name} @{accountId}
+          <span>{name}</span> <span>@{accountId}</span>
         </AccountName>
       </div>
     </div>
