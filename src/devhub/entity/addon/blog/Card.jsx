@@ -2,6 +2,7 @@ function Card({ data }) {
   const { category, title, description, date } = data;
 
   const Container = styled.div`
+    min-height: 12.5rem;
     display: flex;
     padding: 1rem;
     flex-direction: column;
@@ -22,18 +23,23 @@ function Card({ data }) {
       line-height: 110%; /* 39.6px */
     }
 
+    ${category &&
+    `
     span.category {
-      color: ${category.toLowerCase() === "news"
-        ? "#F40303"
-        : category.toLowerCase() === "guide"
-        ? "#004BE1"
-        : category.toLowerCase() === "reference" && "#FF7A00"};
+      color: ${
+        category.toLowerCase() === "news"
+          ? "#F40303"
+          : category.toLowerCase() === "guide"
+          ? "#004BE1"
+          : category.toLowerCase() === "reference" && "#FF7A00"
+      };
       font-size: 1rem;
       font-style: normal;
       font-weight: 700;
       line-height: 20px; /* 125% */
       text-transform: uppercase;
     }
+    `}
 
     span.date {
       color: #818181;
@@ -58,7 +64,7 @@ function Card({ data }) {
 
   return (
     <Container>
-      <span className="category">{category}</span>
+      {category && <span className="category">{category}</span>}
       <h5>{title}</h5>
       <p>{description}</p>
       <span className="date">{formattedDate}</span>

@@ -85,7 +85,10 @@ return (
                     <a
                       style={{ borderRadius: "5px" }}
                       class="dropdown-item link-underline link-underline-opacity-0"
-                      href={href("Feed")}
+                      href={href({
+                      widgetSrc: "${REPL_DEVHUB}/widget/app",
+                      params: { page: "feed" },
+                    })}
                     >
                       Latest
                     </a>
@@ -94,7 +97,11 @@ return (
                     <a
                       style={{ borderRadius: "5px" }}
                       class="dropdown-item link-underline link-underline-opacity-0"
-                      href={href("Feed", { recency: "all" })}
+                      href={href({
+                      widgetSrc: "${REPL_DEVHUB}/widget/app",
+                      params: { page: "feed" },
+                      recency: "all",
+                    })}
                     >
                       All replies
                     </a>
