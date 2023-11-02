@@ -6,21 +6,27 @@ function Page({ data }) {
   const Container = styled.div`
     display: flex;
     flex-direction: column;
+    width: 100%;
 
     padding: 0 3rem;
 
+    ${category &&
+    `
     span.category {
-      color: ${category.toLowerCase() === "news"
-        ? "#F40303"
-        : category.toLowerCase() === "guide"
-        ? "#004BE1"
-        : category.toLowerCase() === "reference" && "#FF7A00"};
+      color: ${
+        category.toLowerCase() === "news"
+          ? "#F40303"
+          : category.toLowerCase() === "guide"
+          ? "#004BE1"
+          : category.toLowerCase() === "reference" && "#FF7A00"
+      };
       font-size: 1.5rem;
       font-style: normal;
       font-weight: 700;
       line-height: 20px; /* 125% */
       text-transform: uppercase;
     }
+    `}
 
     span.date {
       color: #818181;
@@ -80,7 +86,7 @@ function Page({ data }) {
     <>
       <BackgroundImage src={imagelink} />
       <Container>
-        <span className="category">{category}</span>
+        {category && <span className="category">{category}</span>}
         <h1>{title}</h1>
         <p className="subtitle">{subtitle}</p>
         <span className="date">{formattedDate}</span>
