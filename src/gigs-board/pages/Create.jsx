@@ -51,577 +51,174 @@ function href(widgetName, linkProps) {
   }${linkPropsQuery}`;
 }
 /* END_INCLUDE: "common.jsx" */
+/* INCLUDE: "core/lib/draftstate" */
+const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
+let is_edit_or_add_post_transaction = false;
+let transaction_method_name;
 
-/* INCLUDE: "core/lib/autocomplete" */
-const autocompleteEnabled = true;
-const AutoComplete = styled.div`
-  z-index: 5;
+if (props.transactionHashes) {
+  const transaction = fetch("https://rpc.mainnet.near.org", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: "dontcare",
+      method: "tx",
+      params: [props.transactionHashes, context.accountId],
+    }),
+  });
+  transaction_method_name =
+    transaction?.body?.result?.transaction?.actions[0].FunctionCall.method_name;
 
-  > div > div {
-    padding: calc(var(--padding) / 2);
-  }
-`;
+  is_edit_or_add_post_transaction =
+    transaction_method_name == "add_post" ||
+    transaction_method_name == "edit_post";
 
-function textareaInputHandler(value) {
-  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update({ text: value, showAccountAutocomplete });
-}
-
-function autoCompleteAccountId(id) {
-  let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
-  description = `${description} @${id}`.trim() + " ";
-  State.update({ description, showAccountAutocomplete: false });
-}
-/* END_INCLUDE: "core/lib/autocomplete" */
-
-const DRAFT_STATE_STORAGE_KEY = "DRAFT_STATE";
-const parentId = props.parentId ?? null;
-const postId = props.postId ?? null;
-const mode = props.mode ?? "Create";
-
-const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
-const labelStrings = (props.labels ? props.labels.split(",") : []).concat(
-  referralLabels
-);
-const labels = labelStrings.map((s) => {
-  return { name: s };
-});
-
-initState({
-  seekingFunding: false,
-
-  author_id: context.accountId,
-  // Should be a list of objects with field "name".
-  labels,
-  // Should be a list of labels as strings.
-  // Both of the label structures should be modified together.
-  labelStrings,
-  postType: "Idea",
-  name: props.name ?? "",
-  description: props.description ?? "",
-  amount: props.amount ?? "",
-  token: props.token ?? "USDT",
-  supervisor: props.supervisor ?? "neardevdao.near",
-  githubLink: props.githubLink ?? "",
-  warning: "",
-  waitForDraftStateRestore: true,
-});
-
-if (state.waitForDraftStateRestore) {
-  const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
-  if (draftstatestring != null) {
-    if (props.transactionHashes) {
-      State.update({ waitForDraftStateRestore: false });
-      Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
-    } else {
-      try {
-        const draftstate = JSON.parse(draftstatestring);
-        State.update(draftstate);
-      } catch (e) {
-        console.error("error restoring draft", draftstatestring);
-      }
-    }
-    State.update({ waitForDraftStateRestore: false });
+  if (is_edit_or_add_post_transaction) {
+    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
   }
 }
 
-// This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
-// If checking this inside onClick, it will give `null` and we cannot tell the result is true or false.
-let grantNotify = Near.view("social.near", "is_write_permission_granted", {
-  predecessor_id: nearDevGovGigsContractAccountId,
-  key: context.accountId + "/index/notify",
-});
-if (grantNotify === null) {
-  return;
-}
+const onDraftStateChange = (draftState) =>
+  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, JSON.stringify(draftState));
+let draftState;
+try {
+  draftState = JSON.parse(Storage.privateGet(DRAFT_STATE_STORAGE_KEY));
+} catch (e) {}
+/* END_INCLUDE: "core/lib/draftstate" */
 
-const onSubmit = () => {
-  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, JSON.stringify(state));
+const activeOptionStyle = {
+  backgroundColor: "#0C7283",
+  color: "#f3f3f3",
+};
 
-  let labels = state.labelStrings;
+const postTypeOptions = {
+  Idea: {
+    name: "Idea",
+    icon: "bi-lightbulb",
 
-  let body = {
-    name: state.name,
-    description: generateDescription(
-      state.description,
-      state.amount,
-      state.token,
-      state.supervisor,
-      state.seekingFunding
-    ),
+    description:
+      "Get feedback from the community about a problem, opportunity, or need.",
+  },
+
+  Solution: {
+    name: "Solution",
+    icon: "bi-rocket",
+
+    description:
+      "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution.",
+  },
+};
+
+const CreatePage = ({ transactionHashes }) => {
+  const recoveredPostType = Storage.privateGet("post_type");
+
+  const initialState = {
+    post_type: recoveredPostType ?? postTypeOptions.Idea.name,
   };
 
-  if (state.postType === "Solution") {
-    body = {
-      ...body,
-      post_type: "Submission",
-      submission_version: "V1",
-    };
-  } else {
-    // Idea
-    body = {
-      ...body,
-      post_type: "Idea",
-      idea_version: "V1",
-    };
+  State.init(initialState);
+
+  const stateReset = () => {
+    Storage.privateSet("post_type", null);
+    State.update(initialState);
+  };
+
+  if (typeof transactionHashes === "string") stateReset();
+
+  if (recoveredPostType !== null) {
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      post_type: recoveredPostType,
+    }));
   }
 
-  if (!context.accountId) return;
+  const typeSwitch = (optionName) => {
+    State.update((lastKnownState) => ({
+      ...lastKnownState,
+      post_type: optionName,
+    }));
 
-  let txn = [];
-  if (mode == "Create") {
-    txn.push({
-      contractName: nearDevGovGigsContractAccountId,
-      methodName: "add_post",
-      args: {
-        parent_id: parentId,
-        labels,
-        body: body,
-      },
-      deposit: Big(10).pow(21).mul(3),
-      gas: Big(10).pow(12).mul(100),
-    });
-  } else if (mode == "Edit") {
-    txn.push({
-      contractName: nearDevGovGigsContractAccountId,
-      methodName: "edit_post",
-      args: {
-        id: postId,
-        labels,
-        body: body,
-      },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
-    });
-  }
-  if (mode == "Create" || mode == "Edit") {
-    if (grantNotify === false) {
-      txn.unshift({
-        contractName: "social.near",
-        methodName: "grant_write_permission",
-        args: {
-          predecessor_id: nearDevGovGigsContractAccountId,
-          keys: [context.accountId + "/index/notify"],
-        },
-        deposit: Big(10).pow(23),
-        gas: Big(10).pow(12).mul(30),
-      });
-    }
-    Near.call(txn);
-  }
-};
+    Storage.privateSet("post_type", optionName);
+  };
 
-const onIdeaClick = () => {
-  State.update({ postType: "Idea", seekingFunding: false });
-};
-
-const onSolutionClick = () => {
-  State.update({ postType: "Solution" });
-};
-
-const normalizeLabel = (label) =>
-  label
-    .replaceAll(/[- \.]/g, "_")
-    .replaceAll(/[^\w]+/g, "")
-    .replaceAll(/_+/g, "-")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "")
-    .toLowerCase()
-    .trim("-");
-
-const checkLabel = (label) => {
-  Near.asyncView(nearDevGovGigsContractAccountId, "is_allowed_to_use_labels", {
-    editor: context.accountId,
-    labels: [label],
-  }).then((allowed) => {
-    if (allowed) {
-      State.update({ warning: "" });
-    } else {
-      State.update({
-        warning:
-          'The label "' +
-          label +
-          '" is protected and can only be added by moderators',
-      });
-      return;
-    }
-  });
-};
-
-const setLabels = (labels) => {
-  labels = labels.map((o) => {
-    o.name = normalizeLabel(o.name);
-    return o;
-  });
-  if (labels.length < state.labels.length) {
-    let oldLabels = new Set(state.labels.map((label) => label.name));
-    for (let label of labels) {
-      oldLabels.delete(label.name);
-    }
-    let removed = oldLabels.values().next().value;
-    Near.asyncView(
-      nearDevGovGigsContractAccountId,
-      "is_allowed_to_use_labels",
-      { editor: context.accountId, labels: [removed] }
-    ).then((allowed) => {
-      if (allowed) {
-        let labelStrings = labels.map(({ name }) => name);
-        State.update({ labels, labelStrings });
-      } else {
-        State.update({
-          warning:
-            'The label "' +
-            removed +
-            '" is protected and can only be updated by moderators',
-        });
-        return;
-      }
-    });
-  } else {
-    let labelStrings = labels.map((o) => {
-      return o.name;
-    });
-    State.update({ labels, labelStrings });
-  }
-};
-const existingLabelStrings =
-  Near.view(nearDevGovGigsContractAccountId, "get_all_allowed_labels", {
-    editor: context.accountId,
-  }) ?? [];
-const existingLabelSet = new Set(existingLabelStrings);
-const existingLabels = existingLabelStrings.map((s) => {
-  return { name: s };
-});
-
-const labelEditor = (
-  <div className="col-lg-12 mb-2">
-    <p className="fs-6 fw-bold mb-1">Labels</p>
-    <Typeahead
-      multiple
-      labelKey="name"
-      onInputChange={checkLabel}
-      onChange={setLabels}
-      options={existingLabels}
-      placeholder="near.social, widget, NEP, standard, protocol, tool"
-      selected={state.labels}
-      positionFixed
-      allowNew={(results, props) => {
-        return (
-          !existingLabelSet.has(props.text) &&
-          props.selected.filter((selected) => selected.name === props.text)
-            .length == 0 &&
-          Near.view(
-            nearDevGovGigsContractAccountId,
-            "is_allowed_to_use_labels",
-            { editor: context.accountId, labels: [props.text] }
-          )
-        );
-      }}
-    />
-  </div>
-);
-
-const nameDiv = (
-  <div className="col-lg-6 mb-2">
-    <p className="fs-6 fw-bold mb-1">Title</p>
-    <input
-      data-testid="input-title"
-      type="text"
-      value={state.name}
-      onChange={(event) => State.update({ name: event.target.value })}
-    />
-  </div>
-);
-
-const descriptionDiv = (
-  <div className="col-lg-12 mb-2">
-    <p className="fs-6 fw-bold mb-1">Description</p>
-    {widget("components.molecule.markdown-editor", {
-      data: { handler: state.handler, content: state.description },
-      onChange: (content) => {
-        State.update({ description: content, handler: "update" });
-        textareaInputHandler(content);
-      },
-    })}
-    {autocompleteEnabled && state.showAccountAutocomplete && (
-      <AutoComplete>
-        <Widget
-          src="near/widget/AccountAutocomplete"
-          props={{
-            term: state.text.split("@").pop(),
-            onSelect: autoCompleteAccountId,
-            onClose: () => State.update({ showAccountAutocomplete: false }),
-          }}
-        />
-      </AutoComplete>
-    )}
-  </div>
-);
-
-const isFundraisingDiv = (
-  // This is jank with just btns and not radios. But the radios were glitchy af
-  <>
-    <div class="mb-2">
-      <p class="fs-6 fw-bold mb-1">
-        Are you seeking funding for your solution?
-        <span class="text-muted fw-normal">(Optional)</span>
-      </p>
-      <div class="form-check form-check-inline">
-        <label class="form-check-label">
-          <button
-            className="btn btn-light p-0"
-            data-testid="btn-request-funding"
-            style={{
-              backgroundColor: state.seekingFunding ? "#0C7283" : "inherit",
-              color: "#f3f3f3",
-              border: "solid #D9D9D9",
-              borderRadius: "100%",
-              height: "20px",
-              width: "20px",
-            }}
-            onClick={() => State.update({ seekingFunding: true })}
-          />
-          Yes
-        </label>
-      </div>
-      <div class="form-check form-check-inline">
-        <label class="form-check-label">
-          <button
-            className="btn btn-light p-0"
-            style={{
-              backgroundColor: !state.seekingFunding ? "#0C7283" : "inherit",
-              color: "#f3f3f3",
-              border: "solid #D9D9D9",
-              borderRadius: "100%",
-              height: "20px",
-              width: "20px",
-            }}
-            onClick={() => State.update({ seekingFunding: false })}
-          />
-          No
-        </label>
-      </div>
-    </div>
-  </>
-);
-
-const fundraisingDiv = (
-  <div class="d-flex flex-column mb-2">
-    <div className="col-lg-6  mb-2">
-      Currency
-      <select
-        data-testid="select-currency"
-        onChange={(event) => State.update({ token: event.target.value })}
-        class="form-select"
-        aria-label="Select currency"
-        value={state.token}
+  return widget("components.template.app-layout", {
+    children: (
+      <div
+        className="d-flex flex-column gap-4 p-4 bg-light"
+        data-bs-parent={`#accordion${postId}`}
+        id={`${state.post_type}_post_spawner`}
       >
-        <option value="USDT">USDT</option>
-        <option value="NEAR">NEAR</option>
-        <option value="USDC">USDC</option>
-      </select>
-    </div>
-    <div className="col-lg-6 mb-2">
-      Requested amount <span class="text-muted fw-normal">(Numbers Only)</span>
-      <input
-        data-testid="input-amount"
-        type="number"
-        value={parseInt(state.amount) > 0 ? state.amount : ""}
-        min={0}
-        onChange={(event) =>
-          State.update({
-            amount: Number(
-              event.target.value.toString().replace(/e/g, "")
-            ).toString(),
-          })
-        }
-      />
-    </div>
-    <div className="col-lg-6 mb-2">
-      <p class="mb-1">
-        Requested sponsor <span class="text-muted fw-normal">(Optional)</span>
-      </p>
-      <p style={{ fontSize: "13px" }} class="m-0 text-muted fw-light">
-        If you are requesting funding from a specific sponsor, please enter
-        their username.
-      </p>
-      <div class="input-group flex-nowrap">
-        <span class="input-group-text" id="addon-wrapping">
-          @
-        </span>
-        <input
-          data-testid="input-supervisor"
-          type="text"
-          class="form-control"
-          placeholder="Enter username"
-          value={state.supervisor}
-          onChange={(event) => State.update({ supervisor: event.target.value })}
-        />
-      </div>
-    </div>
-  </div>
-);
-
-function generateDescription(text, amount, token, supervisor, seekingFunding) {
-  const fundingText =
-    amount > 0 && token ? `###### Requested amount: ${amount} ${token}\n` : "";
-  const supervisorText = supervisor
-    ? `###### Requested sponsor: @${supervisor}\n`
-    : "";
-  return seekingFunding ? `${fundingText}${supervisorText}${text}` : text;
-}
-
-return (
-  <div class="bg-light d-flex flex-column flex-grow-1">
-    {widget("components.organism.app-header")}
-    <div class="mx-5 mb-5">
-      <div aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item">
-            <a
-              style={{
-                color: "#3252A6",
-              }}
-              className="fw-bold"
-              href={href("Feed")}
+        {transactionHashes ? (
+          <>
+            <p
+              className="d-flex flex-column justify-content-center align-items-center gap-3"
+              style={{ height: 480 }}
             >
-              DevHub
-            </a>
-          </li>
-          <li class="breadcrumb-item active" aria-current="page">
-            Create new
-          </li>
-        </ol>
-      </div>
-      {props.transactionHashes ? (
-        <>
-          Post created successfully. Back to{" "}
-          <a
-            style={{
-              color: "#3252A6",
-            }}
-            className="fw-bold"
-            href={href("Feed")}
-          >
-            feed
-          </a>
-        </>
-      ) : (
-        <>
-          <h4>Create a new post</h4>
-          <p>{state.seekingFunding}</p>
-          <div class="card border-light">
-            <div class="card-body">
-              <p class="card-title fw-bold fs-6">What do you want to create?</p>
-              <div class="d-flex flex-row gap-2">
-                <button
-                  onClick={onIdeaClick}
-                  type="button"
-                  class={`btn btn-outline-secondary`}
-                  style={
-                    state.postType === "Idea"
-                      ? {
-                          backgroundColor: "#0C7283",
-                          color: "#f3f3f3",
-                        }
-                      : {}
-                  }
-                >
-                  <i class="bi bi-lightbulb"></i>
-                  Idea
-                </button>
-                <button
-                  onClick={onSolutionClick}
-                  type="button"
-                  data-testid="btn-solution"
-                  class={`btn btn-outline-secondary`}
-                  style={
-                    state.postType !== "Idea"
-                      ? {
-                          backgroundColor: "#0C7283",
-                          color: "#f3f3f3",
-                        }
-                      : {}
-                  }
-                >
-                  <i class="bi bi-rocket"></i>
-                  Solution
-                </button>
-              </div>
-              <p class="text-muted w-75 my-1">
-                {state.postType === "Idea"
-                  ? "Get feedback from the community about a problem, opportunity, or need."
-                  : "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution."}
-              </p>
-              {state.warning && (
-                <div
-                  class="alert alert-warning alert-dismissible fade show"
-                  role="alert"
-                >
-                  {state.warning}
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Close"
-                    onClick={() => State.update({ warning: "" })}
-                  ></button>
-                </div>
-              )}
-              <div className="row">
-                {nameDiv}
-                {descriptionDiv}
-                {labelEditor}
-                {state.postType === "Solution" && isFundraisingDiv}
-                {state.seekingFunding && fundraisingDiv}
-              </div>
-              <button
-                data-testid="btn-submit"
-                style={{
-                  width: "7rem",
-                  backgroundColor: "#0C7283",
-                  color: "#f3f3f3",
-                }}
-                disabled={
-                  state.seekingFunding && (!state.amount || state.amount < 1)
-                }
-                className="btn btn-light mb-2 p-3"
-                onClick={onSubmit}
+              <span>Post created successfully.</span>
+
+              <a
+                style={{ backgroundColor: "#3252A6" }}
+                className="btn fw-bold"
+                href={href("Feed")}
               >
-                Submit
-              </button>
-            </div>
-            <div class="bg-light d-flex flex-row p-1 border-bottom"></div>
-            <div class="card-body">
-              <p class="text-muted m-0">Preview</p>
-              <div>
-                {widget("entity.post.Post", {
-                  isPreview: true,
-                  id: 0, // irrelevant
-                  post: {
-                    author_id: state.author_id,
-                    likes: [],
-                    snapshot: {
-                      editor_id: state.editor_id,
-                      labels: state.labelStrings,
-                      post_type: state.postType,
-                      name: state.name,
-                      description: generateDescription(
-                        state.description,
-                        state.amount,
-                        state.token,
-                        state.supervisor,
-                        state.seekingFunding
-                      ),
-                      github_link: state.githubLink,
-                    },
-                  },
-                })}
+                Back to feed
+              </a>
+            </p>
+
+            {widget("entity.post.PostEditor", {
+              className: "d-none",
+              transactionHashes,
+            })}
+          </>
+        ) : (
+          <>
+            <div className="d-flex flex-column gap-3 w-100">
+              <p className="card-title fw-bold fs-6">
+                What do you want to create?
+              </p>
+
+              <div className="d-flex gap-3">
+                {Object.values(postTypeOptions).map((option) => (
+                  <button
+                    className={`btn btn-${
+                      state.post_type === option.name
+                        ? "primary"
+                        : "outline-secondary"
+                    }`}
+                    data-testid={`btn-${option.name.toLowerCase()}`}
+                    key={option.name}
+                    onClick={() => typeSwitch(option.name)}
+                    style={
+                      state.post_type === option.name ? activeOptionStyle : null
+                    }
+                    type="button"
+                  >
+                    <i className={`bi ${option.icon}`} />
+                    <span>{option.name}</span>
+                  </button>
+                ))}
               </div>
+
+              <p className="text-muted w-75">
+                {postTypeOptions[state.post_type].description}
+              </p>
             </div>
-          </div>
-        </>
-      )}
-    </div>
-  </div>
-);
+
+            {widget("entity.post.PostEditor", {
+              mode: "Create",
+              onCancel: stateReset,
+              parent_id: null,
+              post_type: state.post_type,
+              transactionHashes,
+            })}
+          </>
+        )}
+      </div>
+    ),
+  });
+};
+
+return CreatePage(props);

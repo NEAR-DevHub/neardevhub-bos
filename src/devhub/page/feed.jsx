@@ -1,27 +1,21 @@
 const { author, recency, tag } = props;
 
-const { getFeaturedCommunities } = VM.require(
-  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
-);
-
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-if (!getFeaturedCommunities || !href) {
+if (!href) {
   return <p>Loading modules...</p>;
 }
 
 const Gradient = styled.div`
-   {
-    height: 250px;
-    text-align: center;
-    background: radial-gradient(
-      circle,
-      rgba(29, 55, 57, 1) 30%,
-      rgba(24, 24, 24, 1) 80%
-    );
+  height: 250px;
+  text-align: center;
+  background: radial-gradient(
+    circle,
+    rgba(29, 55, 57, 1) 30%,
+    rgba(24, 24, 24, 1) 80%
+  );
 
-    font-family: Arial, sans-serif;
-  }
+  font-family: Arial, sans-serif;
 
   .text-primary-gradient {
     color: #53fdca;
@@ -47,66 +41,37 @@ const Gradient = styled.div`
   }
 `;
 
-const featuredCommunities = getFeaturedCommunities() || [];
-
 function Banner() {
   return (
     <div className="d-flex flex-column">
-      <Gradient className="d-flex flex-column justify-content-center">
-        <div className="subtitle-above text-white opacity-75 mb-2">
-          A decentralized community of
-        </div>
-
-        <h1 className="mb-3 text-white slogan">
-          <span className="text-primary-gradient">NEAR </span>Developers
-        </h1>
-
-        <div className="subtitle-below text-white opacity-75">
-          Share your ideas, match solutions, and access support and funding.
-        </div>
-      </Gradient>
-
-      <div className="d-flex flex-column gap-4 py-4">
-        <div className="d-flex justify-content-between">
-          <h5 className="h5 m-0">Featured Communities</h5>
-        </div>
-        <div className="d-flex gap-4 justify-content-between">
-          {featuredCommunities.map((community) => (
-            <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.entity.community.Card"}
-              props={{ metadata: community, format: "medium" }}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="h5 pb-4">Activity</div>
+      <Widget
+        src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`}
+        props={{
+          title: (
+            <>
+              Welcome to /dev/hub,
+              <br />
+              <span style={{ color: "#151515" }}>the home base</span>
+              <br />
+              for developers on NEAR
+            </>
+          ),
+          imageLink:
+            "https://ipfs.near.social/ipfs/bafybeiap2mzwsly4apaldxguiunx4rjwqyadksj5yxuzwrww3kue3ao5qe",
+        }}
+      />
     </div>
   );
 }
 
-const FeedPage = ({ author, recency, tag }) => {
-  State.init({
-    initial: { author, tag },
-    author,
-    tag,
-  });
-
-  // When rerendered with different props, State will be preserved, so we need to update the state when we detect that the props have changed.
-  if (tag !== state.initial.tag || author !== state.initial.author) {
-    State.update({
-      initial: { author, tag },
-      author,
-      tag,
-    });
-  }
-
+const FeedPage = ({ recency, tag }) => {
   return (
     <div className="w-100">
       <Banner />
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.feature.post-search.panel"}
         props={{
+          hideHeader: false,
           children: (
             <Widget
               src={
@@ -122,6 +87,7 @@ const FeedPage = ({ author, recency, tag }) => {
             />
           ),
           recency,
+          tag,
           transactionHashes: props.transactionHashes,
         }}
       />

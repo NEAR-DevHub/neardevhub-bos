@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
 
 test("should show post history for posts in the feed", async ({ page }) => {
-  await page.goto("/devgovgigs.near/widget/gigs-board.pages.Feed");
+  await page.goto("/devgovgigs.near/widget/app?page=feed");
 
   // Fill the search by content by to
   const searchInputSelector = 'input.form-control[type="search"]';
@@ -9,7 +9,6 @@ test("should show post history for posts in the feed", async ({ page }) => {
     state: "visible",
   });
   await searchInput.fill("zero knowledge");
-  await searchInput.press("Enter");
 
   await page.waitForSelector('span:has-text("zero knowledge")', {
     state: "visible",
