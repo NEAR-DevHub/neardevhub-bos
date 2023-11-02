@@ -26,6 +26,7 @@ const ProfileCard = (props) => {
   // const hideAccountId = props.hideAccountId;
   // const hideName = props.hideName;
   const hideImage = props.hideImage;
+  const iconOnly = props.iconOnly;
 
   const profile = props.profile ?? Social.getr(`${accountId}/profile`);
 
@@ -49,10 +50,12 @@ const ProfileCard = (props) => {
           }}
         />
       )}
-      <div className="d-flex flex-column gap-1">
-        <AccountName key="accountName">{name}</AccountName>
-        <AccountName key="accountId">@{accountId}</AccountName>
-      </div>
+      {!iconOnly && (
+        <div className="d-flex flex-column gap-1">
+          <AccountName key="accountName">{name}</AccountName>
+          <AccountName key="accountId">@{accountId}</AccountName>
+        </div>
+      )}
     </div>
   );
 
