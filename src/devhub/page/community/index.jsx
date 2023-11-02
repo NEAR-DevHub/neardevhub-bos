@@ -31,6 +31,7 @@ const NavUnderline = styled.ul`
     font-weight: bold;
     border-bottom: 4px solid #00ec97;
   }
+  border-bottom: 1px solid #cccccc;
 `;
 
 const { tab, permissions, community, view } = props;
@@ -150,7 +151,7 @@ const socialLinks = [
 ];
 
 const NavlinksContainer = styled.div`
-  background: white;
+  //background: white;
   padding: 0 3rem;
 
   @media screen and (max-width: 960px) {
@@ -209,7 +210,7 @@ return (
         </div>
       </div>
 
-      <div className="d-flex align-items-end gap-3 ms-auto mb-md-5">
+      <div className="d-flex align-items-end gap-3 ms-auto mb-md-5 me-4">
         {permissions.can_configure && (
           <Link
             to={`/${REPL_DEVHUB}/widget/app?page=community.configuration&handle=${community.handle}`}
