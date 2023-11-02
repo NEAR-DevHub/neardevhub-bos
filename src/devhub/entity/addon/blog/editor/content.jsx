@@ -111,18 +111,21 @@ const hasDataChanged = () => {
 
 const handlePublish = () => {
   onSubmit &&
-    onSubmit({
-      id: data.id || undefined,
-      title,
-      subtitle,
-      description,
-      date,
-      content,
-      author,
-      image: state.image.cid,
-      tags: data.includeLabels,
-      community: handle,
-    }, data.id !== undefined);
+    onSubmit(
+      {
+        id: data.id || undefined,
+        title,
+        subtitle,
+        description,
+        date,
+        content,
+        author,
+        image: state.image.cid,
+        tags: data.includeLabels,
+        community: handle,
+      },
+      data.id !== undefined
+    );
 };
 
 function Preview() {

@@ -24,14 +24,6 @@ const SidebarButton = styled.button`
 
   background-color: ${({ selected }) => (selected ? "#00ec97" : "white")};
   color: ${({ selected }) => (selected ? "white" : "black")};
-
-  // border: 2px solid #333;
-  // padding: 8px;
-  // margin: 8px;
-  // width: 100%;
-  // text-align: center;
-  // cursor: pointer;
-
 `;
 
 return (

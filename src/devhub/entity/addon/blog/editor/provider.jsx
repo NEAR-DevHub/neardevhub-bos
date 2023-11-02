@@ -91,7 +91,7 @@ const handleGetData = (v) => {
 };
 
 const handleOnSubmit = (v, isEdit) => {
-  console.log(isEdit)
+  console.log(isEdit);
   if (isEdit) {
     Near.call({
       contractName: "${REPL_DEVHUB_CONTRACT}",
