@@ -43,11 +43,19 @@ const buildWhereClause = () => {
   if (props.term) {
     where = { description: { _ilike: `%${props.term}%` }, ...where };
   }
-  if (props.includeLabels && Array.isArray(props.includeLabels)) {
-    where = { labels: { _containsAny: props.includeLabels }, ...where };
+  if (includeLabels && Array.isArray(includeLabels)) {
+    const labelConditions = includeLabels.map((label) => ({
+      labels: { _contains: label },
+    }));
+
+    where = { _and: [...labelConditions, where] };
   }
   if (props.excludeLabels && Array.isArray(props.excludeLabels)) {
-    where = { labels: { _nin: props.excludeLabels }, ...where };
+    const labelConditions = props.excludeLabels.map((label) => ({
+      labels: { _nin: label },
+    }));
+
+    where = { _and: [...labelConditions, where] };
   }
   if (!props.recency) {
     where = { parent_id: { _is_null: true }, ...where };
@@ -72,7 +80,14 @@ const handleOnChange = (v) => {
 };
 
 const handleGetData = (v) => {
-  return getPost({ post_id: parseInt(v) });
+  const postId = parseInt(v);
+  const post = getPost({ post_id: postId });
+  const description = JSON.parse(post.snapshot.description || "null") || {};
+
+  return {
+    id: postId,
+    ...description
+  };
 };
 
 const handleOnSubmit = (v) => {

@@ -26,6 +26,7 @@ return (
     <div
       className="right-panel"
       style={{ flex: 1, width: 0, overflow: "scroll" }}
+      key={selectedItem.id}
     >
       <Content data={selectedItem} />
     </div>
