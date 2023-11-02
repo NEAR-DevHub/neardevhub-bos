@@ -1,6 +1,18 @@
-const { Layout, Item } = props;
+const { Item } = props;
 
 const Container = styled.div``;
+
+const Layout = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+
+  @media screen and (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+`;
 
 const Loader = styled.div`
   text-align: center;
@@ -10,6 +22,19 @@ const Loader = styled.div`
 const Notification = styled.p`
   text-align: center;
   color: #3252a6;
+`;
+
+const Heading = styled.h3`
+  color: #151515;
+  font-size: 2.5rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 120%; /* 48px */
+  margin-bottom: 2rem;
+
+  @media screen and (max-width: 768px) {
+    font-size: 2rem;
+  }
 `;
 
 const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
@@ -111,7 +136,7 @@ const handleLoadMore = () => {
 const renderLoader = () => <Loader>Loading...</Loader>;
 
 const renderItem = (postId) => (
-  <div key={postId} style={{ minHeight: "400px" }}>
+  <div key={postId}>
     {(props.renderItem && props.renderItem(postId)) || <div>Post {postId}</div>}
   </div>
 );
@@ -135,6 +160,7 @@ return (
         hasMore={hasNext}
         loader={renderLoader()}
       >
+        <Heading>Latest Blog Posts</Heading>
         <Layout>
           {/* Layout */}
           {postIds.map(cachedRenderItem)}
