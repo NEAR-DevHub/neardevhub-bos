@@ -163,7 +163,6 @@ const header = (
             props={{
               accountId: post.author_id,
               nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
-              communityName: props.communityName,
             }}
           />
           <span className="fw-bold"> • </span>

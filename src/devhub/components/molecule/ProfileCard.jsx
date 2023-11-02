@@ -50,9 +50,6 @@ const ProfileCard = (props) => {
         />
       )}
       <div className="d-flex gap-1">
-        {props.communityName && (
-          <span className="fw-bold">/{props.communityName} • </span>
-        )}
         <MutedText key="name">Posted by</MutedText>
         <AccountName key="accountId">
           {name} @{accountId}

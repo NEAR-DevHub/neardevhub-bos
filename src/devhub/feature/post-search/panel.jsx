@@ -140,7 +140,6 @@ return (
           term: state.term,
           recency: props.recency,
           transactionHashes: props.transactionHashes,
-          communityName: props.communityName,
         }}
       />
     </PostContainer>

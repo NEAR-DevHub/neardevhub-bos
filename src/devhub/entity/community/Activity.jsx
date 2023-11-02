@@ -27,7 +27,6 @@ return (
             props={{
               hideHeader: true,
               tag: communityData.tag,
-              communityName: communityData.name,
               children: (
                 <Widget
                   src={
