@@ -45,7 +45,7 @@ const Container = styled.div`
   }
 
   a {
-    color: #0000EE;
+    color: #0000ee;
   }
 `;
 
