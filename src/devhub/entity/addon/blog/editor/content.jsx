@@ -73,9 +73,7 @@ const [subtitle, setSubtitle] = useState(initialData.subtitle || "");
 const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || "");
 const [previewMode, setPreviewMode] = useState("card"); // "card" or "page"
-const [date, setDate] = useState(
-  (initialData.date && new Date(initialData.date)) || new Date()
-);
+const [date, setDate] = useState(initialData.date || new Date());
 const [category, setCategory] = useState("guide");
 
 // Legacy State.init for IpfsUploader
@@ -98,7 +96,11 @@ const hasDataChanged = () => {
   return (
     content !== initialData.content ||
     title !== initialData.title ||
-    author !== initialData.author
+    author !== initialData.author ||
+    subtitle !== initialData.subtitle ||
+    description !== initialData.description ||
+    date !== initialData.date ||
+    category !== initialData.category
   );
 };
 
@@ -114,7 +116,6 @@ const handlePublish = () => {
         content,
         author,
         image: state.image.cid,
-        tags: data.includeLabels,
         community: handle,
       },
       data.id !== undefined

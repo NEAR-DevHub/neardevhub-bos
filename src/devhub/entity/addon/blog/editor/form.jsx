@@ -124,7 +124,7 @@ const DateInput = ({ date, setDate }) => {
       <h5>Date</h5>
       <input
         type="date"
-        value={date.toISOString().split("T")[0]}
+        value={date}
         onChange={(e) => setDate(e.target.value)}
       />
     </div>
