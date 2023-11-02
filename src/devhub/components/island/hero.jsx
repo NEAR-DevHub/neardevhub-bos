@@ -50,7 +50,7 @@ const Lead = styled.p`
 
   @media screen and (max-width: 768px) {
     font-size: 1.5rem;
-    width: 85%;
+    width: 100%;
   }
 `;
 
