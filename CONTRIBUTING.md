@@ -83,6 +83,18 @@ A new placeholder should be defined for all three environments: dev-testnet, pro
 
 Currently, there is no local development environment, so we use [testnet NEAR Social](https://test.near.social) to deploy widgets and test them out during your development.
 
+Before deploying the widgets you need to make the needed replacements with references to the account that will host the widgets:
+
+```
+npm run build:preview -- -a devgovgigs.petersalomonsen.near -c devgovgigs.near
+```
+
+Then make sure you stay in the `build` directory when deploying
+
+```
+cd build
+```
+
 To deploy the widgets, we use [`bos` CLI](https://github.com/FroVolod/bos-cli-rs). Start with this command and follow the interactive questionnaire:
 
 ```
