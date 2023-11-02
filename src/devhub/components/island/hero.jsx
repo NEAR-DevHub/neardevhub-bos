@@ -19,10 +19,7 @@ const HeroSection = styled.div`
 
   @media screen and (max-width: 768px) {
     width: 100%;
-    padding-top: 0.625rem;
-    padding-left: 1.5rem;
-    padding-bottom: 0;
-    padding-right: 0;
+    padding: 1rem 1.5rem;
     clip-path: none;
   }
 `;
@@ -38,7 +35,6 @@ const Title = styled.h1`
   @media screen and (max-width: 768px) {
     font-size: 2.25rem;
     letter-spacing: -0.72px;
-    padding-bottom: 1rem;
     margin: 0;
   }
 `;
