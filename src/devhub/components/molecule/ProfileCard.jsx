@@ -11,7 +11,7 @@ const AccountName = styled.span`
   color: #818181;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 20px;
 
   max-width: 30ch;
@@ -49,11 +49,9 @@ const ProfileCard = (props) => {
           }}
         />
       )}
-      <div className="d-flex gap-1">
-        <MutedText key="name">Posted by</MutedText>
-        <AccountName key="accountId">
-          <span>{name}</span> <span>@{accountId}</span>
-        </AccountName>
+      <div className="d-flex flex-column gap-1">
+        <AccountName key="accountName">{name}</AccountName>
+        <AccountName key="accountId">@{accountId}</AccountName>
       </div>
     </div>
   );

@@ -175,8 +175,7 @@ const header = (
               }}
             />
           </ProfileCardContainer>
-          <div class="d-flex">
-            <span className="fw-bold mx-1">•</span>
+          <div class="d-flex ms-auto">
             {editControl}
             {timestamp}
             <Widget
