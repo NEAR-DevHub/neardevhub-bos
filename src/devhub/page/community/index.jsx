@@ -288,46 +288,48 @@ return (
             )
         )}
       </NavUnderline>
-      <div
-        className="my-4 d-flex align-items-center justify-content-between"
-        style={{ gap: "2.5rem" }}
-      >
-        <div class="d-flex align-items-center justify-content-between">
-          <small class="text-muted">
-            <span>Required tags:</span>
-            <Link
-              to={href({
-                widgetSrc: "${REPL_DEVHUB}/widget/app",
-                params: { page: "feed", tag: community.tag },
-              })}
-            >
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
-                props={{
-                  tag: community.tag,
-                }}
-              />
-            </Link>
-          </small>
+      {currentTab.title === "Activity" && (
+        <div
+          className="my-4 d-flex align-items-center justify-content-between"
+          style={{ gap: "2.5rem" }}
+        >
+          <div class="d-flex align-items-center justify-content-between">
+            <small class="text-muted">
+              <span>Required tags:</span>
+              <Link
+                to={href({
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
+                  params: { page: "feed", tag: community.tag },
+                })}
+              >
+                <Widget
+                  src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+                  props={{
+                    tag: community.tag,
+                  }}
+                />
+              </Link>
+            </small>
+          </div>
+          {context.accountId && (
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
+              }
+              props={{
+                title: "Post",
+                href: href({
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
+                  params: {
+                    page: "create",
+                    labels: [community.tag],
+                  },
+                }),
+              }}
+            />
+          )}
         </div>
-        {context.accountId && (
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
-            }
-            props={{
-              title: "Post",
-              href: href({
-                widgetSrc: "${REPL_DEVHUB}/widget/app",
-                params: {
-                  page: "create",
-                  labels: [community.tag],
-                },
-              }),
-            }}
-          />
-        )}
-      </div>
+      )}
     </NavlinksContainer>
     {currentTab && (
       <div className="d-flex w-100 h-100" key={currentTab.title}>
