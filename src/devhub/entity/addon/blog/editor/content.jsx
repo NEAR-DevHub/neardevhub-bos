@@ -60,7 +60,7 @@ const FormContainer = styled.div`
   }
 `;
 
-const { data, handle } = props;
+const { data, handle, onSubmit } = props;
 
 const initialData = data; // TODO: Check Storage API
 
@@ -70,7 +70,9 @@ const [subtitle, setSubtitle] = useState(initialData.subtitle || "");
 const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || "");
 const [previewMode, setPreviewMode] = useState("card"); // "card" or "page"
-const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+const [date, setDate] = useState(
+  (initialData.date && new Date(initialData.date)) || new Date()
+);
 const [category, setCategory] = useState("guide");
 
 // Legacy State.init for IpfsUploader
@@ -79,6 +81,16 @@ State.init({
     cid: "bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
   },
 });
+
+let timeoutId;
+
+const debounce = (func, delay) => {
+  if (!delay) {
+    delay = 300;
+  }
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(func, delay);
+};
 
 const Container = styled.div`
   width: 100%;
@@ -98,30 +110,22 @@ const hasDataChanged = () => {
 };
 
 const handlePublish = () => {
-  Near.call({
-    contractName: "${REPL_DEVHUB_CONTRACT}",
-    methodName: "add_post",
-    args: {
-      labels: ["blog", handle],
-      body: {
-        post_type: "Comment",
-        description: JSON.stringify({
-          title,
-          subtitle,
-          description,
-          date,
-          content,
-          author,
-          image: state.image.cid,
-          tags: data.includeLabels,
-          community: handle,
-        }),
-        comment_version: "V2",
+  onSubmit &&
+    onSubmit(
+      {
+        id: data.id || undefined,
+        title,
+        subtitle,
+        description,
+        date,
+        content,
+        author,
+        image: state.image.cid,
+        tags: data.includeLabels,
+        community: handle,
       },
-    },
-    deposit: Big(10).pow(21).mul(2),
-    gas: Big(10).pow(12).mul(100),
-  });
+      data.id !== undefined
+    );
 };
 
 function Preview() {
@@ -129,30 +133,34 @@ function Preview() {
     case "card": {
       return (
         <Card
-          title={title}
-          subtitle={subtitle}
-          description={description}
-          date={date}
-          content={content}
-          author={author}
-          image={state.image}
-          tags={data.includeLabels} // filter out "blog" and community handle?
-          community={handle}
+          data={{
+            title,
+            subtitle,
+            description,
+            date,
+            content,
+            author,
+            image: state.image,
+            tags: data.includeLabels,
+            community: handle,
+          }}
         />
       );
     }
     case "page": {
       return (
         <Page
-          title={title}
-          subtitle={subtitle}
-          description={description}
-          date={date}
-          content={content}
-          author={author}
-          image={state.image}
-          tags={data.includeLabels} // filter out "blog" and community handle?
-          community={handle}
+          data={{
+            title,
+            subtitle,
+            description,
+            date,
+            content,
+            author,
+            image: state.image,
+            tags: data.includeLabels,
+            community: handle,
+          }}
         />
       );
     }
@@ -219,7 +227,7 @@ return (
                 src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
                 props={{
                   className: "flex-grow-1",
-                  onChange: (e) => setTitle(e.target.value),
+                  onChange: debounce((e) => setTitle(e.target.value)),
                   value: title,
                   placeholder: "Title",
                 }}
@@ -233,7 +241,7 @@ return (
                 src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
                 props={{
                   className: "flex-grow-1",
-                  onChange: (e) => setSubtitle(e.target.value),
+                  onChange: debounce((e) => setSubtitle(e.target.value)),
                   value: subtitle,
                   placeholder: "Subtitle",
                 }}
@@ -270,7 +278,7 @@ return (
                 src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
                 props={{
                   className: "flex-grow-1",
-                  onChange: (e) => setDescription(e.target.value),
+                  onChange: debounce((e) => setDescription(e.target.value)),
                   value: description,
                   placeholder: "Description",
                 }}
@@ -284,7 +292,7 @@ return (
                 src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
                 props={{
                   className: "flex-grow-1",
-                  onChange: (e) => setAuthor(e.target.value),
+                  onChange: debounce((e) => setAuthor(e.target.value)),
                   value: author,
                   placeholder: "Author",
                 }}
@@ -292,18 +300,18 @@ return (
             </div>
           </div>
           <div>
+            <h5>Date</h5>
+            <input
+              type="date"
+              value={date.toISOString().split("T")[0]}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+          <div>
             <h5>Content</h5>
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
               props={{ data: { content }, onChange: setContent }}
-            />
-          </div>
-          <div>
-            <h5>Date</h5>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
             />
           </div>
         </FormContainer>

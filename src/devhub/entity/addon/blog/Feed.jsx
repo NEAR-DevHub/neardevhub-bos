@@ -1,40 +1,12 @@
-const { Item } = props;
+const { Item, Layout } = props;
+
+Layout = Layout || (() => <></>);
 
 const Container = styled.div``;
-
-const Layout = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-
-  @media screen and (max-width: 768px) {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-`;
 
 const Loader = styled.div`
   text-align: center;
   padding: 20px;
-`;
-
-const Notification = styled.p`
-  text-align: center;
-  color: #3252a6;
-`;
-
-const Heading = styled.h3`
-  color: #151515;
-  font-size: 2.5rem;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 120%; /* 48px */
-  margin-bottom: 2rem;
-
-  @media screen and (max-width: 768px) {
-    font-size: 2rem;
-  }
 `;
 
 const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
@@ -107,21 +79,19 @@ const fetchPostIds = (offset) => {
   if (loading) return;
   setLoading(true);
   const variables = { limit: DISPLAY_COUNT, offset, where: buildWhereClause() };
-  const result = fetchGraphQL(query, "DevhubPostsQuery", variables).then(
-    (result) => {
-      if (result.status === 200) {
-        if (result.body.data) {
-          const data = result.body.data[queryName];
-          const newPostIds = data.map((p) => p.post_id);
-          setPostIds(offset === 0 ? newPostIds : [...postIds, ...newPostIds]);
-          setHasNext(data.length >= variables.limit);
-        } else {
-          console.error("GraphQL Error:", result.errors);
-        }
-        setLoading(false);
+  fetchGraphQL(query, "DevhubPostsQuery", variables).then((result) => {
+    if (result.status === 200) {
+      if (result.body.data) {
+        const data = result.body.data[queryName];
+        const newPostIds = data.map((p) => p.post_id);
+        setPostIds(offset === 0 ? newPostIds : [...postIds, ...newPostIds]);
+        setHasNext(data.length >= variables.limit);
+      } else {
+        console.error("GraphQL Error:", result.errors);
       }
+      setLoading(false);
     }
-  );
+  });
 };
 
 useEffect(() => {
@@ -160,7 +130,6 @@ return (
         hasMore={hasNext}
         loader={renderLoader()}
       >
-        <Heading>Latest Blog Posts</Heading>
         <Layout>
           {/* Layout */}
           {postIds.map(cachedRenderItem)}
