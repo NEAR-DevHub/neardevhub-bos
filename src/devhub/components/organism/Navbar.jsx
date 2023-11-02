@@ -66,26 +66,10 @@ const ProfileIcon = () => {
         params: { page: "profile", accountId: context.accountId },
       })}
     >
-      <Wrapper
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        viewBox="0 0 18 18"
-        fill="none"
-        style={{
-          background: "#00EC97",
-          width: 24,
-          height: 24,
-          borderRadius: "50rem",
-        }}
-      >
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M9 2.25C10.5533 2.25 11.8125 3.5092 11.8125 5.0625C11.8125 6.6158 10.5533 7.875 9 7.875C7.4467 7.875 6.1875 6.6158 6.1875 5.0625C6.1875 3.5092 7.4467 2.25 9 2.25ZM9 1.125C6.82538 1.125 5.0625 2.88788 5.0625 5.0625C5.0625 7.23712 6.82538 9 9 9C11.1746 9 12.9375 7.23712 12.9375 5.0625C12.9375 2.88788 11.1746 1.125 9 1.125ZM14.625 16.875H13.5V14.0625C13.5 13.3166 13.2037 12.6012 12.6762 12.0738C12.1488 11.5463 11.4334 11.25 10.6875 11.25H7.3125C5.7592 11.25 4.5 12.5092 4.5 14.0625V16.875H3.375V14.0625C3.375 11.8879 5.13788 10.125 7.3125 10.125H10.6875C12.8621 10.125 14.625 11.8879 14.625 14.0625V16.875Z"
-          fill="#151515"
-        />
-      </Wrapper>
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
+        props={{ iconOnly: true, accountId: context.accountId || null }}
+      />
     </Link>
   );
 };

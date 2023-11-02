@@ -26,6 +26,7 @@ const ProfileCard = (props) => {
   // const hideAccountId = props.hideAccountId;
   // const hideName = props.hideName;
   const hideImage = props.hideImage;
+  const iconOnly = props.iconOnly;
 
   const profile = props.profile ?? Social.getr(`${accountId}/profile`);
 
@@ -49,15 +50,17 @@ const ProfileCard = (props) => {
           }}
         />
       )}
-      <div className="d-flex gap-1">
-        {props.communityName && (
-          <span className="fw-bold">/{props.communityName} • </span>
-        )}
-        <MutedText key="name">Posted by</MutedText>
-        <AccountName key="accountId">
-          {name} @{accountId}
-        </AccountName>
-      </div>
+      {!iconOnly && (
+        <div className="d-flex gap-1">
+          {props.communityName && (
+            <span className="fw-bold">/{props.communityName} • </span>
+          )}
+          <MutedText key="name">Posted by</MutedText>
+          <AccountName key="accountId">
+            {name} @{accountId}
+          </AccountName>
+        </div>
+      )}
     </div>
   );
 
