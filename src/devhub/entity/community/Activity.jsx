@@ -1,5 +1,3 @@
-const { handle } = props;
-
 const { getCommunity } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
@@ -10,53 +8,77 @@ if (!getCommunity || !href) {
   return <p>Loading modules...</p>;
 }
 
-// TODO: Why do we need to get community data again? Isn't the tag the handle...
+const { handle, transactionHashes } = props;
+
+State.init({ isSpawnerHidden: true });
+
+const spawnerToggle = (forcedState) =>
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    isSpawnerHidden: !(forcedState ?? lastKnownState.isSpawnerHidden),
+  }));
+
 const communityData = getCommunity({ handle });
 
-if (communityData === null) {
-  return <div>Loading...</div>;
-}
+return communityData === null ? (
+  <div>Loading ...</div>
+) : (
+  <div className="row">
+    <div className="col-md-9">
+      <div className="row mb-2">
+        <div className="col">
+          <div className="d-flex align-items-center justify-content-between">
+            <small className="text-muted">
+              <span>Required tags:</span>
 
-return (
-  <div style={{ maxWidth: "100%" }}>
-    <div class="col">
-      <div class="d-flex w-100">
-        <div className="col-md-9" style={{ maxWidth: "75%" }}>
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+                props={{ tag: communityData.tag }}
+              />
+            </small>
+
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+              props={{
+                icon: {
+                  type: "bootstrap_icon",
+                  variant: "bi-plus-circle-fill",
+                },
+
+                isHidden: !state.isSpawnerHidden,
+                label: "Post",
+                onClick: () => spawnerToggle(true),
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col">
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.feature.post-search.panel"}
+            src={"${REPL_DEVHUB}/widget/devhub.entity.post.Spawner"}
             props={{
-              hideHeader: true,
-              tag: communityData.tag,
-              communityName: communityData.name,
-              children: (
-                <Widget
-                  src={
-                    "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
-                  }
-                  props={{
-                    title: "Post",
-                    href: href({
-                      widgetSrc: "${REPL_DEVHUB}/widget/app",
-                      params: {
-                        page: "create",
-                        labels: [communityData.tag],
-                      },
-                    }),
-                  }}
-                />
-              ),
-              recency,
-              transactionHashes: props.transactionHashes,
+              isHidden: state.isSpawnerHidden,
+              onCancel: () => spawnerToggle(false),
+              tags: [communityData.tag],
+              transactionHashes,
             }}
           />
-        </div>
-        <div class="col-md-3 container-fluid">
+
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.community.Sidebar"}
-            props={{ community: communityData }}
+            src={"${REPL_DEVHUB}/widget/devhub.entity.post.List"}
+            props={{ tag: communityData.tag }}
           />
         </div>
       </div>
+    </div>
+
+    <div className="col-md-3 container-fluid">
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.entity.community.Sidebar"}
+        props={{ community: communityData }}
+      />
     </div>
   </div>
 );

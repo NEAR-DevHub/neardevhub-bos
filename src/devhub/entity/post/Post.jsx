@@ -26,12 +26,21 @@ const compareTimestamp = props.compareTimestamp ?? "";
 const swapTimestamps = currentTimestamp < compareTimestamp;
 
 const snapshotHistory = post.snapshot_history;
+
 const snapshot =
   currentTimestamp === post.snapshot.timestamp
     ? post.snapshot
     : (snapshotHistory &&
         snapshotHistory.find((s) => s.timestamp === currentTimestamp)) ??
       null;
+
+const fundingAmount = parseInt(
+  snapshot.requested_sponsorship_amount ?? snapshot.amount
+);
+
+const sponsorshipToken =
+  snapshot.requested_sponsorship_token ?? snapshot.sponsorship_token;
+
 const compareSnapshot =
   compareTimestamp === post.snapshot.timestamp
     ? post.snapshot
@@ -41,6 +50,7 @@ const compareSnapshot =
 
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
+
 const parentId = Near.view("${REPL_DEVHUB_CONTRACT}", "get_parent_id", {
   post_id: postId,
 });
@@ -121,23 +131,20 @@ const editControl = allowedToEdit ? (
       aria-expanded="false"
       type="button"
     >
-      <div class="bi bi-pencil-square"></div>
+      <i class="bi bi-pencil-square" />
     </a>
+
     <ul class="dropdown-menu">
       {btnEditorWidget("Idea", "Edit as an idea")}
-      {btnEditorWidget("Submission", "Edit as a solution")}
+      {btnEditorWidget("Solution", "Edit as a solution")}
       {btnEditorWidget("Attestation", "Edit as an attestation")}
       {btnEditorWidget("Sponsorship", "Edit as a sponsorship")}
       {btnEditorWidget("Comment", "Edit as a comment")}
     </ul>
   </div>
-) : (
-  <div></div>
-);
+) : null;
 
-const shareButton = props.isPreview ? (
-  <div></div>
-) : (
+const shareButton = props.isPreview ? null : (
   <Link
     class="card-link text-dark"
     to={href({
@@ -189,7 +196,7 @@ const header = (
 // const emptyIcons = {
 //   Idea: "bi-lightbulb",
 //   Comment: "bi-chat",
-//   Submission: "bi-rocket",
+//   Solution: "bi-rocket",
 //   Attestation: "bi-check-circle",
 //   Sponsorship: "bi-cash-coin",
 //   Github: "bi-github",
@@ -200,7 +207,7 @@ const header = (
 const emptyIcons = {
   Idea: "💡",
   Comment: "bi-chat",
-  Submission: "🚀",
+  Solution: "🚀",
   Attestation: "✅",
   Sponsorship: "🪙",
   Github: "bi-github",
@@ -211,7 +218,7 @@ const emptyIcons = {
 const fillIcons = {
   Idea: "💡",
   Comment: "bi-chat-fill",
-  Submission: "🚀",
+  Solution: "🚀",
   Attestation: "✅",
   Sponsorship: "🪙",
   Github: "bi-github",
@@ -224,7 +231,7 @@ const fillIcons = {
 const borders = {
   Idea: "border-light",
   Comment: "border-light",
-  Submission: "border-light",
+  Solution: "border-light",
   Attestation: "border-light",
   Sponsorship: "border-light",
   Github: "border-light",
@@ -340,8 +347,8 @@ const buttonsFooter = props.isPreview ? null : (
               "Get feedback from the community about a problem, opportunity, or need."
             )}
             {btnCreatorWidget(
-              "Submission",
-              emptyIcons.Submission,
+              "Solution",
+              emptyIcons.Solution,
               "Solution",
               "Provide a specific proposal or implementation to an idea, optionally requesting funding."
             )}
@@ -406,32 +413,6 @@ const buttonsFooter = props.isPreview ? null : (
   </div>
 );
 
-const CreatorWidget = (postType) => {
-  return (
-    <div
-      class={`collapse ${
-        draftState?.parent_post_id == postId && draftState?.postType == postType
-          ? "show"
-          : ""
-      }`}
-      id={`collapse${postType}Creator${postId}`}
-      data-bs-parent={`#accordion${postId}`}
-    >
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
-        props={{
-          postType,
-          onDraftStateChange: props.onDraftStateChange,
-          draftState:
-            draftState?.parent_post_id == postId ? draftState : undefined,
-          parentId: postId,
-          mode: "Create",
-        }}
-      />
-    </div>
-  );
-};
-
 const tokenMapping = {
   NEAR: "NEAR",
   USDT: {
@@ -469,40 +450,6 @@ function tokenResolver(token) {
     return null; // Invalid input
   }
 }
-
-const EditorWidget = (postType) => {
-  return (
-    <div
-      class={`collapse ${
-        draftState?.edit_post_id == postId && draftState?.postType == postType
-          ? "show"
-          : ""
-      }`}
-      id={`collapse${postType}Editor${postId}`}
-      data-bs-parent={`#accordion${postId}`}
-    >
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
-        props={{
-          postType,
-          postId,
-          mode: "Edit",
-          author_id: post.author_id,
-          labels: post.snapshot.labels,
-          name: post.snapshot.name,
-          description: post.snapshot.description,
-          amount: post.snapshot.amount,
-          token: tokenResolver(post.snapshot.sponsorship_token),
-          supervisor: post.snapshot.supervisor,
-          githubLink: post.snapshot.github_link,
-          onDraftStateChange: props.onDraftStateChange,
-          draftState:
-            draftState?.edit_post_id == postId ? draftState : undefined,
-        }}
-      />
-    </div>
-  );
-};
 
 const isDraft =
   (draftState?.parent_post_id === postId &&
@@ -560,7 +507,7 @@ function Editor() {
 }
 
 const renamedPostType =
-  snapshot.post_type == "Submission" ? "Solution" : snapshot.post_type;
+  snapshot.post_type == "Solution" ? "Solution" : snapshot.post_type;
 
 const tags = post.snapshot.labels ? (
   <div

@@ -66,7 +66,7 @@ if (!state.draftStateApplied && props.draftState) {
 let fields = {
   Comment: ["description"],
   Idea: ["name", "description"],
-  Submission: ["name", "description", "fund_raising"],
+  Solution: ["name", "description", "fund_raising"],
   Attestation: ["name", "description"],
   Sponsorship: [
     "name",
@@ -112,7 +112,7 @@ const onSubmit = () => {
       description: state.description,
       idea_version: "V1",
     },
-    Submission: {
+    Solution: {
       name: state.name,
       description: generateDescription(
         state.description,
@@ -507,7 +507,7 @@ function generateDescription(text, amount, token, supervisor, seekingFunding) {
   return seekingFunding ? `${fundingText}${supervisorText}${text}` : text;
 }
 
-const renamedPostType = postType == "Submission" ? "Solution" : postType;
+const renamedPostType = postType == "Solution" ? "Solution" : postType;
 // Below there is a weird code with fields.includes("githubLink") ternary operator.
 // This is to hack around rendering bug of near.social.
 return (
@@ -585,7 +585,7 @@ return (
               post_type: postType,
               name: state.name,
               description:
-                postType == "Submission"
+                postType == "Solution"
                   ? generateDescription(
                       state.description,
                       state.amount,
