@@ -35,22 +35,49 @@ const LinkItem = styled.a`
 const Links = [
   {
     links: [
-      { title: "Ideate on Devhub", href: "https://www.neardevgov.org/blog/how-to-ideate-on-dev-hub", count: 1 },
-      { title: "Post a Proposal", href: "https://www.neardevgov.org/blog/how-to-post-proposals-on-devhub", count: 4 },
-      { title: "Host an Event", href: "https://near.social/devgovgigs.near/widget/app?page=community&handle=hacks&tab=Wiki%202", count: 7 },
+      {
+        title: "Ideate on Devhub",
+        href: "https://www.neardevgov.org/blog/how-to-ideate-on-dev-hub",
+        count: 1,
+      },
+      {
+        title: "Post a Proposal",
+        href: "https://www.neardevgov.org/blog/how-to-post-proposals-on-devhub",
+        count: 4,
+      },
+      {
+        title: "Host an Event",
+        href: "https://near.social/devgovgigs.near/widget/app?page=community&handle=hacks&tab=Wiki%202",
+        count: 7,
+      },
     ],
   },
   {
     links: [
-      { title: "Improve NEAR Docs", href: "https://github.com/near/docs", count: 2 },
-      { title: "Join the Fellowship", href: "https://near.social/devgovgigs.near/widget/app?page=community&handle=fellowship&tab=Wiki%201", count: 5 },
-      
+      {
+        title: "Improve NEAR Docs",
+        href: "https://github.com/near/docs",
+        count: 2,
+      },
+      {
+        title: "Join the Fellowship",
+        href: "https://near.social/devgovgigs.near/widget/app?page=community&handle=fellowship&tab=Wiki%201",
+        count: 5,
+      },
     ],
   },
   {
     links: [
-      { title: "Join NEAR Campus", href: "https://near.social/devgovgigs.near/widget/app?page=community&handle=near-campus", count: 3 },
-      { title: "Dive into Hackbox", href: "https://near.social/hackbox.near/widget/home", count: 6 },
+      {
+        title: "Join NEAR Campus",
+        href: "https://near.social/devgovgigs.near/widget/app?page=community&handle=near-campus",
+        count: 3,
+      },
+      {
+        title: "Dive into Hackbox",
+        href: "https://near.social/hackbox.near/widget/home",
+        count: 6,
+      },
     ],
   },
 ];
@@ -144,7 +171,9 @@ const Content = (
                 >
                   {link.count}
                 </span>{" "}
-                <LinkItem href={link.href} target="no_blank">{link.title}</LinkItem>
+                <LinkItem href={link.href} target="no_blank">
+                  {link.title}
+                </LinkItem>
               </div>
             ))}
           </div>

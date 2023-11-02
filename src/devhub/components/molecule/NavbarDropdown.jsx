@@ -86,21 +86,22 @@ return (
               className={link.href === props.page && "active"}
               key={`${link.title}-${link.href}`}
             >
-               {(link.href.startsWith('http://') || link.href.startsWith('https://')) ? (
-               // External link: Render an <a> tag
-               <a href={link.href} target="_blank" rel="noopener noreferrer">
-                {link.title}
-               </a>
-               ) : (
-               // Internal link: Render the <Link> component
-               <Link
-                to={linkHref({
-                widgetSrc: "${REPL_DEVHUB}/widget/app",
-                params: { page: link.href },
-                })}
-               >
-                {link.title}
-              </Link>
+              {link.href.startsWith("http://") ||
+              link.href.startsWith("https://") ? (
+                // External link: Render an <a> tag
+                <a href={link.href} target="_blank" rel="noopener noreferrer">
+                  {link.title}
+                </a>
+              ) : (
+                // Internal link: Render the <Link> component
+                <Link
+                  to={linkHref({
+                    widgetSrc: "${REPL_DEVHUB}/widget/app",
+                    params: { page: link.href },
+                  })}
+                >
+                  {link.title}
+                </Link>
               )}
             </DropdownLink>
           ))}

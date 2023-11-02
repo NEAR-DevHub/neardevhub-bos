@@ -66,7 +66,8 @@ const actions = [
     description:
       "We are always on the lookout for events that align with our mission and provide value to the NEAR ecosystem. If you are organizing such an event, we would love to hear from you! Below is a guide on how to submit a sponsorship proposal to us.",
     ctaAction: "Learn More →",
-    ctaLink: "https://near.social/devgovgigs.near/widget/app?page=community&handle=hacks&tab=Wiki%202",
+    ctaLink:
+      "https://near.social/devgovgigs.near/widget/app?page=community&handle=hacks&tab=Wiki%202",
   },
   {
     title: "Improve NEAR Docs",
@@ -80,14 +81,16 @@ const actions = [
     description:
       "As the NEAR ecosystem grows rapidly, there is an increasing need to improve developer productivity. The DevDAO NEAR Platform Fellowship Program aims to solve this issue by providing guidance to new contributors from experienced developers.",
     ctaAction: "Learn More →",
-    ctaLink: "https://near.social/devgovgigs.near/widget/app?page=community&handle=fellowship&tab=Wiki 1",
+    ctaLink:
+      "https://near.social/devgovgigs.near/widget/app?page=community&handle=fellowship&tab=Wiki 1",
   },
   {
     title: "Join NEAR Campus",
     description:
       "DevHub’s NEAR Campus supports existing student clubs, researchers, and faculties in blockchain technologies, enhancing both curricular and extracurricular activities. We aim to merge blockchain education with mainstream academics.",
     ctaAction: "Learn More →",
-    ctaLink: "https://near.social/devgovgigs.near/widget/app?page=community&handle=near-campus",
+    ctaLink:
+      "https://near.social/devgovgigs.near/widget/app?page=community&handle=near-campus",
   },
   {
     title: "Dive into Hackbox",
@@ -156,12 +159,14 @@ const ActionCard = ({ action, index }) => {
           }}
           className="rounded-circle d-flex align-items-center justify-content-center me-1"
         >
-          {index+1}
+          {index + 1}
         </span>
         {action.title}
       </h5>
       <p>{action.description}</p>
-      <a href={action.ctaLink} target="no_blank">{action.ctaAction}</a>
+      <a href={action.ctaLink} target="no_blank">
+        {action.ctaAction}
+      </a>
     </Card>
   );
 };
