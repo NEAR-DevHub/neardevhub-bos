@@ -92,8 +92,10 @@ function Page({ data }) {
         <span className="date">{formattedDate}</span>
         <p>{description}</p>
         <Widget
-          src="efiz.near/widget/every.markdown.view"
-          props={{ data: { content: content } }}
+          src={
+            "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+          }
+          props={{ text: content }}
         />
       </Container>
     </>

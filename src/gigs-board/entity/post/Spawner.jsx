@@ -112,7 +112,7 @@ const postTypeOptions = {
   },
 };
 
-const CreatePage = ({ transactionHashes }) => {
+const PostSpawner = ({ isHidden, onCancel, tags, transactionHashes }) => {
   const recoveredPostType = Storage.privateGet("post_type");
 
   const initialState = {
@@ -144,81 +144,55 @@ const CreatePage = ({ transactionHashes }) => {
     Storage.privateSet("post_type", optionName);
   };
 
-  return widget("components.template.app-layout", {
-    children: (
-      <div
-        className="d-flex flex-column gap-4 p-4 bg-light"
-        data-bs-parent={`#accordion${postId}`}
-        id={`${state.post_type}_post_spawner`}
-      >
-        {transactionHashes ? (
-          <>
-            <p
-              className="d-flex flex-column justify-content-center align-items-center gap-3"
-              style={{ height: 480 }}
+  const onCancelClick = () => {
+    if (typeof onCancel === "function") onCancel();
+    stateReset();
+  };
+
+  return (
+    <div
+      className={`flex-column gap-3 py-4 collapse ${
+        isHidden ? "" : "d-flex show"
+      }`}
+      id={`${state.post_type}_post_spawner`}
+    >
+      <div className="d-flex flex-column gap-3">
+        <p className="card-title fw-bold fs-6">What do you want to create?</p>
+
+        <div className="d-flex gap-3">
+          {Object.values(postTypeOptions).map((option) => (
+            <button
+              className={`btn btn-${
+                state.post_type === option.name
+                  ? "primary"
+                  : "outline-secondary"
+              }`}
+              key={option.name}
+              onClick={() => typeSwitch(option.name)}
+              style={state.post_type === option.name ? activeOptionStyle : null}
+              type="button"
             >
-              <span>Post created successfully.</span>
+              <i className={`bi ${option.icon}`} />
+              <span>{option.name}</span>
+            </button>
+          ))}
+        </div>
 
-              <a
-                style={{ backgroundColor: "#3252A6" }}
-                className="btn fw-bold"
-                href={href("Feed")}
-              >
-                Back to feed
-              </a>
-            </p>
-
-            {widget("entity.post.PostEditor", {
-              className: "d-none",
-              transactionHashes,
-            })}
-          </>
-        ) : (
-          <>
-            <div className="d-flex flex-column gap-3 w-100">
-              <p className="card-title fw-bold fs-6">
-                What do you want to create?
-              </p>
-
-              <div className="d-flex gap-3">
-                {Object.values(postTypeOptions).map((option) => (
-                  <button
-                    className={`btn btn-${
-                      state.post_type === option.name
-                        ? "primary"
-                        : "outline-secondary"
-                    }`}
-                    data-testid={`btn-${option.name.toLowerCase()}`}
-                    key={option.name}
-                    onClick={() => typeSwitch(option.name)}
-                    style={
-                      state.post_type === option.name ? activeOptionStyle : null
-                    }
-                    type="button"
-                  >
-                    <i className={`bi ${option.icon}`} />
-                    <span>{option.name}</span>
-                  </button>
-                ))}
-              </div>
-
-              <p className="text-muted w-75">
-                {postTypeOptions[state.post_type].description}
-              </p>
-            </div>
-
-            {widget("entity.post.PostEditor", {
-              mode: "Create",
-              onCancel: stateReset,
-              parent_id: null,
-              post_type: state.post_type,
-              transactionHashes,
-            })}
-          </>
-        )}
+        <p className="text-muted w-75">
+          {postTypeOptions[state.post_type].description}
+        </p>
       </div>
-    ),
-  });
+
+      {widget("entity.post.PostEditor", {
+        mode: "Create",
+        onCancel: onCancelClick,
+        parent_id: null,
+        post_type: state.post_type,
+        tags,
+        transactionHashes,
+      })}
+    </div>
+  );
 };
 
-return CreatePage(props);
+return PostSpawner(props);

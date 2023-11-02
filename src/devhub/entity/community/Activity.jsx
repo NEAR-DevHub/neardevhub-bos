@@ -18,7 +18,7 @@ if (communityData === null) {
 }
 
 const MainContent = styled.div`
-  max-width: 73.5%;
+  flex-grow: 1;
 
   @media screen and (max-width: 960px) {
     max-width: 100%;
@@ -27,6 +27,7 @@ const MainContent = styled.div`
 
 const SidebarContainer = styled.div`
   max-width: 25%;
+  margin-right: 1.5rem;
 
   @media screen and (max-width: 960px) {
     display: none;

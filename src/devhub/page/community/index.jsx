@@ -31,6 +31,7 @@ const NavUnderline = styled.ul`
     font-weight: bold;
     border-bottom: 4px solid #00ec97;
   }
+  border-bottom: 1px solid #cccccc;
 `;
 
 const { tab, permissions, community, view } = props;
@@ -150,7 +151,7 @@ const socialLinks = [
 ];
 
 const NavlinksContainer = styled.div`
-  background: white;
+  //background: white;
   padding: 0 3rem;
 
   @media screen and (max-width: 960px) {
@@ -209,7 +210,7 @@ return (
         </div>
       </div>
 
-      <div className="d-flex align-items-end gap-3 ms-auto mb-md-5">
+      <div className="d-flex align-items-end gap-3 ms-auto mb-md-5 me-4">
         {permissions.can_configure && (
           <Link
             to={`/${REPL_DEVHUB}/widget/app?page=community.configuration&handle=${community.handle}`}
@@ -288,46 +289,48 @@ return (
             )
         )}
       </NavUnderline>
-      <div
-        className="my-4 d-flex align-items-center justify-content-between"
-        style={{ gap: "2.5rem" }}
-      >
-        <div class="d-flex align-items-center justify-content-between">
-          <small class="text-muted">
-            <span>Required tags:</span>
-            <Link
-              to={href({
-                widgetSrc: "${REPL_DEVHUB}/widget/app",
-                params: { page: "feed", tag: community.tag },
-              })}
-            >
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
-                props={{
-                  tag: community.tag,
-                }}
-              />
-            </Link>
-          </small>
+      {currentTab.title === "Activity" && (
+        <div
+          className="my-4 d-flex align-items-center justify-content-between"
+          style={{ gap: "2.5rem" }}
+        >
+          <div class="d-flex align-items-center justify-content-between">
+            <small class="text-muted">
+              <span>Required tags:</span>
+              <Link
+                to={href({
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
+                  params: { page: "feed", tag: community.tag },
+                })}
+              >
+                <Widget
+                  src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+                  props={{
+                    tag: community.tag,
+                  }}
+                />
+              </Link>
+            </small>
+          </div>
+          {context.accountId && (
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
+              }
+              props={{
+                title: "Post",
+                href: href({
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
+                  params: {
+                    page: "create",
+                    labels: [community.tag],
+                  },
+                }),
+              }}
+            />
+          )}
         </div>
-        {context.accountId && (
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
-            }
-            props={{
-              title: "Post",
-              href: href({
-                widgetSrc: "${REPL_DEVHUB}/widget/app",
-                params: {
-                  page: "create",
-                  labels: [community.tag],
-                },
-              }),
-            }}
-          />
-        )}
-      </div>
+      )}
     </NavlinksContainer>
     {currentTab && (
       <div className="d-flex w-100 h-100" key={currentTab.title}>

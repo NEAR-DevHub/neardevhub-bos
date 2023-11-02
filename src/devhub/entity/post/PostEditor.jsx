@@ -1,5 +1,6 @@
 /* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
+
 const AutoComplete = styled.div`
   z-index: 5;
 
@@ -10,13 +11,21 @@ const AutoComplete = styled.div`
 
 function textareaInputHandler(value) {
   const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update({ text: value, showAccountAutocomplete });
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    text: value,
+    showAccountAutocomplete,
+  }));
 }
 
 function autoCompleteAccountId(id) {
   let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
   description = `${description} @${id}`.trim() + " ";
-  State.update({ description, showAccountAutocomplete: false });
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    description,
+    showAccountAutocomplete: false,
+  }));
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
@@ -57,7 +66,7 @@ if (!state.draftStateApplied && props.draftState) {
 let fields = {
   Comment: ["description"],
   Idea: ["name", "description"],
-  Submission: ["name", "description", "fund_raising"],
+  Solution: ["name", "description", "fund_raising"],
   Attestation: ["name", "description"],
   Sponsorship: [
     "name",
@@ -103,7 +112,7 @@ const onSubmit = () => {
       description: state.description,
       idea_version: "V1",
     },
-    Submission: {
+    Solution: {
       name: state.name,
       description: generateDescription(
         state.description,
@@ -523,7 +532,7 @@ return (
           ></button>
         </div>
       )}
-      {/* This statement around the githubLinkDiv creates a weird render bug 
+      {/* This statement around the githubLinkDiv creates a weird render bug
       where the title renders extra on state change. */}
       {fields.includes("githubLink") ? (
         <div className="row">
@@ -576,7 +585,7 @@ return (
               post_type: postType,
               name: state.name,
               description:
-                postType == "Submission"
+                postType == "Solution"
                   ? generateDescription(
                       state.description,
                       state.amount,
