@@ -12,6 +12,8 @@ const Logo = () => {
       svg {
         width: 90px;
         height: 12px;
+        transform: scale(1.5);
+        margin-left: 1rem;
       }
     }
   `;
@@ -81,6 +83,7 @@ const MenuIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
+    style={{ height: 20, width: 20 }}
   >
     <path
       fill-rule="evenodd"
