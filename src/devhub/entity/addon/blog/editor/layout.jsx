@@ -1,10 +1,14 @@
 const { Sidebar, Content, getData } = props;
 
-const [selectedItem, setSelectedItem] = useState(initialProject);
+const [selectedItem, setSelectedItem] = useState(null);
 
 const handleItemClick = (item) => {
-  const data = getData(item);
-  setSelectedItem(data);
+  if (item) {
+    const data = getData(item);
+    setSelectedItem(data);
+  } else {
+    setSelectedItem(null);
+  }
 };
 
 return (
@@ -15,9 +19,6 @@ return (
     <div
       className="left-panel"
       style={{
-        flex: 1,
-        maxWidth: "300px",
-        width: "100%",
         margin: "20px 20px 80px 20px",
       }}
     >

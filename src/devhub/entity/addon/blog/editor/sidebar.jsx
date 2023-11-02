@@ -7,21 +7,36 @@ const SidebarContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
+  gap: 2px;
 `;
 
 const SidebarButton = styled.button`
-  border: 2px solid #333;
-  padding: 8px;
-  margin: 8px;
-  width: 100%;
+  display: flex;
+  padding: 14px 16px;
   text-align: center;
   cursor: pointer;
-  background-color: ${({ selected }) => (selected ? "#4caf50" : "white")};
+  gap: 16px;
+  width: 100%;
+
+  border-radius: 4px;
+  border: 1px solid #00ec97;
+
+  background-color: ${({ selected }) => (selected ? "#00ec97" : "white")};
   color: ${({ selected }) => (selected ? "white" : "black")};
+
+  // border: 2px solid #333;
+  // padding: 8px;
+  // margin: 8px;
+  // width: 100%;
+  // text-align: center;
+  // cursor: pointer;
+
 `;
 
 return (
   <SidebarContainer>
+    <SidebarButton onClick={() => handleItemClick(null)}>New</SidebarButton>
     {(items || []).map((it) => (
       <SidebarButton
         key={it.post_id}

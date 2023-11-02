@@ -112,23 +112,17 @@ const hasDataChanged = () => {
 const handlePublish = () => {
   onSubmit &&
     onSubmit({
-      labels: ["blog", handle],
-      body: {
-        post_type: "Comment",
-        description: JSON.stringify({
-          title,
-          subtitle,
-          description,
-          date,
-          content,
-          author,
-          image: state.image.cid,
-          tags: data.includeLabels,
-          community: handle,
-        }),
-        comment_version: "V2",
-      },
-    });
+      id: data.id || undefined,
+      title,
+      subtitle,
+      description,
+      date,
+      content,
+      author,
+      image: state.image.cid,
+      tags: data.includeLabels,
+      community: handle,
+    }, data.id !== undefined);
 };
 
 function Preview() {

@@ -41,7 +41,8 @@ return (
         props={{
           handle: props.handle,
           Layout: (providerProps) => {
-            const { data, onChange, onSubmit, onCancel, getData } = providerProps;
+            const { data, onChange, onSubmit, onCancel, getData } =
+              providerProps;
             return (
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.entity.addon.blog.editor.layout"

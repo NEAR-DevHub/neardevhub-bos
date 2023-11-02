@@ -86,19 +86,44 @@ const handleGetData = (v) => {
 
   return {
     id: postId,
-    ...description
+    ...description,
   };
 };
 
-const handleOnSubmit = (v) => {
-  console.log("onSubmit", v);
-  Near.call({
-    contractName: "${REPL_DEVHUB_CONTRACT}",
-    methodName: "add_post",
-    args: v,
-    deposit: Big(10).pow(21).mul(2),
-    gas: Big(10).pow(12).mul(100),
-  });
+const handleOnSubmit = (v, isEdit) => {
+  console.log(isEdit)
+  if (isEdit) {
+    Near.call({
+      contractName: "${REPL_DEVHUB_CONTRACT}",
+      methodName: "edit_post",
+      args: {
+        id: v.id,
+        labels: ["blog", handle],
+        body: {
+          post_type: "Comment",
+          description: JSON.stringify(v),
+          comment_version: "V2",
+        },
+      },
+      deposit: Big(10).pow(21).mul(2),
+      gas: Big(10).pow(12).mul(100),
+    });
+  } else {
+    Near.call({
+      contractName: "${REPL_DEVHUB_CONTRACT}",
+      methodName: "add_post",
+      args: {
+        labels: ["blog", handle],
+        body: {
+          post_type: "Comment",
+          description: JSON.stringify(v),
+          comment_version: "V2",
+        },
+      },
+      deposit: Big(10).pow(21).mul(2),
+      gas: Big(10).pow(12).mul(100),
+    });
+  }
 };
 
 const handleOnCancel = (v) => {
