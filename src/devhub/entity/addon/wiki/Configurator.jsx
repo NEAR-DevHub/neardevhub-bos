@@ -112,7 +112,7 @@ return (
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
               props={{
-                label: "Description",
+                label: "Subtitle",
                 className: "flex-grow-1",
                 onChange: (e) => setSubtitle(e.target.value),
                 value: subtitle,
