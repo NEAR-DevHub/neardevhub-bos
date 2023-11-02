@@ -17,17 +17,32 @@ if (communityData === null) {
   return <div>Loading...</div>;
 }
 
+const MainContent = styled.div`
+  max-width: 73.5%;
+
+  @media screen and (max-width: 960px) {
+    max-width: 100%;
+  }
+`;
+
+const SidebarContainer = styled.div`
+  max-width: 25%;
+
+  @media screen and (max-width: 960px) {
+    display: none;
+  }
+`;
+
 return (
   <div style={{ maxWidth: "100%" }}>
     <div class="col">
       <div class="d-flex w-100">
-        <div className="col-md-9" style={{ maxWidth: "75%" }}>
+        <MainContent>
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.feature.post-search.panel"}
             props={{
               hideHeader: true,
               tag: communityData.tag,
-              communityName: communityData.name,
               children: (
                 <Widget
                   src={
@@ -49,13 +64,13 @@ return (
               transactionHashes: props.transactionHashes,
             }}
           />
-        </div>
-        <div class="col-md-3 container-fluid">
+        </MainContent>
+        <SidebarContainer>
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.entity.community.Sidebar"}
             props={{ community: communityData }}
           />
-        </div>
+        </SidebarContainer>
       </div>
     </div>
   </div>

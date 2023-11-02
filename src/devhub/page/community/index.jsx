@@ -149,6 +149,15 @@ const socialLinks = [
     : []),
 ];
 
+const NavlinksContainer = styled.div`
+  background: white;
+  padding: 0 3rem;
+
+  @media screen and (max-width: 960px) {
+    padding: 0 1rem;
+  }
+`;
+
 return (
   <div
     className="d-flex flex-column gap-3 w-100"
@@ -161,7 +170,7 @@ return (
       }}
     />
 
-    <div className="container d-flex flex-wrap justify-content-between gap-4">
+    <div className="container d-flex flex-wrap justify-content-between align-items-center align-items-md-start gap-4">
       <div className="d-flex flex-column ms-3">
         <div className="position-relative">
           <div style={{ width: 150, height: 45 }}>
@@ -176,7 +185,7 @@ return (
           </div>
         </div>
 
-        <div className="d-flex flex-column gap-3 ps-3 pt-3 pb-2">
+        <div className="d-flex flex-column gap-3 ps-md-3 pt-md-3 pb-md-2">
           <CommunityName className="text-nowrap">
             {community.name}
           </CommunityName>
@@ -200,7 +209,7 @@ return (
         </div>
       </div>
 
-      <div className="d-flex align-items-end gap-3 ms-auto mb-5">
+      <div className="d-flex align-items-end gap-3 ms-auto mb-md-5">
         {permissions.can_configure && (
           <Link
             to={`/${REPL_DEVHUB}/widget/app?page=community.configuration&handle=${community.handle}`}
@@ -252,7 +261,7 @@ return (
         />
       </div>
     </div>
-    <div className="bg-white" style={{ padding: "0 3rem" }}>
+    <NavlinksContainer>
       <NavUnderline className="nav gap-4 my-4">
         {tabs.map(
           ({ title }) =>
@@ -319,7 +328,7 @@ return (
           />
         )}
       </div>
-    </div>
+    </NavlinksContainer>
     {currentTab && (
       <div className="d-flex w-100 h-100" key={currentTab.title}>
         <Widget

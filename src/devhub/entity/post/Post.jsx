@@ -152,22 +152,30 @@ const shareButton = props.isPreview ? (
   </Link>
 );
 
+const ProfileCardContainer = styled.div`
+  @media screen and (max-width: 960px) {
+    width: 100%;
+  }
+`;
+
 // card-header
 const header = (
   <div key="header">
     <small class="text-muted">
       <div class="row justify-content-between">
-        <div class="d-flex align-items-center">
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"}
-            props={{
-              accountId: post.author_id,
-              nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
-              communityName: props.communityName,
-            }}
-          />
-          <span className="fw-bold"> • </span>
-          <div class="d-flex">
+        <div class="d-flex align-items-center flex-wrap">
+          <ProfileCardContainer>
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
+              }
+              props={{
+                accountId: post.author_id,
+                nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+              }}
+            />
+          </ProfileCardContainer>
+          <div class="d-flex ms-auto">
             {editControl}
             {timestamp}
             <Widget
@@ -296,9 +304,17 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
   );
 };
 
+const FooterButtonsContianer = styled.div`
+  width: 66.66666667%;
+
+  @media screen and (max-width: 960px) {
+    width: 100%;
+  }
+`;
+
 const buttonsFooter = props.isPreview ? null : (
   <div class="row" key="buttons-footer">
-    <div class="col-8">
+    <FooterButtonsContianer>
       <div class="btn-group" role="group" aria-label="Basic outlined example">
         <ButtonWithHover
           type="button"
@@ -401,7 +417,7 @@ const buttonsFooter = props.isPreview ? null : (
           </Link>
         )}
       </div>
-    </div>
+    </FooterButtonsContianer>
   </div>
 );
 
@@ -596,10 +612,10 @@ const tags = post.snapshot.labels ? (
 );
 
 const Title = styled.h5`
-  margin: 2.25rem 0;
+  margin: 1rem 0;
 
   color: #151515;
-  font-size: 1.75rem;
+  font-size: 1.15rem;
   font-style: normal;
   font-weight: 700;
   line-height: 1.625rem; /* 55.556% */
@@ -609,11 +625,8 @@ const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
   ) : (
-    <Title key="post-title d-flex justify-content-between align-items-center position-relative">
-      <span class={`position-absolute`} style={{ left: 10 }}>
-        {emptyIcons[snapshot.post_type]}
-      </span>
-      {renamedPostType}: {snapshot.name}
+    <Title key="post-title">
+      {emptyIcons[snapshot.post_type]} {renamedPostType}: {snapshot.name}
     </Title>
   );
 
@@ -791,6 +804,10 @@ const CardContainer = styled.div`
   border-radius: 16px !important;
   border: 1px solid rgba(129, 129, 129, 0.3) !important;
   background: #fffefe !important;
+
+  @media screen and (max-width: 960px) {
+    padding: 1rem !important;
+  }
 `;
 
 return (
