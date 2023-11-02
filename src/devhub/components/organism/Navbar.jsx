@@ -156,11 +156,11 @@ const links = [
   {
     title: "/about",
     links: [
-      { title: "mission", href: "mission" },
+      { title: "mission", href: "about" },
       { title: "blog", href: "blog" },
-      { title: "newsletter", href: "newsletter" },
-      { title: "calendar", href: "calendar" },
-      { title: "brand kit", href: "brand-kit" },
+      { title: "newsletter", href: "https://shard.dog/devhub" },
+      { title: "calendar", href: "https://calendar.google.com/calendar/embed?height=600&wkst=2&bgcolor=%23ffffff&ctz=UTC&title&showNav=1&showDate=1&mode=AGENDA&showPrint=0&src=Y19mNTRlZDM3ZmQ5MjMyN2FjZGM3ZTQzNDNmZTQwNzIyYWU1Nzk3YjZjODI5MjliYTkzZTlmM2E4OWM2OTY1N2FiQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23616161" },
+      { title: "brand kit", href: "https://drive.google.com/drive/folders/1C0GMmGq3MzbVPpxvf9807IU-7kpc2_v5?usp=sharing" },
     ],
   },
 ];

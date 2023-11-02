@@ -48,53 +48,53 @@ const Container = styled.div`
 
 const actions = [
   {
-    title: "Propose an idea",
+    title: "Ideate on Devhub",
     description:
-      "DevHub caters to a niche audience of open-source developers motivated by technology and a strong sense of community. They are driven by personal goals and the desire to contribute to the common good and actively participate in the NEAR community.",
-    ctaAction: "Action button →",
-    ctaLink: "#",
+      "The first step in any NEAR ecosystem project is ideation. It is crucial to have a way to find people to share and explore ideas with, partly because it can save a lot of time based on prior discussions. But also because it can you gauge support from a diversity of stakeholders.",
+    ctaAction: "Learn More →",
+    ctaLink: "https://www.neardevgov.org/blog/how-to-ideate-on-dev-hub",
   },
   {
-    title: "Build a solution",
+    title: "Post a Proposal",
     description:
-      "DevHub caters to a niche audience of open-source developers motivated by technology and a strong sense of community. They are driven by personal goals and the desire to contribute to the common good and actively participate in the NEAR community.",
-    ctaAction: "Action button →",
-    ctaLink: "#",
+      "If you have already nurtured and refined your idea, you're ready to draft and post your funding proposal.This guide is here to help you craft a compelling, convincing, and concise proposal that will capture the interest of potential funders.",
+    ctaAction: "Learn More →",
+    ctaLink: "https://www.neardevgov.org/blog/how-to-post-proposals-on-devhub",
   },
   {
     title: "Host an Event",
     description:
-      "DevHub caters to a niche audience of open-source developers motivated by technology and a strong sense of community. They are driven by personal goals and the desire to contribute to the common good and actively participate in the NEAR community.",
-    ctaAction: "Action button →",
-    ctaLink: "#",
+      "We are always on the lookout for events that align with our mission and provide value to the NEAR ecosystem. If you are organizing such an event, we would love to hear from you! Below is a guide on how to submit a sponsorship proposal to us.",
+    ctaAction: "Learn More →",
+    ctaLink: "https://near.social/devgovgigs.near/widget/app?page=community&handle=hacks&tab=Wiki%202",
   },
   {
     title: "Improve NEAR Docs",
     description:
-      "DevHub caters to a niche audience of open-source developers motivated by technology and a strong sense of community. They are driven by personal goals and the desire to contribute to the common good and actively participate in the NEAR community.",
-    ctaAction: "Action button →",
-    ctaLink: "#",
+      "NEAR documentation is an open source repository that anyone can fork, extend and contribute to by creating pull requests. To get started, head over to our github repository and checkout how you can make your first contribution. ",
+    ctaAction: "Learn More →",
+    ctaLink: "https://github.com/near/docs",
   },
   {
-    title: "Propose an idea",
+    title: "Join the Fellowship",
     description:
-      "DevHub caters to a niche audience of open-source developers motivated by technology and a strong sense of community. They are driven by personal goals and the desire to contribute to the common good and actively participate in the NEAR community.",
-    ctaAction: "Action button →",
-    ctaLink: "#",
+      "As the NEAR ecosystem grows rapidly, there is an increasing need to improve developer productivity. The DevDAO NEAR Platform Fellowship Program aims to solve this issue by providing guidance to new contributors from experienced developers.",
+    ctaAction: "Learn More →",
+    ctaLink: "https://near.social/devgovgigs.near/widget/app?page=community&handle=fellowship&tab=Wiki 1",
   },
   {
-    title: "Propose an idea",
+    title: "Join NEAR Campus",
     description:
-      "DevHub caters to a niche audience of open-source developers motivated by technology and a strong sense of community. They are driven by personal goals and the desire to contribute to the common good and actively participate in the NEAR community.",
-    ctaAction: "Action button →",
-    ctaLink: "#",
+      "DevHub’s NEAR Campus supports existing student clubs, researchers, and faculties in blockchain technologies, enhancing both curricular and extracurricular activities. We aim to merge blockchain education with mainstream academics.",
+    ctaAction: "Learn More →",
+    ctaLink: "https://near.social/devgovgigs.near/widget/app?page=community&handle=near-campus",
   },
   {
-    title: "Propose an idea",
+    title: "Dive into Hackbox",
     description:
-      "DevHub caters to a niche audience of open-source developers motivated by technology and a strong sense of community. They are driven by personal goals and the desire to contribute to the common good and actively participate in the NEAR community.",
-    ctaAction: "Action button →",
-    ctaLink: "#",
+      "Hackbox is a revolutionary plug-and-play solution designed to empower local leads and community stewards in hosting hackathons easily and efficiently.",
+    ctaAction: "Learn More →",
+    ctaLink: "https://near.social/hackbox.near/widget/home",
   },
 ];
 
@@ -156,12 +156,12 @@ const ActionCard = ({ action, index }) => {
           }}
           className="rounded-circle d-flex align-items-center justify-content-center me-1"
         >
-          {index}
+          {index+1}
         </span>
         {action.title}
       </h5>
       <p>{action.description}</p>
-      <a href={action.ctaLink}>{action.ctaAction}</a>
+      <a href={action.ctaLink} target="no_blank">{action.ctaAction}</a>
     </Card>
   );
 };
@@ -170,7 +170,8 @@ const ActionContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   justify-content: center;
-  gap: 1rem;
+  column-gap: 1rem;
+  row-gap: 2rem;
 
   width: 100%;
 
