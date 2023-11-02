@@ -5,7 +5,7 @@ const Container = styled.div`
   height: 100%;
   min-height: 100vh;
 
-  background: #ebebeb;
+  background: #f4f4f4;
 
   margin-top: calc(-1 * var(--body-top-padding));
 `;

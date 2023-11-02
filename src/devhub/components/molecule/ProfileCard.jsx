@@ -11,7 +11,7 @@ const AccountName = styled.span`
   color: #818181;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 20px;
 
   max-width: 30ch;
@@ -26,6 +26,7 @@ const ProfileCard = (props) => {
   // const hideAccountId = props.hideAccountId;
   // const hideName = props.hideName;
   const hideImage = props.hideImage;
+  const iconOnly = props.iconOnly;
 
   const profile = props.profile ?? Social.getr(`${accountId}/profile`);
 
@@ -44,20 +45,17 @@ const ProfileCard = (props) => {
             style: { width: "3em", height: "3em", marginRight: "0.3em" },
             profile,
             accountId,
-            className: "d-inline-block",
+            className: "d-inline-block flex-shrink-0",
             imageClassName: "rounded-circle w-100 h-100 align-top",
           }}
         />
       )}
-      <div className="d-flex gap-1">
-        {props.communityName && (
-          <span className="fw-bold">/{props.communityName} • </span>
-        )}
-        <MutedText key="name">Posted by</MutedText>
-        <AccountName key="accountId">
-          {name} @{accountId}
-        </AccountName>
-      </div>
+      {!iconOnly && (
+        <div className="d-flex flex-column gap-1">
+          <AccountName key="accountName">{name}</AccountName>
+          <AccountName key="accountId">@{accountId}</AccountName>
+        </div>
+      )}
     </div>
   );
 

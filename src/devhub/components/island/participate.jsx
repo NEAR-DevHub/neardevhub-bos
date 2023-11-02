@@ -75,7 +75,7 @@ const CTA = styled.a`
 
   &:hover {
     background: #04a46e;
-    text-decoration: none;
+    text-decoration: none !important;
   }
 
   @media screen and (max-width: 768px) {
@@ -151,17 +151,15 @@ const Content = (
       ))}
     </Container>
 
-    <CTA>
-      {" "}
-      <Link
-        to={href({
-          widgetSrc: "${REPL_DEVHUB}/widget/app",
-          params: { page: "contribute" },
-        })}
-      >
-        Learn more →
-      </Link>
-    </CTA>
+    <Link
+      to={href({
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
+        params: { page: "contribute" },
+      })}
+      style={{ textDecoration: "none" }}
+    >
+      <CTA>Learn more →</CTA>
+    </Link>
   </SectionPadding>
 );
 

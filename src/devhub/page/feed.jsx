@@ -64,22 +64,7 @@ function Banner() {
   );
 }
 
-const FeedPage = ({ author, recency, tag }) => {
-  State.init({
-    initial: { author, tag },
-    author,
-    tag,
-  });
-
-  // When rerendered with different props, State will be preserved, so we need to update the state when we detect that the props have changed.
-  if (tag !== state.initial.tag || author !== state.initial.author) {
-    State.update({
-      initial: { author, tag },
-      author,
-      tag,
-    });
-  }
-
+const FeedPage = ({ recency, tag }) => {
   return (
     <div className="w-100">
       <Banner />
@@ -102,6 +87,7 @@ const FeedPage = ({ author, recency, tag }) => {
             />
           ),
           recency,
+          tag,
           transactionHashes: props.transactionHashes,
         }}
       />

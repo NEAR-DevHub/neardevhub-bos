@@ -1,12 +1,3 @@
-const CenteredMessage = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: ${(p) => p.height ?? "100%"};
-`;
-
 const { content, title, subtitle, textAlign } = props;
 
 const Container = styled.div`
@@ -26,6 +17,15 @@ const Title = styled.h1`
 
 const Subtitle = styled.p`
   margin-bottom: 20px;
+`;
+
+const CenteredMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: ${(p) => p.height ?? "100%"};
 `;
 
 if (!content) {

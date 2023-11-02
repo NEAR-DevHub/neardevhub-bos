@@ -70,8 +70,7 @@ const postSearchKeywords = props.searchKeywords ? (
     <span>Found keywords: </span>
     {props.searchKeywords.map((tag) => (
       <Widget
-        // TODO: LEGACY.
-        src={"${REPL_DEVHUB}/widget/gigs-board..components.atom.Tag"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
         props={{ linkTo: "Feed", tag }}
       />
     ))}
@@ -142,8 +141,8 @@ const shareButton = props.isPreview ? (
     class="card-link text-dark"
     to={href({
       gateway: "near.org",
-      widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post", // TODO: Convert to page?
-      params: { id: postId },
+      widgetSrc: "${REPL_DEVHUB}/widget/app",
+      params: { page: "post", id: postId },
     })}
     role="button"
     target="_blank"
@@ -153,22 +152,30 @@ const shareButton = props.isPreview ? (
   </Link>
 );
 
+const ProfileCardContainer = styled.div`
+  @media screen and (max-width: 960px) {
+    width: 100%;
+  }
+`;
+
 // card-header
 const header = (
   <div key="header">
     <small class="text-muted">
       <div class="row justify-content-between">
-        <div class="d-flex align-items-center">
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"}
-            props={{
-              accountId: post.author_id,
-              nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
-              communityName: props.communityName,
-            }}
-          />
-          <span className="fw-bold"> • </span>
-          <div class="d-flex">
+        <div class="d-flex align-items-center flex-wrap">
+          <ProfileCardContainer>
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
+              }
+              props={{
+                accountId: post.author_id,
+                nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+              }}
+            />
+          </ProfileCardContainer>
+          <div class="d-flex ms-auto">
             {editControl}
             {timestamp}
             <Widget
@@ -178,7 +185,7 @@ const header = (
                 timestamp: currentTimestamp,
               }}
             />
-            {/* {shareButton} */}
+            {shareButton}
           </div>
         </div>
       </div>
@@ -297,9 +304,17 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
   );
 };
 
+const FooterButtonsContianer = styled.div`
+  width: 66.66666667%;
+
+  @media screen and (max-width: 960px) {
+    width: 100%;
+  }
+`;
+
 const buttonsFooter = props.isPreview ? null : (
   <div class="row" key="buttons-footer">
-    <div class="col-8">
+    <FooterButtonsContianer>
       <div class="btn-group" role="group" aria-label="Basic outlined example">
         <ButtonWithHover
           type="button"
@@ -387,8 +402,8 @@ const buttonsFooter = props.isPreview ? null : (
           <Link
             to={href({
               gateway: "near.org",
-              widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
-              params: { id: parentId },
+              widgetSrc: "${REPL_DEVHUB}/widget/app",
+              params: { page: "post", id: parentId },
             })}
           >
             <ButtonWithHover
@@ -402,7 +417,7 @@ const buttonsFooter = props.isPreview ? null : (
           </Link>
         )}
       </div>
-    </div>
+    </FooterButtonsContianer>
   </div>
 );
 
@@ -437,6 +452,12 @@ const tokenMapping = {
   USDT: {
     NEP141: {
       address: "usdt.tether-token.near",
+    },
+  },
+  USDC: {
+    NEP141: {
+      address:
+        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
     },
   },
   // Add more tokens here as needed
@@ -538,7 +559,7 @@ function Editor() {
                 name: post.snapshot.name,
                 description: post.snapshot.description,
                 amount: post.snapshot.amount,
-                token: post.snapshot.sponsorship_token,
+                token: tokenResolver(post.snapshot.sponsorship_token),
                 supervisor: post.snapshot.supervisor,
                 githubLink: post.snapshot.github_link,
                 onDraftStateChange: props.onDraftStateChange,
@@ -591,10 +612,10 @@ const tags = post.snapshot.labels ? (
 );
 
 const Title = styled.h5`
-  margin: 2.25rem 0;
+  margin: 1rem 0;
 
   color: #151515;
-  font-size: 1.75rem;
+  font-size: 1.15rem;
   font-style: normal;
   font-weight: 700;
   line-height: 1.625rem; /* 55.556% */
@@ -604,11 +625,8 @@ const postTitle =
   snapshot.post_type == "Comment" ? (
     <div key="post-title"></div>
   ) : (
-    <Title key="post-title d-flex justify-content-between align-items-center position-relative">
-      <span class={`position-absolute`} style={{ left: 10 }}>
-        {emptyIcons[snapshot.post_type]}
-      </span>
-      {renamedPostType}: {snapshot.name}
+    <Title key="post-title">
+      {emptyIcons[snapshot.post_type]} {renamedPostType}: {snapshot.name}
     </Title>
   );
 
@@ -622,7 +640,7 @@ const postExtra =
       <h6 class="card-subtitle mb-2 text-muted">
         Supervisor:{" "}
         <Widget
-          src={"${REPL_DEVHUB}/widget/ProfileLine"}
+          src={"neardevgov.near/widget/ProfileLine"}
           props={{ accountId: snapshot.supervisor }}
         />
       </h6>
@@ -740,8 +758,9 @@ const timestampElement = (_snapshot) => {
       class="text-muted"
       href={href({
         gateway: "near.org",
-        widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: {
+          page: "post",
           id: postId,
           timestamp: _snapshot.timestamp,
           compareTimestamp: null,
@@ -785,6 +804,10 @@ const CardContainer = styled.div`
   border-radius: 16px !important;
   border: 1px solid rgba(129, 129, 129, 0.3) !important;
   background: #fffefe !important;
+
+  @media screen and (max-width: 960px) {
+    padding: 1rem !important;
+  }
 `;
 
 return (

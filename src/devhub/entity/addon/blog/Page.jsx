@@ -1,66 +1,102 @@
-const { title, content, author, image, community, tags } = props;
+const imagelink =
+  "https://ipfs.near.social/ipfs/bafkreiajzvmy7574k7mp3if6u53mdukfr3hoc2kjkhjadt6x56vqhd5swy";
 
-const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
+function Page({ data }) {
+  const { category, title, description, subtitle, date, content } = data;
+  const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 
-function Page({ labels, data }) {
-  const {
-    title,
-    subtitle,
-    description,
-    category,
-    author,
-    image,
-    community,
-    date,
-  } = data;
+    padding: 0 3rem;
 
-  function formatDate(date) {
-    const options = {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      timeZoneName: "short",
-    };
-    return date.toLocaleString("en-US", options).replace(",", "");
-  }
+    ${category &&
+    `
+    span.category {
+      color: ${
+        category.toLowerCase() === "news"
+          ? "#F40303"
+          : category.toLowerCase() === "guide"
+          ? "#004BE1"
+          : category.toLowerCase() === "reference" && "#FF7A00"
+      };
+      font-size: 1.5rem;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 20px; /* 125% */
+      text-transform: uppercase;
+    }
+    `}
+
+    span.date {
+      color: #818181;
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px; /* 125% */
+      margin: 1.5rem 0;
+    }
+
+    h1 {
+      color: #151515;
+      font-size: 3.5rem;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 100%; /* 88px */
+      margin: 1rem 0;
+    }
+
+    p.subtitle {
+      color: #555;
+      font-size: 1.5rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 110%; /* 35.2px */
+      margin: 0;
+    }
+
+    @media screen and (max-width: 768px) {
+      padding: 0 1rem;
+
+      span.category {
+        font-size: 0.75rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      p.subtitle {
+        font-size: 1rem;
+      }
+    }
+  `;
+
+  const BackgroundImage = styled.img`
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  `;
+
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  const formattedDate = new Date(date).toLocaleString("en-US", options);
 
   return (
-    <div className="container mt-5">
-      {image && (
-        <div className="mb-4">
-          <img
-            src={cidToURL(image.cid)}
-            alt="Blog Header Image"
-            className="img-fluid rounded"
-          />
-        </div>
-      )}
-      <h1 className="mb-3">{title}</h1>
-      <p className="text-muted mb-4">
-        Written by <strong>{author || "AUTHOR"}</strong> in{" "}
-        <strong>{community || "COMMUNITY"}</strong>
-      </p>
-      <div className="mb-4">
-        {(tags || []).map((tag) => (
-          <Widget
-            src="${REPL_DEVHUB}/widget/devhub.components.atom.Tag"
-            props={{ tag }}
-          />
-        ))}
-      </div>
-      <div className="mb-5">
+    <>
+      <BackgroundImage src={imagelink} />
+      <Container>
+        {category && <span className="category">{category}</span>}
+        <h1>{title}</h1>
+        <p className="subtitle">{subtitle}</p>
+        <span className="date">{formattedDate}</span>
+        <p>{description}</p>
         <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
-          props={{
-            text: content,
-          }}
+          src="efiz.near/widget/every.markdown.view"
+          props={{ data: { content: content } }}
         />
-      </div>
-    </div>
+      </Container>
+    </>
   );
 }
 

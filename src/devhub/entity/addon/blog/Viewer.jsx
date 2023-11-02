@@ -4,7 +4,7 @@ const { Card } =
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
-const { includeLabels, excludeLabels, layout } = props;
+const { includeLabels, excludeLabels, layout, handle } = props;
 
 const Grid = styled.div`
   display: grid;
@@ -40,7 +40,7 @@ return (
       src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Feed"}
       // TODO: This needs to filter by more labels
       props={{
-        // includeLabels: ["blog", ...(includeTags || [])], // make sure this has the community handle
+        includeLabels: ["blog", handle, ...(includeTags || [])], // make sure this has the community handle
         excludeLabels: excludeTags,
         renderItem: BlogCard,
         Layout: ({ children }) =>

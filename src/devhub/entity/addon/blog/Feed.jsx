@@ -1,18 +1,20 @@
-// I want this to be passed a query
-// renderLoading
-// renderItem
-// renderError
-
-// TEMP FOR TESTNET
-const { getPostsByLabel } =
-  VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
-  (() => {});
-
-const { Layout, Item } = props;
+const { Item } = props;
 
 Layout = Layout || (() => <></>);
 
 const Container = styled.div``;
+
+const Layout = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+
+  @media screen and (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+`;
 
 const Loader = styled.div`
   text-align: center;
@@ -22,6 +24,19 @@ const Loader = styled.div`
 const Notification = styled.p`
   text-align: center;
   color: #3252a6;
+`;
+
+const Heading = styled.h3`
+  color: #151515;
+  font-size: 2.5rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 120%; /* 48px */
+  margin-bottom: 2rem;
+
+  @media screen and (max-width: 768px) {
+    font-size: 2rem;
+  }
 `;
 
 const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
@@ -68,10 +83,18 @@ const buildWhereClause = () => {
     where = { description: { _ilike: `%${props.term}%` }, ...where };
   }
   if (props.includeLabels && Array.isArray(props.includeLabels)) {
-    where = { labels: { _containsAny: props.includeLabels }, ...where };
+    const labelConditions = props.includeLabels.map((label) => ({
+      labels: { _contains: label },
+    }));
+
+    where = { _and: [...labelConditions, where] };
   }
   if (props.excludeLabels && Array.isArray(props.excludeLabels)) {
-    where = { labels: { _nin: props.excludeLabels }, ...where };
+    const labelConditions = props.excludeLabels.map((label) => ({
+      labels: { _nin: label },
+    }));
+
+    where = { _and: [...labelConditions, where] };
   }
   if (!props.recency) {
     where = { parent_id: { _is_null: true }, ...where };
@@ -113,7 +136,7 @@ const handleLoadMore = () => {
 const renderLoader = () => <Loader>Loading...</Loader>;
 
 const renderItem = (postId) => (
-  <div key={postId} style={{ minHeight: "400px" }}>
+  <div key={postId}>
     {(props.renderItem && props.renderItem(postId)) || <div>Post {postId}</div>}
   </div>
 );
@@ -126,8 +149,6 @@ const cachedRenderItem = (postId) => {
   return cachedItems[postId];
 };
 
-// const postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
-
 return (
   <Container>
     {loading && renderLoader()}
@@ -139,6 +160,7 @@ return (
         hasMore={hasNext}
         loader={renderLoader()}
       >
+        <Heading>Latest Blog Posts</Heading>
         <Layout>
           {/* Layout */}
           {postIds.map(cachedRenderItem)}
