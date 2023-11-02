@@ -42,7 +42,7 @@ const ProfileCard = (props) => {
           key="image"
           src="mob.near/widget/ProfileImage"
           props={{
-            style: { width: "3em", height: "3em", marginRight: "0.3em" },
+            style: { width: "2.5em", height: "2.5em", marginRight: "0.3em" },
             profile,
             accountId,
             className: "d-inline-block flex-shrink-0",

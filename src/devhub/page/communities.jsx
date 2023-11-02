@@ -85,6 +85,10 @@ const CTA = styled.button`
   padding: 14px 16px;
   align-items: center;
   gap: 8px;
+
+  &:hover {
+    background: #04a46e;
+  }
 `;
 
 const CardGrid = styled.div`
@@ -160,17 +164,15 @@ return (
         style={{ backgroundColor: "" }}
       >
         <div className="d-flex flex-column gap-3 w-100">
-          <h1 className="m-0 fs-4">
-            <Link
-              to={"/${REPL_DEVHUB}/widget/app?page=communities"}
-              style={{ color: "#00EC97", fontSize: "1.5rem" }}
-            >
-              Communities
-            </Link>
+          <h1
+            className="m-0 fs-4"
+            style={{ color: "#04a46e", fontSize: "1.5rem" }}
+          >
+            Communities
           </h1>
 
           <div className="d-flex flex-column-reverse flex-lg-row gap-3 justify-content-between align-items-center">
-            <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center gap-4">
               <SearchForm
                 type="text"
                 placeholder="🔍 Search Communities"

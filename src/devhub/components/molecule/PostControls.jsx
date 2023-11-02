@@ -17,7 +17,8 @@ const Button = styled.button`
   padding: 0.5rem 1rem;
 
   &:hover {
-    text-decoration: none;
+    background: #04a46e;
+    text-decoration: none !important;
   }
 
   outline: none;
@@ -27,7 +28,7 @@ const Button = styled.button`
 return (
   <div className={`d-flex flex-row-reverse ${props.className}`}>
     {props.href ? (
-      <Link to={props.href}>
+      <Link to={props.href} style={{ textDecoration: "none" }}>
         <Button>
           <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
           {props.title}
