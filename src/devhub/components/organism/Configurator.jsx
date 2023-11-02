@@ -42,13 +42,14 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, onUpdate, stateKey }) => {
+const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
   };
 
-  const formState = state[stateKey] ?? null;
+  const formState = state[stateKey] ?? null,
+    isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
@@ -60,48 +61,52 @@ const useForm = ({ initialValues, onUpdate, stateKey }) => {
   const formUpdate =
     ({ path, via: customFieldUpdate, ...params }) =>
     (fieldInput) => {
-      const transformFn = (node) => {
-        if (typeof customFieldUpdate === "function") {
-          return customFieldUpdate({
-            input: fieldInput?.target?.value ?? fieldInput,
-            lastKnownValue: node,
-            params,
-          });
-        } else {
-          return defaultFieldUpdate({
-            input: fieldInput?.target?.value ?? fieldInput,
-            lastKnownValue: node,
-            params,
-          });
-        }
-      };
       const updatedValues = Struct.deepFieldUpdate(
         formState?.values ?? {},
-        path,
-        (node) => transformFn(node)
+
+        {
+          input: fieldInput?.target?.value ?? fieldInput,
+          params,
+          path,
+
+          via:
+            typeof customFieldUpdate === "function"
+              ? customFieldUpdate
+              : defaultFieldUpdate,
+        }
       );
+
       State.update((lastKnownComponentState) => ({
         ...lastKnownComponentState,
+
         [stateKey]: {
           hasUnsubmittedChanges: !Struct.isEqual(
             updatedValues,
             initialFormState.values
           ),
+
           values: updatedValues,
         },
       }));
 
-      if (typeof onUpdate === "function") {
+      if (
+        typeof onUpdate === "function" &&
+        !Struct.isEqual(updatedValues, initialFormState.values)
+      ) {
         onUpdate(updatedValues);
       }
     };
 
+  if (
+    !uninitialized &&
+    (formState === null || (!formState.hasUnsubmittedChanges && !isSynced))
+  ) {
+    formReset();
+  }
+
   return {
-    hasUnsubmittedChanges: formState?.hasUnsubmittedChanges ?? false,
-    values: {
-      ...(initialValues ?? {}),
-      ...(formState?.values ?? {}),
-    },
+    ...(formState ?? initialFormState),
+    isSynced,
     reset: formReset,
     stateKey,
     update: formUpdate,

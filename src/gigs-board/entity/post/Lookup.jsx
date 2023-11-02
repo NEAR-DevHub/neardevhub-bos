@@ -123,7 +123,7 @@ return (
         </ul>
       </div>
       <div class="dropdown">
-        {widget("feature.post-search.by-author", {
+        {widget("entity.post.AuthorSearch", {
           author: state.author,
           onAuthorSearch: (author) => {
             State.update({ author });
@@ -131,7 +131,7 @@ return (
         })}
       </div>
       <div>
-        {widget("feature.post-search.by-tag", {
+        {widget("entity.post.TagSearch", {
           tag: state.tag,
           onTagSearch: (tag) => {
             State.update({ tag });
