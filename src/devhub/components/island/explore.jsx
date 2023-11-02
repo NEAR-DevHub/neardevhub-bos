@@ -48,8 +48,6 @@ const Card = styled.div`
     }
 
     padding: 1rem;
-    padding-top: 0;
-    padding-bottom: 0;
   }
 `;
 
