@@ -1,6 +1,5 @@
 function Card({ data }) {
   const { category, title, description, date } = data;
-  console.log(data);
 
   const Container = styled.div`
     min-height: 12.5rem;
