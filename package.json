@@ -2,7 +2,6 @@
   "name": "neardevhub-widgets",
   "version": "1.0.0",
   "description": "NEAR DevHub widgets for NEAR Social",
-  "type": "module",
   "devDependencies": {
     "@playwright/test": "^1.38.1",
     "prettier": "^2.8.4",
@@ -14,7 +13,7 @@
     "build": "npm run fmt && node ./module/include.js",
     "dev:testnet": "./scripts/dev.sh",
     "dev:mainnet": "./scripts/dev.sh -a devgovgigs.near -c devgovgigs.near -n mainnet",
-    "build:preview": "node ./scripts/build-preview.js",
+    "build:preview": "node ./scripts/build-preview.mjs",
     "dev": "npm run dev:mainnet",
     "test": "npx playwright test"
   },
