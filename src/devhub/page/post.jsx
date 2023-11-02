@@ -1,10 +1,10 @@
 const { id } = props;
 
 const Container = styled.div`
-  padding: 1rem 3rem;
+  padding: 0 3rem;
 
   @media screen and (max-width: 768px) {
-    padding: 1rem;
+    padding: 0 1rem;
   }
 `;
 
