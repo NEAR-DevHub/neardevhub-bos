@@ -19,7 +19,7 @@ const buttonStyle = {
 };
 
 const PageTitle = styled.h5`
-  color: #00ec97;
+  color: #04a46e;
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
@@ -64,7 +64,7 @@ return (
                 </div>
                 <input
                   type="search"
-                  className="ps-5 form-control border border-0 bg-light"
+                  className="ps-5 form-control border border-0"
                   value={state.term ?? ""}
                   onChange={(e) => updateInput(e.target.value)}
                   onKeyDown={(e) => e.key == "Enter" && search()}
@@ -73,7 +73,7 @@ return (
               </InputContainer>
               <div class="dropdown">
                 <button
-                  class="btn btn-light dropdown-toggle"
+                  class="btn dropdown-toggle bg-white"
                   type="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"

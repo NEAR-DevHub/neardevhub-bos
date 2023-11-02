@@ -40,16 +40,64 @@ const MidContainer = styled.div`
   "display: none;"}
 `;
 
+// const CTA = styled.a`
+//   background: #151515;
+//   padding: 0.75rem 0.75rem;
+//   color: #00ec97 !important;
+//   font-size: 1rem;
+//   font-style: normal;
+//   font-weight: 700;
+//   line-height: 20px; /* 83.333% */
+//   &:hover {
+//     text-decoration: none;
+//   }
+// `;
+
 const CTA = styled.a`
-  background: #151515;
-  padding: 0.75rem 0.75rem;
-  color: #00ec97 !important;
-  font-size: 1rem;
+  display: inline-flex;
+  padding: 0.875rem 1rem;
+  align-items: center;
+  gap: 0.5rem;
+
+  border-radius: 1rem;
+  border: 1px solid #151515;
+
+  color: #151515 !important;
+  font-size: 1.25rem;
   font-style: normal;
   font-weight: 700;
-  line-height: 20px; /* 83.333% */
+  line-height: 120%; /* 28.8px */
+  letter-spacing: -0.48px;
+
   &:hover {
-    text-decoration: none;
+    background: #151515;
+    color: #f4f4f4 !important;
+    text-decoration: none; // Remove underline on hover
+  }
+
+  @media screen and (max-width: 768px) {
+    display: inline-flex;
+    padding: 8px 16px;
+    align-items: center;
+    gap: 8px;
+
+    border-radius: 16px;
+    background: #151515;
+
+    border: none;
+
+    color: #f4f4f4 !important;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 19.2px */
+    letter-spacing: -0.32px;
+
+    &:hover {
+      background: #151515;
+      color: #f4f4f4;
+      text-decoration: none; // Remove underline on hover
+    }
   }
 `;
 
@@ -124,7 +172,9 @@ const MidContent = () => {
           <br />
           opportunities, and insights from the ecosystem in your inbox.
         </Description>
-        <CTA href="#">Subscribe</CTA>
+        <CTA href="https://shard.dog/devhub" target="no_blank">
+          Subscribe
+        </CTA>
         <SocialLinks>
           <a href="https://twitter.com/NEARDevHub" target="_blank">
             <XIcon />
