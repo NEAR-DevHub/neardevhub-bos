@@ -14,11 +14,10 @@ const HeroSection = styled.div`
   padding-left: 3.375rem;
 
   @media screen and (max-width: 768px) {
-    width: 95%;
-    padding-top: 0.625rem;
-    padding-left: 1.5rem;
-    padding-bottom: 1.5rem;
-    padding-right: 0;
+    width: 100%;
+    padding: 1rem 1.5rem;
+
+    clip-path: none;
   }
 `;
 
@@ -29,6 +28,7 @@ const Title = styled.h1`
   font-weight: 700;
   line-height: 100%; /* 88px */
   letter-spacing: -1.76px;
+  margin: 0;
 
   width: 80%;
 
@@ -78,9 +78,6 @@ const MobileImage = styled.img`
   width: 356.187px;
   height: 196px;
 
-  margin-left: -1.5rem;
-  margin-bottom: -1.5rem;
-  margin-right: 0;
   width: 100%;
   object-fit: cover;
   filter: grayscale(1);
@@ -94,10 +91,10 @@ return (
   <Container>
     <HeroSection>
       <Title>{bannerTitle}</Title>
-      <MobileImage src={imageLink} />
     </HeroSection>
     <ImageContainer>
       <Image src={imageLink} />
     </ImageContainer>
+    <MobileImage src={imageLink} />
   </Container>
 );

@@ -147,6 +147,13 @@ const SmallContainer = styled.div`
   "display: flex !important;"}
   justify-content: space-between;
   align-items: center;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column-reverse;
+    justify-content: center;
+    gap: 1rem;
+    align-items: center;
+  }
 `;
 const SmallContent = () => {
   return (
