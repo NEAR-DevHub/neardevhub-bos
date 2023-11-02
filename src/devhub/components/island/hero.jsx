@@ -18,11 +18,12 @@ const HeroSection = styled.div`
   padding-left: 3.375rem;
 
   @media screen and (max-width: 768px) {
-    width: 95%;
+    width: 100%;
     padding-top: 0.625rem;
     padding-left: 1.5rem;
-    padding-bottom: 1.5rem;
+    padding-bottom: 0;
     padding-right: 0;
+    clip-path: none;
   }
 `;
 
@@ -37,6 +38,8 @@ const Title = styled.h1`
   @media screen and (max-width: 768px) {
     font-size: 2.25rem;
     letter-spacing: -0.72px;
+    padding-bottom: 1rem;
+    margin: 0;
   }
 `;
 
@@ -145,12 +148,9 @@ const DesktopDescription = styled.div`
 const MobileImage = styled.img`
   display: none;
 
-  width: 356.187px;
+  width: 100%;
   height: 196px;
 
-  margin-left: -1.5rem;
-  margin-bottom: -1.5rem;
-  margin-right: 0;
   width: 100%;
   object-fit: cover;
   filter: grayscale(1);
@@ -164,7 +164,7 @@ const MobileDescription = styled.div`
   display: none;
   padding: 24px 16px;
 
-  width: 70%;
+  width: 100%;
 
   @media screen and (max-width: 768px) {
     display: block;
@@ -179,7 +179,6 @@ return (
         <span style={{ color: "#101820" }}>home base</span> <br />
         for NEAR builders
       </Title>
-      <MobileImage src={imageLink} />
       <DesktopDescription>
         <Lead>
           Join a vibrant community of innovators shaping the open web.
@@ -196,6 +195,7 @@ return (
         </Link>
       </DesktopDescription>
     </HeroSection>
+    <MobileImage src={imageLink} />
     <ImageContainer>
       <Image src={imageLink} />
     </ImageContainer>
