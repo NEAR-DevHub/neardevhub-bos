@@ -99,8 +99,7 @@ return (
                       class="dropdown-item link-underline link-underline-opacity-0"
                       href={href({
                         widgetSrc: "${REPL_DEVHUB}/widget/app",
-                        params: { page: "feed" },
-                        recency: "all",
+                        params: { page: "feed", recency: "all" },
                       })}
                     >
                       All replies
