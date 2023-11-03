@@ -188,23 +188,7 @@ const ActionContainer = styled.div`
 
 return (
   <>
-    <Widget
-      src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`}
-      props={{
-        title: (
-          <>
-            We are building <br />
-            <span style={{ color: "#151515" }}>
-              a decentralized community
-            </span>{" "}
-            <br />
-            for NEAR Developers.
-          </>
-        ),
-        imageLink:
-          "https://ipfs.near.social/ipfs/bafybeiap2mzwsly4apaldxguiunx4rjwqyadksj5yxuzwrww3kue3ao5qe",
-      }}
-    />
+    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
     <Header>
       <PageHeader>/contribute</PageHeader>
     </Header>

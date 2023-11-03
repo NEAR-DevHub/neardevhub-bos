@@ -51,6 +51,7 @@ const BlogContainer = styled.div`
 // generic feed component.
 return (
   <div className="w-100">
+    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
     <HeaderContainer>
       <Header>/blog</Header>
     </HeaderContainer>

@@ -108,23 +108,7 @@ const CardGrid = styled.div`
 
 return (
   <div className="w-100">
-    <Widget
-      src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`}
-      props={{
-        title: (
-          <>
-            We are building <br />
-            <span style={{ color: "#151515" }}>
-              a decentralized community
-            </span>{" "}
-            <br />
-            for NEAR Developers.
-          </>
-        ),
-        imageLink:
-          "https://ipfs.near.social/ipfs/bafkreigtpjmgt3aphd3plbcremtvazeo7qsjvguw44m74zthyxbhj4toqe",
-      }}
-    />
+    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
     <div style={{ background: "#f4f4f4" }}>
       <div
         className="d-flex justify-content-between p-4"
