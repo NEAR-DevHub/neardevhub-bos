@@ -106,39 +106,6 @@ const CardGrid = styled.div`
   }
 `;
 
-// const SearchForm = styled.input`
-//   display: flex;
-//   padding: 14px 16px;
-//   align-items: center;
-//   gap: 16px;
-
-//   border-radius: 4px;
-//   //background: rgba(129, 129, 129, 0.15);
-
-//   color: #818181;
-//   font-size: 16px;
-//   font-style: normal;
-//   font-weight: 400;
-//   line-height: 20px; /* 125% */
-
-//   border: none;
-// `;
-
-// const Sort = styled.select`
-//   padding: 14px 16px;
-
-//   border-radius: 4px;
-//   //background: rgba(129, 129, 129, 0.15);
-
-//   color: #818181;
-//   font-size: 16px;
-//   font-style: normal;
-//   font-weight: 400;
-//   line-height: 20px; /* 125% */
-
-//   border: none;
-// `;
-
 return (
   <div className="w-100">
     <Widget
