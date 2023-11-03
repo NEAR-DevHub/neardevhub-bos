@@ -48,6 +48,7 @@ function Card({ data }) {
       font-style: normal;
       font-weight: 400;
       line-height: 20px; /* 125% */
+      margin-top: auto;
     }
 
     p {
