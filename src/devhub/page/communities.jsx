@@ -79,7 +79,7 @@ const CTA = styled.button`
   line-height: 20px; /* 125% */
 
   border-radius: 4px;
-  background: #00ec97;
+  background: #04a46e;
 
   display: flex;
   padding: 14px 16px;

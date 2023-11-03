@@ -34,6 +34,7 @@ const Heading = styled.h3`
 const CardContainer = styled.div`
   transition: all 300ms;
   border-radius: 1rem;
+  height: 100%;
 
   &:hover {
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
