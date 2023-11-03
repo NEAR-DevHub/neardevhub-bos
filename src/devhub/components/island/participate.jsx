@@ -37,17 +37,17 @@ const Links = [
     links: [
       {
         title: "Ideate on Devhub",
-        href: "#/devhub.near/widget/app?page=blog&id=2029",
+        href: "/devhub.near/widget/app?page=blog&id=2029",
         count: 1,
       },
       {
         title: "Post a Proposal",
-        href: "#/devhub.near/widget/app?page=blog&id=2035",
+        href: "/devhub.near/widget/app?page=blog&id=2035",
         count: 4,
       },
       {
         title: "Host an Event",
-        href: "#/devhub.near/widget/app?page=community&handle=hacks&tab=Wiki%202",
+        href: "/devhub.near/widget/app?page=community&handle=hacks&tab=Wiki%202",
         count: 7,
       },
     ],
@@ -61,7 +61,7 @@ const Links = [
       },
       {
         title: "Join the Fellowship",
-        href: "#/devhub.near/widget/app?page=community&handle=fellowship&tab=Wiki%201",
+        href: "/devhub.near/widget/app?page=community&handle=fellowship&tab=Wiki%201",
         count: 5,
       },
     ],
@@ -70,12 +70,12 @@ const Links = [
     links: [
       {
         title: "Join NEAR Campus",
-        href: "#/devhub.near/widget/app?page=community&handle=near-campus",
+        href: "/devhub.near/widget/app?page=community&handle=near-campus",
         count: 3,
       },
       {
         title: "Dive into Hackbox",
-        href: "#/hackbox.near/widget/home",
+        href: "/hackbox.near/widget/home",
         count: 6,
       },
     ],
