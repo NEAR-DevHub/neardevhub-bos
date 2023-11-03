@@ -244,7 +244,7 @@ function Form() {
       <div className="d-flex flex-column">
         <div className="d-flex gap-1 flex-column flex-xl-row">
           <Widget
-            src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+            src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.text-input"
             props={{
               className: "w-100",
               key: `${form.values.metadata.id}-repoURL`,
@@ -255,7 +255,7 @@ function Form() {
             }}
           />
           <Widget
-            src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+            src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.text-input"
             props={{
               className: "w-100",
               key: `${form.values.metadata.id}-title`,
@@ -268,7 +268,7 @@ function Form() {
         </div>
 
         <Widget
-          src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+          src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.text-input"
           props={{
             className: "w-100",
             key: `${form.values.metadata.id}-description`,
@@ -282,7 +282,7 @@ function Form() {
 
       <div className="d-flex gap-4 flex-row flex-wrap justify-content-between">
         <Widget
-          src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+          src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.text-input"
           props={{
             heading: "Ticket types",
             classNames: { root: "col-12 col-md-4 h-auto" },
@@ -310,7 +310,7 @@ function Form() {
           </span>
 
           <Widget
-            src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.button-switch"
+            src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.button-switch"
             props={{
               currentValue: form.values.ticketState,
               key: "ticketState",
@@ -325,7 +325,7 @@ function Form() {
           />
         </div>
         <Widget
-          src="${REPL_DEVHUB}/widget/gigs-board.components.organism.configurator"
+          src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.organism.configurator"
           props={{
             heading: "Card fields",
             classNames: { root: "col-12 col-md-4 h-auto" },
@@ -357,7 +357,7 @@ function Form() {
             >
               <div className="d-flex flex-column gap-1 w-100">
                 <Widget
-                  src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+                  src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.text-input"
                   props={{
                     className: "flex-grow-1",
                     key: `${form.values.metadata.id}-column-${id}-title`,
@@ -368,7 +368,7 @@ function Form() {
                   }}
                 />
                 <Widget
-                  src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+                  src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.text-input"
                   props={{
                     format: "comma-separated",
                     key: `${form.values.metadata.id}-column-${title}-labelSearchTerms`,
@@ -385,7 +385,7 @@ function Form() {
                   }}
                 />
                 <Widget
-                  src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.text-input"
+                  src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.text-input"
                   props={{
                     className: "flex-grow-1",
                     key: `${form.values.metadata.id}-column-${id}-description`,
@@ -424,7 +424,7 @@ function Form() {
 
         <div className="d-flex gap-3 justify-content-end w-100">
           <Widget
-            src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.button"
+            src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.button"
             props={{
               classNames: {
                 root: "d-flex btn btn-outline-danger shadow-none border-0",
@@ -435,7 +435,7 @@ function Form() {
             }}
           />
           <Widget
-            src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.button"
+            src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.button"
             props={{
               classNames: { root: "btn btn-success" },
               disabled: form.isSynced,
@@ -469,7 +469,7 @@ return (
           <span>GitHub board configuration</span>
         </h5>
         <Widget
-          src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.button-switch"
+          src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.button-switch"
           props={{
             currentValue: editingMode,
             key: "editingMode",
@@ -499,7 +499,7 @@ return (
     </div>
     {form.values ? (
       <Widget
-        src={`${REPL_DEVHUB}/widget/gigs-board.entity.workspace.view.${form.values.metadata.type}`}
+        src={`${REPL_DEVHUB_LEGACY}/widget/gigs-board.entity.workspace.view.${form.values.metadata.type}`}
         props={{
           ...form.values,
 
@@ -536,7 +536,7 @@ return (
           This community doesn't have a GitHub board
         </h5>
         <Widget
-          src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.button"
+          src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.button"
           props={{
             icon: { type: "bootstrap_icon", variant: "bi-github" },
             isHidden: !permissions.can_configure,

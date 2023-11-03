@@ -328,7 +328,7 @@ const buttonsFooter = props.isPreview ? null : (
           ) : (
             <Widget
               // TODO: LEGACY.
-              src="${REPL_DEVHUB}/widget/gigs-board.components.layout.LikeButton.Faces"
+              src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.layout.LikeButton.Faces"
               props={{
                 likesByUsers: Object.fromEntries(
                   post.likes.map(({ author_id }) => [author_id, ""])

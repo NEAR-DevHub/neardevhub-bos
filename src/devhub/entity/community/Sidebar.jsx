@@ -58,7 +58,7 @@ return community === null ? (
             <Widget
               // TODO: LEGACY.
               src={
-                "${REPL_DEVHUB}/widget/gigs-board.components.molecule.profile-card"
+                "${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.profile-card"
               }
               props={{ accountId }}
             />
