@@ -9,6 +9,7 @@ function Page({ data }) {
     width: 100%;
 
     padding: 0 3rem;
+    margin-bottom: 1rem;
 
     ${category &&
     `
@@ -43,7 +44,7 @@ function Page({ data }) {
       font-style: normal;
       font-weight: 700;
       line-height: 100%; /* 88px */
-      margin: 1rem 0;
+      margin: 1.5rem 0;
     }
 
     p.subtitle {
