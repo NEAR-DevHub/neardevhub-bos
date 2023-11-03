@@ -65,7 +65,7 @@ const Banner = styled.div`
 
 const { data, handle, onSubmit } = props;
 
-const initialData = data; // TODO: Check Storage API
+const initialData = data;
 
 const [content, setContent] = useState(initialData.content || "");
 const [title, setTitle] = useState(initialData.title || "");
@@ -76,21 +76,12 @@ const [previewMode, setPreviewMode] = useState("card"); // "card" or "page"
 const [date, setDate] = useState(initialData.date || new Date());
 const [category, setCategory] = useState("guide");
 
-// Legacy State.init for IpfsUploader
-State.init({
-  image: {
-    cid: "bafkreic4xgorjt6ha5z4s5e3hscjqrowe5ahd7hlfc5p4hb6kdfp6prgy4",
-  },
-});
-
 const Container = styled.div`
   width: 100%;
   margin: 0 auto;
   padding: 20px;
   text-align: left;
 `;
-
-const cidToURL = (cid) => `https://ipfs.near.social/ipfs/${cid}`;
 
 const hasDataChanged = () => {
   return (
@@ -115,7 +106,7 @@ const handlePublish = () => {
         date,
         content,
         author,
-        image: state.image.cid,
+        category,
         community: handle,
       },
       data.id !== undefined
@@ -135,8 +126,6 @@ function Preview() {
             content,
             author,
             category,
-            image: state.image,
-            tags: data.includeLabels,
             community: handle,
           }}
         />
@@ -153,8 +142,6 @@ function Preview() {
             content,
             author,
             category,
-            image: state.image,
-            tags: data.includeLabels,
             community: handle,
           }}
         />
@@ -202,19 +189,6 @@ return (
         role="tabpanel"
         aria-labelledby="edit-tab"
       >
-        <div style={{ height: 280, marginBottom: "1rem" }}>
-          <Banner
-            alt="Blog background Preview"
-            className="card-img-top d-flex flex-column justify-content-end align-items-end p-4"
-            style={{
-              background: `center / cover no-repeat url(${cidToURL(
-                state.image.cid
-              )})`,
-            }}
-          >
-            <IpfsImageUpload image={state.image} />
-          </Banner>
-        </div>
         <Widget
           src="${REPL_DEVHUB}/widget/devhub.entity.addon.blog.editor.form"
           props={{

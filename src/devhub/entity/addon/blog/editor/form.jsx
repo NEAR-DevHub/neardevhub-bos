@@ -35,6 +35,7 @@ const TitleInput = ({ title, setTitle }) => {
             onChange: (e) => setTitle(e.target.value),
             value: title,
             placeholder: "Title",
+            inputProps: { name: "title" },
           }}
         />
       </div>
@@ -53,6 +54,7 @@ const SubtitleInput = ({ subtitle, setSubtitle }) => {
             onChange: (e) => setSubtitle(e.target.value),
             value: subtitle,
             placeholder: "Subtitle",
+            inputProps: { name: "subtitle" },
           }}
         />
       </div>
@@ -92,6 +94,7 @@ const DescriptionInput = ({ description, setDescription }) => {
             onChange: (e) => setDescription(e.target.value),
             value: description,
             placeholder: "Description",
+            inputProps: { name: "description" },
           }}
         />
       </div>
@@ -111,6 +114,7 @@ const AuthorInput = ({ author, setAuthor }) => {
             onChange: (e) => setAuthor(e.target.value),
             value: author,
             placeholder: "Author",
+            inputProps: { name: "author" },
           }}
         />
       </div>
@@ -123,6 +127,7 @@ const DateInput = ({ date, setDate }) => {
     <div>
       <h5>Date</h5>
       <input
+        name="date"
         type="date"
         value={date}
         onChange={(e) => setDate(e.target.value)}
@@ -144,7 +149,7 @@ const ContentEditor = ({ content, setContent }) => {
 };
 
 return (
-  <FormContainer>
+  <FormContainer id="blog-editor-form">
     <TitleInput title={title} setTitle={setTitle} />
     <SubtitleInput subtitle={subtitle} setSubtitle={setSubtitle} />
     <CategorySelect
