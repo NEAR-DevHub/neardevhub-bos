@@ -63,7 +63,7 @@ function Card({ data }) {
   const formattedDate = new Date(date).toLocaleString("en-US", options);
 
   return (
-    <Container>
+    <Container id={`blog-card-${title}`}>
       {category && <span className="category">{category}</span>}
       <h5>{title}</h5>
       <p>{description}</p>

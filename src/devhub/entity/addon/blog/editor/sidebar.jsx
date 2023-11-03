@@ -8,7 +8,7 @@ const SidebarContainer = styled.div`
   flex-direction: column;
   align-items: center;
   height: 100%;
-  gap: 2px;
+  gap: 4px;
 `;
 
 const SidebarButton = styled.button`
@@ -27,10 +27,14 @@ const SidebarButton = styled.button`
 `;
 
 return (
-  <SidebarContainer>
-    <SidebarButton onClick={() => handleItemClick(null)}>New</SidebarButton>
+  <SidebarContainer id="edit-blog-sidebar">
+    <p>Blog posts</p>
+    <SidebarButton onClick={() => handleItemClick(null)} id="create-new-blog">
+      New
+    </SidebarButton>
     {(items || []).map((it) => (
       <SidebarButton
+        id={`edit-blog-selector-${it.post_id}`}
         key={it.post_id}
         selected={selectedItem.id === it.post_id}
         onClick={() => handleItemClick(it.post_id)}
