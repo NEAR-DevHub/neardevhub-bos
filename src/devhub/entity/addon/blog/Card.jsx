@@ -1,5 +1,5 @@
 function Card({ data }) {
-  const { category, title, description, date } = data;
+  const { category, title, subtitle, date } = data;
 
   const Container = styled.div`
     min-height: 12.5rem;
@@ -9,6 +9,7 @@ function Card({ data }) {
     align-items: flex-start;
     gap: 1rem;
     flex-shrink: 0;
+    align-self: stretch;
 
     border-radius: 1rem;
     border: 1px solid rgba(129, 129, 129, 0.3);
@@ -66,7 +67,7 @@ function Card({ data }) {
     <Container id={`blog-card-${title}`}>
       {category && <span className="category">{category}</span>}
       <h5>{title}</h5>
-      <p>{description}</p>
+      <p>{subtitle}</p>
       <span className="date">{formattedDate}</span>
     </Container>
   );
