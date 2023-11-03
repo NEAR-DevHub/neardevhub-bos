@@ -1,4 +1,5 @@
 const { test, expect } = require("@playwright/test");
+const { setCookieConsentAccepted } = require("../testUtils.js");
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -9,6 +10,8 @@ test.describe("Wallet is connected", () => {
     page,
   }) => {
     await page.goto("/devgovgigs.near/widget/app?page=communities");
+
+    await setCookieConsentAccepted(page);
 
     const createCommunityButtonSelector = 'button:has-text("Create Community")';
 
