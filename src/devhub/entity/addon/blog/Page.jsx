@@ -9,7 +9,7 @@ function Page({ data }) {
     width: 100%;
 
     padding: 0 3rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 
     ${category &&
     `
