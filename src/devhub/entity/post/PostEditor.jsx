@@ -36,6 +36,7 @@ const mode = props.mode ?? "Create";
 
 const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
 const labelStrings = (props.labels ?? []).concat(referralLabels);
+
 const labels = labelStrings.map((s) => {
   return { name: s };
 });
@@ -121,7 +122,7 @@ const onSubmit = () => {
         state.supervisor,
         state.seekingFunding
       ),
-      submission_version: "V1",
+      solution_version: "V1",
     },
     Attestation: {
       name: state.name,
