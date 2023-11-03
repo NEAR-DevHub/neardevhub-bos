@@ -14,6 +14,10 @@ const categories = [
     label: "News",
     value: "news",
   },
+  {
+    label: "Reference",
+    value: "reference",
+  },
 ];
 
 const selectOptions = useMemo(
