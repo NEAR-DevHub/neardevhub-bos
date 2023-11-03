@@ -116,7 +116,7 @@ const onSubmit = () => {
     body = {
       ...body,
       post_type: "Solution",
-      submission_version: "V1",
+      solution_version: "V1",
     };
   } else {
     // Idea
