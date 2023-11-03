@@ -172,7 +172,7 @@ const MidContent = () => {
           <br />
           opportunities, and insights from the ecosystem in your inbox.
         </Description>
-        <CTA href="https://shard.dog/devhub" target="no_blank">
+        <CTA href="https://newsletter.neardevhub.org" target="no_blank">
           Subscribe
         </CTA>
         <SocialLinks>

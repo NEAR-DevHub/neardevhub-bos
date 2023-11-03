@@ -91,66 +91,106 @@ return (
 
       <div>
         <p>
-          DevHub caters to a niche audience of open-source developers motivated
-          by technology and a strong sense of community. They are driven by
-          personal goals and the desire to contribute to the common good and
-          actively participate in the NEAR community. What keeps them engaged is
-          the recognition, empowerment, success of fellow community members,
-          innovation, and the sense of technological progress. See NEAR Tech
-          Audience mindmap above for more
+          DevHub brings together individuals, projects, and organizations to
+          build a decentralized NEAR developer ecosystem. We provide social
+          structure and tools to fuel innovation, collaboration, and community
+          within the NEAR ecosystem. Whether you’re a blockchain developer or
+          advocate for the open web, DevHub is your gateway to making a
+          meaningful impact on NEAR and beyond.
         </p>
 
-        <h3>Value Proposition:</h3>
+        <h3>Mission</h3>
         <p>
-          DevHub's unique value proposition lies in its ability to foster
-          innovation for projects that contribute to the common good. It
-          empowers developers by creating a peer-to-peer support structure that
-          enables them to make a meaningful impact within the decentralized NEAR
-          community.
+          Build a self-sufficient developer community to enable a thriving NEAR
+          ecosystem.
         </p>
 
-        <h3>Competitive Edge:</h3>
+        <h3>Values</h3>
         <p>
-          DevHub distinguishes itself by being a decentralized, fair, and
-          predictable platform where projects and brands are part of the
-          decision-making and execution process. It operates at a high velocity,
-          ensuring that results are consistently delivered. This sets it apart
-          from other open-source communities, which often lack the same level of
-          organization and predictability.
+          <ul>
+            <li>
+              <b>Decentralized</b>: We are building together.
+            </li>
+            <li>
+              <b>Transparent</b>: All decision making and communication is open.
+            </li>
+            <li>
+              <b>Self-sufficient</b>: We do not critically depend on any single
+              entity.
+            </li>
+            <li>
+              <b>Robust</b>: Any role or team can be duplicated or replaced.
+            </li>
+            <li>
+              <b>High-velocity</b>: We need to move faster than classic OSS.
+            </li>
+          </ul>
         </p>
 
-        <h3>Emotional Appeal:</h3>
+        <h3>Scope</h3>
         <p>
-          DevHub aims to evoke feelings of respect, fairness, and predictability
-          in its users. It strives to create a balance between being a
-          structured platform and maintaining a sense of socialness and fun
-          within the community.
+          DevHub covers a wide range of areas to support the NEAR developer
+          ecosystem, including:
         </p>
 
         <h3>Visual Identity:</h3>
         <p>
-          The visual identity should reinforce the emotions of respect,
-          fairness, and predictability while maintaining a sense of socialness
-          and fun. It should be highly recognisable, with a consistent colour
-          scheme and design elements that can be integrated into other
-          applications and websites.
+          <ul>
+            <li>
+              <b>Developer Tooling</b>: Contributing code to the NEAR Platform
+              (blockchain and devtools) and facilitating technical decisions
+              with recognized experts based on the needs of the community and
+              ecosystem.
+            </li>
+            <li>
+              <b>Developer Relations</b>: Engaging with the community across
+              various social channels, gathering feedback, and improving
+              documentation.
+            </li>
+            <li>
+              <b>Deep-Tech Awareness</b>: Working with marketing partners to
+              create awareness on interesting projects and technology areas.
+            </li>
+            <li>
+              <b>Events and Hackathons</b>: Organizing events and empowering
+              community leaders with resources to grow their local communities.
+            </li>
+            <li>
+              <b>Education</b>: Partnering with universities across the globe to
+              support students and scholars in exploring Web3 technologies
+            </li>
+            <li>
+              <b>Platform</b>: Developing DevHub platform as a product to enable
+              communities to collaborate and support each other.
+            </li>
+          </ul>
         </p>
 
-        <h3>Immediate Brand Recognition:</h3>
+        <h3>Our Contributors</h3>
         <p>
-          DevHub's goal is for "DevHub" to be the immediate answer for anyone
-          seeking assistance or information related to the NEAR ecosystem,
-          whether it's about code or social events. The brand should convey that
-          it is a reliable, fair, and respectful resource within the NEAR
-          community.
+          DevHub operates through DevDAO, which provides social structures to
+          support developers. Within DevDAO, we have a dedicated core team of
+          moderators and community contributors who work across the key areas
+          above. We welcome contributions from any community members who want to
+          join us in building our ecosystem and their own skills!
         </p>
 
-        <h3>Relation to NEAR:</h3>
+        <h3>Our Platform</h3>
         <p>
-          DevHub is closely tied to NEAR and plays a critical role in supporting
-          and growing the ecosystem. While it should be communicated that DevHub
-          is related to NEAR, it should also maintain its distinct brand
-          identity.
+          Our main tool for interfacing is the DevHub Platform, where you can
+          connect with others, share ideas and solutions, and access resources
+          and support. You can also find communities working on a variety of
+          areas, from protocol development to tooling and documentation.
+        </p>
+
+        <h3>Join Us in Shaping NEAR’s Future</h3>
+        <p>
+          Regardless of your background or where you are on your developer
+          journey, we’re happy you’re here! We hope you’ll explore, find your
+          people, and discover paths to contribute that are most gratifying for
+          you.
+          <br />
+          Let’s build the open web together.
         </p>
       </div>
     </Section>
