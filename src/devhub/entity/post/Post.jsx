@@ -666,7 +666,7 @@ const postsList =
   ) : (
     <div class="row" key="posts-list">
       <div
-        class={`collapse ${
+        class={`collapse mt-3 ${
           defaultExpanded ||
           childPostHasDraft ||
           state.childrenOfChildPostsHasDraft
@@ -724,7 +724,7 @@ const descriptionArea = isUnderPost ? (
     />
   </LimitedMarkdown>
 ) : (
-  <div>
+  <div className="w-100 overflow-auto">
     <div class={state.clamp ? "clamp" : ""}>
       {/* {widget("components.molecule.markdown-viewer", {
         text: state.clamp ? clampedContent : snapshot.description,
@@ -833,20 +833,21 @@ return (
               )}
             </div>
           </div>
-
-          <Widget
-            src="markeljan.near/widget/MarkdownDiff"
-            props={{
-              post: post,
-              currentCode: combineText(
-                swapTimestamps ? compareSnapshot : snapshot
-              ),
-              prevCode: combineText(
-                swapTimestamps ? snapshot : compareSnapshot
-              ),
-              showLineNumber: true,
-            }}
-          />
+          <div className="w-100 overflow-auto">
+            <Widget
+              src="markeljan.near/widget/MarkdownDiff"
+              props={{
+                post: post,
+                currentCode: combineText(
+                  swapTimestamps ? compareSnapshot : snapshot
+                ),
+                prevCode: combineText(
+                  swapTimestamps ? snapshot : compareSnapshot
+                ),
+                showLineNumber: true,
+              }}
+            />
+          </div>
         </div>
       ) : (
         <>
