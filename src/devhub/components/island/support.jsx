@@ -23,7 +23,7 @@ const Items = [
       </>
     ),
     cta: {
-      href: "https://bit.ly/DevHubOfficeHrs",
+      href: "/devhub.near/widget/app?page=community&handle=education&tab=Wiki%202",
       title: "Book a meeting ↗",
     },
   },
@@ -32,7 +32,7 @@ const Items = [
     description:
       "Explore funding opportunities from DevHub to fuel your vision",
     cta: {
-      href: "https://near.social/devgovgigs.near/widget/app?page=community&handle=developer-dao&tab=Funding",
+      href: "/devhub.near/widget/app?page=community&handle=developer-dao&tab=Funding",
       title: "Learn more ↗",
     },
   },
