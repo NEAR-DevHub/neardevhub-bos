@@ -6,7 +6,7 @@ const Button = styled.button`
   gap: 8px;
 
   border-radius: 4px;
-  background: #00ec97;
+  background: #04a46e;
 
   color: #f4f4f4;
   font-size: 16px;
@@ -17,7 +17,7 @@ const Button = styled.button`
   padding: 0.5rem 1rem;
 
   &:hover {
-    background: #04a46e;
+    background: #151515;
     text-decoration: none !important;
   }
 
