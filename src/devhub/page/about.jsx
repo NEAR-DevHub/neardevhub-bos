@@ -131,10 +131,6 @@ return (
         <p>
           DevHub covers a wide range of areas to support the NEAR developer
           ecosystem, including:
-        </p>
-
-        <h3>Visual Identity:</h3>
-        <p>
           <ul>
             <li>
               <b>Developer Tooling</b>: Contributing code to the NEAR Platform
