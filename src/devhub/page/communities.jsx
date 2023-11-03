@@ -87,7 +87,7 @@ const CTA = styled.button`
   gap: 8px;
 
   &:hover {
-    background: #04a46e;
+    background: #555555;
   }
 `;
 
@@ -117,7 +117,7 @@ return (
         <div className="d-flex flex-column gap-3 w-100">
           <h1
             className="m-0 fs-4"
-            style={{ color: "#04a46e", fontSize: "1.5rem" }}
+            style={{ color: "#555555", fontSize: "1.5rem" }}
           >
             Communities
           </h1>

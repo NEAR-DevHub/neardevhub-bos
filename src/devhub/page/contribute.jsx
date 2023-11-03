@@ -10,11 +10,11 @@ const Header = styled.div`
   }
 `;
 
-const PageHeader = styled.h2`
-  color: #00ec97;
+const PageHeader = styled.h1`
+  color: #555555;
   font-size: 1.5rem;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 120%; /* 28.8px */
   letter-spacing: -0.24px;
   margin: 0;
@@ -190,7 +190,7 @@ return (
   <>
     <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
     <Header>
-      <PageHeader>/contribute</PageHeader>
+      <PageHeader>Contribute</PageHeader>
     </Header>
     <Lead>
       There are many ways to start your contribution journey. You can:
