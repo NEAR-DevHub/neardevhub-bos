@@ -17,6 +17,11 @@ const Dropdown = styled.div`
   p {
     &.active {
       color: #fff;
+
+      &:hover {
+        text-decoration: none;
+        color: #096d50 !important;
+      }
     }
   }
 `;
@@ -52,7 +57,12 @@ const DropdownLink = styled.div`
   text-decoration: none;
 
   &.active {
-    color: #00ec97;
+    color: #04a46e;
+  }
+
+  &:hover {
+    text-decoration: none;
+    color: #096d50 !important;
   }
 `;
 
@@ -64,6 +74,7 @@ return (
     {href ? (
       <DropdownLink className={href === props.page && "active"} href={href}>
         <Link
+          style={{ textDecoration: "none" }}
           to={linkHref({
             widgetSrc: "${REPL_DEVHUB}/widget/app",
             params: { page: href },
@@ -89,12 +100,18 @@ return (
               {link.href.startsWith("http://") ||
               link.href.startsWith("https://") ? (
                 // External link: Render an <a> tag
-                <a href={link.href} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={link.href}
+                  style={{ textDecoration: "none" }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {link.title}
                 </a>
               ) : (
                 // Internal link: Render the <Link> component
                 <Link
+                  style={{ textDecoration: "none" }}
                   to={linkHref({
                     widgetSrc: "${REPL_DEVHUB}/widget/app",
                     params: { page: link.href },

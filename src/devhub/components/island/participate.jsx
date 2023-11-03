@@ -28,7 +28,7 @@ const LinkItem = styled.a`
 
   &:hover {
     text-decoration: none;
-    color: #04146e;
+    color: #096d50;
   }
 `;
 

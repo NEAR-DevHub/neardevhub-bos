@@ -1,5 +1,5 @@
 const PageHeader = styled.h2`
-  color: #00ec97;
+  color: #04a46e;
   font-size: 24px;
   font-style: normal;
   font-weight: 400;

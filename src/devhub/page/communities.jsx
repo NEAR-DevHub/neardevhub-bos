@@ -106,39 +106,6 @@ const CardGrid = styled.div`
   }
 `;
 
-const SearchForm = styled.input`
-  display: flex;
-  padding: 14px 16px;
-  align-items: center;
-  gap: 16px;
-
-  border-radius: 4px;
-  //background: rgba(129, 129, 129, 0.15);
-
-  color: #818181;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 20px; /* 125% */
-
-  border: none;
-`;
-
-const Sort = styled.select`
-  padding: 14px 16px;
-
-  border-radius: 4px;
-  //background: rgba(129, 129, 129, 0.15);
-
-  color: #818181;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 20px; /* 125% */
-
-  border: none;
-`;
-
 return (
   <div className="w-100">
     <Widget
@@ -172,14 +139,15 @@ return (
           </h1>
 
           <div className="d-flex flex-column-reverse flex-lg-row gap-3 justify-content-between align-items-center">
-            <div className="d-flex align-items-center gap-4">
-              <SearchForm
+            <div className="d-flex flex-column flex-lg-row col-12 col-md-6 mt-3 mt-lg-0 align-items-center gap-4 col-lg-6">
+              <input
                 type="text"
                 placeholder="🔍 Search Communities"
+                className="form-control w-100"
                 value={searchKey}
                 onChange={(e) => setSearchKey(e.target.value)}
               />
-              <Sort
+              <select
                 class="form-select"
                 onChange={(e) => setSort(e.target.value)}
               >
@@ -188,7 +156,7 @@ return (
                 </option>
                 <option value="a-z">A-Z</option>
                 <option value="z-a">Z-A</option>
-              </Sort>
+              </select>
             </div>
             {context.accountId && (
               <div className="d-flex flex-column justify-content-center">
