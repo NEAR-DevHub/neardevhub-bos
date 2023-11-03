@@ -13,11 +13,55 @@ if (id) {
   );
 }
 
+const HeaderContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 60px;
+  padding: 1rem 3rem;
+  align-items: center;
+  flex-shrink: 0;
+  background-color: #f4f4f4;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+  }
+`;
+
+const Header = styled.h2`
+  color: #04a46e;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 120%; /* 28.8px */
+  letter-spacing: -0.24px;
+  margin: 0;
+`;
+
+const BlogContainer = styled.div`
+  padding: 1rem 3rem;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+  }
+`;
+
+// I like that this reduces duplicate code with the Viewer, but I don't like
+// that "Latest Blog Posts" carries over... // TOOD: create a common blog
+// feed... I think the addon.blog.Feed naming is confusing, as this should be a
+// generic feed component.
 return (
-  // I like that this reduces duplicate code with the Viewer, but I don't like that "Latest Blog Posts" carries over...
-  // TOOD: create a common blog feed... I think the addon.blog.Feed naming is confusing, as this should be a generic feed component.
-  <Widget
-    src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Viewer"}
-    props={{ includeLabels: ["blog"], layout: "grid" }} // what is DevDAO label?
-  />
+  <div className="w-100">
+    <HeaderContainer>
+      <Header>/blog</Header>
+    </HeaderContainer>
+    <BlogContainer>
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Viewer"}
+        props={{
+          handle: "developer-dao",
+          hideTitle: true,
+        }}
+      />
+    </BlogContainer>
+  </div>
 );
