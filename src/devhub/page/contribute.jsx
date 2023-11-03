@@ -89,8 +89,7 @@ const actions = [
     description:
       "DevHub’s NEAR Campus supports existing student clubs, researchers, and faculties in blockchain technologies, enhancing both curricular and extracurricular activities. We aim to merge blockchain education with mainstream academics.",
     ctaAction: "Learn More →",
-    ctaLink:
-      "#/devhub.near/widget/app?page=community&handle=near-campus",
+    ctaLink: "#/devhub.near/widget/app?page=community&handle=near-campus",
   },
   {
     title: "Dive into Hackbox",
