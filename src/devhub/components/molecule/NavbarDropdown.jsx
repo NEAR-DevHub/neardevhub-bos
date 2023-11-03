@@ -57,7 +57,7 @@ const DropdownLink = styled.div`
   text-decoration: none;
 
   &.active {
-    color: #04a46e;
+    color: #555555;
   }
 
   &:hover {

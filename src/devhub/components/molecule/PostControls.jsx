@@ -17,7 +17,7 @@ const Button = styled.button`
   padding: 0.5rem 1rem;
 
   &:hover {
-    background: #151515;
+    background: #555555;
     text-decoration: none !important;
   }
 
