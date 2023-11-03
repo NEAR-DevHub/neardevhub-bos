@@ -196,7 +196,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
             </div>
             <Widget
               // TODO: LEGACY.
-              src={`${REPL_DEVHUB}/widget/gigs-board.${fieldParamsByType[fieldType].name}`}
+              src={`${REPL_DEVHUB_LEGACY}/widget/gigs-board.${fieldParamsByType[fieldType].name}`}
               props={{
                 ...fieldProps,
 
