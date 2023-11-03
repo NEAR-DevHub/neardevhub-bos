@@ -1,5 +1,6 @@
 {
   "REPL_DEVHUB": "devhubtest.testnet",
+  "REPL_DEVHUB_LEGACY": "devhubtest.testnet",
   "REPL_DEVHUB_CONTRACT": "thomaselliot.testnet",
   "REPL_NEAR": "discom.testnet",
   "REPL_MOB": "eugenethedream",
