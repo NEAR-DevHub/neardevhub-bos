@@ -9,7 +9,6 @@ function Card({ data }) {
     align-items: flex-start;
     gap: 1rem;
     flex-shrink: 0;
-    align-self: stretch;
 
     border-radius: 1rem;
     border: 1px solid rgba(129, 129, 129, 0.3);
