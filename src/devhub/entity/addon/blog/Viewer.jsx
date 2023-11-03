@@ -4,7 +4,7 @@ const { Card } =
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
-const { includeLabels, excludeLabels, layout, handle } = props;
+const { includeLabels, excludeLabels, layout, handle, hideTitle } = props;
 
 const Grid = styled.div`
   display: grid;
@@ -49,14 +49,14 @@ function BlogCard(postId) {
 }
 
 return (
-  <div class="row w-100">
-    <Heading>Latest Blog Posts</Heading>
+  <div class="w-100">
+    {!hideTitle && <Heading>Latest Blog Posts</Heading>}
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Feed"}
       // TODO: This needs to filter by more labels
       props={{
-        includeLabels: ["blog", handle, ...(includeTags || [])], // make sure this has the community handle
-        excludeLabels: excludeTags,
+        includeLabels: ["blog", handle, ...(includeLabels || [])], // make sure this has the community handle
+        excludeLabels: excludeLabels || [],
         renderItem: BlogCard,
         Layout: ({ children }) => <Grid>{children}</Grid>,
       }}
