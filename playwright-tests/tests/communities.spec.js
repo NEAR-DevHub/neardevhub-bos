@@ -1,4 +1,5 @@
 const { test, expect } = require("@playwright/test");
+
 const { setCookieConsentAccepted } = require("../testUtils.js");
 
 test.describe("Wallet is connected", () => {
