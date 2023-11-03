@@ -3,6 +3,7 @@ function Card({ data }) {
 
   const Container = styled.div`
     min-height: 12.5rem;
+    height: 100%;
     display: flex;
     padding: 1rem;
     flex-direction: column;
