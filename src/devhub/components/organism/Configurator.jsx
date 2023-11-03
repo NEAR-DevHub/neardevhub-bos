@@ -3,7 +3,7 @@ const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 if (!Struct) {
   return <p>Loading modules...</p>;
 }
-/* INCLUDE: "core/lib/gui/form" */
+
 const defaultFieldUpdate = ({
   input,
   lastKnownValue,
@@ -42,14 +42,13 @@ const defaultFieldUpdate = ({
   }
 };
 
-const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
+const useForm = ({ initialValues, onUpdate, stateKey }) => {
   const initialFormState = {
     hasUnsubmittedChanges: false,
     values: initialValues ?? {},
   };
 
-  const formState = state[stateKey] ?? null,
-    isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
+  const formState = state[stateKey] ?? null;
 
   const formReset = () =>
     State.update((lastKnownComponentState) => ({
@@ -61,58 +60,53 @@ const useForm = ({ initialValues, onUpdate, stateKey, uninitialized }) => {
   const formUpdate =
     ({ path, via: customFieldUpdate, ...params }) =>
     (fieldInput) => {
+      const transformFn = (node) => {
+        if (typeof customFieldUpdate === "function") {
+          return customFieldUpdate({
+            input: fieldInput?.target?.value ?? fieldInput,
+            lastKnownValue: node,
+            params,
+          });
+        } else {
+          return defaultFieldUpdate({
+            input: fieldInput?.target?.value ?? fieldInput,
+            lastKnownValue: node,
+            params,
+          });
+        }
+      };
       const updatedValues = Struct.deepFieldUpdate(
         formState?.values ?? {},
-
-        {
-          input: fieldInput?.target?.value ?? fieldInput,
-          params,
-          path,
-
-          via:
-            typeof customFieldUpdate === "function"
-              ? customFieldUpdate
-              : defaultFieldUpdate,
-        }
+        path,
+        (node) => transformFn(node)
       );
-
       State.update((lastKnownComponentState) => ({
         ...lastKnownComponentState,
-
         [stateKey]: {
           hasUnsubmittedChanges: !Struct.isEqual(
             updatedValues,
             initialFormState.values
           ),
-
           values: updatedValues,
         },
       }));
 
-      if (
-        typeof onUpdate === "function" &&
-        !Struct.isEqual(updatedValues, initialFormState.values)
-      ) {
+      if (typeof onUpdate === "function") {
         onUpdate(updatedValues);
       }
     };
 
-  if (
-    !uninitialized &&
-    (formState === null || (!formState.hasUnsubmittedChanges && !isSynced))
-  ) {
-    formReset();
-  }
-
   return {
-    ...(formState ?? initialFormState),
-    isSynced,
+    hasUnsubmittedChanges: formState?.hasUnsubmittedChanges ?? false,
+    values: {
+      ...(initialValues ?? {}),
+      ...(formState?.values ?? {}),
+    },
     reset: formReset,
     stateKey,
     update: formUpdate,
   };
 };
-/* END_INCLUDE: "core/lib/gui/form" */
 
 const ValueView = styled.div`
   & > p {
