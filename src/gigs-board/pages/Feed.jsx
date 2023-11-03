@@ -211,7 +211,7 @@ const FeedPage = ({ recency, tag }) => {
   return widget("components.template.app-layout", {
     banner,
 
-    children: widget("feature.post-search.panel", {
+    children: widget("entity.post.Lookup", {
       children: widget("components.layout.Controls", {
         title: "Post",
         href: href("Create"),
