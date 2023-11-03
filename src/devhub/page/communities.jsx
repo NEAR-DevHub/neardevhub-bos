@@ -79,7 +79,7 @@ const CTA = styled.button`
   line-height: 20px; /* 125% */
 
   border-radius: 4px;
-  background: #00ec97;
+  background: #04a46e;
 
   display: flex;
   padding: 14px 16px;
@@ -87,7 +87,7 @@ const CTA = styled.button`
   gap: 8px;
 
   &:hover {
-    background: #04a46e;
+    background: #555555;
   }
 `;
 
@@ -108,23 +108,7 @@ const CardGrid = styled.div`
 
 return (
   <div className="w-100">
-    <Widget
-      src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`}
-      props={{
-        title: (
-          <>
-            We are building <br />
-            <span style={{ color: "#151515" }}>
-              a decentralized community
-            </span>{" "}
-            <br />
-            for NEAR Developers.
-          </>
-        ),
-        imageLink:
-          "https://ipfs.near.social/ipfs/bafkreigtpjmgt3aphd3plbcremtvazeo7qsjvguw44m74zthyxbhj4toqe",
-      }}
-    />
+    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
     <div style={{ background: "#f4f4f4" }}>
       <div
         className="d-flex justify-content-between p-4"
@@ -133,7 +117,7 @@ return (
         <div className="d-flex flex-column gap-3 w-100">
           <h1
             className="m-0 fs-4"
-            style={{ color: "#04a46e", fontSize: "1.5rem" }}
+            style={{ color: "#555555", fontSize: "1.5rem" }}
           >
             Communities
           </h1>

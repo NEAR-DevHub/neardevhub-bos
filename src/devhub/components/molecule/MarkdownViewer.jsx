@@ -24,6 +24,10 @@ const Wrapper = styled.div`
     overflow-x: auto;
     font-family: "Courier New", Courier, monospace;
   }
+
+  a {
+    color: #04a46e;
+  }
 `;
 
 const Embedded = styled.span`

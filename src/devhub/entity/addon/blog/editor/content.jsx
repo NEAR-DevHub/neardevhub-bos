@@ -14,6 +14,10 @@ const categories = [
     label: "News",
     value: "news",
   },
+  {
+    label: "Reference",
+    value: "reference",
+  },
 ];
 
 const selectOptions = useMemo(
@@ -237,7 +241,7 @@ return (
         <div style={{ position: "absolute", top: 10, right: 0 }}>
           <Widget
             // LEGACY
-            src="${REPL_DEVHUB}/widget/gigs-board.components.molecule.button-switch"
+            src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.button-switch"
             props={{
               currentValue: previewMode,
               key: "previewMode",

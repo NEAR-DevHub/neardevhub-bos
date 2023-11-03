@@ -73,7 +73,7 @@ const Circle = styled.div`
   }
 
   a {
-    color: #04a46e;
+    color: #555555;
     font-size: 1.125rem;
     font-style: normal;
     font-weight: 700;

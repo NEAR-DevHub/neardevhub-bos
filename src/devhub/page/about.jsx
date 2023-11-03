@@ -1,5 +1,5 @@
 const PageHeader = styled.h2`
-  color: #04a46e;
+  color: #555555;
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
@@ -49,7 +49,7 @@ const Section = styled.div`
     font-size: 1.25rem;
     font-style: normal;
     font-weight: 400;
-    line-height: 120%; /* 28.8px */
+    line-height: 150%;
     margin-bottom: 1rem;
   }
 
@@ -66,24 +66,7 @@ const Section = styled.div`
 
 return (
   <>
-    <Widget
-      src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`}
-      props={{
-        title: (
-          <>
-            We are building <br />
-            <span style={{ color: "#151515" }}>
-              a decentralized community
-            </span>{" "}
-            <br />
-            for NEAR Developers.
-          </>
-        ),
-        imageLink:
-          "https://ipfs.near.social/ipfs/bafkreigtpjmgt3aphd3plbcremtvazeo7qsjvguw44m74zthyxbhj4toqe",
-      }}
-    />
-    <PageHeader>About /dev/hub</PageHeader>
+    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
     <Section>
       <h2>
         What is <span style={{ color: "#00EC97" }}>near</span>/dev/hub?
@@ -131,10 +114,6 @@ return (
         <p>
           DevHub covers a wide range of areas to support the NEAR developer
           ecosystem, including:
-        </p>
-
-        <h3>Visual Identity:</h3>
-        <p>
           <ul>
             <li>
               <b>Developer Tooling</b>: Contributing code to the NEAR Platform

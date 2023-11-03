@@ -102,7 +102,7 @@ const CTA = styled.a`
   margin-top: 1.5rem;
 
   &:hover {
-    background: #04a46e;
+    background: #555555;
     text-decoration: none !important;
   }
 
@@ -119,10 +119,10 @@ const CTA = styled.a`
     gap: 8px;
 
     border-radius: 16px;
-    background: #04a46e;
+    background: #555555;
 
     &:hover {
-      //background: #04A46E;
+      //background: #555555;
       text-decoration: none;
     }
   }
@@ -160,8 +160,8 @@ const Content = (
               <div className="d-flex flex-row">
                 <span
                   style={{
-                    color: "#04A46E",
-                    border: "2px #04A46E solid",
+                    color: "#555555",
+                    border: "2px #555555 solid",
                     fontSize: 12,
                     padding: 4,
                     width: 22,
@@ -198,7 +198,7 @@ return (
     src="${REPL_DEVHUB}/widget/devhub.components.island.home-section"
     props={{
       title: "/participate",
-      titleColor: "#04A46E",
+      titleColor: "#555555",
       description:
         "There are many ways to start your contribution journey. You can:",
       children: Content,

@@ -31,19 +31,33 @@ const Heading = styled.h3`
   }
 `;
 
+const CardContainer = styled.div`
+  transition: all 300ms;
+  border-radius: 1rem;
+  height: 100%;
+
+  &:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+`;
+
 function BlogCard(postId) {
   return (
     <Link
+      style={{ textDecoration: "none" }}
       to={href({
         widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: { page: "blog", id: postId },
       })}
     >
-      <Widget // We need this so the individual posts can make the necessary call for more data
-        src="${REPL_DEVHUB}/widget/devhub.entity.post.Postv2"
-        props={{ postKey: postId, template: (p) => <Card {...(p || {})} /> }} // I wonder if this could take list of types, their templates, normalizer functions, etc... and have this all as a module
-      />
-      {/* // so then you could swap between devhub contract or social contract sources, it doesn't matter. */}
+      <CardContainer>
+        <Widget // We need this so the individual posts can make the necessary call for more data
+          src="${REPL_DEVHUB}/widget/devhub.entity.post.Postv2"
+          props={{ postKey: postId, template: (p) => <Card {...(p || {})} /> }} // I wonder if this could take list of types, their templates, normalizer functions, etc... and have this all as a module
+        />
+        {/* // so then you could swap between devhub contract or social contract sources, it doesn't matter. */}
+      </CardContainer>
     </Link>
   );
 }
