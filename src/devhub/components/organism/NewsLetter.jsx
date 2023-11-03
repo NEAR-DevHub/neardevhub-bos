@@ -221,7 +221,7 @@ const SmallContent = () => {
       </SocialLinks>
       <div className="d-flex align-items-center gap-3">
         <h5 className="m-0">Subscribe to our newsletter</h5>
-        <CTA href="#">Subscribe</CTA>
+        <CTA href="https://newsletter.neardevhub.org" target="no_blank">Subscribe</CTA>
       </div>
     </SmallContainer>
   );
