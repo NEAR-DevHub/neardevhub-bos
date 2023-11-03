@@ -13,6 +13,7 @@
     "build": "npm run fmt && node ./module/include.js",
     "dev:testnet": "./scripts/dev.sh",
     "dev:mainnet": "./scripts/dev.sh -a devgovgigs.near -c devgovgigs.near -n mainnet",
+    "build:preview": "node ./scripts/build-preview.mjs",
     "dev": "npm run dev:mainnet",
     "test": "npx playwright test"
   },
