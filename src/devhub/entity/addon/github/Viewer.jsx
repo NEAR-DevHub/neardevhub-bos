@@ -13,7 +13,6 @@ return (
       communityHandle: handle, // rather than fetching again via the handle
       link: href({
         // do we need a link?
-        gateway: "near.org",
         widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: { page: "community", handle },
       }),
