@@ -78,7 +78,7 @@ const onShareClick = () =>
   clipboard
     .writeText(
       href({
-        gateway: "near.org",
+        gateway: "near.social",
         widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: { page: "community", handle: community.handle },
       })
