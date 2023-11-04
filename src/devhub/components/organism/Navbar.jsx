@@ -243,15 +243,27 @@ return (
                 {link.title}
               </MobileLink>
             ) : (
-              link.links.map((it, idx) => (
-                <MobileLink
-                  key={`nested-link-${idx}`}
-                  className={link.href === props.page && "active"}
-                  href={`/${REPL_DEVHUB}/widget/app?page=${it.href}`}
-                >
-                  {it.title}
-                </MobileLink>
-              ))
+              link.links.map((it, idx) =>
+                it.href.startsWith("http://") ||
+                it.href.startsWith("https://") ? (
+                  <MobileLink
+                    key={`nested-link-${idx}`}
+                    className={link.href === props.page && "active"}
+                    href={it.href}
+                    target="no_blank"
+                  >
+                    /{it.title}
+                  </MobileLink>
+                ) : (
+                  <MobileLink
+                    key={`nested-link-${idx}`}
+                    className={link.href === props.page && "active"}
+                    href={`/${REPL_DEVHUB}/widget/app?page=${it.href}`}
+                  >
+                    /{it.title}
+                  </MobileLink>
+                )
+              )
             )
           )}
         </div>
