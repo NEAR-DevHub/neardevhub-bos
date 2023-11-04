@@ -271,28 +271,3 @@ return (
     )}
   </Navbar>
 );
-
-{
-  link.href.startsWith("http://") || link.href.startsWith("https://") ? (
-    // External link: Render an <a> tag
-    <a
-      href={link.href}
-      style={{ textDecoration: "none" }}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {link.title}
-    </a>
-  ) : (
-    // Internal link: Render the <Link> component
-    <Link
-      style={{ textDecoration: "none" }}
-      to={linkHref({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: link.href },
-      })}
-    >
-      {link.title}
-    </Link>
-  );
-}
