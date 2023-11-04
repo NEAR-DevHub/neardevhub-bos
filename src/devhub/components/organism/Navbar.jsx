@@ -243,15 +243,27 @@ return (
                 {link.title}
               </MobileLink>
             ) : (
-              link.links.map((it, idx) => (
-                <MobileLink
-                  key={`nested-link-${idx}`}
-                  className={link.href === props.page && "active"}
-                  href={`/${REPL_DEVHUB}/widget/app?page=${it.href}`}
-                >
-                  {it.title}
-                </MobileLink>
-              ))
+              link.links.map((it, idx) =>
+                it.href.startsWith("http://") ||
+                it.href.startsWith("https://") ? (
+                  <MobileLink
+                    key={`nested-link-${idx}`}
+                    className={link.href === props.page && "active"}
+                    href={it.href}
+                    target="no_blank"
+                  >
+                    /{it.title}
+                  </MobileLink>
+                ) : (
+                  <MobileLink
+                    key={`nested-link-${idx}`}
+                    className={link.href === props.page && "active"}
+                    href={`/${REPL_DEVHUB}/widget/app?page=${it.href}`}
+                  >
+                    /{it.title}
+                  </MobileLink>
+                )
+              )
             )
           )}
         </div>
@@ -259,3 +271,28 @@ return (
     )}
   </Navbar>
 );
+
+{
+  link.href.startsWith("http://") || link.href.startsWith("https://") ? (
+    // External link: Render an <a> tag
+    <a
+      href={link.href}
+      style={{ textDecoration: "none" }}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {link.title}
+    </a>
+  ) : (
+    // Internal link: Render the <Link> component
+    <Link
+      style={{ textDecoration: "none" }}
+      to={linkHref({
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
+        params: { page: link.href },
+      })}
+    >
+      {link.title}
+    </Link>
+  );
+}
