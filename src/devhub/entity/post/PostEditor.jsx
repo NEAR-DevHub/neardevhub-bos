@@ -1,5 +1,6 @@
 /* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
+
 const AutoComplete = styled.div`
   z-index: 5;
 
@@ -10,13 +11,21 @@ const AutoComplete = styled.div`
 
 function textareaInputHandler(value) {
   const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update({ text: value, showAccountAutocomplete });
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    text: value,
+    showAccountAutocomplete,
+  }));
 }
 
 function autoCompleteAccountId(id) {
   let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
   description = `${description} @${id}`.trim() + " ";
-  State.update({ description, showAccountAutocomplete: false });
+  State.update((lastKnownState) => ({
+    ...lastKnownState,
+    description,
+    showAccountAutocomplete: false,
+  }));
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
@@ -27,6 +36,7 @@ const mode = props.mode ?? "Create";
 
 const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
 const labelStrings = (props.labels ?? []).concat(referralLabels);
+
 const labels = labelStrings.map((s) => {
   return { name: s };
 });
@@ -43,7 +53,7 @@ initState({
   name: props.name ?? "",
   description: props.description ?? "",
   amount: props.amount ?? "0",
-  token: tokenMapping[props.token] ?? "USDT",
+  token: props.token ?? "USDT",
   supervisor: props.supervisor ?? "neardevdao.near",
   githubLink: props.githubLink ?? "",
   warning: "",
@@ -57,7 +67,7 @@ if (!state.draftStateApplied && props.draftState) {
 let fields = {
   Comment: ["description"],
   Idea: ["name", "description"],
-  Submission: ["name", "description", "fund_raising"],
+  Solution: ["name", "description", "fund_raising"],
   Attestation: ["name", "description"],
   Sponsorship: [
     "name",
@@ -86,6 +96,12 @@ const tokenMapping = {
       address: "usdt.tether-token.near",
     },
   },
+  USDC: {
+    NEP141: {
+      address:
+        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    },
+  },
 };
 
 const onSubmit = () => {
@@ -97,7 +113,7 @@ const onSubmit = () => {
       description: state.description,
       idea_version: "V1",
     },
-    Submission: {
+    Solution: {
       name: state.name,
       description: generateDescription(
         state.description,
@@ -106,7 +122,7 @@ const onSubmit = () => {
         state.supervisor,
         state.seekingFunding
       ),
-      submission_version: "V1",
+      solution_version: "V1",
     },
     Attestation: {
       name: state.name,
@@ -315,17 +331,17 @@ const amountDiv = (
 );
 
 const tokenDiv = (
-  <div className="col-lg-6  mb-2">
+  <div className="col-lg-6 mb-2">
     Currency
     <select
       onChange={(event) => State.update({ token: event.target.value })}
       class="form-select"
-      aria-label="Default select"
+      aria-label="Select currency"
+      value={state.token}
     >
-      <option selected value={"USDT"}>
-        USDT
-      </option>
+      <option value="USDT">USDT</option>
       <option value="NEAR">NEAR</option>
+      <option value="USDC">USDC</option>
     </select>
   </div>
 );
@@ -429,17 +445,17 @@ const isFundraisingDiv = (
 
 const fundraisingDiv = (
   <div class="d-flex flex-column mb-2">
-    <div className="col-lg-6  mb-2">
+    <div className="col-lg-6 mb-2">
       Currency
       <select
         onChange={(event) => State.update({ token: event.target.value })}
         class="form-select"
         aria-label="Default select example"
+        value={state.token}
       >
-        <option selected value="NEAR">
-          NEAR
-        </option>
-        <option value={"USDT"}>USDT</option>
+        <option value="USDT">USDT</option>
+        <option value="NEAR">NEAR</option>
+        <option value="USDC">USDC</option>
       </select>
     </div>
     <div className="col-lg-6 mb-2">
@@ -517,7 +533,7 @@ return (
           ></button>
         </div>
       )}
-      {/* This statement around the githubLinkDiv creates a weird render bug 
+      {/* This statement around the githubLinkDiv creates a weird render bug
       where the title renders extra on state change. */}
       {fields.includes("githubLink") ? (
         <div className="row">
@@ -570,7 +586,7 @@ return (
               post_type: postType,
               name: state.name,
               description:
-                postType == "Submission"
+                postType == "Solution"
                   ? generateDescription(
                       state.description,
                       state.amount,

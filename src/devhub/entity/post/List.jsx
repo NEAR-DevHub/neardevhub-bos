@@ -75,15 +75,12 @@ function fetchGraphQL(operationsDoc, operationName, variables) {
 }
 
 function searchConditionChanged() {
-  if (
+  return (
     props.author != state.author ||
     props.term != state.term ||
     props.tag != state.tag ||
     props.recency != state.recency
-  ) {
-    return true;
-  }
-  return false;
+  );
 }
 
 function updateSearchCondition() {
@@ -129,6 +126,16 @@ function getPostIds() {
     where = { parent_id: { _is_null: true }, ...where };
   }
 
+  // Don't show blog
+  where = {
+    _not: {
+      labels: { _contains: "blog" },
+      parent_id: { _is_null: true },
+      post_type: { _eq: "Comment" },
+    },
+    ...where,
+  };
+
   console.log("searching for", where);
   fetchGraphQL(query, "DevhubPostsQuery", {
     limit: 100,
@@ -157,6 +164,8 @@ State.init({
   period: "week",
 });
 
+getPostIds();
+
 function defaultRenderItem(postId, additionalProps) {
   if (!additionalProps) {
     additionalProps = {};
@@ -172,6 +181,7 @@ function defaultRenderItem(postId, additionalProps) {
           defaultExpanded: false,
           isInList: true,
           draftState,
+          isPreview: false,
           onDraftStateChange,
           ...additionalProps,
           referral: postId,
@@ -229,14 +239,6 @@ const getPeriodText = (period) => {
 };
 
 let postIds = state.postIds ?? null;
-if (props.searchResult) {
-  postIds = props.searchResult.postIds;
-} else {
-  postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids");
-  if (postIds) {
-    postIds.reverse();
-  }
-}
 
 const loader = (
   <div className="loader" key={"loader"}>

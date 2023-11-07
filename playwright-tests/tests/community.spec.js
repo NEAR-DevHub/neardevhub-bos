@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 
+import { setCookieConsentAccepted } from "../testUtils.js";
+
 test("should load a community page if handle exists", async ({ page }) => {
   await page.goto(
     "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
@@ -46,6 +48,8 @@ test.describe("Wallet is connected", () => {
     await page.goto(
       "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
     );
+
+    await setCookieConsentAccepted(page);
 
     const postButtonSelector = 'a:has-text("Post")';
 

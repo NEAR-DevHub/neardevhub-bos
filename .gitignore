@@ -6,3 +6,4 @@ node_modules
 replacements.*.json.tmp
 
 /build
+test-results
