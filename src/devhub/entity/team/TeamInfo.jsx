@@ -44,7 +44,7 @@ return editMode ? (
     src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
     props={{
       data: configuratorData,
-      onCancel: () => setCreateTeam(false),
+      onCancel: () => setEditMode(false),
       onSubmit: () => editTeam(),
     }}
   />
