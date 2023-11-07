@@ -29,7 +29,7 @@ const [teamName, setTeamName] = useState(data.teamName || "");
 const [description, setDescription] = useState(data.description || "");
 const [label, setLabel] = useState(data.label || "");
 const [labelType, setLabelType] = useState(
-  (data.label || "").startsWith("starts-with:") ? "starts-with" : ""
+  (data.label || "").startsWith("starts-with:") ? "starts-with:" : ""
 );
 const [editPost, setEditPost] = useState(data.editPost || true);
 const [useLabels, setUseLabels] = useState(data.useLabels || true);
@@ -107,8 +107,9 @@ return (
       {!teamModerators && (
         <div className="flex-grow-1">
           <div>
-            Do you want this team to restrict a single label or restrict it with
-            any label that starts with a similar convention?
+            Would you like this team to limit their restrictions to a single
+            label, or would you prefer them to restrict it with any label that
+            follows a similar convention?
           </div>
           <div className="col-lg-6 mb-2">
             <select
@@ -118,7 +119,7 @@ return (
               value={labelType}
             >
               <option value="starts-with:">
-                Restrict multiple labels with the same start
+                Restrict multiple labels with a common prefix
               </option>
               <option value="">Restrict a single label</option>
             </select>
@@ -128,7 +129,10 @@ return (
               props={{
                 className: "flex-grow-1",
                 onChange: (e) => setLabel(e.target.value),
-                value: label,
+                // This is to make it backwards compatible
+                value: label.startsWith("starts-with:")
+                  ? label.slice(12)
+                  : label,
                 skipPaddingGap: true,
                 placeholder: "label",
                 inputProps: {
