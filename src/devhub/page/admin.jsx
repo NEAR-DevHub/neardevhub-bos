@@ -73,6 +73,7 @@ return (
         isHidden: !featuredCommunities.isLoading,
       }}
     />
+
     {!featuredCommunities.isLoading && (
       <>
         <div className="d-flex flex-wrap align-content-start gap-4">

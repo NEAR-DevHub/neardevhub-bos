@@ -162,6 +162,14 @@ function Page() {
         />
       );
     }
+    case "admin": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.page.admin"}
+          props={passProps}
+        />
+      );
+    }
 
     default: {
       // TODO: 404 page
