@@ -9,12 +9,11 @@ const CommunityBoardPage = ({ handle, permissions }) => {
   return (
     <Widget
       // TODO: LEGACY.
-      src="${REPL_DEVHUB}/widget/gigs-board.entity.workspace.view.kanban.configurator"
+      src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.entity.workspace.view.kanban.configurator"
       props={{
         communityHandle: handle, // rather than fetching again via the handle
         link: href({
           // do we need a link?
-          gateway: "near.org",
           widgetSrc: "${REPL_DEVHUB}/widget/app",
           params: { page: "community", handle },
         }),

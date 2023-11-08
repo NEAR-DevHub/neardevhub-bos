@@ -24,17 +24,15 @@ jobs:
       - name: Replace placeholders
         uses: flcdrg/replace-multiple-action@v1
         with:
-          files: '**/*.jsx'
-          find: '${{ steps.set_replacements.outputs.replacements }}'
-          prefix: '(^|.*)'
-          suffix: '($|.*)'
+          files: "**/*.jsx"
+          find: "${{ steps.set_replacements.outputs.replacements }}"
+          prefix: "(^|.*)"
+          suffix: "($|.*)"
 
       - name: Install bos CLI
         run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.2/bos-cli-installer.sh | sh
-      
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.6/bos-cli-installer.sh | sh
+
       - name: Deploy widgets
         run: |
-          which bos
-          echo $PATH
           bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send

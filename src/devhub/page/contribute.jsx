@@ -10,11 +10,11 @@ const Header = styled.div`
   }
 `;
 
-const PageHeader = styled.h2`
-  color: #00ec97;
+const PageHeader = styled.h1`
+  color: #555555;
   font-size: 1.5rem;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 120%; /* 28.8px */
   letter-spacing: -0.24px;
   margin: 0;
@@ -52,22 +52,21 @@ const actions = [
     description:
       "The first step in any NEAR ecosystem project is ideation. It is crucial to have a way to find people to share and explore ideas with, partly because it can save a lot of time based on prior discussions. But also because it can you gauge support from a diversity of stakeholders.",
     ctaAction: "Learn More →",
-    ctaLink: "https://www.neardevgov.org/blog/how-to-ideate-on-dev-hub",
+    ctaLink: "/devhub.near/widget/app?page=blog&id=2029",
   },
   {
     title: "Post a Proposal",
     description:
       "If you have already nurtured and refined your idea, you're ready to draft and post your funding proposal.This guide is here to help you craft a compelling, convincing, and concise proposal that will capture the interest of potential funders.",
     ctaAction: "Learn More →",
-    ctaLink: "https://www.neardevgov.org/blog/how-to-post-proposals-on-devhub",
+    ctaLink: "/devhub.near/widget/app?page=blog&id=2035",
   },
   {
     title: "Host an Event",
     description:
       "We are always on the lookout for events that align with our mission and provide value to the NEAR ecosystem. If you are organizing such an event, we would love to hear from you! Below is a guide on how to submit a sponsorship proposal to us.",
     ctaAction: "Learn More →",
-    ctaLink:
-      "https://near.social/devgovgigs.near/widget/app?page=community&handle=hacks&tab=Wiki%202",
+    ctaLink: "/devhub.near/widget/app?page=community&handle=hacks&tab=Wiki%202",
   },
   {
     title: "Improve NEAR Docs",
@@ -82,22 +81,21 @@ const actions = [
       "As the NEAR ecosystem grows rapidly, there is an increasing need to improve developer productivity. The DevDAO NEAR Platform Fellowship Program aims to solve this issue by providing guidance to new contributors from experienced developers.",
     ctaAction: "Learn More →",
     ctaLink:
-      "https://near.social/devgovgigs.near/widget/app?page=community&handle=fellowship&tab=Wiki 1",
+      "/devhub.near/widget/app?page=community&handle=fellowship&tab=Wiki 1",
   },
   {
     title: "Join NEAR Campus",
     description:
       "DevHub’s NEAR Campus supports existing student clubs, researchers, and faculties in blockchain technologies, enhancing both curricular and extracurricular activities. We aim to merge blockchain education with mainstream academics.",
     ctaAction: "Learn More →",
-    ctaLink:
-      "https://near.social/devgovgigs.near/widget/app?page=community&handle=near-campus",
+    ctaLink: "/devhub.near/widget/app?page=community&handle=near-campus",
   },
   {
     title: "Dive into Hackbox",
     description:
       "Hackbox is a revolutionary plug-and-play solution designed to empower local leads and community stewards in hosting hackathons easily and efficiently.",
     ctaAction: "Learn More →",
-    ctaLink: "https://near.social/hackbox.near/widget/home",
+    ctaLink: "/hackbox.near/widget/home",
   },
 ];
 
@@ -188,25 +186,9 @@ const ActionContainer = styled.div`
 
 return (
   <>
-    <Widget
-      src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`}
-      props={{
-        title: (
-          <>
-            We are building <br />
-            <span style={{ color: "#151515" }}>
-              a decentralized community
-            </span>{" "}
-            <br />
-            for NEAR Developers.
-          </>
-        ),
-        imageLink:
-          "https://ipfs.near.social/ipfs/bafybeiap2mzwsly4apaldxguiunx4rjwqyadksj5yxuzwrww3kue3ao5qe",
-      }}
-    />
+    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
     <Header>
-      <PageHeader>/contribute</PageHeader>
+      <PageHeader>Contribute</PageHeader>
     </Header>
     <Lead>
       There are many ways to start your contribution journey. You can:
