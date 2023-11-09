@@ -3,7 +3,7 @@
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 const { draftState, onDraftStateChange } = VM.require(
-  "${REPL_DEVHUB}/widget/entity/post/draft"
+  "${REPL_DEVHUB}/widget/entity.post.draft"
 );
 
 href || (href = () => {});
