@@ -1,30 +1,30 @@
 {
-	"name": "neardevhub-widgets",
-	"version": "1.0.0",
-	"description": "NEAR DevHub widgets for NEAR Social",
-	"devDependencies": {
-		"@playwright/test": "^1.38.1",
-		"prettier": "^2.8.4",
-		"replace-in-files": "^3.0.0"
-	},
-	"scripts": {
-		"fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
-		"fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
-		"build": "npm run fmt && node ./module/include.js",
-		"dev:testnet": "./scripts/dev.sh",
-		"dev:mainnet": "./scripts/dev.sh -a devhub.near -c devhub.near -n mainnet",
-		"build:preview": "node ./scripts/build-preview.mjs",
-		"dev": "npm run dev:mainnet",
-		"test": "npx playwright test"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/near/neardevhub-widgets.git"
-	},
-	"author": "Near Inc <hello@nearprotocol.com>",
-	"license": "ISC",
-	"bugs": {
-		"url": "https://github.com/near/neardevhub-widgets/issues"
-	},
-	"homepage": "https://github.com/near/neardevhub-widgets#readme"
+  "name": "neardevhub-widgets",
+  "version": "1.0.0",
+  "description": "NEAR DevHub widgets for NEAR Social",
+  "devDependencies": {
+    "@playwright/test": "^1.38.1",
+    "prettier": "^2.8.4",
+    "replace-in-files": "^3.0.0"
+  },
+  "scripts": {
+    "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
+    "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
+    "build": "npm run fmt && node ./module/include.js",
+    "dev:testnet": "./scripts/dev.sh",
+    "dev:mainnet": "./scripts/dev.sh -a devhub.near -c devhub.near -n mainnet",
+    "build:preview": "node ./scripts/build-preview.mjs",
+    "dev": "npm run dev:mainnet",
+    "test": "npx playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/near/neardevhub-widgets.git"
+  },
+  "author": "Near Inc <hello@nearprotocol.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/near/neardevhub-widgets/issues"
+  },
+  "homepage": "https://github.com/near/neardevhub-widgets#readme"
 }
