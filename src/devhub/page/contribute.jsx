@@ -48,7 +48,7 @@ const Container = styled.div`
 
 const actions = [
   {
-    title: "Ideate on Devhub",
+    title: "Ideate on DevHub",
     description:
       "The first step in any NEAR ecosystem project is ideation. It is crucial to have a way to find people to share and explore ideas with, partly because it can save a lot of time based on prior discussions. But also because it can you gauge support from a diversity of stakeholders.",
     ctaAction: "Learn More →",
