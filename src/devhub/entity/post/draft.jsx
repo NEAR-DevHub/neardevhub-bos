@@ -34,4 +34,4 @@ try {
   draftState = JSON.parse(Storage.privateGet(DRAFT_STATE_STORAGE_KEY));
 } catch (e) {}
 
-return { draftState, onDraftStateChange };
+return { DRAFT_STATE_STORAGE_KEY, draftState, onDraftStateChange };

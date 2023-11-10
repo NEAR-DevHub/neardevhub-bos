@@ -3,10 +3,12 @@
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 const { draftState, onDraftStateChange } = VM.require(
-  "${REPL_DEVHUB}/widget/entity.post.draft"
+  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
 );
 
-href || (href = () => {});
+if (!href) {
+  return <p>Loading modules...</p>;
+}
 
 const ButtonWithHover = styled.button`
   background-color: #fff;
@@ -25,8 +27,6 @@ const post =
 if (!post) {
   return <div>Loading ...</div>;
 }
-
-console.log({ onDraftStateChange });
 
 const referral = props.referral;
 const currentTimestamp = props.timestamp ?? post.snapshot.timestamp;
