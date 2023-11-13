@@ -266,9 +266,11 @@ const existingLabelStrings =
     editor: context.accountId,
   }) ?? [];
 const existingLabelSet = new Set(existingLabelStrings);
-const existingLabels = existingLabelStrings.map((s) => {
-  return { name: s };
-});
+const existingLabels = existingLabelStrings
+  .filter((it) => it !== "blog") // remove blog label so users cannot publish blogs from feed
+  .map((s) => {
+    return { name: s };
+  });
 
 const labelEditor = (
   <div className="col-lg-12  mb-2">
@@ -285,6 +287,7 @@ const labelEditor = (
       allowNew={(results, props) => {
         return (
           !existingLabelSet.has(props.text) &&
+          props.text.toLowerCase() !== "blog" && // dont allow adding "Blog"
           props.selected.filter((selected) => selected.name === props.text)
             .length == 0 &&
           Near.view("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
