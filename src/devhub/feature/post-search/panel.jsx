@@ -4,6 +4,7 @@ href || (href = () => {});
 
 State.init({
   tag: props.tag,
+  author: props.author,
   term: "",
 });
 

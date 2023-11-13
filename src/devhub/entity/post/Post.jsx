@@ -542,6 +542,10 @@ const isDraft =
   (draftState?.edit_post_id === postId &&
     draftState?.postType === state.postType);
 
+const toggleEditor = () => {
+  State.update({ showEditor: !state.showEditor });
+};
+
 function Editor() {
   return (
     <div class="row" id={`accordion${postId}`} key="editors-footer">
@@ -582,6 +586,7 @@ function Editor() {
                 onDraftStateChange,
                 draftState:
                   draftState?.edit_post_id == postId ? draftState : undefined,
+                toggleEditor: toggleEditor,
               }}
             />
           </>
