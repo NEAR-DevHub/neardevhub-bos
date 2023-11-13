@@ -7,7 +7,8 @@
     "http-server": "^14.1.1",
     "near-bos-webcomponent": "^0.0.2",
     "prettier": "^2.8.4",
-    "replace-in-files": "^3.0.0"
+    "replace-in-files": "^3.0.0",
+    "simple-git-hooks": "^2.9.0"
   },
   "scripts": {
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
@@ -19,6 +20,9 @@
     "dev": "npm run dev:mainnet",
     "gateway": "node scripts/dev-gateway.mjs",
     "test": "npx playwright test"
+  },
+  "simple-git-hooks": {
+    "pre-push": "npm run fmt"
   },
   "repository": {
     "type": "git",
