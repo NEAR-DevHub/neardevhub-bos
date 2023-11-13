@@ -543,8 +543,8 @@ const isDraft =
     draftState?.postType === state.postType);
 
 const toggleEditor = () => {
-  State.update({showEditor: !state.showEditor})
-}
+  State.update({ showEditor: !state.showEditor });
+};
 
 function Editor() {
   return (
