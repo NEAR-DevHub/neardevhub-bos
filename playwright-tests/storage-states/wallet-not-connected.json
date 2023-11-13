@@ -2,7 +2,7 @@
   "cookies": [],
   "origins": [
     {
-      "origin": "https://near.org",
+      "origin": "http://localhost:8080",
       "localStorage": [
         {
           "name": "flags",

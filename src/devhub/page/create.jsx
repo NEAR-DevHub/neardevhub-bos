@@ -1,9 +1,3 @@
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
-
-if (!href) {
-  return <p>Loading modules...</p>;
-}
-
 /* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
 
@@ -35,7 +29,16 @@ function autoCompleteAccountId(id) {
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
-const DRAFT_STATE_STORAGE_KEY = "DRAFT_STATE";
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+
+const { DRAFT_STATE_STORAGE_KEY, draftState, onDraftStateChange } = VM.require(
+  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
+);
+
+if (!href) {
+  return <p>Loading modules...</p>;
+}
+
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";

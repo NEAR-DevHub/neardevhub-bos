@@ -5,50 +5,18 @@
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-href || (href = () => {});
+const { draftState, onDraftStateChange } = VM.require(
+  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
+);
 
-/* INCLUDE: "core/lib/draftstate" */
-const DRAFT_STATE_STORAGE_KEY = "POST_DRAFT_STATE";
-let is_edit_or_add_post_transaction = false;
-let transaction_method_name;
-
-if (props.transactionHashes) {
-  const transaction = fetch("https://rpc.mainnet.near.org", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: "dontcare",
-      method: "tx",
-      params: [props.transactionHashes, context.accountId],
-    }),
-  });
-  transaction_method_name =
-    transaction?.body?.result?.transaction?.actions[0].FunctionCall.method_name;
-
-  is_edit_or_add_post_transaction =
-    transaction_method_name == "add_post" ||
-    transaction_method_name == "edit_post";
-
-  if (is_edit_or_add_post_transaction) {
-    Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
-  }
+if (!href) {
+  return <p>Loading modules...</p>;
 }
-
-const onDraftStateChange = (draftState) =>
-  Storage.privateSet(DRAFT_STATE_STORAGE_KEY, JSON.stringify(draftState));
-let draftState;
-try {
-  draftState = JSON.parse(Storage.privateGet(DRAFT_STATE_STORAGE_KEY));
-} catch (e) {}
-/* END_INCLUDE: "core/lib/draftstate" */
 
 const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
 
 const queryName =
-  props.queryName ?? `bo_near_devhub_v17_posts_with_latest_snapshot`;
+  props.queryName ?? `bo_near_devhub_v32_posts_with_latest_snapshot`;
 
 const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
