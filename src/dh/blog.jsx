@@ -1,1 +1,6 @@
-return <Widget src={"${REPL_DEVHUB}/widget/app"} props={{ page: "blog", ...props }} />;
+return (
+  <Widget
+    src={"${REPL_DEVHUB}/widget/app"}
+    props={{ page: "blog", ...props }}
+  />
+);
