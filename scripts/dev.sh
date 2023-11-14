@@ -85,4 +85,4 @@ else
 fi
 
 # Run bos-loader with updated replacements
-~/.cargo/bin/bos-loader "$ACCOUNT_ID" --path src -r "$REPLACEMENTS_JSON.tmp"
+~/.cargo/bin/bos-loader "$ACCOUNT_ID" --path dist -r "$REPLACEMENTS_JSON.tmp"

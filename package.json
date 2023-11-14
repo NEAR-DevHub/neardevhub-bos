@@ -1,18 +1,25 @@
 {
   "name": "neardevhub-widgets",
   "version": "1.0.0",
+  "type": "module",
   "description": "NEAR DevHub widgets for NEAR Social",
   "devDependencies": {
     "@playwright/test": "^1.38.1",
     "http-server": "^14.1.1",
     "near-bos-webcomponent": "^0.0.2",
     "prettier": "^2.8.4",
-    "replace-in-files": "^3.0.0"
+    "replace-in-files": "^3.0.0",
+    "@types/react": "^18.2.33",
+    "@types/react-dom": "^18.2.14",
+    "near-social-vm-types": "^1.0.0",
+    "sucrase": "^3.34.0"
   },
   "scripts": {
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
     "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
-    "build": "npm run fmt && node ./module/include.js",
+    "build": "npm run fmt && npm run copy:source && npm run transpile && node ./scripts/build.js",
+    "copy:source": "mkdir -p ./dist && cd src && find . -name '*.jsx' | cpio -pdm ../dist && cd ..",
+    "transpile": "sucrase ./src -d ./dist --transforms typescript,jsx --jsx-runtime preserve --disable-es-transforms --out-extension jsx",
     "dev:testnet": "./scripts/dev.sh",
     "dev:mainnet": "./scripts/dev.sh -a devhub.near -c devgovgigs.near -n mainnet",
     "build:preview": "node ./scripts/build-preview.mjs",
