@@ -22,7 +22,7 @@
     "test": "npx playwright test"
   },
   "simple-git-hooks": {
-    "pre-push": "npm run fmt"
+    "pre-commit": "npm run fmt"
   },
   "repository": {
     "type": "git",
