@@ -1,7 +1,7 @@
 const MarkdownEditor = ({ data, onChange }) => {
   return (
     <Widget
-      src={"${REPL_EFIZ}/widget/SimpleMDE"}
+      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDE"}
       props={{
         data,
         onChange,
