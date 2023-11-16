@@ -384,6 +384,7 @@ const fundraisingDiv = (
           USDT
         </option>
         <option value="NEAR">NEAR</option>
+        <option value="USDC">USDC</option>
       </select>
     </div>
     <div className="col-lg-6 mb-2">
