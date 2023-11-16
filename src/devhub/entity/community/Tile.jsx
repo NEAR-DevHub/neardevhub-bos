@@ -27,13 +27,6 @@ const AttractableImage = styled.img`
 `;
 /* END_INCLUDE: "core/lib/gui/attractable" */
 
-const TileRoot = ({ children, noFrame, ...otherProps }) =>
-  noFrame ? (
-    <div {...otherProps}>{children}</div>
-  ) : (
-    <AttractableDiv {...otherProps}>{children}</AttractableDiv>
-  );
-
 const Tile = ({
   children,
   borderRadius,
@@ -49,7 +42,7 @@ const Tile = ({
   minHeight,
   style,
 }) => (
-  <TileRoot
+  <AttractableDiv
     className={[
       "d-flex flex-column gap-3",
       className,
@@ -68,13 +61,16 @@ const Tile = ({
       marginBottom: "1rem",
       ...style,
     }}
-    {...{ id, noFrame }}
+    {...{ id }}
   >
     {
       <div
         className={[
           "d-flex align-items-center justify-content-between gap-3",
-          !heading && !headingAdornment && !headerSlotRight ? "d-none" : "",
+
+          noFrame || (!heading && !headingAdornment && !headerSlotRight)
+            ? "d-none"
+            : "",
         ].join(" ")}
         style={{ minHeight: 30 }}
       >
@@ -88,7 +84,7 @@ const Tile = ({
     }
 
     {children}
-  </TileRoot>
+  </AttractableDiv>
 );
 
 return Tile(props);

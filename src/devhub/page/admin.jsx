@@ -2,10 +2,6 @@ const { useQuery, hasModerator, setFeaturedCommunities } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
-const { Tile } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
-  (() => <></>);
-
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 if (!useQuery || !hasModerator || !href) {
