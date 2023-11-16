@@ -3,7 +3,7 @@ type TagProps = {
   tag: string;
 };
 
-export default (props: TagProps) => {
+export default function Tag(props: TagProps) {
   const { black, tag } = props;
 
   const Span = styled.span`
@@ -15,4 +15,4 @@ export default (props: TagProps) => {
   `;
 
   return <Span>{tag}</Span>;
-};
+}
