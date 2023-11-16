@@ -31,7 +31,7 @@ const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $wher
     ${queryName}(
       limit: $limit
       offset: $offset
-      order_by: {block_height: desc}
+      order_by: {ts: desc}
       where: $where
     ) {
       post_id
