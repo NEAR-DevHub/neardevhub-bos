@@ -1,7 +1,7 @@
 import fs from "fs";
 import replaceInFiles from "replace-in-files";
 
-const transpiledPathPrefix = "./dist";
+const transpiledPathPrefix = "./build/src";
 
 async function build() {
   await replaceInFiles({
@@ -25,7 +25,7 @@ async function build() {
   await new Promise((resolve) => {
     fs.rename(
       `${transpiledPathPrefix}/includes`,
-      `${transpiledPathPrefix}/../includes`,
+      `${transpiledPathPrefix}/../../includes`,
       () => {
         resolve();
       }
@@ -37,7 +37,7 @@ async function build() {
     from: /import .* from "@\/includes\/([^"]*)";/gms,
     to: (_match, importPath) => {
       const importedFileContent = fs.readFileSync(
-        `${transpiledPathPrefix}/../includes/${importPath}.jsx`,
+        `${transpiledPathPrefix}/../../includes/${importPath}.jsx`,
         "utf8"
       );
       return `/* INCLUDE: "includes/${importPath}.jsx" */\n${importedFileContent}/* END_INCLUDE: "includes/${importPath}.jsx" */`;
@@ -57,7 +57,7 @@ async function build() {
   await new Promise((resolve) => {
     fs.rename(
       transpiledPathPrefix,
-      `${transpiledPathPrefix}/../${packageJson.name}`,
+      `${transpiledPathPrefix}/../../${packageJson.name}`,
       () => {
         resolve();
       }
