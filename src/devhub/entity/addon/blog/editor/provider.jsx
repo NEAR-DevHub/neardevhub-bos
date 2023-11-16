@@ -132,7 +132,7 @@ const handleOnCancel = (v) => {
 
 return (
   <Layout
-    data={posts.body.data.bo_near_devhub_v34_posts_with_latest_snapshot || []}
+    data={posts.body.data.bo_near_devhub_v35_posts_with_latest_snapshot || []}
     getData={handleGetData}
     onChange={handleOnChange}
     onSubmit={handleOnSubmit}
