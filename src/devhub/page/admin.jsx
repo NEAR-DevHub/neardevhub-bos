@@ -14,18 +14,13 @@ if (!useQuery || !hasModerator || !href) {
 
 const AdministrationSettings = {
   communities: {
-    maxFeatured: 4,
+    maxFeatured: 5,
   },
 };
 
 const CommunityFeaturingSchema = {
   handle: {
-    label: "Community handle",
-
-    hints: {
-      disabled: `You can only add ${AdministrationSettings.communities.maxFeatured} communities at a time`,
-    },
-
+    label: "Pinned handle",
     inputProps: { min: 3, max: 40, required: true },
   },
 };
@@ -55,15 +50,14 @@ const featuredCommunityHandles = featuredCommunityList.map(
   ({ handle }) => handle
 );
 
-const addFeaturedCommunity = ({ handle }) =>
-  setFeaturedCommunities({
-    handles: Array.from(new Set(featuredCommunityHandles).add(handle).values()),
-  });
-
-const removeFeaturedCommunity = ({ handle: input }) =>
-  setFeaturedCommunities({
-    handles: featuredCommunityHandles.filter((handle) => handle !== input),
-  });
+const replaceFeaturedCommunity =
+  ({ handle: targetHandle }) =>
+  ({ handle: replacementHandle }) =>
+    setFeaturedCommunities({
+      handles: featuredCommunityHandles.map((handle) =>
+        handle === targetHandle ? replacementHandle : handle
+      ),
+    });
 
 return (
   <div className="d-flex flex-column gap-4 p-4">
@@ -76,6 +70,8 @@ return (
 
     {!featuredCommunities.isLoading && (
       <>
+        <h3>Featured communities</h3>
+
         <div className="d-flex flex-wrap align-content-start gap-4">
           {featuredCommunityList.map((community) => (
             <Widget
@@ -85,18 +81,16 @@ return (
                   <div className="d-flex justify-content-center align-items-center">
                     <Widget
                       src={
-                        "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                        "${REPL_DEVHUB}/widget/devhub.components.organism.Configurator"
                       }
                       props={{
-                        classNames: {
-                          root: "btn-outline-danger vertical",
-                        },
-                        icon: {
-                          type: "bootstrap_icon",
-                          variant: "bi-x-lg",
-                        },
-                        title: "Remove from featured",
-                        onClick: () => removeFeaturedCommunity(community),
+                        externalState: community,
+                        isActive: true,
+                        isUnlocked: true,
+                        cancelLabel: "Reset",
+                        onSubmit: replaceFeaturedCommunity(community),
+                        submitLabel: "Replace",
+                        schema: CommunityFeaturingSchema,
                       }}
                     />
                   </div>
@@ -109,26 +103,6 @@ return (
             />
           ))}
         </div>
-
-        <Tile>
-          <Widget
-            // TODO: LEGACY.
-            src={
-              "${REPL_DEVHUB}/widget/gigs-board.components.organism.configurator"
-            }
-            props={{
-              heading: "Add featured community",
-              isActive: true,
-
-              isUnlocked:
-                featuredCommunityList.length <
-                AdministrationSettings.communities.maxFeatured,
-
-              schema: CommunityFeaturingSchema,
-              onSubmit: addFeaturedCommunity,
-            }}
-          />
-        </Tile>
       </>
     )}
   </div>
