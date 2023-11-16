@@ -9,7 +9,7 @@ declare const Widget: (params: {
   props: object;
 }) => React.ReactNode;
 
-declare interface BaseProps {
+declare interface DevHubBaseProps {
   page: any;
 }
 
