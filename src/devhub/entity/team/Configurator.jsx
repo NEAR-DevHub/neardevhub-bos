@@ -45,8 +45,8 @@ const [label, setLabel] = useState(data.label || "");
 const [labelType, setLabelType] = useState(
   (data.label || "").startsWith("starts-with:") ? "starts-with:" : ""
 );
-const [editPost, setEditPost] = useState(data.editPost || true);
-const [useLabels, setUseLabels] = useState(data.useLabels || true);
+const [editPost, setEditPost] = useState(data.editPost || false);
+const [useLabels, setUseLabels] = useState(data.useLabels || false);
 const [members, setMembers] = useState(initialData || []);
 
 const [showPreview, setShowPreview] = useState(data.showPreview || []);
