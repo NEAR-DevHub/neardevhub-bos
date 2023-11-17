@@ -179,14 +179,18 @@ return editMode ? (
     <div className="card-body">
       {
         <p class="card-text" key="description">
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
-            }
-            props={{
-              text: metadata.description,
-            }}
-          />
+          {!teamModerators ? (
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+              }
+              props={{
+                text: metadata.description,
+              }}
+            />
+          ) : (
+            "The moderator group has permissions to edit any posts, and apply all labels including restricted ones."
+          )}
         </p>
       }
       {/* Hide this case of the moderators */}
