@@ -23,9 +23,23 @@ const EditableField = styled.input`
   flex: 1;
 `;
 
+// Should be done with types and tsc
+const backwardsCompatibleLabel = (oldLabel) => {
+  if (typeof oldLabel === "string")
+    return oldLabel.startsWith("starts-with:") ? oldLabel.slice(12) : oldLabel;
+  else return "";
+};
+const backwardsCompatibleTeam = (oldTeam) => {
+  if (typeof oldTeam === "string")
+    return oldTeam.startsWith("team:") ? oldTeam.slice(5) : oldTeam;
+  else return "";
+};
+
 const initialData = data.members || [];
 const [newItem, setNewItem] = useState("");
-const [teamName, setTeamName] = useState(data.teamName || "");
+const [teamName, setTeamName] = useState(
+  backwardsCompatibleTeam(data.teamName) || ""
+);
 const [description, setDescription] = useState(data.description || "");
 const [label, setLabel] = useState(data.label || "");
 const [labelType, setLabelType] = useState(
@@ -37,7 +51,9 @@ const [members, setMembers] = useState(initialData || []);
 
 const [showPreview, setShowPreview] = useState(data.showPreview || []);
 
-const teamModerators = teamName == "team:moderators";
+const [warning, setWarning] = useState("");
+
+const teamModerators = teamName == "moderators";
 const moderatorsWarning = teamModerators && (
   <div class="alert alert-warning alert-dismissible fade show" role="alert">
     It's only possible to edit the description and members of team moderators
@@ -48,6 +64,19 @@ const moderatorsWarning = teamModerators && (
       data-bs-dismiss="alert"
       aria-label="Close"
       onClick={() => State.update({ permissionError: "" })}
+    ></button>
+  </div>
+);
+
+const customWarning = warning && (
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {warning}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+      onClick={() => setWarning("")}
     ></button>
   </div>
 );
@@ -66,11 +95,24 @@ const handleDeleteItem = (index) => {
 };
 
 const handleSubmit = () => {
-  // TODO validate inputs
-
+  // validate
+  if (teamName && teamName.startsWith("team:")) {
+    return setWarning("The team name can't start with 'team:'");
+  }
+  if (
+    !backwardsCompatibleLabel(label) ||
+    !label.trim() ||
+    label === "starts-with:"
+  ) {
+    return setWarning("Invalid label, make sure it's not taken");
+  }
+  if (members.length < 1) {
+    return setWarning("Add at least one member to the team");
+  }
   onSubmit({
     teamName,
-    label: labelType + label,
+    description,
+    label: labelType + backwardsCompatibleLabel(label),
     editPost,
     useLabels,
     members: members.map((member) => member.trim()),
@@ -82,6 +124,7 @@ return (
     <Container>
       <h3>{data.teamName ? "Edit" : "Create"} team</h3>
       {moderatorsWarning}
+      {customWarning}
       {!teamModerators && (
         <div className="flex-grow-1">
           <span>Team name</span>
@@ -130,9 +173,7 @@ return (
                 className: "flex-grow-1",
                 onChange: (e) => setLabel(e.target.value),
                 // This is to make it backwards compatible
-                value: label.startsWith("starts-with:")
-                  ? label.slice(12)
-                  : label,
+                value: backwardsCompatibleLabel(label),
                 skipPaddingGap: true,
                 placeholder: "label",
                 inputProps: {
@@ -144,6 +185,7 @@ return (
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.entity.team.LabelPermissions"
               props={{
+                identifier: data.teamName,
                 editPost,
                 setEditPost,
                 useLabels,

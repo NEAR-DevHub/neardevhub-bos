@@ -79,19 +79,42 @@ const Container = styled.div`
   text-align: left;
 `;
 
-function createNewTeam({ teamName, label, editPost, useLabels, members }) {
-  // TODO make multiple calls if necessary
+function createNewTeam({
+  teamName,
+  description,
+  label,
+  editPost,
+  useLabels,
+  members,
+}) {
+  console.log(
+    "🚀 ~ file: admin.jsx:83 ~ createNewTeam ~ { teamName, label, editPost, useLabels, members }:",
+    { teamName, description, label, editPost, useLabels, members }
+  );
+  // TODO
+
+  // Get root members / check if team exists
+
+  //
+
+  // Team must not exist
+  // Label must not exist
+
+  // Check edit team
   Near.call([
     {
-      contractName: nearDevGovGigsContractAccountId,
+      contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "add_member",
       args: {
         member: `team:${teamName}`,
         metadata: {
           member_metadata_version: "V0",
-          description: "",
+          description: description,
           permissions: {
-            [label]: [editPost && "edit-post", useLabels && "use-labels"],
+            [label]: [
+              ...(editPost ? ["edit-post"] : []),
+              ...(useLabels ? ["use-labels"] : []),
+            ],
           },
           children: members,
           parents: [],
@@ -106,44 +129,46 @@ function createNewTeam({ teamName, label, editPost, useLabels, members }) {
 const [createTeam, setCreateTeam] = useState(false);
 
 return (
-  <div className="d-flex flex-column gap-4 p-4">
-    {featuredCommunityList ? (
-      <>
-        <div className="d-flex flex-wrap align-content-start gap-4">
-          {featuredCommunityList.map((community) => (
-            <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.entity.community.Card"}
-              props={{
-                actions: (
-                  <div className="d-flex justify-content-center align-items-center">
-                    <Widget
-                      src={
-                        "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                      }
-                      props={{
-                        classNames: {
-                          root: "btn-outline-danger vertical",
-                        },
-                        icon: {
-                          type: "bootstrap_icon",
-                          variant: "bi-x-lg",
-                        },
-                        title: "Remove from featured",
-                        onClick: () => removeFeaturedCommunity(community),
-                      }}
-                    />
-                  </div>
-                ),
+  <Container>
+    <div className="d-flex flex-column gap-4 p-4">
+      {featuredCommunityList ? (
+        <>
+          <div className="d-flex flex-wrap align-content-start gap-4">
+            Featured Community List
+            {/* {featuredCommunityList.map((community) => (
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.entity.community.Card"}
+                props={{
+                  actions: (
+                    <div className="d-flex justify-content-center align-items-center">
+                      <Widget
+                        src={
+                          "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                        }
+                        props={{
+                          classNames: {
+                            root: "btn-outline-danger vertical",
+                          },
+                          icon: {
+                            type: "bootstrap_icon",
+                            variant: "bi-x-lg",
+                          },
+                          title: "Remove from featured",
+                          onClick: () => removeFeaturedCommunity(community),
+                        }}
+                      />
+                    </div>
+                  ),
 
-                format: "small",
-                metadata: community,
-                target: "_blank",
-              }}
-            />
-          ))}
-        </div>
-        <Tile>
-          <Widget
+                  format: "small",
+                  metadata: community,
+                  target: "_blank",
+                }}
+              />
+            ))} */}
+          </div>
+          {/* <Tile> */}
+          {/* <Widget
             // TODO: LEGACY.
             src={
               "${REPL_DEVHUB}/widget/gigs-board.components.organism.configurator"
@@ -159,44 +184,44 @@ return (
               schema: CommunityFeaturingSchema,
               onSubmit: addFeaturedCommunity,
             }}
-          />
-        </Tile>
-      </>
-    ) : (
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.atom.Spinner"}
-        props={{
-          isHidden: false,
-        }}
-      />
-    )}
-    {!createTeam && (
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
-        props={{
-          onClick: () => setCreateTeam(true),
-          title: "Create team",
-        }}
-      />
-    )}
-    {createTeam && (
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
-        props={{
-          onCancel: () => setCreateTeam(false),
-          onSubmit: () => createNewTeam(),
-        }}
-      />
-    )}
-    {(teamNames || []).map((teamName) => {
-      return (
+          /> */}
+          {/* </Tile> */}
+        </>
+      ) : (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.atom.Spinner"}
           props={{
-            teamName,
+            isHidden: false,
           }}
         />
-      );
-    })}
-  </div>
+      )}
+      {!createTeam ? (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
+          props={{
+            onClick: () => setCreateTeam(true),
+            title: "Create team",
+          }}
+        />
+      ) : (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
+          props={{
+            onCancel: () => setCreateTeam(false),
+            onSubmit: (params) => createNewTeam(params),
+          }}
+        />
+      )}
+      {(teamNames || []).map((teamName) => {
+        return (
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
+            props={{
+              teamName,
+            }}
+          />
+        );
+      })}
+    </div>
+  </Container>
 );

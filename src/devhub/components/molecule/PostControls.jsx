@@ -29,13 +29,13 @@ return (
   <div className={`d-flex flex-row-reverse ${props.className}`}>
     {props.href ? (
       <Link to={props.href} style={{ textDecoration: "none" }}>
-        <Button>
+        <Button className="post-control">
           <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
           {props.title}
         </Button>
       </Link>
     ) : (
-      <Button onClick={props.onClick}>
+      <Button onClick={props.onClick} className="post-control">
         <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
         {props.title || "Post"}
       </Button>

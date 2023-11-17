@@ -17,42 +17,168 @@ if (!accessControlInfo || !rootMembers) {
   return <p>Loading access control info...</p>;
 }
 
+console.log({ accessControlInfo, rootMembers });
+
 const { teamName } = props;
 const label = Object.keys(rootMembers[teamName].permissions)[0] || "";
 const metadata = accessControlInfo.members_list[teamName];
 const editPost = rootMembers[teamName].permissions[label].includes("edit-post");
 const useLabels =
   rootMembers[teamName].permissions[label].includes("use-labels");
+const members = rootMembers[teamName].children || [];
 
 const configuratorData = {
   teamName: teamName,
   description: metadata.description, //
   label: label,
-  members: rootMembers[teamName].children || [],
+  members,
   editPost,
   useLabels,
 };
 
 const [editMode, setEditMode] = useState(false);
 
-function editTeam() {
-  // TODO
+function arrayEq(arr1, arr2) {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+  const sortedArr1 = arr1.slice().sort();
+  const sortedArr2 = arr2.slice().sort();
+  for (let i = 0; i < sortedArr1.length; i++) {
+    if (sortedArr1[i] !== sortedArr2[i]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
+function editTeam({
+  teamName: tmnm,
+  description: dscrptn,
+  label: lbl,
+  editPost: edtpst,
+  useLabels: uslbls,
+  members: mmbrs,
+}) {
+  console.log("🚀 ~ file: TeamInfo.jsx:39 ~ editTeam:");
+  console.log({ tmnm, lbl, edtpst, uslbls, mmbrs });
+  let numberOfChanges = 0;
+
+  // Check which variables are changed
+  if (teamName !== tmnm) {
+    console.log("teamname changed", teamName, tmnm);
+    numberOfChanges++;
+    // Check if exists already
+  }
+
+  if (description !== description) {
+    numberOfChanges++;
+  }
+
+  if (label !== lbl) {
+    console.log("label changed", label, lbl);
+    // Check if exists already
+    numberOfChanges++;
+  }
+
+  if (editPost !== edtpst) {
+    console.log("editPost changed", editPost, edtpst);
+    numberOfChanges++;
+  }
+
+  if (useLabels !== uslbls) {
+    console.log("useLabels changed", useLabels, uslbls);
+
+    numberOfChanges++;
+  }
+
+  if (!arrayEq(members, mmbrs)) {
+    console.log("members changed", members, mmbrs);
+    numberOfChanges++;
+    // If members don't work create multiple transactions to add them first in the same call
+    let txn = [];
+    let membersAndTeams = Object.keys(accessControlInfo.members_list);
+    mmbrs.forEach((member) => {
+      if (!membersAndTeams.includes(member)) {
+        // Contract panic member does not exist in the members_list yet.
+        txn.push({
+          contractName: "${REPL_DEVHUB_CONTRACT}",
+          methodName: "add_member",
+          args: {
+            member: member,
+            metadata: {
+              member_metadata_version: "V0",
+              description: "",
+              permissions: {},
+              children: [],
+              parents: [],
+            },
+          },
+          deposit: Big(0).pow(21),
+          gas: Big(10).pow(12).mul(100),
+        });
+      }
+    });
+  }
+
+  if (numberOfChanges < 1) {
+    // TODO error
+    return "";
+  }
+  // TODO check dit later
+  // If team name changed check if already exists.
+  // Team does not exist green light
+
+  // If label changed check if already exists.
+  // Label must not exist green light
+
+  // Deploy contract on testnet and test what happens with members that do not exist
+  // Deploy preview also / check Elliot his message for Peter in telegram how to and read the contribution README
+
+  // Once tested with if the members work
+  // Green light add preview to issue
+
+  Near.call([
+    {
+      contractName: "${REPL_DEVHUB_CONTRACT}",
+      methodName: "edit_member",
+      args: {
+        member: `team:${tmnm}`,
+        metadata: {
+          member_metadata_version: "V0",
+          description: dscrptn,
+          permissions: {
+            [lbl]: [
+              ...(edtpst ? ["edit-post"] : []),
+              ...(uslbls ? ["use-labels"] : []),
+            ],
+          },
+          children: mmbrs,
+          parents: [],
+        },
+      },
+      deposit: Big(0).pow(21),
+      gas: Big(10).pow(12).mul(100),
+    },
+  ]);
+}
+const backwardsCompatibleTeam = (oldTeam) =>
+  oldTeam.startsWith("team:") ? oldTeam.slice(5) : oldTeam;
 return editMode ? (
   <Widget
     src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
     props={{
       data: configuratorData,
       onCancel: () => setEditMode(false),
-      onSubmit: () => editTeam(),
+      onSubmit: (params) => editTeam(params),
     }}
   />
 ) : (
   <div className="card my-2 attractable">
     <div className="card-body">
       <div class="d-flex justify-content-between">
-        <h3>{teamName.slice(5)}</h3>
+        <h3>{backwardsCompatibleTeam(teamName)}</h3>
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
@@ -96,8 +222,11 @@ return editMode ? (
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.entity.team.LabelPermissions"
         props={{
+          identifier: teamName,
           editPost,
           useLabels,
+          setEditPost: console.log,
+          setUseLabels: console.log,
           disabled: true,
         }}
       />

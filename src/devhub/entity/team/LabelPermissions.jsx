@@ -1,7 +1,9 @@
-const { editPost, setEditPost, useLabels, setUseLabels, disabled } = props;
-
-setUseLabels = setUseLabels || (() => null);
-setEditPost = setEditPost || (() => null);
+const { identifier, editPost, setEditPost, useLabels, setUseLabels, disabled } =
+  props;
+console.log(
+  "🚀 ~ file: LabelPermissions.jsx:2 ~ { editPost, setEditPost, useLabels, setUseLabels, disabled }:",
+  { editPost, setEditPost, useLabels, setUseLabels, disabled }
+);
 
 return (
   <>
@@ -10,12 +12,12 @@ return (
         class="form-check-input"
         type="checkbox"
         value="edit-post"
-        id="flexCheckDefault"
+        id={`editPostCheckbox${identifier}`}
         checked={editPost}
-        onChange={setEditPost(e.target.value)}
+        onChange={() => setEditPost(!editPost)}
         disabled={disabled}
       />
-      <label class="form-check-label" for="flexCheckDefault">
+      <label class="form-check-label" for={`editPostCheckbox${identifier}`}>
         This team is allowed to edit-post with this / these labels
       </label>
     </div>
@@ -24,12 +26,12 @@ return (
         class="form-check-input"
         type="checkbox"
         value="use-labels"
-        id="flexCheckChecked"
+        id={`useLabelsCheckbox${identifier}`}
         checked={useLabels}
-        onChange={setUseLabels(e.target.value)}
+        onChange={() => setUseLabels(!useLabels)}
         disabled={disabled}
       />
-      <label class="form-check-label" for="flexCheckChecked">
+      <label class="form-check-label" for={`useLabelsCheckbox${identifier}`}>
         Only this team and moderators are allowed to use this label
       </label>
     </div>
