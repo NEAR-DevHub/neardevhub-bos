@@ -1,24 +1,27 @@
 {
   "cookies": [],
-  "origins": [{
-    "origin": "http://localhost:8080",
-    "localStorage": [{
-        "name": "near-wallet-selector:selectedWalletId",
-        "value": "near-wallet"
-      },
-      {
-        "name": "near_app_wallet_auth_key",
-        "value": "{\"accountId\":\"theori.near\"}"
-      },
-      {
-        "name": "near-social-vm:v01::accountId:",
-        "value": "theori.near"
-      },
-      {
-        "name": "flags",
-        "value": "{\"bosLoaderUrl\":\"http://127.0.0.1:3030\"}"
-      }
-    ]
-  }],
+  "origins": [
+    {
+      "origin": "http://localhost:8080",
+      "localStorage": [
+        {
+          "name": "near-wallet-selector:selectedWalletId",
+          "value": "near-wallet"
+        },
+        {
+          "name": "near_app_wallet_auth_key",
+          "value": "{\"accountId\":\"theori.near\"}"
+        },
+        {
+          "name": "near-social-vm:v01::accountId:",
+          "value": "theori.near"
+        },
+        {
+          "name": "flags",
+          "value": "{\"bosLoaderUrl\":\"http://127.0.0.1:3030\"}"
+        }
+      ]
+    }
+  ],
   "sessionStorage": []
 }
