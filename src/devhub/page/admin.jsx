@@ -224,6 +224,28 @@ return (
           }}
         />
       )} */}
+      <h1>Admin</h1>
+      {teamNames.includes("team:moderators") && (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
+          props={{
+            teamName: "team:moderators",
+          }}
+        />
+      )}
+      <h1>Other groups</h1>
+      {(teamNames || []).sort().map((teamName) => {
+        if (teamName === "team:moderators") return;
+        return (
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
+            props={{
+              teamName,
+            }}
+          />
+        );
+      })}
+
       {!createTeam ? (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
@@ -241,16 +263,6 @@ return (
           }}
         />
       )}
-      {(teamNames || []).map((teamName) => {
-        return (
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
-            props={{
-              teamName,
-            }}
-          />
-        );
-      })}
     </div>
   </Container>
 );
