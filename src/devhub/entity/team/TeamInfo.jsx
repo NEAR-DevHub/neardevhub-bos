@@ -17,8 +17,6 @@ if (!accessControlInfo || !rootMembers) {
   return <p>Loading access control info...</p>;
 }
 
-console.log({ accessControlInfo, rootMembers });
-
 const { teamName } = props;
 const label = Object.keys(rootMembers[teamName].permissions)[0] || "";
 const metadata = accessControlInfo.members_list[teamName];
@@ -61,44 +59,25 @@ function editTeam({
   useLabels: uslbls,
   members: mmbrs,
 }) {
-  console.log("🚀 ~ file: TeamInfo.jsx:39 ~ editTeam:");
-  console.log({ tmnm, lbl, edtpst, uslbls, mmbrs });
+  let txn = [];
   let numberOfChanges = 0;
 
-  // Check which variables are changed
-  if (teamName !== tmnm) {
-    console.log("teamname changed", teamName, tmnm);
-    numberOfChanges++;
-    // Check if exists already
-  }
-
-  if (description !== description) {
-    numberOfChanges++;
-  }
-
-  if (label !== lbl) {
-    console.log("label changed", label, lbl);
-    // Check if exists already
-    numberOfChanges++;
-  }
-
-  if (editPost !== edtpst) {
-    console.log("editPost changed", editPost, edtpst);
-    numberOfChanges++;
-  }
-
-  if (useLabels !== uslbls) {
-    console.log("useLabels changed", useLabels, uslbls);
-
+  if (
+    teamName !== tmnm ||
+    description !== dscrptn ||
+    label !== lbl ||
+    editPost !== edtpst ||
+    useLabels !== uslbls
+  ) {
     numberOfChanges++;
   }
 
   if (!arrayEq(members, mmbrs)) {
-    console.log("members changed", members, mmbrs);
     numberOfChanges++;
     // If members don't work create multiple transactions to add them first in the same call
-    let txn = [];
+
     let membersAndTeams = Object.keys(accessControlInfo.members_list);
+
     mmbrs.forEach((member) => {
       if (!membersAndTeams.includes(member)) {
         // Contract panic member does not exist in the members_list yet.
@@ -140,6 +119,7 @@ function editTeam({
   // Green light add preview to issue
 
   Near.call([
+    ...txn,
     {
       contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "edit_member",

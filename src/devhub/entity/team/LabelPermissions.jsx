@@ -1,9 +1,5 @@
 const { identifier, editPost, setEditPost, useLabels, setUseLabels, disabled } =
   props;
-console.log(
-  "🚀 ~ file: LabelPermissions.jsx:2 ~ { editPost, setEditPost, useLabels, setUseLabels, disabled }:",
-  { editPost, setEditPost, useLabels, setUseLabels, disabled }
-);
 
 return (
   <>
@@ -11,7 +7,7 @@ return (
       <input
         class="form-check-input"
         type="checkbox"
-        value="edit-post"
+        value={editPost}
         id={`editPostCheckbox${identifier}`}
         checked={editPost}
         onChange={() => setEditPost(!editPost)}
@@ -25,7 +21,7 @@ return (
       <input
         class="form-check-input"
         type="checkbox"
-        value="use-labels"
+        value={useLabels}
         id={`useLabelsCheckbox${identifier}`}
         checked={useLabels}
         onChange={() => setUseLabels(!useLabels)}

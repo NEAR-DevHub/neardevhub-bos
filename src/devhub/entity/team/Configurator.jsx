@@ -95,6 +95,9 @@ const handleDeleteItem = (index) => {
 };
 
 const handleSubmit = () => {
+  if (newItem !== "") {
+    return setWarning("Do you add the newest member or clear the field?");
+  }
   // validate
   if (teamName && teamName.startsWith("team:")) {
     return setWarning("The team name can't start with 'team:'");
@@ -109,6 +112,7 @@ const handleSubmit = () => {
   if (members.length < 1) {
     return setWarning("Add at least one member to the team");
   }
+
   onSubmit({
     teamName,
     description,
@@ -260,7 +264,7 @@ return (
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-success" },
-            disabled: initialData === members,
+            // disabled
             icon: {
               type: "bootstrap_icon",
               variant: "bi-check-circle-fill",

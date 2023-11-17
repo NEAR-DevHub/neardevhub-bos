@@ -1,9 +1,9 @@
-// TODO
-context.accountId = "theori.near";
-
-const { hasModerator, getFeaturedCommunities, getRootMembers } = VM.require(
-  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
-);
+const {
+  hasModerator,
+  getFeaturedCommunities,
+  getRootMembers,
+  getAccessControlInfo,
+} = VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract");
 
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
@@ -11,7 +11,13 @@ const { Tile } =
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-if (!getFeaturedCommunities || !hasModerator || !getRootMembers || !href) {
+if (
+  !getFeaturedCommunities ||
+  !hasModerator ||
+  !getRootMembers ||
+  !href ||
+  !getAccessControlInfo
+) {
   return <p>Loading modules...</p>;
 }
 
@@ -40,6 +46,7 @@ const isDevHubModerator = hasModerator({
 });
 
 const rootMembers = getRootMembers();
+const accessControlInfo = getAccessControlInfo();
 
 const teamNames = Object.keys(rootMembers || {});
 
@@ -87,21 +94,43 @@ function createNewTeam({
   useLabels,
   members,
 }) {
-  console.log(
-    "🚀 ~ file: admin.jsx:83 ~ createNewTeam ~ { teamName, label, editPost, useLabels, members }:",
-    { teamName, description, label, editPost, useLabels, members }
-  );
-  // TODO
+  let txn = [];
 
-  // Get root members / check if team exists
+  if (rootMembers.includes(`team:${teamName}`)) {
+    // Error team already exists
+  }
+  const allLabels = Object.keys(accessControlInfo.rules_list);
+  if (allLabels.includes(label)) {
+    // Error label already exists
+  }
 
-  //
-
-  // Team must not exist
-  // Label must not exist
+  // If we don't do this the contract will panic
+  let membersAndTeams = Object.keys(accessControlInfo.members_list);
+  members.forEach((member) => {
+    if (!membersAndTeams.includes(member)) {
+      // Contract panic member does not exist in the members_list yet!
+      txn.push({
+        contractName: "${REPL_DEVHUB_CONTRACT}",
+        methodName: "add_member",
+        args: {
+          member: member,
+          metadata: {
+            member_metadata_version: "V0",
+            description: "",
+            permissions: {},
+            children: [],
+            parents: [],
+          },
+        },
+        deposit: Big(0).pow(21),
+        gas: Big(10).pow(12).mul(100),
+      });
+    }
+  });
 
   // Check edit team
   Near.call([
+    ...txn,
     {
       contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "add_member",
@@ -135,7 +164,7 @@ return (
         <>
           <div className="d-flex flex-wrap align-content-start gap-4">
             Featured Community List
-            {/* {featuredCommunityList.map((community) => (
+            {featuredCommunityList.map((community) => (
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.community.Card"}
                 props={{
@@ -165,10 +194,10 @@ return (
                   target: "_blank",
                 }}
               />
-            ))} */}
+            ))}
           </div>
-          {/* <Tile> */}
-          {/* <Widget
+          {/* <Tile>
+          <Widget
             // TODO: LEGACY.
             src={
               "${REPL_DEVHUB}/widget/gigs-board.components.organism.configurator"
@@ -184,8 +213,8 @@ return (
               schema: CommunityFeaturingSchema,
               onSubmit: addFeaturedCommunity,
             }}
-          /> */}
-          {/* </Tile> */}
+          />
+          </Tile> */}
         </>
       ) : (
         <Widget
