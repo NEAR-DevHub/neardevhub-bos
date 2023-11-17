@@ -160,7 +160,7 @@ const [createTeam, setCreateTeam] = useState(false);
 return (
   <Container>
     <div className="d-flex flex-column gap-4 p-4">
-      {featuredCommunityList ? (
+      {/* {featuredCommunityList ? (
         <>
           <div className="d-flex flex-wrap align-content-start gap-4">
             Featured Community List
@@ -196,7 +196,7 @@ return (
               />
             ))}
           </div>
-          {/* <Tile>
+          <Tile>
           <Widget
             // TODO: LEGACY.
             src={
@@ -214,7 +214,7 @@ return (
               onSubmit: addFeaturedCommunity,
             }}
           />
-          </Tile> */}
+          </Tile>
         </>
       ) : (
         <Widget
@@ -223,7 +223,7 @@ return (
             isHidden: false,
           }}
         />
-      )}
+      )} */}
       {!createTeam ? (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
