@@ -29,7 +29,7 @@ const members = rootMembers[teamName].children || [];
 
 const configuratorData = {
   teamName: teamName,
-  description: metadata.description, //
+  description: metadata.description,
   label: label,
   members,
   editPost,
@@ -86,8 +86,6 @@ function editTeam({
 
   if (!arrayEq(members, mmbrs)) {
     numberOfChanges++;
-    // If members don't work create multiple transactions to add them first in the same call
-
     let membersAndTeams = Object.keys(accessControlInfo.members_list);
 
     mmbrs.forEach((member) => {
@@ -117,8 +115,6 @@ function editTeam({
     // Error nothing changed
     return "";
   }
-
-  // Deploy preview also / check Elliot his message for Peter in telegram how to and read the contribution README
 
   Near.call([
     ...txn,

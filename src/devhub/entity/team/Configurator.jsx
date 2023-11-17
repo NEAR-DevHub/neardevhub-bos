@@ -98,7 +98,6 @@ const handleSubmit = () => {
   if (newItem !== "") {
     return setWarning("Do you add the newest member or clear the field?");
   }
-  // validate
   if (teamName && teamName.startsWith("team:")) {
     return setWarning("The team name can't start with 'team:'");
   }
@@ -176,7 +175,6 @@ return (
               props={{
                 className: "flex-grow-1",
                 onChange: (e) => setLabel(e.target.value),
-                // This is to make it backwards compatible
                 value: backwardsCompatibleLabel(label),
                 skipPaddingGap: true,
                 placeholder: "label",
@@ -264,7 +262,6 @@ return (
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-success" },
-            // disabled
             icon: {
               type: "bootstrap_icon",
               variant: "bi-check-circle-fill",
