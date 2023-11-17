@@ -16,7 +16,6 @@ test.describe("Wallet is connected", () => {
     await page.waitForSelector(createTeamButtonSelector, {
       state: "visible",
     });
-    // const buttonText = await createTeamButtonSelector.textContent();
 
     // Click on the first post history button
     await page.click(createTeamButtonSelector);
