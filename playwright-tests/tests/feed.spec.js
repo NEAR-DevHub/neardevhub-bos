@@ -52,8 +52,8 @@ test("should hide posts with devhub-test tag", async ({ page }) => {
   // look for tag input
   const tagInputSelector = 'input[placeholder="Search by tag"]';
   await page.waitForSelector(tagInputSelector, {
-    state: 'visible'
-  })
+    state: "visible",
+  });
   await page.click(tagInputSelector);
 
   // select devhub-test
@@ -61,11 +61,12 @@ test("should hide posts with devhub-test tag", async ({ page }) => {
   await page.click(testingTagSelector);
 
   // check if no posts are found
-  const noPostFoundSelector = 'p.text-secondary:has-text("No posts matches search")';
+  const noPostFoundSelector =
+    'p.text-secondary:has-text("No posts matches search")';
   await page.waitForSelector(noPostFoundSelector, {
-    state: 'visible'
-  })
-})
+    state: "visible",
+  });
+});
 
 test.describe("Wallet is connected", () => {
   // sign in to wallet
