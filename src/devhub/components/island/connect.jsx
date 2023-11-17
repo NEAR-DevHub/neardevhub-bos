@@ -90,7 +90,7 @@ const Card = ({ title, description, href }) => {
 
 const Cards = [
   {
-    title: "Devhub Hacks",
+    title: "DevHub Hacks",
     description: "Host and support developer focused events around the globe.",
     href: "/${REPL_DEVHUB}/widget/app?page=community&handle=hacks",
   },

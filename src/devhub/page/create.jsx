@@ -1,9 +1,3 @@
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
-
-if (!href) {
-  return <p>Loading modules...</p>;
-}
-
 /* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
 
@@ -35,7 +29,16 @@ function autoCompleteAccountId(id) {
 }
 /* END_INCLUDE: "core/lib/autocomplete" */
 
-const DRAFT_STATE_STORAGE_KEY = "DRAFT_STATE";
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+
+const { DRAFT_STATE_STORAGE_KEY, draftState, onDraftStateChange } = VM.require(
+  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
+);
+
+if (!href) {
+  return <p>Loading modules...</p>;
+}
+
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
@@ -249,9 +252,11 @@ const existingLabelStrings =
     editor: context.accountId,
   }) ?? [];
 const existingLabelSet = new Set(existingLabelStrings);
-const existingLabels = existingLabelStrings.map((s) => {
-  return { name: s };
-});
+const existingLabels = existingLabelStrings
+  .filter((it) => it !== "blog") // remove blog label so users cannot publish blogs from feed
+  .map((s) => {
+    return { name: s };
+  });
 
 const labelEditor = (
   <div className="col-lg-12 mb-2">
@@ -268,6 +273,7 @@ const labelEditor = (
       allowNew={(results, props) => {
         return (
           !existingLabelSet.has(props.text) &&
+          props.text.toLowerCase() !== "blog" && // dont allow adding "Blog"
           props.selected.filter((selected) => selected.name === props.text)
             .length == 0 &&
           Near.view("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
@@ -378,6 +384,7 @@ const fundraisingDiv = (
           USDT
         </option>
         <option value="NEAR">NEAR</option>
+        <option value="USDC">USDC</option>
       </select>
     </div>
     <div className="col-lg-6 mb-2">

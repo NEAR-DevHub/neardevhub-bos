@@ -2,6 +2,9 @@ node_modules
 .vscode
 .DS_Store
 
+// yarn
+yarn.lock
+
 // replacements
 replacements.*.json.tmp
 

@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-import { setCookieConsentAccepted } from "../testUtils.js";
-
 test("should load a community page if handle exists", async ({ page }) => {
   await page.goto(
     "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
@@ -49,8 +47,6 @@ test.describe("Wallet is connected", () => {
       "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
     );
 
-    await setCookieConsentAccepted(page);
-
     const postButtonSelector = 'a:has-text("Post")';
 
     await page.waitForSelector(postButtonSelector, {
@@ -65,7 +61,7 @@ test.describe("Wallet is connected", () => {
 
     // Verify that the URL is the expected one.
     expect(page.url()).toBe(
-      "https://near.org/devgovgigs.near/widget/app?page=create&labels=devhub-test"
+      "http://localhost:8080/devgovgigs.near/widget/app?page=create&labels=devhub-test"
     );
 
     // Wait for the Typeahead field to render.

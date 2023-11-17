@@ -65,6 +65,7 @@ const FeedPage = ({ recency, tag }) => {
           ),
           recency,
           tag,
+          author,
           transactionHashes: props.transactionHashes,
         }}
       />

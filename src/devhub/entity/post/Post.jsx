@@ -2,20 +2,36 @@
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-href || (href = () => {});
+const { draftState, onDraftStateChange } = VM.require(
+  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
+);
+
+if (!href) {
+  return <p>Loading modules...</p>;
+}
 
 const ButtonWithHover = styled.button`
   background-color: #fff;
+  transition: all 300ms;
+  border-radius: 0.5rem;
+
   &:hover {
     background-color: #e9ecef;
     color: #000;
   }
+
+  &:disabled {
+    background-color: #fff;
+    color: #b7b7b7;
+  }
 `;
 
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
+
 const post =
   props.post ??
   Near.view("${REPL_DEVHUB_CONTRACT}", "get_post", { post_id: postId });
+
 if (!post) {
   return <div>Loading ...</div>;
 }
@@ -26,12 +42,14 @@ const compareTimestamp = props.compareTimestamp ?? "";
 const swapTimestamps = currentTimestamp < compareTimestamp;
 
 const snapshotHistory = post.snapshot_history;
+
 const snapshot =
   currentTimestamp === post.snapshot.timestamp
     ? post.snapshot
     : (snapshotHistory &&
         snapshotHistory.find((s) => s.timestamp === currentTimestamp)) ??
       null;
+
 const compareSnapshot =
   compareTimestamp === post.snapshot.timestamp
     ? post.snapshot
@@ -41,6 +59,7 @@ const compareSnapshot =
 
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
+
 const parentId = Near.view("${REPL_DEVHUB_CONTRACT}", "get_parent_id", {
   post_id: postId,
 });
@@ -54,8 +73,6 @@ const childPostIds = props.isPreview ? [] : childPostIdsUnordered.reverse();
 const expandable = props.isPreview ? false : props.expandable ?? false;
 const defaultExpanded = expandable ? props.defaultExpanded : true;
 
-const draftState = props.draftState;
-
 function readableDate(timestamp) {
   var a = new Date(timestamp);
   return a.toDateString() + " " + a.toLocaleTimeString();
@@ -68,6 +85,7 @@ const timestamp = readableDate(
 const postSearchKeywords = props.searchKeywords ? (
   <div style={{ "font-family": "monospace" }} key="post-search-keywords">
     <span>Found keywords: </span>
+
     {props.searchKeywords.map((tag) => (
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
@@ -122,6 +140,7 @@ const editControl = allowedToEdit ? (
     >
       <div class="bi bi-pencil-square"></div>
     </a>
+
     <ul class="dropdown-menu">
       {btnEditorWidget("Idea", "Edit as an idea")}
       {btnEditorWidget("Solution", "Edit as a solution")}
@@ -174,9 +193,11 @@ const header = (
               }}
             />
           </ProfileCardContainer>
+
           <div class="d-flex ms-auto">
             {editControl}
             {timestamp}
+
             <Widget
               src={"${REPL_DEVHUB}/widget/devhub.entity.post.History"}
               props={{
@@ -246,13 +267,16 @@ let grantNotify = Near.view("social.near", "is_write_permission_granted", {
   predecessor_id: "${REPL_DEVHUB_CONTRACT}",
   key: context.accountId + "/index/notify",
 });
+
 if (grantNotify === null) {
   return;
 }
+
 const onLike = () => {
   if (!context.accountId) {
     return;
   }
+
   let likeTxn = [
     {
       contractName: "${REPL_DEVHUB_CONTRACT}",
@@ -277,6 +301,7 @@ const onLike = () => {
       gas: Big(10).pow(12).mul(30),
     });
   }
+
   Near.call(likeTxn);
 };
 
@@ -294,6 +319,7 @@ const btnCreatorWidget = (postType, icon, name, desc) => {
         <i class={`bi ${icon}`} style={{ fontSize: "1.5rem" }}>
           {" "}
         </i>
+
         <div class="ps-2 text-wrap" style={{ width: "18rem" }}>
           <div>{name}</div>
           <small class="fw-light text-secondary">{desc}</small>
@@ -336,6 +362,7 @@ const buttonsFooter = props.isPreview ? null : (
             />
           )}
         </ButtonWithHover>
+
         <div class="btn-group" role="group">
           <ButtonWithHover
             type="button"
@@ -382,18 +409,27 @@ const buttonsFooter = props.isPreview ? null : (
             )}
           </ul>
         </div>
-        <ButtonWithHover
-          type="button"
-          class="btn"
-          style={{ border: "0px" }}
-          data-bs-toggle="collapse"
-          href={`#collapseChildPosts${postId}`}
-          aria-expanded={defaultExpanded}
-          aria-controls={`collapseChildPosts${postId}`}
-        >
-          <i class="bi bi-chevron-down"> </i>{" "}
-          {`Expand Replies (${childPostIds.length})`}
-        </ButtonWithHover>
+        {childPostIds.length > 0 && (
+          <ButtonWithHover
+            type="button"
+            class="btn"
+            style={{ border: "0px" }}
+            data-bs-toggle="collapse"
+            href={`#collapseChildPosts${postId}`}
+            aria-expanded={defaultExpanded}
+            aria-controls={`collapseChildPosts${postId}`}
+            onClick={() =>
+              State.update({ expandReplies: !state.expandReplies })
+            }
+          >
+            <i
+              class={`bi bi-chevron-${state.expandReplies ? "up" : "down"}`}
+            ></i>{" "}
+            {`${state.expandReplies ? "Collapse" : "Expand"} Replies (${
+              childPostIds.length
+            })`}
+          </ButtonWithHover>
+        )}
 
         {isUnderPost || !parentId ? (
           <div key="link-to-parent"></div>
@@ -434,7 +470,7 @@ const CreatorWidget = (postType) => {
         src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
         props={{
           postType,
-          onDraftStateChange: props.onDraftStateChange,
+          onDraftStateChange,
           draftState:
             draftState?.parent_post_id == postId ? draftState : undefined,
           parentId: postId,
@@ -508,7 +544,7 @@ const EditorWidget = (postType) => {
           token: tokenResolver(post.snapshot.sponsorship_token),
           supervisor: post.snapshot.supervisor,
           githubLink: post.snapshot.github_link,
-          onDraftStateChange: props.onDraftStateChange,
+          onDraftStateChange,
           draftState:
             draftState?.edit_post_id == postId ? draftState : undefined,
         }}
@@ -523,6 +559,10 @@ const isDraft =
   (draftState?.edit_post_id === postId &&
     draftState?.postType === state.postType);
 
+const toggleEditor = () => {
+  State.update({ showEditor: !state.showEditor });
+};
+
 function Editor() {
   return (
     <div class="row" id={`accordion${postId}`} key="editors-footer">
@@ -536,7 +576,7 @@ function Editor() {
               src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
               props={{
                 postType: state.postType,
-                onDraftStateChange: props.onDraftStateChange,
+                onDraftStateChange,
                 draftState:
                   draftState?.parent_post_id == postId ? draftState : undefined,
                 parentId: postId,
@@ -560,9 +600,10 @@ function Editor() {
                 token: tokenResolver(post.snapshot.sponsorship_token),
                 supervisor: post.snapshot.supervisor,
                 githubLink: post.snapshot.github_link,
-                onDraftStateChange: props.onDraftStateChange,
+                onDraftStateChange,
                 draftState:
                   draftState?.edit_post_id == postId ? draftState : undefined,
+                toggleEditor: toggleEditor,
               }}
             />
           </>
@@ -677,18 +718,20 @@ const postsList =
         id={`collapseChildPosts${postId}`}
       >
         {childPostIds.map((childId) => (
-          <Widget
-            src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
-            props={{
-              id: childId,
-              isUnderPost: true,
-              onDraftStateChange: props.onDraftStateChange,
-              draftState,
-              expandParent: () =>
-                State.update({ childrenOfChildPostsHasDraft: true }),
-              referral: `subpost${childId}of${postId}`,
-            }}
-          />
+          <div key={childId} style={{ marginBottom: "0.5rem" }}>
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
+              props={{
+                id: childId,
+                isUnderPost: true,
+                onDraftStateChange,
+                draftState,
+                expandParent: () =>
+                  State.update({ childrenOfChildPostsHasDraft: true }),
+                referral: `subpost${childId}of${postId}`,
+              }}
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -705,6 +748,7 @@ const needClamp = isInList && contentArray.length > 5;
 
 initState({
   clamp: needClamp,
+  expandReplies: defaultExpanded,
 });
 
 const clampedContent = needClamp
