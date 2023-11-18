@@ -105,11 +105,11 @@ function createNewTeam({
     return setAlertMessage("This label is already restricted by another team");
   }
 
-  // If we don't do this the contract will panic
   let membersAndTeams = Object.keys(accessControlInfo.members_list);
   members.forEach((member) => {
+    // if Contract panic member does not exist in the members_list
     if (!membersAndTeams.includes(member)) {
-      // Contract panic member does not exist in the members_list yet!
+      // Add member
       txn.push({
         contractName: "${REPL_DEVHUB_CONTRACT}",
         methodName: "add_member",
