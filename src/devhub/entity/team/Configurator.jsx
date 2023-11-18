@@ -58,7 +58,7 @@ const moderatorsWarning = teamModerators && (
   <Widget
     src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
     props={{
-      onClick: () => null,
+      onClose: () => null,
       message:
         "It's only possible to edit the description and members \
         of team moderators through the UI.",
@@ -115,7 +115,7 @@ return (
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
         props={{
-          onClick: () => setWarning(""),
+          onClose: () => setWarning(""),
           message: warning,
         }}
       />

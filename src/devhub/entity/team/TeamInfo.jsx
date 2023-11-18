@@ -37,7 +37,7 @@ const configuratorData = {
 };
 
 const [editMode, setEditMode] = useState(false);
-const [error, setError] = useState("");
+const [alertMessage, setAlertMessage] = useState("");
 
 function arrayEq(arr1, arr2) {
   if (arr1.length !== arr2.length) {
@@ -68,16 +68,16 @@ function editTeam({
   if (teamName !== tmnm) {
     numberOfChanges++;
     if (allTeamNames.includes(`team:${tmnm}`)) {
-      // Error team already exists
-      return;
+      return setAlertMessage("This team name already exists");
     }
   }
 
   if (label !== lbl) {
     const allLabels = Object.keys(accessControlInfo.rules_list);
     if (allLabels.includes(lbl)) {
-      // Error label already exists
-      return;
+      return setAlertMessage(
+        "This label is already restricted by another team"
+      );
     }
   }
 
@@ -113,8 +113,7 @@ function editTeam({
   }
 
   if (numberOfChanges < 1) {
-    // Error nothing changed
-    return "";
+    return setAlertMessage("No changes found.");
   }
 
   Near.call([
@@ -154,7 +153,13 @@ return editMode ? (
         onSubmit: (params) => editTeam(params),
       }}
     />
-    // TODO Alert
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+      props={{
+        onClose: () => setAlertMessage(""),
+        message: alertMessage,
+      }}
+    />
   </>
 ) : (
   <div className="card my-2 attractable">

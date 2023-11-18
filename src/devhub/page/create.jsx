@@ -524,7 +524,7 @@ return (
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
                 props={{
-                  onClick: () => State.update({ warning: "" }),
+                  onClose: () => State.update({ warning: "" }),
                   message: state.warning,
                 }}
               />

@@ -1,4 +1,4 @@
-const Alert = ({ onClick, message }) =>
+const Alert = ({ onClose, message }) =>
   message && (
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
       {message}
@@ -7,7 +7,7 @@ const Alert = ({ onClick, message }) =>
         class="btn-close"
         data-bs-dismiss="alert"
         aria-label="Close"
-        onClick={onClick}
+        onClick={onClose}
       ></button>
     </div>
   );
