@@ -49,6 +49,7 @@ const rootMembers = getRootMembers();
 const accessControlInfo = getAccessControlInfo();
 
 const teamNames = Object.keys(rootMembers || {});
+const [alertMessage, setAlertMessage] = useState("");
 
 const noPermissionBanner = (
   <div
@@ -97,11 +98,11 @@ function createNewTeam({
   let txn = [];
 
   if (rootMembers.includes(`team:${teamName}`)) {
-    // Error team already exists
+    return setAlertMessage("This team name already exists");
   }
   const allLabels = Object.keys(accessControlInfo.rules_list);
   if (allLabels.includes(label)) {
-    // Error label already exists
+    return setAlertMessage("This label is already restricted by another team");
   }
 
   // If we don't do this the contract will panic
@@ -226,12 +227,21 @@ return (
       )} */}
       <h1>Admin</h1>
       {teamNames.includes("team:moderators") && (
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
-          props={{
-            teamName: "team:moderators",
-          }}
-        />
+        <>
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
+            props={{
+              teamName: "team:moderators",
+            }}
+          />
+          <Widget
+            src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+            props={{
+              onClose: () => setAlertMessage(""),
+              message: alertMessage,
+            }}
+          />
+        </>
       )}
       <h1>Other groups</h1>
       {(teamNames || []).sort().map((teamName) => {
