@@ -55,30 +55,15 @@ const [warning, setWarning] = useState("");
 
 const teamModerators = teamName == "moderators";
 const moderatorsWarning = teamModerators && (
-  <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    It's only possible to edit the description and members of team moderators
-    through the UI.
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="alert"
-      aria-label="Close"
-      onClick={() => State.update({ permissionError: "" })}
-    ></button>
-  </div>
-);
-
-const customWarning = warning && (
-  <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    {warning}
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="alert"
-      aria-label="Close"
-      onClick={() => setWarning("")}
-    ></button>
-  </div>
+  <Widget
+    src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+    props={{
+      onClick: () => null,
+      message:
+        "It's only possible to edit the description and members \
+        of team moderators through the UI.",
+    }}
+  />
 );
 
 const handleAddItem = () => {
@@ -127,76 +112,86 @@ return (
     <Container>
       <h3>{data.teamName ? "Edit" : "Create"} team</h3>
       {moderatorsWarning}
-      {customWarning}
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+        props={{
+          onClick: () => setWarning(""),
+          message: warning,
+        }}
+      />
+      {/* Moderators is only editable through the CLI except for the members property */}
       {!teamModerators && (
-        <div className="flex-grow-1">
-          <span>Team name</span>
-          <Widget
-            src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-            props={{
-              className: "flex-grow-1",
-              skipPaddingGap: true,
-              onChange: (e) => setTeamName(e.target.value),
-              value: teamName,
-              placeholder: "Team name",
-            }}
-          />
-        </div>
-      )}
-      <div className="flex-grow-1">
-        <span>Team description</span>
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
-          props={{ data: { content: description }, onChange: setDescription }}
-        />
-      </div>
-      {!teamModerators && (
-        <div className="flex-grow-1">
-          <div>
-            Would you like this team to limit their restrictions to a single
-            label, or would you prefer them to restrict it with any label that
-            follows a similar convention?
-          </div>
-          <div className="col-lg-6 mb-2">
-            <select
-              onChange={(event) => setLabelType(event.target.value)}
-              class="form-select"
-              aria-label="Select type"
-              value={labelType}
-            >
-              <option value="starts-with:">
-                Restrict multiple labels with a common prefix
-              </option>
-              <option value="">Restrict a single label</option>
-            </select>
-            <div>What would you like the restricted label to be?</div>
+        <>
+          <div className="flex-grow-1">
+            <span>Team name</span>
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
               props={{
                 className: "flex-grow-1",
-                onChange: (e) => setLabel(e.target.value),
-                value: backwardsCompatibleLabel(label),
                 skipPaddingGap: true,
-                placeholder: "label",
-                inputProps: {
-                  prefix: labelType,
-                },
-              }}
-            />
-            <div>Select label permissions</div>
-            <Widget
-              src="${REPL_DEVHUB}/widget/devhub.entity.team.LabelPermissions"
-              props={{
-                identifier: data.teamName,
-                editPost,
-                setEditPost,
-                useLabels,
-                setUseLabels,
-                disabled: false,
+                onChange: (e) => setTeamName(e.target.value),
+                value: teamName,
+                placeholder: "Team name",
               }}
             />
           </div>
-        </div>
+          <div className="flex-grow-1">
+            <span>Team description</span>
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
+              props={{
+                data: { content: description },
+                onChange: setDescription,
+              }}
+            />
+          </div>
+          <div className="flex-grow-1">
+            <div>
+              Would you like this team to limit their restrictions to a single
+              label, or would you prefer them to restrict it with any label that
+              follows a similar convention?
+            </div>
+            <div className="col-lg-6 mb-2">
+              <select
+                onChange={(event) => setLabelType(event.target.value)}
+                class="form-select"
+                aria-label="Select type"
+                value={labelType}
+              >
+                <option value="starts-with:">
+                  Restrict multiple labels with a common prefix
+                </option>
+                <option value="">Restrict a single label</option>
+              </select>
+              <div>What would you like the restricted label to be?</div>
+              <Widget
+                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                props={{
+                  className: "flex-grow-1",
+                  onChange: (e) => setLabel(e.target.value),
+                  value: backwardsCompatibleLabel(label),
+                  skipPaddingGap: true,
+                  placeholder: "label",
+                  inputProps: {
+                    prefix: labelType,
+                  },
+                }}
+              />
+              <div>Select label permissions</div>
+              <Widget
+                src="${REPL_DEVHUB}/widget/devhub.entity.team.LabelPermissions"
+                props={{
+                  identifier: data.teamName,
+                  editPost,
+                  setEditPost,
+                  useLabels,
+                  setUseLabels,
+                  disabled: false,
+                }}
+              />
+            </div>
+          </div>
+        </>
       )}
       {members.map((item, index) => (
         <Item key={index}>

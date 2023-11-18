@@ -37,6 +37,7 @@ const configuratorData = {
 };
 
 const [editMode, setEditMode] = useState(false);
+const [error, setError] = useState("");
 
 function arrayEq(arr1, arr2) {
   if (arr1.length !== arr2.length) {
@@ -144,14 +145,17 @@ function editTeam({
 const backwardsCompatibleTeam = (oldTeam) =>
   oldTeam.startsWith("team:") ? oldTeam.slice(5) : oldTeam;
 return editMode ? (
-  <Widget
-    src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
-    props={{
-      data: configuratorData,
-      onCancel: () => setEditMode(false),
-      onSubmit: (params) => editTeam(params),
-    }}
-  />
+  <>
+    <Widget
+      src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
+      props={{
+        data: configuratorData,
+        onCancel: () => setEditMode(false),
+        onSubmit: (params) => editTeam(params),
+      }}
+    />
+    // TODO Alert
+  </>
 ) : (
   <div className="card my-2 attractable">
     <div className="card-body">

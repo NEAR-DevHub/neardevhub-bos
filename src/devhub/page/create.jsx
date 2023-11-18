@@ -521,21 +521,13 @@ return (
                   ? "Get feedback from the community about a problem, opportunity, or need."
                   : "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution."}
               </p>
-              {state.warning && (
-                <div
-                  class="alert alert-warning alert-dismissible fade show"
-                  role="alert"
-                >
-                  {state.warning}
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Close"
-                    onClick={() => State.update({ warning: "" })}
-                  ></button>
-                </div>
-              )}
+              <Widget
+                src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+                props={{
+                  onClick: () => State.update({ warning: "" }),
+                  message: state.warning,
+                }}
+              />
               <div className="row">
                 {nameDiv}
                 {descriptionDiv}

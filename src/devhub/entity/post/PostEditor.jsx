@@ -523,19 +523,13 @@ return (
 
     <div class="card-body">
       {state.warning && (
-        <div
-          class="alert alert-warning alert-dismissible fade show"
-          role="alert"
-        >
-          {state.warning}
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close"
-            onClick={() => State.update({ warning: "" })}
-          ></button>
-        </div>
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+          props={{
+            onClick: () => State.update({ warning: "" }),
+            message: state.warning,
+          }}
+        />
       )}
       {/* This statement around the githubLinkDiv creates a weird render bug
       where the title renders extra on state change. */}
