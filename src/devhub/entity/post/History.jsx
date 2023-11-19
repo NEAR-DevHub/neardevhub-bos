@@ -6,66 +6,14 @@ props.newTab: boolean;
 props.timestamp: number;
 props.referral: any;
 */
-
-/* INCLUDE: "common.jsx" */
-const nearDevGovGigsContractAccountId =
-  props.nearDevGovGigsContractAccountId ||
-  (context.widgetSrc ?? "devgovgigs.near").split("/", 1)[0];
-
-const nearDevGovGigsWidgetsAccountId =
-  props.nearDevGovGigsWidgetsAccountId || "devgovgigs.near";
-
-function widget(widgetName, widgetProps, key) {
-  widgetProps = {
-    ...widgetProps,
-    nearDevGovGigsContractAccountId: props.nearDevGovGigsContractAccountId,
-    nearDevGovGigsWidgetsAccountId: props.nearDevGovGigsWidgetsAccountId,
-    referral: props.referral,
-  };
-
-  return (
-    <Widget
-      src={`${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.${widgetName}`}
-      props={widgetProps}
-      key={key}
-    />
-  );
-}
-
-function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-
-  if (props.nearDevGovGigsContractAccountId) {
-    linkProps.nearDevGovGigsContractAccountId =
-      props.nearDevGovGigsContractAccountId;
-  }
-
-  if (props.nearDevGovGigsWidgetsAccountId) {
-    linkProps.nearDevGovGigsWidgetsAccountId =
-      props.nearDevGovGigsWidgetsAccountId;
-  }
-
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/${nearDevGovGigsWidgetsAccountId}/widget/gigs-board.pages.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
-/* END_INCLUDE: "common.jsx" */
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+const { getPost } =
+  VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
+  (() => {});
 
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
-const post =
-  props.post ??
-  Near.view(nearDevGovGigsContractAccountId, "get_post", {
-    post_id: postId,
-  });
+const post = getPost({ post_id: postId });
+
 if (!post || !post.snapshot_history) {
   return <div class="bi bi-clock-history px-2"></div>;
 }
