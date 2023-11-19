@@ -12,9 +12,17 @@ if (!href) {
 
 const ButtonWithHover = styled.button`
   background-color: #fff;
+  transition: all 300ms;
+  border-radius: 0.5rem;
+
   &:hover {
     background-color: #e9ecef;
     color: #000;
+  }
+
+  &:disabled {
+    background-color: #fff;
+    color: #b7b7b7;
   }
 `;
 
@@ -401,18 +409,27 @@ const buttonsFooter = props.isPreview ? null : (
             )}
           </ul>
         </div>
-        <ButtonWithHover
-          type="button"
-          class="btn"
-          style={{ border: "0px" }}
-          data-bs-toggle="collapse"
-          href={`#collapseChildPosts${postId}`}
-          aria-expanded={defaultExpanded}
-          aria-controls={`collapseChildPosts${postId}`}
-        >
-          <i class="bi bi-chevron-down"> </i>{" "}
-          {`Expand Replies (${childPostIds.length})`}
-        </ButtonWithHover>
+        {childPostIds.length > 0 && (
+          <ButtonWithHover
+            type="button"
+            class="btn"
+            style={{ border: "0px" }}
+            data-bs-toggle="collapse"
+            href={`#collapseChildPosts${postId}`}
+            aria-expanded={defaultExpanded}
+            aria-controls={`collapseChildPosts${postId}`}
+            onClick={() =>
+              State.update({ expandReplies: !state.expandReplies })
+            }
+          >
+            <i
+              class={`bi bi-chevron-${state.expandReplies ? "up" : "down"}`}
+            ></i>{" "}
+            {`${state.expandReplies ? "Collapse" : "Expand"} Replies (${
+              childPostIds.length
+            })`}
+          </ButtonWithHover>
+        )}
 
         {isUnderPost || !parentId ? (
           <div key="link-to-parent"></div>
@@ -542,6 +559,10 @@ const isDraft =
   (draftState?.edit_post_id === postId &&
     draftState?.postType === state.postType);
 
+const toggleEditor = () => {
+  State.update({ showEditor: !state.showEditor });
+};
+
 function Editor() {
   return (
     <div class="row" id={`accordion${postId}`} key="editors-footer">
@@ -582,6 +603,7 @@ function Editor() {
                 onDraftStateChange,
                 draftState:
                   draftState?.edit_post_id == postId ? draftState : undefined,
+                toggleEditor: toggleEditor,
               }}
             />
           </>
@@ -696,18 +718,20 @@ const postsList =
         id={`collapseChildPosts${postId}`}
       >
         {childPostIds.map((childId) => (
-          <Widget
-            src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
-            props={{
-              id: childId,
-              isUnderPost: true,
-              onDraftStateChange,
-              draftState,
-              expandParent: () =>
-                State.update({ childrenOfChildPostsHasDraft: true }),
-              referral: `subpost${childId}of${postId}`,
-            }}
-          />
+          <div key={childId} style={{ marginBottom: "0.5rem" }}>
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
+              props={{
+                id: childId,
+                isUnderPost: true,
+                onDraftStateChange,
+                draftState,
+                expandParent: () =>
+                  State.update({ childrenOfChildPostsHasDraft: true }),
+                referral: `subpost${childId}of${postId}`,
+              }}
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -724,6 +748,7 @@ const needClamp = isInList && contentArray.length > 5;
 
 initState({
   clamp: needClamp,
+  expandReplies: defaultExpanded,
 });
 
 const clampedContent = needClamp

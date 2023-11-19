@@ -16,13 +16,13 @@ if (!href) {
 const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
 
 const queryName =
-  props.queryName ?? `bo_near_devhub_v32_posts_with_latest_snapshot`;
+  props.queryName ?? `bo_near_devhub_v36_posts_with_latest_snapshot`;
 
 const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
       limit: $limit
       offset: $offset
-      order_by: {block_height: desc}
+      order_by: {ts: desc}
       where: $where
     ) {
       post_id
@@ -94,13 +94,22 @@ function getPostIds() {
     where = { parent_id: { _is_null: true }, ...where };
   }
 
-  // Don't show blog
+  // Don't show blog and devhub-test posts
   where = {
-    _not: {
-      labels: { _contains: "blog" },
-      parent_id: { _is_null: true },
-      post_type: { _eq: "Comment" },
-    },
+    _and: [
+      {
+        _not: {
+          labels: { _contains: "blog" },
+          parent_id: { _is_null: true },
+          post_type: { _eq: "Comment" },
+        },
+      },
+      {
+        _not: {
+          labels: { _contains: "devhub-test" },
+        },
+      },
+    ],
     ...where,
   };
 

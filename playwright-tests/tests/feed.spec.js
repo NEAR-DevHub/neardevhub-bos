@@ -44,3 +44,72 @@ test("should show post history for posts in the feed", async ({ page }) => {
   const desiredChildSelector = `${siblingSelector} .bi-file-earmark-diff`;
   await page.waitForSelector(desiredChildSelector, { state: "visible" });
 });
+
+test("should hide posts with devhub-test tag", async ({ page }) => {
+  // go to feeds page
+  await page.goto("/devhub.near/widget/app?page=feed");
+
+  // look for tag input
+  const tagInputSelector = 'input[placeholder="Search by tag"]';
+  await page.waitForSelector(tagInputSelector, {
+    state: "visible",
+  });
+  await page.click(tagInputSelector);
+
+  // select devhub-test
+  const testingTagSelector = 'a.dropdown-item[aria-label="devhub-test"]';
+  await page.click(testingTagSelector);
+
+  // check if no posts are found
+  const noPostFoundSelector =
+    'p.text-secondary:has-text("No posts matches search")';
+  await page.waitForSelector(noPostFoundSelector, {
+    state: "visible",
+  });
+});
+
+test.describe("Wallet is connected", () => {
+  // sign in to wallet
+  test.use({
+    storageState: "playwright-tests/storage-states/wallet-connected.json",
+  });
+
+  test("should hide posts editor when hit cancel", async ({ page }) => {
+    // go to feed with logged in user account
+    await page.goto("/devhub.near/widget/app?page=feed&author=efiz.near");
+
+    // find first post with edit button
+    const firstPostWithEditButton = 'a.card-link[title="Edit post"]';
+    await page.waitForSelector(firstPostWithEditButton, {
+      state: "visible",
+    });
+
+    // open edit post menu
+    await page.click(firstPostWithEditButton);
+
+    // select first option to edit as idea
+    const editAsIdeaLink = 'a.dropdown-item:has-text("Edit as an idea")';
+    await page.waitForSelector(editAsIdeaLink, {
+      state: "visible",
+    });
+    await page.click(editAsIdeaLink);
+
+    // check if the editor is visible
+    const editAsIdea = 'div.card-header:has-text("Edit Idea")';
+    await page.waitForSelector(editAsIdea, {
+      state: "visible",
+    });
+
+    // find and click cancel button
+    const cancelButton = 'button.btn:has-text("Cancel")';
+    await page.waitForSelector(cancelButton, {
+      state: "visible",
+    });
+    await page.click(cancelButton);
+
+    // check if editor is hidden
+    await page.waitForSelector(editAsIdea, {
+      state: "hidden",
+    });
+  });
+});

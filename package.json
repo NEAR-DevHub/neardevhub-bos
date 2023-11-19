@@ -13,7 +13,8 @@
     "near-social-vm-types": "^1.0.0",
     "prettier": "^2.8.4",
     "replace-in-files": "^3.0.0",
-    "sucrase": "^3.34.0"
+    "sucrase": "^3.34.0",
+    "simple-git-hooks": "^2.9.0"
   },
   "scripts": {
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
@@ -29,6 +30,9 @@
     "replace": "node ./scripts/replace.js -a devhub.near -c devgovgigs.near -n mainnet",
     "gateway": "node scripts/dev-gateway.mjs",
     "test": "npx playwright test"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run fmt"
   },
   "repository": {
     "type": "git",

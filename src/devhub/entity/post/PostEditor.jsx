@@ -33,6 +33,7 @@ const postType = props.postType ?? "Sponsorship";
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
+const toggleEditor = props.toggleEditor;
 
 const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
 const labelStrings = (props.labels ?? []).concat(referralLabels);
@@ -570,6 +571,17 @@ return (
         onClick={onSubmit}
       >
         Submit
+      </button>
+      <button
+        style={{
+          width: "7rem",
+          backgroundColor: "#fff",
+          color: "#000",
+        }}
+        className="btn btn-light mb-2 p-3"
+        onClick={toggleEditor}
+      >
+        Cancel
       </button>
       {disclaimer}
     </div>
