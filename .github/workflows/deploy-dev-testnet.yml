@@ -27,6 +27,7 @@ jobs:
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.2/bos-cli-installer.sh | sh
 
       - name: Deploy widgets
+        working-directory: ./build
         run: |
           which bos
           echo $PATH
