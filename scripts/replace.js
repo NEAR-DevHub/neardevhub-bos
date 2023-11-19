@@ -107,28 +107,25 @@ console.log("Building widgets...");
 FILES.forEach((file) => {
   // Create corresponding directory structure in build/src folder
   let dir = path.dirname(file);
-  if (!fs.existsSync(`build/${dir}`)) {
-    fs.mkdirSync(`build/${dir}`, { recursive: true });
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
   }
 
   // Define the output path
-  let outfile = `build/${file}`;
-  fs.copyFileSync(file, outfile); // initialize outfile with the original file content
+  fs.copyFileSync(file, file); // initialize outfile with the original file content
 });
 
 console.log("Making replacements...");
 
 // Iterate over each .jsx file again for replacements
 FILES.forEach((file) => {
-  let outfile = `build/${file}`;
-  console.log(outfile);
-
-  let content = fs.readFileSync(outfile, "utf8");
+  let content = fs.readFileSync(file, "utf8");
+  console.log(file);
   // Iterate over each key to get the replacement value
   keys.forEach((key) => {
     let replace = replacements[key];
     let search = new RegExp(`\\$\\{${key}\\}`, "g");
     content = content.replace(search, replace);
   });
-  fs.writeFileSync(outfile, content);
+  fs.writeFileSync(file, content);
 });

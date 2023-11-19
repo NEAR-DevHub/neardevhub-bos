@@ -32,18 +32,6 @@ async function build() {
     );
   });
 
-  await replaceInFiles({
-    files: [`${transpiledPathPrefix}/**/*.jsx`],
-    from: /import .* from "@\/includes\/([^"]*)";/gms,
-    to: (_match, importPath) => {
-      const importedFileContent = fs.readFileSync(
-        `${transpiledPathPrefix}/../../includes/${importPath}.jsx`,
-        "utf8"
-      );
-      return `/* INCLUDE: "includes/${importPath}.jsx" */\n${importedFileContent}/* END_INCLUDE: "includes/${importPath}.jsx" */`;
-    },
-  });
-
   const packageJson = JSON.parse(
     fs.readFileSync(new URL("../package.json", import.meta.url))
   );

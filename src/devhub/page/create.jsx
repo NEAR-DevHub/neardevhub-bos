@@ -1,33 +1,9 @@
-/* INCLUDE: "core/lib/autocomplete" */
-const autocompleteEnabled = true;
-
-const AutoComplete = styled.div`
-  z-index: 5;
-
-  > div > div {
-    padding: calc(var(--padding) / 2);
-  }
-`;
-
-function textareaInputHandler(value) {
-  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  State.update((lastKnownState) => ({
-    ...lastKnownState,
-    text: value,
-    showAccountAutocomplete,
-  }));
-}
-
-function autoCompleteAccountId(id) {
-  let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
-  description = `${description} @${id}`.trim() + " ";
-  State.update((lastKnownState) => ({
-    ...lastKnownState,
-    description,
-    showAccountAutocomplete: false,
-  }));
-}
-/* END_INCLUDE: "core/lib/autocomplete" */
+const {
+  autoCompleteAccountId,
+  autocompleteEnabled,
+  AutoComplete,
+  textareaInputHandler,
+} = VM.require("${REPL_DEVHUB}/widget/core.lib.autocomplete");
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
@@ -35,7 +11,13 @@ const { DRAFT_STATE_STORAGE_KEY, draftState, onDraftStateChange } = VM.require(
   "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
 );
 
-if (!href) {
+if (
+  !href ||
+  !autoCompleteAccountId ||
+  !autocompleteEnabled ||
+  !AutoComplete ||
+  !textareaInputHandler
+) {
   return <p>Loading modules...</p>;
 }
 

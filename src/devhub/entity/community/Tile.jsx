@@ -1,35 +1,5 @@
-/* INCLUDE: "core/lib/gui/attractable" */
-const AttractableDiv = styled.div`
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-  transition: box-shadow 0.6s;
-
-  &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  }
-`;
-
-const AttractableLink = styled.a`
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-  transition: box-shadow 0.6s;
-
-  &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  }
-`;
-
-const AttractableImage = styled.img`
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-  transition: box-shadow 0.6s;
-
-  &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  }
-`;
-/* END_INCLUDE: "core/lib/gui/attractable" */
-
 const Tile = ({
   children,
-  borderRadius,
   className,
   fullWidth,
   headerSlotRight,
@@ -37,18 +7,18 @@ const Tile = ({
   headingAdornment,
   id,
   isHidden,
-  noBorder,
   noFrame,
   minHeight,
   style,
 }) => (
-  <AttractableDiv
+  <div
     className={[
       "d-flex flex-column gap-3",
       className,
       fullWidth ? "w-100" : "",
       !noFrame ? "p-3" : "",
       isHidden ? "d-none" : "",
+      "attractable",
     ].join(" ")}
     style={{
       maxWidth: fullWidth ? "100%" : null,
@@ -84,7 +54,7 @@ const Tile = ({
     }
 
     {children}
-  </AttractableDiv>
+  </div>
 );
 
 return Tile(props);
