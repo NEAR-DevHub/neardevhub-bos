@@ -5,7 +5,7 @@ import { spawn } from 'child_process';
 
 // Start the HTTP server
 const server = httpServer.createServer({
-  root: path.join(process.cwd(), 'node_modules/near-bos-webcomponent/dist/')
+  root: path.join(process.cwd(), 'playwright-tests/gateway')
 });
 
 server.listen(8080, () => {

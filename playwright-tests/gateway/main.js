@@ -4,12 +4,14 @@ import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 
 const selector = await setupWalletSelector({
-  network: "testnet",
+  network: "mainnet",
   modules: [setupMyNearWallet(), setupHereWallet()],
 });
 
 const modal = setupModal(selector, {
-  contractId: "test.testnet",
+  contractId: "social.near",
 });
 
-modal.show();
+document
+  .getElementById("openWalletSelectorButton")
+  .addEventListener("click", () => modal.show());
