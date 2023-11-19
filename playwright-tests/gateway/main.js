@@ -15,3 +15,14 @@ const modal = setupModal(selector, {
 document
   .getElementById("openWalletSelectorButton")
   .addEventListener("click", () => modal.show());
+
+// Needed for context.accountId
+const near_app_wallet_auth_key = JSON.parse(
+  localStorage.getItem("near_app_wallet_auth_key")
+);
+if (near_app_wallet_auth_key) {
+  localStorage.setItem(
+    "near-social-vm:v01::accountId:",
+    `"${near_app_wallet_auth_key.accountId}"`
+  );
+}

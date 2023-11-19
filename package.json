@@ -18,7 +18,7 @@
     "dev:mainnet": "./scripts/dev.sh -a devhub.near -c devhub.near -n mainnet",
     "build:preview": "node ./scripts/build-preview.mjs",
     "dev": "npm run dev:mainnet",
-    "generateimportmap": "(cd playwright-tests/gateway/ && jspm link index.html -o index.html)",
+    "generateimportmap": "(cd playwright-tests/gateway/ && jspm link 404.html -o 404.html)",
     "gateway": "node scripts/dev-gateway.mjs",
     "test": "npx playwright test",
     "test:watch:codespaces": "npm test -- --ui-host=0.0.0.0"
