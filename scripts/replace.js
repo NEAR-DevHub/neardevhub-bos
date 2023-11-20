@@ -7,7 +7,6 @@ let NETWORK_ENV = "testnet";
 let CREATOR_REPL = "REPL_DEVHUB";
 let CONTRACT_REPL = "REPL_DEVHUB_CONTRACT";
 let ACCOUNT_ID = "";
-let SIGNER_ID = "";
 let CONTRACT_ID = "";
 
 // Parse command line arguments
@@ -16,10 +15,6 @@ for (let i = 0; i < args.length; i++) {
     case "-a":
     case "--account":
       ACCOUNT_ID = args[++i];
-      break;
-    case "-s":
-    case "--signer":
-      SIGNER_ID = args[++i];
       break;
     case "-c":
     case "--contract":
@@ -43,10 +38,6 @@ if (!ACCOUNT_ID) {
     "Error: Account is not provided. Please provide the account to deploy the widgets to."
   );
   process.exit(1);
-}
-
-if (!SIGNER_ID) {
-  SIGNER_ID = ACCOUNT_ID;
 }
 
 // Check if network is provided but not contract
