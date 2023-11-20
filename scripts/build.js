@@ -4,11 +4,18 @@ import replaceInFiles from "replace-in-files";
 const transpiledPathPrefix = "./build/src";
 
 async function build() {
+  // await replaceInFiles({
+  //   files: [`${transpiledPathPrefix}/**/*.jsx`],
+  //   from: /export\s+default\s+function[^(]*\((.*)/gms,
+  //   to: (_match, rest) =>
+  //     `function MainComponent(${rest}\nreturn MainComponent(props, context);`,
+  // });
+  // TODO test
   await replaceInFiles({
     files: [`${transpiledPathPrefix}/**/*.jsx`],
-    from: /export\s+default\s+function[^(]*\((.*)/gms,
-    to: (_match, rest) =>
-      `function MainComponent(${rest}\nreturn MainComponent(props, context);`,
+    from: /export\s+default\s+function\s+(\w+)\((.*)/gms,
+    to: (_match, funcName, rest) =>
+      `function ${funcName}(${rest}\nreturn ${funcName}(props, context);`,
   });
 
   await replaceInFiles({
