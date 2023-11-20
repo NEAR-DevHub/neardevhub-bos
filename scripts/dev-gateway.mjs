@@ -16,5 +16,5 @@ server.listen(8080, () => {
 const npmRunDev = spawn("npm", ["run", "dev:mainnet"], { stdio: "inherit" });
 
 npmRunDev.on("close", (code) => {
-  console.log(`npm run dev process exited with code ${code}`);
+  console.log(`npm run dev:mainnet process exited with code ${code}`);
 });
