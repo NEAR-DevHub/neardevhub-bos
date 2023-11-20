@@ -23,6 +23,7 @@ function autoCompleteAccountId(id) {
   description = `${description} @${id}`.trim() + " ";
   State.update((lastKnownState) => ({
     ...lastKnownState,
+    handler: "autocompleteSelected",
     description,
     showAccountAutocomplete: false,
   }));
