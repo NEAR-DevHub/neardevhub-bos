@@ -10,7 +10,7 @@ const AutoComplete = styled.div`
 `;
 
 function textareaInputHandler(value) {
-  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
+  const showAccountAutocomplete = /(^|\s)@/.test(value);
   State.update((lastKnownState) => ({
     ...lastKnownState,
     text: value,
