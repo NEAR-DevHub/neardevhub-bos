@@ -581,6 +581,7 @@ function Editor() {
                   draftState?.parent_post_id == postId ? draftState : undefined,
                 parentId: postId,
                 mode: "Create",
+                toggleEditor: toggleEditor,
               }}
             />
           </>
