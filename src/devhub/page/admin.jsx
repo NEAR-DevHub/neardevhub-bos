@@ -88,6 +88,13 @@ if (!isDevHubModerator) {
   return noPermissionBanner;
 }
 
+function handleSubmit() {
+  if (communityHandles.length < 4) {
+    return setCommunityMessage("Can't set fewer than 4 communities");
+  }
+  setFeaturedCommunities({ handles: communityHandles });
+}
+
 function createNewTeam({
   teamName,
   description,
@@ -229,30 +236,32 @@ return (
                     </button>
                   </Item>
                 ))}
-                <Item>
-                  <div className="flex-grow-1">
-                    <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                      props={{
-                        className: "flex-grow-1",
-                        skipPaddingGap: true,
-                        onChange: (e) => setNewItem(e.target.value),
-                        value: newItem,
-                        placeholder: "zero-knowledge",
-                        inputProps: {
-                          prefix: "Community handle",
-                        },
-                      }}
-                    />
-                  </div>
-                  <button
-                    className="btn btn-success add-member"
-                    onClick={handleAddItem}
-                    disabled={newItem === ""}
-                  >
-                    <i className="bi bi-plus" />
-                  </button>
-                </Item>
+                {communityHandles.length < 5 && (
+                  <Item>
+                    <div className="flex-grow-1">
+                      <Widget
+                        src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                        props={{
+                          className: "flex-grow-1",
+                          skipPaddingGap: true,
+                          onChange: (e) => setNewItem(e.target.value),
+                          value: newItem,
+                          placeholder: "zero-knowledge",
+                          inputProps: {
+                            prefix: "Community handle",
+                          },
+                        }}
+                      />
+                    </div>
+                    <button
+                      className="btn btn-success add-member"
+                      onClick={handleAddItem}
+                      disabled={newItem === ""}
+                    >
+                      <i className="bi bi-plus" />
+                    </button>
+                  </Item>
+                )}
                 <div
                   className={
                     "d-flex align-items-center justify-content-end gap-3 mt-4"
@@ -284,8 +293,7 @@ return (
                         variant: "bi-check-circle-fill",
                       },
                       label: "Submit",
-                      onClick: () =>
-                        setFeaturedCommunities({ handles: communityHandles }),
+                      onClick: () => handleSubmit(),
                     }}
                   />
                 </div>
