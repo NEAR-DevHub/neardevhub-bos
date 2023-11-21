@@ -235,7 +235,7 @@ return (
           />
         </div>
         <button
-          className="btn btn-success"
+          className="btn btn-success add-member"
           onClick={handleAddItem}
           disabled={newItem === ""}
         >
