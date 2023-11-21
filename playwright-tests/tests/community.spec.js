@@ -61,7 +61,7 @@ test.describe("Wallet is connected", () => {
 
     // Verify that the URL is the expected one.
     expect(page.url()).toBe(
-      "http://localhost:8080/devgovgigs.near/widget/app?page=create&labels=devhub-test,%20hacks"
+      "http://localhost:8080/devgovgigs.near/widget/app?page=create&labels=devhub-test"
     );
 
     // Wait for the Typeahead field to render.

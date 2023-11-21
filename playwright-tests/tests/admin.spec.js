@@ -11,14 +11,14 @@ test.describe("Wallet is connected", () => {
   }) => {
     await page.goto("/devhub.near/widget/app?page=admin");
 
-    const createTeamButtonSelector = "button.post-control";
+    const buttonSelector = `button[data-testid="create-team"]`;
     // Wait for the first post history button to be visible
-    await page.waitForSelector(createTeamButtonSelector, {
+    await page.waitForSelector(buttonSelector, {
       state: "visible",
     });
 
     // Click on the first post history button
-    await page.click(createTeamButtonSelector);
+    await page.click(buttonSelector);
     await page.locator(".flex-grow-1").first().click();
     await page.getByPlaceholder("Team name").click();
     await page.getByPlaceholder("Team name").fill("new team");
@@ -43,19 +43,15 @@ test.describe("Wallet is connected", () => {
     await page.getByPlaceholder("member").nth(1).click();
     await page.getByPlaceholder("member").nth(1).fill("theori.near");
     addMemberButton.click();
-    await page
-      .getByText(
-        "NEAR BOS embeddable custom element /communities /activity feed /about ↓ Admin mo"
-      )
-      .press("Escape");
+
     await page.getByRole("button", { name: "Submit" }).click();
   });
 
-  test("should hide posts editor when hit cancel", async ({ page }) => {
+  test("should hide team configurator when hit cancel", async ({ page }) => {
     await page.goto("/devhub.near/widget/app?page=admin");
-    const createTeamButtonSelector = "button.post-control";
+    const buttonSelector = `button[data-testid="create-team"]`;
     // Wait for the first post history button to be visible
-    await page.waitForSelector(createTeamButtonSelector, {
+    await page.waitForSelector(buttonSelector, {
       state: "visible",
     });
 
@@ -68,6 +64,51 @@ test.describe("Wallet is connected", () => {
     await page.getByRole("button", { name: "" }).nth(1).click();
     await page.getByRole("button", { name: "Cancel" }).click();
   });
+
+  test("should be able to toggle the manage featured communities section", async ({
+    page,
+  }) => {
+    await page.goto("/devhub.near/widget/app?page=admin");
+    const buttonSelector = `button[data-testid="manage-featured"]`;
+    // Wait for the first post history button to be visible
+    await page.waitForSelector(buttonSelector, {
+      state: "visible",
+    });
+
+    // This part removes 2 of the featured communities and clicks cancel
+    // They should appear again
+    await page.getByTestId("manage-featured").click();
+    await page.getByRole("button", { name: "Cancel" }).first().click();
+    await page.getByTestId("manage-featured").click();
+    await page.locator("div:nth-child(5) > .btn").click();
+    await page.getByRole("button", { name: "" }).nth(2).click();
+    await page.getByRole("button", { name: "Cancel" }).first().click();
+    await page.getByTestId("manage-featured").click();
+    await page.locator("div:nth-child(5) > .btn").click();
+    await page.getByRole("button", { name: "Cancel" }).first().click();
+  });
+
+  test("shouldn't be able to add a none existing community handle without a warning", async ({
+    page,
+  }) => {
+    await page.goto("/devhub.near/widget/app?page=admin");
+    const buttonSelector = `button[data-testid="manage-featured"]`;
+    // Wait for the first post history button to be visible
+    await page.waitForSelector(buttonSelector, {
+      state: "visible",
+    });
+    await page.getByTestId("manage-featured").click();
+    await page.getByPlaceholder("zero-knowledge").click();
+    await page
+      .getByPlaceholder("zero-knowledge")
+      .fill("arandomnonsensehandlethatwouldnotexist");
+    await page.getByRole("button", { name: "" }).click();
+    await page
+      .getByText(
+        "This community handle does not exist, make sure you use an existing handle."
+      )
+      .click();
+  });
 });
 
 test.describe("Wallet is not connect", () => {
@@ -78,10 +119,10 @@ test.describe("Wallet is not connect", () => {
     page,
   }) => {
     await page.goto("/devhub.near/widget/app?page=admin");
-    const createTeamButtonSelector = "h2.alert.alert-danger";
+    const buttonSelector = "h2.alert.alert-danger";
     // Wait for the first post history button to be visible
 
-    const banner = await page.waitForSelector(createTeamButtonSelector, {
+    const banner = await page.waitForSelector(buttonSelector, {
       state: "visible",
     });
     const bannerText = await banner.textContent();
