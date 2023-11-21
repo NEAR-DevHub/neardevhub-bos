@@ -25,7 +25,12 @@ if (
   return <p>Loading modules...</p>;
 }
 
-const featuredCommunityList = getFeaturedCommunities();
+const fc = getFeaturedCommunities();
+// The state will stay empty even after the data right data has been retrieved
+if (!fc) {
+  return <p>Loading featured communities...</p>;
+}
+const featuredCommunityList = fc || [];
 const allMetadata = getAllCommunitiesMetadata();
 const accessControlInfo = getAccessControlInfo();
 const rootMembers = getRootMembers();
