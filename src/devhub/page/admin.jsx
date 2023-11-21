@@ -3,6 +3,8 @@ const {
   getFeaturedCommunities,
   getRootMembers,
   getAccessControlInfo,
+  setFeaturedCommunities,
+  getAllCommunitiesMetadata,
 } = VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract");
 
 const { Tile } =
@@ -16,40 +18,55 @@ if (
   !hasModerator ||
   !getRootMembers ||
   !href ||
-  !getAccessControlInfo
+  !getAccessControlInfo ||
+  !setFeaturedCommunities ||
+  !getAllCommunitiesMetadata
 ) {
   return <p>Loading modules...</p>;
 }
 
-const AdministrationSettings = {
-  communities: {
-    maxFeatured: 4,
-  },
-};
-
-const CommunityFeaturingSchema = {
-  handle: {
-    label: "Community handle",
-
-    hints: {
-      disabled: `You can only add ${AdministrationSettings.communities.maxFeatured} communities at a time`,
-    },
-
-    inputProps: { min: 3, max: 40, required: true },
-  },
-};
-
 const featuredCommunityList = getFeaturedCommunities();
+const allMetadata = getAllCommunitiesMetadata();
+const accessControlInfo = getAccessControlInfo();
+const rootMembers = getRootMembers();
+const teamNames = Object.keys(rootMembers || {});
 
 const isDevHubModerator = hasModerator({
   account_id: context.accountId,
 });
 
-const rootMembers = getRootMembers();
-const accessControlInfo = getAccessControlInfo();
-
-const teamNames = Object.keys(rootMembers || {});
 const [alertMessage, setAlertMessage] = useState("");
+const [communityMessage, setCommunityMessage] = useState("");
+const [createTeam, setCreateTeam] = useState(false);
+const [communityHandles, setCommunityHandles] = useState(
+  featuredCommunityList.map(({ handle }) => handle)
+);
+const [newItem, setNewItem] = useState("");
+const [editMode, setEditMode] = useState(false);
+const [previewConnect, setPreviewConnect] = useState(false);
+
+const handleResetItems = () => {
+  setCommunityHandles(featuredCommunityList.map(({ handle }) => handle));
+};
+
+const handleAddItem = () => {
+  if (!allMetadata.map(({ handle }) => handle).includes(newItem)) {
+    // Community does not exist
+    return setCommunityMessage(
+      "This community handle does not exist, make sure you use an existing handle."
+    );
+  }
+  if (newItem) {
+    setCommunityHandles([...communityHandles, newItem]);
+    setNewItem("");
+  }
+};
+
+const handleDeleteItem = (index) => {
+  const updatedData = [...communityHandles];
+  updatedData.splice(index, 1);
+  setCommunityHandles(updatedData);
+};
 
 const noPermissionBanner = (
   <div
@@ -65,27 +82,6 @@ const noPermissionBanner = (
 if (!isDevHubModerator) {
   return noPermissionBanner;
 }
-
-const featuredCommunityHandles = featuredCommunityList.map(
-  ({ handle }) => handle
-);
-
-const addFeaturedCommunity = ({ handle }) =>
-  Near.call(devHubAccountId, "set_featured_communities", {
-    handles: Array.from(new Set(featuredCommunityHandles).add(handle).values()),
-  });
-
-const removeFeaturedCommunity = ({ handle: input }) =>
-  Near.call(devHubAccountId, "set_featured_communities", {
-    handles: featuredCommunityHandles.filter((handle) => handle !== input),
-  });
-
-const Container = styled.div`
-  width: 100%;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: left;
-`;
 
 function createNewTeam({
   teamName,
@@ -156,76 +152,173 @@ function createNewTeam({
   ]);
 }
 
-const [createTeam, setCreateTeam] = useState(false);
+const Item = styled.div`
+  padding: 10px;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 10px;
+`;
+
+const Container = styled.div`
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: left;
+`;
+
+const CardGrid = styled.div`
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem;
+
+  @media screen and (max-width: 1000px) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+`;
 
 return (
   <Container>
     <div className="d-flex flex-column gap-4 p-4">
-      {/* {featuredCommunityList ? (
+      {featuredCommunityList && (
         <>
-          <div className="d-flex flex-wrap align-content-start gap-4">
-            Featured Community List
-            {featuredCommunityList.map((community) => (
+          {editMode ? (
+            <>
               <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.community.Card"}
+                src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
                 props={{
-                  actions: (
-                    <div className="d-flex justify-content-center align-items-center">
+                  onClose: () => setCommunityMessage(""),
+                  message: communityMessage,
+                }}
+              />
+              <Tile className="p-3">
+                <h3> Manage featured communities</h3>
+                {communityHandles.map((item, index) => (
+                  <Item key={index}>
+                    <div className="flex-grow-1">
                       <Widget
-                        src={
-                          "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                        }
+                        src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
                         props={{
-                          classNames: {
-                            root: "btn-outline-danger vertical",
+                          className: "flex-grow-1",
+                          value: item,
+                          skipPaddingGap: true,
+                          placeholder: "Community handle",
+                          inputProps: {
+                            prefix: "Community handle",
+                            disabled: true,
                           },
-                          icon: {
-                            type: "bootstrap_icon",
-                            variant: "bi-x-lg",
-                          },
-                          title: "Remove from featured",
-                          onClick: () => removeFeaturedCommunity(community),
                         }}
                       />
                     </div>
-                  ),
-
-                  format: "small",
-                  metadata: community,
-                  target: "_blank",
+                    <button
+                      className="btn btn-outline-danger"
+                      onClick={() => handleDeleteItem(index)}
+                    >
+                      <i className="bi bi-trash-fill" />
+                    </button>
+                  </Item>
+                ))}
+                <Item>
+                  <div className="flex-grow-1">
+                    <Widget
+                      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                      props={{
+                        className: "flex-grow-1",
+                        skipPaddingGap: true,
+                        onChange: (e) => setNewItem(e.target.value),
+                        value: newItem,
+                        placeholder: "zero-knowledge",
+                        inputProps: {
+                          prefix: "Community handle",
+                        },
+                      }}
+                    />
+                  </div>
+                  <button
+                    className="btn btn-success add-member"
+                    onClick={handleAddItem}
+                    disabled={newItem === ""}
+                  >
+                    <i className="bi bi-plus" />
+                  </button>
+                </Item>
+                <div
+                  className={
+                    "d-flex align-items-center justify-content-end gap-3 mt-4"
+                  }
+                >
+                  <Widget
+                    src={
+                      "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                    }
+                    props={{
+                      classNames: {
+                        root: "btn-outline-danger shadow-none border-0",
+                      },
+                      label: "Cancel",
+                      onClick: () => {
+                        setEditMode(false);
+                        handleResetItems();
+                      },
+                    }}
+                  />
+                  <Widget
+                    src={
+                      "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                    }
+                    props={{
+                      classNames: { root: "btn" },
+                      icon: {
+                        type: "bootstrap_icon",
+                        variant: "bi-check-circle-fill",
+                      },
+                      label: "Submit",
+                      onClick: () =>
+                        setFeaturedCommunities({ handles: communityHandles }),
+                    }}
+                  />
+                </div>
+              </Tile>
+              <Widget
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
+                }
+                props={{
+                  onClick: () => setPreviewConnect(!previewConnect),
+                  icon: previewConnect ? "bi bi-toggle-on" : "bi bi-toggle-off",
+                  title: "Preview homepage",
+                  testId: "preview-homepage",
                 }}
               />
-            ))}
-          </div>
-          <Tile>
-          <Widget
-            // TODO: LEGACY.
-            src={
-              "${REPL_DEVHUB}/widget/gigs-board.components.organism.configurator"
-            }
-            props={{
-              heading: "Add featured community",
-              isActive: true,
-
-              isUnlocked:
-                featuredCommunityList.length <
-                AdministrationSettings.communities.maxFeatured,
-
-              schema: CommunityFeaturingSchema,
-              onSubmit: addFeaturedCommunity,
-            }}
-          />
-          </Tile>
+            </>
+          ) : (
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
+              }
+              props={{
+                onClick: () => setEditMode(true),
+                icon: "bi bi-gear-wide-connected",
+                title: "Manage featured communities",
+                testId: "manage-featured",
+              }}
+            />
+          )}
         </>
-      ) : (
+      )}
+      {previewConnect && (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.atom.Spinner"}
-          props={{
-            isHidden: false,
-          }}
+          src="${REPL_DEVHUB}/widget/devhub.components.island.connect"
+          props={{ ...props }}
         />
-      )} */}
-      <h1>Admin</h1>
+      )}
+      <h1>Admin group</h1>
       {teamNames.includes("team:moderators") && (
         <>
           <Widget
@@ -262,6 +355,7 @@ return (
           props={{
             onClick: () => setCreateTeam(true),
             title: "Create team",
+            testId: "create-team",
           }}
         />
       ) : (
