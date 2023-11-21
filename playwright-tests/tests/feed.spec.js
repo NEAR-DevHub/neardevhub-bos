@@ -45,6 +45,29 @@ test("should show post history for posts in the feed", async ({ page }) => {
   await page.waitForSelector(desiredChildSelector, { state: "visible" });
 });
 
+test("should hide posts with devhub-test tag", async ({ page }) => {
+  // go to feeds page
+  await page.goto("/devhub.near/widget/app?page=feed");
+
+  // look for tag input
+  const tagInputSelector = 'input[placeholder="Search by tag"]';
+  await page.waitForSelector(tagInputSelector, {
+    state: "visible",
+  });
+  await page.click(tagInputSelector);
+
+  // select devhub-test
+  const testingTagSelector = 'a.dropdown-item[aria-label="devhub-test"]';
+  await page.click(testingTagSelector);
+
+  // check if no posts are found
+  const noPostFoundSelector =
+    'p.text-secondary:has-text("No posts matches search")';
+  await page.waitForSelector(noPostFoundSelector, {
+    state: "visible",
+  });
+});
+
 test.describe("Wallet is connected", () => {
   // sign in to wallet
   test.use({
