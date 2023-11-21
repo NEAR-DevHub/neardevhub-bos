@@ -19,10 +19,6 @@ const Item = styled.div`
   gap: 10px;
 `;
 
-const EditableField = styled.input`
-  flex: 1;
-`;
-
 // Should be done with types and tsc
 const backwardsCompatibleLabel = (oldLabel) => {
   if (typeof oldLabel === "string")
