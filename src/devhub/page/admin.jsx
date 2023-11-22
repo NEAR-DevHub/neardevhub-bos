@@ -161,71 +161,7 @@ const [createTeam, setCreateTeam] = useState(false);
 return (
   <Container>
     <div className="d-flex flex-column gap-4 p-4">
-      {/* {featuredCommunityList ? (
-        <>
-          <div className="d-flex flex-wrap align-content-start gap-4">
-            Featured Community List
-            {featuredCommunityList.map((community) => (
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.community.Card"}
-                props={{
-                  actions: (
-                    <div className="d-flex justify-content-center align-items-center">
-                      <Widget
-                        src={
-                          "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                        }
-                        props={{
-                          classNames: {
-                            root: "btn-outline-danger vertical",
-                          },
-                          icon: {
-                            type: "bootstrap_icon",
-                            variant: "bi-x-lg",
-                          },
-                          title: "Remove from featured",
-                          onClick: () => removeFeaturedCommunity(community),
-                        }}
-                      />
-                    </div>
-                  ),
-
-                  format: "small",
-                  metadata: community,
-                  target: "_blank",
-                }}
-              />
-            ))}
-          </div>
-          <Tile>
-          <Widget
-            // TODO: LEGACY.
-            src={
-              "${REPL_DEVHUB}/widget/gigs-board.components.organism.configurator"
-            }
-            props={{
-              heading: "Add featured community",
-              isActive: true,
-
-              isUnlocked:
-                featuredCommunityList.length <
-                AdministrationSettings.communities.maxFeatured,
-
-              schema: CommunityFeaturingSchema,
-              onSubmit: addFeaturedCommunity,
-            }}
-          />
-          </Tile>
-        </>
-      ) : (
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.atom.Spinner"}
-          props={{
-            isHidden: false,
-          }}
-        />
-      )} */}
-      <h1>Admin</h1>
+      <h1>Moderators</h1>
       {teamNames.includes("team:moderators") && (
         <>
           <Widget
@@ -243,25 +179,17 @@ return (
           />
         </>
       )}
-      <h1>Other groups</h1>
-      {(teamNames || []).sort().map((teamName) => {
-        if (teamName === "team:moderators") return;
-        return (
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
-            props={{
-              teamName,
-            }}
-          />
-        );
-      })}
-
+      <h1>Restricted Labels</h1>
+      <h5>
+        Create special labels and control who can use and edit posts with those
+        labels.
+      </h5>
       {!createTeam ? (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
           props={{
             onClick: () => setCreateTeam(true),
-            title: "Create team",
+            title: "Create label",
           }}
         />
       ) : (
@@ -273,6 +201,17 @@ return (
           }}
         />
       )}
+      {(teamNames || []).sort().map((teamName) => {
+        if (teamName === "team:moderators") return;
+        return (
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
+            props={{
+              teamName,
+            }}
+          />
+        );
+      })}
     </div>
   </Container>
 );

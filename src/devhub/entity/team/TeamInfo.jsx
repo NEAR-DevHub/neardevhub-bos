@@ -65,13 +65,14 @@ function editTeam({
   let txn = [];
   let numberOfChanges = 0;
 
-  if (teamName !== tmnm) {
+  if (backwardsCompatibleTeam(teamName) !== tmnm) {
     numberOfChanges++;
     if (allTeamNames.includes(`team:${tmnm}`)) {
       return setAlertMessage("This team name already exists");
     }
   }
 
+  console.log(label, lbl);
   if (label !== lbl) {
     const allLabels = Object.keys(accessControlInfo.rules_list);
     if (allLabels.includes(lbl)) {
@@ -141,8 +142,11 @@ function editTeam({
     },
   ]);
 }
+// Teams are saved in contract by their prefix 'team:'
+// This function makes the teamName display friendly.
 const backwardsCompatibleTeam = (oldTeam) =>
   oldTeam.startsWith("team:") ? oldTeam.slice(5) : oldTeam;
+
 return editMode ? (
   <>
     <Widget
@@ -174,7 +178,7 @@ return editMode ? (
               type: "bootstrap_icon",
               variant: "bi-gear-wide-connected",
             },
-            label: "Edit team",
+            label: teamModerators ? "Edit members" : "Edit team",
             onClick: () => setEditMode(true),
           }}
         />
@@ -194,7 +198,7 @@ return editMode ? (
               }}
             />
           ) : (
-            "The moderator group has permissions to edit any posts, and apply all labels including restricted ones."
+            "The moderator group has permissions to edit any posts and apply all labels, including restricted ones."
           )}
         </p>
       }
