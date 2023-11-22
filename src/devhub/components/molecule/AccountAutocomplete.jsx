@@ -3,7 +3,7 @@ if (!context.accountId || !props.term) return <></>;
 let results = [];
 const profilesData = Social.get("*/profile/name", "final") || {};
 const followingData = Social.get(
-  `measdasdsd.near/graph/follow/**`,
+  `${context.accountId}/graph/follow/**`,
   "final"
 );
 if (!profilesData) return <></>;
