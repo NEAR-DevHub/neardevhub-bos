@@ -4,6 +4,10 @@ const [showMenu, setShowMenu] = useState(false);
 
 const { href: linkHref } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
+const { hasModerator } = VM.require(
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+);
+
 linkHref || (linkHref = () => {});
 
 const Logo = () => {
@@ -129,7 +133,7 @@ const MobileMenu = styled.button`
   }
 `;
 
-const links = [
+let links = [
   {
     title: "/communities",
     href: "communities",
@@ -157,6 +161,23 @@ const links = [
     ],
   },
 ];
+
+if (hasModerator) {
+  const isDevHubModerator = hasModerator({
+    account_id: context.accountId,
+  });
+
+  if (isDevHubModerator) {
+    links = [
+      {
+        title: "/admin",
+        href: "admin",
+        links: [],
+      },
+      ...links,
+    ];
+  }
+}
 
 const MobileNav = styled.div`
   display: none;

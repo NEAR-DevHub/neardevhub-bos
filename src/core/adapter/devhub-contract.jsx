@@ -25,6 +25,12 @@ function getFeaturedCommunities() {
   );
 }
 
+function setFeaturedCommunities({ handles }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "set_featured_communities", {
+    handles,
+  });
+}
+
 function getAccountCommunityPermissions({ account_id, community_handle }) {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "get_account_community_permissions", {
@@ -217,6 +223,7 @@ return {
   createCommunity,
   getCommunity,
   getFeaturedCommunities,
+  setFeaturedCommunities,
   getAccountCommunityPermissions,
   updateCommunity,
   deleteCommunity,
