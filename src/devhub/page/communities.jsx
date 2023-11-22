@@ -91,21 +91,6 @@ const CTA = styled.button`
   }
 `;
 
-const CardGrid = styled.div`
-  width: 100%;
-  height: 100%;
-
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 3rem;
-
-  @media screen and (max-width: 1000px) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-  }
-`;
-
 return (
   <div className="w-100">
     <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
@@ -131,16 +116,36 @@ return (
                 value={searchKey}
                 onChange={(e) => setSearchKey(e.target.value)}
               />
-              <select
-                class="form-select"
-                onChange={(e) => setSort(e.target.value)}
-              >
-                <option selected value="">
-                  Sort
-                </option>
-                <option value="a-z">A-Z</option>
-                <option value="z-a">Z-A</option>
-              </select>
+              <div class="dropdown">
+                <button
+                  class="btn dropdown-toggle bg-white"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Sort: {sort?.toUpperCase() || "Latest"}
+                </button>
+                <ul class="dropdown-menu px-2 shadow">
+                  <li
+                    onClick={() => setSort("")}
+                    class="dropdown-item link-underline link-underline-opacity-0"
+                  >
+                    Latest
+                  </li>
+                  <li
+                    onClick={() => setSort("a-z")}
+                    class="dropdown-item link-underline link-underline-opacity-0"
+                  >
+                    A-Z
+                  </li>
+                  <li
+                    onClick={() => setSort("z-a")}
+                    class="dropdown-item link-underline link-underline-opacity-0"
+                  >
+                    Z-A
+                  </li>
+                </ul>
+              </div>
             </div>
             {context.accountId && (
               <div className="d-flex flex-column justify-content-center">
@@ -164,29 +169,37 @@ return (
             }}
           />
         )}
-        <CardGrid>
-          {searchKey === "" && sort === ""
-            ? (communitiesMetadata ?? []).reverse().map((communityMetadata) => (
-                <Widget
-                  src="${REPL_DEVHUB}/widget/devhub.entity.community.Card"
-                  props={{
-                    format: "small",
-                    isBannerEnabled: false,
-                    metadata: communityMetadata,
-                  }}
-                />
-              ))
-            : SortedAndFiltered(searchKey, sort).map((communityMetadata) => (
-                <Widget
-                  src="${REPL_DEVHUB}/widget/devhub.entity.community.Card"
-                  props={{
-                    format: "small",
-                    isBannerEnabled: false,
-                    metadata: communityMetadata,
-                  }}
-                />
-              ))}
-        </CardGrid>
+        <div class="container">
+          <div class="row">
+            {searchKey === "" && sort === ""
+              ? (communitiesMetadata ?? [])
+                  .reverse()
+                  .map((communityMetadata) => (
+                    <div className="col-lg-4 col-sm-6 col-12 mb-3">
+                      <Widget
+                        src="${REPL_DEVHUB}/widget/devhub.entity.community.Card"
+                        props={{
+                          format: "small",
+                          isBannerEnabled: false,
+                          metadata: communityMetadata,
+                        }}
+                      />
+                    </div>
+                  ))
+              : SortedAndFiltered(searchKey, sort).map((communityMetadata) => (
+                  <div className="col-lg-4 col-sm-6 col-12 mb-3">
+                    <Widget
+                      src="${REPL_DEVHUB}/widget/devhub.entity.community.Card"
+                      props={{
+                        format: "small",
+                        isBannerEnabled: false,
+                        metadata: communityMetadata,
+                      }}
+                    />
+                  </div>
+                ))}
+          </div>
+        </div>
       </div>
     </div>
   </div>

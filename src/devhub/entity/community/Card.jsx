@@ -26,6 +26,13 @@ const CommunityCard = ({
     line-height: 30px; /* 41.667% */
   `;
 
+  const CommunityDataContainer = styled.div`
+    max-width: 60%;
+    @media screen and (max-width: 576px) {
+      max-width: 90%;
+    }
+  `;
+
   const CommunityDescription = styled.p`
     color: #818181;
     font-size: 1rem;
@@ -39,7 +46,7 @@ const CommunityCard = ({
     height: 8rem;
     object-fit: cover;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 992px) {
       width: 4rem;
       height: 4rem;
     }
@@ -52,7 +59,7 @@ const CommunityCard = ({
       className={[
         "d-flex p-0 p-lg-3",
         "rounded-2 border border-2",
-        "text-black text-decoration-none attractable flex-grow-1",
+        "text-black text-decoration-none attractable flex-grow-1 h-100",
       ].join(" ")}
       style={{
         background: isBannerEnabled
@@ -74,7 +81,7 @@ const CommunityCard = ({
           src={metadata.logo_url}
         />
 
-        <div className="d-flex flex-column justify-content-center gap-1 w-100">
+        <CommunityDataContainer className="d-flex flex-column justify-content-center gap-1 w-100">
           <CommunityName
             style={{ textOverflow: "ellipsis", wordWrap: "break-word" }}
           >
@@ -86,14 +93,14 @@ const CommunityCard = ({
           >
             {metadata.description}
           </CommunityDescription>
-        </div>
+        </CommunityDataContainer>
       </div>
     </Link>
   );
 
   const formatMedium = (
     <Link
-      className="card d-flex flex-column flex-shrink-0 text-decoration-none text-reset attractable"
+      className="card d-flex flex-column flex-shrink-0 text-decoration-none text-reset attractable h-100"
       to={link}
       style={{ width: "23%", maxWidth: 304 }}
     >
@@ -101,7 +108,6 @@ const CommunityCard = ({
         className="card-img-top w-100"
         style={{
           background: `center / cover no-repeat url(${metadata.banner_url})`,
-          height: 164,
         }}
       />
 
