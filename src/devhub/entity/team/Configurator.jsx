@@ -58,19 +58,6 @@ const [showPreview, setShowPreview] = useState(data.showPreview || []);
 
 const [warning, setWarning] = useState("");
 
-const teamModerators = teamName == "moderators";
-const moderatorsWarning = teamModerators && (
-  <Widget
-    src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
-    props={{
-      onClose: () => null,
-      message:
-        "It's only possible to edit the description and members \
-        of team moderators through the UI.",
-    }}
-  />
-);
-
 const handleAddItem = () => {
   if (newItem) {
     setMembers([...members, newItem]);
@@ -116,7 +103,6 @@ return (
   <Tile className="p-3">
     <Container>
       <h3>{data.teamName ? "Edit" : "Create"} group</h3>
-      {moderatorsWarning}
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
         props={{
@@ -125,7 +111,7 @@ return (
         }}
       />
       {/* Moderators is only editable through the CLI except for the members property */}
-      {!teamModerators && (
+      {teamName !== "moderators" && (
         <>
           <div className="flex-grow-1">
             <span>Group name</span>
