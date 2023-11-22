@@ -1,3 +1,8 @@
+/**
+ * In the context of the contract, a group is essentially a member identified
+ * by the prefix 'team:'; therefore, on the front end, we also employ 'team,'
+ * with the user interface displaying 'group' for clarity.
+ */
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
   (() => <></>);
@@ -110,7 +115,7 @@ const handleSubmit = () => {
 return (
   <Tile className="p-3">
     <Container>
-      <h3>{data.teamName ? "Edit" : "Create"} team</h3>
+      <h3>{data.teamName ? "Edit" : "Create"} group</h3>
       {moderatorsWarning}
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
@@ -123,7 +128,7 @@ return (
       {!teamModerators && (
         <>
           <div className="flex-grow-1">
-            <span>Team name</span>
+            <span>Group name</span>
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
               props={{
@@ -136,7 +141,7 @@ return (
             />
           </div>
           <div className="flex-grow-1">
-            <span>Team description</span>
+            <span>Group description</span>
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
               props={{
@@ -147,7 +152,7 @@ return (
           </div>
           <div className="flex-grow-1">
             <div>
-              Would you like this team to limit their restrictions to a single
+              Would you like this group to limit their restrictions to a single
               label, or would you prefer them to restrict it with any label that
               follows a similar convention?
             </div>

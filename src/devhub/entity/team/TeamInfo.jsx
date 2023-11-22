@@ -1,3 +1,8 @@
+/**
+ * In the context of the contract, a group is essentially a member identified
+ * by the prefix 'team:'; therefore, on the front end, we also employ 'team,'
+ * with the user interface displaying 'group' for clarity.
+ */
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
   (() => <></>);
@@ -178,7 +183,7 @@ return editMode ? (
               type: "bootstrap_icon",
               variant: "bi-gear-wide-connected",
             },
-            label: teamModerators ? "Edit members" : "Edit team",
+            label: teamModerators ? "Edit members" : "Edit group",
             onClick: () => setEditMode(true),
           }}
         />
@@ -245,7 +250,7 @@ return editMode ? (
               </Tile>
             ))
           ) : (
-            <div>No members in this team</div>
+            <div>No members in this group</div>
           )}
         </div>
       )}
