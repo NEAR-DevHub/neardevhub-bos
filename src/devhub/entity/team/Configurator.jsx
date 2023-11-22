@@ -1,8 +1,3 @@
-/**
- * In the context of the contract, a group is essentially a member identified
- * by the prefix 'team:'; therefore, on the front end, we also employ 'team,'
- * with the user interface displaying 'group' for clarity.
- */
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
   (() => <></>);
@@ -40,7 +35,6 @@ const [newItem, setNewItem] = useState("");
 const [teamName, setTeamName] = useState(
   backwardsCompatibleTeam(data.teamName) || ""
 );
-const [description, setDescription] = useState(data.description || "");
 const [label, setLabel] = useState(data.label || "");
 const [labelType, setLabelType] = useState(
   (data.label || "").startsWith("starts-with:") ? "starts-with:" : ""
@@ -86,7 +80,6 @@ const handleSubmit = () => {
 
   onSubmit({
     teamName,
-    description,
     label: labelType + backwardsCompatibleLabel(label),
     editPost,
     useLabels,
@@ -97,7 +90,7 @@ const handleSubmit = () => {
 return (
   <Tile className="p-3">
     <Container>
-      <h3>{data.teamName ? "Edit label" : "Create group"}</h3>
+      <h3>{data.teamName == "" ? "Edit label" : "Create label"}</h3>
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
         props={{
@@ -121,16 +114,7 @@ return (
               }}
             />
           </div>
-          <div className="flex-grow-1">
-            <span>Group description</span>
-            <Widget
-              src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
-              props={{
-                data: { content: description },
-                onChange: setDescription,
-              }}
-            />
-          </div>
+
           <div className="flex-grow-1">
             <div>
               Would you like this group to limit their restrictions to a single

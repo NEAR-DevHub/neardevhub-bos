@@ -158,97 +158,94 @@ const backwardsCompatibleLabel = (oldLabel) => {
 const backwardsCompatibleTeam = (oldTeam) =>
   oldTeam.startsWith("team:") ? oldTeam.slice(5) : oldTeam;
 
-return editMode ? (
+return (
   <>
-    <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
-      props={{
-        data: configuratorData,
-        onCancel: () => setEditMode(false),
-        onSubmit: (params) => editTeam(params),
-      }}
-    />
-    <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
-      props={{
-        onClose: () => setAlertMessage(""),
-        message: alertMessage,
-      }}
-    />
-  </>
-) : (
-  /**
-   *  <th scope="col">label name</th>
-                  <th scope="col">Type</th>
-                  <th scope="col">Members</th>
-                  <th scope="col">Only allow members to use label</th>
-                  <th scope="col">Allow members to edit any post with label</th>
-                  <th scope="col">Actions</th>
-   */
-  <tr>
-    <th scope="row">
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
-        props={{
-          tag: backwardsCompatibleLabel(label),
-        }}
-      />
-    </th>
-    <td>
-      {(label || "").startsWith("starts-with:")
-        ? "Multiple labels with common prefix"
-        : "Single label"}
-    </td>
-    <td>
-      {metadata.children && (
-        <div class="vstack">
-          {metadata.children.length ? (
-            metadata.children.map((child) => <p>{child}</p>)
-          ) : (
-            <div>No members in this group</div>
-          )}
+    <tr>
+      <th scope="row" class=" justify-content-center align-items-center p-3">
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+          props={{
+            tag: backwardsCompatibleLabel(label),
+          }}
+        />
+      </th>
+      <td class=" justify-content-center align-items-center p-3">
+        {(label || "").startsWith("starts-with:")
+          ? "Multiple labels with common prefix"
+          : "Single label"}
+      </td>
+      <td class=" justify-content-center align-items-center p-3">
+        {metadata.children && (
+          <div class="vstack">
+            {metadata.children.length ? (
+              metadata.children.map((child) => <p>{child}</p>)
+            ) : (
+              <div>No members in this group</div>
+            )}
+          </div>
+        )}
+      </td>
+      <td class=" justify-content-center align-items-center p-3">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            value={useLabels}
+            id={`useLabelsCheckbox${identifier}`}
+            checked={useLabels}
+            onChange={() => setUseLabels(!useLabels)}
+            disabled={disabled}
+          />
         </div>
-      )}
-    </td>
-    <td>
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          value={useLabels}
-          id={`useLabelsCheckbox${identifier}`}
-          checked={useLabels}
-          onChange={() => setUseLabels(!useLabels)}
-          disabled={disabled}
+      </td>
+      <td class=" justify-content-center align-items-center p-3">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            value={editPost}
+            id={`editPostCheckbox${identifier}`}
+            checked={editPost}
+            onChange={() => setEditPost(!editPost)}
+            disabled={disabled}
+          />
+        </div>
+      </td>
+      <td class=" justify-content-center align-items-center p-3">
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+          props={{
+            classNames: { root: "btn-outline-light text-dark" },
+            icon: {
+              type: "bootstrap_icon",
+              variant: "bi-gear-wide-connected",
+            },
+            label: "Edit",
+            onClick: () => setEditMode(true),
+          }}
         />
-      </div>
-    </td>
-    <td>
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          value={editPost}
-          id={`editPostCheckbox${identifier}`}
-          checked={editPost}
-          onChange={() => setEditPost(!editPost)}
-          disabled={disabled}
-        />
-      </div>
-    </td>
-    <td>
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-        props={{
-          classNames: { root: "btn-outline-light text-dark" },
-          icon: {
-            type: "bootstrap_icon",
-            variant: "bi-gear-wide-connected",
-          },
-          label: "Edit",
-          onClick: () => setEditMode(true),
-        }}
-      />
-    </td>
-  </tr>
+      </td>
+    </tr>
+    {editMode && (
+      <tr>
+        <th scope="row" colspan="6">
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
+            props={{
+              data: configuratorData,
+              onCancel: () => setEditMode(false),
+              onSubmit: (params) => editTeam(params),
+            }}
+          />
+          <Widget
+            src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+            props={{
+              onClose: () => setAlertMessage(""),
+              message: alertMessage,
+            }}
+          />
+        </th>
+      </tr>
+    )}
+  </>
 );
