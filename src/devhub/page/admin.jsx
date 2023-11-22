@@ -198,191 +198,255 @@ const CardGrid = styled.div`
 return (
   <Container>
     <div className="d-flex flex-column gap-4 p-4">
-      {featuredCommunityList && (
-        <>
-          {editMode ? (
-            <>
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
-                props={{
-                  onClose: () => setCommunityMessage(""),
-                  message: communityMessage,
-                }}
-              />
-              <Tile className="p-3">
-                <h3> Manage featured communities</h3>
-                {communityHandles.map((item, index) => (
-                  <Item key={index}>
-                    <div className="flex-grow-1">
-                      <Widget
-                        src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                        props={{
-                          className: "flex-grow-1",
-                          value: item,
-                          skipPaddingGap: true,
-                          placeholder: "Community handle",
-                          inputProps: {
-                            prefix: "Community handle",
-                            disabled: true,
-                          },
-                        }}
-                      />
-                    </div>
-                    <button
-                      className="btn btn-outline-danger"
-                      onClick={() => handleDeleteItem(index)}
-                    >
-                      <i className="bi bi-trash-fill" />
-                    </button>
-                  </Item>
-                ))}
-                {communityHandles.length < 5 && (
-                  <Item>
-                    <div className="flex-grow-1">
-                      <Widget
-                        src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                        props={{
-                          className: "flex-grow-1",
-                          skipPaddingGap: true,
-                          onChange: (e) => setNewItem(e.target.value),
-                          value: newItem,
-                          placeholder: "zero-knowledge",
-                          inputProps: {
-                            prefix: "Community handle",
-                          },
-                        }}
-                      />
-                    </div>
-                    <button
-                      className="btn btn-success add-member"
-                      onClick={handleAddItem}
-                      disabled={newItem === ""}
-                    >
-                      <i className="bi bi-plus" />
-                    </button>
-                  </Item>
-                )}
-                <div
-                  className={
-                    "d-flex align-items-center justify-content-end gap-3 mt-4"
-                  }
-                >
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active"
+            id="home-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#home"
+            type="button"
+            role="tab"
+            aria-controls="home"
+            aria-selected="true"
+          >
+            Home page settings
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="profile-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#profile"
+            type="button"
+            role="tab"
+            aria-controls="profile"
+            aria-selected="false"
+          >
+            Moderators
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="contact-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#contact"
+            type="button"
+            role="tab"
+            aria-controls="contact"
+            aria-selected="false"
+          >
+            Restricted labels
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div
+          class="tab-pane fade show active"
+          id="home"
+          role="tabpanel"
+          aria-labelledby="home-tab"
+        >
+          <Widget
+            src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+            props={{
+              onClose: () => setCommunityMessage(""),
+              message: communityMessage,
+            }}
+          />
+          <Tile className="p-3">
+            <h3> Manage featured communities</h3>
+            {communityHandles.map((item, index) => (
+              <Item key={index}>
+                <div className="flex-grow-1">
                   <Widget
-                    src={
-                      "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                    }
+                    src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
                     props={{
-                      classNames: {
-                        root: "btn-outline-danger shadow-none border-0",
+                      className: "flex-grow-1",
+                      value: item,
+                      skipPaddingGap: true,
+                      placeholder: "Community handle",
+                      inputProps: {
+                        prefix: "Community handle",
+                        disabled: true,
                       },
-                      label: "Cancel",
-                      onClick: () => {
-                        setEditMode(false);
-                        handleResetItems();
-                      },
-                    }}
-                  />
-                  <Widget
-                    src={
-                      "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                    }
-                    props={{
-                      classNames: { root: "btn" },
-                      icon: {
-                        type: "bootstrap_icon",
-                        variant: "bi-check-circle-fill",
-                      },
-                      label: "Submit",
-                      onClick: () => handleSubmit(),
                     }}
                   />
                 </div>
-              </Tile>
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => handleDeleteItem(index)}
+                >
+                  <i className="bi bi-trash-fill" />
+                </button>
+              </Item>
+            ))}
+            {communityHandles.length < 5 && (
+              <Item>
+                <div className="flex-grow-1">
+                  <Widget
+                    src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                    props={{
+                      className: "flex-grow-1",
+                      skipPaddingGap: true,
+                      onChange: (e) => setNewItem(e.target.value),
+                      value: newItem,
+                      placeholder: "zero-knowledge",
+                      inputProps: {
+                        prefix: "Community handle",
+                      },
+                    }}
+                  />
+                </div>
+                <button
+                  className="btn btn-success add-member"
+                  onClick={handleAddItem}
+                  disabled={newItem === ""}
+                >
+                  <i className="bi bi-plus" />
+                </button>
+              </Item>
+            )}
+            <div
+              className={
+                "d-flex align-items-center justify-content-end gap-3 mt-4"
+              }
+            >
               <Widget
-                src={
-                  "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
-                }
+                src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
                 props={{
-                  onClick: () => setPreviewConnect(!previewConnect),
-                  icon: previewConnect ? "bi bi-toggle-on" : "bi bi-toggle-off",
-                  title: "Preview homepage",
-                  testId: "preview-homepage",
+                  classNames: {
+                    root: "btn-outline-danger shadow-none border-0",
+                  },
+                  label: "Cancel",
+                  onClick: () => {
+                    setEditMode(false);
+                    handleResetItems();
+                  },
+                }}
+              />
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+                props={{
+                  classNames: { root: "btn" },
+                  icon: {
+                    type: "bootstrap_icon",
+                    variant: "bi-check-circle-fill",
+                  },
+                  label: "Submit",
+                  onClick: () => handleSubmit(),
+                }}
+              />
+            </div>
+          </Tile>
+          <Widget
+            src={
+              "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
+            }
+            props={{
+              onClick: () => setPreviewConnect(!previewConnect),
+              icon: previewConnect ? "bi bi-toggle-on" : "bi bi-toggle-off",
+              title: "Preview homepage",
+              testId: "preview-homepage",
+            }}
+          />
+
+          {previewConnect && (
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.components.island.connect"
+              props={{ ...props }}
+            />
+          )}
+        </div>
+        <div
+          class="tab-pane fade"
+          id="profile"
+          role="tabpanel"
+          aria-labelledby="profile-tab"
+        >
+          <h1>Moderators</h1>
+          {teamNames.includes("team:moderators") && (
+            <>
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
+                props={{
+                  teamName: "team:moderators",
+                }}
+              />
+              <Widget
+                src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+                props={{
+                  onClose: () => setAlertMessage(""),
+                  message: alertMessage,
                 }}
               />
             </>
-          ) : (
+          )}
+        </div>
+        <div
+          class="tab-pane fade"
+          id="contact"
+          role="tabpanel"
+          aria-labelledby="contact-tab"
+        >
+          <h1>Restricted Labels</h1>
+          <h5>
+            Create special labels and control who can use and edit posts with
+            those labels.
+          </h5>
+          {!createTeam ? (
             <Widget
               src={
                 "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
               }
               props={{
-                onClick: () => setEditMode(true),
-                icon: "bi bi-gear-wide-connected",
-                title: "Manage featured communities",
-                testId: "manage-featured",
+                onClick: () => setCreateTeam(true),
+                title: "Create label",
+                testId: "create-team",
+              }}
+            />
+          ) : (
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
+              props={{
+                onCancel: () => setCreateTeam(false),
+                onSubmit: (params) => createNewTeam(params),
               }}
             />
           )}
-        </>
-      )}
-      {previewConnect && (
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.island.connect"
-          props={{ ...props }}
-        />
-      )}
-      <h1>Moderators</h1>
-      {teamNames.includes("team:moderators") && (
-        <>
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
-            props={{
-              teamName: "team:moderators",
-            }}
-          />
-          <Widget
-            src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
-            props={{
-              onClose: () => setAlertMessage(""),
-              message: alertMessage,
-            }}
-          />
-        </>
-      )}
-      <h1>Restricted Labels</h1>
-      <h5>
-        Create special labels and control who can use and edit posts with those
-        labels.
-      </h5>
-      {!createTeam ? (
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"}
-          props={{
-            onClick: () => setCreateTeam(true),
-            title: "Create label",
-            testId: "create-team",
-          }}
-        />
-      ) : (
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
-          props={{
-            onCancel: () => setCreateTeam(false),
-            onSubmit: (params) => createNewTeam(params),
-          }}
-        />
-      )}
-      {(teamNames || []).sort().map((teamName) => {
-        if (teamName === "team:moderators") return;
-        return (
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.team.TeamInfo"}
-            props={{
-              teamName,
-            }}
-          />
-        );
-      })}
+
+          <div class="table-responsive">
+            <table class="table table-hover table-sm table-bordered table-striped">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">label name</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Members</th>
+                  <th scope="col">Only allow members to use label</th>
+                  <th scope="col">Allow members to edit any post with label</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {(teamNames || []).sort().map((teamName) => {
+                  if (teamName === "team:moderators") return;
+                  return (
+                    <Widget
+                      src={"${REPL_DEVHUB}/widget/devhub.entity.team.LabelRow"}
+                      props={{
+                        teamName,
+                      }}
+                    />
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </Container>
 );

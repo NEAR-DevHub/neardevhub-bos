@@ -24,7 +24,6 @@ const Item = styled.div`
   gap: 10px;
 `;
 
-// Should be done with types and tsc
 const backwardsCompatibleLabel = (oldLabel) => {
   if (typeof oldLabel === "string")
     return oldLabel.startsWith("starts-with:") ? oldLabel.slice(12) : oldLabel;
@@ -98,7 +97,7 @@ const handleSubmit = () => {
 return (
   <Tile className="p-3">
     <Container>
-      <h3>{data.teamName ? "Edit" : "Create"} group</h3>
+      <h3>{data.teamName ? "Edit label" : "Create group"}</h3>
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
         props={{
