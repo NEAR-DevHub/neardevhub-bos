@@ -23,7 +23,7 @@
     "build": "npm run fmt && npm run copy:jsx && npm run transpile && npm run replace && node ./scripts/build.js",
     "copy:jsx": "mkdir -p build/src && cp -r ./src ./build",
     "transpile": "sucrase ./src -d ./build/src --transforms typescript,jsx --jsx-runtime preserve --disable-es-transforms --out-extension jsx",
-    "dev": "npm run watch & npm run dev:mainnet",
+    "dev": "npm run dev:mainnet",
     "dev:mainnet": "./scripts/dev.sh -a devhub.near",
     "dev:testnet": "./scripts/dev.sh -a devhub.testnet",
     "replace": "node ./scripts/replace.js -a devhub.near -c devgovgigs.near -n mainnet",
