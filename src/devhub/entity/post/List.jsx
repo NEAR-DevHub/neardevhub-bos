@@ -94,13 +94,22 @@ function getPostIds() {
     where = { parent_id: { _is_null: true }, ...where };
   }
 
-  // Don't show blog
+  // Don't show blog and devhub-test posts
   where = {
-    _not: {
-      labels: { _contains: "blog" },
-      parent_id: { _is_null: true },
-      post_type: { _eq: "Comment" },
-    },
+    _and: [
+      {
+        _not: {
+          labels: { _contains: "blog" },
+          parent_id: { _is_null: true },
+          post_type: { _eq: "Comment" },
+        },
+      },
+      {
+        _not: {
+          labels: { _contains: "devhub-test" },
+        },
+      },
+    ],
     ...where,
   };
 
