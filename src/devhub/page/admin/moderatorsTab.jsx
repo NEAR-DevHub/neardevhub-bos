@@ -60,9 +60,9 @@ return (
                 list: moderators,
               },
               setList: setModerators,
-
-              validate: (newItem) => true, // TODO
-              invalidate: () => null, // TODO check if id exists on near
+              // Could add a check to see if it is an valid account id.
+              validate: (newItem) => true,
+              invalidate: () => null,
             }}
           />
           <div

@@ -40,7 +40,7 @@ function createEditTeam({
   editPost,
   useLabels,
   members,
-  contractCall, // TODO typescript edit_member || add_member
+  contractCall, // typescript edit_member || add_member
 }) {
   let txn = [];
   console.log("🚀 ~ file: index.jsx:48 ~ teamNames:", teamNames);
