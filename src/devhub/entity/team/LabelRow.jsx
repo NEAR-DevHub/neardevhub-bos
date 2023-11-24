@@ -34,7 +34,6 @@ const members = rootMembers[teamName].children || [];
 
 const configuratorData = {
   teamName: teamName,
-  description: metadata.description,
   label: label,
   members,
   editPost,
@@ -61,7 +60,6 @@ function arrayEq(arr1, arr2) {
 
 function editTeam({
   teamName: tmnm,
-  description: dscrptn,
   label: lbl,
   editPost: edtpst,
   useLabels: uslbls,
@@ -87,7 +85,7 @@ function editTeam({
     }
   }
 
-  if (description !== dscrptn || editPost !== edtpst || useLabels !== uslbls) {
+  if (editPost !== edtpst || useLabels !== uslbls) {
     numberOfChanges++;
   }
 
@@ -131,7 +129,7 @@ function editTeam({
         member: `team:${tmnm}`,
         metadata: {
           member_metadata_version: "V0",
-          description: dscrptn,
+          description: "",
           permissions: {
             [lbl]: [
               ...(edtpst ? ["edit-post"] : []),

@@ -78,6 +78,7 @@ return (
           className="btn btn-success add-member"
           onClick={handleAddItem}
           disabled={newItem === ""}
+          data-testid="add-to-list"
         >
           <i className="bi bi-plus" />
         </button>

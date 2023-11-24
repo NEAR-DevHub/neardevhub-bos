@@ -62,7 +62,9 @@ const handleDeleteItem = (index) => {
 
 const handleSubmit = () => {
   if (newItem !== "") {
-    return setWarning("Do you add the newest member or clear the field?");
+    return setWarning(
+      "Don't forget to add the last member or clear the field to get rid of this warning."
+    );
   }
   if (teamName && teamName.startsWith("team:")) {
     return setWarning("The team name can't start with 'team:'");
