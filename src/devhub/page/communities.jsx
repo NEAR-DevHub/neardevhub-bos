@@ -96,12 +96,16 @@ const CardGrid = styled.div`
   height: 100%;
 
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 3rem;
 
-  @media screen and (max-width: 1000px) {
+  @media screen and (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (max-width: 768px) {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 2rem;
   }
 `;
@@ -122,8 +126,8 @@ return (
             Communities
           </h1>
 
-          <div className="d-flex flex-column-reverse flex-lg-row gap-3 justify-content-between align-items-center">
-            <div className="d-flex flex-column flex-lg-row col-12 col-md-6 mt-3 mt-lg-0 align-items-center gap-4 col-lg-6">
+          <div className="d-flex flex-column-reverse flex-sm-row gap-3 justify-content-between align-items-center">
+            <div className="d-flex flex-column flex-sm-row col-12 col-sm-6 mt-3 mt-lg-0 align-items-center gap-4">
               <input
                 type="text"
                 placeholder="🔍 Search Communities"
@@ -131,16 +135,21 @@ return (
                 value={searchKey}
                 onChange={(e) => setSearchKey(e.target.value)}
               />
-              <select
-                class="form-select"
-                onChange={(e) => setSort(e.target.value)}
-              >
-                <option selected value="">
-                  Sort
-                </option>
-                <option value="a-z">A-Z</option>
-                <option value="z-a">Z-A</option>
-              </select>
+              <div className="d-flex align-items-center gap-2 col-sm-6 col-12">
+                <label htmlFor="sort">Sort:</label>
+                <select
+                  name="sort"
+                  id="sort"
+                  class="form-select"
+                  onChange={(e) => setSort(e.target.value)}
+                >
+                  <option selected value="">
+                    Latest
+                  </option>
+                  <option value="a-z">A-Z</option>
+                  <option value="z-a">Z-A</option>
+                </select>
+              </div>
             </div>
             {context.accountId && (
               <div className="d-flex flex-column justify-content-center">
