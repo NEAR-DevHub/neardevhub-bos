@@ -1,4 +1,26 @@
 /* INCLUDE: "core/lib/autocomplete" */
+
+State.init({
+  seekingFunding: false,
+  author_id: context.accountId,
+  // Should be a list of objects with field "name".
+  labels,
+  // Should be a list of labels as strings.
+  // Both of the label structures should be modified together.
+  labelStrings,
+  postType: "Idea",
+  name: props.name ?? "",
+  description: props.description ?? "",
+  amount: props.amount ?? "",
+  token: props.token ?? "USDT",
+  supervisor: props.supervisor ?? "neardevdao.near",
+  githubLink: props.githubLink ?? "",
+  warning: "",
+  waitForDraftStateRestore: true,
+  mentionInput: "", // text next to @ tag
+  mentionsArray: [], // all the mentions in the description
+});
+
 const autocompleteEnabled = true;
 
 const AutoComplete = styled.div`
@@ -10,20 +32,43 @@ const AutoComplete = styled.div`
 `;
 
 function textareaInputHandler(value) {
-  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
+  const words = value.split(/\s+/);
+  const allMentiones = words
+    .filter((word) => word.startsWith("@"))
+    .map((mention) => mention.slice(1));
+  const newMentiones = allMentiones.filter(
+    (item) => !state.mentionsArray.includes(item)
+  );
+
   State.update((lastKnownState) => ({
     ...lastKnownState,
     text: value,
-    showAccountAutocomplete,
+    showAccountAutocomplete: newMentiones?.length > 0,
+    mentionsArray: allMentiones,
+    mentionInput: newMentiones?.[0] ?? "",
   }));
 }
 
 function autoCompleteAccountId(id) {
-  let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
-  description = `${description} @${id}`.trim() + " ";
+  // to make sure we update the @ at correct index
+  let currentIndex = 0;
+  const updatedDescription = state.description.replace(
+    /(?:^|\s)(@[^\s]*)/g,
+    (match) => {
+      if (currentIndex === state.mentionsArray.indexOf(state.mentionInput)) {
+        currentIndex++;
+        return ` @${id}`;
+      } else {
+        currentIndex++;
+        return match;
+      }
+    }
+  );
+
   State.update((lastKnownState) => ({
     ...lastKnownState,
-    description,
+    handler: "autocompleteSelected",
+    description: updatedDescription,
     showAccountAutocomplete: false,
   }));
 }
@@ -49,26 +94,6 @@ const labelStrings = (props.labels ? props.labels.split(",") : []).concat(
 );
 const labels = labelStrings.map((s) => {
   return { name: s };
-});
-
-State.init({
-  seekingFunding: false,
-
-  author_id: context.accountId,
-  // Should be a list of objects with field "name".
-  labels,
-  // Should be a list of labels as strings.
-  // Both of the label structures should be modified together.
-  labelStrings,
-  postType: "Idea",
-  name: props.name ?? "",
-  description: props.description ?? "",
-  amount: props.amount ?? "",
-  token: props.token ?? "USDT",
-  supervisor: props.supervisor ?? "neardevdao.near",
-  githubLink: props.githubLink ?? "",
-  warning: "",
-  waitForDraftStateRestore: true,
 });
 
 if (state.waitForDraftStateRestore) {
@@ -315,7 +340,7 @@ const descriptionDiv = (
         <Widget
           src="${REPL_NEAR}/widget/AccountAutocomplete"
           props={{
-            term: state.text.split("@").pop(),
+            term: state.mentionInput,
             onSelect: autoCompleteAccountId,
             onClose: () => State.update({ showAccountAutocomplete: false }),
           }}
