@@ -56,12 +56,11 @@ npm run dev -a bob.near -c contract.bobs.near -n mainnet
 
 By using these flags, you have the flexibility to customize the development environment according to your specific needs.
 
-
 #### Developing across multiple environments
 
 When referencing a component or any parameter that depends on the network, please use the placeholders defined in replacements.*.json. There are three such files that correspond to different environments:
 
-`replacements.dev.json` - deploys the develop branch, to testnet @ test.beta.near.org 
+`replacements.dev.json` - deploys the develop branch, to testnet @ test.beta.near.org
 
 `replacements.testnet.json` - deploys main branch, to testnet @ test.near.org
 
@@ -116,6 +115,15 @@ https://test.near.social/#/YOUR_ACCOUNT_ID/widget/gigs-board.pages.Feed?nearDevG
 ```
 
 NOTE: If you have [DevHub contract](https://github.com/near/neardevhub-contract) deployed to the same account, you can skip the `nearDevGovGigsContractAccountId` argument, otherwise, feel free to use the contract deployed to `gigs.frol14.testnet` (on testnet) or `devgovgigs.near` (on mainnet).
+
+### Contribution Recognition
+
+We value all contributions, and to recognize your efforts, we follow the [All Contributors specification](https://allcontributors.org/docs/en/bot/usage). If you contribute, make sure to check the [types of contributions](https://allcontributors.org/docs/en/emoji-key) and add yourself as a contributor using the following command:
+
+```bash
+# Run this command in the root of your project after making a contribution
+@all-contributors please add <username> as a contributor
+```
 
 #### Deploy for Production
 
