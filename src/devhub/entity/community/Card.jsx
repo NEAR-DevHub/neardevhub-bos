@@ -50,6 +50,11 @@ const CommunityCard = ({
       width: 4rem;
       height: 4rem;
     }
+
+    @media screen and (min-width: 992px) and (max-width: 1200px) {
+      width: 6rem;
+      height: 6rem;
+    }
   `;
 
   const formatSmall = (
