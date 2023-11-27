@@ -338,7 +338,7 @@ const descriptionDiv = (
     {autocompleteEnabled && state.showAccountAutocomplete && (
       <AutoComplete>
         <Widget
-          src="${REPL_NEAR}/widget/AccountAutocomplete"
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
           props={{
             term: state.mentionInput,
             onSelect: autoCompleteAccountId,

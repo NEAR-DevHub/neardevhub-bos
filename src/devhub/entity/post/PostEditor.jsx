@@ -379,7 +379,7 @@ const callDescriptionDiv = () => {
       {autocompleteEnabled && state.showAccountAutocomplete && (
         <AutoComplete>
           <Widget
-            src="near/widget/AccountAutocomplete"
+            src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
             props={{
               term: state.text.split("@").pop(),
               onSelect: autoCompleteAccountId,
