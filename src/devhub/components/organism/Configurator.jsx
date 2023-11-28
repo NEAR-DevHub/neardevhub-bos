@@ -116,16 +116,16 @@ const ValueView = styled.div`
 
 const fieldParamsByType = {
   array: {
-    name: "components.molecule.text-input",
+    name: "components.molecule.Input",
     inputProps: { type: "text" },
   },
 
   boolean: {
-    name: "components.atom.toggle",
+    name: "components.atom.Toggle",
   },
 
   string: {
-    name: "components.molecule.text-input",
+    name: "components.molecule.Input",
     inputProps: { type: "text" },
   },
 };
