@@ -50,8 +50,7 @@ return (
         <Item key={index}>
           <div className="flex-grow-1">
             <Widget
-              // TODO: LEGACY.
-              src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.text-input"
+              src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
               props={{
                 className: "flex-grow-1",
                 value: item,
@@ -74,8 +73,7 @@ return (
       <Item>
         <div className="flex-grow-1">
           <Widget
-            // TODO: LEGACY.
-            src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.text-input"
+            src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
             props={{
               className: "flex-grow-1",
               onChange: (e) => setNewItem(e.target.value),

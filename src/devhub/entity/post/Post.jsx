@@ -189,7 +189,6 @@ const header = (
               }
               props={{
                 accountId: post.author_id,
-                nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
               }}
             />
           </ProfileCardContainer>
@@ -352,8 +351,7 @@ const buttonsFooter = props.isPreview ? null : (
             "Like"
           ) : (
             <Widget
-              // TODO: LEGACY.
-              src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.layout.LikeButton.Faces"
+              src="${REPL_DEVHUB}/widget/devhub.components.layout.LikeButton.Faces"
               props={{
                 likesByUsers: Object.fromEntries(
                   post.likes.map(({ author_id }) => [author_id, ""])
