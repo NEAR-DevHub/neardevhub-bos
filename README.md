@@ -16,20 +16,9 @@ We grant commit access to the Developer DAO team and any active developers who h
 
 ## How we work
 
-We communicate primarily over GitHub. We recommend configuring your [notifications](https://docs.github.com/en/account-and-profile/managing-subscriptions-and-notifications-on-github/setting-up-notifications/configuring-notifications) to ensure you get the latest updates.
+We communicate primarily over GitHub. We recommend configuring your [notifications](https://docs.github.com/en/account-and-profile/managing-subscriptions-and-notifications-on-github/setting-up-notifications/configuring-notifications) to ensure you get the latest updates.   
 
-[Learn more](https://github.com/near/devgigsboard-widgets/blob/main/docs/how-we-work.md) about how we work asynchronously.
-
-## Contributors ✨
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+[Learn more](https://github.com/near/devgigsboard-widgets/blob/main/docs/how-we-work.md) about how we work asynchronously.  
 
 # Getting Help
 
