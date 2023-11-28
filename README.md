@@ -1,4 +1,7 @@
 # 👋 Welcome to the NEAR DevHub!
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [NEAR DevHub](http://devgovgigs.near.social) is a decentralized community platform for NEAR developers to contribute to the ecosystem and stay informed on the latest topics. It enables anyone to share ideas, match solutions, and access technical support and funding. The Developer DAO team is actively developing the DevHub and welcoming open contributions from the community. We strive to maintain a transparent and efficient process for all.  
 
@@ -23,3 +26,25 @@ We communicate primarily over GitHub. We recommend configuring your [notificatio
 # Getting Help
 
 If you are working on a specific issue, you can leave a comment. You can also drop a message on the [NEAR Dev](https://t.me/neardev) Telegram channel.
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/nearmax"><img src="https://avatars.githubusercontent.com/u/35039879?v=4?s=100" width="100px;" alt="Maksym Zavershynskyi"/><br /><sub><b>Maksym Zavershynskyi</b></sub></a><br /><a href="https://github.com/near/neardevhub-widgets/commits?author=nearmax" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
