@@ -1,0 +1,13 @@
+{
+    "files": ["README.md"],
+    "imageSize": 100,
+    "commit": false,
+    "contributorsPerLine": 5,
+    "projectName": "neardevhub-widgets",
+    "projectOwner": "near",
+    "repoType": "github",
+    "repoHost": "https://github.com",
+    "skipCi": true,
+    "commitConvention": "none",
+    "badgeTemplate": "[![All Contributors](https://img.shields.io/github/all-contributors/<%= projectOwner %>/<%= projectName %>?color=ee8449&style=flat-square)](#contributors)"
+}
