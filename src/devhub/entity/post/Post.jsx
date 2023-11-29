@@ -561,6 +561,18 @@ const toggleEditor = () => {
   State.update({ showEditor: !state.showEditor });
 };
 
+const amountMatch = post.snapshot.description.match(
+  /Requested amount: (\d+(\.\d+)?) (\w+)/
+);
+const amount = amountMatch ? parseFloat(amountMatch[1]) : null;
+const currency = amountMatch ? amountMatch[3] : null;
+
+const sponsorMatch = post.snapshot.description.match(
+  /Requested sponsor: @([^\s]+)/
+);
+const sponsorTag = sponsorMatch ? sponsorMatch[1] : null;
+const seekingFunding = amount !== 0 || currency !== "" || sponsorTag !== "";
+
 function Editor() {
   return (
     <div class="row" id={`accordion${postId}`} key="editors-footer">
@@ -595,9 +607,13 @@ function Editor() {
                 labels: post.snapshot.labels,
                 name: post.snapshot.name,
                 description: post.snapshot.description,
-                amount: post.snapshot.amount,
-                token: tokenResolver(post.snapshot.sponsorship_token),
-                supervisor: post.snapshot.supervisor,
+                amount: post.snapshot.amount || amount,
+                token: tokenResolver(
+                  post.snapshot.sponsorship_token || currency
+                ),
+                supervisor:
+                  post.snapshot.post.snapshot.supervisor || sponsorTag,
+                seekingFunding: seekingFunding,
                 githubLink: post.snapshot.github_link,
                 onDraftStateChange,
                 draftState:
