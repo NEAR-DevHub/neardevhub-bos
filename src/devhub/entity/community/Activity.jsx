@@ -35,7 +35,7 @@ const SidebarContainer = styled.div`
 `;
 
 return (
-  <div style={{ maxWidth: "100%" }}>
+  <div style={{ maxWidth: "100%", width: "100%" }}>
     <div class="col">
       <div class="d-flex w-100">
         <MainContent>
