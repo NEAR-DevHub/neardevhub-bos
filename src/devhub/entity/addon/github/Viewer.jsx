@@ -7,8 +7,7 @@ const { kanbanBoards, handle, permissions } = props;
 
 return (
   <Widget
-    // TODO: LEGACY.
-    src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.entity.workspace.view.github.configurator"
+    src="${REPL_DEVHUB}/widget/devhub.entity.addon.github.configurator"
     props={{
       communityHandle: handle, // rather than fetching again via the handle
       link: href({
@@ -17,9 +16,6 @@ return (
         params: { page: "community", handle },
       }),
       permissions,
-      // TODO: REMOVE AFTER MIGRATION.
-      nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
-      nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB_CONTRACT}",
     }}
   />
 );
