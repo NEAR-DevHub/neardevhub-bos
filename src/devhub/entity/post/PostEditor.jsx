@@ -43,6 +43,10 @@ const labels = labelStrings.map((s) => {
 });
 
 const cleanDescription = (description) => {
+  if (props.postType !== "Solution") {
+    return description;
+  }
+
   return description.replace(
     /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
     ""
