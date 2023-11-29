@@ -24,7 +24,11 @@ const TextInput = ({
   const isValid = () => {
     if (inputProps.required && value?.length === 0) {
       return false;
-    } else if (inputProps.min && inputProps.min > value?.length) {
+    } else if (
+      value?.length > 0 &&
+      inputProps.min &&
+      inputProps.min > value?.length
+    ) {
       return false;
     } else if (inputProps.max && inputProps.max < value?.length) {
       return false;
@@ -121,6 +125,7 @@ const TextInput = ({
           }
           style={{ resize: inputProps.resize ?? "vertical" }}
           type={typeAttribute}
+          maxLength={inputProps.max}
           {...{ onChange, placeholder, value, ...inputProps }}
         />
       )}

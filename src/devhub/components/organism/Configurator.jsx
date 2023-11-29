@@ -266,6 +266,7 @@ const Configurator = ({
       if (fieldDefinition.inputProps.required && value?.length === 0) {
         return false;
       } else if (
+        value?.length > 0 &&
         fieldDefinition.inputProps.min &&
         fieldDefinition.inputProps.min > value?.length
       ) {
