@@ -571,7 +571,8 @@ const sponsorMatch = post.snapshot.description.match(
   /Requested sponsor: @([^\s]+)/
 );
 const sponsorTag = sponsorMatch ? sponsorMatch[1] : null;
-const seekingFunding = amount !== 0 || currency !== "" || sponsorTag !== "";
+const seekingFunding =
+  amount !== null || currency !== null || sponsorTag !== null;
 
 function Editor() {
   return (
