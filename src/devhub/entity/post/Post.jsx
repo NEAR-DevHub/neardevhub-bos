@@ -625,12 +625,7 @@ const tags = post.snapshot.labels ? (
   >
     {post.snapshot.labels.map((tag, idx) => (
       <div className="d-flex align-items-center my-3 me-3">
-        <Link
-          to={href({
-            widgetSrc: "#/${REPL_DEVHUB}/widget/app",
-            params: { page: "feed", tag: tag },
-          })}
-        >
+        <a href={`/${REPL_DEVHUB}/widget/app?page=feed&tag=${tag}`}>
           <div
             className="d-flex gap-3 align-items-center"
             style={{ cursor: "pointer", textDecoration: "none" }}
@@ -643,7 +638,7 @@ const tags = post.snapshot.labels ? (
               }}
             />
           </div>
-        </Link>
+        </a>
         {idx !== post.snapshot.labels.length - 1 && (
           <span className="ms-3">•</span>
         )}
