@@ -379,7 +379,7 @@ const callDescriptionDiv = () => {
       {autocompleteEnabled && state.showAccountAutocomplete && (
         <AutoComplete>
           <Widget
-            src="near/widget/AccountAutocomplete"
+            src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
             props={{
               term: state.text.split("@").pop(),
               onSelect: autoCompleteAccountId,
@@ -512,106 +512,142 @@ function generateDescription(text, amount, token, supervisor, seekingFunding) {
   return seekingFunding ? `${fundingText}${supervisorText}${text}` : text;
 }
 
+const [tab, setTab] = useState("editor");
+
 const renamedPostType = postType == "Submission" ? "Solution" : postType;
 // Below there is a weird code with fields.includes("githubLink") ternary operator.
 // This is to hack around rendering bug of near.social.
 return (
   <div className="card">
     <div className="card-header">
-      {mode} {renamedPostType}
+      <div>
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <button
+              class={`nav-link ${tab === "editor" ? "active" : ""}`}
+              onClick={() => setTab("editor")}
+            >
+              Editor
+            </button>
+          </li>
+          <li class="nav-item">
+            <button
+              class={`nav-link ${tab === "preview" ? "active" : ""}`}
+              onClick={() => setTab("preview")}
+            >
+              Preview
+            </button>
+          </li>
+        </ul>
+      </div>
+      {tab === "editor" && (
+        <div className="my-3">
+          {mode} {renamedPostType}
+        </div>
+      )}
+      {tab === "preview" && <div className="my-3">Post Preview</div>}
     </div>
 
-    <div class="card-body">
-      {state.warning && (
+    {tab === "editor" && (
+      <div class="card-body">
+        {state.warning && (
+          <div
+            class="alert alert-warning alert-dismissible fade show"
+            role="alert"
+          >
+            {state.warning}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+              onClick={() => State.update({ warning: "" })}
+            ></button>
+          </div>
+        )}
+        {/* This statement around the githubLinkDiv creates a weird render bug
+      where the title renders extra on state change. */}
+        {fields.includes("githubLink") ? (
+          <div className="row">
+            {fields.includes("githubLink") && githubLinkDiv}
+            {labelEditor}
+            {fields.includes("name") && nameDiv}
+            {fields.includes("description") && callDescriptionDiv()}
+          </div>
+        ) : (
+          <div className="row">
+            {labelEditor}
+            {fields.includes("name") && nameDiv}
+            {fields.includes("amount") && amountDiv}
+            {fields.includes("sponsorship_token") && tokenDiv}
+            {fields.includes("supervisor") && supervisorDiv}
+            {fields.includes("description") && callDescriptionDiv()}
+            {fields.includes("fund_raising") && isFundraisingDiv}
+            {state.seekingFunding &&
+              fields.includes("fund_raising") &&
+              fundraisingDiv}
+          </div>
+        )}
+        <button
+          style={{
+            width: "7rem",
+            backgroundColor: "#0C7283",
+            color: "#f3f3f3",
+          }}
+          disabled={state.seekingFunding && (!state.amount || state.amount < 1)}
+          className="btn btn-light mb-2 p-3"
+          onClick={onSubmit}
+        >
+          Submit
+        </button>
+        <button
+          style={{
+            width: "7rem",
+            backgroundColor: "#fff",
+            color: "#000",
+          }}
+          className="btn btn-light mb-2 p-3"
+          onClick={toggleEditor}
+        >
+          Cancel
+        </button>
+        {disclaimer}
+      </div>
+    )}
+    {tab === "preview" && (
+      <div class="card-body">
         <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+          src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
           props={{
-            onClose: () => State.update({ warning: "" }),
-            message: state.warning,
+            isPreview: true,
+            id: 0, // irrelevant
+            post: {
+              author_id: state.author_id,
+              likes: [],
+              snapshot: {
+                editor_id: state.editor_id,
+                labels: state.labelStrings,
+                post_type: postType,
+                name: state.name,
+                description:
+                  postType == "Solution"
+                    ? generateDescription(
+                        state.description,
+                        state.amount,
+                        state.token,
+                        state.supervisor,
+                        state.seekingFunding
+                      )
+                    : state.description,
+                amount: state.amount,
+                sponsorship_token: state.token,
+                supervisor: state.supervisor,
+                github_link: state.githubLink,
+              },
+            },
           }}
         />
-      )}
-      {/* This statement around the githubLinkDiv creates a weird render bug
-      where the title renders extra on state change. */}
-      {fields.includes("githubLink") ? (
-        <div className="row">
-          {fields.includes("githubLink") && githubLinkDiv}
-          {labelEditor}
-          {fields.includes("name") && nameDiv}
-          {fields.includes("description") && callDescriptionDiv()}
-        </div>
-      ) : (
-        <div className="row">
-          {labelEditor}
-          {fields.includes("name") && nameDiv}
-          {fields.includes("amount") && amountDiv}
-          {fields.includes("sponsorship_token") && tokenDiv}
-          {fields.includes("supervisor") && supervisorDiv}
-          {fields.includes("description") && callDescriptionDiv()}
-          {fields.includes("fund_raising") && isFundraisingDiv}
-          {state.seekingFunding &&
-            fields.includes("fund_raising") &&
-            fundraisingDiv}
-        </div>
-      )}
-      <button
-        style={{
-          width: "7rem",
-          backgroundColor: "#0C7283",
-          color: "#f3f3f3",
-        }}
-        disabled={state.seekingFunding && (!state.amount || state.amount < 1)}
-        className="btn btn-light mb-2 p-3"
-        onClick={onSubmit}
-      >
-        Submit
-      </button>
-      <button
-        style={{
-          width: "7rem",
-          backgroundColor: "#fff",
-          color: "#000",
-        }}
-        className="btn btn-light mb-2 p-3"
-        onClick={toggleEditor}
-      >
-        Cancel
-      </button>
-      {disclaimer}
-    </div>
-    <div class="card-footer">
-      Preview:
-      <Widget
-        src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
-        props={{
-          isPreview: true,
-          id: 0, // irrelevant
-          post: {
-            author_id: state.author_id,
-            likes: [],
-            snapshot: {
-              editor_id: state.editor_id,
-              labels: state.labelStrings,
-              post_type: postType,
-              name: state.name,
-              description:
-                postType == "Solution"
-                  ? generateDescription(
-                      state.description,
-                      state.amount,
-                      state.token,
-                      state.supervisor,
-                      state.seekingFunding
-                    )
-                  : state.description,
-              amount: state.amount,
-              sponsorship_token: state.token,
-              supervisor: state.supervisor,
-              github_link: state.githubLink,
-            },
-          },
-        }}
-      />
-    </div>
+      </div>
+    )}
   </div>
 );

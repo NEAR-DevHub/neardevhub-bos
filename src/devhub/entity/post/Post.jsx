@@ -189,7 +189,6 @@ const header = (
               }
               props={{
                 accountId: post.author_id,
-                nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
               }}
             />
           </ProfileCardContainer>
@@ -352,8 +351,7 @@ const buttonsFooter = props.isPreview ? null : (
             "Like"
           ) : (
             <Widget
-              // TODO: LEGACY.
-              src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.layout.LikeButton.Faces"
+              src="${REPL_DEVHUB}/widget/devhub.components.layout.LikeButton.Faces"
               props={{
                 likesByUsers: Object.fromEntries(
                   post.likes.map(({ author_id }) => [author_id, ""])
@@ -581,6 +579,7 @@ function Editor() {
                   draftState?.parent_post_id == postId ? draftState : undefined,
                 parentId: postId,
                 mode: "Create",
+                toggleEditor: toggleEditor,
               }}
             />
           </>
@@ -626,7 +625,7 @@ const tags = post.snapshot.labels ? (
       <div className="d-flex align-items-center my-3 me-3">
         <Link
           to={href({
-            widgetSrc: "${REPL_DEVHUB}/widget/app",
+            widgetSrc: "#/${REPL_DEVHUB}/widget/app",
             params: { page: "feed", tag: tag },
           })}
         >

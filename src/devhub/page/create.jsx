@@ -1,4 +1,26 @@
 /* INCLUDE: "core/lib/autocomplete" */
+
+State.init({
+  seekingFunding: false,
+  author_id: context.accountId,
+  // Should be a list of objects with field "name".
+  labels,
+  // Should be a list of labels as strings.
+  // Both of the label structures should be modified together.
+  labelStrings,
+  postType: "Idea",
+  name: props.name ?? "",
+  description: props.description ?? "",
+  amount: props.amount ?? "",
+  token: props.token ?? "USDT",
+  supervisor: props.supervisor ?? "neardevdao.near",
+  githubLink: props.githubLink ?? "",
+  warning: "",
+  waitForDraftStateRestore: true,
+  mentionInput: "", // text next to @ tag
+  mentionsArray: [], // all the mentions in the description
+});
+
 const autocompleteEnabled = true;
 
 const AutoComplete = styled.div`
@@ -10,20 +32,43 @@ const AutoComplete = styled.div`
 `;
 
 function textareaInputHandler(value) {
-  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
+  const words = value.split(/\s+/);
+  const allMentiones = words
+    .filter((word) => word.startsWith("@"))
+    .map((mention) => mention.slice(1));
+  const newMentiones = allMentiones.filter(
+    (item) => !state.mentionsArray.includes(item)
+  );
+
   State.update((lastKnownState) => ({
     ...lastKnownState,
     text: value,
-    showAccountAutocomplete,
+    showAccountAutocomplete: newMentiones?.length > 0,
+    mentionsArray: allMentiones,
+    mentionInput: newMentiones?.[0] ?? "",
   }));
 }
 
 function autoCompleteAccountId(id) {
-  let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
-  description = `${description} @${id}`.trim() + " ";
+  // to make sure we update the @ at correct index
+  let currentIndex = 0;
+  const updatedDescription = state.description.replace(
+    /(?:^|\s)(@[^\s]*)/g,
+    (match) => {
+      if (currentIndex === state.mentionsArray.indexOf(state.mentionInput)) {
+        currentIndex++;
+        return ` @${id}`;
+      } else {
+        currentIndex++;
+        return match;
+      }
+    }
+  );
+
   State.update((lastKnownState) => ({
     ...lastKnownState,
-    description,
+    handler: "autocompleteSelected",
+    description: updatedDescription,
     showAccountAutocomplete: false,
   }));
 }
@@ -49,26 +94,6 @@ const labelStrings = (props.labels ? props.labels.split(",") : []).concat(
 );
 const labels = labelStrings.map((s) => {
   return { name: s };
-});
-
-State.init({
-  seekingFunding: false,
-
-  author_id: context.accountId,
-  // Should be a list of objects with field "name".
-  labels,
-  // Should be a list of labels as strings.
-  // Both of the label structures should be modified together.
-  labelStrings,
-  postType: "Idea",
-  name: props.name ?? "",
-  description: props.description ?? "",
-  amount: props.amount ?? "",
-  token: props.token ?? "USDT",
-  supervisor: props.supervisor ?? "neardevdao.near",
-  githubLink: props.githubLink ?? "",
-  warning: "",
-  waitForDraftStateRestore: true,
 });
 
 if (state.waitForDraftStateRestore) {
@@ -313,9 +338,9 @@ const descriptionDiv = (
     {autocompleteEnabled && state.showAccountAutocomplete && (
       <AutoComplete>
         <Widget
-          src="${REPL_NEAR}/widget/AccountAutocomplete"
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
           props={{
-            term: state.text.split("@").pop(),
+            term: state.mentionInput,
             onSelect: autoCompleteAccountId,
             onClose: () => State.update({ showAccountAutocomplete: false }),
           }}
@@ -435,6 +460,8 @@ function generateDescription(text, amount, token, supervisor, seekingFunding) {
   return seekingFunding ? `${fundingText}${supervisorText}${text}` : text;
 }
 
+const [tab, setTab] = useState("editor");
+
 return (
   <div class="bg-light d-flex flex-column flex-grow-1 w-100">
     <div class="mx-5 mb-5">
@@ -477,109 +504,153 @@ return (
         </>
       ) : (
         <>
-          <h4>Create a new post</h4>
-          <p>{state.seekingFunding}</p>
-          <div class="card border-light">
-            <div class="card-body">
-              <p class="card-title fw-bold fs-6">What do you want to create?</p>
-              <div class="d-flex flex-row gap-2">
-                <button
-                  onClick={onIdeaClick}
-                  type="button"
-                  class={`btn btn-outline-secondary`}
-                  style={
-                    state.postType === "Idea"
-                      ? {
-                          backgroundColor: "#0C7283",
-                          color: "#f3f3f3",
-                        }
-                      : {}
-                  }
-                >
-                  <i class="bi bi-lightbulb"></i>
-                  Idea
-                </button>
-                <button
-                  onClick={onSolutionClick}
-                  type="button"
-                  class={`btn btn-outline-secondary`}
-                  style={
-                    state.postType !== "Idea"
-                      ? {
-                          backgroundColor: "#0C7283",
-                          color: "#f3f3f3",
-                        }
-                      : {}
-                  }
-                >
-                  <i class="bi bi-rocket"></i>
-                  Solution
-                </button>
-              </div>
-              <p class="text-muted w-75 my-1">
-                {state.postType === "Idea"
-                  ? "Get feedback from the community about a problem, opportunity, or need."
-                  : "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution."}
-              </p>
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
-                props={{
-                  onClose: () => State.update({ warning: "" }),
-                  message: state.warning,
-                }}
-              />
-              <div className="row">
-                {nameDiv}
-                {descriptionDiv}
-                {labelEditor}
-                {state.postType === "Solution" && isFundraisingDiv}
-                {state.seekingFunding && fundraisingDiv}
-              </div>
-              <button
-                style={{
-                  width: "7rem",
-                  backgroundColor: "#0C7283",
-                  color: "#f3f3f3",
-                }}
-                disabled={
-                  state.seekingFunding && (!state.amount || state.amount < 1)
-                }
-                className="btn btn-light mb-2 p-3"
-                onClick={onSubmit}
-              >
-                Submit
-              </button>
-            </div>
-            <div class="bg-light d-flex flex-row p-1 border-bottom"></div>
-            <div class="card-body">
-              <p class="text-muted m-0">Preview</p>
+          <div className="card">
+            <div className="card-header">
               <div>
-                <Widget
-                  src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
-                  props={{
-                    isPreview: true,
-                    id: 0, // irrelevant
-                    post: {
-                      author_id: state.author_id,
-                      likes: [],
-                      snapshot: {
-                        editor_id: state.editor_id,
-                        labels: state.labelStrings,
-                        post_type: state.postType,
-                        name: state.name,
-                        description: generateDescription(
-                          state.description,
-                          state.amount,
-                          state.token,
-                          state.supervisor,
-                          state.seekingFunding
-                        ),
-                        github_link: state.githubLink,
-                      },
-                    },
-                  }}
-                />
+                <ul class="nav nav-tabs">
+                  <li class="nav-item">
+                    <button
+                      class={`nav-link ${tab === "editor" ? "active" : ""}`}
+                      onClick={() => setTab("editor")}
+                    >
+                      Editor
+                    </button>
+                  </li>
+                  <li class="nav-item">
+                    <button
+                      class={`nav-link ${tab === "preview" ? "active" : ""}`}
+                      onClick={() => setTab("preview")}
+                    >
+                      Preview
+                    </button>
+                  </li>
+                </ul>
               </div>
+              {tab === "editor" && (
+                <div className="my-3">Create a new post</div>
+              )}
+              {tab === "preview" && <div className="my-3">Post Preview</div>}
+            </div>
+            <p>{state.seekingFunding}</p>
+            <div class="card border-light">
+              {tab === "editor" && (
+                <>
+                  <div class="card-body">
+                    <p class="card-title fw-bold fs-6">
+                      What do you want to create?
+                    </p>
+                    <div class="d-flex flex-row gap-2">
+                      <button
+                        onClick={onIdeaClick}
+                        type="button"
+                        class={`btn btn-outline-secondary`}
+                        style={
+                          state.postType === "Idea"
+                            ? {
+                                backgroundColor: "#0C7283",
+                                color: "#f3f3f3",
+                              }
+                            : {}
+                        }
+                      >
+                        <i class="bi bi-lightbulb"></i>
+                        Idea
+                      </button>
+                      <button
+                        onClick={onSolutionClick}
+                        type="button"
+                        class={`btn btn-outline-secondary`}
+                        style={
+                          state.postType !== "Idea"
+                            ? {
+                                backgroundColor: "#0C7283",
+                                color: "#f3f3f3",
+                              }
+                            : {}
+                        }
+                      >
+                        <i class="bi bi-rocket"></i>
+                        Solution
+                      </button>
+                    </div>
+                    <p class="text-muted w-75 my-1">
+                      {state.postType === "Idea"
+                        ? "Get feedback from the community about a problem, opportunity, or need."
+                        : "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution."}
+                    </p>
+                    {state.warning && (
+                      <div
+                        class="alert alert-warning alert-dismissible fade show"
+                        role="alert"
+                      >
+                        {state.warning}
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-bs-dismiss="alert"
+                          aria-label="Close"
+                          onClick={() => State.update({ warning: "" })}
+                        ></button>
+                      </div>
+                    )}
+                    <div className="row">
+                      {nameDiv}
+                      {descriptionDiv}
+                      {labelEditor}
+                      {state.postType === "Solution" && isFundraisingDiv}
+                      {state.seekingFunding && fundraisingDiv}
+                    </div>
+                    <button
+                      style={{
+                        width: "7rem",
+                        backgroundColor: "#0C7283",
+                        color: "#f3f3f3",
+                      }}
+                      disabled={
+                        state.seekingFunding &&
+                        (!state.amount || state.amount < 1)
+                      }
+                      className="btn btn-light mb-2 p-3"
+                      onClick={onSubmit}
+                    >
+                      Submit
+                    </button>
+                  </div>
+                  <div class="bg-light d-flex flex-row p-1 border-bottom"></div>
+                </>
+              )}
+              {tab === "preview" && (
+                <div class="card-body">
+                  <p class="text-muted m-0">Preview</p>
+                  <div>
+                    <Widget
+                      src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
+                      props={{
+                        isPreview: true,
+                        id: 0, // irrelevant
+                        post: {
+                          author_id: state.author_id,
+                          likes: [],
+                          snapshot: {
+                            editor_id: state.editor_id,
+                            labels: state.labelStrings,
+                            post_type: state.postType,
+                            name: state.name,
+                            description: generateDescription(
+                              state.description,
+                              state.amount,
+                              state.token,
+                              state.supervisor,
+                              state.seekingFunding
+                            ),
+                            github_link: state.githubLink,
+                          },
+                        },
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </>
