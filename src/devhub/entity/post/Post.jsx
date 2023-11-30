@@ -625,7 +625,7 @@ const tags = post.snapshot.labels ? (
       <div className="d-flex align-items-center my-3 me-3">
         <Link
           to={href({
-            widgetSrc: "#/${REPL_DEVHUB}/widget/app",
+            widgetSrc: "${REPL_DEVHUB}/widget/app",
             params: { page: "feed", tag: tag },
           })}
         >
