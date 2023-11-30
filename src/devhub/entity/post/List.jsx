@@ -61,14 +61,13 @@ function updateSearchCondition() {
   });
 }
 
-function getPostIds() {
+function getPostIds(tag) {
   if (searchConditionChanged()) {
     updateSearchCondition();
-    return;
   }
   let where = {};
   let authorId = props.author;
-  let label = props.tag;
+  let label = tag || props.tag;
   if (authorId) {
     where = { author_id: { _eq: authorId }, ...where };
   }
@@ -141,7 +140,9 @@ State.init({
   period: "week",
 });
 
-getPostIds();
+if (!state.items || searchConditionChanged()) {
+  getPostIds();
+}
 
 function defaultRenderItem(postId, additionalProps) {
   if (!additionalProps) {
@@ -162,6 +163,9 @@ function defaultRenderItem(postId, additionalProps) {
           onDraftStateChange,
           ...additionalProps,
           referral: postId,
+          updateTagInParent: (tag) => {
+            getPostIds(tag);
+          },
         }}
       />
     </div>
