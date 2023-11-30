@@ -22,13 +22,9 @@ const TextInput = ({
       : "text";
 
   const isValid = () => {
-    if (inputProps.required && value?.length === 0) {
-      return false;
-    } else if (
-      value?.length > 0 &&
-      inputProps.min &&
-      inputProps.min > value?.length
-    ) {
+    if (!value || value.length === 0) {
+      return !inputProps.required;
+    } else if (inputProps.min && inputProps.min > value?.length) {
       return false;
     } else if (inputProps.max && inputProps.max < value?.length) {
       return false;

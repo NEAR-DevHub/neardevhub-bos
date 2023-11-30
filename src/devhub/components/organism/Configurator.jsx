@@ -263,10 +263,9 @@ const Configurator = ({
     Object.keys(schema).every((key) => {
       const fieldDefinition = schema[key];
       const value = form.values[key];
-      if (fieldDefinition.inputProps.required && value?.length === 0) {
-        return false;
+      if (!value || value.length === 0) {
+        return !fieldDefinition.inputProps.required;
       } else if (
-        value?.length > 0 &&
         fieldDefinition.inputProps.min &&
         fieldDefinition.inputProps.min > value?.length
       ) {
