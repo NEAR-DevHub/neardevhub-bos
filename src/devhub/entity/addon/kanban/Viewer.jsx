@@ -8,8 +8,7 @@ const { metadata, payload, handle, permissions } = props;
 const CommunityBoardPage = ({ handle, permissions }) => {
   return (
     <Widget
-      // TODO: LEGACY.
-      src="${REPL_DEVHUB_LEGACY}/widget/gigs-board.entity.workspace.view.kanban.configurator"
+      src="${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.configurator"
       props={{
         communityHandle: handle, // rather than fetching again via the handle
         link: href({
@@ -18,9 +17,6 @@ const CommunityBoardPage = ({ handle, permissions }) => {
           params: { page: "community", handle },
         }),
         permissions,
-        // TODO: REMOVE AFTER MIGRATION.
-        nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
-        nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB_CONTRACT}",
       }}
     />
   );

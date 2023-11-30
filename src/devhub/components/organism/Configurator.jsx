@@ -116,16 +116,16 @@ const ValueView = styled.div`
 
 const fieldParamsByType = {
   array: {
-    name: "components.molecule.text-input",
+    name: "components.molecule.Input",
     inputProps: { type: "text" },
   },
 
   boolean: {
-    name: "components.atom.toggle",
+    name: "components.atom.Toggle",
   },
 
   string: {
-    name: "components.molecule.text-input",
+    name: "components.molecule.Input",
     inputProps: { type: "text" },
   },
 };
@@ -188,10 +188,9 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
               </ValueView>
             </div>
             <Widget
-              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+              src={`${REPL_DEVHUB}/widget/devhub.${fieldParamsByType[fieldType].name}`}
               props={{
                 ...fieldProps,
-
                 className: [
                   "w-100",
                   fieldProps.className ?? "",

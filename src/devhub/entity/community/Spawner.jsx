@@ -79,7 +79,7 @@ const CommunityInputsDefaults = {
 
 return (
   <Widget
-    src={"${REPL_DEVHUB}/widget/devhub.components.organism.Configurator"}
+    src="${REPL_DEVHUB}/widget/devhub.components.organism.Configurator"
     props={{
       heading: "Community information",
       externalState: CommunityInputsDefaults,
@@ -95,7 +95,6 @@ return (
       },
       submitLabel: "Launch",
       onCancel: onCancel,
-      nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB_LEGACY}",
     }}
   />
 );
