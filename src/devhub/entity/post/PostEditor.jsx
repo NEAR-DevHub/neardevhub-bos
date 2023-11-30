@@ -43,10 +43,6 @@ const labels = labelStrings.map((s) => {
 });
 
 const cleanDescription = (description) => {
-  if (props.postType !== "Solution") {
-    return description;
-  }
-
   return description.replace(
     /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
     ""
@@ -63,7 +59,10 @@ initState({
   labelStrings,
   postType,
   name: props.name ?? "",
-  description: cleanDescription(props.description) ?? "",
+  description:
+    (props.postType === "Solution"
+      ? cleanDescription(props.description)
+      : props.description) ?? "",
   amount: props.amount ?? "0",
   token: props.token ?? "USDT",
   supervisor: props.supervisor ?? "neardevdao.near",

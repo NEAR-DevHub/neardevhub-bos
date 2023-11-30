@@ -561,9 +561,9 @@ const toggleEditor = () => {
   State.update({ showEditor: !state.showEditor });
 };
 
-let amount;
-let token;
-let supervisor;
+let amount = null;
+let token = null;
+let supervisor = null;
 
 if (state.postType === "Solution") {
   const amountMatch = post.snapshot.description.match(
