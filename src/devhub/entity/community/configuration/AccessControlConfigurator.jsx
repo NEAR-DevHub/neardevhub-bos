@@ -13,6 +13,14 @@ if (!Struct) {
   return <p>Loading modules...</p>;
 }
 
+const AutoComplete = styled.div`
+  z-index: 5;
+
+  > div > div {
+    padding: calc(var(--padding) / 2);
+  }
+`;
+
 const Wrapper = styled.div`
   .container {
     display: flex;
@@ -47,6 +55,10 @@ const Wrapper = styled.div`
   input[type="text"]:disabled {
     all: inherit;
   }
+
+  input::placeholder {
+    font-size: 16px;
+  }
 `;
 
 const { data, onSubmit, onCancel, setIsActive, isActive } = props;
@@ -56,6 +68,7 @@ const initialValues = Struct.typeMatch(CommunityAccessControlSchema)
 
 const [admins, setAdmins] = useState(initialValues?.admins ?? []);
 const [text, setText] = useState("");
+const [showAccountAutocomplete, setShowAutoAutocomplete] = useState(false);
 
 function handleKeyDown(e) {
   if (e.key !== "Enter") return;
@@ -76,6 +89,17 @@ const onSubmitClick = () => {
   setIsActive(false);
 };
 
+function textareaInputHandler(value) {
+  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
+  setShowAutoAutocomplete(showAccountAutocomplete);
+}
+
+function autoCompleteAccountId(id) {
+  setAdmins([...admins, id]);
+  setText("");
+  setShowAutoAutocomplete(false);
+}
+
 return (
   <Wrapper className="flex-grow-1 d-flex flex-column gap-4">
     <div className="container">
@@ -88,26 +112,45 @@ return (
               nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
             }}
           />
-          <span
-            className="remove"
-            onClick={() =>
-              isActive && setAdmins(admins.filter((item) => item !== admin))
-            }
-          >
-            &times;
-          </span>
+          {/* don't allow removal if only 1 admin is added */}
+          {admins.length > 1 && (
+            <span
+              className="remove"
+              onClick={() =>
+                isActive && setAdmins(admins.filter((item) => item !== admin))
+              }
+            >
+              &times;
+            </span>
+          )}
         </div>
       ))}
       <input
         disabled={!isActive}
         value={text}
-        onChange={(v) => setText(v.target.value)}
+        onChange={(v) => {
+          textareaInputHandler(v.target.value);
+          setText(v.target.value);
+        }}
         onKeyDown={handleKeyDown}
         type="text"
         className="admins-input"
-        placeholder="Add Admins"
+        placeholder={isActive && "Add Admins here..."}
       />
     </div>
+    {showAccountAutocomplete && (
+      <AutoComplete>
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
+          props={{
+            term: text,
+            onSelect: autoCompleteAccountId,
+            onClose: () => showAccountAutocomplete(false),
+            filterAccounts: admins,
+          }}
+        />
+      </AutoComplete>
+    )}
     {isActive && (
       <div className="d-flex align-items-center justify-content-end gap-3 mt-auto">
         <Widget
