@@ -652,7 +652,9 @@ const tags = post.snapshot.labels ? (
         >
           <div
             onClick={() => {
-              props.updateTagInParent(tag);
+              if (typeof props.updateTagInParent === "function") {
+                props.updateTagInParent(tag);
+              }
             }}
             className="d-flex gap-3 align-items-center"
             style={{ cursor: "pointer", textDecoration: "none" }}
