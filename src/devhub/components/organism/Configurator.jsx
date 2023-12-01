@@ -258,7 +258,41 @@ const Configurator = ({
     ? toFormatted(form.values)
     : form.values;
 
-  const isFormValid = isValid ? isValid(formFormattedValues) : true;
+  const internalValidation = () =>
+    Object.keys(schema).every((key) => {
+      const fieldDefinition = schema[key];
+      const value = form.values[key];
+      if (!value || value.length === 0) {
+        return !fieldDefinition.inputProps.required;
+      } else if (
+        fieldDefinition.inputProps.min &&
+        fieldDefinition.inputProps.min > value?.length
+      ) {
+        return false;
+      } else if (
+        fieldDefinition.inputProps.max &&
+        fieldDefinition.inputProps.max < value?.length
+      ) {
+        return false;
+      } else if (
+        fieldDefinition.inputProps.allowCommaAndSpace === false &&
+        /^[^,\s]*$/.test(value) === false
+      ) {
+        return false;
+      } else if (
+        fieldDefinition.inputProps.validUrl === true &&
+        /^(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/.test(
+          value
+        ) === false
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+  const isFormValid = () => {
+    return internalValidation() && (!isValid || isValid(formFormattedValues));
+  };
 
   const onCancelClick = () => {
     form.reset();
@@ -266,7 +300,7 @@ const Configurator = ({
   };
 
   const onSubmitClick = () => {
-    if (onSubmit && isFormValid) {
+    if (onSubmit && isFormValid()) {
       onSubmit(formFormattedValues);
     }
   };
@@ -298,7 +332,7 @@ const Configurator = ({
             src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
             props={{
               classNames: { root: classNames.submit || "btn-success" },
-              disabled: !form.hasUnsubmittedChanges || !isFormValid,
+              disabled: !form.hasUnsubmittedChanges || !isFormValid(),
               icon: submitIcon || {
                 type: "bootstrap_icon",
                 variant: "bi-check-circle-fill",
