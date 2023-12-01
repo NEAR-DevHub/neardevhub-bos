@@ -42,8 +42,15 @@ const labels = labelStrings.map((s) => {
   return { name: s };
 });
 
+const cleanDescription = (description) => {
+  return description.replace(
+    /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
+    ""
+  );
+};
+
 initState({
-  seekingFunding: false,
+  seekingFunding: props.seekingFunding ?? false,
   author_id: context.accountId,
   // Should be a list of objects with field "name".
   labels,
@@ -52,7 +59,10 @@ initState({
   labelStrings,
   postType,
   name: props.name ?? "",
-  description: props.description ?? "",
+  description:
+    (props.postType === "Solution"
+      ? cleanDescription(props.description)
+      : props.description) ?? "",
   amount: props.amount ?? "0",
   token: props.token ?? "USDT",
   supervisor: props.supervisor ?? "neardevdao.near",
