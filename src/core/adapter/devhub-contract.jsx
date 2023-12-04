@@ -2,6 +2,10 @@ function getRootMembers() {
   return Near.view("${REPL_DEVHUB_CONTRACT}", "get_root_members") ?? null;
 }
 
+function removeMember(member) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "remove_member", { member });
+}
+
 function hasModerator({ account_id }) {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", { account_id }) ??
@@ -23,6 +27,12 @@ function getFeaturedCommunities() {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "get_featured_communities") ?? null
   );
+}
+
+function setFeaturedCommunities({ handles }) {
+  return Near.call("${REPL_DEVHUB_CONTRACT}", "set_featured_communities", {
+    handles,
+  });
 }
 
 function getAccountCommunityPermissions({ account_id, community_handle }) {
@@ -213,10 +223,12 @@ function useQuery(name, params) {
 
 return {
   getRootMembers,
+  removeMember,
   hasModerator,
   createCommunity,
   getCommunity,
   getFeaturedCommunities,
+  setFeaturedCommunities,
   getAccountCommunityPermissions,
   updateCommunity,
   deleteCommunity,
