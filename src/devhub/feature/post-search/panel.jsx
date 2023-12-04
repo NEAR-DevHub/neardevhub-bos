@@ -147,6 +147,7 @@ return (
           term: state.term,
           recency: props.recency,
           transactionHashes: props.transactionHashes,
+          updateTagInput: (tag) => State.update({ tag }),
         }}
       />
     </PostContainer>
