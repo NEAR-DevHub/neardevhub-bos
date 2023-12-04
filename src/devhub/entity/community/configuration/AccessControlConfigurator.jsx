@@ -89,11 +89,6 @@ const onSubmitClick = () => {
   setIsActive(false);
 };
 
-function textareaInputHandler(value) {
-  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
-  setShowAutoAutocomplete(showAccountAutocomplete);
-}
-
 function autoCompleteAccountId(id) {
   setAdmins([...admins, id]);
   setText("");
@@ -113,11 +108,11 @@ return (
             }}
           />
           {/* don't allow removal if only 1 admin is added */}
-          {admins.length > 1 && (
+          {admins.length > 1 && isActive &&(
             <span
               className="remove"
               onClick={() =>
-                isActive && setAdmins(admins.filter((item) => item !== admin))
+                 setAdmins(admins.filter((item) => item !== admin))
               }
             >
               &times;
@@ -129,7 +124,7 @@ return (
         disabled={!isActive}
         value={text}
         onChange={(v) => {
-          textareaInputHandler(v.target.value);
+          setShowAutoAutocomplete(true);
           setText(v.target.value);
         }}
         onKeyDown={handleKeyDown}
@@ -145,7 +140,7 @@ return (
           props={{
             term: text,
             onSelect: autoCompleteAccountId,
-            onClose: () => showAccountAutocomplete(false),
+            onClose: () => setShowAutoAutocomplete(false),
             filterAccounts: admins,
           }}
         />
