@@ -108,12 +108,10 @@ return (
             }}
           />
           {/* don't allow removal if only 1 admin is added */}
-          {admins.length > 1 && isActive &&(
+          {admins.length > 1 && isActive && (
             <span
               className="remove"
-              onClick={() =>
-                 setAdmins(admins.filter((item) => item !== admin))
-              }
+              onClick={() => setAdmins(admins.filter((item) => item !== admin))}
             >
               &times;
             </span>
