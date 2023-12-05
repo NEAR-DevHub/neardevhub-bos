@@ -109,8 +109,7 @@ function editTeam({
               parents: [],
             },
           },
-          deposit: Big(0).pow(21),
-          gas: Big(10).pow(12).mul(100),
+          gas: Big(10).pow(14),
         });
       }
     });
@@ -140,8 +139,7 @@ function editTeam({
           parents: [],
         },
       },
-      deposit: Big(0).pow(21),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     },
   ]);
 }
