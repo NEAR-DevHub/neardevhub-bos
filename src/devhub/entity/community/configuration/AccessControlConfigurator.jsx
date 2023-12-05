@@ -105,6 +105,7 @@ return (
             props={{
               accountId: admin,
               nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB}",
+              openLinkInNewTab: true,
             }}
           />
           {/* don't allow removal if only 1 admin is added */}
