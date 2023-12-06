@@ -283,8 +283,7 @@ const onLike = () => {
       args: {
         post_id: postId,
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     },
   ];
 
@@ -296,8 +295,7 @@ const onLike = () => {
         predecessor_id: "${REPL_DEVHUB_CONTRACT}",
         keys: [context.accountId + "/index/notify"],
       },
-      deposit: Big(10).pow(23),
-      gas: Big(10).pow(12).mul(30),
+      gas: Big(10).pow(14),
     });
   }
 

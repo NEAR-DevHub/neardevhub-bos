@@ -105,8 +105,7 @@ const handleOnSubmit = (v, isEdit) => {
           comment_version: "V2",
         },
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     });
   } else {
     Near.call({
@@ -120,8 +119,7 @@ const handleOnSubmit = (v, isEdit) => {
           comment_version: "V2",
         },
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     });
   }
 };
