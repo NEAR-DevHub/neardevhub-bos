@@ -1,6 +1,7 @@
 if (!context.accountId || !props.term) return <></>;
 
 let results = [];
+const filterAccounts = props.filterAccounts ?? []; //  hide certain accounts from the list
 const profilesData = Social.get("*/profile/name", "final") || {};
 const followingData = Social.get(
   `${context.accountId}/graph/follow/**`,
@@ -43,6 +44,9 @@ for (let i = 0; i < profiles.length; i++) {
 
 results.sort((a, b) => b.score - a.score);
 results = results.slice(0, limit);
+if (filterAccounts?.length > 0) {
+  results = results.filter((item) => !filterAccounts?.includes(item.accountId));
+}
 
 function onResultClick(id) {
   props.onSelect && props.onSelect(id);

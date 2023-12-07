@@ -197,8 +197,7 @@ const onSubmit = () => {
         labels,
         body,
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     });
   } else if (mode == "Edit") {
     props.onDraftStateChange(
@@ -212,8 +211,7 @@ const onSubmit = () => {
         labels,
         body,
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     });
   }
   if (mode == "Create" || mode == "Edit") {
@@ -225,8 +223,7 @@ const onSubmit = () => {
           predecessor_id: "${REPL_DEVHUB_CONTRACT}",
           keys: [context.accountId + "/index/notify"],
         },
-        deposit: Big(10).pow(23),
-        gas: Big(10).pow(12).mul(30),
+        gas: Big(10).pow(14),
       });
     }
     Near.call(txn);
