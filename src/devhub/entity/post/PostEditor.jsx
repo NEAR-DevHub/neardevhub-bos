@@ -42,8 +42,15 @@ const labels = labelStrings.map((s) => {
   return { name: s };
 });
 
+const cleanDescription = (description) => {
+  return description.replace(
+    /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
+    ""
+  );
+};
+
 initState({
-  seekingFunding: false,
+  seekingFunding: props.seekingFunding ?? false,
   author_id: context.accountId,
   // Should be a list of objects with field "name".
   labels,
@@ -52,7 +59,10 @@ initState({
   labelStrings,
   postType,
   name: props.name ?? "",
-  description: props.description ?? "",
+  description:
+    (props.postType === "Solution"
+      ? cleanDescription(props.description)
+      : props.description) ?? "",
   amount: props.amount ?? "0",
   token: props.token ?? "USDT",
   supervisor: props.supervisor ?? "neardevdao.near",
@@ -162,8 +172,7 @@ const onSubmit = () => {
         labels,
         body,
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     });
   } else if (mode == "Edit") {
     props.onDraftStateChange(
@@ -177,8 +186,7 @@ const onSubmit = () => {
         labels,
         body,
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     });
   }
   if (mode == "Create" || mode == "Edit") {
@@ -190,8 +198,7 @@ const onSubmit = () => {
           predecessor_id: "${REPL_DEVHUB_CONTRACT}",
           keys: [context.accountId + "/index/notify"],
         },
-        deposit: Big(10).pow(23),
-        gas: Big(10).pow(12).mul(30),
+        gas: Big(10).pow(14),
       });
     }
     Near.call(txn);

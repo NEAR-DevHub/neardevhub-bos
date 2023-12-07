@@ -1,11 +1,11 @@
-# 👋 Welcome to the NEAR DevHub!
+# 👋 Welcome to the NEAR DevHub
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [NEAR DevHub](http://devgovgigs.near.social) is a decentralized community platform for NEAR developers to contribute to the ecosystem and stay informed on the latest topics. It enables anyone to share ideas, match solutions, and access technical support and funding. The Developer DAO team is actively developing the DevHub and welcoming open contributions from the community. We strive to maintain a transparent and efficient process for all.  
 
-This repository holds [NEAR Social](https://near.social) widgets to interact with the [DevHub smart-contract](https://github.com/near/devgigsboard). 
+This repository holds [NEAR Social](https://near.social) widgets to interact with the [DevHub smart-contract](https://github.com/near/devgigsboard).
 
 ## How to contribute?
 
@@ -19,32 +19,18 @@ We grant commit access to the Developer DAO team and any active developers who h
 
 ## How we work
 
-We communicate primarily over GitHub. We recommend configuring your [notifications](https://docs.github.com/en/account-and-profile/managing-subscriptions-and-notifications-on-github/setting-up-notifications/configuring-notifications) to ensure you get the latest updates.   
+We communicate primarily over GitHub. We recommend configuring your [notifications](https://docs.github.com/en/account-and-profile/managing-subscriptions-and-notifications-on-github/setting-up-notifications/configuring-notifications) to ensure you get the latest updates.
 
 [Learn more](https://github.com/near/devgigsboard-widgets/blob/main/docs/how-we-work.md) about how we work asynchronously.  
 
-# Getting Help
+## Getting Help
 
 If you are working on a specific issue, you can leave a comment. You can also drop a message on the [NEAR Dev](https://t.me/neardev) Telegram channel.
 
 ## Contributors ✨
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+<a href="https://github.com/near/neardevhub-widgets/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=near/neardevhub-widgets" />
+</a>
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ori-near"><img src="https://avatars.githubusercontent.com/u/110252255?v=4?s=100" width="100px;" alt="Ori"/><br /><sub><b>Ori</b></sub></a><br /><a href="https://github.com/near/neardevhub-widgets/commits?author=ori-near" title="Code">💻</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+Made with [contrib.rocks](https://contrib.rocks).
