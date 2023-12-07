@@ -1,5 +1,3 @@
-/* INCLUDE: "core/lib/autocomplete" */
-
 State.init({
   seekingFunding: false,
   author_id: context.accountId,
@@ -20,6 +18,8 @@ State.init({
   mentionInput: "", // text next to @ tag
   mentionsArray: [], // all the mentions in the description
 });
+
+/* INCLUDE: "core/lib/autocomplete" */
 
 const autocompleteEnabled = true;
 
