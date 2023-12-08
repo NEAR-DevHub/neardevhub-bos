@@ -1,3 +1,12 @@
+const cleanDescription = (description) => {
+  return description
+    ? description.replace(
+        /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
+        ""
+      )
+    : description;
+};
+
 initState({
   seekingFunding: props.seekingFunding ?? false,
   author_id: context.accountId,
@@ -88,13 +97,6 @@ const labelStrings = (props.labels ?? []).concat(referralLabels);
 const labels = labelStrings.map((s) => {
   return { name: s };
 });
-
-const cleanDescription = (description) => {
-  return description.replace(
-    /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
-    ""
-  );
-};
 
 if (!state.draftStateApplied && props.draftState) {
   State.update({ ...props.draftState, draftStateApplied: true });
