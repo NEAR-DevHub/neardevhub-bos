@@ -1,8 +1,10 @@
 const cleanDescription = (description) => {
-  return description ? description.replace(
-    /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
-    ""
-  ) : description
+  return description
+    ? description.replace(
+        /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
+        ""
+      )
+    : description;
 };
 
 initState({
