@@ -1,4 +1,3 @@
-import fs from "fs";
 import replaceInFiles from "replace-in-files";
 
 const transpiledPathPrefix = "./build/src";

@@ -1,6 +1,10 @@
 import { spawn } from "child_process";
 import Watcher from "watcher";
 
+const npmRunBuildInitial = spawn("npm", ["run", "build"]);
+console.log("Building..");
+npmRunBuildInitial.on("close", () => console.log("Initial build finished"));
+
 var dir_of_interest = process.cwd() + "/src";
 
 const watcher = new Watcher(dir_of_interest, {
@@ -26,7 +30,7 @@ watcher.on("all", (event, targetPath, targetPathNext) => {
   // Start the 'npm run build' process
   const npmRunBuild = spawn("npm", ["run", "build"], { stdio: "ignore" });
 
-  npmRunBuild.on("close", (code) => {
+  npmRunBuild.on("close", () => {
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0);
     process.stdout.write(`Build finished\n`);
