@@ -1,3 +1,36 @@
+const cleanDescription = (description) => {
+  return description
+    ? description.replace(
+        /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
+        ""
+      )
+    : description;
+};
+
+initState({
+  seekingFunding: props.seekingFunding ?? false,
+  author_id: context.accountId,
+  // Should be a list of objects with field "name".
+  labels,
+  // Should be a list of labels as strings.
+  // Both of the label structures should be modified together.
+  labelStrings: [],
+  postType,
+  name: props.name ?? "",
+  description:
+    (props.postType === "Solution"
+      ? cleanDescription(props.description)
+      : props.description) ?? "",
+  amount: props.amount ?? "0",
+  token: props.token ?? "USDT",
+  supervisor: props.supervisor ?? "neardevdao.near",
+  githubLink: props.githubLink ?? "",
+  warning: "",
+  draftStateApplied: false,
+  mentionInput: "", // text next to @ tag
+  mentionsArray: [], // all the mentions in the description
+});
+
 /* INCLUDE: "core/lib/autocomplete" */
 const autocompleteEnabled = true;
 
@@ -10,23 +43,46 @@ const AutoComplete = styled.div`
 `;
 
 function textareaInputHandler(value) {
-  const showAccountAutocomplete = /@[\w][^\s]*$/.test(value);
+  const words = value.split(/\s+/);
+  const allMentiones = words
+    .filter((word) => word.startsWith("@"))
+    .map((mention) => mention.slice(1));
+  const newMentiones = allMentiones.filter(
+    (item) => !state.mentionsArray.includes(item)
+  );
+
   State.update((lastKnownState) => ({
     ...lastKnownState,
     text: value,
-    showAccountAutocomplete,
+    showAccountAutocomplete: newMentiones?.length > 0,
+    mentionsArray: allMentiones,
+    mentionInput: newMentiones?.[0] ?? "",
   }));
 }
 
 function autoCompleteAccountId(id) {
-  let description = state.description.replace(/[\s]{0,1}@[^\s]*$/, "");
-  description = `${description} @${id}`.trim() + " ";
+  // to make sure we update the @ at correct index
+  let currentIndex = 0;
+  const updatedDescription = state.description.replace(
+    /(?:^|\s)(@[^\s]*)/g,
+    (match) => {
+      if (currentIndex === state.mentionsArray.indexOf(state.mentionInput)) {
+        currentIndex++;
+        return ` @${id}`;
+      } else {
+        currentIndex++;
+        return match;
+      }
+    }
+  );
   State.update((lastKnownState) => ({
     ...lastKnownState,
-    description,
+    handler: "autocompleteSelected",
+    description: updatedDescription,
     showAccountAutocomplete: false,
   }));
 }
+
 /* END_INCLUDE: "core/lib/autocomplete" */
 
 const postType = props.postType ?? "Sponsorship";
@@ -40,25 +96,6 @@ const labelStrings = (props.labels ?? []).concat(referralLabels);
 
 const labels = labelStrings.map((s) => {
   return { name: s };
-});
-
-initState({
-  seekingFunding: false,
-  author_id: context.accountId,
-  // Should be a list of objects with field "name".
-  labels,
-  // Should be a list of labels as strings.
-  // Both of the label structures should be modified together.
-  labelStrings,
-  postType,
-  name: props.name ?? "",
-  description: props.description ?? "",
-  amount: props.amount ?? "0",
-  token: props.token ?? "USDT",
-  supervisor: props.supervisor ?? "neardevdao.near",
-  githubLink: props.githubLink ?? "",
-  warning: "",
-  draftStateApplied: false,
 });
 
 if (!state.draftStateApplied && props.draftState) {
@@ -162,8 +199,7 @@ const onSubmit = () => {
         labels,
         body,
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     });
   } else if (mode == "Edit") {
     props.onDraftStateChange(
@@ -177,8 +213,7 @@ const onSubmit = () => {
         labels,
         body,
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     });
   }
   if (mode == "Create" || mode == "Edit") {
@@ -190,8 +225,7 @@ const onSubmit = () => {
           predecessor_id: "${REPL_DEVHUB_CONTRACT}",
           keys: [context.accountId + "/index/notify"],
         },
-        deposit: Big(10).pow(23),
-        gas: Big(10).pow(12).mul(30),
+        gas: Big(10).pow(14),
       });
     }
     Near.call(txn);
@@ -381,7 +415,7 @@ const callDescriptionDiv = () => {
           <Widget
             src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
             props={{
-              term: state.text.split("@").pop(),
+              term: state.mentionInput,
               onSelect: autoCompleteAccountId,
               onClose: () => State.update({ showAccountAutocomplete: false }),
             }}
