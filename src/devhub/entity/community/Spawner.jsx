@@ -11,10 +11,9 @@ const CommunityInputsPartialSchema = {
     inputProps: {
       min: 2,
       max: 40,
-
+      allowCommaAndSpace: false,
       placeholder:
         "Choose unique URL handle for your community. Example: zero-knowledge.",
-
       required: true,
     },
 
@@ -38,7 +37,7 @@ const CommunityInputsPartialSchema = {
     inputProps: {
       min: 2,
       max: 30,
-
+      allowCommaAndSpace: false,
       placeholder:
         "Any posts with this tag will show up in your community feed.",
 
@@ -80,9 +79,7 @@ const CommunityInputsDefaults = {
 
 return (
   <Widget
-    src={
-      "${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.organism.configurator"
-    }
+    src="${REPL_DEVHUB}/widget/devhub.components.organism.Configurator"
     props={{
       heading: "Community information",
       externalState: CommunityInputsDefaults,
@@ -98,7 +95,6 @@ return (
       },
       submitLabel: "Launch",
       onCancel: onCancel,
-      nearDevGovGigsWidgetsAccountId: "${REPL_DEVHUB_LEGACY}",
     }}
   />
 );

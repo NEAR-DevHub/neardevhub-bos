@@ -77,7 +77,7 @@ const history = (
             >
               <a
                 class="dropdown-item"
-                href={href("Post", {
+                href={href("post", {
                   id: postId,
                   timestamp: item.timestamp,
                   compareTimestamp: null,

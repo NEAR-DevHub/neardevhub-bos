@@ -19,6 +19,7 @@ if (communityData === null) {
 
 const MainContent = styled.div`
   flex-grow: 1;
+  max-width: 75%;
 
   @media screen and (max-width: 960px) {
     max-width: 100%;
@@ -35,7 +36,7 @@ const SidebarContainer = styled.div`
 `;
 
 return (
-  <div style={{ maxWidth: "100%" }}>
+  <div style={{ maxWidth: "100%", width: "100%" }}>
     <div class="col">
       <div class="d-flex w-100">
         <MainContent>

@@ -682,29 +682,19 @@ return (
       </div>
       <div class="dropdown">
         <Widget
-          // TODO: LEGACY.
-          src={
-            "${REPL_DEVHUB_LEGACY}/widget/gigs-board.feature.post-search.by-author"
-          }
+          src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-author"
           props={{
             authorQuery: props.authorQuery,
             onAuthorSearch: props.onAuthorSearch,
-            nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId,
-            nearDevGovGigsContractAccountId: nearDevGovGigsContractAccountId,
           }}
         />
       </div>
       <div>
         <Widget
-          // TODO: LEGACY.
-          src={
-            "${REPL_DEVHUB_LEGACY}/widget/gigs-board.feature.post-search.by-tag"
-          }
+          src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-tag"
           props={{
             tagQuery: props.tagQuery,
             onTagSearch: props.onTagSearch,
-            nearDevGovGigsWidgetsAccountId: nearDevGovGigsWidgetsAccountId,
-            nearDevGovGigsContractAccountId: nearDevGovGigsContractAccountId,
           }}
         />
       </div>

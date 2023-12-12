@@ -47,7 +47,6 @@ return community === null ? (
     />
 
     <Widget
-      // TODO: LEGACY.
       src={"${REPL_DEVHUB}/widget/devhub.entity.community.Tile"}
       props={{
         heading: "Admins",
@@ -55,10 +54,7 @@ return community === null ? (
         children: (community?.admins ?? []).map((accountId) => (
           <div key={accountId} className="d-flex" style={{ fontWeight: 500 }}>
             <Widget
-              // TODO: LEGACY.
-              src={
-                "${REPL_DEVHUB_LEGACY}/widget/gigs-board.components.molecule.profile-card"
-              }
+              src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
               props={{ accountId }}
             />
           </div>

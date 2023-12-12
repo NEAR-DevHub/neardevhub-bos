@@ -8,7 +8,7 @@ const CommunityAboutSchema = {
 
       placeholder:
         "Tell people about your community. This will appear on your community’s homepage.",
-
+      required: true,
       resize: "none",
     },
 
@@ -37,7 +37,7 @@ const CommunityAboutSchema = {
   },
 
   website_url: {
-    inputProps: { prefix: "https://", min: 2, max: 60 },
+    inputProps: { prefix: "https://", min: 2, max: 60, validUrl: true },
     label: "Website",
     order: 5,
   },

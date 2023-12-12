@@ -48,7 +48,7 @@ return (
           style={{ minHeight: 30 }}
         >
           <h5 className="h5 d-inline-flex gap-2 m-0">
-            <span>Admins</span>
+            <span>Community Admins</span>
           </h5>
         </div>
         <UserList name="Admin" users={communityData.admins} />
