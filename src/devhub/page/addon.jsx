@@ -94,6 +94,10 @@ const checkFullyRefactored = (addon_id) => {
 
 const isFullyRefactored = checkFullyRefactored(addon.addon_id);
 
+function updateWidgetEndpoint(widgetSrc) {
+  return widgetSrc.replace("devgovgigs", "devhub");
+}
+
 return (
   <Container>
     {isFullyRefactored && // Unfully refactored addons have the configurator built in.
@@ -113,7 +117,7 @@ return (
       {/* We hide in order to prevent a reload when we switch between two views */}
       <div className={`${view !== "configure" ? "d-none" : ""}`}>
         <Widget
-          src={addonMatch.configurator_widget}
+          src={updateWidgetEndpoint(addonMatch.configurator_widget)}
           props={{
             data: config,
             onSubmit: (data) => {
@@ -125,7 +129,6 @@ return (
                 },
               });
             },
-
             handle, // this is temporary prop drilling until kanban and github are migrated
             permissions,
           }}
@@ -133,9 +136,10 @@ return (
       </div>
       <div className={`${view === "configure" ? "d-none" : ""}`}>
         <Widget
-          src={addonMatch.view_widget}
+          src={updateWidgetEndpoint(addonMatch.view_widget)}
           props={{
             ...config,
+            data: config,
             // temporary prop drilling
             handle,
             permissions,

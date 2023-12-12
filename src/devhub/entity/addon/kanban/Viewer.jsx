@@ -8,15 +8,15 @@ const { metadata, payload, handle, permissions } = props;
 const CommunityBoardPage = ({ handle, permissions }) => {
   return (
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.configurator"
+      src="${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Configurator"
       props={{
         communityHandle: handle, // rather than fetching again via the handle
         link: href({
-          // do we need a link?
           widgetSrc: "${REPL_DEVHUB}/widget/app",
           params: { page: "community", handle },
         }),
         permissions,
+        ...props,
       }}
     />
   );

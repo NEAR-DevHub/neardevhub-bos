@@ -40,4 +40,14 @@ function href({ gateway, widgetSrc, params }) {
   }
 }
 
-return { href };
+function widget(widgetName, widgetProps, key) {
+  return (
+    <Widget
+      src={`${REPL_DEVHUB}/widget/devhub.${widgetName}`}
+      props={widgetProps}
+      key={key}
+    />
+  );
+}
+
+return { href, widget };

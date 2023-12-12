@@ -78,4 +78,49 @@ const pick = (sourceObject, keysToPick) => {
 const typeMatch = (input) =>
   input !== null && typeof input === "object" && !Array.isArray(input);
 
-return { deepFieldUpdate, isEqual, pick, toOrdered, typeMatch };
+const defaultFieldUpdate = ({
+  input,
+  lastKnownValue,
+  params: { arrayDelimiter },
+}) => {
+  switch (typeof input) {
+    case "boolean":
+      return input;
+
+    case "object": {
+      if (Array.isArray(input) && typeof lastKnownValue === "string") {
+        return input.join(arrayDelimiter ?? ",");
+      } else {
+        return Array.isArray(lastKnownValue)
+          ? [...lastKnownValue, ...input]
+          : { ...lastKnownValue, ...input };
+      }
+    }
+
+    case "string":
+      return Array.isArray(lastKnownValue)
+        ? input.split(arrayDelimiter ?? ",").map((string) => string.trim())
+        : input;
+
+    default: {
+      if ((input ?? null) === null) {
+        switch (typeof lastKnownValue) {
+          case "boolean":
+            return !lastKnownValue;
+
+          default:
+            return lastKnownValue;
+        }
+      } else return input;
+    }
+  }
+};
+
+return {
+  deepFieldUpdate,
+  isEqual,
+  pick,
+  toOrdered,
+  typeMatch,
+  defaultFieldUpdate,
+};
