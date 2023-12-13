@@ -16,7 +16,6 @@ const CommunityBoardPage = ({ handle, permissions }) => {
           params: { page: "community", handle },
         }),
         permissions,
-        ...props,
       }}
     />
   );

@@ -159,7 +159,6 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
     uninitialized: !Struct.typeMatch(data),
   });
 
-  const [text, setText] = useState(null);
   const isViewInitialized = (form.values.metadata.id ?? null) !== null;
 
   const formToggle = (forcedState) =>
