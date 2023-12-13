@@ -296,7 +296,7 @@ const onLike = () => {
         keys: [context.accountId + "/index/notify"],
       },
       gas: Big(10).pow(14),
-      deposit: Big(10).pow(5),
+      deposit: Big(10).pow(22),
     });
   }
 
