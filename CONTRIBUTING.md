@@ -29,13 +29,19 @@ npm install
 
 #### Run the dev script
 
-To initiate the development environment, you can use the following script. This script will first check if bos-loader is installed and, if not, install it. Then, it will serve the default development environment.
+To initiate the development environment, you can use the following script. This script will first check if bos-loader is installed and, if not, install it. Then, it will serve the default development environment and watch for changes inside `./src`.
 
-```sh
+```zsh
 npm run dev
 ```
 
-In order to build changes in typescript files you have to run the watch script.
+This runs the bos-loader and the watcher together. You can also run testnet by running:
+
+```zsh
+npm run dev:testnet
+```
+
+While testing the testnet, it's necessary to manually execute the watch script yourself to ensure that changes to files trigger the rebuilding process.
 
 Open another terminal and run:
 
