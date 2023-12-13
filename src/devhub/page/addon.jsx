@@ -63,6 +63,11 @@ if (!getAllAddons || !setCommunityAddon) {
 }
 
 const availableAddons = getAllAddons();
+
+if (!availableAddons) {
+  return <p>Loading addons...</p>;
+}
+
 const addonMatch = availableAddons.find((it) => it.id === addon.addon_id);
 
 if (!addonMatch) {
@@ -93,7 +98,8 @@ const checkFullyRefactored = (addon_id) => {
 };
 
 const isFullyRefactored = checkFullyRefactored(addon.addon_id);
-
+console.log("addonMatch");
+console.log(addonMatch);
 return (
   <Container>
     {isFullyRefactored && // Unfully refactored addons have the configurator built in.

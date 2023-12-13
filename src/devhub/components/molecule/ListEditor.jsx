@@ -1,7 +1,3 @@
-const { Tile } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
-  (() => <></>);
-
 const { data, setList, validate, invalidate } = props;
 
 const [newItem, setNewItem] = useState("");
