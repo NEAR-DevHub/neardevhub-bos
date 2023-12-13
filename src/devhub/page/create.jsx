@@ -1,10 +1,3 @@
-// TODO
-// const {
-//   autoCompleteAccountId,
-//   autocompleteEnabled,
-//   AutoComplete,
-//   textareaInputHandler,
-// } = VM.require("${REPL_DEVHUB}/widget/core.lib.autocomplete");
 State.init({
   seekingFunding: false,
   author_id: context.accountId,
@@ -87,13 +80,7 @@ const { DRAFT_STATE_STORAGE_KEY, draftState, onDraftStateChange } = VM.require(
   "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
 );
 
-if (
-  !href ||
-  !autoCompleteAccountId ||
-  !autocompleteEnabled ||
-  !AutoComplete ||
-  !textareaInputHandler
-) {
+if (!href) {
   return <p>Loading modules...</p>;
 }
 

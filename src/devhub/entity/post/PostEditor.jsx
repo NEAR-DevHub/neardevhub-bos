@@ -1,20 +1,3 @@
-// TODO
-// const {
-//   autoCompleteAccountId,
-//   autocompleteEnabled,
-//   AutoComplete,
-//   textareaInputHandler,
-// } = VM.require("${REPL_DEVHUB}/widget/core.lib.autocomplete");
-
-// if (
-//   !autoCompleteAccountId ||
-//   !autocompleteEnabled ||
-//   !AutoComplete ||
-//   !textareaInputHandler
-// ) {
-//   return <p>Loading modules...</p>;
-// }
-
 const cleanDescription = (description) => {
   return description
     ? description.replace(

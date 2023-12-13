@@ -6,8 +6,6 @@ type TagProps = {
 export default function Tag(props: TagProps) {
   const { black, tag } = props;
 
-  console.log("test file change");
-
   const Span = styled.span`
     color: ${black ? "#818181" : "#00ec97"};
     font-size: 16px;

@@ -5,9 +5,6 @@ command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
-# Set up trap to run on exit or interruption
-trap 'kill $(lsof -ti:3030)' EXIT INT TERM
-
 # Check if bos-loader is installed
 if ! command_exists bos-loader; then
     # Install bos-loader
@@ -33,12 +30,12 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# npm run watch &
+# Set up trap to run on exit or interruption
+trap 'kill $(lsof -ti:3030)' SIGTSTP SIGINT
 
-# Run bos-loader with updated replacements
+# Run bos-loader with updated replacements in the background
 ~/.cargo/bin/bos-loader "$ACCOUNT_ID" --path build/src &
 
-# Run npm run dev in the background
 npm run watch
 
 wait

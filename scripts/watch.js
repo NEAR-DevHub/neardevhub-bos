@@ -17,7 +17,7 @@ const watcher = new Watcher(dir_of_interest, {
 });
 
 watcher.on("error", (error) => {
-  console.log(error instanceof Error); // => true, "Error" instances are always provided on "error"
+  console.log(error instanceof Error);
 });
 
 watcher.on("all", (event, targetPath, targetPathNext) => {
