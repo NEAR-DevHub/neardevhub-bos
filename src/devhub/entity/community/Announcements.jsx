@@ -32,7 +32,7 @@ const Container = styled.div`
   }
 `;
 
-const Tags = styled.div`
+const Tag = styled.div`
   border-top-right-radius: 50px;
   border-bottom-right-radius: 50px;
   border-top-left-radius: 50px;
@@ -126,36 +126,25 @@ return (
       <SidebarContainer>
         <div className="d-flex flex-column gap-3">
           <div className="card p-3">
-            <p>
-              On a mission to support DevHub initiatives and grow the NEAR
-              developer ecosystem
-            </p>
+            <p>{communityData?.description}</p>
             <p className="d-flex gap-2 flex-wrap">
-              <Tags>devhub-marketing</Tags>
-              <Tags>tag-2</Tags>
+              <Tag>{communityData?.tag} </Tag>
             </p>
           </div>
-          <div>
-            <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.entity.community.Tile"}
-              props={{
-                heading: <h5>Community Admins</h5>,
-                children: (communityData?.admins ?? []).map((accountId) => (
-                  <div
-                    key={accountId}
-                    className="d-flex"
-                    style={{ fontWeight: 500 }}
-                  >
-                    <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
-                      props={{ accountId }}
-                    />
-                  </div>
-                )),
-                minHeight: 0,
-                noBorder: true,
-              }}
-            />
+          <div className="card p-3 d-flex flex-column gap-2">
+            <h6>Community Admins</h6>
+            {(communityData?.admins ?? []).map((accountId) => (
+              <div
+                key={accountId}
+                className="d-flex"
+                style={{ fontWeight: 500 }}
+              >
+                <Widget
+                  src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
+                  props={{ accountId }}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </SidebarContainer>
