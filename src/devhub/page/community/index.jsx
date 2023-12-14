@@ -43,12 +43,19 @@ if (!href) {
 }
 
 if (!tab) {
-  tab = "Activity";
+  tab = "Announcements";
 }
 
 const [isLinkCopied, setLinkCopied] = useState(false);
 
 const tabs = [
+  {
+    title: "Announcements",
+    view: "${REPL_DEVHUB}/widget/devhub.entity.community.Announcements",
+    params: {
+      handle: community.handle,
+    },
+  },
   {
     title: "Activity",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Activity",
