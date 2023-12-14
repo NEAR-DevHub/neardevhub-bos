@@ -143,7 +143,6 @@ function autoCompleteAccountId(id) {
   );
   State.update((lastKnownState) => ({
     ...lastKnownState,
-    handler: "autocompleteSelected",
     text: updatedDescription,
     showAccountAutocomplete: false,
   }));
