@@ -87,8 +87,7 @@ return (
                       style={{ borderRadius: "5px" }}
                       class="dropdown-item link-underline link-underline-opacity-0"
                       href={href({
-                        widgetSrc: "${REPL_DEVHUB}/widget/app",
-                        params: { page: "feed" },
+                        widgetSrc: "${REPL_DEVHUB}/widget/dh.feed",
                       })}
                     >
                       Latest
@@ -99,8 +98,8 @@ return (
                       style={{ borderRadius: "5px" }}
                       class="dropdown-item link-underline link-underline-opacity-0"
                       href={href({
-                        widgetSrc: "${REPL_DEVHUB}/widget/app",
-                        params: { page: "feed", recency: "all" },
+                        widgetSrc: "${REPL_DEVHUB}/widget/page.feed",
+                        params: { recency: "all" },
                       })}
                     >
                       All replies

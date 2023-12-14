@@ -26,8 +26,7 @@ const Logo = () => {
     <Wrapper>
       <Link
         to={linkHref({
-          widgetSrc: "${REPL_DEVHUB}/widget/app",
-          params: { page: "home" },
+          widgetSrc: "${REPL_DEVHUB}/widget/dh.home",
         })}
       >
         <svg
@@ -68,8 +67,8 @@ const ProfileIcon = () => {
   return (
     <Link
       to={linkHref({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "profile", accountId: context.accountId },
+        widgetSrc: "${REPL_DEVHUB}/widget/dh.profile",
+        params: { accountId: context.accountId },
       })}
     >
       <Widget

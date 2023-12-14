@@ -406,8 +406,7 @@ return (
           }}
           className="fw-bold"
           to={href({
-            widgetSrc: "${REPL_DEVHUB}/widget/app",
-            params: { page: "feed" },
+            widgetSrc: "${REPL_DEVHUB}/widget/dh.feed",
           })}
         >
           feed

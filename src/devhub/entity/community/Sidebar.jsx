@@ -18,8 +18,8 @@ const CommunitySummary = () => {
       <small class="text-muted mb-3">
         <Link
           to={href({
-            widgetSrc: "${REPL_DEVHUB}/widget/app",
-            params: { page: "feed", tag: community.tag },
+            widgetSrc: "${REPL_DEVHUB}/widget/dh.feed",
+            params: { tag: community.tag },
           })}
         >
           <Widget

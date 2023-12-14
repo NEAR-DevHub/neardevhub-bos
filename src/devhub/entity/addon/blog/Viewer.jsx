@@ -47,8 +47,8 @@ function BlogCard(postId) {
     <Link
       style={{ textDecoration: "none" }}
       to={href({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "blog", id: postId },
+        widgetSrc: "${REPL_DEVHUB}/widget/dh.blog",
+        params: { id: postId },
       })}
     >
       <CardContainer>

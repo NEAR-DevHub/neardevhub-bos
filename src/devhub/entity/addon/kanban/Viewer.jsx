@@ -13,8 +13,8 @@ const CommunityBoardPage = ({ handle, permissions }) => {
         communityHandle: handle, // rather than fetching again via the handle
         link: href({
           // do we need a link?
-          widgetSrc: "${REPL_DEVHUB}/widget/app",
-          params: { page: "community", handle },
+          widgetSrc: "${REPL_DEVHUB}/widget/dh.community",
+          params: { handle },
         }),
         permissions,
       }}

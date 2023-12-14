@@ -53,9 +53,8 @@ return (
                   props={{
                     title: "Post",
                     href: href({
-                      widgetSrc: "${REPL_DEVHUB}/widget/app",
+                      widgetSrc: "${REPL_DEVHUB}/widget/dh.create",
                       params: {
-                        page: "create",
                         labels: [communityData.tag],
                       },
                     }),

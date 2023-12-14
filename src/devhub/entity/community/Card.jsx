@@ -50,8 +50,8 @@ const Card = styled.div`
 const CommunityCard = ({ metadata }) => {
   const { handle, logo_url, name, description } = metadata;
   const link = href({
-    widgetSrc: "${REPL_DEVHUB}/widget/app",
-    params: { page: "community", handle: handle },
+    widgetSrc: "${REPL_DEVHUB}/widget/dh.community",
+    params: { handle: handle },
   });
 
   return (

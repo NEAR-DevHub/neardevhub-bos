@@ -181,10 +181,7 @@ return (
         </Lead>
         <Link
           to={href({
-            widgetSrc: "${REPL_DEVHUB}/widget/app",
-            params: {
-              page: "about",
-            },
+            widgetSrc: "${REPL_DEVHUB}/widget/dh.about",
           })}
         >
           <CTA href="#">Read more →</CTA>
@@ -199,7 +196,7 @@ return (
       <Lead>Join a vibrant community of innovators shaping the open web.</Lead>
       <Link
         to={href({
-          widgetSrc: "${REPL_DEVHUB}/widget/app",
+          widgetSrc: "${REPL_DEVHUB}/widget/dh.about",
           params: {
             page: "about",
           },

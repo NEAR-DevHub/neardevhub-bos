@@ -7,9 +7,8 @@ return props.post === undefined ? (
     <a
       className="btn btn-outline-dark"
       href={href({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
+        widgetSrc: "${REPL_DEVHUB}/widget/dh.post",
         params: {
-          page: "post",
           id: props.post,
         },
       })}

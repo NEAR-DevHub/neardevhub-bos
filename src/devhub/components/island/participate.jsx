@@ -183,8 +183,7 @@ const Content = (
 
     <Link
       to={href({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "contribute" },
+        widgetSrc: "${REPL_DEVHUB}/widget/dh.contribute",
       })}
       style={{ textDecoration: "none" }}
     >

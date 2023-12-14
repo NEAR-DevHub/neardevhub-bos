@@ -159,8 +159,8 @@ const shareButton = props.isPreview ? (
   <Link
     class="card-link text-dark"
     to={href({
-      widgetSrc: "${REPL_DEVHUB}/widget/app",
-      params: { page: "post", id: postId },
+      widgetSrc: "${REPL_DEVHUB}/widget/dh.post",
+      params: { id: postId },
     })}
     role="button"
     target="_blank"
@@ -433,8 +433,8 @@ const buttonsFooter = props.isPreview ? null : (
         ) : (
           <Link
             to={href({
-              widgetSrc: "${REPL_DEVHUB}/widget/app",
-              params: { page: "post", id: parentId },
+              widgetSrc: "${REPL_DEVHUB}/widget/dh.post",
+              params: { id: parentId },
             })}
           >
             <ButtonWithHover
@@ -645,8 +645,8 @@ const tags = post.snapshot.labels ? (
       <div className="d-flex align-items-center my-3 me-3">
         <Link
           to={href({
-            widgetSrc: "${REPL_DEVHUB}/widget/app",
-            params: { page: "feed", tag: tag },
+            widgetSrc: "${REPL_DEVHUB}/widget/dh.feed",
+            params: { tag: tag },
           })}
         >
           <div
@@ -826,9 +826,8 @@ const timestampElement = (_snapshot) => {
     <Link
       class="text-muted"
       href={href({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
+        widgetSrc: "${REPL_DEVHUB}/widget/dh.post",
         params: {
-          page: "post",
           id: postId,
           timestamp: _snapshot.timestamp,
           compareTimestamp: null,

@@ -76,8 +76,7 @@ return (
         <Link
           style={{ textDecoration: "none" }}
           to={linkHref({
-            widgetSrc: "${REPL_DEVHUB}/widget/app",
-            params: { page: href },
+            widgetSrc: `${REPL_DEVHUB}/widget/dh.${href}`,
           })}
         >
           {title}
@@ -113,8 +112,7 @@ return (
                 <Link
                   style={{ textDecoration: "none" }}
                   to={linkHref({
-                    widgetSrc: "${REPL_DEVHUB}/widget/app",
-                    params: { page: link.href },
+                    widgetSrc: `${REPL_DEVHUB}/widget/dh.${link.href}`,
                   })}
                 >
                   {link.title}

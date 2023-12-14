@@ -57,8 +57,7 @@ const FeedPage = ({ recency, tag }) => {
               props={{
                 title: "Post",
                 href: href({
-                  widgetSrc: "${REPL_DEVHUB}/widget/app",
-                  params: { page: "create" },
+                  widgetSrc: "${REPL_DEVHUB}/widget/dh.create",
                 }),
               }}
             />

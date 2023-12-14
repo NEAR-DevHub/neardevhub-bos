@@ -79,8 +79,8 @@ const onShareClick = () =>
     .writeText(
       href({
         gateway: "near.social",
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "community", handle: community.handle },
+        widgetSrc: "${REPL_DEVHUB}/widget/dh.community",
+        params: { handle: community.handle },
       })
     )
     .then(setLinkCopied(true));
@@ -270,9 +270,8 @@ return (
               <li className="nav-item" key={title}>
                 <Link
                   to={href({
-                    widgetSrc: "${REPL_DEVHUB}/widget/app",
+                    widgetSrc: "${REPL_DEVHUB}/widget/dh.community",
                     params: {
-                      page: "community",
                       handle: community.handle,
                       tab: title,
                     },
@@ -299,8 +298,8 @@ return (
               <span>Required tags:</span>
               <Link
                 to={href({
-                  widgetSrc: "${REPL_DEVHUB}/widget/app",
-                  params: { page: "feed", tag: community.tag },
+                  widgetSrc: "${REPL_DEVHUB}/widget/dh.feed",
+                  params: { tag: community.tag },
                 })}
               >
                 <Widget
@@ -320,9 +319,8 @@ return (
               props={{
                 title: "Post",
                 href: href({
-                  widgetSrc: "${REPL_DEVHUB}/widget/app",
+                  widgetSrc: "${REPL_DEVHUB}/widget/dh.create",
                   params: {
-                    page: "create",
                     labels: [community.tag],
                   },
                 }),
