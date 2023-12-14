@@ -10,13 +10,14 @@ const communityData = getCommunity({ handle });
 
 const MainContent = styled.div`
   padding-left: 2rem;
+  flex: 3;
   @media screen and (max-width: 960px) {
     padding-left: 0rem;
   }
 `;
 
 const SidebarContainer = styled.div`
-  min-width: 25%;
+  flex: 1;
 `;
 
 const Container = styled.div`
@@ -49,7 +50,7 @@ const Tags = styled.div`
 
 return (
   <div className="w-100" style={{ maxWidth: "100%" }}>
-    <Container className="d-flex gap-2 m-3 pl-2">
+    <Container className="d-flex gap-3 m-3 pl-2">
       <MainContent className="max-width-100">
         <div className="d-flex flex-column gap-4">
           <div className="card p-3">
