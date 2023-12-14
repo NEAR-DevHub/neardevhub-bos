@@ -14,6 +14,9 @@ const MainContent = styled.div`
   @media screen and (max-width: 960px) {
     padding-left: 0rem;
   }
+  .post:hover {
+    background-color: inherit !important;
+  }
 `;
 
 const SidebarContainer = styled.div`
