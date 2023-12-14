@@ -270,6 +270,7 @@ const setLabels = (labels) => {
     State.update({ labels, labelStrings });
   }
 };
+
 const existingLabelStrings =
   Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_allowed_labels", {
     editor: context.accountId,

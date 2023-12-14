@@ -9,7 +9,7 @@ test.describe("Wallet is connected", () => {
   test("should be able to manage featured communities from home page settings tab", async ({
     page,
   }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
+    await page.goto("/devhub.near/widget/dh.admin");
 
     const buttonSelector = `button[data-testid="preview-homepage"]`;
     // Wait for the first post history button to be visible
@@ -42,7 +42,7 @@ test.describe("Wallet is connected", () => {
   });
 
   test("should be able to manage moderators", async ({ page }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
+    await page.goto("/devhub.near/widget/dh.admin");
     const buttonSelector = `button[data-testid="preview-homepage"]`;
     // Wait for the first post button to be visible
     await page.waitForSelector(buttonSelector, {
@@ -72,7 +72,7 @@ test.describe("Wallet is connected", () => {
   });
 
   test("should be able to manage restricted labels", async ({ page }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
+    await page.goto("/devhub.near/widget/dh.admin");
     const buttonSelector = `button[data-testid="preview-homepage"]`;
     // Wait for the first post button to be visible
     await page.waitForSelector(buttonSelector, {
@@ -171,7 +171,7 @@ test.describe("Wallet is connected", () => {
   test("shouldn't be able to add a none existing community handle without a warning", async ({
     page,
   }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
+    await page.goto("/devhub.near/widget/dh.admin");
     const buttonSelector = `button[data-testid="preview-homepage"]`;
     // Wait for the first post  button to be visible
     await page.waitForSelector(buttonSelector, {
@@ -199,7 +199,7 @@ test.describe("Wallet is not connect", () => {
   test("should show banner that the user doesn't have access", async ({
     page,
   }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
+    await page.goto("/devhub.near/widget/dh.admin");
     const buttonSelector = "h2.alert.alert-danger";
     // Wait for the first post history button to be visible
 

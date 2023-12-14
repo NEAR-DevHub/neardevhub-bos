@@ -81,7 +81,6 @@ return (
   <Widget
     src="${REPL_DEVHUB}/widget/devhub.components.organism.Configurator"
     props={{
-      heading: "Community information",
       externalState: CommunityInputsDefaults,
       fullWidth: true,
       isActive: true,

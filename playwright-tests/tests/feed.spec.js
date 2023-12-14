@@ -25,7 +25,7 @@ test("LEGACY: should show post history for posts in the feed", async ({
 });
 
 test("should show post history for posts in the feed", async ({ page }) => {
-  await page.goto("/devgovgigs.near/widget/app?page=feed");
+  await page.goto("/devhub.near/widget/dh.feed");
 
   const firstPostHistoryButtonSelector = 'a.card-link[title="Post History"]';
   // Wait for the first post history button to be visible
@@ -47,7 +47,7 @@ test("should show post history for posts in the feed", async ({ page }) => {
 
 test("should hide posts with devhub-test tag", async ({ page }) => {
   // go to feeds page
-  await page.goto("/devhub.near/widget/app?page=feed");
+  await page.goto("/devhub.near/widget/dh.feed");
 
   // look for tag input
   const tagInputSelector = 'input[placeholder="Search by tag"]';
@@ -76,7 +76,7 @@ test.describe("Wallet is connected", () => {
 
   test("should hide posts editor when hit cancel", async ({ page }) => {
     // go to feed with logged in user account
-    await page.goto("/devhub.near/widget/app?page=feed&author=efiz.near");
+    await page.goto("/devhub.near/widget/dh.feed?author=efiz.near");
 
     // find first post with edit button
     const firstPostWithEditButton = 'a.card-link[title="Edit post"]';

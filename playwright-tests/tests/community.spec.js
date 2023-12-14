@@ -1,12 +1,10 @@
 import { test, expect } from "@playwright/test";
 
 test("should load a community page if handle exists", async ({ page }) => {
-  await page.goto(
-    "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
-  );
+  await page.goto("/devhub.near/widget/dh.community?handle=devhub-test");
 
   // Using the <Link> that wraps the tabs to identify a community page loaded
-  const communityTabSelector = `a[href^="/devgovgigs.near/widget/app?page=community&handle=devhub-test&tab="]`;
+  const communityTabSelector = `a[href^="/devhub.near/widget/dh.community?handle=devhub-test&tab="]`;
 
   // Wait for the tab to be visible
   await page.waitForSelector(communityTabSelector, {
@@ -21,9 +19,7 @@ test("should load a community page if handle exists", async ({ page }) => {
 });
 
 test("should load an error page if handle does not exist", async ({ page }) => {
-  await page.goto(
-    "/devgovgigs.near/widget/app?page=community&handle=devhub-faketest"
-  );
+  await page.goto("/devhub.near/widget/dh.community?handle=devhub-faketest");
 
   // Using the <Link> that wraps the card to identify a community
   const communityNotFoundSelector =
@@ -43,9 +39,7 @@ test.describe("Wallet is connected", () => {
   test("should allow connected user to post from community page", async ({
     page,
   }) => {
-    await page.goto(
-      "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
-    );
+    await page.goto("/devhub.near/widget/dh.community?handle=devhub-test");
 
     const postButtonSelector = 'a:has-text("Post")';
 
@@ -61,7 +55,7 @@ test.describe("Wallet is connected", () => {
 
     // Verify that the URL is the expected one.
     expect(page.url()).toBe(
-      "http://localhost:8080/devgovgigs.near/widget/app?page=create&labels=devhub-test"
+      "http://localhost:8080/devhub.near/widget/dh.create?labels=devhub-test"
     );
 
     // Wait for the Typeahead field to render.
@@ -90,9 +84,7 @@ test.describe("Wallet is not connected", () => {
   test("should not allow unconnected user to post from community page", async ({
     page,
   }) => {
-    await page.goto(
-      "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
-    );
+    await page.goto("/devhub.near/widget/dh.community?handle=devhub-test");
 
     const createCommunityButtonSelector = 'button:has-text("Post")';
 

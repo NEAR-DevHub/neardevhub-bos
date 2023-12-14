@@ -8,7 +8,7 @@ test.describe("Wallet is connected", () => {
   test("should show spawner when user clicks create community", async ({
     page,
   }) => {
-    await page.goto("/devgovgigs.near/widget/app?page=communities");
+    await page.goto("/devhub.near/widget/dh.communities");
 
     const createCommunityButtonSelector = 'button:has-text("Create Community")';
 
@@ -17,7 +17,7 @@ test.describe("Wallet is connected", () => {
     });
     await page.click(createCommunityButtonSelector);
 
-    const communitySpawnerSelector = 'div:has-text("Community information")';
+    const communitySpawnerSelector = 'div:has-text("Description")';
     await page.waitForSelector(communitySpawnerSelector, { state: "visible" });
   });
 });
@@ -28,7 +28,7 @@ test.describe("Wallet is not connected", () => {
   });
 
   test("spawner and button should not be visible", async ({ page }) => {
-    await page.goto("/devgovgigs.near/widget/app?page=communities");
+    await page.goto("/devhub.near/widget/dh.communities");
 
     const createCommunityButtonSelector = 'button:has-text("Create Community")';
 

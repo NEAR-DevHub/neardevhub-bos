@@ -7,7 +7,7 @@ test.describe("Wallet is connected", () => {
 
   test.describe("AddonsConfigurator", () => {
     const baseUrl =
-      "/devgovgigs.near/widget/app?page=community.configuration&handle=devhub-test";
+      "/devhub.near/widget/dh.community.configuration?handle=devhub-test";
     // const dropdownSelector =
     //   'input[data-component="near/widget/DIG.InputSelect"]';
     // const addButtonSelector = "button.btn-success:has(i.bi.bi-plus)";

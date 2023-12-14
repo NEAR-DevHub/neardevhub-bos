@@ -52,21 +52,21 @@ const actions = [
     description:
       "The first step in any NEAR ecosystem project is ideation. It is crucial to have a way to find people to share and explore ideas with, partly because it can save a lot of time based on prior discussions. But also because it can you gauge support from a diversity of stakeholders.",
     ctaAction: "Learn More →",
-    ctaLink: "/devhub.near/widget/app?page=blog&id=2029",
+    ctaLink: "/devhub.near/widget/dh.blog?id=2029",
   },
   {
     title: "Post a Proposal",
     description:
       "If you have already nurtured and refined your idea, you're ready to draft and post your funding proposal.This guide is here to help you craft a compelling, convincing, and concise proposal that will capture the interest of potential funders.",
     ctaAction: "Learn More →",
-    ctaLink: "/devhub.near/widget/app?page=blog&id=2035",
+    ctaLink: "/devhub.near/widget/dh.blog?id=2035",
   },
   {
     title: "Host an Event",
     description:
       "We are always on the lookout for events that align with our mission and provide value to the NEAR ecosystem. If you are organizing such an event, we would love to hear from you! Below is a guide on how to submit a sponsorship proposal to us.",
     ctaAction: "Learn More →",
-    ctaLink: "/devhub.near/widget/app?page=community&handle=hacks&tab=Wiki%202",
+    ctaLink: "/devhub.near/widget/dh.community?handle=hacks&tab=Wiki%202",
   },
   {
     title: "Improve NEAR Docs",
@@ -80,15 +80,14 @@ const actions = [
     description:
       "As the NEAR ecosystem grows rapidly, there is an increasing need to improve developer productivity. The DevDAO NEAR Platform Fellowship Program aims to solve this issue by providing guidance to new contributors from experienced developers.",
     ctaAction: "Learn More →",
-    ctaLink:
-      "/devhub.near/widget/app?page=community&handle=fellowship&tab=Wiki 1",
+    ctaLink: "/devhub.near/widget/dh.community?handle=fellowship&tab=Wiki 1",
   },
   {
     title: "Join NEAR Campus",
     description:
       "DevHub’s NEAR Campus supports existing student clubs, researchers, and faculties in blockchain technologies, enhancing both curricular and extracurricular activities. We aim to merge blockchain education with mainstream academics.",
     ctaAction: "Learn More →",
-    ctaLink: "/devhub.near/widget/app?page=community&handle=near-campus",
+    ctaLink: "/devhub.near/widget/dh.community?handle=near-campus",
   },
   {
     title: "Dive into Hackbox",

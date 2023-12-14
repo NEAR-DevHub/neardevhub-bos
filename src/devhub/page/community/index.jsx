@@ -213,7 +213,7 @@ return (
       <div className="d-flex align-items-end gap-3 ms-auto mb-md-5 me-4">
         {permissions.can_configure && (
           <Link
-            to={`/${REPL_DEVHUB}/widget/app?page=community.configuration&handle=${community.handle}`}
+            to={`/${REPL_DEVHUB}/widget/dh.community.configuration?handle=${community.handle}`}
           >
             <Widget
               src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}

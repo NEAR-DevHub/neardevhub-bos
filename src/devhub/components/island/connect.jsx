@@ -102,7 +102,7 @@ const Cards = communities.map((com) => {
   return {
     title: com.name,
     description: com.description,
-    href: "/${REPL_DEVHUB}/widget/app?page=community&handle=" + com.handle,
+    href: "/${REPL_DEVHUB}/widget/dh.community?handle=" + com.handle,
   };
 });
 
@@ -309,7 +309,7 @@ const Content = (
       ))}
     </MobileCards>
     <CTAContainer>
-      <CTA href="/${REPL_DEVHUB}/widget/app?page=communities">
+      <CTA href="/${REPL_DEVHUB}/widget/dh.communities">
         Explore all communities →
       </CTA>
     </CTAContainer>

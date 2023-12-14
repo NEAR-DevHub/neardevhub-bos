@@ -14,9 +14,7 @@ return (
   <Container>
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.entity.post.Post"}
-      props={{
-        id,
-      }}
+      props={props}
     />
   </Container>
 );

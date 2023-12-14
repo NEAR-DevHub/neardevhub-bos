@@ -51,7 +51,7 @@ return (
           onSubmit: sectionSubmit,
           data: communityData,
           hasConfigurePermissions,
-          link: `/${REPL_DEVHUB}/widget/app?page=community&handle=${handle}`,
+          link: `/${REPL_DEVHUB}/widget/dh.community?handle=${handle}`,
         }}
       />
     </Tile>
