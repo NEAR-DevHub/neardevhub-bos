@@ -53,15 +53,17 @@ return (
     <Container className="d-flex gap-3 m-3 pl-2">
       <MainContent className="max-width-100">
         <div className="d-flex flex-column gap-4">
-          <div className="card p-3">
-            <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
-              props={{
-                optimisticUpdateFn: () => console.log("commit"),
-                clearOptimisticUpdateFn: () => console.log("clear"),
-              }}
-            />
-          </div>
+          {context.accountId && (
+            <div className="card p-3">
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
+                props={{
+                  optimisticUpdateFn: () => console.log("commit"),
+                  clearOptimisticUpdateFn: () => console.log("clear"),
+                }}
+              />
+            </div>
+          )}
           <div className="d-flex flex-wrap justify-content-between">
             <h5>Announcements</h5>
             <div className="d-flex align-items-center gap-2">
