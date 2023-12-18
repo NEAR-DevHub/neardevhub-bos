@@ -41,7 +41,7 @@ const GithubKanbanBoard = ({
   repoURL,
   ticketState,
   dataTypesIncluded,
-  metadata
+  metadata,
 }) => {
   const ticketStateFilter =
     ticketState === "open" || ticketState === "closed" || ticketState === "all"
