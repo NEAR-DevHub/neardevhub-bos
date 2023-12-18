@@ -141,13 +141,14 @@ const socialLinks = [
       ]
     : []),
 
-  ...(Array.isArray(community.telegram_handle.length) &&
-  community.telegram_handle.length > 0
-    ? community.telegram_handle.map((telegram_handle) => ({
-        href: `https://t.me/${telegram_handle}`,
-        iconClass: "bi bi-telegram",
-        name: telegram_handle,
-      }))
+  ...(community.telegram_handle?.length > 0
+    ? [
+        {
+          href: community.telegram_handle,
+          iconClass: "bi bi-telegram",
+          name: community.telegram_handle,
+        },
+      ]
     : []),
 ];
 
