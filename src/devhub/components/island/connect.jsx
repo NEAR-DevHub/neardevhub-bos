@@ -8,6 +8,10 @@ if (!getFeaturedCommunities) {
 
 const communities = getFeaturedCommunities();
 
+if (!communities) {
+  return <p>Loading communities...</p>;
+}
+
 const [startIndex, setStartIndex] = useState(0);
 const [endIndex, setEndIndex] = useState(2);
 
