@@ -110,6 +110,14 @@ function trimHttps(url) {
   return url;
 }
 
+// some communties have url as handle (eg: devhub platform) while others has correct handle
+function checkTelegramHandle(tg) {
+  const pattern = /https:\/\/t.me\/(.*)/;
+  const includesHttp = tg.match(pattern);
+  const handle = includesHttp ? includesHttp[1] : tg;
+  return { handle, url: "https://t.me/" + handle };
+}
+
 const socialLinks = [
   ...((community.website_url?.length ?? 0) > 0
     ? [
@@ -141,12 +149,14 @@ const socialLinks = [
       ]
     : []),
 
-  ...(community.telegram_handle.length > 0
-    ? community.telegram_handle.map((telegram_handle) => ({
-        href: `https://t.me/${telegram_handle}`,
-        iconClass: "bi bi-telegram",
-        name: telegram_handle,
-      }))
+  ...(community.telegram_handle?.length > 0
+    ? [
+        {
+          href: checkTelegramHandle(community.telegram_handle).url,
+          iconClass: "bi bi-telegram",
+          name: checkTelegramHandle(community.telegram_handle).handle,
+        },
+      ]
     : []),
 ];
 
