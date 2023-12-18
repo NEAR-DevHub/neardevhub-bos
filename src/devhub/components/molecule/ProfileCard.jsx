@@ -27,6 +27,7 @@ const ProfileCard = (props) => {
   // const hideName = props.hideName;
   const hideImage = props.hideImage;
   const iconOnly = props.iconOnly;
+  const openLinkInNewTab = props.openLinkInNewTab ?? false;
 
   const profile = props.profile ?? Social.getr(`${accountId}/profile`);
 
@@ -66,6 +67,8 @@ const ProfileCard = (props) => {
           ? link
           : `/${REPL_MOB}/widget/ProfilePage?accountId=${accountId}`
       }
+      target={openLinkInNewTab ? "_blank" : ""}
+      rel="noopener noreferrer"
       className="link-dark text-truncate d-inline-flex"
     >
       {inner}

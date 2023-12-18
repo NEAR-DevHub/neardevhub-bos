@@ -19,6 +19,7 @@ if (communityData === null) {
 
 const MainContent = styled.div`
   flex-grow: 1;
+  max-width: 75%;
 
   @media screen and (max-width: 960px) {
     max-width: 100%;

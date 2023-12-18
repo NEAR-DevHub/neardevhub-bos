@@ -283,8 +283,7 @@ const onLike = () => {
       args: {
         post_id: postId,
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     },
   ];
 
@@ -296,8 +295,8 @@ const onLike = () => {
         predecessor_id: "${REPL_DEVHUB_CONTRACT}",
         keys: [context.accountId + "/index/notify"],
       },
-      deposit: Big(10).pow(23),
-      gas: Big(10).pow(12).mul(30),
+      gas: Big(10).pow(14),
+      deposit: Big(10).pow(22),
     });
   }
 
@@ -561,6 +560,25 @@ const toggleEditor = () => {
   State.update({ showEditor: !state.showEditor });
 };
 
+let amount = null;
+let token = null;
+let supervisor = null;
+
+if (state.postType === "Solution") {
+  const amountMatch = post.snapshot.description.match(
+    /Requested amount: (\d+(\.\d+)?) (\w+)/
+  );
+  amount = amountMatch ? parseFloat(amountMatch[1]) : null;
+  token = amountMatch ? amountMatch[3] : null;
+
+  const sponsorMatch = post.snapshot.description.match(
+    /Requested sponsor: @([^\s]+)/
+  );
+  supervisor = sponsorMatch ? sponsorMatch[1] : null;
+}
+
+const seekingFunding = amount !== null || token !== null || supervisor !== null;
+
 function Editor() {
   return (
     <div class="row" id={`accordion${postId}`} key="editors-footer">
@@ -595,9 +613,11 @@ function Editor() {
                 labels: post.snapshot.labels,
                 name: post.snapshot.name,
                 description: post.snapshot.description,
-                amount: post.snapshot.amount,
-                token: tokenResolver(post.snapshot.sponsorship_token),
-                supervisor: post.snapshot.supervisor,
+                amount: post.snapshot.amount || amount,
+                token: tokenResolver(post.snapshot.sponsorship_token || token),
+                supervisor:
+                  post.snapshot.post.snapshot.supervisor || supervisor,
+                seekingFunding: seekingFunding,
                 githubLink: post.snapshot.github_link,
                 onDraftStateChange,
                 draftState:
@@ -625,11 +645,16 @@ const tags = post.snapshot.labels ? (
       <div className="d-flex align-items-center my-3 me-3">
         <Link
           to={href({
-            widgetSrc: "#/${REPL_DEVHUB}/widget/app",
+            widgetSrc: "${REPL_DEVHUB}/widget/app",
             params: { page: "feed", tag: tag },
           })}
         >
           <div
+            onClick={() => {
+              if (typeof props.updateTagInParent === "function") {
+                props.updateTagInParent(tag);
+              }
+            }}
             className="d-flex gap-3 align-items-center"
             style={{ cursor: "pointer", textDecoration: "none" }}
           >

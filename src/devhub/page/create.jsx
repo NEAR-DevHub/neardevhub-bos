@@ -1,5 +1,3 @@
-/* INCLUDE: "core/lib/autocomplete" */
-
 State.init({
   seekingFunding: false,
   author_id: context.accountId,
@@ -7,7 +5,7 @@ State.init({
   labels,
   // Should be a list of labels as strings.
   // Both of the label structures should be modified together.
-  labelStrings,
+  labelStrings: [],
   postType: "Idea",
   name: props.name ?? "",
   description: props.description ?? "",
@@ -20,6 +18,8 @@ State.init({
   mentionInput: "", // text next to @ tag
   mentionsArray: [], // all the mentions in the description
 });
+
+/* INCLUDE: "core/lib/autocomplete" */
 
 const autocompleteEnabled = true;
 
@@ -167,8 +167,7 @@ const onSubmit = () => {
         labels,
         body: body,
       },
-      deposit: Big(10).pow(21).mul(3),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     });
   } else if (mode == "Edit") {
     txn.push({
@@ -179,8 +178,7 @@ const onSubmit = () => {
         labels,
         body: body,
       },
-      deposit: Big(10).pow(21).mul(2),
-      gas: Big(10).pow(12).mul(100),
+      gas: Big(10).pow(14),
     });
   }
   if (mode == "Create" || mode == "Edit") {
@@ -192,8 +190,8 @@ const onSubmit = () => {
           predecessor_id: "${REPL_DEVHUB_CONTRACT}",
           keys: [context.accountId + "/index/notify"],
         },
-        deposit: Big(10).pow(23),
-        gas: Big(10).pow(12).mul(30),
+        gas: Big(10).pow(14),
+        deposit: Big(10).pow(22),
       });
     }
     Near.call(txn);

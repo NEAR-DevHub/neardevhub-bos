@@ -30,7 +30,7 @@ const CommunityInformationSchema = {
     inputProps: {
       min: 2,
       max: 40,
-
+      allowCommaAndSpace: false,
       placeholder:
         "Choose unique URL handle for your community. Example: zero-knowledge.",
 
@@ -45,7 +45,7 @@ const CommunityInformationSchema = {
     inputProps: {
       min: 2,
       max: 30,
-
+      allowCommaAndSpace: false,
       placeholder:
         "Any posts with this tag will show up in your community feed.",
 
