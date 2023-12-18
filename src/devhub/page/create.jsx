@@ -96,6 +96,11 @@ const labels = labelStrings.map((s) => {
   return { name: s };
 });
 
+// If the post is created from the community page the label is set by default.
+State.update({
+  labels,
+});
+
 if (state.waitForDraftStateRestore) {
   const draftstatestring = Storage.privateGet(DRAFT_STATE_STORAGE_KEY);
   if (draftstatestring != null) {
