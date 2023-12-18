@@ -31,13 +31,13 @@ npm install
 
 To initiate the development environment, you can use the following script. This script will first check if bos-loader is installed and, if not, install it. Then, it will serve the default development environment and watch for changes inside `./src`.
 
-```zsh
+```sh
 npm run dev
 ```
 
 This runs the bos-loader and the watcher together. You can also run testnet by running:
 
-```zsh
+```sh
 npm run dev:testnet
 ```
 
@@ -45,7 +45,7 @@ While testing the testnet, it's necessary to manually execute the watch script y
 
 Open another terminal and run:
 
-```zsh
+```sh
 npm run watch
 ```
 
