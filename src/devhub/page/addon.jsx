@@ -98,8 +98,7 @@ const checkFullyRefactored = (addon_id) => {
 };
 
 const isFullyRefactored = checkFullyRefactored(addon.addon_id);
-console.log("addonMatch");
-console.log(addonMatch);
+
 return (
   <Container>
     {isFullyRefactored && // Unfully refactored addons have the configurator built in.
