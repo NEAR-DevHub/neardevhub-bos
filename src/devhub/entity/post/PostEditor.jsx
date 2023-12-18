@@ -14,7 +14,7 @@ initState({
   labels,
   // Should be a list of labels as strings.
   // Both of the label structures should be modified together.
-  labelStrings,
+  labelStrings: [],
   postType,
   name: props.name ?? "",
   description:
@@ -226,6 +226,7 @@ const onSubmit = () => {
           keys: [context.accountId + "/index/notify"],
         },
         gas: Big(10).pow(14),
+        deposit: Big(10).pow(22),
       });
     }
     Near.call(txn);
