@@ -1,7 +1,9 @@
 import { test, expect } from "@playwright/test";
 
 test("should load a community page if handle exists", async ({ page }) => {
-  await page.goto("/devhub.near/widget/app?page=community&handle=devhub-test");
+  await page.goto(
+    "/devhub.near/widget/app?page=community&handle=devhub-test"
+  );
 
   // Using the <Link> that wraps the tabs to identify a community page loaded
   const communityTabSelector = `a[href^="/devhub.near/widget/app?page=community&handle=devhub-test&tab="]`;
@@ -20,7 +22,7 @@ test("should load a community page if handle exists", async ({ page }) => {
 
 test("should load an error page if handle does not exist", async ({ page }) => {
   await page.goto(
-    "/devhub.near/widget/app?page=community&handle=devhub-faketest"
+    "/devgovgigs.near/widget/app?page=community&handle=devhub-faketest"
   );
 
   // Using the <Link> that wraps the card to identify a community
@@ -89,7 +91,7 @@ test.describe("Wallet is not connected", () => {
     page,
   }) => {
     await page.goto(
-      "/devhub.near/widget/app?page=community&handle=devhub-test"
+      "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
     );
 
     const createCommunityButtonSelector = 'button:has-text("Post")';
