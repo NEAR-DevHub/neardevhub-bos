@@ -1,9 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("should load a community page if handle exists", async ({ page }) => {
-  await page.goto(
-    "/devhub.near/widget/app?page=community&handle=devhub-test"
-  );
+  await page.goto("/devhub.near/widget/app?page=community&handle=devhub-test");
 
   // Using the <Link> that wraps the tabs to identify a community page loaded
   const communityTabSelector = `a[href^="/devhub.near/widget/app?page=community&handle=devhub-test&tab="]`;
