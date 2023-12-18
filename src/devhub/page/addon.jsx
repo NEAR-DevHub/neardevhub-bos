@@ -68,7 +68,10 @@ if (!getAllAddons || !setCommunityAddon) {
 }
 
 const availableAddons = getAllAddons();
-const addonMatch = availableAddons.find((it) => it.id === addon.addon_id);
+
+const addonMatch = (availableAddons ?? []).find(
+  (it) => it.id === addon.addon_id
+);
 
 if (!addonMatch) {
   return (
