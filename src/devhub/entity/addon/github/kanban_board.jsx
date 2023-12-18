@@ -36,21 +36,12 @@ const withType = (type) => (data) => ({ ...data, type });
 
 const GithubKanbanBoard = ({
   columns,
-  metadata,
   title,
   description,
   repoURL,
   ticketState,
   dataTypesIncluded,
-  configurationControls,
-  isConfiguratorActive,
-  isSynced,
-  link,
-  onCancel,
-  onDelete,
-  onConfigure,
-  onSave,
-  permissions,
+  metadata
 }) => {
   const ticketStateFilter =
     ticketState === "open" || ticketState === "closed" || ticketState === "all"
@@ -102,19 +93,26 @@ const GithubKanbanBoard = ({
     }));
   }
 
-  return widget("entity.layout", {
-    metadata: { title, description },
-    configurationControls,
-    isConfiguratorActive,
-    isSynced,
-    link,
-    onCancel,
-    onConfigure,
-    onDelete,
-    onSave,
-    permissions,
-    children: (
-      <>
+  return (
+    <div>
+      <div className="d-flex flex-column align-items-center gap-2 py-4">
+        <h5 className="h5 d-inline-flex gap-2 m-0">
+          {widget("components.atom.Icon", {
+            type: "bootstrap_icon",
+            variant: "bi-kanban-fill",
+          })}
+
+          <span>{(title?.length ?? 0) > 0 ? title : "Untitled view"}</span>
+        </h5>
+
+        <p className="m-0 py-1 text-secondary text-center">
+          {(description?.length ?? 0) > 0
+            ? description
+            : "No description provided"}
+        </p>
+      </div>
+
+      <div className="d-flex gap-3 w-100" style={{ overflowX: "auto" }}>
         {Object.keys(columns).length === 0 ? (
           <div
             className={[
@@ -126,12 +124,11 @@ const GithubKanbanBoard = ({
             No columns were created so far.
           </div>
         ) : null}
-
         {Object.values(columns).map((column) => {
           const tickets = state.ticketsByColumn[column.id] ?? [];
 
           return (
-            <div className="col-3" key={`column-${column.id}-view`}>
+            <div className="col-4" key={`column-${column.id}-view`}>
               <div className="card rounded-4">
                 <div
                   className={[
@@ -165,9 +162,9 @@ const GithubKanbanBoard = ({
             </div>
           );
         })}
-      </>
-    ),
-  });
+      </div>
+    </div>
+  );
 };
 
 return GithubKanbanBoard(props);

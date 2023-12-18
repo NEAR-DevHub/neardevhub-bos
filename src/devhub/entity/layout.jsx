@@ -73,7 +73,6 @@ const WorkspaceViewLayout = ({
             classNames: {
               root: "btn-sm btn-outline-warning shadow-none border-0",
             },
-
             isHidden: typeof onCancel !== "function" || !isConfiguratorActive,
             label: "Cancel",
             onClick: onCancel,

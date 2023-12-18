@@ -207,6 +207,7 @@ const Configurator = ({
   schema,
   submitIcon,
   submitLabel,
+  hideSubmitBtn,
 }) => {
   const fieldsRender = customFieldsRender || defaultFieldsRender;
 
@@ -276,7 +277,7 @@ const Configurator = ({
           schema,
         })}
       </div>
-      {isActive && (
+      {isActive && !hideSubmitBtn && (
         <div className="d-flex align-items-center justify-content-end gap-3 mt-auto">
           {actionsAdditional ? (
             <div className="me-auto">{actionsAdditional}</div>

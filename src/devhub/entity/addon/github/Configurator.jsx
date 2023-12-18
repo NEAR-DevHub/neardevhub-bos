@@ -16,74 +16,6 @@ withUUIDIndex || (withUUIDIndex = () => {});
 useQuery || (useQuery = () => {});
 updateCommunityGithub || (updateCommunityGithub = () => {});
 
-const useForm = ({ initialValues, stateKey, uninitialized }) => {
-  const initialFormState = {
-    hasUnsubmittedChanges: false,
-    values: initialValues ?? {},
-  };
-
-  const formState = state[stateKey] ?? null,
-    isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
-
-  const formReset = () =>
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
-      [stateKey]: initialFormState,
-      hasUnsubmittedChanges: false,
-    }));
-
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const transformFn = (node) => {
-        if (typeof customFieldUpdate === "function") {
-          return customFieldUpdate({
-            input: fieldInput?.target?.value ?? fieldInput,
-            lastKnownValue: node,
-            params,
-          });
-        } else {
-          return Struct.defaultFieldUpdate({
-            input: fieldInput?.target?.value ?? fieldInput,
-            lastKnownValue: node,
-            params,
-          });
-        }
-      };
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
-        path, // Pass the path directly
-        (node) => transformFn(node)
-      );
-
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
-        [stateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
-          values: updatedValues,
-        },
-      }));
-    };
-
-  if (
-    !uninitialized &&
-    (formState === null || (!formState.hasUnsubmittedChanges && !isSynced))
-  ) {
-    formReset();
-  }
-
-  return {
-    ...(formState ?? initialFormState),
-    isSynced,
-    reset: formReset,
-    stateKey,
-    update: formUpdate,
-  };
-};
-
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
   transition: box-shadow 0.6s;
@@ -120,7 +52,6 @@ const GithubKanbanBoardDefaults = {
   metadata: {
     id: uuid(),
     type: "github.kanban_board",
-
     ticket: {
       type: "github.kanban_ticket",
       features: { id: true, author: true, labels: true, type: true },
@@ -134,60 +65,65 @@ const toMigrated = ({ metadata, id, ...restParams }) => ({
     ...metadata,
     id: id ?? metadata.id,
   },
-
   ...restParams,
 });
 
-const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
-  State.init({
-    editingMode: "form",
-    isActive: false,
-  });
+const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
+  const data = Object.values(kanbanBoards)?.[0];
 
-  const community = useQuery("community", { handle: communityHandle });
+  if (!data) {
+    return (
+      <div class="alert alert-danger" role="alert">
+        Loading...
+      </div>
+    );
+  }
 
-  const data = Object.values(
-    ((community?.data?.github ?? null) === null
-      ? {}
-      : JSON.parse(community.data.github)
-    )?.kanbanBoards ?? {}
-  )[0];
+  const initialFormState = Struct.typeMatch(data) ? toMigrated(data) : {};
+  const [formState, setForm] = useState(initialFormState);
+  const [editingMode, setEditingMode] = useState("form");
+  const [showPreview, setPreview] = useState(false);
 
-  const form = useForm({
-    initialValues: Struct.typeMatch(data) ? toMigrated(data) : {},
-    stateKey: "github-form",
-    uninitialized: !Struct.typeMatch(data),
-  });
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const transformFn = (node) => {
+        if (typeof customFieldUpdate === "function") {
+          return customFieldUpdate({
+            input: fieldInput?.target?.value ?? fieldInput,
+            lastKnownValue: node,
+            params,
+          });
+        } else {
+          return Struct.defaultFieldUpdate({
+            input: fieldInput?.target?.value ?? fieldInput,
+            lastKnownValue: node,
+            params,
+          });
+        }
+      };
+      const updatedValues = Struct.deepFieldUpdate(
+        formState ?? {},
+        path, // Pass the path directly
+        (node) => transformFn(node)
+      );
+      setForm({ ...formState, ...updatedValues });
+    };
 
-  const isViewInitialized = (form.values.metadata.id ?? null) !== null;
+  const formReset = () => {
+    setForm(initialFormState);
+  };
 
-  const formToggle = (forcedState) =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      isActive: forcedState ?? !lastKnownState.isActive,
-    }));
+  const onEditingModeChange = ({ target: { value } }) => setEditingMode(value);
 
-  const onEditingModeChange = ({ target: { value } }) =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      editingMode: value,
-    }));
-
-  const newViewInit = () =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      board: {
-        hasUnsubmittedChanges: false,
-        values: GithubKanbanBoardDefaults,
-      },
-      isActive: true,
-    }));
+  const newViewInit = () => {
+    setForm(GithubKanbanBoardDefaults);
+  };
 
   const columnsCreateNew = ({ lastKnownValue }) =>
     Object.keys(lastKnownValue).length < settings.maxColumnsNumber
       ? {
           ...(lastKnownValue ?? {}),
-
           ...withUUIDIndex({
             description: "",
             labelSearchTerms: [],
@@ -204,49 +140,41 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
       );
 
   const onCancel = () => {
-    form.reset();
-    formToggle(false);
+    formReset();
   };
 
-  const onSave = () =>
-    updateCommunityGithub({
-      handle: communityHandle,
+  const onSave = () => onSubmit(formState);
 
-      github: JSON.stringify({
-        kanbanBoards: { [form.values.metadata.id]: form.values },
-      }),
-    });
-
-  const formElement = isViewInitialized ? (
+  const formElement = (
     <>
       <div className="d-flex flex-column">
         <div className="d-flex gap-1 flex-column flex-xl-row">
           {widget("components.molecule.Input", {
             className: "w-100",
-            key: `${form.values.metadata.id}-repoURL`,
+            key: `${formState.metadata.id}-repoURL`,
             label: "Repository URL",
-            onChange: form.update({ path: ["repoURL"] }),
+            onChange: formUpdate({ path: ["repoURL"] }),
             placeholder: "https://github.com/example-org/example-repo",
-            value: form.values.repoURL,
+            value: formState.repoURL,
           })}
 
           {widget("components.molecule.Input", {
             className: "w-100",
-            key: `${form.values.metadata.id}-title`,
+            key: `${formState.metadata.id}-title`,
             label: "Title",
-            onChange: form.update({ path: ["title"] }),
+            onChange: formUpdate({ path: ["title"] }),
             placeholder: "NEAR Protocol NEPs",
-            value: form.values.title,
+            value: formState.title,
           })}
         </div>
 
         {widget("components.molecule.Input", {
           className: "w-100",
-          key: `${form.values.metadata.id}-description`,
+          key: `${formState.metadata.id}-description`,
           label: "Description",
-          onChange: form.update({ path: ["description"] }),
+          onChange: formUpdate({ path: ["description"] }),
           placeholder: "Latest NEAR Enhancement Proposals by status.",
-          value: form.values.description,
+          value: formState.description,
         })}
       </div>
 
@@ -254,12 +182,13 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
         {widget("components.organism.Configurator", {
           heading: "Ticket types",
           classNames: { root: "col-12 col-md-4 h-auto" },
-          externalState: form.values.dataTypesIncluded,
+          externalState: formState.dataTypesIncluded,
           isActive: true,
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
-          onChange: form.update({ path: ["dataTypesIncluded"] }),
+          onChange: formUpdate({ path: ["dataTypesIncluded"] }),
           schema: GithubKanbanBoardTicketTypesSchema,
+          hideSubmitBtn: true,
         })}
 
         <div
@@ -270,16 +199,16 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
         >
           <span
             className="d-inline-flex gap-2"
-            id={`${form.values.metadata.id}-ticketState`}
+            id={`${formState.metadata.id}-ticketState`}
           >
             <i class="bi bi-cone-striped" />
             <span>Ticket state</span>
           </span>
 
           {widget("components.molecule.Switch", {
-            currentValue: form.values.ticketState,
+            currentValue: formState.ticketState,
             key: "ticketState",
-            onChange: form.update({ path: ["ticketState"] }),
+            onChange: formUpdate({ path: ["ticketState"] }),
 
             options: [
               { label: "All", value: "all" },
@@ -288,16 +217,16 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
             ],
           })}
         </div>
-
         {widget("components.organism.Configurator", {
           heading: "Card fields",
           classNames: { root: "col-12 col-md-4 h-auto" },
-          externalState: form.values.metadata.ticket.features,
+          externalState: formState.metadata.ticket.features,
           isActive: true,
           isEmbedded: true,
           isUnlocked: permissions.can_configure,
-          onChange: form.update({ path: ["metadata", "ticket", "features"] }),
+          onChange: formUpdate({ path: ["metadata", "ticket", "features"] }),
           schema: GithubKanbanBoardTicketFeaturesSchema,
+          hideSubmitBtn: true,
         })}
       </div>
 
@@ -309,7 +238,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
       </div>
 
       <div className="d-flex flex-column align-items-center gap-3 w-100">
-        {Object.values(form.values.columns ?? {}).map(
+        {Object.values(formState.columns ?? {}).map(
           ({ id, description, labelSearchTerms, title }) => (
             <AttractableDiv
               className="d-flex gap-3 rounded-4 border p-3 w-100"
@@ -318,21 +247,21 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
               <div className="d-flex flex-column gap-1 w-100">
                 {widget("components.molecule.Input", {
                   className: "flex-grow-1",
-                  key: `${form.values.metadata.id}-column-${id}-title`,
+                  key: `${formState.metadata.id}-column-${id}-title`,
                   label: "Title",
-                  onChange: form.update({ path: ["columns", id, "title"] }),
+                  onChange: formUpdate({ path: ["columns", id, "title"] }),
                   placeholder: "👀 Review",
                   value: title,
                 })}
 
                 {widget("components.molecule.Input", {
                   format: "comma-separated",
-                  key: `${form.values.metadata.id}-column-${title}-labelSearchTerms`,
+                  key: `${formState.metadata.id}-column-${title}-labelSearchTerms`,
 
                   label: `Search terms for all the labels
 											MUST be presented in included tickets`,
 
-                  onChange: form.update({
+                  onChange: formUpdate({
                     path: ["columns", id, "labelSearchTerms"],
                   }),
 
@@ -342,10 +271,10 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
 
                 {widget("components.molecule.Input", {
                   className: "flex-grow-1",
-                  key: `${form.values.metadata.id}-column-${id}-description`,
+                  key: `${formState.metadata.id}-column-${id}-description`,
                   label: "Description",
 
-                  onChange: form.update({
+                  onChange: formUpdate({
                     path: ["columns", id, "description"],
                   }),
 
@@ -362,7 +291,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
               >
                 <button
                   className="btn btn-outline-danger"
-                  onClick={form.update({
+                  onClick={formUpdate({
                     path: ["columns"],
                     via: columnsDeleteById(id),
                   })}
@@ -380,8 +309,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
             classNames: {
               root: "d-flex btn btn-outline-danger shadow-none border-0",
             },
-
-            isHidden: typeof onCancel !== "function" || !state.isActive,
+            isHidden: typeof onCancel !== "function",
             label: "Cancel",
             onClick: onCancel,
           })}
@@ -397,33 +325,62 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
               height: 14,
             },
 
-            isHidden: typeof onSave !== "function" || !state.isActive,
+            isHidden: typeof onSave !== "function",
             label: "Save",
             onClick: onSave,
           })}
         </div>
       </div>
     </>
-  ) : null;
+  );
 
-  return community.data === null ? (
-    <div class="alert alert-danger" role="alert">
-      {community.isLoading
-        ? "Loading..."
-        : `Community with handle ${communityHandle} not found.`}
-    </div>
-  ) : (
+  return (
     <div
       className="d-flex flex-column gap-4 w-100"
       style={{ maxWidth: "100%" }}
     >
-      {isViewInitialized ? (
-        <div
-          className={[
-            "d-flex flex-column gap-4 w-100",
-            state.isActive ? "" : "d-none",
-          ].join(" ")}
-        >
+      <ul className="nav nav-tabs" id="editPreviewTabs" role="tablist">
+        <li className="nav-item" role="presentation">
+          <button
+            className={`nav-link ${!showPreview ? "active" : ""}`}
+            id="edit-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#edit"
+            type="button"
+            role="tab"
+            aria-controls="edit"
+            aria-selected="true"
+            onClick={() => setPreview(false)}
+          >
+            Edit
+          </button>
+        </li>
+        <li className="nav-item" role="presentation">
+          <button
+            className={`nav-link ${showPreview ? "active" : ""}`}
+            id="preview-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#preview"
+            type="button"
+            role="tab"
+            aria-controls="preview"
+            aria-selected="false"
+            onClick={() => setPreview(true)}
+          >
+            Preview
+          </button>
+        </li>
+      </ul>
+      {showPreview ? (
+        <div>
+          {widget("entity.addon.github.Viewer", {
+            kanbanBoards: {
+              [formState.metadata.id]: formState,
+            },
+          })}
+        </div>
+      ) : (
+        <div className={["d-flex flex-column gap-4 w-100"].join(" ")}>
           <div className="d-flex align-items-center justify-content-between gap-3 w-100">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-gear-wide-connected" />
@@ -431,7 +388,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
             </h5>
 
             {widget("components.molecule.Switch", {
-              currentValue: state.editingMode,
+              currentValue: editingMode,
               isHidden: true,
               key: "editingMode",
               onChange: onEditingModeChange,
@@ -445,7 +402,7 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
             })}
           </div>
 
-          {state.editingMode === "form" ? (
+          {editingMode === "form" ? (
             formElement
           ) : (
             <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
@@ -454,50 +411,46 @@ const GithubViewConfigurator = ({ communityHandle, link, permissions }) => {
                 disabled
                 rows="12"
                 type="text"
-                value={JSON.stringify(form.values ?? {}, null, "\t")}
+                value={JSON.stringify(formState ?? {}, null, "\t")}
               />
             </div>
           )}
-        </div>
-      ) : null}
+          {Object.keys(formState).length > 0 ? (
+            widget(
+              "components.molecule.Button",
+              {
+                classNames: {
+                  root: "btn-sm btn-outline-secondary",
+                },
+                label: "New column",
+                disabled:
+                  Object.keys(formState.columns).length >=
+                  settings.maxColumnsNumber,
+                icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
+                onClick: formUpdate({
+                  path: ["columns"],
+                  via: columnsCreateNew,
+                }),
+              },
+              controlProps.label
+            )
+          ) : (
+            <div
+              className="d-flex flex-column align-items-center justify-content-center gap-4"
+              style={{ height: 384 }}
+            >
+              <h5 className="h5 d-inline-flex gap-2 m-0">
+                This community doesn't have a GitHub board
+              </h5>
 
-      {Object.keys(form.values).length > 0 ? (
-        widget(`entity.addon.${form.values.metadata.type}`, {
-          ...form.values,
-          configurationControls: [
-            {
-              label: "New column",
-              disabled:
-                Object.keys(form.values.columns).length >=
-                settings.maxColumnsNumber,
-              icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
-              onClick: form.update({
-                path: ["columns"],
-                via: columnsCreateNew,
-              }),
-            },
-          ],
-          isConfiguratorActive: state.isActive,
-          isSynced: form.isSynced,
-          link,
-          onConfigure: () => formToggle(true),
-          permissions,
-        })
-      ) : (
-        <div
-          className="d-flex flex-column align-items-center justify-content-center gap-4"
-          style={{ height: 384 }}
-        >
-          <h5 className="h5 d-inline-flex gap-2 m-0">
-            This community doesn't have a GitHub board
-          </h5>
-
-          {widget("components.molecule.Button", {
-            icon: { type: "bootstrap_icon", variant: "bi-github" },
-            isHidden: !permissions.can_configure,
-            label: "Create GitHub board",
-            onClick: newViewInit,
-          })}
+              {widget("components.molecule.Button", {
+                icon: { type: "bootstrap_icon", variant: "bi-github" },
+                isHidden: !permissions.can_configure,
+                label: "Create GitHub board",
+                onClick: newViewInit,
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>

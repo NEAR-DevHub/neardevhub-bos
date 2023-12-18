@@ -4,6 +4,11 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
   position: relative;
+  padding: 0 1rem;
+
+  @media screen and (max-width: 960px) {
+    padding: 0 1rem;
+  }
 `;
 
 const Content = styled.div`
@@ -85,7 +90,7 @@ const [view, setView] = useState(props.view || "viewer");
 const checkFullyRefactored = (addon_id) => {
   switch (addon_id) {
     case "kanban":
-    case "github":
+      // case "github":
       return false;
     default:
       return true;
@@ -95,7 +100,7 @@ const checkFullyRefactored = (addon_id) => {
 const isFullyRefactored = checkFullyRefactored(addon.addon_id);
 
 function updateWidgetEndpoint(widgetSrc) {
-  return widgetSrc.replace("devgovgigs", "devhub");
+  return widgetSrc.replace("devgovgigs.near", "devhub.near");
 }
 
 return (
@@ -119,6 +124,7 @@ return (
         <Widget
           src={updateWidgetEndpoint(addonMatch.configurator_widget)}
           props={{
+            ...config,
             data: config,
             onSubmit: (data) => {
               setCommunityAddon({
