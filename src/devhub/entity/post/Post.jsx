@@ -69,6 +69,40 @@ const childPostIdsUnordered =
     post_id: postId,
   }) ?? [];
 
+const getAllChildrenIds = (postId, limit, count) => {
+  if (count >= limit) {
+    return [];
+  }
+
+  const childPostIdsUnordered =
+    Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids", {
+      post_id: postId,
+    }) ?? [];
+
+  if (childPostIdsUnordered.length === 0) {
+    return [];
+  }
+
+  const childrenIds = childPostIdsUnordered.slice(0, limit - count);
+  const remainingLimit = limit - childrenIds.length;
+
+  const additionalChildrenIds = childrenIds.flatMap((childId) => [
+    childId,
+    ...getAllChildrenIds(childId, remainingLimit, count + 1),
+  ]);
+
+  return additionalChildrenIds;
+};
+
+// TODO replace smartContractAllChildren with 'allChildren' and remove
+// getAllChildrenIds once the contract is up to date
+const smartContractAllChildren =
+  Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids_recursive", {
+    post_id: postId,
+  }) ?? [];
+
+const allChildren = getAllChildrenIds(postId, 99, 0);
+
 const childPostIds = props.isPreview ? [] : childPostIdsUnordered.reverse();
 const expandable = props.isPreview ? false : props.expandable ?? false;
 const defaultExpanded = expandable ? props.defaultExpanded : true;
@@ -423,7 +457,7 @@ const buttonsFooter = props.isPreview ? null : (
               class={`bi bi-chevron-${state.expandReplies ? "up" : "down"}`}
             ></i>{" "}
             {`${state.expandReplies ? "Collapse" : "Expand"} Replies (${
-              childPostIds.length
+              allChildren.length == 99 ? "99+" : allChildren.length
             })`}
           </ButtonWithHover>
         )}
