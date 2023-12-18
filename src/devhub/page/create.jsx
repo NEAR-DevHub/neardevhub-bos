@@ -2,7 +2,7 @@ State.init({
   seekingFunding: false,
   author_id: context.accountId,
   // Should be a list of objects with field "name".
-  labels,
+  labels: [],
   // Should be a list of labels as strings.
   // Both of the label structures should be modified together.
   labelStrings: [],
@@ -94,6 +94,10 @@ const labelStrings = (props.labels ? props.labels.split(",") : []).concat(
 );
 const labels = labelStrings.map((s) => {
   return { name: s };
+});
+
+State.update({
+  labels,
 });
 
 if (state.waitForDraftStateRestore) {
