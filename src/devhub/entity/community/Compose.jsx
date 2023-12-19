@@ -101,6 +101,12 @@ function onPostClick() {
   }
 }
 
+const handleSubmit = () => {
+  const data = composeData();
+  onSubmit(data);
+  onCancel();
+};
+
 function onCommit() {
   State.update({
     image: {},
@@ -461,17 +467,13 @@ return (
         )}
       </button>
 
-      <CommitButton
-        disabled={!state.text}
-        force
-        data={composeData}
-        onCancel={onCancel}
-        onClick={onPostClick}
-        onCommit={onCommit}
+      <button
+        disabled={!state.text && !state.image}
+        onClick={handleSubmit}
         className="commit-post-button"
       >
         Post
-      </CommitButton>
+      </button>
     </Actions>
   </Wrapper>
 );

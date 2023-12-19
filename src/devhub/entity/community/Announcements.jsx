@@ -1,10 +1,12 @@
 const { handle } = props;
 const { Feed } = VM.require("devs.near/widget/Module.Feed");
-const { getCommunity } = VM.require(
+const { getCommunity, addCommunityAnnouncement } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
+
 Feed = Feed || (() => <></>);
 getCommunity = getCommunity || (() => <></>);
+addCommunityAnnouncement = addCommunityAnnouncement || (() => <></>);
 
 const communityData = getCommunity({ handle });
 
@@ -56,17 +58,20 @@ return (
     <Container className="d-flex gap-3 m-3 pl-2">
       <MainContent className="max-width-100">
         <div className="d-flex flex-column gap-4">
-          {context.accountId && (
-            <div className="card p-3">
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
-                props={{
-                  optimisticUpdateFn: () => console.log("commit"),
-                  clearOptimisticUpdateFn: () => console.log("clear"),
-                }}
-              />
-            </div>
-          )}
+          {context.accountId &&
+            (communityData?.admins ?? []).includes(context.accountId) && (
+              <div className="card p-3">
+                <Widget
+                  src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
+                  props={{
+                    optimisticUpdateFn: () => console.log("commit"),
+                    clearOptimisticUpdateFn: () => console.log("clear"),
+                    onSubmit: (v) =>
+                      addCommunityAnnouncement({ handle, data: v }),
+                  }}
+                />
+              </div>
+            )}
           <div className="d-flex flex-wrap justify-content-between">
             <h5>Announcements</h5>
             <div className="d-flex align-items-center gap-2">
@@ -93,19 +98,7 @@ return (
                   options: {
                     limit: 10,
                     order: "desc",
-                    accountId: communityData.accountId,
-                  },
-                  cacheOptions: {
-                    ignoreCache: true,
-                  },
-                },
-                {
-                  action: "repost",
-                  key: "main",
-                  options: {
-                    limit: 10,
-                    order: "desc",
-                    accountId: communityData.accountId,
+                    accountId: [`${handle}.communities.devhub.near`],
                   },
                   cacheOptions: {
                     ignoreCache: true,
