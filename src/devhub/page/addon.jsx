@@ -90,8 +90,9 @@ const ButtonRow = styled.div`
 
 const [view, setView] = useState(props.view || "viewer");
 
+// TODO : remove after contract data change
 function updateWidgetEndpoint(widgetSrc) {
-  widgetSrc.replace("configurator", "Configurator");
+  widgetSrc = widgetSrc.replace("configurator", "Configurator");
   return widgetSrc.replace("devgovgigs.near", "devhub.near");
 }
 
