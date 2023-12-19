@@ -17,3 +17,8 @@ export const waitForSelectorToBeVisible = async (page, selector) => {
     state: "visible",
   });
 };
+
+export const clickWhenSelectorIsVisible = async (page, selector) => {
+  waitForSelectorToBeVisible(page, selector);
+  await page.click(selector);
+};
