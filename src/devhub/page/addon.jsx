@@ -63,6 +63,11 @@ if (!getAllAddons || !setCommunityAddon) {
 }
 
 const availableAddons = getAllAddons();
+
+if (!availableAddons) {
+  return <p>Loading addons...</p>;
+}
+
 const addonMatch = availableAddons.find((it) => it.id === addon.addon_id);
 
 if (!addonMatch) {
