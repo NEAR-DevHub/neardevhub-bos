@@ -226,6 +226,7 @@ const onSubmit = () => {
           keys: [context.accountId + "/index/notify"],
         },
         gas: Big(10).pow(14),
+        deposit: Big(10).pow(22),
       });
     }
     Near.call(txn);

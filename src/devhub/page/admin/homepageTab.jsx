@@ -11,7 +11,8 @@ const { Tile } =
 if (
   !getFeaturedCommunities ||
   !setFeaturedCommunities ||
-  !getAllCommunitiesMetadata
+  !getAllCommunitiesMetadata ||
+  !Tile
 ) {
   return <p>Loading modules...</p>;
 }
