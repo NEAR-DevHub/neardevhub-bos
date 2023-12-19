@@ -51,23 +51,25 @@ test.describe("Wallet is connected", () => {
 
     await page.getByRole("tab", { name: "Moderators" }).click();
     await page.getByTestId("edit-members").click();
-    await page.locator("div:nth-child(9)").click();
+    await page.locator("div:nth-child(3) > div:nth-child(7)").click();
     await page
       .locator(
-        "div:nth-child(9) > div > .d-flex > .input-group > .form-control"
+        "div:nth-child(7) > div > .d-flex > .input-group > .form-control"
       )
       .click();
     await page
       .locator(
-        "div:nth-child(9) > div > .d-flex > .input-group > .form-control"
+        "div:nth-child(7) > div > .d-flex > .input-group > .form-control"
       )
-      .fill("thomasguntenaar.near");
+      .fill("test.near");
     await page.getByRole("button", { name: "" }).click();
     await page.getByRole("button", { name: " Submit" }).click();
-    await page.getByText("Close").click();
-    await page.getByRole("button", { name: "Cancel" }).click();
-    await page.getByTestId("edit-members").click();
-    await page.locator("div:nth-child(9)").click();
+    await page.getByRole("button", { name: "Confirm" }).click();
+    await page.getByLabel("Close").click();
+    await page.locator("div:nth-child(3) > div:nth-child(7) > .btn").click();
+    await page.getByRole("button", { name: " Submit" }).click();
+    await page.getByRole("button", { name: "Confirm" }).click();
+    await page.getByLabel("Close").click();
     await page.getByTestId("edit-members").click();
   });
 
