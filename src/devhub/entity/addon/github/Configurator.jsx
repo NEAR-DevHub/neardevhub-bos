@@ -108,8 +108,8 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
       );
       setForm((prevFormState) => ({
         ...prevFormState,
-        ...updatedValues
-      }))
+        ...updatedValues,
+      }));
     };
 
   const formReset = () => {
