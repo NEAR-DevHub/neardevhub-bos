@@ -4,6 +4,9 @@ if (!props.type) {
   return "Loading ...";
 }
 
+/**
+ *  props.post_type = "comment" | "idea" | "solution" | "attestation" | "sponsorship" | "blog"
+ */
 const type = props.type.split("/")[1];
 return props.type ? (
   <>
@@ -15,13 +18,13 @@ return props.type ? (
       ? "edited your"
       : type == "mention"
       ? "mentioned you in their"
-      : "???"}{" "}
+      : props.post_type}
     <a
       className="fw-bold text-muted"
       href={href({
         widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: {
-          page: "post",
+          page: props.post_type == "blog" ? "blog" : "post",
           id: props.post,
         },
       })}
