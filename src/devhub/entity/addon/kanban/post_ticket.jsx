@@ -1,11 +1,9 @@
-const { widget, href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const { getPost } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 getPost || (getPost = () => {});
 href || (href = () => {});
-
-widget || (widget = () => {});
 
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -107,10 +105,13 @@ const KanbanPostTicket = ({ metadata }) => {
       <div className="card-footer d-flex justify-content-between gap-3">
         {features.like_count ? (
           <span>
-            {widget("components.atom.Icon", {
-              type: "bootstrap_icon",
-              variant: "bi-heart-fill",
-            })}
+            <Widget
+              src={`${REPL_DEVHUB}/widget/devhub.components.atom.Icon`}
+              props={{
+                type: "bootstrap_icon",
+                variant: "bi-heart-fill",
+              }}
+            />
 
             {data.likes.length}
           </span>
@@ -118,10 +119,13 @@ const KanbanPostTicket = ({ metadata }) => {
 
         {features.reply_count ? (
           <span>
-            {widget("components.atom.Icon", {
-              type: "bootstrap_icon",
-              variant: "bi-comment",
-            })}
+            <Widget
+              src={`${REPL_DEVHUB}/widget/devhub.components.atom.Icon`}
+              props={{
+                type: "bootstrap_icon",
+                ariant: "bi-comment",
+              }}
+            />
 
             {data.comments.length}
           </span>
@@ -174,10 +178,13 @@ const KanbanPostTicket = ({ metadata }) => {
 
         {features.sponsorship_request_indicator ? (
           <span className="d-flex gap-2">
-            {widget("components.atom.Icon", {
-              type: "bootstrap_icon",
-              variant: "bi-cash",
-            })}
+            <Widget
+              src={`${REPL_DEVHUB}/widget/devhub.components.atom.Icon`}
+              props={{
+                type: "bootstrap_icon",
+                variant: "bi-cash",
+              }}
+            />
 
             <span>Funding requested</span>
           </span>

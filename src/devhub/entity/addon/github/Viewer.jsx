@@ -1,5 +1,4 @@
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
-const { widget } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const { useQuery } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
@@ -7,7 +6,6 @@ const { useQuery } = VM.require(
 useQuery || (useQuery = () => {});
 
 href || (href = () => {});
-widget || (widget = () => {});
 const { kanbanBoards, handle, permissions } = props;
 
 if (!kanbanBoards) {
@@ -16,16 +14,14 @@ if (!kanbanBoards) {
 
 const data = Object.values(kanbanBoards)?.[0];
 
-const [isEditScreenActive, setEditScreenActive] = useState(true);
-
-return widget(`entity.addon.${data.metadata.type}`, {
-  ...data,
-  isConfiguratorActive: false,
-  isSynced: true,
-  link: href({
-    widgetSrc: "${REPL_DEVHUB}/widget/app",
-    params: { page: "community", handle },
-  }),
-  onConfigure: () => setEditScreenActive(!isEditScreenActive),
-  permissions,
-});
+return (
+  <Widget
+    src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${data.metadata.type}`}
+    props={{
+      ...data,
+      isConfiguratorActive: false,
+      isSynced: true,
+      permissions,
+    }}
+  />
+);

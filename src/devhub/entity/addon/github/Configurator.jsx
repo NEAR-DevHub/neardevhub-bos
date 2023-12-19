@@ -1,4 +1,3 @@
-const { widget } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 
 if (!Struct) {
@@ -47,7 +46,6 @@ const GithubKanbanBoardDefaults = {
   repoURL: "",
   ticketState: "all",
   title: "",
-
   metadata: {
     id: uuid(),
     type: "github.kanban_board",
@@ -103,7 +101,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
       };
       const updatedValues = Struct.deepFieldUpdate(
         formState ?? {},
-        path, // Pass the path directly
+        path,
         (node) => transformFn(node)
       );
       setForm((prevFormState) => ({
@@ -151,47 +149,58 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
     <>
       <div className="d-flex flex-column">
         <div className="d-flex gap-1 flex-column flex-xl-row">
-          {widget("components.molecule.Input", {
-            className: "w-100",
-            key: `${formState.metadata.id}-repoURL`,
-            label: "Repository URL",
-            onChange: formUpdate({ path: ["repoURL"] }),
-            placeholder: "https://github.com/example-org/example-repo",
-            value: formState.repoURL,
-          })}
-
-          {widget("components.molecule.Input", {
-            className: "w-100",
-            key: `${formState.metadata.id}-title`,
-            label: "Title",
-            onChange: formUpdate({ path: ["title"] }),
-            placeholder: "NEAR Protocol NEPs",
-            value: formState.title,
-          })}
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+            props={{
+              className: "w-100",
+              key: `${formState.metadata.id}-repoURL`,
+              label: "Repository URL",
+              onChange: formUpdate({ path: ["repoURL"] }),
+              placeholder: "https://github.com/example-org/example-repo",
+              value: formState.repoURL,
+            }}
+          />
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+            props={{
+              className: "w-100",
+              key: `${formState.metadata.id}-title`,
+              label: "Title",
+              onChange: formUpdate({ path: ["title"] }),
+              placeholder: "NEAR Protocol NEPs",
+              value: formState.title,
+            }}
+          />
         </div>
 
-        {widget("components.molecule.Input", {
-          className: "w-100",
-          key: `${formState.metadata.id}-description`,
-          label: "Description",
-          onChange: formUpdate({ path: ["description"] }),
-          placeholder: "Latest NEAR Enhancement Proposals by status.",
-          value: formState.description,
-        })}
+        <Widget
+          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+          props={{
+            className: "w-100",
+            key: `${formState.metadata.id}-description`,
+            label: "Description",
+            onChange: formUpdate({ path: ["description"] }),
+            placeholder: "Latest NEAR Enhancement Proposals by status.",
+            value: formState.description,
+          }}
+        />
       </div>
 
       <div className="d-flex gap-4 flex-row flex-wrap justify-content-between">
-        {widget("components.organism.Configurator", {
-          heading: "Ticket types",
-          classNames: { root: "col-12 col-md-4 h-auto" },
-          externalState: formState.dataTypesIncluded,
-          isActive: true,
-          isEmbedded: true,
-          isUnlocked: permissions.can_configure,
-          onChange: formUpdate({ path: ["dataTypesIncluded"] }),
-          schema: GithubKanbanBoardTicketTypesSchema,
-          hideSubmitBtn: true,
-        })}
+        <Widget
+          src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+          props={{
+            heading: "Ticket types",
+            classNames: { root: "col-12 col-md-4 h-auto" },
+            externalState: formState.dataTypesIncluded,
+            isActive: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onChange: formUpdate({ path: ["dataTypesIncluded"] }),
+            schema: GithubKanbanBoardTicketTypesSchema,
+            hideSubmitBtn: true,
+          }}
+        />
 
         <div
           className={[
@@ -206,30 +215,35 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
             <i class="bi bi-cone-striped" />
             <span>Ticket state</span>
           </span>
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Switch`}
+            props={{
+              currentValue: formState.ticketState,
+              key: "ticketState",
+              onChange: formUpdate({ path: ["ticketState"] }),
 
-          {widget("components.molecule.Switch", {
-            currentValue: formState.ticketState,
-            key: "ticketState",
-            onChange: formUpdate({ path: ["ticketState"] }),
-
-            options: [
-              { label: "All", value: "all" },
-              { label: "Open", value: "open" },
-              { label: "Closed", value: "closed" },
-            ],
-          })}
+              options: [
+                { label: "All", value: "all" },
+                { label: "Open", value: "open" },
+                { label: "Closed", value: "closed" },
+              ],
+            }}
+          />
         </div>
-        {widget("components.organism.Configurator", {
-          heading: "Card fields",
-          classNames: { root: "col-12 col-md-4 h-auto" },
-          externalState: formState.metadata.ticket.features,
-          isActive: true,
-          isEmbedded: true,
-          isUnlocked: permissions.can_configure,
-          onChange: formUpdate({ path: ["metadata", "ticket", "features"] }),
-          schema: GithubKanbanBoardTicketFeaturesSchema,
-          hideSubmitBtn: true,
-        })}
+        <Widget
+          src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+          props={{
+            heading: "Card fields",
+            classNames: { root: "col-12 col-md-4 h-auto" },
+            externalState: formState.metadata.ticket.features,
+            isActive: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onChange: formUpdate({ path: ["metadata", "ticket", "features"] }),
+            schema: GithubKanbanBoardTicketFeaturesSchema,
+            hideSubmitBtn: true,
+          }}
+        />
       </div>
 
       <div className="d-flex align-items-center justify-content-between">
@@ -247,44 +261,51 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
               key={`column-${id}-configurator`}
             >
               <div className="d-flex flex-column gap-1 w-100">
-                {widget("components.molecule.Input", {
-                  className: "flex-grow-1",
-                  key: `${formState.metadata.id}-column-${id}-title`,
-                  label: "Title",
-                  onChange: formUpdate({ path: ["columns", id, "title"] }),
-                  placeholder: "👀 Review",
-                  value: title,
-                })}
+                <Widget
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+                  props={{
+                    className: "flex-grow-1",
+                    key: `${formState.metadata.id}-column-${id}-title`,
+                    label: "Title",
+                    onChange: formUpdate({ path: ["columns", id, "title"] }),
+                    placeholder: "👀 Review",
+                    value: title,
+                  }}
+                />
+                <Widget
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+                  props={{
+                    format: "comma-separated",
+                    key: `${formState.metadata.id}-column-${title}-labelSearchTerms`,
 
-                {widget("components.molecule.Input", {
-                  format: "comma-separated",
-                  key: `${formState.metadata.id}-column-${title}-labelSearchTerms`,
-
-                  label: `Search terms for all the labels
+                    label: `Search terms for all the labels
 											MUST be presented in included tickets`,
 
-                  onChange: formUpdate({
-                    path: ["columns", id, "labelSearchTerms"],
-                  }),
+                    onChange: formUpdate({
+                      path: ["columns", id, "labelSearchTerms"],
+                    }),
 
-                  placeholder: "WG-, draft, review, proposal, ...",
-                  value: labelSearchTerms.join(", "),
-                })}
+                    placeholder: "WG-, draft, review, proposal, ...",
+                    value: labelSearchTerms.join(", "),
+                  }}
+                />
+                <Widget
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+                  props={{
+                    className: "flex-grow-1",
+                    key: `${formState.metadata.id}-column-${id}-description`,
+                    label: "Description",
 
-                {widget("components.molecule.Input", {
-                  className: "flex-grow-1",
-                  key: `${formState.metadata.id}-column-${id}-description`,
-                  label: "Description",
+                    onChange: formUpdate({
+                      path: ["columns", id, "description"],
+                    }),
 
-                  onChange: formUpdate({
-                    path: ["columns", id, "description"],
-                  }),
+                    placeholder:
+                      "NEPs that need a review by Subject Matter Experts.",
 
-                  placeholder:
-                    "NEPs that need a review by Subject Matter Experts.",
-
-                  value: description,
-                })}
+                    value: description,
+                  }}
+                />
               </div>
 
               <div
@@ -307,30 +328,35 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
         )}
 
         <div className="d-flex gap-3 justify-content-end w-100">
-          {widget("components.molecule.Button", {
-            classNames: {
-              root: "d-flex btn btn-outline-danger shadow-none border-0",
-            },
-            isHidden: typeof onCancel !== "function",
-            label: "Cancel",
-            onClick: onCancel,
-          })}
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+            props={{
+              classNames: {
+                root: "d-flex btn btn-outline-danger shadow-none border-0",
+              },
+              isHidden: typeof onCancel !== "function",
+              label: "Cancel",
+              onClick: onCancel,
+            }}
+          />
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+            props={{
+              classNames: { root: "btn btn-success" },
+              disabled: form.isSynced,
 
-          {widget("components.molecule.Button", {
-            classNames: { root: "btn btn-success" },
-            disabled: form.isSynced,
+              icon: {
+                type: "svg_icon",
+                variant: "floppy_drive",
+                width: 14,
+                height: 14,
+              },
 
-            icon: {
-              type: "svg_icon",
-              variant: "floppy_drive",
-              width: 14,
-              height: 14,
-            },
-
-            isHidden: typeof onSave !== "function",
-            label: "Save",
-            onClick: onSave,
-          })}
+              isHidden: typeof onSave !== "function",
+              label: "Save",
+              onClick: onSave,
+            }}
+          />
         </div>
       </div>
     </>
@@ -375,11 +401,14 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
       </ul>
       {showPreview ? (
         <div>
-          {widget("entity.addon.github.Viewer", {
-            kanbanBoards: {
-              [formState.metadata.id]: formState,
-            },
-          })}
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.entity.addon.github.Viewer`}
+            props={{
+              kanbanBoards: {
+                [formState.metadata.id]: formState,
+              },
+            }}
+          />
         </div>
       ) : (
         <div className={["d-flex flex-column gap-4 w-100"].join(" ")}>
@@ -388,55 +417,58 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
               <i className="bi bi-gear-wide-connected" />
               <span>GitHub board configuration</span>
             </h5>
-
-            {widget("components.molecule.Switch", {
-              currentValue: editingMode,
-              isHidden: true,
-              key: "editingMode",
-              onChange: onEditingModeChange,
-
-              options: [
-                { label: "Form", value: "form" },
-                { label: "JSON", value: "JSON" },
-              ],
-
-              title: "Editing mode selection",
-            })}
+            <Widget
+              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Switch`}
+              props={{
+                currentValue: editingMode,
+                key: "editingMode",
+                onChange: onEditingModeChange,
+                options: [
+                  { label: "Form", value: "form" },
+                  { label: "JSON", value: "JSON" },
+                ],
+                title: "Editing mode selection",
+              }}
+            />
           </div>
-
-          {editingMode === "form" ? (
-            formElement
-          ) : (
-            <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
-              <textarea
-                className="form-control"
-                disabled
-                rows="12"
-                type="text"
-                value={JSON.stringify(formState ?? {}, null, "\t")}
-              />
-            </div>
+          {Object.keys(formState).length > 0 && (
+            <>
+              {editingMode === "form" ? (
+                <div>
+                  {formElement}
+                  <Widget
+                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                    props={{
+                      classNames: {
+                        root: "btn-sm btn-outline-secondary",
+                      },
+                      label: "New column",
+                      disabled:
+                        Object.keys(formState.columns).length >=
+                        settings.maxColumnsNumber,
+                      icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
+                      onClick: formUpdate({
+                        path: ["columns"],
+                        via: columnsCreateNew,
+                      }),
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
+                  <textarea
+                    className="form-control"
+                    disabled
+                    rows="12"
+                    type="text"
+                    value={JSON.stringify(formState ?? {}, null, "\t")}
+                  />
+                </div>
+              )}
+            </>
           )}
-          {Object.keys(formState).length > 0 ? (
-            widget(
-              "components.molecule.Button",
-              {
-                classNames: {
-                  root: "btn-sm btn-outline-secondary",
-                },
-                label: "New column",
-                disabled:
-                  Object.keys(formState.columns).length >=
-                  settings.maxColumnsNumber,
-                icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
-                onClick: formUpdate({
-                  path: ["columns"],
-                  via: columnsCreateNew,
-                }),
-              },
-              controlProps.label
-            )
-          ) : (
+
+          {!Object.keys(formState).length && (
             <div
               className="d-flex flex-column align-items-center justify-content-center gap-4"
               style={{ height: 384 }}
@@ -444,13 +476,15 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
               <h5 className="h5 d-inline-flex gap-2 m-0">
                 This community doesn't have a GitHub board
               </h5>
-
-              {widget("components.molecule.Button", {
-                icon: { type: "bootstrap_icon", variant: "bi-github" },
-                isHidden: !permissions.can_configure,
-                label: "Create GitHub board",
-                onClick: newViewInit,
-              })}
+              <Widget
+                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                props={{
+                  icon: { type: "bootstrap_icon", variant: "bi-github" },
+                  isHidden: !permissions.can_configure,
+                  label: "Create GitHub board",
+                  onClick: newViewInit,
+                }}
+              />
             </div>
           )}
         </div>

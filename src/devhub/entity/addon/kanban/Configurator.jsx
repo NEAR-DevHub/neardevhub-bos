@@ -1,10 +1,9 @@
-const { widget } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 
 if (!Struct) {
   return <p>Loading modules...</p>;
 }
-const { updateCommunityBoard, useQuery } = VM.require(
+const { useQuery } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 const { uuid, withUUIDIndex } = VM.require(
@@ -14,75 +13,6 @@ const { uuid, withUUIDIndex } = VM.require(
 uuid || (uuid = () => {});
 withUUIDIndex || (withUUIDIndex = () => {});
 useQuery || (useQuery = () => {});
-updateCommunityBoard || (updateCommunityBoard = () => {});
-
-const useForm = ({ initialValues, stateKey, uninitialized }) => {
-  const initialFormState = {
-    hasUnsubmittedChanges: false,
-    values: initialValues ?? {},
-  };
-
-  const formState = state[stateKey] ?? null,
-    isSynced = Struct.isEqual(formState?.values ?? {}, initialFormState.values);
-
-  const formReset = () =>
-    State.update((lastKnownComponentState) => ({
-      ...lastKnownComponentState,
-      [stateKey]: initialFormState,
-      hasUnsubmittedChanges: false,
-    }));
-
-  const formUpdate =
-    ({ path, via: customFieldUpdate, ...params }) =>
-    (fieldInput) => {
-      const transformFn = (node) => {
-        if (typeof customFieldUpdate === "function") {
-          return customFieldUpdate({
-            input: fieldInput?.target?.value ?? fieldInput,
-            lastKnownValue: node,
-            params,
-          });
-        } else {
-          return Struct.defaultFieldUpdate({
-            input: fieldInput?.target?.value ?? fieldInput,
-            lastKnownValue: node,
-            params,
-          });
-        }
-      };
-      const updatedValues = Struct.deepFieldUpdate(
-        formState?.values ?? {},
-        path,
-        (node) => transformFn(node)
-      );
-
-      State.update((lastKnownComponentState) => ({
-        ...lastKnownComponentState,
-        [stateKey]: {
-          hasUnsubmittedChanges: !Struct.isEqual(
-            updatedValues,
-            initialFormState.values
-          ),
-          values: updatedValues,
-        },
-      }));
-    };
-
-  if (
-    !uninitialized &&
-    (formState === null || (!formState.hasUnsubmittedChanges && !isSynced))
-  ) {
-    formReset();
-  }
-
-  return {
-    ...(formState ?? initialFormState),
-    isSynced,
-    reset: formReset,
-    stateKey,
-    update: formUpdate,
-  };
-};
 
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -144,10 +74,8 @@ const KanbanPostBoardDefaults = {
     type: "kanban.post_board",
     title: "",
     description: "",
-
     ticket: {
       type: "kanban.post_ticket",
-
       features: {
         author: true,
         like_count: true,
@@ -162,7 +90,6 @@ const KanbanPostBoardDefaults = {
       },
     },
   },
-
   payload: {
     columns: {},
     tags: { excluded: [], required: [] },
@@ -173,18 +100,15 @@ const toMigrated = ({ config, metadata, payload }) => ({
   metadata: {
     ...KanbanPostBoardDefaults.metadata,
     ...metadata,
-
     ticket: {
       ...KanbanPostBoardDefaults.metadata.ticket,
       ...metadata.ticket,
-
       features: {
         ...KanbanPostBoardDefaults.metadata.ticket.features,
         ...metadata.ticket.features,
       },
     },
   },
-
   payload: {
     ...KanbanPostBoardDefaults.payload,
     ...payload,
@@ -192,54 +116,61 @@ const toMigrated = ({ config, metadata, payload }) => ({
   },
 });
 
-const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
-  State.init({
-    editingMode: "form",
-    isActive: false,
-  });
+const KanbanViewConfigurator = ({ data, permissions, onSubmit }) => {
+  if (!data) {
+    return (
+      <div class="alert alert-danger" role="alert">
+        Loading...
+      </div>
+    );
+  }
+  const initialFormState = Struct.pick(
+    data.metadata === undefined ? {} : toMigrated(data),
+    ["metadata", "payload"]
+  );
 
-  const community = useQuery("community", { handle: communityHandle });
+  const [formState, setForm] = useState(initialFormState);
+  const [editingMode, setEditingMode] = useState("form");
+  const [showPreview, setPreview] = useState(false);
 
-  const data =
-    (community.data?.board ?? null) === null
-      ? {}
-      : JSON.parse(community.data.board);
+  const formUpdate =
+    ({ path, via: customFieldUpdate, ...params }) =>
+    (fieldInput) => {
+      const transformFn = (node) => {
+        if (typeof customFieldUpdate === "function") {
+          return customFieldUpdate({
+            input: fieldInput?.target?.value ?? fieldInput,
+            lastKnownValue: node,
+            params,
+          });
+        } else {
+          return Struct.defaultFieldUpdate({
+            input: fieldInput?.target?.value ?? fieldInput,
+            lastKnownValue: node,
+            params,
+          });
+        }
+      };
+      const updatedValues = Struct.deepFieldUpdate(
+        formState ?? {},
+        path,
+        (node) => transformFn(node)
+      );
+      setForm((prevFormState) => ({
+        ...prevFormState,
+        ...updatedValues,
+      }));
+    };
 
-  const form = useForm({
-    initialValues: Struct.pick(
-      data.metadata === undefined ? {} : toMigrated(data),
-      ["metadata", "payload"]
-    ),
+  const formReset = () => {
+    setForm(initialFormState);
+  };
 
-    stateKey: "kanban-view",
-    uninitialized: (data.metadata ?? null) === null,
-  });
+  const editingModeSwitch = ({ target: { value } }) => setEditingMode(value);
 
-  const isViewInitialized = Object.keys(form.values.metadata ?? {}).length > 0;
-
-  const formToggle = (forcedState) =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      isActive: forcedState ?? !lastKnownState.isActive,
-    }));
-
-  const editingModeSwitch = ({ target: { value } }) =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      editingMode: value,
-    }));
-
-  const newViewInit = () =>
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-
-      [form.stateKey]: {
-        hasUnsubmittedChanges: false,
-        values: KanbanPostBoardDefaults,
-      },
-
-      isActive: true,
-    }));
+  const newViewInit = () => {
+    setForm(GithubKanbanBoardDefaults);
+  };
 
   const columnsCreateNew = ({ lastKnownValue }) =>
     Object.keys(lastKnownValue).length < settings.maxColumnsNumber
@@ -257,55 +188,57 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       );
 
   const onCancel = () => {
-    form.reset();
-    formToggle(false);
+    formReset();
   };
 
-  const onSave = () =>
-    updateCommunityBoard({
-      handle: communityHandle,
-      board: JSON.stringify(form.values),
-    });
+  const onSave = () => onSubmit(formState);
 
-  const viewDelete = () =>
-    updateCommunityBoard({ handle: communityHandle, board: null });
-
-  const formElement = isViewInitialized ? (
+  const formElement = (
     <>
       <div className="d-flex flex-column flex-lg-row align-items-stretch gap-4 w-100">
         <div className="d-flex flex-column gap-4 w-100">
-          {widget("components.organism.Configurator", {
-            heading: "Basic information",
-            externalState: form.values.metadata,
-            isActive: true,
-            isEmbedded: true,
-            isUnlocked: permissions.can_configure,
-            onChange: form.update({ path: ["metadata"] }),
-            schema: KanbanPostBoardBasicInfoSchema,
-          })}
-
-          {widget("components.organism.Configurator", {
-            heading: "Tags",
-            externalState: form.values.payload.tags,
-            isActive: true,
-            isEmbedded: true,
-            isUnlocked: permissions.can_configure,
-            onChange: form.update({ path: ["payload", "tags"] }),
-            schema: KanbanPostBoardTagsSchema,
-          })}
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+            props={{
+              heading: "Basic information",
+              externalState: formState.metadata,
+              isActive: true,
+              isEmbedded: true,
+              isUnlocked: permissions.can_configure,
+              onChange: formUpdate({ path: ["metadata"] }),
+              schema: KanbanPostBoardBasicInfoSchema,
+              hideSubmitBtn: true,
+            }}
+          />
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+            props={{
+              heading: "Tags",
+              externalState: formState.payload.tags,
+              isActive: true,
+              isEmbedded: true,
+              isUnlocked: permissions.can_configure,
+              onChange: formUpdate({ path: ["payload", "tags"] }),
+              schema: KanbanPostBoardTagsSchema,
+              hideSubmitBtn: true,
+            }}
+          />
         </div>
-
-        {widget("components.organism.Configurator", {
-          heading: "Card fields",
-          classNames: { root: "w-auto h-auto" },
-          externalState: form.values.metadata.ticket.features,
-          isActive: true,
-          isEmbedded: true,
-          isUnlocked: permissions.can_configure,
-          onChange: form.update({ path: ["metadata", "ticket", "features"] }),
-          schema: KanbanPostBoardTicketFeaturesSchema,
-          style: { minWidth: "36%" },
-        })}
+        <Widget
+          src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+          props={{
+            heading: "Card fields",
+            classNames: { root: "w-auto h-auto" },
+            externalState: formState.metadata.ticket.features,
+            isActive: true,
+            isEmbedded: true,
+            isUnlocked: permissions.can_configure,
+            onChange: formUpdate({ path: ["metadata", "ticket", "features"] }),
+            schema: KanbanPostBoardTicketFeaturesSchema,
+            style: { minWidth: "36%" },
+            hideSubmitBtn: true,
+          }}
+        />
       </div>
 
       <div className="d-flex align-items-center justify-content-between w-100">
@@ -316,50 +249,51 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
       </div>
 
       <div className="d-flex flex-column align-items-center gap-3 w-100">
-        {Object.values(form.values.payload.columns ?? {}).map(
+        {Object.values(formState.payload.columns ?? {}).map(
           ({ id, description, tag, title }) => (
             <AttractableDiv
               className="d-flex gap-3 rounded-4 border p-3 w-100"
               key={`column-${id}-configurator`}
             >
               <div className="d-flex flex-column gap-1 w-100">
-                {widget("components.molecule.Input", {
-                  className: "flex-grow-1",
-                  key: `column-${id}-title`,
-                  label: "Column title",
-
-                  onChange: form.update({
-                    path: ["payload", "columns", id, "title"],
-                  }),
-
-                  placeholder: "Enter column title.",
-                  value: title,
-                })}
-
-                {widget("components.molecule.Input", {
-                  className: "flex-grow-1",
-                  key: `column-${id}-description`,
-                  label: "Description",
-
-                  onChange: form.update({
-                    path: ["payload", "columns", id, "description"],
-                  }),
-
-                  placeholder: "Enter a brief description of the column.",
-                  value: description,
-                })}
-
-                {widget("components.molecule.Input", {
-                  key: `kanban-view-column-${id}-tag`,
-                  label: "Enter a single tag to show posts in this column",
-
-                  onChange: form.update({
-                    path: ["payload", "columns", id, "tag"],
-                  }),
-
-                  placeholder: "Tag-Name",
-                  value: tag,
-                })}
+                <Widget
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+                  props={{
+                    className: "flex-grow-1",
+                    key: `column-${id}-title`,
+                    label: "Column title",
+                    onChange: formUpdate({
+                      path: ["payload", "columns", id, "title"],
+                    }),
+                    placeholder: "Enter column title.",
+                    value: title,
+                  }}
+                />
+                <Widget
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+                  props={{
+                    className: "flex-grow-1",
+                    key: `column-${id}-description`,
+                    label: "Description",
+                    onChange: formUpdate({
+                      path: ["payload", "columns", id, "description"],
+                    }),
+                    placeholder: "Enter a brief description of the column.",
+                    value: description,
+                  }}
+                />
+                <Widget
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+                  props={{
+                    key: `kanban-view-column-${id}-tag`,
+                    label: "Enter a single tag to show posts in this column",
+                    onChange: formUpdate({
+                      path: ["payload", "columns", id, "tag"],
+                    }),
+                    placeholder: "Tag-Name",
+                    value: tag,
+                  }}
+                />
               </div>
 
               <div
@@ -368,7 +302,7 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
               >
                 <button
                   className="btn btn-outline-danger"
-                  onClick={form.update({
+                  onClick={formUpdate({
                     path: ["payload", "columns"],
                     via: columnsDeleteById(id),
                   })}
@@ -382,120 +316,144 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
         )}
 
         <div className="d-flex gap-3 justify-content-end w-100">
-          {widget("components.molecule.Button", {
-            classNames: {
-              root: "d-flex btn btn-outline-danger shadow-none border-0",
-            },
-
-            isHidden: typeof onCancel !== "function" || !state.isActive,
-            label: "Cancel",
-            onClick: onCancel,
-          })}
-
-          {widget("components.molecule.Button", {
-            classNames: { root: "btn btn-success" },
-            disabled: form.isSynced,
-
-            icon: {
-              type: "svg_icon",
-              variant: "floppy_drive",
-              width: 14,
-              height: 14,
-            },
-
-            isHidden: typeof onSave !== "function" || !state.isActive,
-            label: "Save",
-            onClick: onSave,
-          })}
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+            props={{
+              classNames: {
+                root: "d-flex btn btn-outline-danger shadow-none border-0",
+              },
+              isHidden: typeof onCancel !== "function",
+              label: "Cancel",
+              onClick: onCancel,
+            }}
+          />
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+            props={{
+              classNames: { root: "btn btn-success" },
+              disabled: form.isSynced,
+              icon: {
+                type: "svg_icon",
+                variant: "floppy_drive",
+                width: 14,
+                height: 14,
+              },
+              isHidden: typeof onSave !== "function",
+              label: "Save",
+              onClick: onSave,
+            }}
+          />
         </div>
       </div>
     </>
-  ) : null;
+  );
 
-  return !isViewInitialized && community.data === null ? (
-    <div class="alert alert-danger" role="alert">
-      {community.isLoading
-        ? "Loading..."
-        : `Community with handle ${communityHandle} not found.`}
-    </div>
-  ) : (
+  return (
     <div
       className="d-flex flex-column gap-4 w-100"
       style={{ maxWidth: "100%" }}
     >
-      {isViewInitialized ? (
-        <div
-          className={[
-            "d-flex flex-column gap-4 w-100",
-            state.isActive ? "" : "d-none",
-          ].join(" ")}
-        >
+      <ul className="nav nav-tabs" id="editPreviewTabs" role="tablist">
+        <li className="nav-item" role="presentation">
+          <button
+            className={`nav-link ${!showPreview ? "active" : ""}`}
+            id="edit-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#edit"
+            type="button"
+            role="tab"
+            aria-controls="edit"
+            aria-selected="true"
+            onClick={() => setPreview(false)}
+          >
+            Edit
+          </button>
+        </li>
+        <li className="nav-item" role="presentation">
+          <button
+            className={`nav-link ${showPreview ? "active" : ""}`}
+            id="preview-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#preview"
+            type="button"
+            role="tab"
+            aria-controls="preview"
+            aria-selected="false"
+            onClick={() => setPreview(true)}
+          >
+            Preview
+          </button>
+        </li>
+      </ul>
+      {showPreview ? (
+        <div>
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Viewer`}
+            props={{
+              data: formState,
+            }}
+          />
+        </div>
+      ) : (
+        <div className={["d-flex flex-column gap-4 w-100"].join(" ")}>
           <div className="d-flex align-items-center justify-content-between gap-3 w-100">
             <h5 className="h5 d-inline-flex gap-2 m-0">
               <i className="bi bi-gear-wide-connected" />
               <span>Kanban board configuration</span>
             </h5>
-
-            {widget("components.molecule.Switch", {
-              currentValue: state.editingMode,
-              isHidden: true,
-              key: "editingMode",
-              onChange: editingModeSwitch,
-
-              options: [
-                { label: "Form", value: "form" },
-                { label: "JSON", value: "JSON" },
-              ],
-
-              title: "Editing mode selection",
-            })}
+            <Widget
+              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Switch`}
+              props={{
+                currentValue: editingMode,
+                key: "editingMode",
+                onChange: editingModeSwitch,
+                options: [
+                  { label: "Form", value: "form" },
+                  { label: "JSON", value: "JSON" },
+                ],
+                title: "Editing mode selection",
+              }}
+            />
           </div>
-
-          {state.editingMode === "form" ? (
-            formElement
-          ) : (
-            <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
-              <textarea
-                className="form-control"
-                disabled
-                rows="12"
-                type="text"
-                value={JSON.stringify(form.values ?? {}, null, "\t")}
-              />
-            </div>
+          {Object.keys(formState.metadata ?? {}).length > 0 && (
+            <>
+              {editingMode === "form" ? (
+                <div>
+                  {formElement}
+                  <Widget
+                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                    props={{
+                      classNames: {
+                        root: "btn-sm btn-outline-secondary",
+                      },
+                      label: "New column",
+                      disabled:
+                        Object.keys(formState.payload.columns).length >=
+                        settings.maxColumnsNumber,
+                      icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
+                      onClick: formUpdate({
+                        path: ["payload", "columns"],
+                        via: columnsCreateNew,
+                      }),
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
+                  <textarea
+                    className="form-control"
+                    disabled
+                    rows="12"
+                    type="text"
+                    value={JSON.stringify(formState ?? {}, null, "\t")}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
-      ) : null}
-
-      {isViewInitialized ? (
-        widget(`entity.addon.${form.values.metadata.type}`, {
-          ...form.values,
-
-          configurationControls: [
-            {
-              label: "New column",
-
-              disabled:
-                Object.keys(form.values.payload.columns).length >=
-                settings.maxColumnsNumber,
-
-              icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
-
-              onClick: form.update({
-                path: ["payload", "columns"],
-                via: columnsCreateNew,
-              }),
-            },
-          ],
-
-          isConfiguratorActive: state.isActive,
-          isSynced: form.isSynced,
-          link,
-          onConfigure: () => formToggle(true),
-          onDelete: isViewInitialized ? viewDelete : null,
-          permissions,
-        })
-      ) : (
+      )}
+      {!Object.keys(formState.metadata ?? {}).length && (
         <div
           className="d-flex flex-column align-items-center justify-content-center gap-4"
           style={{ height: 384 }}
@@ -503,13 +461,15 @@ const KanbanViewConfigurator = ({ communityHandle, link, permissions }) => {
           <h5 className="h5 d-inline-flex gap-2 m-0">
             This community doesn't have a kanban board
           </h5>
-
-          {widget("components.molecule.Button", {
-            icon: { type: "bootstrap_icon", variant: "bi-kanban-fill" },
-            isHidden: !permissions.can_configure,
-            label: "Create kanban board",
-            onClick: newViewInit,
-          })}
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+            props={{
+              icon: { type: "bootstrap_icon", variant: "bi-kanban-fill" },
+              isHidden: !permissions.can_configure,
+              label: "Create kanban board",
+              onClick: newViewInit,
+            }}
+          />
         </div>
       )}
     </div>

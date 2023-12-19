@@ -55,13 +55,6 @@ function deleteCommunity({ handle }) {
   return Near.call("${REPL_DEVHUB_CONTRACT}", "delete_community", { handle });
 }
 
-function updateCommunityBoard({ handle, board }) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community_board", {
-    handle,
-    board,
-  });
-}
-
 /**
  * Sets all addons, for configurating tabs
  */
@@ -103,64 +96,6 @@ function getAllCommunitiesMetadata() {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_communities_metadata") ?? null
   );
-}
-
-function getAvailableAddons() {
-  return [
-    {
-      id: "wiki",
-      title: "Wiki",
-      description: "Create a wiki for your community",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.wiki.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.wiki.Configurator",
-    },
-    {
-      id: "telegram",
-      title: "Telegram",
-      description: "Connect your telegram",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.telegram.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.telegram.Configurator",
-    },
-    {
-      id: "github",
-      title: "Github",
-      description: "Connect your github",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.github.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.github.Configurator",
-    },
-    {
-      id: "kanban",
-      title: "Kanban",
-      description: "Connect your github kanban board",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.Configurator",
-    },
-    {
-      id: "blog",
-      title: "Blog",
-      description: "Create a blog for your community",
-      view_widget: "${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Viewer",
-      configurator_widget:
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator",
-    },
-  ];
-  // return Near.view("${REPL_DEVHUB_CONTRACT}", "get_available_addons") ?? null;
-}
-
-function getCommunityAddons({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addons", {
-    handle,
-  });
-}
-
-function getCommunityAddonConfigs({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addon_configs", {
-    handle,
-  });
 }
 
 function getAllLabels() {
@@ -225,15 +160,12 @@ return {
   getAccountCommunityPermissions,
   updateCommunity,
   deleteCommunity,
-  updateCommunityBoard,
   setCommunityAddons,
   setCommunityAddon,
   getAccessControlInfo,
   getAllAuthors,
   getAllCommunitiesMetadata,
   getAllAddons,
-  getCommunityAddons,
-  getCommunityAddonConfigs,
   getAllLabels,
   getPost,
   getPostsByAuthor,

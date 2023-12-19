@@ -1,9 +1,6 @@
-const { widget } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const { DataRequest } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.data-request"
 );
-
-widget || (widget = () => {});
 DataRequest || (DataRequest = {});
 
 const dataToColumns = (data, columns) =>
@@ -108,10 +105,13 @@ const GithubKanbanBoard = ({
     <div>
       <div className="d-flex flex-column align-items-center gap-2 py-4">
         <h5 className="h5 d-inline-flex gap-2 m-0">
-          {widget("components.atom.Icon", {
-            type: "bootstrap_icon",
-            variant: "bi-kanban-fill",
-          })}
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.atom.Icon`}
+            props={{
+              type: "bootstrap_icon",
+              variant: "bi-kanban-fill",
+            }}
+          />
 
           <span>{(title?.length ?? 0) > 0 ? title : "Untitled view"}</span>
         </h5>
@@ -160,13 +160,13 @@ const GithubKanbanBoard = ({
                   </span>
 
                   <div class="d-flex flex-column gap-2">
-                    {tickets.map((ticket) =>
-                      widget(
-                        `entity.addon.${metadata.ticket.type}`,
-                        { metadata: metadata.ticket, payload: ticket },
-                        ticket.id
-                      )
-                    )}
+                    {tickets.map((ticket) => (
+                      <Widget
+                        src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
+                        props={{ metadata: metadata.ticket, payload: ticket }}
+                        key={ticket.id}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>

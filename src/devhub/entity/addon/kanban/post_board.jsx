@@ -1,9 +1,7 @@
-const { widget } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const { getPostsByLabel } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 getPostsByLabel || (getPostsByLabel = () => {});
-widget || (widget = () => {});
 
 const postTagsToIdSet = (tags) => {
   return new Set(
@@ -30,19 +28,7 @@ const configToColumnData = ({ columns, tags }) =>
     };
   }, {});
 
-const KanbanPostBoard = ({
-  metadata,
-  payload,
-  configurationControls,
-  isConfiguratorActive,
-  isSynced,
-  link,
-  onCancel,
-  onConfigure,
-  onDelete,
-  onSave,
-  permissions,
-}) => {
+const KanbanPostBoard = ({ metadata, payload }) => {
   const columns = Object.entries(configToColumnData(payload)).map(
     ([columnId, column]) => (
       <div className="col-3" key={`column-${columnId}-view`}>
@@ -66,13 +52,13 @@ const KanbanPostBoard = ({
             </span>
 
             <div class="d-flex flex-column gap-2">
-              {column.postIds.map((postId) =>
-                widget(
-                  `entity.addon.${metadata.ticket.type}`,
-                  { metadata: { id: postId, ...metadata.ticket } },
-                  postId
-                )
-              )}
+              {column.postIds.map((postId) => (
+                <Widget
+                  src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
+                  props={{ metadata: { id: postId, ...metadata.ticket } }}
+                  key={postId}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -80,19 +66,32 @@ const KanbanPostBoard = ({
     )
   );
 
-  return widget("entity.layout", {
-    configurationControls,
-    isConfiguratorActive,
-    isSynced,
-    link,
-    metadata,
-    onCancel,
-    onConfigure,
-    onDelete,
-    onSave,
-    permissions,
-    children: (
-      <>
+  return (
+    <div>
+      <div className="d-flex flex-column align-items-center gap-2 py-4">
+        <h5 className="h5 d-inline-flex gap-2 m-0">
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.atom.Icon`}
+            props={{
+              type: "bootstrap_icon",
+              variant: "bi-kanban-fill",
+            }}
+          />
+
+          <span>
+            {(metadata?.title?.length ?? 0) > 0
+              ? metadata.title
+              : "Untitled view"}
+          </span>
+        </h5>
+
+        <p className="m-0 py-1 text-secondary text-center">
+          {(metadata?.description?.length ?? 0) > 0
+            ? metadata.description
+            : "No description provided"}
+        </p>
+      </div>
+      <div className="d-flex gap-3 w-100" style={{ overflowX: "auto" }}>
         <div
           className={[
             "d-flex align-items-center justify-content-center w-100 text-black-50 opacity-50",
@@ -104,9 +103,9 @@ const KanbanPostBoard = ({
         </div>
 
         {columns}
-      </>
-    ),
-  });
+      </div>
+    </div>
+  );
 };
 
 return KanbanPostBoard(props);

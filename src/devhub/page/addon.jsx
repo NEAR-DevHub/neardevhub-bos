@@ -90,18 +90,6 @@ const ButtonRow = styled.div`
 
 const [view, setView] = useState(props.view || "viewer");
 
-const checkFullyRefactored = (addon_id) => {
-  switch (addon_id) {
-    case "kanban":
-      // case "github":
-      return false;
-    default:
-      return true;
-  }
-};
-
-const isFullyRefactored = checkFullyRefactored(addon.addon_id);
-
 function updateWidgetEndpoint(widgetSrc) {
   widgetSrc.replace("configurator", "Configurator");
   return widgetSrc.replace("devgovgigs.near", "devhub.near");
@@ -109,19 +97,17 @@ function updateWidgetEndpoint(widgetSrc) {
 
 return (
   <Container>
-    {isFullyRefactored && // Unfully refactored addons have the configurator built in.
-      // So we hide the header
-      permissions.can_configure && (
-        <SettingsButton
-          onClick={() => setView(view === "configure" ? "view" : "configure")}
-        >
-          {view === "configure" ? (
-            <span className="bi bi-x"></span>
-          ) : (
-            <span className="bi bi-gear"></span>
-          )}
-        </SettingsButton>
-      )}
+    {permissions.can_configure && (
+      <SettingsButton
+        onClick={() => setView(view === "configure" ? "view" : "configure")}
+      >
+        {view === "configure" ? (
+          <span className="bi bi-x"></span>
+        ) : (
+          <span className="bi bi-gear"></span>
+        )}
+      </SettingsButton>
+    )}
     <Content>
       {/* We hide in order to prevent a reload when we switch between two views */}
       <div className={`${view !== "configure" ? "d-none" : ""}`}>
