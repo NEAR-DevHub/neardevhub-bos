@@ -4,7 +4,7 @@ const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 if (!Struct) {
   return <p>Loading modules...</p>;
 }
-const { updateCommunityGithub, useQuery } = VM.require(
+const { useQuery } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 const { uuid, withUUIDIndex } = VM.require(
@@ -14,7 +14,6 @@ const { uuid, withUUIDIndex } = VM.require(
 uuid || (uuid = () => {});
 withUUIDIndex || (withUUIDIndex = () => {});
 useQuery || (useQuery = () => {});
-updateCommunityGithub || (updateCommunityGithub = () => {});
 
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
@@ -107,7 +106,10 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
         path, // Pass the path directly
         (node) => transformFn(node)
       );
-      setForm({ ...formState, ...updatedValues });
+      setForm((prevFormState) => ({
+        ...prevFormState,
+        ...updatedValues
+      }))
     };
 
   const formReset = () => {

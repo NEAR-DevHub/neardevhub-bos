@@ -62,13 +62,6 @@ function updateCommunityBoard({ handle, board }) {
   });
 }
 
-function updateCommunityGithub({ handle, github }) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community_github", {
-    handle,
-    github,
-  });
-}
-
 /**
  * Sets all addons, for configurating tabs
  */
@@ -233,7 +226,6 @@ return {
   updateCommunity,
   deleteCommunity,
   updateCommunityBoard,
-  updateCommunityGithub,
   setCommunityAddons,
   setCommunityAddon,
   getAccessControlInfo,

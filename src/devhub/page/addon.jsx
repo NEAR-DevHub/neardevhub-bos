@@ -103,6 +103,7 @@ const checkFullyRefactored = (addon_id) => {
 const isFullyRefactored = checkFullyRefactored(addon.addon_id);
 
 function updateWidgetEndpoint(widgetSrc) {
+  widgetSrc.replace("configurator", "Configurator");
   return widgetSrc.replace("devgovgigs.near", "devhub.near");
 }
 

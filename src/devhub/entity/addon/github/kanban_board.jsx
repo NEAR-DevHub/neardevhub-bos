@@ -56,40 +56,51 @@ const GithubKanbanBoard = ({
     const pullRequests = dataTypesIncluded.PullRequest
       ? DataRequest?.paginated(
           (pageNumber) =>
-            fetch(
-              `https://api.github.com/repos/${repoURL
-                .split("/")
-                .slice(-2)
-                .concat(["pulls"])
-                .join(
-                  "/"
-                )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-            )?.body,
-
+            useCache(
+              () =>
+                asyncFetch(
+                  `https://api.github.com/repos/${repoURL
+                    .split("/")
+                    .slice(-2)
+                    .concat(["pulls"])
+                    .join(
+                      "/"
+                    )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
+                ).then((res) => res?.body),
+              repoURL + pageNumber,
+              { subscribe: false }
+            ),
           { startWith: 1 }
-        ).map(withType("PullRequest"))
+        )
       : [];
 
     const issues = dataTypesIncluded.Issue
       ? DataRequest?.paginated(
           (pageNumber) =>
-            fetch(
-              `https://api.github.com/repos/${repoURL
-                .split("/")
-                .slice(-2)
-                .concat(["issues"])
-                .join(
-                  "/"
-                )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-            )?.body,
-
+            useCache(
+              () =>
+                asyncFetch(
+                  `https://api.github.com/repos/${repoURL
+                    .split("/")
+                    .slice(-2)
+                    .concat(["issues"])
+                    .join(
+                      "/"
+                    )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
+                ).then((res) => res?.body),
+              repoURL + pageNumber,
+              { subscribe: false }
+            ),
           { startWith: 1 }
         ).map(withType("Issue"))
       : [];
 
     State.update((lastKnownState) => ({
       ...lastKnownState,
-      ticketsByColumn: dataToColumns([...issues, ...pullRequests], columns),
+      ticketsByColumn: dataToColumns(
+        [...(issues ?? []), ...(pullRequests ?? [])],
+        columns
+      ),
     }));
   }
 
