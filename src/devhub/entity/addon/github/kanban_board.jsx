@@ -1,7 +1,7 @@
 const { DataRequest } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.data-request"
 );
-DataRequest || (DataRequest = {});
+DataRequest || (DataRequest = { paginated: () => {} });
 
 const dataToColumns = (data, columns) =>
   Object.values(columns).reduce(
