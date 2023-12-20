@@ -137,7 +137,6 @@ return (
           props={{
             ...config,
             data: config,
-            // temporary prop drilling
             handle,
             permissions,
           }}

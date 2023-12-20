@@ -169,7 +169,7 @@ const KanbanViewConfigurator = ({ data, permissions, onSubmit }) => {
   const editingModeSwitch = ({ target: { value } }) => setEditingMode(value);
 
   const newViewInit = () => {
-    setForm(GithubKanbanBoardDefaults);
+    setForm(KanbanPostBoardDefaults);
   };
 
   const columnsCreateNew = ({ lastKnownValue }) =>
