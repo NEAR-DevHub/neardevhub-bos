@@ -89,7 +89,7 @@ const GithubKanbanBoard = ({
               { subscribe: false }
             ),
           { startWith: 1 }
-        ).map(withType("Issue"))
+        )?.map(withType("Issue"))
       : [];
 
     State.update((lastKnownState) => ({
@@ -135,7 +135,7 @@ const GithubKanbanBoard = ({
             No columns were created so far.
           </div>
         ) : null}
-        {Object.values(columns).map((column) => {
+        {Object.values(columns ?? {})?.map((column) => {
           const tickets = state.ticketsByColumn[column.id] ?? [];
 
           return (
