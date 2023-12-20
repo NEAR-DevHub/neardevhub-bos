@@ -8,7 +8,9 @@ useQuery || (useQuery = () => {});
 href || (href = () => {});
 const { kanbanBoards, handle, permissions } = props;
 
-if (!kanbanBoards) {
+const data = Object.values(kanbanBoards ?? {})?.[0];
+
+if (!kanbanBoards || !data?.metadata) {
   return (
     <div
       className="d-flex flex-column align-items-center justify-content-center gap-4"
@@ -20,8 +22,6 @@ if (!kanbanBoards) {
     </div>
   );
 }
-
-const data = Object.values(kanbanBoards)?.[0];
 
 return (
   <Widget

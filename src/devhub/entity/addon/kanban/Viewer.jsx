@@ -9,7 +9,7 @@ href || (href = () => {});
 
 const { data, handle, permissions } = props;
 
-if (!data) {
+if (!data || !data?.metadata) {
   return (
     <div
       className="d-flex flex-column align-items-center justify-content-center gap-4"
