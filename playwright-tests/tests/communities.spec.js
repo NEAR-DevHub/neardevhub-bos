@@ -1,4 +1,10 @@
-import { test, expect } from "@playwright/test";
+import {
+  setInputAndAssert,
+  clickWhenSelectorIsVisible,
+  waitForSelectorToBeVisible,
+} from "../testUtils";
+
+const { test, expect } = require("@playwright/test");
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -20,7 +26,89 @@ test.describe("Wallet is connected", () => {
     const communitySpawnerSelector = 'div:has-text("Community information")';
     await page.waitForSelector(communitySpawnerSelector, { state: "visible" });
   });
+
+  test("should validate input when user is creating a new community", async ({
+    page,
+  }) => {
+    await page.goto("/devgovgigs.near/widget/app?page=communities");
+
+    await clickWhenSelectorIsVisible(
+      page,
+      'button:has-text("Create Community")'
+    );
+
+    await waitForSelectorToBeVisible(
+      page,
+      'div:has-text("Community information")'
+    );
+
+    // missing title
+    await expectInputValidation(
+      page,
+      "",
+      "The description",
+      "the-url-handle",
+      "the-tag",
+      false
+    );
+
+    // missing description
+    await expectInputValidation(
+      page,
+      "The title",
+      "",
+      "the-url-handle",
+      "the-tag",
+      false
+    );
+
+    // missing URL handle
+    await expectInputValidation(
+      page,
+      "The title",
+      "The description",
+      "",
+      "the-tag",
+      false
+    );
+
+    // missing tag
+    await expectInputValidation(
+      page,
+      "The title",
+      "The description",
+      "the-url-handle",
+      "",
+      false
+    );
+
+    // valid input
+    await expectInputValidation(
+      page,
+      "The title",
+      "The description",
+      "the-url-handle",
+      "the-tag",
+      true
+    );
+  });
 });
+
+const expectInputValidation = async (
+  page,
+  title,
+  description,
+  urlHandle,
+  tag,
+  valid
+) => {
+  await setInputAndAssert(page, 'input[aria-label="Name"]', title);
+  await setInputAndAssert(page, 'input[aria-label="Description"]', description);
+  await setInputAndAssert(page, 'input[aria-label="URL handle"]', urlHandle);
+  await setInputAndAssert(page, 'input[aria-label="Tag"]', tag);
+
+  expect(await page.isEnabled('button:has-text("Launch")')).toBe(valid);
+};
 
 test.describe("Wallet is not connected", () => {
   test.use({
