@@ -102,25 +102,39 @@ Currently, there is no local development environment, so we use [testnet NEAR So
 
 Before deploying the widgets you need to make the needed replacements with references to the account that will host the widgets:
 
+Edit the line in package.json that looks like this:
+
+```json
+"replace": "node ./scripts/replace.js -a devhub.near -c devgovgigs.near -n mainnet",
 ```
-npm run build:preview -- -a devgovgigs.petersalomonsen.near -c devgovgigs.near
+
+to something like this:
+
+```json
+"replace": "node ./scripts/replace.js -a devgovgigs.petersalomonsen.near -c devgovgigs.near -n mainnet",
+```
+
+Run:
+
+```sh
+npm run build
 ```
 
 Then make sure you stay in the `build` directory when deploying
 
-```
+```sh
 cd build
 ```
 
 To deploy the widgets, we use [`bos` CLI](https://github.com/FroVolod/bos-cli-rs). Start with this command and follow the interactive questionnaire:
 
-```
+```sh
 bos components deploy
 ```
 
 After successful deployment, you will see a full command that could be used to re-deploy the widgets without interactive questionnaire, like this:
 
-```
+```sh
 bos components deploy gigs.frol14.testnet sign-as gigs.frol14.testnet network-config testnet sign-with-macos-keychain send
 ```
 
