@@ -37,7 +37,7 @@ test.describe("Wallet is connected", () => {
 
     await setInputAndAssert(
       page,
-      'p:has-text("Title") + input',
+      'input[data-testid="name-editor"]',
       "The test title"
     );
 
@@ -45,54 +45,98 @@ test.describe("Wallet is connected", () => {
     await selectAndAssert(page, 'div:has-text("Currency") select', "USDT");
     await setInputAndAssert(
       page,
-      'div:has-text("Requested amount") input',
+      'input[data-testid="requested-amount-editor"]',
       "300"
     );
   });
 
-  test("should init create post with labels from params", async ({ page }) => {
+  test("should init create post with single label from params", async ({
+    page,
+  }) => {
     await page.goto("/devhub.near/widget/app?page=create&labels=devhub-test");
 
-    const selector = 'div:has-text("Labels") input';
+    const selector = ".rbt-input-multi";
+    const typeAheadElement = await page.waitForSelector(selector);
 
-    const singleValue = await page.inputValue(selector);
-    expect(singleValue).toBe("devhub-test");
+    const tokenWithValue = await typeAheadElement.$(
+      '.rbt-token:has-text("devhub-test")'
+    );
+    expect(tokenWithValue).toBeTruthy();
+  });
 
-    await page.goto("/devhub.near/widget/app?page=create&labels=devhub-test");
+  test("should init create post with multi label from params", async ({
+    page,
+  }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=create&labels=devhub-test,security"
+    );
 
-    const multiValue = await page.inputValue(selector);
-    expect(multiValue).toBe("devhub-test");
+    const selector = ".rbt-input-multi";
+    const typeAheadElement = await page.waitForSelector(selector);
+
+    const devhubTestToken = await typeAheadElement.$(
+      '.rbt-token:has-text("devhub-test")'
+    );
+    expect(devhubTestToken).toBeTruthy();
+    const securityToken = await typeAheadElement.$(
+      '.rbt-token:has-text("security")'
+    );
+    expect(securityToken).toBeTruthy();
   });
 
   test("should allow user to select multiple labels", async ({ page }) => {
     await page.goto("/devhub.near/widget/app?page=create");
+    const selector = ".rbt-input-main";
+    await page.waitForSelector(selector);
+    await page.fill(selector, "devhub-test");
 
-    const selector = 'div:has-text("Labels") input';
+    await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight); // Scroll to the bottom of the page
+    }); // we do this because the input dropdown is not visible and cannot be clicked
+    await page.getByLabel("devhub-test").click();
 
-    await page.fill(selector, "devhub-test, security");
-    const actualValue = await page.inputValue(selector);
-    expect(actualValue).toBe(["devhub-test", "security"]);
+    await page.fill(selector, "security");
+    await page.getByLabel("security").click();
+
+    const typeAheadElement = await page.waitForSelector(".rbt-input-multi");
+    const devhubToken = await typeAheadElement.$(
+      `.rbt-token:has-text("devhub-test")`
+    );
+    expect(devhubToken).toBeTruthy();
+
+    const securityToken = await typeAheadElement.$(
+      `.rbt-token:has-text("security")`
+    );
+    expect(securityToken).toBeTruthy();
   });
 
   test("should not allow user to use the blog label", async ({ page }) => {
     await page.goto("/devhub.near/widget/app?page=create");
 
-    const selector = 'div:has-text("Labels") input';
-
+    const selector = ".rbt-input-main";
+    await page.waitForSelector(selector);
     await page.fill(selector, "blog");
-    const actualValue = await page.inputValue(selector);
-    expect(actualValue).toBe("");
+    const labelSelector = `:is(label:has-text("blog"))`;
+    await page.waitForSelector(labelSelector, { state: "detached" });
   });
 
   test("should allow the user to create new labels", async ({ page }) => {
     await page.goto("/devhub.near/widget/app?page=create");
 
-    await page.goto("/devhub.near/widget/app?page=create");
-
-    const selector = 'div:has-text("Labels") input';
-
+    const selector = ".rbt-input-main";
+    await page.waitForSelector(selector);
     await page.fill(selector, "random-crazy-label-lol");
-    const actualValue = await page.inputValue(selector);
-    expect(actualValue).toBe("random-crazy-label-lol");
+    const labelSelector = `:is(mark:has-text("random-crazy-label-lol"))`;
+    const element = await page.waitForSelector(labelSelector);
+    await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight); // Scroll to the bottom of the page
+    });
+    await element.click();
+
+    const typeAheadElement = await page.waitForSelector(".rbt-input-multi");
+    const newToken = await typeAheadElement.$(
+      `.rbt-token:has-text("random-crazy-label-lol")`
+    );
+    expect(newToken).toBeTruthy();
   });
 });

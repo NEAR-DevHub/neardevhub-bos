@@ -242,6 +242,7 @@ function NameEditor() {
     <div className="col-lg-6 mb-2">
       <p className="fs-6 fw-bold mb-1">Title</p>
       <input
+        data-testid="name-editor"
         type="text"
         value={state.name}
         onChange={(event) => State.update({ name: event.target.value })}
@@ -285,7 +286,6 @@ function LabelsEditor() {
     <div className="col-lg-12 mb-2">
       <p className="fs-6 fw-bold mb-1">Labels</p>
       <Typeahead
-        data-testid="labels-editor"
         multiple
         onInputChange={checkLabel}
         onChange={setLabels}
@@ -378,6 +378,7 @@ function Fundraising() {
         Requested amount{" "}
         <span class="text-muted fw-normal">(Numbers Only)</span>
         <input
+          data-testid="requested-amount-editor"
           type="number"
           value={parseInt(state.amount) > 0 ? state.amount : ""}
           min={0}
