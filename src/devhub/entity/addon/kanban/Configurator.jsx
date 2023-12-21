@@ -116,7 +116,16 @@ const toMigrated = ({ config, metadata, payload }) => ({
   },
 });
 
-const KanbanViewConfigurator = ({ data, permissions, onSubmit }) => {
+const KanbanViewConfigurator = ({ handle, data, permissions, onSubmit }) => {
+  const tags = useCache(
+    () =>
+      Near.asyncView("${REPL_DEVHUB_CONTRACT}", "get_all_labels").then(
+        (res) => res
+      ),
+    handle,
+    { subscribe: false }
+  );
+
   if (!data) {
     return (
       <div class="alert alert-danger" role="alert">
@@ -130,7 +139,6 @@ const KanbanViewConfigurator = ({ data, permissions, onSubmit }) => {
   );
 
   const [formState, setForm] = useState(initialFormState);
-  const [editingMode, setEditingMode] = useState("form");
   const [showPreview, setPreview] = useState(false);
 
   const formUpdate =
@@ -165,8 +173,6 @@ const KanbanViewConfigurator = ({ data, permissions, onSubmit }) => {
   const formReset = () => {
     setForm(initialFormState);
   };
-
-  const editingModeSwitch = ({ target: { value } }) => setEditingMode(value);
 
   const newViewInit = () => {
     setForm(KanbanPostBoardDefaults);
@@ -210,19 +216,6 @@ const KanbanViewConfigurator = ({ data, permissions, onSubmit }) => {
               hideSubmitBtn: true,
             }}
           />
-          <Widget
-            src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
-            props={{
-              heading: "Tags",
-              externalState: formState.payload.tags,
-              isActive: true,
-              isEmbedded: true,
-              isUnlocked: permissions.can_configure,
-              onChange: formUpdate({ path: ["payload", "tags"] }),
-              schema: KanbanPostBoardTagsSchema,
-              hideSubmitBtn: true,
-            }}
-          />
         </div>
         <Widget
           src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
@@ -241,7 +234,7 @@ const KanbanViewConfigurator = ({ data, permissions, onSubmit }) => {
         />
       </div>
 
-      <div className="d-flex align-items-center justify-content-between w-100">
+      <div className="d-flex align-items-center justify-content-between w-100 mb-2">
         <span className="d-inline-flex gap-2 m-0">
           <i className="bi bi-list-task" />
           <span>{`Columns ( max. ${settings.maxColumnsNumber} )`}</span>
@@ -401,55 +394,28 @@ const KanbanViewConfigurator = ({ data, permissions, onSubmit }) => {
               <i className="bi bi-gear-wide-connected" />
               <span>Kanban board configuration</span>
             </h5>
-            <Widget
-              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Switch`}
-              props={{
-                currentValue: editingMode,
-                key: "editingMode",
-                onChange: editingModeSwitch,
-                options: [
-                  { label: "Form", value: "form" },
-                  { label: "JSON", value: "JSON" },
-                ],
-                title: "Editing mode selection",
-              }}
-            />
           </div>
           {Object.keys(formState.metadata ?? {}).length > 0 && (
-            <>
-              {editingMode === "form" ? (
-                <div>
-                  {formElement}
-                  <Widget
-                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-                    props={{
-                      classNames: {
-                        root: "btn-sm btn-outline-secondary",
-                      },
-                      label: "New column",
-                      disabled:
-                        Object.keys(formState.payload.columns).length >=
-                        settings.maxColumnsNumber,
-                      icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
-                      onClick: formUpdate({
-                        path: ["payload", "columns"],
-                        via: columnsCreateNew,
-                      }),
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
-                  <textarea
-                    className="form-control"
-                    disabled
-                    rows="12"
-                    type="text"
-                    value={JSON.stringify(formState ?? {}, null, "\t")}
-                  />
-                </div>
-              )}
-            </>
+            <div>
+              {formElement}
+              <Widget
+                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                props={{
+                  classNames: {
+                    root: "btn-sm btn-outline-secondary",
+                  },
+                  label: "New column",
+                  disabled:
+                    Object.keys(formState.payload.columns).length >=
+                    settings.maxColumnsNumber,
+                  icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
+                  onClick: formUpdate({
+                    path: ["payload", "columns"],
+                    via: columnsCreateNew,
+                  }),
+                }}
+              />
+            </div>
           )}
         </div>
       )}

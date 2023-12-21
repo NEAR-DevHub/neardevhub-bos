@@ -78,7 +78,6 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
 
   const initialFormState = Struct.typeMatch(data) ? toMigrated(data) : {};
   const [formState, setForm] = useState(initialFormState);
-  const [editingMode, setEditingMode] = useState("form");
   const [showPreview, setPreview] = useState(false);
 
   const formUpdate =
@@ -113,8 +112,6 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
   const formReset = () => {
     setForm(initialFormState);
   };
-
-  const onEditingModeChange = ({ target: { value } }) => setEditingMode(value);
 
   const newViewInit = () => {
     setForm(GithubKanbanBoardDefaults);
@@ -246,7 +243,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
         />
       </div>
 
-      <div className="d-flex align-items-center justify-content-between">
+      <div className="d-flex align-items-center justify-content-between mb-2">
         <span className="d-inline-flex gap-2 m-0">
           <i className="bi bi-list-task" />
           <span>{`Columns ( max. ${settings.maxColumnsNumber} )`}</span>
@@ -417,55 +414,28 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
               <i className="bi bi-gear-wide-connected" />
               <span>GitHub board configuration</span>
             </h5>
-            <Widget
-              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Switch`}
-              props={{
-                currentValue: editingMode,
-                key: "editingMode",
-                onChange: onEditingModeChange,
-                options: [
-                  { label: "Form", value: "form" },
-                  { label: "JSON", value: "JSON" },
-                ],
-                title: "Editing mode selection",
-              }}
-            />
           </div>
           {Object.keys(formState).length > 0 && (
-            <>
-              {editingMode === "form" ? (
-                <div>
-                  {formElement}
-                  <Widget
-                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-                    props={{
-                      classNames: {
-                        root: "btn-sm btn-outline-secondary",
-                      },
-                      label: "New column",
-                      disabled:
-                        Object.keys(formState.columns).length >=
-                        settings.maxColumnsNumber,
-                      icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
-                      onClick: formUpdate({
-                        path: ["columns"],
-                        via: columnsCreateNew,
-                      }),
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="d-flex flex-column flex-grow-1 border-0 bg-transparent w-100">
-                  <textarea
-                    className="form-control"
-                    disabled
-                    rows="12"
-                    type="text"
-                    value={JSON.stringify(formState ?? {}, null, "\t")}
-                  />
-                </div>
-              )}
-            </>
+            <div>
+              {formElement}
+              <Widget
+                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                props={{
+                  classNames: {
+                    root: "btn-sm btn-outline-secondary",
+                  },
+                  label: "New column",
+                  disabled:
+                    Object.keys(formState.columns).length >=
+                    settings.maxColumnsNumber,
+                  icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
+                  onClick: formUpdate({
+                    path: ["columns"],
+                    via: columnsCreateNew,
+                  }),
+                }}
+              />
+            </div>
           )}
 
           {!Object.keys(formState).length && (

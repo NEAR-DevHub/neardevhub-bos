@@ -70,25 +70,11 @@ const KanbanPostBoard = ({ metadata, payload }) => {
     <div>
       <div className="d-flex flex-column align-items-center gap-2 py-4">
         <h5 className="h5 d-inline-flex gap-2 m-0">
-          <Widget
-            src={`${REPL_DEVHUB}/widget/devhub.components.atom.Icon`}
-            props={{
-              type: "bootstrap_icon",
-              variant: "bi-kanban-fill",
-            }}
-          />
-
-          <span>
-            {(metadata?.title?.length ?? 0) > 0
-              ? metadata.title
-              : "Untitled view"}
-          </span>
+          <span>{metadata?.title}</span>
         </h5>
 
         <p className="m-0 py-1 text-secondary text-center">
-          {(metadata?.description?.length ?? 0) > 0
-            ? metadata.description
-            : "No description provided"}
+          {metadata?.description}
         </p>
       </div>
       <div className="d-flex gap-3 w-100" style={{ overflowX: "auto" }}>
