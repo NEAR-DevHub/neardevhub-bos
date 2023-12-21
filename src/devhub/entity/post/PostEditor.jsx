@@ -188,9 +188,6 @@ const onSubmit = () => {
   }
   let txn = [];
   if (mode == "Create") {
-    props.onDraftStateChange(
-      Object.assign({}, state, { parent_post_id: parentId })
-    );
     txn.push({
       contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "add_post",
@@ -202,9 +199,6 @@ const onSubmit = () => {
       gas: Big(10).pow(14),
     });
   } else if (mode == "Edit") {
-    props.onDraftStateChange(
-      Object.assign({}, state, { edit_post_id: postId })
-    );
     txn.push({
       contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "edit_post",
