@@ -120,6 +120,18 @@ test.describe("Wallet is connected", () => {
     await page.waitForSelector(labelSelector, { state: "detached" });
   });
 
+  test("should not allow user to use a protected label", async ({ page }) => {
+    await page.goto("/devhub.near/widget/app?page=create");
+
+    const selector = ".rbt-input-main";
+    await page.waitForSelector(selector);
+    await page.fill(selector, "funding-requested");
+    const labelSelector = `:is(label:has-text("funding-requested"))`;
+    await page.waitForSelector(labelSelector, { state: "detached" });
+
+    await page.waitForSelector(".alert", { state: "visible" });
+  });
+
   test("should allow the user to create new labels", async ({ page }) => {
     await page.goto("/devhub.near/widget/app?page=create");
 
@@ -138,5 +150,30 @@ test.describe("Wallet is connected", () => {
       `.rbt-token:has-text("random-crazy-label-lol")`
     );
     expect(newToken).toBeTruthy();
+  });
+});
+
+test.describe("Admin is connected", () => {
+  // sign in to wallet
+  test.use({
+    storageState: "playwright-tests/storage-states/wallet-connected-admin.json",
+  });
+
+  test("should allow admin to use a protected label", async ({ page }) => {
+    await page.goto("/devhub.near/widget/app?page=create");
+
+    const selector = ".rbt-input-main";
+    await page.waitForSelector(selector);
+    await page.fill(selector, "funding-requested");
+    await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight); // Scroll to the bottom of the page
+    }); // we do this because the input dropdown is not visible and cannot be clicked
+    await page.getByLabel("funding-requested").click();
+
+    const typeAheadElement = await page.waitForSelector(".rbt-input-multi");
+    const protectedToken = await typeAheadElement.$(
+      `.rbt-token:has-text("funding-requested")`
+    );
+    expect(protectedToken).toBeTruthy();
   });
 });
