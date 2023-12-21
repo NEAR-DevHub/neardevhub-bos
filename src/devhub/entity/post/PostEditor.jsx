@@ -1,3 +1,7 @@
+const { onDraftStateChange } = VM.require(
+  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
+);
+
 const cleanDescription = (description) => {
   return description
     ? description.replace(
@@ -6,6 +10,18 @@ const cleanDescription = (description) => {
       )
     : description;
 };
+
+const postType = props.postType ?? "Sponsorship";
+const parentId = props.parentId ?? null;
+const postId = props.postId ?? null;
+const mode = props.mode ?? "Create";
+const toggleEditor = props.toggleEditor;
+const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
+const labelStrings = (props.labels ?? []).concat(referralLabels);
+
+const labels = labelStrings.map((s) => {
+  return { name: s };
+});
 
 initState({
   seekingFunding: props.seekingFunding ?? false,
@@ -84,19 +100,6 @@ function autoCompleteAccountId(id) {
 }
 
 /* END_INCLUDE: "core/lib/autocomplete" */
-
-const postType = props.postType ?? "Sponsorship";
-const parentId = props.parentId ?? null;
-const postId = props.postId ?? null;
-const mode = props.mode ?? "Create";
-const toggleEditor = props.toggleEditor;
-
-const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
-const labelStrings = (props.labels ?? []).concat(referralLabels);
-
-const labels = labelStrings.map((s) => {
-  return { name: s };
-});
 
 if (!state.draftStateApplied && props.draftState) {
   State.update({ ...props.draftState, draftStateApplied: true });
@@ -188,6 +191,7 @@ const onSubmit = () => {
   }
   let txn = [];
   if (mode == "Create") {
+    onDraftStateChange(Object.assign({}, state, { parent_post_id: parentId }));
     txn.push({
       contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "add_post",
@@ -199,6 +203,7 @@ const onSubmit = () => {
       gas: Big(10).pow(14),
     });
   } else if (mode == "Edit") {
+    onDraftStateChange(Object.assign({}, state, { edit_post_id: postId }));
     txn.push({
       contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "edit_post",
