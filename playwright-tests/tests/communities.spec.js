@@ -1,10 +1,9 @@
+import { test, expect } from "@playwright/test";
 import {
   setInputAndAssert,
   clickWhenSelectorIsVisible,
   waitForSelectorToBeVisible,
 } from "../testUtils";
-
-const { test, expect } = require("@playwright/test");
 
 test.describe("Wallet is connected", () => {
   test.use({
