@@ -1,12 +1,10 @@
 import { test, expect } from "@playwright/test";
 
 test("should load a community page if handle exists", async ({ page }) => {
-  await page.goto(
-    "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
-  );
+  await page.goto("/devhub.near/widget/app?page=community&handle=devhub-test");
 
   // Using the <Link> that wraps the tabs to identify a community page loaded
-  const communityTabSelector = `a[href^="/devgovgigs.near/widget/app?page=community&handle=devhub-test&tab="]`;
+  const communityTabSelector = `a[href^="/devhub.near/widget/app?page=community&handle=devhub-test&tab="]`;
 
   // Wait for the tab to be visible
   await page.waitForSelector(communityTabSelector, {
@@ -44,7 +42,7 @@ test.describe("Wallet is connected", () => {
     page,
   }) => {
     await page.goto(
-      "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
+      "/devhub.near/widget/app?page=community&handle=devhub-test"
     );
 
     const postButtonSelector = 'a:has-text("Post")';
@@ -61,7 +59,7 @@ test.describe("Wallet is connected", () => {
 
     // Verify that the URL is the expected one.
     expect(page.url()).toBe(
-      "http://localhost:8080/devgovgigs.near/widget/app?page=create&labels=devhub-test"
+      "http://localhost:8080/devhub.near/widget/app?page=create&labels=devhub-test"
     );
 
     // Wait for the Typeahead field to render.
