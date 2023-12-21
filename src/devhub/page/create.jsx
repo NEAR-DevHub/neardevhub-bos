@@ -15,6 +15,30 @@ if (!context.accountId) {
   );
 }
 
+const postTypeOptions = {
+  Idea: {
+    name: "Idea",
+    icon: "bi-lightbulb",
+
+    description:
+      "Get feedback from the community about a problem, opportunity, or need.",
+  },
+
+  Solution: {
+    name: "Solution",
+    icon: "bi-rocket",
+
+    description:
+      "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution.",
+  },
+};
+
+const typeSwitch = (optionName) => {
+  State.update({
+    postType: optionName,
+  });
+};
+
 function initLabels() {
   const labels = [];
   if (props.labels) {
@@ -481,43 +505,33 @@ return (
                       What do you want to create?
                     </p>
                     <div class="d-flex flex-row gap-2">
-                      <button
-                        onClick={onIdeaClick}
-                        type="button"
-                        class={`btn btn-outline-secondary`}
-                        style={
-                          state.postType === "Idea"
-                            ? {
-                                backgroundColor: "#0C7283",
-                                color: "#f3f3f3",
-                              }
-                            : {}
-                        }
-                      >
-                        <i class="bi bi-lightbulb"></i>
-                        Idea
-                      </button>
-                      <button
-                        onClick={onSolutionClick}
-                        type="button"
-                        class={`btn btn-outline-secondary`}
-                        style={
-                          state.postType !== "Idea"
-                            ? {
-                                backgroundColor: "#0C7283",
-                                color: "#f3f3f3",
-                              }
-                            : {}
-                        }
-                      >
-                        <i class="bi bi-rocket"></i>
-                        Solution
-                      </button>
+                      {Object.values(postTypeOptions).map((option) => (
+                        <button
+                          className={`btn btn-${
+                            state.postType === option.name
+                              ? "primary"
+                              : "outline-secondary"
+                          }`}
+                          data-testid={`btn-${option.name.toLowerCase()}`}
+                          key={option.name}
+                          onClick={() => typeSwitch(option.name)}
+                          style={
+                            state.postType === option.name
+                              ? {
+                                  backgroundColor: "#0C7283",
+                                  color: "#f3f3f3",
+                                }
+                              : null
+                          }
+                          type="button"
+                        >
+                          <i className={`bi ${option.icon}`} />
+                          <span>{option.name}</span>
+                        </button>
+                      ))}
                     </div>
                     <p class="text-muted w-75 my-1">
-                      {state.postType === "Idea"
-                        ? "Get feedback from the community about a problem, opportunity, or need."
-                        : "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution."}
+                      {postTypeOptions[state.postType].description}
                     </p>
                     {state.warning && (
                       <div
