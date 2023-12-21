@@ -69,39 +69,10 @@ const childPostIdsUnordered =
     post_id: postId,
   }) ?? [];
 
-const getAllChildrenIds = (postId, limit, count) => {
-  if (count >= limit) {
-    return [];
-  }
-
-  const childPostIdsUnordered =
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids", {
-      post_id: postId,
-    }) ?? [];
-
-  if (childPostIdsUnordered.length === 0) {
-    return [];
-  }
-
-  const childrenIds = childPostIdsUnordered.slice(0, limit - count);
-  const remainingLimit = limit - childrenIds.length;
-
-  const additionalChildrenIds = childrenIds.flatMap((childId) => [
-    childId,
-    ...getAllChildrenIds(childId, remainingLimit, count + 1),
-  ]);
-
-  return additionalChildrenIds;
-};
-
-// TODO replace smartContractAllChildren with 'allChildren' and remove
-// getAllChildrenIds once the contract is up to date
-const smartContractAllChildren =
-  Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids_recursive", {
+const allChildren =
+  Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_children_ids", {
     post_id: postId,
   }) ?? [];
-
-const allChildren = getAllChildrenIds(postId, 99, 0);
 
 const childPostIds = props.isPreview ? [] : childPostIdsUnordered.reverse();
 const expandable = props.isPreview ? false : props.expandable ?? false;
