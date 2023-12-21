@@ -67,6 +67,7 @@ return (
               inputProps: {
                 prefix: data.prefix,
               },
+              key: data.prefix + "new-list-item",
             }}
           />
         </div>
