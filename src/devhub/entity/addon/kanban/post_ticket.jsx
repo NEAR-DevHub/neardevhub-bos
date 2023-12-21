@@ -22,6 +22,19 @@ const iconsByPostType = {
   Sponsorship: "bi-cash-coin",
 };
 
+function getToken(token) {
+  let amountUnit = "";
+  if (typeof token === "string") {
+    amountUnit = token;
+  } else if (typeof token === "object") {
+    const address = Object.values(token)?.[0]?.address ?? "";
+    const ftMetadata = Near.view(address, "ft_metadata", {});
+    if (ftMetadata !== null) {
+      amountUnit = ftMetadata?.symbol;
+    }
+  }
+  return amountUnit;
+}
 const KanbanPostTicket = ({ metadata }) => {
   const data = getPost({
     post_id: metadata.id ? parseInt(metadata.id) : 0,
@@ -160,7 +173,7 @@ const KanbanPostTicket = ({ metadata }) => {
   const tagList =
     Array.isArray(tags) && features.tags ? (
       <div className="d-flex flex-wrap gap-2 m-0">
-        {tags.map((tag) => (
+        {(tags ?? []).map((tag) => (
           <a href={href("Feed", { tag })} key={tag}>
             <span className="badge text-bg-primary me-1">{tag}</span>
           </a>
@@ -193,13 +206,15 @@ const KanbanPostTicket = ({ metadata }) => {
         {features.requested_sponsorship_value ||
         features.approved_sponsorship_value ? (
           <span className="d-flex flex-wrap gap-2">
-            <span>{`${
-              post_type === "Solution" ? "Requested" : "Approved"
-            } funding:`}</span>
+            <span>
+              {post_type === "Solution" ? "Requested" : "Approved"} funding:
+            </span>
 
             <span className="d-flex flex-nowrap gap-1">
               <span>{requested_sponsorship_amount ?? amount}</span>
-              <span>{requested_sponsorship_token ?? sponsorship_token}</span>
+              <span>
+                {requested_sponsorship_token ?? getToken(sponsorship_token)}
+              </span>
             </span>
           </span>
         ) : null}

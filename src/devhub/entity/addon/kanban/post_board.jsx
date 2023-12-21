@@ -5,7 +5,7 @@ getPostsByLabel || (getPostsByLabel = () => {});
 
 const postTagsToIdSet = (tags) => {
   return new Set(
-    tags.map((tag) => getPostsByLabel({ label: tag }) ?? []).flat(1)
+    (tags ?? [])?.map((tag) => getPostsByLabel({ label: tag }) ?? []).flat(1)
   );
 };
 
@@ -29,7 +29,7 @@ const configToColumnData = ({ columns, tags }) =>
   }, {});
 
 const KanbanPostBoard = ({ metadata, payload }) => {
-  const columns = Object.entries(configToColumnData(payload)).map(
+  const columns = Object.entries(configToColumnData(payload) ?? {}).map(
     ([columnId, column]) => (
       <div className="col-3" key={`column-${columnId}-view`}>
         <div className="card rounded-4">
@@ -52,7 +52,7 @@ const KanbanPostBoard = ({ metadata, payload }) => {
             </span>
 
             <div class="d-flex flex-column gap-2">
-              {column.postIds.map((postId) => (
+              {column.postIds?.map((postId) => (
                 <Widget
                   src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
                   props={{ metadata: { id: postId, ...metadata.ticket } }}
