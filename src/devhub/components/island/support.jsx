@@ -23,8 +23,8 @@ const Items = [
       </>
     ),
     cta: {
-      href: "/devhub.near/widget/app?page=community&handle=education&tab=Wiki%202",
-      title: "Book a meeting ↗",
+      href: "/devhub.near/widget/app?page=community&handle=devrel&tab=Office%20hours%20/%20Support",
+      title: "Join ↗",
     },
   },
   {
