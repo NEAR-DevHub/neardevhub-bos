@@ -5,43 +5,9 @@
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-const { DRAFT_STATE_STORAGE_KEY, draftState, onDraftStateChange } = VM.require(
+const { draftState, onDraftStateChange } = VM.require(
   "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
 );
-
-if (props.transactionHashes) {
-  const transaction = useCache(
-    () =>
-      asyncFetch("https://rpc.mainnet.near.org", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: "dontcare",
-          method: "tx",
-          params: [props.transactionHashes, context.accountId],
-        }),
-      }).then((res) => res),
-    props.transactionHashes + context.accountId,
-    { subscribe: false }
-  );
-
-  if (transaction !== null) {
-    const transaction_method_name =
-      transaction?.body?.result?.transaction?.actions[0].FunctionCall
-        .method_name;
-
-    const is_edit_or_add_post_transaction =
-      transaction_method_name == "add_post" ||
-      transaction_method_name == "edit_post";
-
-    if (is_edit_or_add_post_transaction) {
-      Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
-    }
-  }
-}
 
 if (!href) {
   return <p>Loading modules...</p>;
@@ -203,6 +169,7 @@ function defaultRenderItem(postId, additionalProps) {
             }
             getPostIds(tag);
           },
+          transactionHashes: props.transactionHashes,
         }}
       />
     </div>

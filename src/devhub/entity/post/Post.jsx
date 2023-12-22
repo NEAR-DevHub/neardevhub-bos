@@ -452,32 +452,6 @@ const buttonsFooter = props.isPreview ? null : (
   </div>
 );
 
-const CreatorWidget = (postType) => {
-  return (
-    <div
-      class={`collapse ${
-        draftState?.parent_post_id == postId && draftState?.postType == postType
-          ? "show"
-          : ""
-      }`}
-      id={`collapse${postType}Creator${postId}`}
-      data-bs-parent={`#accordion${postId}`}
-    >
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
-        props={{
-          postType,
-          onDraftStateChange,
-          draftState:
-            draftState?.parent_post_id == postId ? draftState : undefined,
-          parentId: postId,
-          mode: "Create",
-        }}
-      />
-    </div>
-  );
-};
-
 const tokenMapping = {
   NEAR: "NEAR",
   USDT: {
@@ -515,40 +489,6 @@ function tokenResolver(token) {
     return null; // Invalid input
   }
 }
-
-const EditorWidget = (postType) => {
-  return (
-    <div
-      class={`collapse ${
-        draftState?.edit_post_id == postId && draftState?.postType == postType
-          ? "show"
-          : ""
-      }`}
-      id={`collapse${postType}Editor${postId}`}
-      data-bs-parent={`#accordion${postId}`}
-    >
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
-        props={{
-          postType,
-          postId,
-          mode: "Edit",
-          author_id: post.author_id,
-          labels: post.snapshot.labels,
-          name: post.snapshot.name,
-          description: post.snapshot.description,
-          amount: post.snapshot.amount,
-          token: tokenResolver(post.snapshot.sponsorship_token),
-          supervisor: post.snapshot.supervisor,
-          githubLink: post.snapshot.github_link,
-          onDraftStateChange,
-          draftState:
-            draftState?.edit_post_id == postId ? draftState : undefined,
-        }}
-      />
-    </div>
-  );
-};
 
 const isDraft =
   (draftState?.parent_post_id === postId &&
@@ -598,6 +538,7 @@ function Editor() {
                 parentId: postId,
                 mode: "Create",
                 toggleEditor: toggleEditor,
+                transactionHashes: props.transactionHashes,
               }}
             />
           </>
@@ -623,6 +564,7 @@ function Editor() {
                 draftState:
                   draftState?.edit_post_id == postId ? draftState : undefined,
                 toggleEditor: toggleEditor,
+                transactionHashes: props.transactionHashes,
               }}
             />
           </>
