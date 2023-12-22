@@ -1,7 +1,3 @@
-const { onDraftStateChange } = VM.require(
-  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
-);
-
 const cleanDescription = (description) => {
   return description
     ? description.replace(
@@ -87,7 +83,7 @@ if (props.transactionHashes) {
       transaction_method_name == "edit_post";
 
     if (is_edit_or_add_post_transaction) {
-      Storage.privateSet(DRAFT_STATE_STORAGE_KEY, undefined);
+      props.onDraftStateChange(null);
     }
   }
 }
@@ -225,7 +221,9 @@ const onSubmit = () => {
   }
   let txn = [];
   if (mode == "Create") {
-    onDraftStateChange(Object.assign({}, state, { parent_post_id: parentId }));
+    props.onDraftStateChange(
+      Object.assign({}, state, { parent_post_id: parentId })
+    );
     txn.push({
       contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "add_post",
@@ -237,7 +235,9 @@ const onSubmit = () => {
       gas: Big(10).pow(14),
     });
   } else if (mode == "Edit") {
-    onDraftStateChange(Object.assign({}, state, { edit_post_id: postId }));
+    props.onDraftStateChange(
+      Object.assign({}, state, { edit_post_id: postId })
+    );
     txn.push({
       contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "edit_post",
