@@ -169,6 +169,7 @@ function defaultRenderItem(postId, additionalProps) {
             }
             getPostIds(tag);
           },
+          transactionHashes: props.transactionHashes,
         }}
       />
     </div>
