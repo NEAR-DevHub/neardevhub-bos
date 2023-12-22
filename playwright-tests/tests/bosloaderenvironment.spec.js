@@ -14,7 +14,7 @@ test("should find bos loader configuration in localstorage", async ({
 });
 
 test("should not get bos loader fetch error", async ({ page }) => {
-  await page.goto("/devgovgigs.near/widget/gigs-board.pages.Feed");
+  await page.goto("/devhub.near/widget/app?page=feed");
   const bodyText = await page.textContent("body");
   expect(bodyText).not.toContain("BOS Loader fetch error");
 });
