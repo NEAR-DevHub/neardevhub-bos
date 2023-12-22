@@ -37,7 +37,7 @@ test.describe("Wallet is connected", () => {
       'button:has-text("Create Community")'
     );
 
-    await waitForSelectorToBeVisible(page, 'button:has-text("Laucnh")');
+    await waitForSelectorToBeVisible(page, 'button:has-text("Launch")');
 
     // missing title
     await expectInputValidation(
