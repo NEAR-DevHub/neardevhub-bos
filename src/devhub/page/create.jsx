@@ -603,6 +603,22 @@ return (
                       }}
                     />
                   </div>
+                  <button
+                    data-testid="submit-create-post"
+                    style={{
+                      width: "7rem",
+                      backgroundColor: "#0C7283",
+                      color: "#f3f3f3",
+                    }}
+                    disabled={
+                      state.seekingFunding &&
+                      (!state.amount || state.amount < 1)
+                    }
+                    className="btn btn-light my-2 p-3"
+                    onClick={onSubmit}
+                  >
+                    Submit
+                  </button>
                 </div>
               )}
             </div>
