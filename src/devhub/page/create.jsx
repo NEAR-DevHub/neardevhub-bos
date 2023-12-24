@@ -620,8 +620,10 @@ return (
                       color: "#f3f3f3",
                     }}
                     disabled={
-                      state.seekingFunding &&
-                      (!state.amount || state.amount < 1)
+                      (state.seekingFunding &&
+                        (!state.amount || state.amount < 1)) ||
+                      state.name === "" ||
+                      state.description === ""
                     }
                     className="btn btn-light my-2 p-3"
                     onClick={onSubmit}
