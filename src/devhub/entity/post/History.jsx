@@ -104,7 +104,7 @@ const history = (
                 {readableDate(item.timestamp / 1000000)}
 
                 <Widget
-                  src="mob.near/widget/ProfileImage"
+                  src="${REPL_MOB}/widget/ProfileImage"
                   props={{
                     accountId: item.editor_id,
                     style: {

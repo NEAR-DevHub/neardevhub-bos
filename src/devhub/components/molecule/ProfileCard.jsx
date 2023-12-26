@@ -41,7 +41,7 @@ const ProfileCard = (props) => {
       {!hideImage && (
         <Widget
           key="image"
-          src="mob.near/widget/ProfileImage"
+          src="${REPL_MOB}/widget/ProfileImage"
           props={{
             style: { width: "2.5em", height: "2.5em", marginRight: "0.3em" },
             profile,
@@ -80,7 +80,7 @@ const ProfileCard = (props) => {
   if (props.tooltip === true) {
     return (
       <Widget
-        src="mob.near/widget/Profile.OverlayTrigger"
+        src="${REPL_MOB}/widget/Profile.OverlayTrigger"
         props={{ accountId, children: inner }}
       />
     );

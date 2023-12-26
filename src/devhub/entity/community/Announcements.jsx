@@ -110,7 +110,7 @@ return (
                   loading={
                     <div className="w-100" style={{ height: "200px" }} />
                   }
-                  src="mob.near/widget/MainPage.N.Post"
+                  src="${REPL_MOB}/widget/MainPage.N.Post"
                   props={{
                     accountId: p.accountId,
                     blockHeight: p.blockHeight,
