@@ -760,13 +760,7 @@ const descriptionArea = isUnderPost ? (
         </SeeMore>
       </div>
     ) : (
-      <>
-        <div class="d-flex justify-content-start">
-          <SeeMore onClick={() => State.update({ clamp: true })}>
-            Hide more
-          </SeeMore>
-        </div>
-      </>
+      <></>
     )}
   </div>
 );
