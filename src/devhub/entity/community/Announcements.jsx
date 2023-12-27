@@ -25,6 +25,16 @@ const SidebarContainer = styled.div`
   flex: 1;
 `;
 
+const Heading = styled.div`
+  font-size: 19px;
+  font-weight: 600;
+`;
+
+const SubHeading = styled.div`
+  font-size: 15px;
+  font-weight: 600;
+`;
+
 const Container = styled.div`
   flex-wrap: no-wrap;
   max-width: 100%;
@@ -34,6 +44,10 @@ const Container = styled.div`
   }
   @media screen and (max-width: 960px) {
     flex-wrap: wrap;
+  }
+
+  .card {
+    border-radius: 1rem !important;
   }
 `;
 
@@ -48,9 +62,9 @@ const Tag = styled.div`
   gap: 0.5rem;
   border-width: 1px;
   border-style: solid;
-  font-size: 13px;
+  font-size: 14px;
   color: rgba(0, 236, 151, 1);
-  font-weight: 700;
+  font-weight: 800;
 `;
 
 return (
@@ -60,7 +74,7 @@ return (
         <div className="d-flex flex-column gap-4">
           {context.accountId &&
             (communityData?.admins ?? []).includes(context.accountId) && (
-              <div className="card p-3">
+              <div className="card p-4">
                 <Widget
                   src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                   props={{
@@ -73,7 +87,7 @@ return (
               </div>
             )}
           <div className="d-flex flex-wrap justify-content-between">
-            <h5>Announcements</h5>
+            <Heading>Announcements</Heading>
             <div className="d-flex align-items-center gap-2">
               <select
                 name="sort"
@@ -89,7 +103,7 @@ return (
               </select>
             </div>
           </div>
-          <div className="card p-3">
+          <div className="card p-4">
             <Feed
               index={[
                 {
@@ -105,15 +119,18 @@ return (
                   },
                 },
               ]}
-              Item={(p) => (
+              Item={(item) => (
                 <Widget
-                  loading={
-                    <div className="w-100" style={{ height: "200px" }} />
-                  }
-                  src="${REPL_MOB}/widget/MainPage.N.Post"
+                  src="near/widget/Posts.Post"
                   props={{
-                    accountId: p.accountId,
-                    blockHeight: p.blockHeight,
+                    accountId: item.accountId,
+                    blockHeight: item.blockHeight,
+                    blockTimestamp: item.block_timestamp,
+                    content: item.content,
+                    comments: item.comments,
+                    likes: item.accounts_liked,
+                    verifications: item.verifications,
+                    showFlagAccountFeature: false,
                   }}
                 />
               )}
@@ -123,14 +140,14 @@ return (
       </MainContent>
       <SidebarContainer>
         <div className="d-flex flex-column gap-3">
-          <div className="card p-3">
-            <p>{communityData?.description}</p>
-            <p className="d-flex gap-2 flex-wrap">
+          <div className="card p-4">
+            <div className="mb-2">{communityData?.description}</div>
+            <div className="d-flex gap-2 flex-wrap">
               <Tag>{communityData?.tag} </Tag>
-            </p>
+            </div>
           </div>
-          <div className="card p-3 d-flex flex-column gap-2">
-            <h6>Community Admins</h6>
+          <div className="card p-4 d-flex flex-column gap-2">
+            <SubHeading>Community Admins</SubHeading>
             {(communityData?.admins ?? []).map((accountId) => (
               <div
                 key={accountId}
