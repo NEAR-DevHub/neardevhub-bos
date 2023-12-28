@@ -721,6 +721,12 @@ const clampedContent = needClamp
   ? contentArray.slice(0, 3).join("\n")
   : snapshot.description;
 
+const SeeMore = styled.a`
+  cursor: pointer;
+  color: #00b774 !important;
+  font-weight: bold;
+`;
+
 // Should make sure the posts under the currently top viewed post are limited in size.
 const descriptionArea = isUnderPost ? (
   <LimitedMarkdown className="overflow-auto" key="description-area">
@@ -749,13 +755,9 @@ const descriptionArea = isUnderPost ? (
     </div>
     {state.clamp ? (
       <div class="d-flex justify-content-start">
-        <a
-          style={{ cursor: "pointer", color: "#00ec97" }}
-          class="btn-link text-dark fw-bold text-decoration-none"
-          onClick={() => State.update({ clamp: false })}
-        >
+        <SeeMore onClick={() => State.update({ clamp: false })}>
           See more
-        </a>
+        </SeeMore>
       </div>
     ) : (
       <></>
