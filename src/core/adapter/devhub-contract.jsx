@@ -153,9 +153,9 @@ function getPostsByLabel({ label }) {
   );
 }
 
-function addCommunityAnnouncement({ handle, data }) {
+function setCommunitySocialDB({ handle, data }) {
   return (
-    Near.call("${REPL_DEVHUB_CONTRACT}", "add_community_announcement", {
+    Near.call("${REPL_DEVHUB_CONTRACT}", "set_community_socialdb", {
       handle,
       data,
     }) ?? null
@@ -215,6 +215,6 @@ return {
   getPost,
   getPostsByAuthor,
   getPostsByLabel,
-  addCommunityAnnouncement,
+  setCommunitySocialDB,
   useQuery,
 };

@@ -2,9 +2,6 @@ if (!context.accountId) {
   return <></>;
 }
 
-const optimisticUpdateFn = props.optimisticUpdateFn;
-const clearOptimisticUpdateFn = props.clearOptimisticUpdateFn;
-
 State.init({
   image: {},
   text: "",
@@ -81,33 +78,14 @@ function composeData() {
   return data;
 }
 
-function onCancel() {
-  if (clearOptimisticUpdateFn) {
-    clearOptimisticUpdateFn();
-  }
-}
-
-function onPostClick() {
-  if (optimisticUpdateFn) {
-    const post = {
-      account_id: context.accountId,
-      block_height: "now",
-      block_timestamp: Date.now() * 1000000,
-      content,
-      comments: [],
-      accounts_liked: [],
-    };
-    optimisticUpdateFn(post);
-  }
-}
-
 const handleSubmit = () => {
   const data = composeData();
-  onSubmit(data);
-  onCancel();
+  if (props.onSubmit) {
+    props.onSubmit(data);
+  }
 };
 
-function onCommit() {
+function resetState() {
   State.update({
     image: {},
     text: "",
