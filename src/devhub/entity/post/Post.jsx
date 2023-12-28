@@ -648,7 +648,7 @@ const postExtra =
       <h6 class="card-subtitle mb-2 text-muted">
         Supervisor:{" "}
         <Widget
-          src={"neardevgov.near/widget/ProfileLine"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileLine"}
           props={{ accountId: snapshot.supervisor }}
         />
       </h6>
