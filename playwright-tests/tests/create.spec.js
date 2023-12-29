@@ -28,7 +28,7 @@ test.describe("Wallet is connected", () => {
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
 
-  test("should be able to submit a solution with USDC as currency", async ({
+  test("should be able to submit a solution (funding request) with USDC as currency", async ({
     page,
   }) => {
     await page.goto("/devhub.near/widget/app?page=create");
@@ -41,12 +41,43 @@ test.describe("Wallet is connected", () => {
       "The test title"
     );
 
+    const descriptionInput = page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await descriptionInput.focus();
+    await descriptionInput.fill("Developer contributor report by somebody");
+
+    const tagsInput = page.locator(".rbt-input-multi");
+    await tagsInput.focus();
+    await tagsInput.pressSequentially("paid-cont", { delay: 100 });
+    await tagsInput.press("Tab");
+    await tagsInput.pressSequentially("developer-da", { delay: 100 });
+    await tagsInput.press("Tab");
+
     await page.click('label:has-text("Yes") button');
     await selectAndAssert(page, 'div:has-text("Currency") select', "USDT");
     await setInputAndAssert(
       page,
       'input[data-testid="requested-amount-editor"]',
       "300"
+    );
+    await page.click('button:has-text("Submit")');
+    await expect(page.locator("div.modal-body code")).toHaveText(
+      JSON.stringify(
+        {
+          parent_id: null,
+          labels: ["paid-contributor", "developer-dao"],
+          body: {
+            name: "The test title",
+            description:
+              "###### Requested amount: 300 USDT\n###### Requested sponsor: @neardevdao.near\nDeveloper contributor report by somebody",
+            post_type: "Solution",
+            solution_version: "V1",
+          },
+        },
+        null,
+        1
+      )
     );
   });
 
