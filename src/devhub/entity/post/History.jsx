@@ -6,7 +6,6 @@ props.newTab: boolean;
 props.timestamp: number;
 props.referral: any;
 */
-
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
@@ -78,11 +77,14 @@ const history = (
             >
               <a
                 class="dropdown-item"
-                href={href("post", {
-                  id: postId,
-                  timestamp: item.timestamp,
-                  compareTimestamp: null,
-                  referral,
+                href={href({
+                  widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
+                  params: {
+                    id: postId,
+                    timestamp: item.timestamp,
+                    compareTimestamp: null,
+                    referral,
+                  },
                 })}
                 target={props.newTab ? "_blank" : undefined}
               >
@@ -106,11 +108,14 @@ const history = (
             </div>
             <a
               class="dropdown-item"
-              href={href("Post", {
-                id: postId,
-                timestamp: currentTimestamp,
-                compareTimestamp: item.timestamp,
-                referral,
+              href={href({
+                widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
+                params: {
+                  id: postId,
+                  timestamp: currentTimestamp,
+                  compareTimestamp: item.timestamp,
+                  referral,
+                },
               })}
             >
               <i class="bi bi-file-earmark-diff" />
