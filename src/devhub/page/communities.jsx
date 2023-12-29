@@ -186,7 +186,7 @@ return (
           </div>
         </div>
       </div>
-      <div className="d-flex flex-wrap align-content-start gap-4 p-4 w-100 h-100">
+      <div className="d-flex flex-wrap align-content-start gap-4 py-2 px-4 w-100 h-100">
         {showSpawner && (
           <Widget
             src="${REPL_DEVHUB}/widget/devhub.entity.community.Spawner"
