@@ -7,7 +7,39 @@ const cleanDescription = (description) => {
     : description;
 };
 
-const postType = props.postType ?? "Sponsorship";
+const postTypeOptions = {
+  Idea: {
+    name: "Idea",
+    icon: "bi-lightbulb",
+    description:
+      "Get feedback from the community about a problem, opportunity, or need.",
+  },
+
+  Solution: {
+    name: "Solution",
+    icon: "bi-rocket",
+    description:
+      "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution.",
+  },
+};
+
+let fields = {
+  Comment: ["description"],
+  Idea: ["name", "description"],
+  Solution: ["name", "description", "fund_raising"],
+  Attestation: ["name", "description"],
+  Sponsorship: [
+    "name",
+    "description",
+    "amount",
+    "sponsorship_token",
+    "supervisor",
+  ],
+  Github: ["githubLink", "name", "description"],
+};
+
+const isCreatePostPage = props.isCreatePostPage ?? false;
+const postType = props.postType ?? "Idea";
 const parentId = props.parentId ?? null;
 const postId = props.postId ?? null;
 const mode = props.mode ?? "Create";
@@ -41,6 +73,7 @@ initState({
   draftStateApplied: false,
   mentionInput: "", // text next to @ tag
   mentionsArray: [], // all the mentions in the description
+  displayFields: fields[postType],
 });
 
 /* INCLUDE: "core/lib/autocomplete" */
@@ -135,20 +168,12 @@ if (!state.draftStateApplied && props.draftState) {
   State.update({ ...props.draftState, draftStateApplied: true });
 }
 
-let fields = {
-  Comment: ["description"],
-  Idea: ["name", "description"],
-  Solution: ["name", "description", "fund_raising"],
-  Attestation: ["name", "description"],
-  Sponsorship: [
-    "name",
-    "description",
-    "amount",
-    "sponsorship_token",
-    "supervisor",
-  ],
-  Github: ["githubLink", "name", "description"],
-}[postType];
+const typeSwitch = (optionName) => {
+  State.update({
+    postType: optionName,
+    displayFields: fields[optionName],
+  });
+};
 
 // This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onClick, it will give `null` and we cannot tell the result is true or false.
@@ -214,8 +239,8 @@ const onSubmit = () => {
       github_version: "V0",
       github_link: state.githubLink,
     },
-  }[postType];
-  body["post_type"] = postType;
+  }[state.postType];
+  body["post_type"] = state.postType;
   if (!context.accountId) {
     return;
   }
@@ -384,6 +409,7 @@ const nameDiv = (
   <div className="col-lg-6  mb-2">
     Title:
     <input
+      data-testid="name-editor"
       type="text"
       value={state.name}
       onChange={(event) => State.update({ name: event.target.value })}
@@ -534,6 +560,7 @@ const fundraisingDiv = (
       Requested amount
       <span class="text-muted fw-normal">(Numbers Only)</span>
       <input
+        data-testid="requested-amount-editor"
         type="number"
         value={parseInt(state.amount) > 0 ? state.amount : ""}
         min={0}
@@ -582,7 +609,8 @@ function generateDescription(text, amount, token, supervisor, seekingFunding) {
 
 const [tab, setTab] = useState("editor");
 
-const renamedPostType = postType == "Submission" ? "Solution" : postType;
+const renamedPostType =
+  state.postType == "Submission" ? "Solution" : state.postType;
 // Below there is a weird code with fields.includes("githubLink") ternary operator.
 // This is to hack around rendering bug of near.social.
 return (
@@ -633,30 +661,67 @@ return (
             ></button>
           </div>
         )}
+        {isCreatePostPage && (
+          <div>
+            <p class="card-title fw-bold fs-6">What do you want to create?</p>
+            <div class="d-flex flex-row gap-2">
+              {Object.values(postTypeOptions).map((option) => (
+                <button
+                  className={`btn btn-${
+                    state.postType === option.name
+                      ? "primary"
+                      : "outline-secondary"
+                  }`}
+                  data-testid={`btn-${option.name.toLowerCase()}`}
+                  key={option.name}
+                  onClick={() => typeSwitch(option.name)}
+                  style={
+                    state.postType === option.name
+                      ? {
+                          backgroundColor: "#0C7283",
+                          color: "#f3f3f3",
+                        }
+                      : null
+                  }
+                  type="button"
+                >
+                  <i className={`bi ${option.icon}`} />
+                  <span>{option.name}</span>
+                </button>
+              ))}
+            </div>
+            <p class="text-muted w-75 my-1">
+              {postTypeOptions[state.postType].description}
+            </p>
+          </div>
+        )}
         {/* This statement around the githubLinkDiv creates a weird render bug
       where the title renders extra on state change. */}
-        {fields.includes("githubLink") ? (
+        {state.displayFields.includes("githubLink") ? (
           <div className="row">
-            {fields.includes("githubLink") && githubLinkDiv}
+            {state.displayFields.includes("githubLink") && githubLinkDiv}
             {labelEditor}
-            {fields.includes("name") && nameDiv}
-            {fields.includes("description") && callDescriptionDiv()}
+            {state.displayFields.includes("name") && nameDiv}
+            {state.displayFields.includes("description") &&
+              callDescriptionDiv()}
           </div>
         ) : (
           <div className="row">
             {labelEditor}
-            {fields.includes("name") && nameDiv}
-            {fields.includes("amount") && amountDiv}
-            {fields.includes("sponsorship_token") && tokenDiv}
-            {fields.includes("supervisor") && supervisorDiv}
-            {fields.includes("description") && callDescriptionDiv()}
-            {fields.includes("fund_raising") && isFundraisingDiv}
+            {state.displayFields.includes("name") && nameDiv}
+            {state.displayFields.includes("amount") && amountDiv}
+            {state.displayFields.includes("sponsorship_token") && tokenDiv}
+            {state.displayFields.includes("supervisor") && supervisorDiv}
+            {state.displayFields.includes("description") &&
+              callDescriptionDiv()}
+            {state.displayFields.includes("fund_raising") && isFundraisingDiv}
             {state.seekingFunding &&
-              fields.includes("fund_raising") &&
+              state.displayFields.includes("fund_raising") &&
               fundraisingDiv}
           </div>
         )}
         <button
+          data-testid="submit-create-post"
           style={{
             width: "7rem",
             backgroundColor: "#0C7283",
@@ -698,7 +763,7 @@ return (
                 post_type: postType,
                 name: state.name,
                 description:
-                  postType == "Solution"
+                  state.postType == "Solution"
                     ? generateDescription(
                         state.description,
                         state.amount,
