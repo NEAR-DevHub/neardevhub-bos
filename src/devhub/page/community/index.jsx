@@ -1,3 +1,9 @@
+const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
+
+if (!Struct) {
+  return "Loading...";
+}
+
 const Button = styled.button`
   height: 40px;
   font-size: 14px;
@@ -46,6 +52,8 @@ if (!tab) {
   tab = "Activity";
 }
 
+tab = Struct.normalizeLabel(tab);
+
 const [isLinkCopied, setLinkCopied] = useState(false);
 
 const tabs = [
@@ -85,7 +93,7 @@ const onShareClick = () =>
     )
     .then(setLinkCopied(true));
 
-let currentTab = tabs.find((it) => it.title === tab);
+let currentTab = tabs.find((it) => Struct.normalizeLabel(it.title) === tab);
 
 const CommunityName = styled.span`
   color: #151515;

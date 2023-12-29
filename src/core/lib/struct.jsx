@@ -78,4 +78,21 @@ const pick = (sourceObject, keysToPick) => {
 const typeMatch = (input) =>
   input !== null && typeof input === "object" && !Array.isArray(input);
 
-return { deepFieldUpdate, isEqual, pick, toOrdered, typeMatch };
+/**
+ * Transform input into a consistent and standardized format
+ *
+ * @param {string} label - The input to normalize.
+ * @returns {string} - normalized input
+ */
+
+const normalizeLabel = (label) =>
+  label
+    .replaceAll(/[- \.]/g, "_")
+    .replaceAll(/[^\w]+/g, "")
+    .replaceAll(/_+/g, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "")
+    .toLowerCase()
+    .trim("-");
+
+return { deepFieldUpdate, isEqual, pick, toOrdered, typeMatch, normalizeLabel };
