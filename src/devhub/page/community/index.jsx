@@ -289,10 +289,10 @@ return (
                     params: {
                       page: "community",
                       handle: community.handle,
-                      tab: title,
+                      tab: normalize(title),
                     },
                   })}
-                  aria-current={tab === title && "page"}
+                  aria-current={tab === normalize(title) && "page"}
                   className={[
                     "d-inline-flex gap-2",
                     tab === normalize(title) ? "nav-link active" : "nav-link",

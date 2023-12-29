@@ -1,6 +1,6 @@
 const { normalize } =
   VM.require("${REPL_DEVHUB}/widget/core.lib.stringUtils") || (() => {});
-  
+
 const CenteredMessage = styled.div`
   display: flex;
   flex-direction: column;
