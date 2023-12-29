@@ -7,22 +7,7 @@ props.timestamp: number;
 props.referral: any;
 */
 
-function href(widgetName, linkProps) {
-  linkProps = { ...linkProps };
-  if (props.referral) {
-    linkProps.referral = props.referral;
-  }
-
-  const linkPropsQuery = Object.entries(linkProps)
-    .filter(([_key, nullable]) => (nullable ?? null) !== null)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `/${REPL_DEVHUB}/widget/devhub.page.${widgetName}${
-    linkPropsQuery ? "?" : ""
-  }${linkPropsQuery}`;
-}
-/* END_INCLUDE: "common.jsx" */
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
 const post =
