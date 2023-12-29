@@ -1,12 +1,12 @@
 const { handle } = props;
 const { Feed } = VM.require("devs.near/widget/Module.Feed");
-const { getCommunity, addCommunityAnnouncement } = VM.require(
+const { getCommunity, setCommunitySocialDB } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 Feed = Feed || (() => <></>);
 getCommunity = getCommunity || (() => <></>);
-addCommunityAnnouncement = addCommunityAnnouncement || (() => <></>);
+setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 
 const communityData = getCommunity({ handle });
 
@@ -78,10 +78,7 @@ return (
                 <Widget
                   src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                   props={{
-                    optimisticUpdateFn: () => console.log("commit"),
-                    clearOptimisticUpdateFn: () => console.log("clear"),
-                    onSubmit: (v) =>
-                      addCommunityAnnouncement({ handle, data: v }),
+                    onSubmit: (v) => setCommunitySocialDB({ handle, data: v }),
                   }}
                 />
               </div>
@@ -112,7 +109,7 @@ return (
                   options: {
                     limit: 10,
                     order: "desc",
-                    accountId: [`${handle}.communities.devhub.near`],
+                    accountId: [`${handle}.community.${REPL_DEVHUB_CONTRACT}`],
                   },
                   cacheOptions: {
                     ignoreCache: true,
