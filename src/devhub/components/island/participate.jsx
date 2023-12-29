@@ -47,7 +47,7 @@ const Links = [
       },
       {
         title: "Host an Event",
-        href: "/devhub.near/widget/app?page=community&handle=hacks&tab=Wiki%202",
+        href: "/devhub.near/widget/app?page=community&handle=hacks&tab=wiki-202",
         count: 3,
       },
     ],
@@ -61,7 +61,7 @@ const Links = [
       },
       {
         title: "Join the Fellowship",
-        href: "/devhub.near/widget/app?page=community&handle=fellowship&tab=Wiki%201",
+        href: "/devhub.near/widget/app?page=community&handle=fellowship&tab=wiki-201",
         count: 5,
       },
       {
