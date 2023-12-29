@@ -33,7 +33,7 @@ const UserList = ({ name, users }) => (
             style={{ fontWeight: 500 }}
           >
             <Widget
-              src="neardevgov.near/widget/ProfileLine"
+              src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileLine"
               props={{ accountId: user, hideAccountId: true, tooltip: true }}
             />
           </span>
