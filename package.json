@@ -29,7 +29,8 @@
     "replace": "node ./scripts/replace.js -a devhub.near -c devgovgigs.near -n mainnet",
     "gateway": "node scripts/dev-gateway.mjs",
     "test": "npx playwright test",
-    "watch": "node scripts/watch.js"
+    "watch": "node scripts/watch.js",
+    "test:watch:codespaces": "npm test -- --ui-host=0.0.0.0"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run fmt"
