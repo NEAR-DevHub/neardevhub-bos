@@ -1,3 +1,20 @@
+const CenteredMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 384px;
+`;
+
+if (!context.accountId) {
+  return (
+    <CenteredMessage height={"384px"}>
+      <h2>Please sign in to create a post.</h2>
+    </CenteredMessage>
+  );
+}
+
 const cleanDescription = (description) => {
   return description
     ? description.replace(
@@ -368,7 +385,9 @@ const existingLabels = existingLabelStrings
 
 const labelEditor = (
   <div className="col-lg-12  mb-2">
-    Labels:
+    <label htmlFor="labels" className="fs-6 fw-bold mb-1">
+      Labels
+    </label>
     <Typeahead
       multiple
       labelKey="name"
@@ -406,9 +425,13 @@ const githubLinkDiv = (
 );
 
 const nameDiv = (
-  <div className="col-lg-6  mb-2">
-    Title:
+  <div className="col-lg-12  mb-2">
+    <label htmlFor="title" className="fs-6 fw-bold mb-1">
+      Title
+    </label>
     <input
+      name="title"
+      id="title"
       data-testid="name-editor"
       type="text"
       value={state.name}
@@ -458,8 +481,9 @@ const supervisorDiv = (
 const callDescriptionDiv = () => {
   return (
     <div className="col-lg-12  mb-2">
-      Description:
-      <br />
+      <label htmlFor="description" className="fs-6 fw-bold mb-1">
+        Description
+      </label>
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"}
         props={{
@@ -636,7 +660,7 @@ return (
           </li>
         </ul>
       </div>
-      {tab === "editor" && (
+      {!isCreatePostPage && tab === "editor" && (
         <div className="my-3">
           {mode} {renamedPostType}
         </div>
@@ -727,7 +751,11 @@ return (
             backgroundColor: "#0C7283",
             color: "#f3f3f3",
           }}
-          disabled={state.seekingFunding && (!state.amount || state.amount < 1)}
+          disabled={
+            (state.seekingFunding && (!state.amount || state.amount < 1)) ||
+            state.name === "" ||
+            state.description === ""
+          }
           className="btn btn-light mb-2 p-3"
           onClick={onSubmit}
         >
