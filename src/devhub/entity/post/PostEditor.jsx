@@ -1,3 +1,6 @@
+const { normalize } =
+  VM.require("${REPL_DEVHUB}/widget/core.lib.stringUtils") || (() => {});
+
 const cleanDescription = (description) => {
   return description
     ? description.replace(
@@ -233,16 +236,6 @@ const onSubmit = () => {
   }
 };
 
-const normalizeLabel = (label) =>
-  label
-    .replaceAll(/[- \.]/g, "_")
-    .replaceAll(/[^\w]+/g, "")
-    .replaceAll(/_+/g, "-")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "")
-    .toLowerCase()
-    .trim("-");
-
 const checkLabel = (label) => {
   Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
     editor: context.accountId,
@@ -264,7 +257,7 @@ const checkLabel = (label) => {
 
 const setLabels = (labels) => {
   labels = labels.map((o) => {
-    o.name = normalizeLabel(o.name);
+    o.name = normalize(o.name);
     return o;
   });
   if (labels.length < state.labels.length) {
