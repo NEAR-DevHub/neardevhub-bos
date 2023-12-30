@@ -14,11 +14,7 @@ test.describe("Wallet is connected", () => {
 
     await page.click('button:has-text("Solution")');
 
-    await setInputAndAssert(
-      page,
-      'input[data-testid="name-editor"]',
-      "The test title"
-    );
+    await page.getByTestId("name-editor").fill("The test title");
 
     const descriptionInput = page
       .frameLocator("iframe")
@@ -35,11 +31,8 @@ test.describe("Wallet is connected", () => {
 
     await page.click('label:has-text("Yes") button');
     await selectAndAssert(page, 'div:has-text("Currency") select', "USDT");
-    await setInputAndAssert(
-      page,
-      'input[data-testid="requested-amount-editor"]',
-      "300"
-    );
+    await page.getByTestId("requested-amount-editor").fill("300");
+
     await page.click('button:has-text("Submit")');
     await expect(page.locator("div.modal-body code")).toHaveText(
       JSON.stringify(
@@ -71,16 +64,6 @@ test.describe("Wallet is connected by moderator", () => {
     await page.click('button:has-text("Reply")');
     await page.click('li:has-text("Sponsorship")');
 
-    const tagsInput = page.getByText("Labels:").locator(".rbt-input-multi");
-    await tagsInput.click();
-    await tagsInput.pressSequentially("funding", { delay: 100 });
-    await tagsInput.press("Tab");
-    await tagsInput.pressSequentially("funding-information-coll", {
-      delay: 100,
-    });
-    await tagsInput.press("Tab");
-    await tagsInput.blur();
-
     await page
       .getByText("Title:")
       .getByRole("textbox")
@@ -90,7 +73,8 @@ test.describe("Wallet is connected by moderator", () => {
       .getByText("Amount:", { exact: true })
       .getByRole("textbox")
       .fill("7050");
-    await (await page.getByLabel("Select currency")).selectOption("USDC");
+
+    await page.getByLabel("Select currency").selectOption("USDC");
 
     const descriptionInput = page
       .frameLocator("iframe")
@@ -99,7 +83,15 @@ test.describe("Wallet is connected by moderator", () => {
     await descriptionInput.fill(
       "Congrats on getting your funding request approved"
     );
-    await descriptionInput.blur();
+
+    const tagsInput = page.getByText("Labels:").locator(".rbt-input-multi");
+    await tagsInput.click();
+    await tagsInput.pressSequentially("funding", { delay: 100 });
+    await tagsInput.press("Tab");
+    await tagsInput.pressSequentially("funding-information-coll", {
+      delay: 100,
+    });
+    await tagsInput.press("Tab");
 
     await page.click('button:has-text("Submit")');
 
