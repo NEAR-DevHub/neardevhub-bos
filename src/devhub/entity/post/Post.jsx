@@ -529,7 +529,7 @@ const seekingFunding = amount !== null || token !== null || supervisor !== null;
 
 function Editor() {
   return (
-    <div class="row" id={`accordion${postId}`} key="editors-footer">
+    <div class="row mt-2" id={`accordion${postId}`} key="editors-footer">
       <div
         key={`${state.postType}${state.editorType}${postId}`}
         className={"w-100"}

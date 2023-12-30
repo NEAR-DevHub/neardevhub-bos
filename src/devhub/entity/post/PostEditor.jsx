@@ -692,202 +692,208 @@ const renamedPostType =
 // Below there is a weird code with fields.includes("githubLink") ternary operator.
 // This is to hack around rendering bug of near.social.
 
-if (showPostPage) {
-  return (
-    <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.post.Post"}
-      props={{
-        id: postId,
-        expandable: true,
-        defaultExpanded: false,
-        isInList: true,
-        isPreview: false,
-        onDraftStateChange: props.onDraftStateChange,
-        referral: postId,
-        transactionHashes: props.transactionHashes,
-      }}
-    />
-  );
-} else
-  return (
-    <div className="card">
-      <div className="card-header">
-        <div>
-          <ul class="nav nav-tabs">
-            <li class="nav-item">
-              <button
-                class={`nav-link ${tab === "editor" ? "active" : ""}`}
-                onClick={() => setTab("editor")}
-              >
-                Editor
-              </button>
-            </li>
-            <li class="nav-item">
-              <button
-                class={`nav-link ${tab === "preview" ? "active" : ""}`}
-                onClick={() => setTab("preview")}
-              >
-                Preview
-              </button>
-            </li>
-          </ul>
-        </div>
-        {!isCreatePostPage && tab === "editor" && (
-          <div className="my-3">
-            {mode} {renamedPostType}
-          </div>
-        )}
-        {tab === "preview" && <div className="my-3">Post Preview</div>}
-      </div>
-      <div class="card-body">
-        {tab === "editor" && (
-          <>
-            {state.warning && (
-              <div
-                class="alert alert-warning alert-dismissible fade show"
-                role="alert"
-              >
-                {state.warning}
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="alert"
-                  aria-label="Close"
-                  onClick={() => State.update({ warning: "" })}
-                ></button>
-              </div>
-            )}
-            {isCreatePostPage && (
-              <div>
-                <p class="card-title fw-bold fs-6">
-                  What do you want to create?
-                </p>
-                <div class="d-flex flex-row gap-2">
-                  {Object.values(postTypeOptions).map((option) => (
-                    <button
-                      className={`btn btn-${
-                        state.postType === option.name
-                          ? "primary"
-                          : "outline-secondary"
-                      }`}
-                      data-testid={`btn-${option.name.toLowerCase()}`}
-                      key={option.name}
-                      onClick={() => typeSwitch(option.name)}
-                      style={
-                        state.postType === option.name
-                          ? {
-                              backgroundColor: "#0C7283",
-                              color: "#f3f3f3",
-                            }
-                          : null
-                      }
-                      type="button"
-                    >
-                      <i className={`bi ${option.icon}`} />
-                      <span>{option.name}</span>
-                    </button>
-                  ))}
-                </div>
-                <p class="text-muted w-75 my-1">
-                  {postTypeOptions[state.postType].description}
-                </p>
-              </div>
-            )}
-            {/* This statement around the githubLinkDiv creates a weird render bug
-      where the title renders extra on state change. */}
-            {state.displayFields.includes("githubLink") ? (
-              <div className="row">
-                {state.displayFields.includes("githubLink") && githubLinkDiv}
-                {labelEditor}
-                {state.displayFields.includes("name") && nameDiv}
-                {state.displayFields.includes("description") &&
-                  callDescriptionDiv()}
-              </div>
-            ) : (
-              <div className="row">
-                {labelEditor}
-                {state.displayFields.includes("name") && nameDiv}
-                {state.displayFields.includes("amount") && amountDiv}
-                {state.displayFields.includes("sponsorship_token") && tokenDiv}
-                {state.displayFields.includes("supervisor") && supervisorDiv}
-                {state.displayFields.includes("description") &&
-                  callDescriptionDiv()}
-                {state.displayFields.includes("fund_raising") &&
-                  isFundraisingDiv}
-                {state.seekingFunding &&
-                  state.displayFields.includes("fund_raising") &&
-                  fundraisingDiv}
-              </div>
-            )}
-
-            {disclaimer}
-          </>
-        )}
-        {tab === "preview" && (
-          <div className="mb-2">
-            <Widget
-              src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
-              props={{
-                isPreview: true,
-                id: 0, // irrelevant
-                post: {
-                  author_id: state.author_id,
-                  likes: [],
-                  snapshot: {
-                    editor_id: state.editor_id,
-                    labels: state.labelStrings,
-                    post_type: postType,
-                    name: state.name,
-                    description:
-                      state.postType == "Solution"
-                        ? generateDescription(
-                            state.description,
-                            state.amount,
-                            state.token,
-                            state.supervisor,
-                            state.seekingFunding
-                          )
-                        : state.description,
-                    amount: state.amount,
-                    sponsorship_token: state.token,
-                    supervisor: state.supervisor,
-                    github_link: state.githubLink,
-                  },
-                },
-              }}
-            />
-          </div>
-        )}
-        <button
-          data-testid="submit-create-post"
-          style={{
-            width: "7rem",
-            backgroundColor: "#0C7283",
-            color: "#f3f3f3",
+return (
+  <div className="d-flex flex-column flex-grow-1 w-100">
+    <div className="mx-2 mx-md-5 mb-5">
+      {showPostPage ? (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.entity.post.Post"}
+          props={{
+            id: postId,
+            expandable: true,
+            defaultExpanded: false,
+            isInList: true,
+            isPreview: false,
+            onDraftStateChange: props.onDraftStateChange,
+            referral: postId,
+            transactionHashes: props.transactionHashes,
           }}
-          disabled={
-            (state.seekingFunding && (!state.amount || state.amount < 1)) ||
-            (isCreatePostPage &&
-              (state.name === "" || state.description === ""))
-          }
-          className="btn btn-light mb-2 p-3"
-          onClick={onSubmit}
-        >
-          Submit
-        </button>
-        {!isCreatePostPage && (
-          <button
-            style={{
-              width: "7rem",
-              backgroundColor: "#fff",
-              color: "#000",
-            }}
-            className="btn btn-light mb-2 p-3"
-            onClick={() => props.setEditorState(false)}
-          >
-            Cancel
-          </button>
-        )}
-      </div>
+        />
+      ) : (
+        <div className="card">
+          <div className="card-header">
+            <div>
+              <ul class="nav nav-tabs">
+                <li class="nav-item">
+                  <button
+                    class={`nav-link ${tab === "editor" ? "active" : ""}`}
+                    onClick={() => setTab("editor")}
+                  >
+                    Editor
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button
+                    class={`nav-link ${tab === "preview" ? "active" : ""}`}
+                    onClick={() => setTab("preview")}
+                  >
+                    Preview
+                  </button>
+                </li>
+              </ul>
+            </div>
+            {!isCreatePostPage && tab === "editor" && (
+              <div className="my-3">
+                {mode} {renamedPostType}
+              </div>
+            )}
+            {tab === "preview" && <div className="my-3">Post Preview</div>}
+          </div>
+          <div class="card-body">
+            {tab === "editor" && (
+              <>
+                {state.warning && (
+                  <div
+                    class="alert alert-warning alert-dismissible fade show"
+                    role="alert"
+                  >
+                    {state.warning}
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="alert"
+                      aria-label="Close"
+                      onClick={() => State.update({ warning: "" })}
+                    ></button>
+                  </div>
+                )}
+                {isCreatePostPage && (
+                  <div>
+                    <p class="card-title fw-bold fs-6">
+                      What do you want to create?
+                    </p>
+                    <div class="d-flex flex-row gap-2">
+                      {Object.values(postTypeOptions).map((option) => (
+                        <button
+                          className={`btn btn-${
+                            state.postType === option.name
+                              ? "primary"
+                              : "outline-secondary"
+                          }`}
+                          data-testid={`btn-${option.name.toLowerCase()}`}
+                          key={option.name}
+                          onClick={() => typeSwitch(option.name)}
+                          style={
+                            state.postType === option.name
+                              ? {
+                                  backgroundColor: "#0C7283",
+                                  color: "#f3f3f3",
+                                }
+                              : null
+                          }
+                          type="button"
+                        >
+                          <i className={`bi ${option.icon}`} />
+                          <span>{option.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <p class="text-muted w-75 my-1">
+                      {postTypeOptions[state.postType].description}
+                    </p>
+                  </div>
+                )}
+                {/* This statement around the githubLinkDiv creates a weird render bug
+      where the title renders extra on state change. */}
+                {state.displayFields.includes("githubLink") ? (
+                  <div className="row">
+                    {state.displayFields.includes("githubLink") &&
+                      githubLinkDiv}
+                    {labelEditor}
+                    {state.displayFields.includes("name") && nameDiv}
+                    {state.displayFields.includes("description") &&
+                      callDescriptionDiv()}
+                  </div>
+                ) : (
+                  <div className="row">
+                    {labelEditor}
+                    {state.displayFields.includes("name") && nameDiv}
+                    {state.displayFields.includes("amount") && amountDiv}
+                    {state.displayFields.includes("sponsorship_token") &&
+                      tokenDiv}
+                    {state.displayFields.includes("supervisor") &&
+                      supervisorDiv}
+                    {state.displayFields.includes("description") &&
+                      callDescriptionDiv()}
+                    {state.displayFields.includes("fund_raising") &&
+                      isFundraisingDiv}
+                    {state.seekingFunding &&
+                      state.displayFields.includes("fund_raising") &&
+                      fundraisingDiv}
+                  </div>
+                )}
+
+                {disclaimer}
+              </>
+            )}
+            {tab === "preview" && (
+              <div className="mb-2">
+                <Widget
+                  src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
+                  props={{
+                    isPreview: true,
+                    id: 0, // irrelevant
+                    post: {
+                      author_id: state.author_id,
+                      likes: [],
+                      snapshot: {
+                        editor_id: state.editor_id,
+                        labels: state.labelStrings,
+                        post_type: postType,
+                        name: state.name,
+                        description:
+                          state.postType == "Solution"
+                            ? generateDescription(
+                                state.description,
+                                state.amount,
+                                state.token,
+                                state.supervisor,
+                                state.seekingFunding
+                              )
+                            : state.description,
+                        amount: state.amount,
+                        sponsorship_token: state.token,
+                        supervisor: state.supervisor,
+                        github_link: state.githubLink,
+                      },
+                    },
+                  }}
+                />
+              </div>
+            )}
+            <button
+              data-testid="submit-create-post"
+              style={{
+                width: "7rem",
+                backgroundColor: "#0C7283",
+                color: "#f3f3f3",
+              }}
+              disabled={
+                (state.seekingFunding && (!state.amount || state.amount < 1)) ||
+                (isCreatePostPage &&
+                  (state.name === "" || state.description === ""))
+              }
+              className="btn btn-light mb-2 p-3"
+              onClick={onSubmit}
+            >
+              Submit
+            </button>
+            {!isCreatePostPage && (
+              <button
+                style={{
+                  width: "7rem",
+                  backgroundColor: "#fff",
+                  color: "#000",
+                }}
+                className="btn btn-light mb-2 p-3"
+                onClick={() => props.setEditorState(false)}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
