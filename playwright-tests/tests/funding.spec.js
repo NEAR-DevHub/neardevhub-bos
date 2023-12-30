@@ -120,7 +120,7 @@ test.describe("Wallet is connected by moderator", () => {
           },
         },
         null,
-        2
+        1
       )
     );
   });
