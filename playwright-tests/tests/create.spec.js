@@ -71,8 +71,8 @@ test.describe("Wallet is connected", () => {
             name: "The test title",
             description:
               "###### Requested amount: 300 USDT\n###### Requested sponsor: @neardevdao.near\nDeveloper contributor report by somebody",
-            post_type: "Solution",
             solution_version: "V1",
+            post_type: "Solution",
           },
         },
         null,
