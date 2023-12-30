@@ -7,6 +7,17 @@ const CenteredMessage = styled.div`
   height: 384px;
 `;
 
+function initLabels() {
+  const labels = [];
+  if (props.labels) {
+    labels.push(...props.labels.split(","));
+  }
+  if (props.referral) {
+    labels.push(`referral:${props.referral}`);
+  }
+  return labels;
+}
+
 if (!context.accountId) {
   return (
     <CenteredMessage height={"384px"}>
@@ -59,8 +70,7 @@ const isCreatePostPage = props.isCreatePostPage ?? false;
 const postType = props.postType ?? "Idea";
 const parentId = props.parentId ?? null;
 const mode = props.mode ?? "Create";
-const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
-const labelStrings = (props.labels ?? []).concat(referralLabels);
+const labelStrings = initLabels();
 const [postIdList, setPostIdList] = useState(null); // to show updated post after approve txn
 const [showPostPage, setShowPostPage] = useState(false); // show newly created post
 const [postId, setPostId] = useState(props.postId ?? null);
