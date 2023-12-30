@@ -19,7 +19,8 @@
     "build:preview": "node ./scripts/build-preview.mjs",
     "dev": "npm run dev:mainnet",
     "gateway": "node scripts/dev-gateway.mjs",
-    "test": "npx playwright test"
+    "test": "npx playwright test",
+    "test:watch:codespaces": "npm test -- --ui-host=0.0.0.0"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run fmt"
