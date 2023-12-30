@@ -76,7 +76,7 @@ test.describe("Wallet is connected", () => {
           },
         },
         null,
-        1
+        2
       )
     );
   });

@@ -43,16 +43,17 @@ test.describe("Wallet is connected", () => {
             name: "The test title",
             description:
               "###### Requested amount: 300 USDT\n###### Requested sponsor: @neardevdao.near\nDeveloper contributor report by somebody",
-            post_type: "Solution",
             solution_version: "V1",
+            post_type: "Solution",
           },
         },
         null,
-        1
+        2
       )
     );
   });
 });
+
 test.describe("Wallet is connected by moderator", () => {
   test.use({
     storageState:
@@ -63,10 +64,8 @@ test.describe("Wallet is connected by moderator", () => {
     await page.goto("/devhub.near/widget/app?page=post&id=2586");
     await page.click('button:has-text("Reply")');
     await page.click('li:has-text("Sponsorship")');
-
     await page
-      .getByText("Title:")
-      .getByRole("textbox")
+      .getByTestId("name-editor")
       .fill("Sponsorship: DevHub Platform Development Work");
 
     await page
@@ -84,8 +83,8 @@ test.describe("Wallet is connected by moderator", () => {
       "Congrats on getting your funding request approved"
     );
 
-    const tagsInput = page.getByText("Labels:").locator(".rbt-input-multi");
-    await tagsInput.click();
+    const tagsInput = await page.locator(".rbt-input-multi");
+    await tagsInput.focus();
     await tagsInput.pressSequentially("funding", { delay: 100 });
     await tagsInput.press("Tab");
     await tagsInput.pressSequentially("funding-information-coll", {
@@ -121,7 +120,7 @@ test.describe("Wallet is connected by moderator", () => {
           },
         },
         null,
-        1
+        2
       )
     );
   });
