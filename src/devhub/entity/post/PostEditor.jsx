@@ -9,8 +9,11 @@ const CenteredMessage = styled.div`
 
 function initLabels() {
   const labels = [];
-  if (props.labels) {
+  if (typeof props.labels === "string") {
     labels.push(...props.labels.split(","));
+  }
+  if (Array.isArray(props.labels)) {
+    labels.push(...props.labels);
   }
   if (props.referral) {
     labels.push(`referral:${props.referral}`);
