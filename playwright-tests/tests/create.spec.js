@@ -121,9 +121,6 @@ test.describe("Wallet is connected", () => {
     await page.waitForSelector(selector);
     await page.fill(selector, "devhub-test");
 
-    await page.evaluate(() => {
-      window.scrollTo(0, document.body.scrollHeight); // Scroll to the bottom of the page
-    }); // we do this because the input dropdown is not visible and cannot be clicked
     await page.getByLabel("devhub-test").click();
 
     await page.fill(selector, "security");
@@ -171,9 +168,6 @@ test.describe("Wallet is connected", () => {
     await page.fill(selector, "random-crazy-label-lol");
     const labelSelector = `:is(mark:has-text("random-crazy-label-lol"))`;
     const element = await page.waitForSelector(labelSelector);
-    await page.evaluate(() => {
-      window.scrollTo(0, document.body.scrollHeight); // Scroll to the bottom of the page
-    });
     await element.click();
 
     const typeAheadElement = await page.waitForSelector(".rbt-input-multi");
@@ -196,9 +190,6 @@ test.describe("Admin is connected", () => {
     const selector = ".rbt-input-main";
     await page.waitForSelector(selector);
     await page.fill(selector, "funding-requested");
-    await page.evaluate(() => {
-      window.scrollTo(0, document.body.scrollHeight); // Scroll to the bottom of the page
-    }); // we do this because the input dropdown is not visible and cannot be clicked
     await page.getByLabel("funding-requested").click();
 
     const typeAheadElement = await page.waitForSelector(".rbt-input-multi");
