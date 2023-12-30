@@ -79,11 +79,13 @@ test.describe("Wallet is connected by moderator", () => {
       delay: 100,
     });
     await tagsInput.press("Tab");
+    await tagsInput.blur();
 
     await page
       .getByText("Title:")
       .getByRole("textbox")
       .fill("Sponsorship: DevHub Platform Development Work");
+
     await page
       .getByText("Amount:", { exact: true })
       .getByRole("textbox")
@@ -97,9 +99,16 @@ test.describe("Wallet is connected by moderator", () => {
     await descriptionInput.fill(
       "Congrats on getting your funding request approved"
     );
+    await descriptionInput.blur();
 
     await page.click('button:has-text("Submit")');
-    await expect(page.locator("div.modal-body code")).toHaveText(
+
+    const transactionText = JSON.stringify(
+      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      null,
+      1
+    );
+    await expect(transactionText).toEqual(
       JSON.stringify(
         {
           parent_id: 2586,
