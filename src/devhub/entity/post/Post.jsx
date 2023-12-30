@@ -687,7 +687,7 @@ const postsList =
         class={`collapse mt-3 ${
           defaultExpanded ||
           childPostHasDraft ||
-          state.childrenOfChildPostsHasDraft || 
+          state.childrenOfChildPostsHasDraft ||
           state.expandReplies
             ? "show"
             : ""
