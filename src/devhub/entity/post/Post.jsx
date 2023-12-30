@@ -496,8 +496,16 @@ const isDraft =
   (draftState?.edit_post_id === postId &&
     draftState?.postType === state.postType);
 
-const toggleEditor = () => {
-  State.update({ showEditor: !state.showEditor });
+const setExpandReplies = (value) => {
+  State.update({ expandReplies: value });
+};
+
+const setEditorState = (value) => {
+  if (draftState && !value) {
+    // clear the draft state since user initiated cancel
+    onDraftStateChange(null);
+  }
+  State.update({ showEditor: value });
 };
 
 let amount = null;
@@ -537,8 +545,9 @@ function Editor() {
                   draftState?.parent_post_id == postId ? draftState : undefined,
                 parentId: postId,
                 mode: "Create",
-                toggleEditor: toggleEditor,
                 transactionHashes: props.transactionHashes,
+                setExpandReplies,
+                setEditorState: setEditorState,
               }}
             />
           </>
@@ -563,8 +572,9 @@ function Editor() {
                 onDraftStateChange,
                 draftState:
                   draftState?.edit_post_id == postId ? draftState : undefined,
-                toggleEditor: toggleEditor,
+                setEditorState: setEditorState,
                 transactionHashes: props.transactionHashes,
+                setExpandReplies,
               }}
             />
           </>
