@@ -1,4 +1,9 @@
 const isTableView = props.isTableView;
+const columnId = props.columnId;
+const showDescriptionState = props.showDescriptionState;
+const showTagsState = props.showTagsState;
+const showFundingState = props.showFundingState;
+const showSponsorState = props.showSponsorState;
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const { getPost } = VM.require(
@@ -216,7 +221,9 @@ const KanbanPostTicket = ({ metadata }) => {
 
   const descriptionArea =
     post_type === "Comment" ? (
-      <div style={{ maxHeight: "6em" }}>
+      <div
+        style={{ maxHeight: "6em", wordBreak: "break-all", overflow: "hidden" }}
+      >
         <Markdown className="card-text" text={description} />
       </div>
     ) : null;
@@ -241,24 +248,45 @@ const KanbanPostTicket = ({ metadata }) => {
 
   if (isTableView) {
     // hide the headings whose td doesn't exists
-    props.setDescriptionDisplay(showDescription);
-    props.setFundingDisplay(showFunding);
-    props.setSponsorDisplay(showSponsor);
-    props.setTagsDisplay(showTags);
+    // we check existing state, since some of the postIDs can have description..., so we need to show the title for them irrespective
+    if (showDescription) {
+      props.setDescriptionDisplay((prevState) => ({
+        ...prevState,
+        [columnId]: showDescription,
+      }));
+    }
+    if (showFunding) {
+      props.setFundingDisplay((prevState) => ({
+        ...prevState,
+        [columnId]: showFunding,
+      }));
+    }
+    if (showSponsor) {
+      props.setSponsorDisplay((prevState) => ({
+        ...prevState,
+        [columnId]: showSponsor,
+      }));
+    }
+    if (showTags) {
+      props.setTagsDisplay((prevState) => ({
+        ...prevState,
+        [columnId]: showTags,
+      }));
+    }
 
     return (
       <tbody>
         <tr>
           <td>{titleArea}</td>
-          {showDescription && <td>{descriptionArea} </td>}
-          {showFunding && (
+          {showDescriptionState[columnId] && <td>{descriptionArea} </td>}
+          {showFundingState[columnId] && (
             <td>
               {sponsorshipRequestIndicator}
               {sponsorshipValue}
             </td>
           )}
-          {showSponsor && <td>{requestedSponsor}</td>}
-          {showTags && <td>{tagList}</td>}
+          {showSponsorState[columnId] && <td>{requestedSponsor}</td>}
+          {showTagsState[columnId] && <td>{tagList}</td>}
         </tr>
       </tbody>
     );

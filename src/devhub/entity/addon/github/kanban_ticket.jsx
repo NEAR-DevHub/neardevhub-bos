@@ -109,7 +109,10 @@ const GithubKanbanTicket = ({
   return (
     <AttractableDiv className="card border-secondary">
       {header}
-      <div className="card-body d-flex flex-column gap-3">
+      <div
+        className="card-body d-flex flex-column gap-3"
+        style={{ fontSize: 15 }}
+      >
         {titleArea}
         {labelList}
       </div>

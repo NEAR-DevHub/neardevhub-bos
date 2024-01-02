@@ -12,10 +12,10 @@ const postTagsToIdSet = (tags) => {
 const [showTable, setShowTable] = useState(false);
 const [expandTables, setExpandTables] = useState({});
 // we have heading in this component but the logic to display them is in child
-const [showDescription, setDescriptionDisplay] = useState(false);
-const [showFunding, setFundingDisplay] = useState(false);
-const [showTags, setTagsDisplay] = useState(false);
-const [showSponsor, setSponsorDisplay] = useState(false);
+const [showDescription, setDescriptionDisplay] = useState({});
+const [showFunding, setFundingDisplay] = useState({});
+const [showTags, setTagsDisplay] = useState({});
+const [showSponsor, setSponsorDisplay] = useState({});
 
 const configToColumnData = ({ columns, tags }) =>
   Object.entries(columns).reduce((registry, [columnId, column]) => {
@@ -50,34 +50,40 @@ const KanbanPostBoard = ({ metadata, payload }) => {
                 {column.postIds.length}
               </div>
             </div>
-            <div
-              onClick={() => {
-                const data = { ...expandTables };
-                data[columnId] =
-                  typeof data[columnId] === "boolean" ? !data[columnId] : false;
+            {column.postIds?.length > 0 && (
+              <div
+                onClick={() => {
+                  const data = { ...expandTables };
+                  data[columnId] =
+                    typeof data[columnId] === "boolean"
+                      ? !data[columnId]
+                      : false;
 
-                setExpandTables(data);
-              }}
-            >
-              {expandTables[columnId] !== false ? (
-                <i class="bi bi-caret-up"></i>
-              ) : (
-                <i class="bi bi-caret-down"></i>
-              )}
-            </div>
+                  setExpandTables(data);
+                }}
+              >
+                {expandTables[columnId] !== false ? (
+                  <i class="bi bi-caret-up"></i>
+                ) : (
+                  <i class="bi bi-caret-down"></i>
+                )}
+              </div>
+            )}
           </div>
-          {expandTables[columnId] !== false && (
+
+          {expandTables[columnId] !== false && column.postIds?.length > 0 && (
             <div className="card-body w-100" style={{ overflow: "scroll" }}>
               <table className="table">
                 <thead>
                   <tr>
                     <th>Title</th>
-                    {showDescription && <th>Description</th>}
-                    {showFunding && <th>Funding</th>}
-                    {showSponsor && <th>Sponser/Supervisor</th>}
-                    {showTags && <th>Tags</th>}
+                    {showDescription[columnId] && <th>Description</th>}
+                    {showFunding[columnId] && <th>Funding</th>}
+                    {showSponsor[columnId] && <th>Sponser/Supervisor</th>}
+                    {showTags[columnId] && <th>Tags</th>}
                   </tr>
                 </thead>
+
                 {column.postIds?.map((postId) => (
                   <Widget
                     src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
@@ -86,8 +92,13 @@ const KanbanPostBoard = ({ metadata, payload }) => {
                       setFundingDisplay,
                       setSponsorDisplay,
                       setTagsDisplay,
+                      showDescriptionState: showDescription,
+                      showFundingState: showFunding,
+                      showSponsorState: showSponsor,
+                      showTagsState: showTags,
                       metadata: { id: postId, ...metadata.ticket },
                       isTableView: true,
+                      columnId,
                     }}
                     key={postId}
                   />
