@@ -452,32 +452,6 @@ const buttonsFooter = props.isPreview ? null : (
   </div>
 );
 
-const CreatorWidget = (postType) => {
-  return (
-    <div
-      class={`collapse ${
-        draftState?.parent_post_id == postId && draftState?.postType == postType
-          ? "show"
-          : ""
-      }`}
-      id={`collapse${postType}Creator${postId}`}
-      data-bs-parent={`#accordion${postId}`}
-    >
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
-        props={{
-          postType,
-          onDraftStateChange,
-          draftState:
-            draftState?.parent_post_id == postId ? draftState : undefined,
-          parentId: postId,
-          mode: "Create",
-        }}
-      />
-    </div>
-  );
-};
-
 const tokenMapping = {
   NEAR: "NEAR",
   USDT: {
@@ -515,40 +489,6 @@ function tokenResolver(token) {
     return null; // Invalid input
   }
 }
-
-const EditorWidget = (postType) => {
-  return (
-    <div
-      class={`collapse ${
-        draftState?.edit_post_id == postId && draftState?.postType == postType
-          ? "show"
-          : ""
-      }`}
-      id={`collapse${postType}Editor${postId}`}
-      data-bs-parent={`#accordion${postId}`}
-    >
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
-        props={{
-          postType,
-          postId,
-          mode: "Edit",
-          author_id: post.author_id,
-          labels: post.snapshot.labels,
-          name: post.snapshot.name,
-          description: post.snapshot.description,
-          amount: post.snapshot.amount,
-          token: tokenResolver(post.snapshot.sponsorship_token),
-          supervisor: post.snapshot.supervisor,
-          githubLink: post.snapshot.github_link,
-          onDraftStateChange,
-          draftState:
-            draftState?.edit_post_id == postId ? draftState : undefined,
-        }}
-      />
-    </div>
-  );
-};
 
 const isDraft =
   (draftState?.parent_post_id === postId &&
@@ -598,6 +538,7 @@ function Editor() {
                 parentId: postId,
                 mode: "Create",
                 toggleEditor: toggleEditor,
+                transactionHashes: props.transactionHashes,
               }}
             />
           </>
@@ -623,6 +564,7 @@ function Editor() {
                 draftState:
                   draftState?.edit_post_id == postId ? draftState : undefined,
                 toggleEditor: toggleEditor,
+                transactionHashes: props.transactionHashes,
               }}
             />
           </>
@@ -706,7 +648,7 @@ const postExtra =
       <h6 class="card-subtitle mb-2 text-muted">
         Supervisor:{" "}
         <Widget
-          src={"neardevgov.near/widget/ProfileLine"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileLine"}
           props={{ accountId: snapshot.supervisor }}
         />
       </h6>
@@ -779,6 +721,12 @@ const clampedContent = needClamp
   ? contentArray.slice(0, 3).join("\n")
   : snapshot.description;
 
+const SeeMore = styled.a`
+  cursor: pointer;
+  color: #00b774 !important;
+  font-weight: bold;
+`;
+
 // Should make sure the posts under the currently top viewed post are limited in size.
 const descriptionArea = isUnderPost ? (
   <LimitedMarkdown className="overflow-auto" key="description-area">
@@ -807,13 +755,9 @@ const descriptionArea = isUnderPost ? (
     </div>
     {state.clamp ? (
       <div class="d-flex justify-content-start">
-        <a
-          style={{ cursor: "pointer", color: "#00ec97" }}
-          class="btn-link text-dark fw-bold text-decoration-none"
-          onClick={() => State.update({ clamp: false })}
-        >
+        <SeeMore onClick={() => State.update({ clamp: false })}>
           See more
-        </a>
+        </SeeMore>
       </div>
     ) : (
       <></>
