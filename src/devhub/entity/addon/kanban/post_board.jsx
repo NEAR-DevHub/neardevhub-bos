@@ -38,6 +38,7 @@ const KanbanPostBoard = ({ metadata, payload }) => {
               "card-body d-flex flex-column gap-3 p-2",
               "border border-2 border-secondary rounded-4",
             ].join(" ")}
+            style={{ height: "75vh", overflow: "scroll" }}
           >
             <span className="d-flex flex-column py-1">
               <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
@@ -77,7 +78,7 @@ const KanbanPostBoard = ({ metadata, payload }) => {
           {metadata?.description}
         </p>
       </div>
-      <div className="d-flex gap-3 w-100" style={{ overflowX: "auto" }}>
+      <div className="d-flex gap-3 w-100">
         <div
           className={[
             "d-flex align-items-center justify-content-center w-100 text-black-50 opacity-50",

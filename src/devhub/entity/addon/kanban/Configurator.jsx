@@ -275,18 +275,22 @@ const KanbanViewConfigurator = ({ handle, data, permissions, onSubmit }) => {
                     value: description,
                   }}
                 />
-                <Widget
-                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
-                  props={{
-                    key: `kanban-view-column-${id}-tag`,
-                    label: "Enter a single tag to show posts in this column",
-                    onChange: formUpdate({
-                      path: ["payload", "columns", id, "tag"],
-                    }),
-                    placeholder: "Tag-Name",
-                    value: tag,
-                  }}
-                />
+                <div className="d-flex flex-column flex-1 align-items-start justify-content-evenly gap-1 p-2 flex-grow-1">
+                  <span className="d-flex justify-content-between align-items-center gap-3 w-100">
+                    Enter a single tag to show posts in this column
+                  </span>
+                  <div className="w-100">
+                    <Widget
+                      src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-tag"
+                      props={{
+                        tag: tag,
+                        onTagSearch: formUpdate({
+                          path: ["payload", "columns", id, "tag"],
+                        }),
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div

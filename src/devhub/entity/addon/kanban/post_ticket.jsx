@@ -165,7 +165,7 @@ const KanbanPostTicket = ({ metadata }) => {
 
   const descriptionArea =
     post_type === "Comment" ? (
-      <div className="overflow-auto" style={{ maxHeight: "6em" }}>
+      <div style={{ maxHeight: "6em" }}>
         <Markdown className="card-text" text={description} />
       </div>
     ) : null;
@@ -185,7 +185,10 @@ const KanbanPostTicket = ({ metadata }) => {
     <AttractableDiv className="card border-secondary">
       {header}
 
-      <div className="card-body d-flex flex-column gap-3">
+      <div
+        className="card-body d-flex flex-column gap-2"
+        style={{ fontSize: 14 }}
+      >
         {titleArea}
         {descriptionArea}
 
@@ -224,7 +227,6 @@ const KanbanPostTicket = ({ metadata }) => {
             <span>{`${
               post_type === "Solution" ? "Requested sponsor" : "Supervisor"
             }:`}</span>
-
             <Widget
               className="flex-wrap"
               src={`neardevgov.near/widget/ProfileLine`}
