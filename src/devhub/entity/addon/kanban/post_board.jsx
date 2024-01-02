@@ -9,13 +9,13 @@ const postTagsToIdSet = (tags) => {
   );
 };
 
-const [showTable, setShowTable] = useState(true);
+const [showTable, setShowTable] = useState(false);
 const [expandTables, setExpandTables] = useState({});
 // we have heading in this component but the logic to display them is in child
-const [showDescription, setDescriptionDisplay] = useState(true);
-const [showFunding, setFundingDisplay] = useState(true);
-const [showTags, setTagsDisplay] = useState(true);
-const [showSponsor, setSponsorDisplay] = useState(true);
+const [showDescription, setDescriptionDisplay] = useState(false);
+const [showFunding, setFundingDisplay] = useState(false);
+const [showTags, setTagsDisplay] = useState(false);
+const [showSponsor, setSponsorDisplay] = useState(false);
 
 const configToColumnData = ({ columns, tags }) =>
   Object.entries(columns).reduce((registry, [columnId, column]) => {
@@ -67,7 +67,7 @@ const KanbanPostBoard = ({ metadata, payload }) => {
             </div>
           </div>
           {expandTables[columnId] !== false && (
-            <div className="card-body">
+            <div className="card-body w-100" style={{ overflow: "scroll" }}>
               <table className="table">
                 <thead>
                   <tr>

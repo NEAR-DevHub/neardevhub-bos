@@ -127,9 +127,14 @@ const GithubKanbanBoard = ({
           const tickets = state.ticketsByColumn[column.id] ?? [];
 
           return (
-            <div className="col-4" key={`column-${column.id}-view`}>
+            <div
+              className="col-3"
+              style={{ minWidth: "300px" }}
+              key={`column-${column.id}-view`}
+            >
               <div className="card rounded-4">
                 <div
+                  style={{ height: "75vh", overflow: "scroll" }}
                   className={[
                     "card-body d-flex flex-column gap-3 p-2",
                     "border border-2 border-secondary rounded-4",
