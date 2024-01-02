@@ -275,20 +275,18 @@ const KanbanPostTicket = ({ metadata }) => {
     }
 
     return (
-      <tbody>
-        <tr>
-          <td>{titleArea}</td>
-          {showDescriptionState[columnId] && <td>{descriptionArea} </td>}
-          {showFundingState[columnId] && (
-            <td>
-              {sponsorshipRequestIndicator}
-              {sponsorshipValue}
-            </td>
-          )}
-          {showSponsorState[columnId] && <td>{requestedSponsor}</td>}
-          {showTagsState[columnId] && <td>{tagList}</td>}
-        </tr>
-      </tbody>
+      <tr>
+        <td>{titleArea}</td>
+        {showDescriptionState[columnId] && <td>{descriptionArea} </td>}
+        {showFundingState[columnId] && (
+          <td>
+            {sponsorshipRequestIndicator}
+            {sponsorshipValue}
+          </td>
+        )}
+        {showSponsorState[columnId] && <td>{requestedSponsor}</td>}
+        {showTagsState[columnId] && <td>{tagList}</td>}
+      </tr>
     );
   }
   return (

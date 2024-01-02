@@ -73,7 +73,7 @@ const KanbanPostBoard = ({ metadata, payload }) => {
 
           {expandTables[columnId] !== false && column.postIds?.length > 0 && (
             <div className="card-body w-100" style={{ overflow: "scroll" }}>
-              <table className="table">
+              <table className="table table-bordered">
                 <thead>
                   <tr>
                     <th>Title</th>
@@ -83,26 +83,27 @@ const KanbanPostBoard = ({ metadata, payload }) => {
                     {showTags[columnId] && <th>Tags</th>}
                   </tr>
                 </thead>
-
-                {column.postIds?.map((postId) => (
-                  <Widget
-                    src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
-                    props={{
-                      setDescriptionDisplay,
-                      setFundingDisplay,
-                      setSponsorDisplay,
-                      setTagsDisplay,
-                      showDescriptionState: showDescription,
-                      showFundingState: showFunding,
-                      showSponsorState: showSponsor,
-                      showTagsState: showTags,
-                      metadata: { id: postId, ...metadata.ticket },
-                      isTableView: true,
-                      columnId,
-                    }}
-                    key={postId}
-                  />
-                ))}
+                <tbody>
+                  {column.postIds?.map((postId) => (
+                    <Widget
+                      src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
+                      props={{
+                        setDescriptionDisplay,
+                        setFundingDisplay,
+                        setSponsorDisplay,
+                        setTagsDisplay,
+                        showDescriptionState: showDescription,
+                        showFundingState: showFunding,
+                        showSponsorState: showSponsor,
+                        showTagsState: showTags,
+                        metadata: { id: postId, ...metadata.ticket },
+                        isTableView: true,
+                        columnId,
+                      }}
+                      key={postId}
+                    />
+                  ))}
+                </tbody>
               </table>
             </div>
           )}
