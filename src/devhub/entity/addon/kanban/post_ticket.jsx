@@ -1,3 +1,5 @@
+const isTableView = props.isTableView;
+
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const { getPost } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
@@ -147,7 +149,7 @@ const KanbanPostTicket = ({ metadata }) => {
     ) : null;
 
   const titleArea = (
-    <span className="card-text gap-2">
+    <span>
       {features.type ? (
         <i className={`bi ${iconsByPostType[post_type]}`} />
       ) : null}
@@ -162,6 +164,55 @@ const KanbanPostTicket = ({ metadata }) => {
       </span>
     </span>
   );
+
+  const sponsorshipRequestIndicator = features.sponsorship_request_indicator ? (
+    <span className="d-flex gap-2">
+      <Widget
+        src={`${REPL_DEVHUB}/widget/devhub.components.atom.Icon`}
+        props={{
+          type: "bootstrap_icon",
+          variant: "bi-cash",
+        }}
+      />
+
+      <span>Funding requested</span>
+    </span>
+  ) : null;
+
+  const sponsorshipValue =
+    features.requested_sponsorship_value ||
+    features.approved_sponsorship_value ? (
+      <span className="d-flex flex-wrap gap-2">
+        <span>
+          {post_type === "Solution" ? "Requested" : "Approved"} funding:
+        </span>
+
+        <span className="d-flex flex-nowrap gap-1">
+          <span>{requested_sponsorship_amount ?? amount}</span>
+          <span>
+            {requested_sponsorship_token ?? getToken(sponsorship_token)}
+          </span>
+        </span>
+      </span>
+    ) : null;
+
+  const requestedSponsor =
+    features.requested_sponsor || features.sponsorship_supervisor ? (
+      <div className="d-flex flex-wrap gap-2">
+        <span>{`${
+          post_type === "Solution" ? "Requested sponsor" : "Supervisor"
+        }:`}</span>
+        <Widget
+          className="flex-wrap"
+          src={`neardevgov.near/widget/ProfileLine`}
+          props={{
+            accountId: requested_sponsor ?? supervisor,
+            hideAccountId: true,
+            tooltip: true,
+          }}
+        />
+      </div>
+    ) : null;
 
   const descriptionArea =
     post_type === "Comment" ? (
@@ -181,64 +232,49 @@ const KanbanPostTicket = ({ metadata }) => {
       </div>
     ) : null;
 
+  const showDescription = post_type === "Comment";
+  const showFunding =
+    features.requested_sponsorship_value || features.approved_sponsorship_value;
+  const showSponsor =
+    features.requested_sponsor || features.sponsorship_supervisor;
+  const showTags = Array.isArray(tags) && features.tags;
+
+  if (isTableView) {
+    // hide the headings whose td doesn't exists
+    props.setDescriptionDisplay(showDescription);
+    props.setFundingDisplay(showFunding);
+    props.setSponsorDisplay(showSponsor);
+    props.setTagsDisplay(showTags);
+
+    return (
+      <tbody>
+        <tr>
+          <td>{titleArea}</td>
+          {showDescription && <td>{descriptionArea} </td>}
+          {showFunding && (
+            <td>
+              {sponsorshipRequestIndicator}
+              {sponsorshipValue}
+            </td>
+          )}
+          {showSponsor && <td>{requestedSponsor}</td>}
+          {showTags && <td>{tagList}</td>}
+        </tr>
+      </tbody>
+    );
+  }
   return (
     <AttractableDiv className="card border-secondary">
       {header}
-
       <div
         className="card-body d-flex flex-column gap-2"
         style={{ fontSize: 14 }}
       >
-        {titleArea}
+        <span className="card-text gap-2">{titleArea}</span>
         {descriptionArea}
-
-        {features.sponsorship_request_indicator ? (
-          <span className="d-flex gap-2">
-            <Widget
-              src={`${REPL_DEVHUB}/widget/devhub.components.atom.Icon`}
-              props={{
-                type: "bootstrap_icon",
-                variant: "bi-cash",
-              }}
-            />
-
-            <span>Funding requested</span>
-          </span>
-        ) : null}
-
-        {features.requested_sponsorship_value ||
-        features.approved_sponsorship_value ? (
-          <span className="d-flex flex-wrap gap-2">
-            <span>
-              {post_type === "Solution" ? "Requested" : "Approved"} funding:
-            </span>
-
-            <span className="d-flex flex-nowrap gap-1">
-              <span>{requested_sponsorship_amount ?? amount}</span>
-              <span>
-                {requested_sponsorship_token ?? getToken(sponsorship_token)}
-              </span>
-            </span>
-          </span>
-        ) : null}
-
-        {features.requested_sponsor || features.sponsorship_supervisor ? (
-          <div className="d-flex flex-wrap gap-2">
-            <span>{`${
-              post_type === "Solution" ? "Requested sponsor" : "Supervisor"
-            }:`}</span>
-            <Widget
-              className="flex-wrap"
-              src={`neardevgov.near/widget/ProfileLine`}
-              props={{
-                accountId: requested_sponsor ?? supervisor,
-                hideAccountId: true,
-                tooltip: true,
-              }}
-            />
-          </div>
-        ) : null}
-
+        {sponsorshipRequestIndicator}
+        {sponsorshipValue}
+        {requestedSponsor}
         {tagList}
       </div>
 

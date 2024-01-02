@@ -9,6 +9,14 @@ const postTagsToIdSet = (tags) => {
   );
 };
 
+const [showTable, setShowTable] = useState(true);
+const [expandTables, setExpandTables] = useState({});
+// we have heading in this component but the logic to display them is in child
+const [showDescription, setDescriptionDisplay] = useState(true);
+const [showFunding, setFundingDisplay] = useState(true);
+const [showTags, setTagsDisplay] = useState(true);
+const [showSponsor, setSponsorDisplay] = useState(true);
+
 const configToColumnData = ({ columns, tags }) =>
   Object.entries(columns).reduce((registry, [columnId, column]) => {
     const postIds = (getPostsByLabel({ label: column.tag }) ?? []).reverse();
@@ -29,9 +37,76 @@ const configToColumnData = ({ columns, tags }) =>
   }, {});
 
 const KanbanPostBoard = ({ metadata, payload }) => {
-  const columns = Object.entries(configToColumnData(payload) ?? {}).map(
+  const tableView = Object.entries(configToColumnData(payload) ?? {}).map(
+    ([columnId, column]) => {
+      return (
+        <div className="card p-2">
+          <div className="d-flex justify-content-between p-3 align-items-center">
+            <div className="d-flex gap-2 align-items-center">
+              <div style={{ fontSize: 20, fontWeight: 700 }}>
+                {column.title}
+              </div>
+              <div className="badge rounded-pill bg-secondary">
+                {column.postIds.length}
+              </div>
+            </div>
+            <div
+              onClick={() => {
+                const data = { ...expandTables };
+                data[columnId] =
+                  typeof data[columnId] === "boolean" ? !data[columnId] : false;
+
+                setExpandTables(data);
+              }}
+            >
+              {expandTables[columnId] !== false ? (
+                <i class="bi bi-caret-up"></i>
+              ) : (
+                <i class="bi bi-caret-down"></i>
+              )}
+            </div>
+          </div>
+          {expandTables[columnId] !== false && (
+            <div className="card-body">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    {showDescription && <th>Description</th>}
+                    {showFunding && <th>Funding</th>}
+                    {showSponsor && <th>Sponser/Supervisor</th>}
+                    {showTags && <th>Tags</th>}
+                  </tr>
+                </thead>
+                {column.postIds?.map((postId) => (
+                  <Widget
+                    src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
+                    props={{
+                      setDescriptionDisplay,
+                      setFundingDisplay,
+                      setSponsorDisplay,
+                      setTagsDisplay,
+                      metadata: { id: postId, ...metadata.ticket },
+                      isTableView: true,
+                    }}
+                    key={postId}
+                  />
+                ))}
+              </table>
+            </div>
+          )}
+        </div>
+      );
+    }
+  );
+
+  const columnView = Object.entries(configToColumnData(payload) ?? {}).map(
     ([columnId, column]) => (
-      <div className="col-3" key={`column-${columnId}-view`}>
+      <div
+        className="col-3"
+        style={{ minWidth: "300px" }}
+        key={`column-${columnId}-view`}
+      >
         <div className="card rounded-4">
           <div
             className={[
@@ -56,7 +131,10 @@ const KanbanPostBoard = ({ metadata, payload }) => {
               {column.postIds?.map((postId) => (
                 <Widget
                   src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
-                  props={{ metadata: { id: postId, ...metadata.ticket } }}
+                  props={{
+                    metadata: { id: postId, ...metadata.ticket },
+                    isTableView: false,
+                  }}
                   key={postId}
                 />
               ))}
@@ -69,7 +147,20 @@ const KanbanPostBoard = ({ metadata, payload }) => {
 
   return (
     <div>
-      <div className="d-flex flex-column align-items-center gap-2 py-4">
+      <div className="d-flex flex-column align-items-center gap-2 py-4 w-100">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            value={showTable}
+            id={"table"}
+            checked={showTable === true}
+            onChange={() => setShowTable(!showTable)}
+          />
+          <label class="form-check-label" for={`table`}>
+            Table View
+          </label>
+        </div>
         <h5 className="h5 d-inline-flex gap-2 m-0">
           <span>{metadata?.title}</span>
         </h5>
@@ -78,7 +169,7 @@ const KanbanPostBoard = ({ metadata, payload }) => {
           {metadata?.description}
         </p>
       </div>
-      <div className="d-flex gap-3 w-100">
+      <div className="d-flex gap-3 w-100" style={{ overflow: "scroll" }}>
         <div
           className={[
             "d-flex align-items-center justify-content-center w-100 text-black-50 opacity-50",
@@ -89,7 +180,11 @@ const KanbanPostBoard = ({ metadata, payload }) => {
           No columns were created so far.
         </div>
 
-        {columns}
+        {showTable ? (
+          <div className="w-100 d-flex flex-column gap-3">{tableView} </div>
+        ) : (
+          columnView
+        )}
       </div>
     </div>
   );
