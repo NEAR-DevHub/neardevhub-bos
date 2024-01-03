@@ -218,7 +218,7 @@ const checkLabel = (label) => {
 
 const setLabels = (labels) => {
   const normalizedLabels = labels.map((o) =>
-    o.customOption ? normalizeLabel(o.label) : normalizeLabel(o)
+    o.customOption ? normalize(o.label) : normalize(o)
   );
   const uniqueLabels = [...new Set(normalizedLabels)];
 
