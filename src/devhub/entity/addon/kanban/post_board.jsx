@@ -24,138 +24,125 @@ const configToColumnData = ({ columns, tags }) =>
       ...registry,
       [columnId]: {
         ...column,
-        postIds:
-          tags.required.length > 0
-            ? postIds.filter(
-                (postId) =>
-                  postTagsToIdSet(tags.required).has(postId) &&
-                  !postTagsToIdSet(tags.excluded).has(postId)
-              )
-            : postIds,
+        postIds: postIds,
       },
     };
   }, {});
 
 const KanbanPostBoard = ({ metadata, payload }) => {
-  const tableView = Object.entries(configToColumnData(payload) ?? {}).map(
-    ([columnId, column]) => {
-      return (
-        <div className="card p-2">
-          <div className="d-flex justify-content-between p-3 align-items-center">
-            <div className="d-flex gap-2 align-items-center">
-              <div style={{ fontSize: 20, fontWeight: 700 }}>
-                {column.title}
-              </div>
-              <div className="badge rounded-pill bg-secondary">
-                {column.postIds.length}
-              </div>
+  const boardData = Object.entries(configToColumnData(payload) ?? {});
+
+  const tableView = boardData.map(([columnId, column]) => {
+    return (
+      <div className="card p-2">
+        <div className="d-flex justify-content-between p-3 align-items-center">
+          <div className="d-flex gap-2 align-items-center">
+            <div style={{ fontSize: 20, fontWeight: 700 }}>{column.title}</div>
+            <div className="badge rounded-pill bg-secondary">
+              {column.postIds.length}
             </div>
-            {column.postIds?.length > 0 && (
-              <div
-                onClick={() => {
-                  const data = { ...expandTables };
-                  data[columnId] =
-                    typeof data[columnId] === "boolean"
-                      ? !data[columnId]
-                      : false;
-
-                  setExpandTables(data);
-                }}
-              >
-                {expandTables[columnId] !== false ? (
-                  <i class="bi bi-caret-up"></i>
-                ) : (
-                  <i class="bi bi-caret-down"></i>
-                )}
-              </div>
-            )}
           </div>
+          {column.postIds?.length > 0 && (
+            <div
+              onClick={() => {
+                const data = { ...expandTables };
+                data[columnId] =
+                  typeof data[columnId] === "boolean" ? !data[columnId] : false;
 
-          {expandTables[columnId] !== false && column.postIds?.length > 0 && (
-            <div className="card-body w-100" style={{ overflow: "scroll" }}>
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    {showDescription[columnId] && <th>Description</th>}
-                    {showFunding[columnId] && <th>Funding</th>}
-                    {showSponsor[columnId] && <th>Sponser/Supervisor</th>}
-                    {showTags[columnId] && <th>Tags</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {column.postIds?.map((postId) => (
-                    <Widget
-                      src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
-                      props={{
-                        setDescriptionDisplay,
-                        setFundingDisplay,
-                        setSponsorDisplay,
-                        setTagsDisplay,
-                        showDescriptionState: showDescription,
-                        showFundingState: showFunding,
-                        showSponsorState: showSponsor,
-                        showTagsState: showTags,
-                        metadata: { id: postId, ...metadata.ticket },
-                        isTableView: true,
-                        columnId,
-                      }}
-                      key={postId}
-                    />
-                  ))}
-                </tbody>
-              </table>
+                setExpandTables(data);
+              }}
+            >
+              {expandTables[columnId] !== false ? (
+                <i class="bi bi-caret-up"></i>
+              ) : (
+                <i class="bi bi-caret-down"></i>
+              )}
             </div>
           )}
         </div>
-      );
-    }
-  );
 
-  const columnView = Object.entries(configToColumnData(payload) ?? {}).map(
-    ([columnId, column]) => (
-      <div
-        className="col-3"
-        style={{ minWidth: "300px" }}
-        key={`column-${columnId}-view`}
-      >
-        <div className="card rounded-4">
-          <div
-            className={[
-              "card-body d-flex flex-column gap-3 p-2",
-              "border border-2 border-secondary rounded-4",
-            ].join(" ")}
-            style={{ height: "75vh", overflow: "scroll" }}
-          >
-            <span className="d-flex flex-column py-1">
-              <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
-                {column.title}
+        {expandTables[columnId] !== false && column.postIds?.length > 0 && (
+          <div className="card-body w-100" style={{ overflow: "scroll" }}>
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  {showDescription[columnId] && <th>Description</th>}
+                  {showFunding[columnId] && <th>Funding</th>}
+                  {showSponsor[columnId] && <th>Sponser/Supervisor</th>}
+                  {showTags[columnId] && <th>Tags</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {column.postIds?.map((postId) => (
+                  <Widget
+                    src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
+                    props={{
+                      setDescriptionDisplay,
+                      setFundingDisplay,
+                      setSponsorDisplay,
+                      setTagsDisplay,
+                      showDescriptionState: showDescription,
+                      showFundingState: showFunding,
+                      showSponsorState: showSponsor,
+                      showTagsState: showTags,
+                      metadata: { id: postId, ...metadata.ticket },
+                      isTableView: true,
+                      columnId,
+                    }}
+                    key={postId}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    );
+  });
 
-                <span className="badge rounded-pill bg-secondary">
-                  {column.postIds.length}
-                </span>
-              </h6>
+  const columnView = boardData.map(([columnId, column]) => (
+    <div
+      className="col-3"
+      style={{ minWidth: "300px" }}
+      key={`column-${columnId}-view`}
+    >
+      <div className="card rounded-4">
+        <div
+          className={[
+            "card-body d-flex flex-column gap-3 p-2",
+            "border border-2 border-secondary rounded-4",
+          ].join(" ")}
+          style={{ height: "75vh", overflow: "scroll" }}
+        >
+          <span className="d-flex flex-column py-1">
+            <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
+              {column.title}
 
-              <p class="text-secondary m-0">{column.description}</p>
-            </span>
+              <span className="badge rounded-pill bg-secondary">
+                {column.postIds.length}
+              </span>
+            </h6>
 
-            <div class="d-flex flex-column gap-2">
-              {column.postIds?.map((postId) => (
-                <Widget
-                  src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
-                  props={{
-                    metadata: { id: postId, ...metadata.ticket },
-                    isTableView: false,
-                  }}
-                  key={postId}
-                />
-              ))}
-            </div>
+            <p class="text-secondary m-0">{column.description}</p>
+          </span>
+
+          <div class="d-flex flex-column gap-2">
+            {column.postIds?.map((postId) => (
+              <Widget
+                src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
+                props={{
+                  metadata: { id: postId, ...metadata.ticket },
+                  isTableView: false,
+                }}
+                key={postId}
+              />
+            ))}
           </div>
         </div>
       </div>
-    )
-  );
+    </div>
+  ));
 
   return (
     <div>
