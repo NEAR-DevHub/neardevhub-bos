@@ -90,12 +90,6 @@ const ButtonRow = styled.div`
 
 const [view, setView] = useState(props.view || "viewer");
 
-// TODO : remove after contract data change
-function updateWidgetEndpoint(widgetSrc) {
-  widgetSrc = widgetSrc.replace("configurator", "Configurator");
-  return widgetSrc.replace("devgovgigs.near", "devhub.near");
-}
-
 return (
   <Container>
     {permissions.can_configure && (
@@ -112,7 +106,7 @@ return (
     <Content>
       {view === "configure" ? (
         <Widget
-          src={updateWidgetEndpoint(addonMatch.configurator_widget)}
+          src={addonMatch.configurator_widget}
           props={{
             ...config,
             data: config,
@@ -131,7 +125,7 @@ return (
         />
       ) : (
         <Widget
-          src={updateWidgetEndpoint(addonMatch.view_widget)}
+          src={addonMatch.view_widget}
           props={{
             ...config,
             data: config,
