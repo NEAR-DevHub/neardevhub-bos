@@ -155,7 +155,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
           ...withUUIDIndex({
             description: "",
             labelSearchTerms: [],
-            title: "New column",
+            title: "",
           }),
         }
       : lastKnownValue;
