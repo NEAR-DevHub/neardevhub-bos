@@ -1,3 +1,6 @@
+const { normalize } =
+  VM.require("${REPL_DEVHUB}/widget/core.lib.stringUtils") || (() => {});
+
 const CenteredMessage = styled.div`
   display: flex;
   flex-direction: column;
@@ -194,16 +197,6 @@ const onSolutionClick = () => {
   State.update({ postType: "Solution" });
 };
 
-const normalizeLabel = (label) =>
-  label
-    .replaceAll(/[- \.]/g, "_")
-    .replaceAll(/[^\w]+/g, "")
-    .replaceAll(/_+/g, "-")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "")
-    .toLowerCase()
-    .trim("-");
-
 const checkLabel = (label) => {
   Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
     editor: context.accountId,
@@ -225,7 +218,7 @@ const checkLabel = (label) => {
 
 const setLabels = (labels) => {
   const normalizedLabels = labels.map((o) =>
-    o.customOption ? normalizeLabel(o.label) : normalizeLabel(o)
+    o.customOption ? normalize(o.label) : normalize(o)
   );
   const uniqueLabels = [...new Set(normalizedLabels)];
 
