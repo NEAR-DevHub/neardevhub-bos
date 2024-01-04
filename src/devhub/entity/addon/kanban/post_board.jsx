@@ -68,7 +68,7 @@ const KanbanPostBoard = ({ metadata, payload }) => {
                 <tr>
                   <th>Title</th>
                   {showDescription[columnId] && <th>Description</th>}
-                  {showFunding[columnId] && <th>Funding</th>}
+                  {showFunding[columnId] && <th>Amount</th>}
                   {showSponsor[columnId] && <th>Sponser/Supervisor</th>}
                   {showTags[columnId] && <th>Tags</th>}
                 </tr>
@@ -160,11 +160,11 @@ const KanbanPostBoard = ({ metadata, payload }) => {
             Table View
           </label>
         </div>
-        <h5 className="h5 d-inline-flex gap-2 m-0">
+        <h5 className="h4 d-inline-flex gap-2 m-0">
           <span>{metadata?.title}</span>
         </h5>
 
-        <p className="m-0 py-1 text-secondary text-center">
+        <p className="h6 m-0 py-1 text-secondary text-center">
           {metadata?.description}
         </p>
       </div>
