@@ -4,5 +4,6 @@
   "REPL_DEVHUB_CONTRACT": "devgovgigs.near",
   "REPL_NEAR": "near",
   "REPL_MOB": "mob.near",
-  "REPL_EFIZ": "efiz.near"
+  "REPL_EFIZ": "efiz.near",
+  "REPL_DEVS": "devs.near"
 }

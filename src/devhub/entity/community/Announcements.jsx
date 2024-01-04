@@ -1,10 +1,8 @@
 const { handle } = props;
-const { Feed } = VM.require("devs.near/widget/Module.Feed");
 const { getCommunity, setCommunitySocialDB } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
-Feed = Feed || (() => <></>);
 getCommunity = getCommunity || (() => <></>);
 setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 
@@ -67,6 +65,8 @@ const Tag = styled.div`
   font-weight: 800;
 `;
 
+const [sort, setSort] = useState("timedesc");
+
 return (
   <div className="w-100" style={{ maxWidth: "100%" }}>
     <Container className="d-flex gap-3 m-3 pl-2">
@@ -90,47 +90,26 @@ return (
                 name="sort"
                 id="sort"
                 class="form-select"
-                onChange={(e) => setSort(e.target.value)}
+                value={sort}
+                onChange={(e) => {
+                  setSort(e.target.value);
+                }}
               >
-                <option selected value="">
+                <option selected value="timedesc">
                   Latest
                 </option>
-                <option value="a-z">A-Z</option>
-                <option value="z-a">Z-A</option>
+                <option value="recentcommentdesc">Last Commented</option>
               </select>
             </div>
           </div>
           <div className="card p-4">
-            <Feed
-              index={[
-                {
-                  action: "post",
-                  key: "main",
-                  options: {
-                    limit: 10,
-                    order: "desc",
-                    accountId: [`${handle}.community.${REPL_DEVHUB_CONTRACT}`],
-                  },
-                  cacheOptions: {
-                    ignoreCache: true,
-                  },
-                },
-              ]}
-              Item={(item) => (
-                <Widget
-                  src="near/widget/Posts.Post"
-                  props={{
-                    accountId: item.accountId,
-                    blockHeight: item.blockHeight,
-                    blockTimestamp: item.block_timestamp,
-                    content: item.content,
-                    comments: item.comments,
-                    likes: item.accounts_liked,
-                    verifications: item.verifications,
-                    showFlagAccountFeature: false,
-                  }}
-                />
-              )}
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
+              props={{
+                showFlagAccountFeature: true,
+                filteredAccountIds: `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                sort: sort,
+              }}
             />
           </div>
         </div>

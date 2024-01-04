@@ -363,11 +363,11 @@ return (
     {state.showPreview ? (
       <PreviewWrapper>
         <Widget
-          src="near/widget/v1.Posts.Post"
+          src="${REPL_NEAR}/widget/Posts.Post"
           props={{
             accountId: context.accountId,
             blockHeight: "now",
-            content,
+            content: state.text,
           }}
         />
       </PreviewWrapper>

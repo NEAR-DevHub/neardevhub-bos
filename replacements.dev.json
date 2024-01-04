@@ -4,5 +4,6 @@
   "REPL_DEVHUB_CONTRACT": "bodevhub.testnet",
   "REPL_NEAR": "discom.testnet",
   "REPL_MOB": "eugenethedream",
-  "REPL_EFIZ": "efiz.testnet"
+  "REPL_EFIZ": "efiz.testnet",
+  "REPL_DEVS": "nearbuilders.testnet"
 }
