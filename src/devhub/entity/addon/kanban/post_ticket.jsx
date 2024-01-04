@@ -6,10 +6,6 @@ const showFundingState = props.showFundingState;
 const showSponsorState = props.showSponsorState;
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
-const { getPost } = VM.require(
-  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
-);
-getPost || (getPost = () => {});
 href || (href = () => {});
 
 const AttractableDiv = styled.div`
@@ -42,11 +38,7 @@ function getToken(token) {
   }
   return amountUnit;
 }
-const KanbanPostTicket = ({ metadata }) => {
-  const data = getPost({
-    post_id: metadata.id ? parseInt(metadata.id) : 0,
-  });
-
+const KanbanPostTicket = ({ metadata, data }) => {
   if (!data) return <div>Loading ...</div>;
 
   const {

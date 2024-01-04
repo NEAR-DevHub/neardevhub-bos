@@ -61,6 +61,7 @@ const KanbanPostBoardDefaults = {
         tags: true,
         type: true,
       },
+      sortBy: "",
     },
   },
   payload: {
@@ -87,6 +88,20 @@ const toMigrated = ({ config, metadata, payload }) => ({
     ...config,
   },
 });
+
+const sortByOptions = [
+  { label: "None", value: "none" },
+  { label: "Amount: High to Low", value: "descending-amount" },
+  { label: "Amount: Low to High", value: "ascending-amount" },
+  { label: "Date: Newest to Oldest", value: "descending-date" },
+  { label: "Date: Oldest to Newest", value: "ascending-date" },
+  { label: "Author: A-Z", value: "ascending-author" },
+  { label: "Author: Z-A", value: "descending-author" },
+  { label: "Sponsor/Supervisor: A-Z", value: "ascending-sponsor" },
+  { label: "Sponsor/Supervisor: Z-A", value: "descending-sponsor" },
+  { label: "Most Likes", value: "descending-likes" },
+  { label: "Fewest Likes", value: "ascending-likes" },
+];
 
 const KanbanViewConfigurator = ({ handle, data, permissions, onSubmit }) => {
   const tags = useCache(
@@ -194,7 +209,7 @@ const KanbanViewConfigurator = ({ handle, data, permissions, onSubmit }) => {
             className="d-flex justify-content-between align-items-center gap-3 w-100"
             style={{ fontWeight: 500, fontSize: "16" }}
           >
-            Fields to display:
+            Fields to display
           </span>
           <div>
             <Widget
@@ -214,6 +229,35 @@ const KanbanViewConfigurator = ({ handle, data, permissions, onSubmit }) => {
                 hideSubmitBtn: true,
               }}
             />
+          </div>
+        </div>
+        <div className="d-flex flex-column flex-1 align-items-start justify-content-evenly gap-1 p-2 flex-grow-1">
+          <span
+            className="d-flex justify-content-between align-items-center gap-3 w-100"
+            style={{ fontWeight: 500, fontSize: "16" }}
+          >
+            Sort by
+          </span>
+          <div>
+            <div className="input-group">
+              <select
+                className="form-select border border-2"
+                value={formState.metadata.ticket.sortBy}
+                onChange={formUpdate({
+                  path: ["metadata", "ticket", "sortBy"],
+                })}
+                aria-label={label}
+              >
+                <option value="none" disabled hidden>
+                  None
+                </option>
+                {sortByOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
