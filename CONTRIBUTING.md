@@ -171,14 +171,6 @@ We use [Playwright](https://playwright.dev) for tests, which are located in the 
 
 See the [test-pipeline](./.github/workflows/continuous-integration-workflow.yml) for what dependencies that needs to be installed on your workstation for tests to run.
 
-#### Making Changes to common.jsx
-
-The `common.jsx` file contains a set of shared utilities that are often reused in DevHub widgets. When you need to change it, just edit the file in the root of the project, and update the widgets with this one command:
-
-```
-npm run build
-```
-
 #### Storage Deposit
 
 Sometimes there is a need to deposit extra tokens to cover the widgets’ storage cost. You can do that with [`bos` CLI](https://github.com/FroVolod/bos-cli-rs):

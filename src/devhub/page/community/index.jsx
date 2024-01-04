@@ -1,3 +1,6 @@
+const { normalize } =
+  VM.require("${REPL_DEVHUB}/widget/core.lib.stringUtils") || (() => {});
+
 const Button = styled.button`
   height: 40px;
   font-size: 14px;
@@ -46,6 +49,8 @@ if (!tab) {
   tab = "Activity";
 }
 
+tab = normalize(tab);
+
 const [isLinkCopied, setLinkCopied] = useState(false);
 
 const tabs = [
@@ -85,7 +90,7 @@ const onShareClick = () =>
     )
     .then(setLinkCopied(true));
 
-let currentTab = tabs.find((it) => it.title === tab);
+let currentTab = tabs.find((it) => normalize(it.title) === tab);
 
 const CommunityName = styled.span`
   color: #151515;
@@ -284,13 +289,13 @@ return (
                     params: {
                       page: "community",
                       handle: community.handle,
-                      tab: title,
+                      tab: normalize(title),
                     },
                   })}
-                  aria-current={tab === title && "page"}
+                  aria-current={tab === normalize(title) && "page"}
                   className={[
                     "d-inline-flex gap-2",
-                    tab === title ? "nav-link active" : "nav-link",
+                    tab === normalize(title) ? "nav-link active" : "nav-link",
                   ].join(" ")}
                 >
                   <span>{title}</span>
