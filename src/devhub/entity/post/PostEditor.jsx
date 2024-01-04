@@ -90,7 +90,7 @@ useEffect(() => {
     if (!postData) {
       setPostData(data);
     }
-    if (postData && JSON.stringify(postData) !== JSON.stringify(data)) {
+    if (postData && data && JSON.stringify(postData) !== JSON.stringify(data)) {
       props.setEditorState(false);
       props.setExpandReplies(true);
       setPostData(data);
@@ -100,7 +100,11 @@ useEffect(() => {
     if (!postIdList) {
       setPostIdList(postIds);
     }
-    if (postIdList?.length > 0 && postIdList.length !== postIds.length) {
+    if (
+      postIdList?.length > 0 &&
+      postIds.length > 0 &&
+      postIdList.length !== postIds.length
+    ) {
       props.onDraftStateChange(null);
       if (isCreatePostPage) {
         setShowPostPage(true);
