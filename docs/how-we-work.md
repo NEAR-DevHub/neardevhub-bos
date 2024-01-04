@@ -8,7 +8,7 @@ As contributors, we believe we can all succeed when we embrace these principles:
 
 * **Ownership & Code Quality**: Take full ownership of assigned issues, delivering high-quality code. Adhere to our developer workflow and limit work in-progress to two issues at a time.
 
-* **Participation & Support**: Participe daily by promptly responding to requests and supporting fellow contributors.
+* **Participation & Support**: Participate daily by promptly responding to requests and supporting fellow contributors.
 
 * **Visibility & Organization**: Maintain visibility on your progress by keeping tickets up to date. Additionally, contribute to triaging tickets to maintain an organized backlog.
 
@@ -23,7 +23,7 @@ As contributors, we believe we can all succeed when we embrace these principles:
 
 ### Kanban Project Board
 
-To track our progress and manage issues effectively, we use a [Kanban board](https://github.com/orgs/near/projects/60/views/1). The board consists of the following columns:
+To track our progress and manage issues effectively, we use a [Kanban board](https://github.com/orgs/NEAR-DevHub/projects/4/views/1). The board consists of the following columns:
 
 1. **Triage**: Issues that need processing, such as adding details, priority, and size.
 2. **Backlog**: Issues that are accepted and ready for development.
@@ -42,7 +42,7 @@ Note: To update the status of tickets, you will need project permissions. If you
 
 Triaging is the process of reviewing all new issues to ensure they are ready for development. Here's how we do it:   
 
-1. **Validation**: Active DevHub contributors may review new issues in the triage column and determine if they are valid, actionable, and useful. We may update the title or description, verify the reproduction steps, remove duplicates, and apply the appropriate [labels](https://github.com/near/devgigsboard-widgets/labels), such as the [good first issues](https://github.com/near/devgigsboard-widgets/contribute) label to issues that are good for new developers.
+1. **Validation**: Active DevHub contributors may review new issues in the triage column and determine if they are valid, actionable, and useful. We may update the title or description, verify the reproduction steps, remove duplicates, and apply the appropriate [labels](https://github.com/NEAR-DevHub/neardevhub-bos/labels), such as the [good first issues](https://github.com/NEAR-DevHub/neardevhub-bos/contribute) label to issues that are good for new developers.
 
 2. **Prioritization**: DevHub Moderators will work to prioritize issues using these levels:
     * **P0**: Critical issues that need immediate attention.
@@ -60,11 +60,11 @@ Triaging is the process of reviewing all new issues to ensure they are ready for
 
 Please add questions or comments for any clarifications or design needs to help with estimation.
 
-4. **Milestones**: DevHub Moderators will group several related tickets into themes using [milestones](https://github.com/near/devgigsboard-widgets/milestones), such as a new feature or improvements to a specific platform area.
+4. **Milestones**: DevHub Moderators will group several related tickets into themes using [milestones](https://github.com/NEAR-DevHub/neardevhub-bos/milestones), such as a new feature or improvements to a specific platform area.
 
 5. **Start/End Dates**: Active DevHub contributors may assign estimated dates to help us plan roadmap and potential resource needs for specific deliverables.
 
-Once an item is triaged, we move it to the [Backlog column](https://github.com/orgs/near/projects/60).
+Once an item is triaged, we move it to the [Backlog column](https://github.com/orgs/NEAR-DevHub/projects/4/views/1).
 
 ## Developer Workflow
 
@@ -72,7 +72,7 @@ Our development workflow guides us through managing issues and pull requests fro
 
 ### 1. **Select Issues**
 
-    1. You can pick any issues from the [Backlog column](https://github.com/orgs/near/projects/60) and indicate your interest by leaving a comment. A DevHub Moderator will assign the ticket to you.
+    1. You can pick any issues from the Backlog column and indicate your interest by leaving a comment. A DevHub Moderator will assign the ticket to you.
     2. If an issue has an estimation or the existing estimation seems off, add your estimation with one or two sentences explaining why you think it will take that amount of time.
 
 Note: We expect you to complete your ticket within the number of days you committed. So if a ticket is ~3 days, you should be able to request a review on the third or fourth day.
@@ -92,8 +92,10 @@ Notes: We may reassign issues that are not in progress yet. So it is important t
     2. Implement tests to ensure that other developers will be warned if they break your code by accident
     3. Also use tests to speed up your own development workflow. Writing tests during implementation should reduce the code-test iteration loop time.
     4. Help the Pull Request reviewer, your tests should clearly describe what you have implemented. The better the test coverage, the better are the chances of getting your PR approved.
-    5. For more information about writing tests look into the [contribution guidelines](https://github.com/near/neardevhub-widgets/blob/main/CONTRIBUTING.md#writing-tests)
-    
+    5. For more information about writing tests look into the contribution guidelines.
+
+[contribution guidelines](https://github.com/NEAR-DevHub/neardevhub-bos/blob/main/CONTRIBUTING.md#writing-tests)
+
 ### 4. **Update Tickets**
 
     1. If your ticket blocked:
@@ -101,9 +103,10 @@ Notes: We may reassign issues that are not in progress yet. So it is important t
         2. Own resolution: Add daily comments to the ticket to communicate the progress. Try to resolve the blocking ticket or find an owner for it. Once the blocker is resolved, add a comment specifying that it is no longer blocker. Move the ticket back to the backlog. 
     2. If your ticket takes longer than your estimation time:
         a. Add a comment specifying why the ticket is larger than your original estimate and what actions have you already taken, and what are your next steps. 
-        b. Tag the Tech Lead and propose a new estimate for the amount of time you need to finish the task, along with the rationale for it. Or specify if you need someone else to take over.  Example: [https://github.com/near/neardevhub-widgets/pull/126#issuecomment-1554330035](https://github.com/near/neardevhub-widgets/pull/126#issuecomment-1554330035). 
+        b. Tag the Tech Lead and propose a new estimate for the amount of time you need to finish the task, along with the rationale for it. Or specify if you need someone else to take over.
         c. Add a daily comment to the ticket to indicate your progress.
 
+[Example 2b](https://github.com/NEAR-DevHub/neardevhub-bos/pull/126#issuecomment-1554330035)
 
 ### 5. **Request Review** 
 
