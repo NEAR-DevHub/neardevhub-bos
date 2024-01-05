@@ -107,7 +107,7 @@ const GithubKanbanTicket = ({
   ) : null;
 
   return (
-    <AttractableDiv className="card border-secondary">
+    <AttractableDiv className="card">
       {header}
       <div
         className="card-body d-flex flex-column gap-3"

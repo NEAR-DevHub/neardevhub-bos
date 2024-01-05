@@ -207,7 +207,7 @@ const KanbanPostBoard = ({ metadata, payload }) => {
             <div
               className={[
                 "card-body d-flex flex-column gap-3 p-2",
-                "border border-1 border-secondary rounded-4",
+                "border border-1 rounded-4",
               ].join(" ")}
               style={{ height: "75vh" }}
             >

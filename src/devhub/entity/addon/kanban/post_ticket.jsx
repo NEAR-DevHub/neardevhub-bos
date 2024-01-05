@@ -183,7 +183,7 @@ const KanbanPostTicket = ({ metadata, data }) => {
     );
   }
   return (
-    <AttractableDiv className="card border-secondary">
+    <AttractableDiv className="card">
       <div
         className="card-body d-flex flex-column gap-2"
         style={{ fontSize: 14 }}
