@@ -61,20 +61,6 @@ function deleteCommunity({ handle }) {
   return Near.call("${REPL_DEVHUB_CONTRACT}", "delete_community", { handle });
 }
 
-function updateCommunityBoard({ handle, board }) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community_board", {
-    handle,
-    board,
-  });
-}
-
-function updateCommunityGithub({ handle, github }) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community_github", {
-    handle,
-    github,
-  });
-}
-
 /**
  * Sets all addons, for configurating tabs
  */
@@ -116,18 +102,6 @@ function getAllCommunitiesMetadata() {
   return (
     Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_communities_metadata") ?? null
   );
-}
-
-function getCommunityAddons({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addons", {
-    handle,
-  });
-}
-
-function getCommunityAddonConfigs({ handle }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_community_addon_configs", {
-    handle,
-  });
 }
 
 function getAllLabels() {
@@ -201,16 +175,12 @@ return {
   getAccountCommunityPermissions,
   updateCommunity,
   deleteCommunity,
-  updateCommunityBoard,
-  updateCommunityGithub,
   setCommunityAddons,
   setCommunityAddon,
   getAccessControlInfo,
   getAllAuthors,
   getAllCommunitiesMetadata,
   getAllAddons,
-  getCommunityAddons,
-  getCommunityAddonConfigs,
   getAllLabels,
   getPost,
   getPostsByAuthor,
