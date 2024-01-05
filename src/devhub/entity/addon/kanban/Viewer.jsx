@@ -1,25 +1,34 @@
+const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+
+if (!Struct) {
+  return <p>Loading modules...</p>;
+}
 
 href || (href = () => {});
 
-const { metadata, payload, handle, permissions } = props;
-// TODO: Convert this viewer to display the provided data via metadata, payload
+const { data, handle, permissions } = props;
 
-const CommunityBoardPage = ({ handle, permissions }) => {
+if (!data || !data?.metadata) {
   return (
-    <Widget
-      src="${REPL_DEVHUB}/widget/devhub.entity.addon.kanban.configurator"
-      props={{
-        communityHandle: handle, // rather than fetching again via the handle
-        link: href({
-          // do we need a link?
-          widgetSrc: "${REPL_DEVHUB}/widget/app",
-          params: { page: "community", handle },
-        }),
-        permissions,
-      }}
-    />
+    <div
+      className="d-flex flex-column align-items-center justify-content-center gap-4"
+      style={{ height: 384 }}
+    >
+      <h5 className="h5 d-inline-flex gap-2 m-0">
+        Please add configuration for your board.
+      </h5>
+    </div>
   );
-};
+}
 
-return CommunityBoardPage(props);
+return (
+  <Widget
+    src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${data.metadata.type}`}
+    props={{
+      ...data,
+      isSynced: true,
+      permissions,
+    }}
+  />
+);

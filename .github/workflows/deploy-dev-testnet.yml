@@ -15,24 +15,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set replacements
-        id: set_replacements
-        run: |
-          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value)]' replacements.dev.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
-
-      - name: Replace placeholders
-        uses: flcdrg/replace-multiple-action@v1
+      - name: Set up node
+        uses: actions/setup-node@v3
         with:
-          files: '**/*.jsx'
-          find: '${{ steps.set_replacements.outputs.replacements }}'
-          prefix: '(^|.*)'
-          suffix: '($|.*)'
+          node-version: 20
+          cache: "npm"
+      - run: |
+          npm install
+          npm run build
 
       - name: Install bos CLI
         run: |
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.2/bos-cli-installer.sh | sh
-      
+
       - name: Deploy widgets
+        working-directory: ./build
         run: |
           which bos
           echo $PATH

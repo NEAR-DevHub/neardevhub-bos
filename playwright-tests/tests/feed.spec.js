@@ -112,4 +112,43 @@ test.describe("Wallet is connected", () => {
       state: "hidden",
     });
   });
+
+  test("successful idea reply post should not show the editor", async ({
+    page,
+  }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=feed&transactionHash=2123123123"
+    );
+    const editAsIdea = 'div.card-header:has-text("Create Idea")';
+    // check if editor is hidden
+    await page.waitForSelector(editAsIdea, {
+      state: "hidden",
+    });
+  });
+
+  test("successful comment post should not show the editor", async ({
+    page,
+  }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=feed&transactionHash=2123123123"
+    );
+    const editAsIdea = 'div.card-header:has-text("Create Comment")';
+    // check if editor is hidden
+    await page.waitForSelector(editAsIdea, {
+      state: "hidden",
+    });
+  });
+
+  test("successful edited post should not show the editor", async ({
+    page,
+  }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=feed&transactionHash=2123123123"
+    );
+    const editAsIdea = 'div.card-header:has-text("Edit Idea")';
+    // check if editor is hidden
+    await page.waitForSelector(editAsIdea, {
+      state: "hidden",
+    });
+  });
 });

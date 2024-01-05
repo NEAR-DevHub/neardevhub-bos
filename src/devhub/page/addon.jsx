@@ -4,6 +4,11 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
   position: relative;
+  padding: 0 1rem;
+
+  @media screen and (max-width: 960px) {
+    padding: 0 1rem;
+  }
 `;
 
 const Content = styled.div`
@@ -64,11 +69,9 @@ if (!getAllAddons || !setCommunityAddon) {
 
 const availableAddons = getAllAddons();
 
-if (!availableAddons) {
-  return <p>Loading addons...</p>;
-}
-
-const addonMatch = availableAddons.find((it) => it.id === addon.addon_id);
+const addonMatch = (availableAddons ?? []).find(
+  (it) => it.id === addon.addon_id
+);
 
 if (!addonMatch) {
   return (
@@ -87,39 +90,25 @@ const ButtonRow = styled.div`
 
 const [view, setView] = useState(props.view || "viewer");
 
-const checkFullyRefactored = (addon_id) => {
-  switch (addon_id) {
-    case "kanban":
-    case "github":
-      return false;
-    default:
-      return true;
-  }
-};
-
-const isFullyRefactored = checkFullyRefactored(addon.addon_id);
-
 return (
   <Container>
-    {isFullyRefactored && // Unfully refactored addons have the configurator built in.
-      // So we hide the header
-      permissions.can_configure && (
-        <SettingsButton
-          onClick={() => setView(view === "configure" ? "view" : "configure")}
-        >
-          {view === "configure" ? (
-            <span className="bi bi-x"></span>
-          ) : (
-            <span className="bi bi-gear"></span>
-          )}
-        </SettingsButton>
-      )}
+    {permissions.can_configure && (
+      <SettingsButton
+        onClick={() => setView(view === "configure" ? "view" : "configure")}
+      >
+        {view === "configure" ? (
+          <span className="bi bi-x"></span>
+        ) : (
+          <span className="bi bi-gear"></span>
+        )}
+      </SettingsButton>
+    )}
     <Content>
-      {/* We hide in order to prevent a reload when we switch between two views */}
-      <div className={`${view !== "configure" ? "d-none" : ""}`}>
+      {view === "configure" ? (
         <Widget
           src={addonMatch.configurator_widget}
           props={{
+            ...config,
             data: config,
             onSubmit: (data) => {
               setCommunityAddon({
@@ -130,23 +119,21 @@ return (
                 },
               });
             },
-
             handle, // this is temporary prop drilling until kanban and github are migrated
             permissions,
           }}
         />
-      </div>
-      <div className={`${view === "configure" ? "d-none" : ""}`}>
+      ) : (
         <Widget
           src={addonMatch.view_widget}
           props={{
             ...config,
-            // temporary prop drilling
+            data: config,
             handle,
             permissions,
           }}
         />
-      </div>
+      )}
     </Content>
   </Container>
 );

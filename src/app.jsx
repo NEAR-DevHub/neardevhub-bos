@@ -3,6 +3,10 @@
  * Page route gets passed in through params, along with all other page props.
  */
 
+const { onDraftStateChange } = VM.require(
+  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
+);
+
 const { page, ...passProps } = props;
 
 // Import our modules
@@ -115,8 +119,8 @@ function Page() {
     case "create": {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.page.create"}
-          props={passProps}
+          src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
+          props={{ ...passProps, isCreatePostPage: true, onDraftStateChange }}
         />
       );
     }
