@@ -1,3 +1,37 @@
+const { normalize } =
+  VM.require("${REPL_DEVHUB}/widget/core.lib.stringUtils") || (() => {});
+
+const CenteredMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 384px;
+`;
+
+function initLabels() {
+  const labels = [];
+  if (typeof props.labels === "string") {
+    labels.push(...props.labels.split(","));
+  }
+  if (Array.isArray(props.labels)) {
+    labels.push(...props.labels);
+  }
+  if (props.referral) {
+    labels.push(`referral:${props.referral}`);
+  }
+  return labels;
+}
+
+if (!context.accountId) {
+  return (
+    <CenteredMessage height={"384px"}>
+      <h2>Please sign in to create a post.</h2>
+    </CenteredMessage>
+  );
+}
+
 const cleanDescription = (description) => {
   return description
     ? description.replace(
@@ -6,6 +40,88 @@ const cleanDescription = (description) => {
       )
     : description;
 };
+
+const postTypeOptions = {
+  Idea: {
+    name: "Idea",
+    icon: "bi-lightbulb",
+    description:
+      "Get feedback from the community about a problem, opportunity, or need.",
+  },
+
+  Solution: {
+    name: "Solution",
+    icon: "bi-rocket",
+    description:
+      "Provide a specific proposal or implementation to an idea, optionally requesting funding. If your solution relates to an existing idea, please reply to the original post with a solution.",
+  },
+};
+
+let fields = {
+  Comment: ["description"],
+  Idea: ["name", "description"],
+  Solution: ["name", "description", "fund_raising"],
+  Attestation: ["name", "description"],
+  Sponsorship: [
+    "name",
+    "description",
+    "amount",
+    "sponsorship_token",
+    "supervisor",
+  ],
+  Github: ["githubLink", "name", "description"],
+};
+
+const isCreatePostPage = props.isCreatePostPage ?? false;
+const postType = props.postType ?? "Idea";
+const parentId = props.parentId ?? null;
+const mode = props.mode ?? "Create";
+const labelStrings = initLabels();
+const [postIdList, setPostIdList] = useState(null); // to show updated post after approve txn
+const [showPostPage, setShowPostPage] = useState(false); // show newly created post
+const [postId, setPostId] = useState(props.postId ?? null);
+const [postData, setPostData] = useState(null); // for capturing edit post change
+
+useEffect(() => {
+  if (mode == "Edit") {
+    const data = Near.view("${REPL_DEVHUB_CONTRACT}", "get_post", {
+      post_id: postId,
+    });
+    if (!postData) {
+      setPostData(data);
+    }
+    if (postData && data && JSON.stringify(postData) !== JSON.stringify(data)) {
+      props.setEditorState(false);
+      props.setExpandReplies(true);
+      setPostData(data);
+    }
+  } else {
+    const postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_post_ids");
+    if (!postIdList) {
+      setPostIdList(postIds);
+    }
+    if (
+      postIdList?.length > 0 &&
+      postIds.length > 0 &&
+      postIdList.length !== postIds.length
+    ) {
+      props.onDraftStateChange(null);
+      if (isCreatePostPage) {
+        setShowPostPage(true);
+        setPostId(postIds[postIds?.length - 1]);
+      } else {
+        // close editor and expand replies
+        props.setEditorState(false);
+        props.setExpandReplies(true);
+      }
+      setPostIdList(postIds);
+    }
+  }
+});
+
+const labels = labelStrings.map((s) => {
+  return { name: s };
+});
 
 initState({
   seekingFunding: props.seekingFunding ?? false,
@@ -29,6 +145,7 @@ initState({
   draftStateApplied: false,
   mentionInput: "", // text next to @ tag
   mentionsArray: [], // all the mentions in the description
+  displayFields: fields[postType],
 });
 
 /* INCLUDE: "core/lib/autocomplete" */
@@ -41,6 +158,46 @@ const AutoComplete = styled.div`
     padding: calc(var(--padding) / 2);
   }
 `;
+
+if (props.transactionHashes) {
+  const transaction = useCache(
+    () =>
+      asyncFetch("https://rpc.mainnet.near.org", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: "dontcare",
+          method: "tx",
+          params: [props.transactionHashes, context.accountId],
+        }),
+      }).then((res) => res),
+    props.transactionHashes + context.accountId,
+    { subscribe: false }
+  );
+
+  if (transaction !== null) {
+    const transaction_method_name =
+      transaction?.body?.result?.transaction?.actions[0].FunctionCall
+        .method_name;
+
+    const is_edit_or_add_post_transaction =
+      transaction_method_name == "add_post" ||
+      transaction_method_name == "edit_post";
+
+    if (is_edit_or_add_post_transaction) {
+      props.onDraftStateChange(null);
+    }
+
+    // show the latest created post to user
+    if (transaction_method_name == "add_post" && isCreatePostPage) {
+      setShowPostPage(true);
+      setPostId(postIdList?.[postIdList?.length - 1]);
+    }
+  }
+}
 
 function textareaInputHandler(value) {
   const words = value.split(/\s+/);
@@ -85,37 +242,16 @@ function autoCompleteAccountId(id) {
 
 /* END_INCLUDE: "core/lib/autocomplete" */
 
-const postType = props.postType ?? "Sponsorship";
-const parentId = props.parentId ?? null;
-const postId = props.postId ?? null;
-const mode = props.mode ?? "Create";
-const toggleEditor = props.toggleEditor;
-
-const referralLabels = props.referral ? [`referral:${props.referral}`] : [];
-const labelStrings = (props.labels ?? []).concat(referralLabels);
-
-const labels = labelStrings.map((s) => {
-  return { name: s };
-});
-
 if (!state.draftStateApplied && props.draftState) {
   State.update({ ...props.draftState, draftStateApplied: true });
 }
 
-let fields = {
-  Comment: ["description"],
-  Idea: ["name", "description"],
-  Solution: ["name", "description", "fund_raising"],
-  Attestation: ["name", "description"],
-  Sponsorship: [
-    "name",
-    "description",
-    "amount",
-    "sponsorship_token",
-    "supervisor",
-  ],
-  Github: ["githubLink", "name", "description"],
-}[postType];
+const typeSwitch = (optionName) => {
+  State.update({
+    postType: optionName,
+    displayFields: fields[optionName],
+  });
+};
 
 // This must be outside onClick, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onClick, it will give `null` and we cannot tell the result is true or false.
@@ -181,8 +317,8 @@ const onSubmit = () => {
       github_version: "V0",
       github_link: state.githubLink,
     },
-  }[postType];
-  body["post_type"] = postType;
+  }[state.postType];
+  body["post_type"] = state.postType;
   if (!context.accountId) {
     return;
   }
@@ -233,16 +369,6 @@ const onSubmit = () => {
   }
 };
 
-const normalizeLabel = (label) =>
-  label
-    .replaceAll(/[- \.]/g, "_")
-    .replaceAll(/[^\w]+/g, "")
-    .replaceAll(/_+/g, "-")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "")
-    .toLowerCase()
-    .trim("-");
-
 const checkLabel = (label) => {
   Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
     editor: context.accountId,
@@ -264,7 +390,7 @@ const checkLabel = (label) => {
 
 const setLabels = (labels) => {
   labels = labels.map((o) => {
-    o.name = normalizeLabel(o.name);
+    o.name = normalize(o.name);
     return o;
   });
   if (labels.length < state.labels.length) {
@@ -310,7 +436,9 @@ const existingLabels = existingLabelStrings
 
 const labelEditor = (
   <div className="col-lg-12  mb-2">
-    Labels:
+    <label htmlFor="labels" className="fs-6 fw-bold mb-1">
+      Labels
+    </label>
     <Typeahead
       multiple
       labelKey="name"
@@ -348,9 +476,14 @@ const githubLinkDiv = (
 );
 
 const nameDiv = (
-  <div className="col-lg-6  mb-2">
-    Title:
+  <div className="col-lg-12  mb-2">
+    <label htmlFor="title" className="fs-6 fw-bold mb-1">
+      Title
+    </label>
     <input
+      name="title"
+      id="title"
+      data-testid="name-editor"
       type="text"
       value={state.name}
       onChange={(event) => State.update({ name: event.target.value })}
@@ -399,8 +532,9 @@ const supervisorDiv = (
 const callDescriptionDiv = () => {
   return (
     <div className="col-lg-12  mb-2">
-      Description:
-      <br />
+      <label htmlFor="description" className="fs-6 fw-bold mb-1">
+        Description
+      </label>
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"}
         props={{
@@ -501,6 +635,7 @@ const fundraisingDiv = (
       Requested amount
       <span class="text-muted fw-normal">(Numbers Only)</span>
       <input
+        data-testid="requested-amount-editor"
         type="number"
         value={parseInt(state.amount) > 0 ? state.amount : ""}
         min={0}
@@ -549,140 +684,213 @@ function generateDescription(text, amount, token, supervisor, seekingFunding) {
 
 const [tab, setTab] = useState("editor");
 
-const renamedPostType = postType == "Submission" ? "Solution" : postType;
+const renamedPostType =
+  state.postType == "Submission" ? "Solution" : state.postType;
 // Below there is a weird code with fields.includes("githubLink") ternary operator.
 // This is to hack around rendering bug of near.social.
-return (
-  <div className="card">
-    <div className="card-header">
-      <div>
-        <ul class="nav nav-tabs">
-          <li class="nav-item">
-            <button
-              class={`nav-link ${tab === "editor" ? "active" : ""}`}
-              onClick={() => setTab("editor")}
-            >
-              Editor
-            </button>
-          </li>
-          <li class="nav-item">
-            <button
-              class={`nav-link ${tab === "preview" ? "active" : ""}`}
-              onClick={() => setTab("preview")}
-            >
-              Preview
-            </button>
-          </li>
-        </ul>
-      </div>
-      {tab === "editor" && (
-        <div className="my-3">
-          {mode} {renamedPostType}
-        </div>
-      )}
-      {tab === "preview" && <div className="my-3">Post Preview</div>}
-    </div>
 
-    {tab === "editor" && (
-      <div class="card-body">
-        {state.warning && (
-          <div
-            class="alert alert-warning alert-dismissible fade show"
-            role="alert"
-          >
-            {state.warning}
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="alert"
-              aria-label="Close"
-              onClick={() => State.update({ warning: "" })}
-            ></button>
-          </div>
-        )}
-        {/* This statement around the githubLinkDiv creates a weird render bug
-      where the title renders extra on state change. */}
-        {fields.includes("githubLink") ? (
-          <div className="row">
-            {fields.includes("githubLink") && githubLinkDiv}
-            {labelEditor}
-            {fields.includes("name") && nameDiv}
-            {fields.includes("description") && callDescriptionDiv()}
-          </div>
-        ) : (
-          <div className="row">
-            {labelEditor}
-            {fields.includes("name") && nameDiv}
-            {fields.includes("amount") && amountDiv}
-            {fields.includes("sponsorship_token") && tokenDiv}
-            {fields.includes("supervisor") && supervisorDiv}
-            {fields.includes("description") && callDescriptionDiv()}
-            {fields.includes("fund_raising") && isFundraisingDiv}
-            {state.seekingFunding &&
-              fields.includes("fund_raising") &&
-              fundraisingDiv}
-          </div>
-        )}
-        <button
-          style={{
-            width: "7rem",
-            backgroundColor: "#0C7283",
-            color: "#f3f3f3",
-          }}
-          disabled={state.seekingFunding && (!state.amount || state.amount < 1)}
-          className="btn btn-light mb-2 p-3"
-          onClick={onSubmit}
-        >
-          Submit
-        </button>
-        <button
-          style={{
-            width: "7rem",
-            backgroundColor: "#fff",
-            color: "#000",
-          }}
-          className="btn btn-light mb-2 p-3"
-          onClick={toggleEditor}
-        >
-          Cancel
-        </button>
-        {disclaimer}
-      </div>
-    )}
-    {tab === "preview" && (
-      <div class="card-body">
+return (
+  <div className="d-flex flex-column flex-grow-1 w-100">
+    <div className="mx-2 mx-md-5 mb-5">
+      {showPostPage ? (
         <Widget
-          src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
+          src={"${REPL_DEVHUB}/widget/devhub.entity.post.Post"}
           props={{
-            isPreview: true,
-            id: 0, // irrelevant
-            post: {
-              author_id: state.author_id,
-              likes: [],
-              snapshot: {
-                editor_id: state.editor_id,
-                labels: state.labelStrings,
-                post_type: postType,
-                name: state.name,
-                description:
-                  postType == "Solution"
-                    ? generateDescription(
-                        state.description,
-                        state.amount,
-                        state.token,
-                        state.supervisor,
-                        state.seekingFunding
-                      )
-                    : state.description,
-                amount: state.amount,
-                sponsorship_token: state.token,
-                supervisor: state.supervisor,
-                github_link: state.githubLink,
-              },
-            },
+            id: postId,
+            expandable: true,
+            defaultExpanded: false,
+            isInList: true,
+            isPreview: false,
+            onDraftStateChange: props.onDraftStateChange,
+            referral: postId,
+            transactionHashes: props.transactionHashes,
           }}
         />
-      </div>
-    )}
+      ) : (
+        <div className="card">
+          <div className="card-header">
+            <div>
+              <ul class="nav nav-tabs">
+                <li class="nav-item">
+                  <button
+                    class={`nav-link ${tab === "editor" ? "active" : ""}`}
+                    onClick={() => setTab("editor")}
+                  >
+                    Editor
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button
+                    class={`nav-link ${tab === "preview" ? "active" : ""}`}
+                    onClick={() => setTab("preview")}
+                  >
+                    Preview
+                  </button>
+                </li>
+              </ul>
+            </div>
+            {!isCreatePostPage && tab === "editor" && (
+              <div className="my-3">
+                {mode} {renamedPostType}
+              </div>
+            )}
+            {tab === "preview" && <div className="my-3">Post Preview</div>}
+          </div>
+          <div class="card-body">
+            {tab === "editor" && (
+              <>
+                {state.warning && (
+                  <div
+                    class="alert alert-warning alert-dismissible fade show"
+                    role="alert"
+                  >
+                    {state.warning}
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="alert"
+                      aria-label="Close"
+                      onClick={() => State.update({ warning: "" })}
+                    ></button>
+                  </div>
+                )}
+                {isCreatePostPage && (
+                  <div>
+                    <p class="card-title fw-bold fs-6">
+                      What do you want to create?
+                    </p>
+                    <div class="d-flex flex-row gap-2">
+                      {Object.values(postTypeOptions).map((option) => (
+                        <button
+                          className={`btn btn-${
+                            state.postType === option.name
+                              ? "primary"
+                              : "outline-secondary"
+                          }`}
+                          data-testid={`btn-${option.name.toLowerCase()}`}
+                          key={option.name}
+                          onClick={() => typeSwitch(option.name)}
+                          style={
+                            state.postType === option.name
+                              ? {
+                                  backgroundColor: "#0C7283",
+                                  color: "#f3f3f3",
+                                }
+                              : null
+                          }
+                          type="button"
+                        >
+                          <i className={`bi ${option.icon}`} />
+                          <span>{option.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <p class="text-muted w-75 my-1">
+                      {postTypeOptions[state.postType].description}
+                    </p>
+                  </div>
+                )}
+                {/* This statement around the githubLinkDiv creates a weird render bug
+      where the title renders extra on state change. */}
+                {state.displayFields.includes("githubLink") ? (
+                  <div className="row">
+                    {state.displayFields.includes("githubLink") &&
+                      githubLinkDiv}
+                    {labelEditor}
+                    {state.displayFields.includes("name") && nameDiv}
+                    {state.displayFields.includes("description") &&
+                      callDescriptionDiv()}
+                  </div>
+                ) : (
+                  <div className="row">
+                    {labelEditor}
+                    {state.displayFields.includes("name") && nameDiv}
+                    {state.displayFields.includes("amount") && amountDiv}
+                    {state.displayFields.includes("sponsorship_token") &&
+                      tokenDiv}
+                    {state.displayFields.includes("supervisor") &&
+                      supervisorDiv}
+                    {state.displayFields.includes("description") &&
+                      callDescriptionDiv()}
+                    {state.displayFields.includes("fund_raising") &&
+                      isFundraisingDiv}
+                    {state.seekingFunding &&
+                      state.displayFields.includes("fund_raising") &&
+                      fundraisingDiv}
+                  </div>
+                )}
+
+                {disclaimer}
+              </>
+            )}
+            {tab === "preview" && (
+              <div className="mb-2">
+                <Widget
+                  src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
+                  props={{
+                    isPreview: true,
+                    id: 0, // irrelevant
+                    post: {
+                      author_id: state.author_id,
+                      likes: [],
+                      snapshot: {
+                        editor_id: state.editor_id,
+                        labels: state.labelStrings,
+                        post_type: postType,
+                        name: state.name,
+                        description:
+                          state.postType == "Solution"
+                            ? generateDescription(
+                                state.description,
+                                state.amount,
+                                state.token,
+                                state.supervisor,
+                                state.seekingFunding
+                              )
+                            : state.description,
+                        amount: state.amount,
+                        sponsorship_token: state.token,
+                        supervisor: state.supervisor,
+                        github_link: state.githubLink,
+                      },
+                    },
+                  }}
+                />
+              </div>
+            )}
+            <button
+              data-testid="submit-create-post"
+              style={{
+                width: "7rem",
+                backgroundColor: "#0C7283",
+                color: "#f3f3f3",
+              }}
+              disabled={
+                (state.seekingFunding && (!state.amount || state.amount < 1)) ||
+                (isCreatePostPage &&
+                  (state.name === "" || state.description === ""))
+              }
+              className="btn btn-light mb-2 p-3"
+              onClick={onSubmit}
+            >
+              Submit
+            </button>
+            {!isCreatePostPage && (
+              <button
+                style={{
+                  width: "7rem",
+                  backgroundColor: "#fff",
+                  color: "#000",
+                }}
+                className="btn btn-light mb-2 p-3"
+                onClick={() => props.setEditorState(false)}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   </div>
 );
