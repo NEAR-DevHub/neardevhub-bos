@@ -1,9 +1,4 @@
-const isTableView = props.isTableView;
 const columnId = props.columnId;
-const showDescriptionState = props.showDescriptionState;
-const showTagsState = props.showTagsState;
-const showFundingState = props.showFundingState;
-const showSponsorState = props.showSponsorState;
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 href || (href = () => {});
@@ -139,49 +134,9 @@ const KanbanPostTicket = ({ metadata, data }) => {
       </div>
     ) : null;
 
-  const showDescription = post_type === "Comment";
   const showFunding = features.approved_sponsorship_value;
   const showSponsor = features.sponsorship_supervisor;
-  const showTags = Array.isArray(tags) && features.tags;
 
-  if (isTableView) {
-    // hide the headings whose td doesn't exists
-    // we check existing state, since some of the postIDs can have description..., so we need to show the title for them irrespective
-    if (showDescription) {
-      props.setDescriptionDisplay((prevState) => ({
-        ...prevState,
-        [columnId]: showDescription,
-      }));
-    }
-    if (showFunding) {
-      props.setFundingDisplay((prevState) => ({
-        ...prevState,
-        [columnId]: showFunding,
-      }));
-    }
-    if (showSponsor) {
-      props.setSponsorDisplay((prevState) => ({
-        ...prevState,
-        [columnId]: showSponsor,
-      }));
-    }
-    if (showTags) {
-      props.setTagsDisplay((prevState) => ({
-        ...prevState,
-        [columnId]: showTags,
-      }));
-    }
-
-    return (
-      <tr>
-        <td>{titleArea}</td>
-        {showDescriptionState[columnId] && <td>{descriptionArea} </td>}
-        {showFundingState[columnId] && <td>{sponsorshipValue}</td>}
-        {showSponsorState[columnId] && <td>{requestedSponsor}</td>}
-        {showTagsState[columnId] && <td>{tagList}</td>}
-      </tr>
-    );
-  }
   return (
     <AttractableDiv className="card">
       <div
