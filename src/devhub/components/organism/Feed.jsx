@@ -83,7 +83,7 @@ return (
         index={[
           {
             action: "post",
-            key: "main",
+            key: props.indexKey || "main",
             options: {
               limit: 10,
               order: "desc",

@@ -2,6 +2,8 @@ if (!context.accountId) {
   return <></>;
 }
 
+const indexKey = props.indexKey || "main";
+
 State.init({
   image: {},
   text: "",
@@ -56,7 +58,7 @@ function composeData() {
     },
     index: {
       post: JSON.stringify({
-        key: "main",
+        key: indexKey,
         value: {
           type: "md",
         },
