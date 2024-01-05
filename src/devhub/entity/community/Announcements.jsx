@@ -107,7 +107,9 @@ return (
               src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
               props={{
                 showFlagAccountFeature: true,
-                filteredAccountIds: `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                filteredAccountIds: [
+                  `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                ],
                 sort: sort,
               }}
             />

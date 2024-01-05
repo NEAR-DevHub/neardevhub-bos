@@ -1,5 +1,7 @@
-const { Feed } = VM.require("${REPL_DEVS}/widget/Module.Feed");
+const { Feed } = VM.require("${REPL_DEVS}/widget/Feed");
 Feed = Feed || (() => <></>);
+
+const filteredAccountIds = props.filteredAccountIds ?? [];
 
 const GRAPHQL_ENDPOINT =
   props.GRAPHQL_ENDPOINT ?? "https://near-queryapi.api.pagoda.co";
@@ -85,7 +87,7 @@ return (
             options: {
               limit: 10,
               order: "desc",
-              accountId: [`${handle}.community.${REPL_DEVHUB_CONTRACT}`],
+              accountId: filteredAccountIds,
             },
             cacheOptions: {
               ignoreCache: true,
@@ -95,6 +97,7 @@ return (
         Item={(item) => (
           <Widget
             src="${REPL_NEAR}/widget/v1.Posts.Post"
+            loading={<div className="w-100" style={{ height: "200px" }} />}
             props={{
               accountId: item.accountId,
               blockHeight: item.blockHeight,
@@ -108,7 +111,7 @@ return (
         props={{
           GRAPHQL_ENDPOINT,
           showFlagAccountFeature: true,
-          ...props,
+          filteredAccountIds: filteredAccountIds,
         }}
       />
     )}
