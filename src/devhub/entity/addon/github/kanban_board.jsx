@@ -103,7 +103,7 @@ const GithubKanbanBoard = ({
 
   return (
     <div>
-      <div className="d-flex flex-column align-items-center gap-2 py-4">
+      <div className="d-flex flex-column align-items-center gap-2 pb-4">
         <h5 className="h5 d-inline-flex gap-2 m-0">
           <span>{title}</span>
         </h5>

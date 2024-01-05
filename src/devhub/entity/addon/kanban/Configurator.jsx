@@ -304,8 +304,7 @@ const KanbanViewConfigurator = ({ handle, data, permissions, onSubmit }) => {
                   />
                   <div className="d-flex flex-column flex-1 align-items-start justify-content-evenly gap-1 p-2 flex-grow-1">
                     <span className="d-flex justify-content-between align-items-center gap-3 w-100">
-                      Enter a single tag of which you want to show posts in this
-                      column
+                      Enter a tag to filter posts in this column
                     </span>
                     <div className="w-100">
                       <Widget

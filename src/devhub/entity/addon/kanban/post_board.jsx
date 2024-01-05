@@ -249,8 +249,8 @@ const KanbanPostBoard = ({ metadata, payload }) => {
 
   return (
     <div>
-      <div className="d-flex flex-column align-items-center gap-2 py-4 w-100">
-        <div class="form-check">
+      <div className="d-flex flex-column align-items-center gap-2 pb-4 w-100">
+        {/* <div class="form-check">
           <input
             class="form-check-input"
             type="checkbox"
@@ -262,7 +262,7 @@ const KanbanPostBoard = ({ metadata, payload }) => {
           <label class="form-check-label" for={`table`}>
             Table View
           </label>
-        </div>
+        </div> */}
         <h5 className="h4 d-inline-flex gap-2 m-0">
           <span>{metadata?.title}</span>
         </h5>
