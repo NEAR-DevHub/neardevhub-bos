@@ -72,23 +72,25 @@ const GithubKanbanBoard = ({
       : [];
 
     const issues = dataTypesIncluded.Issue
-      ? DataRequest?.paginated(
-          (pageNumber) =>
-            useCache(
-              () =>
-                asyncFetch(
-                  `https://api.github.com/repos/${repoURL
-                    .split("/")
-                    .slice(-2)
-                    .concat(["issues"])
-                    .join(
-                      "/"
-                    )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-                ).then((res) => res?.body),
-              repoURL + pageNumber,
-              { subscribe: false }
-            ),
-          { startWith: 1 }
+      ? (
+          DataRequest?.paginated(
+            (pageNumber) =>
+              useCache(
+                () =>
+                  asyncFetch(
+                    `https://api.github.com/repos/${repoURL
+                      .split("/")
+                      .slice(-2)
+                      .concat(["issues"])
+                      .join(
+                        "/"
+                      )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
+                  ).then((res) => res?.body),
+                repoURL + pageNumber,
+                { subscribe: false }
+              ),
+            { startWith: 1 }
+          ) ?? []
         )?.map(withType("Issue"))
       : [];
 
