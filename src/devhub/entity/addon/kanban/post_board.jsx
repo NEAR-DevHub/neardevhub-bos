@@ -281,7 +281,11 @@ const KanbanPostBoard = ({ metadata, payload }) => {
         >
           No columns were created so far.
         </div>
-        <span className={showTable ? "w-100 d-flex flex-column gap-3" : 'd-flex gap-3 w-100'}>
+        <span
+          className={
+            showTable ? "w-100 d-flex flex-column gap-3" : "d-flex gap-3 w-100"
+          }
+        >
           {view}
         </span>
       </div>
