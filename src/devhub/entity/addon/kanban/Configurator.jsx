@@ -241,7 +241,7 @@ const KanbanViewConfigurator = ({ handle, data, permissions, onSubmit }) => {
           <div>
             <div className="input-group">
               <select
-                className="form-select border border-2"
+                className="form-select border border-1"
                 value={formState.metadata.ticket.sortBy}
                 onChange={formUpdate({
                   path: ["metadata", "ticket", "sortBy"],
