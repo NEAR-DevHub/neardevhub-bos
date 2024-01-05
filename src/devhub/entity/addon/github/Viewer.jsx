@@ -1,20 +1,35 @@
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+const { useQuery } = VM.require(
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+);
+
+useQuery || (useQuery = () => {});
 
 href || (href = () => {});
-
 const { kanbanBoards, handle, permissions } = props;
-// TODO: Convert this viewer to display the provided data via kanbanBoards
+
+const data = Object.values(kanbanBoards ?? {})?.[0];
+
+if (!kanbanBoards || !data?.metadata) {
+  return (
+    <div
+      className="d-flex flex-column align-items-center justify-content-center gap-4"
+      style={{ height: 384 }}
+    >
+      <h5 className="h5 d-inline-flex gap-2 m-0">
+        Please add configuration for your board.
+      </h5>
+    </div>
+  );
+}
 
 return (
   <Widget
-    src="${REPL_DEVHUB}/widget/devhub.entity.addon.github.configurator"
+    src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${data.metadata.type}`}
     props={{
-      communityHandle: handle, // rather than fetching again via the handle
-      link: href({
-        // do we need a link?
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "community", handle },
-      }),
+      ...data,
+      isConfiguratorActive: false,
+      isSynced: true,
       permissions,
     }}
   />
