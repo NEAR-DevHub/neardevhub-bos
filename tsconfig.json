@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "baseUrl": "./src/",
+    "paths": { "@/includes/*": ["./includes/*"] },
+    "jsx": "preserve",
+    "types": ["@types/react", "near-social-vm-types", "./global.d.ts"],
+    "strict": true,
+    "noImplicitAny": true
+  }
+}
