@@ -14,7 +14,8 @@ if (tags === null) {
   return <div>Loading ...</div>;
 }
 
-const onChange = (selectedTags) => props.onTagSearch?.(selectedTags[0]?.name);
+const onChange = (selectedTags) =>
+  props.onTagSearch?.(selectedTags[0]?.name ?? "");
 
 return (
   <Typeahead
