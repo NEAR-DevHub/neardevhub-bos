@@ -93,7 +93,7 @@ const GithubKanbanTicket = ({
 
   const labelList = features.labels ? (
     <div className="d-flex flex-wrap gap-2 m-0">
-      {labels.map((label) => (
+      {(labels ?? []).map((label) => (
         <a href={label.url} key={label.id} title={label.description}>
           <span
             className="badge text-wrap"
@@ -107,9 +107,12 @@ const GithubKanbanTicket = ({
   ) : null;
 
   return (
-    <AttractableDiv className="card border-secondary">
+    <AttractableDiv className="card">
       {header}
-      <div className="card-body d-flex flex-column gap-3">
+      <div
+        className="card-body d-flex flex-column gap-3"
+        style={{ fontSize: 15 }}
+      >
         {titleArea}
         {labelList}
       </div>
