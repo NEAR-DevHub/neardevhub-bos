@@ -72,23 +72,25 @@ const GithubKanbanBoard = ({
       : [];
 
     const issues = dataTypesIncluded.Issue
-      ? DataRequest?.paginated(
-          (pageNumber) =>
-            useCache(
-              () =>
-                asyncFetch(
-                  `https://api.github.com/repos/${repoURL
-                    .split("/")
-                    .slice(-2)
-                    .concat(["issues"])
-                    .join(
-                      "/"
-                    )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-                ).then((res) => res?.body),
-              repoURL + pageNumber,
-              { subscribe: false }
-            ),
-          { startWith: 1 }
+      ? (
+          DataRequest?.paginated(
+            (pageNumber) =>
+              useCache(
+                () =>
+                  asyncFetch(
+                    `https://api.github.com/repos/${repoURL
+                      .split("/")
+                      .slice(-2)
+                      .concat(["issues"])
+                      .join(
+                        "/"
+                      )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
+                  ).then((res) => res?.body),
+                repoURL + pageNumber,
+                { subscribe: false }
+              ),
+            { startWith: 1 }
+          ) ?? []
         )?.map(withType("Issue"))
       : [];
 
@@ -103,7 +105,7 @@ const GithubKanbanBoard = ({
 
   return (
     <div>
-      <div className="d-flex flex-column align-items-center gap-2 py-4">
+      <div className="d-flex flex-column align-items-center gap-2 pb-4">
         <h5 className="h5 d-inline-flex gap-2 m-0">
           <span>{title}</span>
         </h5>
@@ -127,12 +129,17 @@ const GithubKanbanBoard = ({
           const tickets = state.ticketsByColumn[column.id] ?? [];
 
           return (
-            <div className="col-4" key={`column-${column.id}-view`}>
+            <div
+              className="col-3"
+              style={{ minWidth: "300px" }}
+              key={`column-${column.id}-view`}
+            >
               <div className="card rounded-4">
                 <div
+                  style={{ height: "75vh", overflow: "scroll" }}
                   className={[
                     "card-body d-flex flex-column gap-3 p-2",
-                    "border border-2 border-secondary rounded-4",
+                    "border border-1 rounded-4",
                   ].join(" ")}
                 >
                   <span className="d-flex flex-column py-1">

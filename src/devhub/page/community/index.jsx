@@ -1,5 +1,6 @@
-const { normalize } =
-  VM.require("${REPL_DEVHUB}/widget/core.lib.stringUtils") || (() => {});
+const { normalize } = VM.require("${REPL_DEVHUB}/widget/core.lib.stringUtils");
+
+normalize || (normalize = () => {});
 
 const Button = styled.button`
   height: 40px;
