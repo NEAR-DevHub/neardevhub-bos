@@ -61,6 +61,15 @@ function Page() {
         />
       );
     }
+    // ?page=devDaoDashboard
+    case "devDaoDashboard": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.page.dashboard"}
+          props={passProps}
+        />
+      );
+    }
     // ?page=community
     case "community": {
       return (
