@@ -24,6 +24,10 @@ const NavUnderline = styled.ul`
   a:hover {
     color: #151515;
   }
+
+  .nav-item {
+    font-size: 15px;
+  }
 `;
 
 const tabs = [

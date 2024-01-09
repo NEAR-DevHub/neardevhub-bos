@@ -4,8 +4,18 @@ const { getRelativeTime } = VM.require(
 
 getRelativeTime || (getRelativeTime = () => {});
 const Container = styled.div`
+  font-size: 13px;
   .text-grey {
     color: #b9b9b9 !important;
+  }
+
+  .card-custom {
+    border-radius: 5px;
+    background-color: white;
+  }
+
+  .text-size-2 {
+    font-size: 15px;
   }
 
   .text-dark-grey {
@@ -17,9 +27,8 @@ const Container = styled.div`
   }
 
   td {
-    padding-inline: 1.5rem;
+    padding: 0.5rem;
     color: inherit;
-    padding-block: 0.5rem;
   }
 
   .overflow {
@@ -87,103 +96,99 @@ const [expandSummaryIndex, setExpandSummary] = useState({});
 return (
   <Container className="d-flex flex-column gap-4">
     <div className="d-flex flex-row gap-2 align-items-center justify-content-between">
-      <div className="h4 bold mb-0">Payment History</div>
+      <div className="h5 bold mb-0">Payment History</div>
       <div>
         <button className="btn btn-outline-primary d-flex gap-2 align-items-center justify-content-center p-2 px-3">
           <i class="bi bi-sliders"></i> <div>Filters</div>
         </button>
       </div>
     </div>
-    <div className="custom-card overflow">
-      <div className="card-body">
-        <table className="table">
-          <thead>
-            <tr className="text-grey">
-              <td>ID</td>
-              <td>PROPOSAL</td>
-              <td>FROM</td>
-              <td>TO</td>
-              <td>KYC/B VERIFIED</td>
-              <td>TOKEN</td>
-              <td>AMOUNT</td>
-              <td>APPROVER</td>
-              <td>TRANSACTION</td>
-              <td>WHEN</td>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.map((item, index) => {
-              return (
-                <tr
-                  className={expandSummaryIndex[index] ? "text-grey-100" : ""}
-                >
-                  <td>{item.id}</td>
-                  <td>
-                    <div className="d-flex flex-row justify-content-between">
-                      <div
-                        className="d-flex flex-column gap-2 flex-wrap"
-                        style={{ maxWidth: 280 }}
-                      >
-                        <div className="h6 bold text-truncate max-w-100">
-                          {item.title}
+    <div className="card-custom overflow p-3">
+      <table className="table">
+        <thead>
+          <tr className="text-grey">
+            <td>ID</td>
+            <td>PROPOSAL</td>
+            <td>FROM</td>
+            <td>TO</td>
+            <td>KYC/B VERIFIED</td>
+            <td>TOKEN</td>
+            <td>AMOUNT</td>
+            <td>APPROVER</td>
+            <td>TRANSACTION</td>
+            <td>WHEN</td>
+          </tr>
+        </thead>
+        <tbody>
+          {data?.map((item, index) => {
+            return (
+              <tr className={expandSummaryIndex[index] ? "text-grey-100" : ""}>
+                <td>{item.id}</td>
+                <td>
+                  <div className="d-flex flex-row justify-content-between">
+                    <div
+                      className="d-flex flex-column gap-2 flex-wrap"
+                      style={{ maxWidth: 280 }}
+                    >
+                      <div className="h6 bold text-truncate max-w-100">
+                        {item.title}
+                      </div>
+                      {expandSummaryIndex[index] && (
+                        <div className={"text-dark-grey max-w-100"}>
+                          {item.summary}
                         </div>
-                        {expandSummaryIndex[index] && (
-                          <div className={"text-dark-grey max-w-100"}>
-                            {item.summary}
-                          </div>
-                        )}
-                      </div>
-                      <div className="cursor">
-                        <img
-                          src={
-                            expandSummaryIndex[index]
-                              ? "https://ipfs.near.social/ipfs/bafkreic35n4yddasdpl532oqcxjwore66jrjx2qc433hqdh5wi2ijy4ida"
-                              : "https://ipfs.near.social/ipfs/bafkreiaujwid7iigy6sbkrt6zkwmafz5umocvzglndugvofcz2fpw5ur3y"
-                          }
-                          onClick={() =>
-                            setExpandSummary((prevState) => ({
-                              ...prevState,
-                              [index]: !prevState[index],
-                            }))
-                          }
-                          height={20}
-                        />
-                      </div>
+                      )}
                     </div>
-                  </td>
-                  <td className="text-truncate bold" style={{ maxWidth: 150 }}>
-                    {item.from}
-                  </td>
-                  <td className="text-truncate bold" style={{ maxWidth: 150 }}>
-                    {item.to}
-                  </td>
-                  <td className="text-center">
-                    {item.kycbVerified ? (
+                    <div className="cursor">
                       <img
-                        src="https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm"
-                        height={30}
+                        src={
+                          expandSummaryIndex[index]
+                            ? "https://ipfs.near.social/ipfs/bafkreic35n4yddasdpl532oqcxjwore66jrjx2qc433hqdh5wi2ijy4ida"
+                            : "https://ipfs.near.social/ipfs/bafkreiaujwid7iigy6sbkrt6zkwmafz5umocvzglndugvofcz2fpw5ur3y"
+                        }
+                        onClick={() =>
+                          setExpandSummary((prevState) => ({
+                            ...prevState,
+                            [index]: !prevState[index],
+                          }))
+                        }
+                        height={20}
                       />
-                    ) : (
-                      "Need icon"
-                    )}
-                  </td>
-                  <td className="bold">{item.token}</td>
-                  <td className="bold">
-                    {parseFloat(item.amount).toLocaleString("en-US")}
-                  </td>
-                  <td>{item.approver}</td>
-                  <td className="text-truncate" style={{ maxWidth: 150 }}>
-                    {item.txnHash}
-                  </td>
-                  <td className="text-grey">
-                    {getRelativeTime(item.approvedAt)}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                    </div>
+                  </div>
+                </td>
+                <td className="text-truncate bold" style={{ maxWidth: 150 }}>
+                  {item.from}
+                </td>
+                <td className="text-truncate bold" style={{ maxWidth: 150 }}>
+                  {item.to}
+                </td>
+                <td className="text-center">
+                  {item.kycbVerified ? (
+                    <img
+                      src="https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm"
+                      height={30}
+                    />
+                  ) : (
+                    "Need icon"
+                  )}
+                </td>
+                <td className="bold">{item.token}</td>
+                <td className="bold">
+                  {parseFloat(item.amount).toLocaleString("en-US")}
+                </td>
+                <td>{item.approver}</td>
+                <td className="text-truncate" style={{ maxWidth: 150 }}>
+                  {item.txnHash}
+                </td>
+                <td className="text-grey">
+                  {getRelativeTime(item.approvedAt)}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   </Container>
 );
