@@ -1,4 +1,4 @@
-const { tab, ...passProps } = props;
+const { tab, accountType, ...passProps } = props;
 
 const tabKeys = {
   TRUSTEES: "trustees",
@@ -6,7 +6,7 @@ const tabKeys = {
 };
 
 const [isTrustee, setIsTrustee] = useState(tab ? true : false);
-const [selectedTab, setSelectedTab] = useState(tabKeys.TRUSTEES);
+const [selectedTab, setSelectedTab] = useState(accountType ?? tabKeys.TRUSTEES);
 
 const Container = styled.div`
   width: 100%;
@@ -74,10 +74,7 @@ return (
                 props={{ ...passProps, setIsTrustee, tab }}
               />
             ) : (
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.trustee.dashboard"}
-                props={{ ...passProps, setIsTrustee, tab }}
-              />
+              <div>Moderators Dashboard</div>
             )}
           </Tabs>
         </div>

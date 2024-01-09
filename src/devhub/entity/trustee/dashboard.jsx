@@ -62,6 +62,7 @@ return (
                   widgetSrc: `${REPL_DEVHUB}/widget/app`,
                   params: {
                     page: "devDaoDashboard",
+                    accountType: "trustees",
                     tab: normalize(title),
                   },
                 })}
