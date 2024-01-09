@@ -7,7 +7,7 @@ const Container = styled.div`
   }
 
   .py-3 {
-    padding-block: 1.5rem !important;
+    padding-block: 1rem !important;
   }
 
   .flex-item {
@@ -49,7 +49,7 @@ if (res === null || txns === null) {
 return (
   <Container className="d-flex flex-column gap-4">
     <div className="h5 bold mb-0">Treasury</div>
-    <div className="bg-dark-grey text-white p-4 py-3 d-flex gap-2 align-items-center rounded-4">
+    <div className="bg-dark-grey text-white p-3 py-3 d-flex gap-2 align-items-center rounded-4">
       <div className="flex-item d-flex gap-2 align-items-center">
         <div className="h3 bold">{accountId}</div>
         <i
