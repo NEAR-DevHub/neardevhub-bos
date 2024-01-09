@@ -19,6 +19,7 @@ const Container = styled.div`
   td {
     padding-inline: 1.5rem;
     color: inherit;
+    padding-block: 0.5rem;
   }
 
   .overflow {
@@ -126,14 +127,11 @@ return (
                         <div className="h6 bold text-truncate max-w-100">
                           {item.title}
                         </div>
-                        <div
-                          className={
-                            "text-dark-grey max-w-100 " +
-                            (expandSummaryIndex[index] ? "" : "text-truncate")
-                          }
-                        >
-                          {item.summary}
-                        </div>
+                        {expandSummaryIndex[index] && (
+                          <div className={"text-dark-grey max-w-100"}>
+                            {item.summary}
+                          </div>
+                        )}
                       </div>
                       <div className="cursor">
                         <img
@@ -153,10 +151,10 @@ return (
                       </div>
                     </div>
                   </td>
-                  <td className="text-truncate" style={{ maxWidth: 150 }}>
+                  <td className="text-truncate bold" style={{ maxWidth: 150 }}>
                     {item.from}
                   </td>
-                  <td className="text-truncate" style={{ maxWidth: 150 }}>
+                  <td className="text-truncate bold" style={{ maxWidth: 150 }}>
                     {item.to}
                   </td>
                   <td className="text-center">
@@ -169,8 +167,10 @@ return (
                       "Need icon"
                     )}
                   </td>
-                  <td>{item.token}</td>
-                  <td>{parseFloat(item.amount).toLocaleString("en-US")}</td>
+                  <td className="bold">{item.token}</td>
+                  <td className="bold">
+                    {parseFloat(item.amount).toLocaleString("en-US")}
+                  </td>
                   <td>{item.approver}</td>
                   <td className="text-truncate" style={{ maxWidth: 150 }}>
                     {item.txnHash}

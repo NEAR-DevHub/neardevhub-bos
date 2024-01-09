@@ -20,6 +20,7 @@ const Container = styled.div`
   td {
     padding-inline: 1.5rem;
     color: inherit;
+    padding-block: 0.5rem;
   }
 
   .overflow {
@@ -111,44 +112,43 @@ return (
                   className={expandSummaryIndex[index] ? "text-grey-100" : ""}
                 >
                   <td>{item.id}</td>
-                  <td className="d-flex flex-row justify-content-between">
-                    <div
-                      className="d-flex flex-column gap-2 flex-wrap"
-                      style={{ maxWidth: 280 }}
-                    >
-                      <div className="h6 bold text-truncate max-w-100">
-                        {item.title}
-                      </div>
+                  <td>
+                    <div className="d-flex flex-row justify-content-between gap-2">
                       <div
-                        className={
-                          "text-dark-grey max-w-100 " +
-                          (expandSummaryIndex[index] ? "" : "text-truncate")
-                        }
+                        className="d-flex flex-column gap-2 flex-wrap"
+                        style={{ maxWidth: 280 }}
                       >
-                        {item.summary}
+                        <div className="h6 bold text-truncate max-w-100">
+                          {item.title}
+                        </div>
+                        {expandSummaryIndex[index] && (
+                          <div className={"text-dark-grey max-w-100"}>
+                            {item.summary}
+                          </div>
+                        )}
                       </div>
-                    </div>
-                    <div className="cursor">
-                      <img
-                        src={
-                          expandSummaryIndex[index]
-                            ? "https://ipfs.near.social/ipfs/bafkreic35n4yddasdpl532oqcxjwore66jrjx2qc433hqdh5wi2ijy4ida"
-                            : "https://ipfs.near.social/ipfs/bafkreiaujwid7iigy6sbkrt6zkwmafz5umocvzglndugvofcz2fpw5ur3y"
-                        }
-                        onClick={() =>
-                          setExpandSummary((prevState) => ({
-                            ...prevState,
-                            [index]: !prevState[index],
-                          }))
-                        }
-                        height={20}
-                      />
+                      <div className="cursor">
+                        <img
+                          src={
+                            expandSummaryIndex[index]
+                              ? "https://ipfs.near.social/ipfs/bafkreic35n4yddasdpl532oqcxjwore66jrjx2qc433hqdh5wi2ijy4ida"
+                              : "https://ipfs.near.social/ipfs/bafkreiaujwid7iigy6sbkrt6zkwmafz5umocvzglndugvofcz2fpw5ur3y"
+                          }
+                          onClick={() =>
+                            setExpandSummary((prevState) => ({
+                              ...prevState,
+                              [index]: !prevState[index],
+                            }))
+                          }
+                          height={20}
+                        />
+                      </div>
                     </div>
                   </td>
-                  <td className="text-truncate" style={{ maxWidth: 150 }}>
+                  <td className="text-truncate bold" style={{ maxWidth: 150 }}>
                     {item.from}
                   </td>
-                  <td className="text-truncate" style={{ maxWidth: 150 }}>
+                  <td className="text-truncate bold" style={{ maxWidth: 150 }}>
                     {item.to}
                   </td>
                   <td className="text-center">
@@ -161,8 +161,10 @@ return (
                       "Need icon"
                     )}
                   </td>
-                  <td>{item.token}</td>
-                  <td>{parseFloat(item.amount).toLocaleString("en-US")}</td>
+                  <td className="bold">{item.token}</td>
+                  <td className="bold">
+                    {parseFloat(item.amount).toLocaleString("en-US")}
+                  </td>
                   <td className="text-grey">{getRelativeTime(item.created)}</td>
                   <td>
                     <button>Pay</button>
