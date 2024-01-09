@@ -89,7 +89,7 @@ return (
     <div className="d-flex flex-row gap-2 align-items-center justify-content-between">
       <div className="h4 bold mb-0">Payment History</div>
       <div>
-        <button className="btn btn-outline-primary d-flex gap-2 align-items-center justify-content-center p-2">
+        <button className="btn btn-outline-primary d-flex gap-2 align-items-center justify-content-center p-2 px-3">
           <i class="bi bi-sliders"></i> <div>Filters</div>
         </button>
       </div>
