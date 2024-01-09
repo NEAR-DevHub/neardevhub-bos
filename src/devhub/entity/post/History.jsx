@@ -7,13 +7,13 @@ props.timestamp: number;
 props.referral: any;
 */
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
-const { getPost } =
-  VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
-  (() => {});
 
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
-const post = getPost({ post_id: postId });
-
+const post =
+  props.post ??
+  Near.view(nearDevGovGigsContractAccountId, "get_post", {
+    post_id: postId,
+  });
 if (!post || !post.snapshot_history) {
   return <div class="bi bi-clock-history px-2"></div>;
 }
