@@ -370,18 +370,18 @@ const onSubmit = () => {
     });
   }
   if (mode == "Create" || mode == "Edit") {
-    // if (grantNotify === false) {
-    txn.unshift({
-      contractName: "${REPL_SOCIAL_CONTRACT}",
-      methodName: "grant_write_permission",
-      args: {
-        predecessor_id: "${REPL_DEVHUB_CONTRACT}",
-        keys: [context.accountId + "/index/notify"],
-      },
-      gas: Big(10).pow(14),
-      deposit: getDepositAmountForWriteAccess(userStorageDeposit),
-    });
-    // }
+    if (grantNotify === false) {
+      txn.unshift({
+        contractName: "${REPL_SOCIAL_CONTRACT}",
+        methodName: "grant_write_permission",
+        args: {
+          predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+          keys: [context.accountId + "/index/notify"],
+        },
+        gas: Big(10).pow(14),
+        deposit: getDepositAmountForWriteAccess(userStorageDeposit),
+      });
+    }
     Near.call(txn);
   }
 };
