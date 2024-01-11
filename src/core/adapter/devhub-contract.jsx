@@ -105,23 +105,23 @@ function getAllCommunitiesMetadata() {
 }
 
 function getAllLabels() {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_labels") ?? null;
+  return Near.view("${REPL_DEVHUB_LEGACY}", "get_all_labels") ?? null;
 }
 
 function getPost({ post_id }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_post", { post_id }) ?? null;
+  return Near.view("${REPL_DEVHUB_LEGACY}", "get_post", { post_id }) ?? null;
 }
 
 function getPostsByAuthor({ author }) {
   return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_author", { author }) ??
+    Near.view("${REPL_DEVHUB_LEGACY}", "get_posts_by_author", { author }) ??
     null
   );
 }
 
 function getPostsByLabel({ label }) {
   return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_label", {
+    Near.view("${REPL_DEVHUB_LEGACY}", "get_posts_by_label", {
       label,
     }) ?? null
   );
@@ -142,7 +142,7 @@ function useQuery(name, params) {
   const cacheState = useCache(
     () =>
       Near.asyncView(
-        "${REPL_DEVHUB_CONTRACT}",
+        "${REPL_DEVHUB_LEGACY}",
         ["get", name].join("_"),
         params ?? {}
       )

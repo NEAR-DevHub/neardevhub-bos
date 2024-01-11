@@ -85,7 +85,7 @@ const [postData, setPostData] = useState(null); // for capturing edit post chang
 
 useEffect(() => {
   if (mode == "Edit") {
-    const data = Near.view("${REPL_DEVHUB_CONTRACT}", "get_post", {
+    const data = Near.view("${REPL_DEVHUB_LEGACY}", "get_post", {
       post_id: postId,
     });
     if (!postData) {
@@ -97,7 +97,7 @@ useEffect(() => {
       setPostData(data);
     }
   } else {
-    const postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_post_ids");
+    const postIds = Near.view("${REPL_DEVHUB_LEGACY}", "get_all_post_ids");
     if (!postIdList) {
       setPostIdList(postIds);
     }
@@ -400,7 +400,7 @@ const setLabels = (labels) => {
       oldLabels.delete(label.name);
     }
     let removed = oldLabels.values().next().value;
-    Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+    Near.asyncView("${REPL_DEVHUB_LEGACY}", "is_allowed_to_use_labels", {
       editor: context.accountId,
       labels: [removed],
     }).then((allowed) => {
@@ -425,7 +425,7 @@ const setLabels = (labels) => {
   }
 };
 const existingLabelStrings =
-  Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_allowed_labels", {
+  Near.view("${REPL_DEVHUB_LEGACY}", "get_all_allowed_labels", {
     editor: context.accountId,
   }) ?? [];
 const existingLabelSet = new Set(existingLabelStrings);
@@ -455,7 +455,7 @@ const labelEditor = (
           props.text.toLowerCase() !== "blog" && // dont allow adding "Blog"
           props.selected.filter((selected) => selected.name === props.text)
             .length == 0 &&
-          Near.view("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+          Near.view("${REPL_DEVHUB_LEGACY}", "is_allowed_to_use_labels", {
             editor: context.accountId,
             labels: [props.text],
           })

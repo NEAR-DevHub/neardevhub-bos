@@ -30,7 +30,7 @@ const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
 
 const post =
   props.post ??
-  Near.view("${REPL_DEVHUB_CONTRACT}", "get_post", { post_id: postId });
+  Near.view("${REPL_DEVHUB_LEGACY}", "get_post", { post_id: postId });
 
 if (!post) {
   return <div>Loading ...</div>;
@@ -60,12 +60,12 @@ const compareSnapshot =
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
 
-const parentId = Near.view("${REPL_DEVHUB_CONTRACT}", "get_parent_id", {
+const parentId = Near.view("${REPL_DEVHUB_LEGACY}", "get_parent_id", {
   post_id: postId,
 });
 
 const childPostIdsUnordered =
-  Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids", {
+  Near.view("${REPL_DEVHUB_LEGACY}", "get_children_ids", {
     post_id: postId,
   }) ?? [];
 
@@ -278,7 +278,7 @@ const onLike = () => {
 
   let likeTxn = [
     {
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "add_like",
       args: {
         post_id: postId,
