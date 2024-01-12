@@ -145,6 +145,11 @@ let links = [
     links: [],
   },
   {
+    title: "/proposals feed",
+    href: "proposal.feed",
+    links: [],
+  },
+  {
     title: "/about",
     links: [
       { title: "mission", href: "about" },

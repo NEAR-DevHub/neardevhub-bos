@@ -64,7 +64,7 @@ function Page() {
     // ?page=community
     case "community": {
       return (
-        // Considering to consolsidate this into a single widget,
+        // Considering to consolidate this into a single widget,
         // where each level handles its own routing.
         // Modularizing a page just like we do with addons
         <Widget
@@ -105,6 +105,42 @@ function Page() {
           }}
         />
       );
+    }
+    case "proposal": {
+      switch (routes[1]) {
+        case "index": {
+          return (
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.page.proposal.index"
+              props={passProps}
+            />
+          );
+        }
+        case "create": {
+          return (
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.page.proposal.create"
+              props={passProps}
+            />
+          );
+        }
+        case "feed": {
+          return (
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.page.proposal.feed"
+              props={passProps}
+            />
+          );
+        }
+        default: {
+          return (
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.page.proposal.index"
+              props={passProps}
+            />
+          );
+        }
+      }
     }
     // ?page=feed
     case "feed": {
