@@ -99,3 +99,30 @@ test.describe("Wallet is not connected", () => {
     });
   });
 });
+
+test.describe("Is community admin", () => {
+  test.use({
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-community-admin.json",
+  });
+  test("should edit a community", async ({ page }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community.configuration&handle=webassemblymusic"
+    );
+    await page.locator('h5:has-text("Community Information")').waitFor();
+    await page.getByRole("button", { name: " Edit" }).first().click();
+
+    await page
+      .getByTestId("1-description--editable")
+      .fill("Music written in stone on NEAR");
+
+    await page.getByRole("button", { name: " Submit" }).click();
+    await page.getByRole("button", { name: "Save" }).click();
+    const transactionObj = JSON.parse(
+      await page.locator("div.modal-body code").innerText()
+    );
+    expect(transactionObj.community.description).toBe(
+      "Music written in stone on NEAR"
+    );
+  });
+});
