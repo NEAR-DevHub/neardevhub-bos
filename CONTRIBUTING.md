@@ -6,6 +6,20 @@ At DevHub, we value the contributions of each individual. This document provides
 
 ## Developer Setup
 
+You can set up everything manually as described further down, or you can use the dev container setup which has everything out of the box and will get you started quickly.
+
+### Using a dev container
+
+This project is configured for developing with github codespaces or a locally hosted [devcontainer](https://containers.dev/). If using one of these options you get all the dev setup you need out of the box, and you don't have to spend time on installing any dependencies.
+
+Once your dev container is started you can run the test suite, which is a good check to verify that all is running as expected:
+
+`npm run test:watch:codespaces`
+
+This will give you a web interface for all the tests, and you can run them to see how everything is expected to work. You should also use the test suite when developing new functionality, as it is a much more efficient workflow for the testing and development iterations. Also it prevents future regression if you develop the test driven way.
+
+If your work requires changes to the developer setup, you should also include and test them in the devcontainer setup so that this is always up to date.
+
 ### Prerequisites
 
 Before you start contributing to neardevhub-widgets, ensure you have the following prerequisites installed on your machine:
