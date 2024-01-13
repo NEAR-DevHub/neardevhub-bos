@@ -7,26 +7,25 @@ const tabKeys = {
 const treasuryDaoID = "${REPL_TREASURY_CONTRACT}";
 const councilInfo = Near.view(treasuryDaoID, "get_policy");
 const [selectedTab, setSelectedTab] = useState(accountType ?? tabKeys.TRUSTEES);
+const [isTrustee, setIsTrustee] = useState(false);
+const [isModerator, setIsModerator] = useState(false);
 
 if (councilInfo === null) {
   return <></>;
 }
 
-const checkIfAcIsTrustee = () => {
-  const istrustee = false;
-  if (!context.accountId) {
-    return isTrustee;
-  }
+if (context.accountId) {
   councilInfo.roles.map((item) => {
     // trustees or moderators
-    if (item.name === selectedTab) {
-      istrustee = item.kind.Group.includes(context.accountId);
+    if (item.name === tabKeys.TRUSTEES) {
+      setIsTrustee(item.kind.Group.includes(context.accountId));
+    }
+    if (item.name === tabKeys.MODERATORS) {
+      setIsModerator(item.kind.Group.includes(context.accountId));
     }
   });
-  return istrustee;
-};
+}
 
-const [isTrustee, setIsTrustee] = useState(checkIfAcIsTrustee());
 const Container = styled.div`
   width: 100%;
   padding-block: 1rem;
@@ -55,11 +54,15 @@ const Tabs = styled.div`
   }
 `;
 
+const showLoginWindow =
+  (selectedTab === tabKeys.TRUSTEES && !isTrustee) ||
+  (selectedTab === tabKeys.MODERATORS && !isModerator);
+
 return (
   <Container className="pl-5">
     <div className="h2 bold">DevDAO Dashboard</div>
     <div className="mt-3">
-      {!isTrustee ? (
+      {showLoginWindow ? (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.entity.trustee.login"}
           props={{ ...passProps, setIsTrustee }}
