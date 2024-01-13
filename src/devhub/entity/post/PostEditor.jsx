@@ -276,7 +276,7 @@ let grantNotify = Near.view(
     key: context.accountId + "/index/notify",
   }
 );
-if (grantNotify === null) {
+if (grantNotify === null || userStorageDeposit === null) {
   return;
 }
 
