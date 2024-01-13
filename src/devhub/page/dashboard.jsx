@@ -4,10 +4,29 @@ const tabKeys = {
   TRUSTEES: "trustees",
   MODERATORS: "moderators",
 };
-
-const [isTrustee, setIsTrustee] = useState(tab ? true : false);
+const treasuryDaoID = "${REPL_TREASURY_CONTRACT}";
+const councilInfo = Near.view(treasuryDaoID, "get_policy");
 const [selectedTab, setSelectedTab] = useState(accountType ?? tabKeys.TRUSTEES);
 
+if (councilInfo === null) {
+  return <></>;
+}
+
+const checkIfAcIsTrustee = () => {
+  const istrustee = false;
+  if (!context.accountId) {
+    return isTrustee;
+  }
+  councilInfo.roles.map((item) => {
+    // trustees or moderators
+    if (item.name === selectedTab) {
+      istrustee = item.kind.Group.includes(context.accountId);
+    }
+  });
+  return istrustee;
+};
+
+const [isTrustee, setIsTrustee] = useState(checkIfAcIsTrustee());
 const Container = styled.div`
   width: 100%;
   padding-block: 1rem;

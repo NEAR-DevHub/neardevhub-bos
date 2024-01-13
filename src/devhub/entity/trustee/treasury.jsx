@@ -43,7 +43,7 @@ const txns = fetch(
 );
 
 if (res === null || txns === null) {
-  return <></>;
+  return <>Loading</>;
 }
 
 return (
@@ -62,12 +62,6 @@ return (
           <p>Balance</p>
           <p className="h5 bold">
             {convertYoctoToNear(res.body?.account[0]?.amount)}
-          </p>
-        </div>
-        <div>
-          <p>Staked</p>
-          <p className="h5 bold">
-            {convertYoctoToNear(res.body?.account[0]?.locked)}
           </p>
         </div>
         <div>

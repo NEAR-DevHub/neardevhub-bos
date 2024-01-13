@@ -4,5 +4,6 @@
   "REPL_DEVHUB_CONTRACT": "thomaspreview.testnet",
   "REPL_NEAR": "discom.testnet",
   "REPL_MOB": "eugenethedream",
-  "REPL_EFIZ": "efiz.testnet"
+  "REPL_EFIZ": "efiz.testnet",
+  "REPL_TREASURY_CONTRACT": "treasury.dhthomas.testnet"
 }

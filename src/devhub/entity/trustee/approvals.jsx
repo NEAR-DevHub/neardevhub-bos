@@ -3,6 +3,32 @@ const { getRelativeTime } = VM.require(
 );
 
 getRelativeTime || (getRelativeTime = () => {});
+const treasuryDaoID = "${REPL_TREASURY_CONTRACT}";
+const resPerPage = 50;
+const [currentPage, setPage] = useState(0);
+const [expandSummaryIndex, setExpandSummary] = useState({});
+const proposals = Near.view(treasuryDaoID, "get_proposals", {
+  from_index: currentPage === 0 ? currentPage : (currentPage - 1) * resPerPage,
+  limit: resPerPage,
+});
+
+const lastProposalID = Near.view(treasuryDaoID, "get_last_proposal_id", {});
+if (proposals === null || lastProposalID === null) {
+  return <></>;
+}
+
+const onPay = (id) => {
+  Near.call({
+    contractName: treasuryDaoID,
+    methodName: "act_proposal",
+    args: {
+      id: id,
+      action: "VoteApprove",
+      memo: "",
+    },
+    gas: Big(10).pow(14),
+  });
+};
 
 const Container = styled.div`
   font-size: 13px;
@@ -50,49 +76,101 @@ const Container = styled.div`
   }
 `;
 
-const data = [
-  {
-    id: 1,
-    summary:
-      "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibu",
-    title: "Proposal 1 will deliver a new solution to improve th...",
-    description: "",
-    from: "megha19.near",
-    to: "megha19.near",
-    kycbVerified: true,
-    token: "NEAR",
-    amount: "1000",
-    created: 1643468479000,
-  },
-  {
-    id: 2,
-    summary:
-      "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibu",
-    title: "Proposal 2 will deliver a new solution to improve th...",
-    description: "",
-    from: "mefsdfdsfsdfsdfie urhfgiurehvbiubuihrbiuthvuerhtiuerhvniurhntiuheritheruthieurtheiutheritigha19.near",
-    to: "megha19.near",
-    kycbVerified: true,
-    token: "NEAR",
-    amount: "1000",
-    created: 1643468479000,
-  },
-  {
-    id: 3,
-    summary:
-      "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibu",
-    title: "Proposal 3 will deliver a new solution to improve th...",
-    description: "",
-    from: "megha19.near",
-    to: "megha19.near",
-    kycbVerified: false,
-    token: "NEAR",
-    amount: "1000.44",
-    created: 1643468479000,
-  },
-];
+// filter transfer proposals
+const transferProposals = proposals.filter(
+  (item) => item.kind?.FunctionCall?.actions?.[0]?.method_name === "ft_transfer"
+);
 
-const [expandSummaryIndex, setExpandSummary] = useState({});
+const ProposalsComponent = () => {
+  transferProposals?.map((item, index) => {
+    // decode args
+    const actions = item.kind?.FunctionCall?.actions?.[0];
+    const args = JSON.parse(atob(actions?.args ?? ""));
+    const isReceiverkycbVerified = true;
+    const isNEAR = true;
+    const address = item.token;
+    let ftMetadata = {
+      symbol: "NEAR",
+      decimals: 24,
+    };
+    if (!isNEAR) {
+      ftMetadata = Near.view(address, "ft_metadata", {});
+      if (ftMetadata === null) return null;
+    }
+    let amount = amountWithDecimals;
+    if (amountWithoutDecimals !== undefined) {
+      amount = Big(amountWithoutDecimals)
+        .div(Big(10).pow(ftMetadata.decimals))
+        .toString();
+    }
+
+    return (
+      <tr className={expandSummaryIndex[index] ? "text-grey-100" : ""}>
+        <td>{item.id}</td>
+        <td>
+          <div className="d-flex flex-row gap-2">
+            <div
+              className="d-flex flex-column gap-2 flex-wrap"
+              style={{ maxWidth: 320 }}
+            >
+              <div
+                className={
+                  "text-size-2 bold max-w-100" +
+                  (!expandSummaryIndex[index] && " text-truncate")
+                }
+              >
+                {args.title}
+              </div>
+              {expandSummaryIndex[index] && (
+                <div className={"text-dark-grey max-w-100"}>{args.summary}</div>
+              )}
+            </div>
+            <div className="cursor">
+              <img
+                src={
+                  expandSummaryIndex[index]
+                    ? "https://ipfs.near.social/ipfs/bafkreic35n4yddasdpl532oqcxjwore66jrjx2qc433hqdh5wi2ijy4ida"
+                    : "https://ipfs.near.social/ipfs/bafkreiaujwid7iigy6sbkrt6zkwmafz5umocvzglndugvofcz2fpw5ur3y"
+                }
+                onClick={() =>
+                  setExpandSummary((prevState) => ({
+                    ...prevState,
+                    [index]: !prevState[index],
+                  }))
+                }
+                height={20}
+              />
+            </div>
+          </div>
+        </td>
+        <td className="text-truncate bold" style={{ maxWidth: 150 }}>
+          {treasuryDaoID}
+        </td>
+        <td className="text-truncate bold" style={{ maxWidth: 150 }}>
+          {args.receiver_id}
+        </td>
+        <td className="text-center">
+          {isReceiverkycbVerified ? (
+            <img
+              src="https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm"
+              height={30}
+            />
+          ) : (
+            "Need icon"
+          )}
+        </td>
+        <td className="bold">{item.token}</td>
+        <td className="bold">
+          {parseFloat(args.amount).toLocaleString("en-US")}
+        </td>
+        <td className="text-grey">{getRelativeTime(item.submission_time)}</td>
+        <td>
+          <button onClick={() => onPay(item.id)}>Pay</button>
+        </td>
+      </tr>
+    );
+  });
+};
 
 return (
   <Container className="d-flex flex-column gap-4">
@@ -116,72 +194,18 @@ return (
           </tr>
         </thead>
         <tbody>
-          {data?.map((item, index) => {
-            return (
-              <tr className={expandSummaryIndex[index] ? "text-grey-100" : ""}>
-                <td>{item.id}</td>
-                <td>
-                  <div className="d-flex flex-row gap-2">
-                    <div
-                      className="d-flex flex-column gap-2 flex-wrap"
-                      style={{ maxWidth: 320 }}
-                    >
-                      <div className="text-size-2 bold text-truncate max-w-100">
-                        {item.title}
-                      </div>
-                      {expandSummaryIndex[index] && (
-                        <div className={"text-dark-grey max-w-100"}>
-                          {item.summary}
-                        </div>
-                      )}
-                    </div>
-                    <div className="cursor">
-                      <img
-                        src={
-                          expandSummaryIndex[index]
-                            ? "https://ipfs.near.social/ipfs/bafkreic35n4yddasdpl532oqcxjwore66jrjx2qc433hqdh5wi2ijy4ida"
-                            : "https://ipfs.near.social/ipfs/bafkreiaujwid7iigy6sbkrt6zkwmafz5umocvzglndugvofcz2fpw5ur3y"
-                        }
-                        onClick={() =>
-                          setExpandSummary((prevState) => ({
-                            ...prevState,
-                            [index]: !prevState[index],
-                          }))
-                        }
-                        height={20}
-                      />
-                    </div>
-                  </div>
-                </td>
-                <td className="text-truncate bold" style={{ maxWidth: 150 }}>
-                  {item.from}
-                </td>
-                <td className="text-truncate bold" style={{ maxWidth: 150 }}>
-                  {item.to}
-                </td>
-                <td className="text-center">
-                  {item.kycbVerified ? (
-                    <img
-                      src="https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm"
-                      height={30}
-                    />
-                  ) : (
-                    "Need icon"
-                  )}
-                </td>
-                <td className="bold">{item.token}</td>
-                <td className="bold">
-                  {parseFloat(item.amount).toLocaleString("en-US")}
-                </td>
-                <td className="text-grey">{getRelativeTime(item.created)}</td>
-                <td>
-                  <button>Pay</button>
-                </td>
-              </tr>
-            );
-          })}
+          <ProposalsComponent />
         </tbody>
       </table>
+    </div>
+    <div className="d-flex align-items-center justify-content-center">
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Pagination"}
+        props={{
+          totalPages: Math.round(lastProposalID / resPerPage),
+          onPageClick: (v) => setPage(v),
+        }}
+      />
     </div>
   </Container>
 );
