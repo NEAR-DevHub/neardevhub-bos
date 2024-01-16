@@ -388,6 +388,7 @@ return (
 
         <Textarea data-value={state.text}>
           <textarea
+            data-testid="compose-announcement"
             placeholder="What's happening?"
             onInput={(event) => textareaInputHandler(event.target.value)}
             onKeyUp={(event) => {
@@ -447,6 +448,7 @@ return (
       </button>
 
       <button
+        data-testid="post-btn"
         disabled={!state.text && !state.image}
         onClick={handleSubmit}
         className="commit-post-button"

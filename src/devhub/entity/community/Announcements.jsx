@@ -102,18 +102,17 @@ return (
               </select>
             </div>
           </div>
-          <div className="card p-4">
-            <Widget
-              src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
-              props={{
-                showFlagAccountFeature: true,
-                filteredAccountIds: [
-                  `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
-                ],
-                sort: sort,
-              }}
-            />
-          </div>
+
+          <Widget
+            src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
+            props={{
+              showFlagAccountFeature: true,
+              filteredAccountIds: [
+                `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+              ],
+              sort: sort,
+            }}
+          />
         </div>
       </MainContent>
       <SidebarContainer>

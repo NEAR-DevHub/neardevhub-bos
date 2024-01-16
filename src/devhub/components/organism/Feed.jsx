@@ -2,6 +2,7 @@ const { Feed } = VM.require("${REPL_DEVS}/widget/Feed");
 Feed = Feed || (() => <></>);
 
 const filteredAccountIds = props.filteredAccountIds ?? [];
+const [showCard, setShowCard] = useState(false);
 
 const GRAPHQL_ENDPOINT =
   props.GRAPHQL_ENDPOINT ?? "https://near-queryapi.api.pagoda.co";
@@ -47,6 +48,7 @@ fetchGraphQL(lastPostQuery, "IndexerQuery", {})
       feedIndexerResponse.body.data.dataplatform_near_social_feed_posts.length >
         0
     ) {
+      setShowCard(true);
       const nearSocialBlockHeight = lastPostSocialApi[0].blockHeight;
       const feedIndexerBlockHeight =
         feedIndexerResponse.body.data.dataplatform_near_social_feed_posts[0]
@@ -77,7 +79,7 @@ fetchGraphQL(lastPostQuery, "IndexerQuery", {})
   });
 
 return (
-  <>
+  <div className={showCard && "card p-4"}>
     {state.shouldFallback ? (
       <Feed
         index={[
@@ -116,5 +118,5 @@ return (
         }}
       />
     )}
-  </>
+  </div>
 );
