@@ -48,7 +48,6 @@ fetchGraphQL(lastPostQuery, "IndexerQuery", {})
       feedIndexerResponse.body.data.dataplatform_near_social_feed_posts.length >
         0
     ) {
-      setShowCard(true);
       const nearSocialBlockHeight = lastPostSocialApi[0].blockHeight;
       const feedIndexerBlockHeight =
         feedIndexerResponse.body.data.dataplatform_near_social_feed_posts[0]
@@ -79,6 +78,7 @@ fetchGraphQL(lastPostQuery, "IndexerQuery", {})
   });
 
 return (
+  // display card only when a post exists
   <div className={showCard && "card p-4"}>
     {state.shouldFallback ? (
       <Feed
@@ -96,8 +96,11 @@ return (
             },
           },
         ]}
-        Item={(item) => (
-          <p>{JSON.stringify(item)}</p>
+        Item={(item) => {
+          if (!showCard) {
+            setShowCard(true);
+          }
+          return <p>{JSON.stringify(item)}</p>;
           // <Widget
           //   src="${REPL_NEAR}/widget/v1.Posts.Post"
           //   loading={<div className="w-100" style={{ height: "200px" }} />}
@@ -106,7 +109,7 @@ return (
           //     blockHeight: item.blockHeight,
           //   }}
           // />
-        )}
+        }}
       />
     ) : (
       <Widget
@@ -115,6 +118,7 @@ return (
           GRAPHQL_ENDPOINT,
           showFlagAccountFeature: true,
           filteredAccountIds: filteredAccountIds,
+          setShowCard: setShowCard,
         }}
       />
     )}

@@ -1,5 +1,6 @@
 const LIMIT = 10;
 const filteredAccountIds = props.filteredAccountIds;
+const setShowCard = props.setShowCard ?? (() => {});
 
 const sort = props.sort || "timedec";
 
@@ -225,6 +226,12 @@ const [isLoading, setIsLoading] = useState(false);
 useEffect(() => {
   loadMorePosts(false);
 }, []);
+
+useEffect(() => {
+  if (postsData.posts.length > 0) {
+    setShowCard(true);
+  }
+}, [postsData]);
 
 useEffect(() => {
   if (initialQueryTime === null) {
