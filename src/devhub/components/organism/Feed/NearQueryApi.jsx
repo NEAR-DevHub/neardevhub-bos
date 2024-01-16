@@ -1,5 +1,7 @@
 const LIMIT = 10;
 const filteredAccountIds = props.filteredAccountIds;
+const GRAPHQL_ENDPOINT =
+  props.GRAPHQL_ENDPOINT ?? "https://near-queryapi.api.pagoda.co";
 
 const sort = props.sort || "timedec";
 

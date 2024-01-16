@@ -95,15 +95,14 @@ return (
           },
         ]}
         Item={(item) => (
-          <p>{JSON.stringify(item)}</p>
-          // <Widget
-          //   src="${REPL_NEAR}/widget/v1.Posts.Post"
-          //   loading={<div className="w-100" style={{ height: "200px" }} />}
-          //   props={{
-          //     accountId: item.accountId,
-          //     blockHeight: item.blockHeight,
-          //   }}
-          // />
+          <Widget
+            src="${REPL_NEAR}/widget/v1.Posts.Post"
+            loading={<div className="w-100" style={{ height: "200px" }} />}
+            props={{
+              accountId: item.accountId,
+              blockHeight: item.blockHeight,
+            }}
+          />
         )}
       />
     ) : (
