@@ -79,40 +79,39 @@ fetchGraphQL(lastPostQuery, "IndexerQuery", {})
 
 return (
   // display card only when a post exists
-  <div className={showCard && "card"}>
+  <div className={showCard && "card p-4"}>
     {state.shouldFallback ? (
-      <div className="p-4">
-        <Feed
-          index={[
-            {
-              action: "post",
-              key: "main",
-              options: {
-                limit: 10,
-                order: "desc",
-                accountId: filteredAccountIds,
-              },
-              cacheOptions: {
-                ignoreCache: true,
-              },
+      <Feed
+        index={[
+          {
+            action: "post",
+            key: "main",
+            options: {
+              limit: 10,
+              order: "desc",
+              accountId: filteredAccountIds,
             },
-          ]}
-          Item={(item) => {
-            if (!showCard) {
-              setShowCard(true);
-            }
-            return <p>{JSON.stringify(item)}</p>;
-            // <Widget
-            //   src="${REPL_NEAR}/widget/v1.Posts.Post"
-            //   loading={<div className="w-100" style={{ height: "200px" }} />}
-            //   props={{
-            //     accountId: item.accountId,
-            //     blockHeight: item.blockHeight,
-            //   }}
-            // />
-          }}
-        />
-      </div>
+            cacheOptions: {
+              ignoreCache: true,
+            },
+          },
+        ]}
+        Item={(item) => {
+          if (!showCard) {
+            setShowCard(true);
+          }
+          return (
+            <Widget
+              src="${REPL_NEAR}/widget/v1.Posts.Post"
+              loading={<div className="w-100" style={{ height: "200px" }} />}
+              props={{
+                accountId: item.accountId,
+                blockHeight: item.blockHeight,
+              }}
+            />
+          );
+        }}
+      />
     ) : (
       <Widget
         src={`${REPL_DEVHUB}/widget/devhub.components.organism.Feed.NearQueryApi`}

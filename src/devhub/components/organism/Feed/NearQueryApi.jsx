@@ -251,35 +251,21 @@ if (!initialized && sort) {
   setInitialized(true);
 }
 
-const FeedWrapper = styled.div`
-  .post {
-    padding-left: 24px;
-    padding-right: 24px;
-
-    @media (max-width: 1024px) {
-      padding-left: 12px;
-      padding-right: 12px;
-    }
-  }
-`;
-
 return (
   <>
-    <FeedWrapper>
-      <Widget
-        src="${REPL_NEAR}/widget/Posts.Feed"
-        props={{
-          hasMore,
-          isLoading,
-          loadMorePosts: () => {
-            if (!isLoading) {
-              loadMorePosts(false);
-            }
-          },
-          posts: postsData.posts,
-          showFlagAccountFeature: props.showFlagAccountFeature,
-        }}
-      />
-    </FeedWrapper>
+    <Widget
+      src="${REPL_NEAR}/widget/Posts.Feed"
+      props={{
+        hasMore,
+        isLoading,
+        loadMorePosts: () => {
+          if (!isLoading) {
+            loadMorePosts(false);
+          }
+        },
+        posts: postsData.posts,
+        showFlagAccountFeature: props.showFlagAccountFeature,
+      }}
+    />
   </>
 );
