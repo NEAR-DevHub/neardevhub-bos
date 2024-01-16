@@ -20,7 +20,7 @@ test("should load a community page if handle exists", async ({ page }) => {
 
 test("should load an error page if handle does not exist", async ({ page }) => {
   await page.goto(
-    "/devgovgigs.near/widget/app?page=community&handle=devhub-faketest"
+    "/devhub.near/widget/app?page=community&handle=devhub-faketest"
   );
 
   // Using the <Link> that wraps the card to identify a community
@@ -89,7 +89,7 @@ test.describe("Wallet is not connected", () => {
     page,
   }) => {
     await page.goto(
-      "/devgovgigs.near/widget/app?page=community&handle=devhub-test"
+      "/devhub.near/widget/app?page=community&handle=devhub-test"
     );
 
     const createCommunityButtonSelector = 'button:has-text("Post")';

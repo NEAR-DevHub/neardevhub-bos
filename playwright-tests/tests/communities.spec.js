@@ -13,33 +13,19 @@ test.describe("Wallet is connected", () => {
   test("should show spawner when user clicks create community", async ({
     page,
   }) => {
-    await page.goto("/devgovgigs.near/widget/app?page=communities");
+    await page.goto("/devhub.near/widget/app?page=communities");
 
-    const createCommunityButtonSelector = 'button:has-text("Create Community")';
+    await page.getByRole("button", { name: " Community" }).click();
 
-    await page.waitForSelector(createCommunityButtonSelector, {
-      state: "visible",
-    });
-    await page.click(createCommunityButtonSelector);
-
-    const communitySpawnerSelector = 'div:has-text("Community information")';
-    await page.waitForSelector(communitySpawnerSelector, { state: "visible" });
+    await page.getByTestId("1-name--editable").fill("the new community name");
   });
 
   test("should validate input when user is creating a new community", async ({
     page,
   }) => {
-    await page.goto("/devgovgigs.near/widget/app?page=communities");
+    await page.goto("/devhub.near/widget/app?page=communities");
 
-    await clickWhenSelectorIsVisible(
-      page,
-      'button:has-text("Create Community")'
-    );
-
-    await waitForSelectorToBeVisible(
-      page,
-      'div:has-text("Community information")'
-    );
+    await page.getByRole("button", { name: " Community" }).click();
 
     // missing title
     await expectInputValidation(
@@ -92,24 +78,16 @@ test.describe("Wallet is connected", () => {
     );
   });
   test("should create a new community", async ({ page }) => {
-    await page.goto("/devgovgigs.near/widget/app?page=communities");
+    await page.goto("/devhub.near/widget/app?page=communities");
 
-    await clickWhenSelectorIsVisible(
-      page,
-      'button:has-text("Create Community")'
-    );
+    await page.getByRole("button", { name: " Community" }).click();
 
-    await waitForSelectorToBeVisible(
-      page,
-      'div:has-text("Community information")'
-    );
-
-    await page.locator('input[aria-label="Name"]').fill("My new community");
+    await page.getByTestId("1-name--editable").fill("My new community");
     await page
-      .locator('input[aria-label="Description"]')
+      .getByTestId("3-description--editable")
       .fill("A very nice community to be in");
-    await page.locator('input[aria-label="URL handle"]').fill("mynewcommunity");
-    await page.locator('input[aria-label="Tag"]').fill("mynewcommunity");
+    await page.getByTestId("0-handle--editable").fill("mynewcommunity");
+    await page.getByTestId("2-tag--editable").fill("mynewcommunity");
     await page.getByText("Launch").click();
     const transactionText = JSON.stringify(
       JSON.parse(await page.locator("div.modal-body code").innerText()),
@@ -161,7 +139,7 @@ test.describe("Wallet is not connected", () => {
   });
 
   test("spawner and button should not be visible", async ({ page }) => {
-    await page.goto("/devgovgigs.near/widget/app?page=communities");
+    await page.goto("/devhub.near/widget/app?page=communities");
 
     const createCommunityButtonSelector = 'button:has-text("Create Community")';
 
