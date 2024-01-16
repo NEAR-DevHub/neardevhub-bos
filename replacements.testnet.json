@@ -4,5 +4,6 @@
   "REPL_DEVHUB_CONTRACT": "thomaselliot.testnet",
   "REPL_NEAR": "discom.testnet",
   "REPL_MOB": "eugenethedream",
-  "REPL_EFIZ": "efiz.testnet"
+  "REPL_EFIZ": "efiz.testnet",
+  "REPL_SOCIAL_CONTRACT": "v1.social08.testnet"
 }
