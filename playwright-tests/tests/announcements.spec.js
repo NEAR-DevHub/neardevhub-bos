@@ -10,8 +10,10 @@ test.describe("Non authenticated user's wallet is connected", () => {
       "/devhub.near/widget/app?page=community&handle=devhub-test"
     );
 
-    const composeTextarea = await page.$(`textarea[data-testid="compose"]`);
-    expect(composeTextarea).not.toBeTruthy();
+    const composeTextareaSelector = await page.$(
+      `textarea[data-testid="compose"]`
+    );
+    expect(composeTextareaSelector).not.toBeTruthy();
   });
 });
 
@@ -25,8 +27,8 @@ test.describe("Admin wallet is connected", () => {
       "/devhub.near/widget/app?page=community&handle=devhub-test"
     );
 
-    const composeTextarea = `textarea[data-testid="compose-announcement"]`;
-    await page.waitForSelector(composeTextarea, {
+    const composeTextareaSelector = `textarea[data-testid="compose-announcement"]`;
+    await page.waitForSelector(composeTextareaSelector, {
       state: "visible",
     });
   });
@@ -35,12 +37,12 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=devhub-test"
     );
-    const composeTextarea = `textarea[data-testid="compose-announcement"]`;
+    const composeTextareaSelector = `textarea[data-testid="compose-announcement"]`;
     // Wait for the compose area to be visible
-    await page.waitForSelector(composeTextarea, {
+    await page.waitForSelector(composeTextareaSelector, {
       state: "visible",
     });
-    page.type(composeTextarea, "Annoncements is live!");
+    page.type(composeTextareaSelector, "Annoncements is live!");
     const postButtonSelector = `button[data-testid="post-btn"]`;
     // Wait for the post button to be visible
     await page.waitForSelector(postButtonSelector, {
@@ -70,8 +72,8 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=devhub-test"
     );
-    const commentDiv = `div[title="Comment"]`;
-    await page.waitForSelector(commentDiv, {
+    const commentButtonSelector = `button[title="Add Comment"]`;
+    await page.waitForSelector(commentButtonSelector, {
       state: "visible",
     });
   });
@@ -80,8 +82,8 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=devhub-test"
     );
-    const likeDiv = `div[title="Like"]`;
-    await page.waitForSelector(likeDiv, {
+    const likeButtonSelector = `button[title="Like"]`;
+    await page.waitForSelector(likeButtonSelector, {
       state: "visible",
     });
   });
@@ -98,17 +100,31 @@ test.describe("Admin wallet is connected", () => {
   //     );
   //   });
 
-  //   test("a post shows in feed (near-query-api query)", async ({ page }) => {
-  //     await page.goto(
-  //       "/devhub.near/widget/app?page=community&handle=devhub-test"
-  //     );
-  //   });
+  test("a post shows in feed (near-query-api query)", async ({ page }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community&handle=devhub-test"
+    );
+    // card is only visible when there is a post
+    const postsDivSelector = `div[class="card"]`;
+    await page.waitForSelector(postsDivSelector, {
+      state: "visible",
+    });
+  });
 
-  //   test("a comment shows on post in feed (near-query-api query)", async ({
-  //     page,
-  //   }) => {
-  //     await page.goto(
-  //       "/devhub.near/widget/app?page=community&handle=devhub-test"
-  //     );
+  // test("a comment shows on post in feed (near-query-api query)", async ({
+  //   page,
+  // }) => {
+  //   await page.goto(
+  //     "/devhub.near/widget/app?page=community&handle=devhub-test"
+  //   );
+  //   // card is only visible when there is a post
+  //   const postsDivSelector = `div[class="card"]`;
+  //   await page.waitForSelector(postsDivSelector, {
+  //     state: "visible",
   //   });
+  //   const commentButtonSelector = `button[title="Add Comment"]`;
+  //   await page.waitForSelector(commentButtonSelector, {
+  //     state: "visible",
+  //   });
+  // });
 });
