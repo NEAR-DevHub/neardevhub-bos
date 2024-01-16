@@ -88,43 +88,25 @@ test.describe("Admin wallet is connected", () => {
     });
   });
 
-  //   test("a post shows in feed (socialdb query)", async ({ page }) => {
-  //     await page.goto(
-  //       "/devhub.near/widget/app?page=community&handle=devhub-test"
-  //     );
-  //   });
-
-  //   test("a comment shows on post in feed (socialdb query)", async ({ page }) => {
-  //     await page.goto(
-  //       "/devhub.near/widget/app?page=community&handle=devhub-test"
-  //     );
-  //   });
-
-  test("a post shows in feed (near-query-api query)", async ({ page }) => {
+  test("a post shows in feed", async ({ page }) => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=devhub-test"
     );
-    // card is only visible when there is a post
+    // card class div is only visible when there is a post
     const postsDivSelector = `div[class="card"]`;
     await page.waitForSelector(postsDivSelector, {
       state: "visible",
     });
   });
 
-  // test("a comment shows on post in feed (near-query-api query)", async ({
-  //   page,
-  // }) => {
-  //   await page.goto(
-  //     "/devhub.near/widget/app?page=community&handle=devhub-test"
-  //   );
-  //   // card is only visible when there is a post
-  //   const postsDivSelector = `div[class="card"]`;
-  //   await page.waitForSelector(postsDivSelector, {
-  //     state: "visible",
-  //   });
-  //   const commentButtonSelector = `button[title="Add Comment"]`;
-  //   await page.waitForSelector(commentButtonSelector, {
-  //     state: "visible",
-  //   });
-  // });
+  test("a comment shows on post in feed", async ({ page }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community&handle=devhub-test"
+    );
+    // only comments have a row class
+    const commentsDivSelector = `div[class="row"]`;
+    await page.waitForSelector(commentsDivSelector, {
+      state: "visible",
+    });
+  });
 });
