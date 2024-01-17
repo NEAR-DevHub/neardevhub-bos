@@ -4,7 +4,7 @@ test("should load blogs in the sidebar for a given handle", async ({
   page,
 }) => {
   await page.goto(
-    "/devhub.near/widget/devhub.entity.addon.blog.Configurator?handle=devhub-test"
+    "/devgovgigs.near/widget/devhub.entity.addon.blog.Configurator?handle=devhub-test"
   );
 
   await page.waitForSelector(`[id^="edit-blog-selector-"]`);
@@ -18,7 +18,7 @@ test("should prepopulate the form when a blog is selected from the left", async 
   page,
 }) => {
   await page.goto(
-    "/devhub.near/widget/devhub.entity.addon.blog.Configurator?handle=devhub-test"
+    "/devgovgigs.near/widget/devhub.entity.addon.blog.Configurator?handle=devhub-test"
   );
 
   await page.waitForSelector(`[id^="edit-blog-selector-"]`);
@@ -56,7 +56,9 @@ test("should prepopulate the form when a blog is selected from the left", async 
 });
 
 test("should have an empty form if select new blog", async ({ page }) => {
-  await page.goto("/devhub.near/widget/devhub.entity.addon.blog.Configurator");
+  await page.goto(
+    "/devgovgigs.near/widget/devhub.entity.addon.blog.Configurator"
+  );
 
   const newBlogSelector = `[id^="create-new-blog"]`;
   await page.waitForSelector(newBlogSelector, {
@@ -93,7 +95,7 @@ test("should load a blog page and its blogs for a given community handle", async
   page,
 }) => {
   await page.goto(
-    "/devhub.near/widget/devhub.entity.addon.blog.Viewer?handle=devhub-test"
+    "/devgovgigs.near/widget/devhub.entity.addon.blog.Viewer?handle=devhub-test"
   );
 
   const blogCardSelector = '[id^="blog-card-"]';
