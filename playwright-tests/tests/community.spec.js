@@ -42,7 +42,7 @@ test.describe("Wallet is connected", () => {
     page,
   }) => {
     await page.goto(
-      "/devhub.near/widget/app?page=community&handle=devhub-test"
+      "/devhub.near/widget/app?page=community&handle=devhub-test&tab=activity"
     );
 
     const postButtonSelector = 'a:has-text("Post")';
@@ -89,7 +89,7 @@ test.describe("Wallet is not connected", () => {
     page,
   }) => {
     await page.goto(
-      "/devhub.near/widget/app?page=community&handle=devhub-test"
+      "/devhub.near/widget/app?page=community&handle=devhub-test&tab=activity"
     );
 
     const createCommunityButtonSelector = 'button:has-text("Post")';

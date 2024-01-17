@@ -1,5 +1,6 @@
 const LIMIT = 10;
 const filteredAccountIds = props.filteredAccountIds;
+const setShowCard = props.setShowCard ?? (() => {});
 const GRAPHQL_ENDPOINT =
   props.GRAPHQL_ENDPOINT ?? "https://near-queryapi.api.pagoda.co";
 
@@ -229,6 +230,12 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
+  if (postsData.posts.length > 0) {
+    setShowCard(true);
+  }
+}, [postsData]);
+
+useEffect(() => {
   if (initialQueryTime === null) {
     clearInterval(feedInterval);
   } else {
@@ -244,35 +251,21 @@ if (!initialized && sort) {
   setInitialized(true);
 }
 
-const FeedWrapper = styled.div`
-  .post {
-    padding-left: 24px;
-    padding-right: 24px;
-
-    @media (max-width: 1024px) {
-      padding-left: 12px;
-      padding-right: 12px;
-    }
-  }
-`;
-
 return (
   <>
-    <FeedWrapper>
-      <Widget
-        src="${REPL_NEAR}/widget/Posts.Feed"
-        props={{
-          hasMore,
-          isLoading,
-          loadMorePosts: () => {
-            if (!isLoading) {
-              loadMorePosts(false);
-            }
-          },
-          posts: postsData.posts,
-          showFlagAccountFeature: props.showFlagAccountFeature,
-        }}
-      />
-    </FeedWrapper>
+    <Widget
+      src="${REPL_NEAR}/widget/Posts.Feed"
+      props={{
+        hasMore,
+        isLoading,
+        loadMorePosts: () => {
+          if (!isLoading) {
+            loadMorePosts(false);
+          }
+        },
+        posts: postsData.posts,
+        showFlagAccountFeature: props.showFlagAccountFeature,
+      }}
+    />
   </>
 );
