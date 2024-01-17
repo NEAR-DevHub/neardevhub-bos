@@ -111,7 +111,7 @@ const searchKeywords = props.searchKeywords ? (
 
 const allowedToEdit =
   !props.isPreview &&
-  Near.view("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_edit", {
+  Near.view("${REPL_DEVHUB_LEGACY}", "is_allowed_to_edit", {
     post_id: postId,
     editor: context.accountId,
   });
@@ -270,7 +270,7 @@ let grantNotify = Near.view(
   "${REPL_SOCIAL_CONTRACT}",
   "is_write_permission_granted",
   {
-    predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+    predecessor_id: "${REPL_DEVHUB_LEGACY}",
     key: context.accountId + "/index/notify",
   }
 );

@@ -272,7 +272,7 @@ let grantNotify = Near.view(
   "${REPL_SOCIAL_CONTRACT}",
   "is_write_permission_granted",
   {
-    predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+    predecessor_id: "${REPL_DEVHUB_LEGACY}",
     key: context.accountId + "/index/notify",
   }
 );
@@ -387,7 +387,7 @@ const onSubmit = () => {
 };
 
 const checkLabel = (label) => {
-  Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+  Near.asyncView("${REPL_DEVHUB_LEGACY}", "is_allowed_to_use_labels", {
     editor: context.accountId,
     labels: [label],
   }).then((allowed) => {

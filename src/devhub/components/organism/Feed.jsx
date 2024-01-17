@@ -107,6 +107,7 @@ return (
               props={{
                 accountId: item.accountId,
                 blockHeight: item.blockHeight,
+                filteredAccountIds: filteredAccountIds,
               }}
             />
           );
