@@ -5,6 +5,20 @@ At DevHub, we value the contributions of each individual. This document provides
 
 ## Developer Setup
 
+You can set up everything manually as described further down, or you can use the dev container setup which has everything out of the box and will get you started quickly.
+
+### Using a dev container
+
+This project is configured for developing with github codespaces or a locally hosted [devcontainer](https://containers.dev/). If using one of these options you get all the dev setup you need out of the box, and you don't have to spend time on installing any dependencies.
+
+Once your dev container is started you can run the test suite, which is a good check to verify that all is running as expected:
+
+`npm run test:watch:codespaces`
+
+This will give you a web interface for all the tests, and you can run them to see how everything is expected to work. You should also use the test suite when developing new functionality, as it is a much more efficient workflow for the testing and development iterations. Also it prevents future regression if you develop the test driven way.
+
+If your work requires changes to the developer setup, you should also include and test them in the devcontainer setup so that this is always up to date.
+
 ### Prerequisites
 
 Before you start contributing to neardevhub-widgets, ensure you have the following prerequisites installed on your machine:
@@ -137,7 +151,19 @@ npm run fmt
 
 We use [Playwright](https://playwright.dev) for tests, which are located in the [playwright-tests](./playwright-tests/) folder. For each change or addition to the codebase you should also make sure that your changes are covered by tests in order to ensure that other developers will not break it in the future. Also you should write tests to accelerate your own development, so that you don't have to do manual coding/test interations via the browser.
 
-See the [test-pipeline](./.github/workflows/continuous-integration-workflow.yml) for what dependencies that needs to be installed on your workstation for tests to run.
+Use the [dev-container](#using-a-dev-container) setup mentioned above for getting quick access to a complete development environment with test dependencies included, or see the [test-pipeline](./.github/workflows/continuous-integration-workflow.yml) for what dependencies that needs to be installed on your workstation for tests to run.
+
+Currently, none of the tests post actual transactions to the smart contracts. Still you should try writing your tests so that they do the actual function call, but just skip the final step of sending the transaction. You can do this by capturing the transaction confirmation popup provided by the NEAR social VM.
+
+Here is an example snippet to capture the VM confirmation popup:
+
+```javascript
+const transactionObj = JSON.parse(
+    await page.locator("div.modal-body code").innerText()
+);
+```
+
+This will parse the text contents into the javascript object that we here call `transactionObj`. You can then make assertions on the properties. See the test called "should edit a community" in [community.spec.js](./playwright-tests/tests/community.spec.js) for a full example.
 
 #### Storage Deposit
 
