@@ -96,7 +96,6 @@ test.describe("Admin wallet is connected", () => {
     await postLocator.focus();
   });
 
-  
   // SKIPPING
   test.skip("a comment shows on post in feed", async ({ page }) => {
     // This test needs to be revisited if we modify the post / comment
