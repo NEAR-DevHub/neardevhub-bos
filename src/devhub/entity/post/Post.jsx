@@ -308,7 +308,7 @@ const onLike = () => {
       contractName: "${REPL_SOCIAL_CONTRACT}",
       methodName: "grant_write_permission",
       args: {
-        predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+        predecessor_id: "${REPL_DEVHUB_LEGACY}",
         keys: [context.accountId + "/index/notify"],
       },
       gas: Big(10).pow(14),

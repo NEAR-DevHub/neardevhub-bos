@@ -345,7 +345,7 @@ const onSubmit = () => {
       Object.assign({}, state, { parent_post_id: parentId })
     );
     txn.push({
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "add_post",
       args: {
         parent_id: parentId,
@@ -359,7 +359,7 @@ const onSubmit = () => {
       Object.assign({}, state, { edit_post_id: postId })
     );
     txn.push({
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "edit_post",
       args: {
         id: postId,
@@ -375,7 +375,7 @@ const onSubmit = () => {
         contractName: "${REPL_SOCIAL_CONTRACT}",
         methodName: "grant_write_permission",
         args: {
-          predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+          predecessor_id: "${REPL_DEVHUB_LEGACY}",
           keys: [context.accountId + "/index/notify"],
         },
         gas: Big(10).pow(14),

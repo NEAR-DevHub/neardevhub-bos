@@ -94,7 +94,7 @@ const handleOnSubmit = (v, isEdit) => {
   console.log(isEdit);
   if (isEdit) {
     Near.call({
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "edit_post",
       args: {
         id: v.id,
@@ -109,7 +109,7 @@ const handleOnSubmit = (v, isEdit) => {
     });
   } else {
     Near.call({
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "add_post",
       args: {
         labels: ["blog", handle],
