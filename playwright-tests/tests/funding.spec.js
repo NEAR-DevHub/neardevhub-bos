@@ -8,6 +8,7 @@ test.describe("Wallet is connected", () => {
   });
 
   test("should be able to submit a solution (funding request)", async ({
+    //
     page,
   }) => {
     await page.goto("/devhub.near/widget/app?page=create");
@@ -31,6 +32,11 @@ test.describe("Wallet is connected", () => {
 
     await page.click('label:has-text("Yes") button');
     await selectAndAssert(page, 'div:has-text("Currency") select', "USDT");
+    await setInputAndAssert(
+      page,
+      'input[data-testid="requested-amount-editor"]',
+      "300"
+    );
     await page.getByTestId("requested-amount-editor").fill("300");
 
     await page.click('button:has-text("Submit")');

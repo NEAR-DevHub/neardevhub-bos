@@ -97,7 +97,7 @@ const [postData, setPostData] = useState(null); // for capturing edit post chang
 
 useEffect(() => {
   if (mode == "Edit") {
-    const data = Near.view("${REPL_DEVHUB_CONTRACT}", "get_post", {
+    const data = Near.view("${REPL_DEVHUB_LEGACY}", "get_post", {
       post_id: postId,
     });
     if (!postData) {
@@ -109,7 +109,7 @@ useEffect(() => {
       setPostData(data);
     }
   } else {
-    const postIds = Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_post_ids");
+    const postIds = Near.view("${REPL_DEVHUB_LEGACY}", "get_all_post_ids");
     if (!postIdList) {
       setPostIdList(postIds);
     }
@@ -272,7 +272,7 @@ let grantNotify = Near.view(
   "${REPL_SOCIAL_CONTRACT}",
   "is_write_permission_granted",
   {
-    predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+    predecessor_id: "${REPL_DEVHUB_LEGACY}",
     key: context.accountId + "/index/notify",
   }
 );
@@ -345,7 +345,7 @@ const onSubmit = () => {
       Object.assign({}, state, { parent_post_id: parentId })
     );
     txn.push({
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "add_post",
       args: {
         parent_id: parentId,
@@ -359,7 +359,7 @@ const onSubmit = () => {
       Object.assign({}, state, { edit_post_id: postId })
     );
     txn.push({
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "edit_post",
       args: {
         id: postId,
@@ -375,7 +375,7 @@ const onSubmit = () => {
         contractName: "${REPL_SOCIAL_CONTRACT}",
         methodName: "grant_write_permission",
         args: {
-          predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+          predecessor_id: "${REPL_DEVHUB_LEGACY}",
           keys: [context.accountId + "/index/notify"],
         },
         gas: Big(10).pow(14),
@@ -387,7 +387,7 @@ const onSubmit = () => {
 };
 
 const checkLabel = (label) => {
-  Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+  Near.asyncView("${REPL_DEVHUB_LEGACY}", "is_allowed_to_use_labels", {
     editor: context.accountId,
     labels: [label],
   }).then((allowed) => {
@@ -416,7 +416,7 @@ const setLabels = (labels) => {
       oldLabels.delete(label.name);
     }
     let removed = oldLabels.values().next().value;
-    Near.asyncView("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+    Near.asyncView("${REPL_DEVHUB_LEGACY}", "is_allowed_to_use_labels", {
       editor: context.accountId,
       labels: [removed],
     }).then((allowed) => {
@@ -441,7 +441,7 @@ const setLabels = (labels) => {
   }
 };
 const existingLabelStrings =
-  Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_allowed_labels", {
+  Near.view("${REPL_DEVHUB_LEGACY}", "get_all_allowed_labels", {
     editor: context.accountId,
   }) ?? [];
 const existingLabelSet = new Set(existingLabelStrings);
@@ -471,7 +471,7 @@ const labelEditor = (
           props.text.toLowerCase() !== "blog" && // dont allow adding "Blog"
           props.selected.filter((selected) => selected.name === props.text)
             .length == 0 &&
-          Near.view("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_use_labels", {
+          Near.view("${REPL_DEVHUB_LEGACY}", "is_allowed_to_use_labels", {
             editor: context.accountId,
             labels: [props.text],
           })

@@ -3,10 +3,11 @@ import path from "path";
 
 const args = process.argv.slice(2);
 
-let NETWORK_ENV = "testnet";
+let NETWORK_ENV = "mainnet";
 let CREATOR_REPL = "REPL_DEVHUB";
 let CONTRACT_REPL = "REPL_DEVHUB_CONTRACT";
 let ACCOUNT_ID = "";
+let SIGNER_ID = "";
 let CONTRACT_ID = "";
 
 // Parse command line arguments
@@ -15,6 +16,10 @@ for (let i = 0; i < args.length; i++) {
     case "-a":
     case "--account":
       ACCOUNT_ID = args[++i];
+      break;
+    case "-s":
+    case "--signer":
+      SIGNER_ID = args[++i];
       break;
     case "-c":
     case "--contract":
@@ -38,6 +43,10 @@ if (!ACCOUNT_ID) {
     "Error: Account is not provided. Please provide the account to deploy the widgets to."
   );
   process.exit(1);
+}
+
+if (!SIGNER_ID) {
+  SIGNER_ID = ACCOUNT_ID;
 }
 
 // Check if network is provided but not contract
@@ -90,33 +99,41 @@ function getAllFiles(dirPath, arrayOfFiles) {
   return arrayOfFiles;
 }
 
-let FILES = getAllFiles("build/src").filter((file) => file.endsWith(".jsx"));
+let FILES = getAllFiles("src").filter((file) => file.endsWith(".jsx"));
 
 console.log("Building widgets...");
+
+// If the build directory exists, delete it
+if (fs.existsSync("build")) {
+  fs.rmdirSync("build", { recursive: true });
+}
 
 // Iterate over each .jsx file
 FILES.forEach((file) => {
   // Create corresponding directory structure in build/src folder
   let dir = path.dirname(file);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(`build/${dir}`)) {
+    fs.mkdirSync(`build/${dir}`, { recursive: true });
   }
 
   // Define the output path
-  fs.copyFileSync(file, file); // initialize outfile with the original file content
+  let outfile = `build/${file}`;
+  fs.copyFileSync(file, outfile); // initialize outfile with the original file content
 });
 
 console.log("Making replacements...");
 
 // Iterate over each .jsx file again for replacements
 FILES.forEach((file) => {
-  let content = fs.readFileSync(file, "utf8");
-  console.log(file);
+  let outfile = `build/${file}`;
+  console.log(outfile);
+
+  let content = fs.readFileSync(outfile, "utf8");
   // Iterate over each key to get the replacement value
   keys.forEach((key) => {
     let replace = replacements[key];
     let search = new RegExp(`\\$\\{${key}\\}`, "g");
     content = content.replace(search, replace);
   });
-  fs.writeFileSync(file, content);
+  fs.writeFileSync(outfile, content);
 });

@@ -35,11 +35,7 @@ test.describe("Wallet is connected", () => {
 
     await page.click('button:has-text("Solution")');
 
-    await setInputAndAssert(
-      page,
-      'input[data-testid="name-editor"]',
-      "The test title"
-    );
+    await page.getByTestId("name-editor").fill("The test title");
 
     const descriptionInput = page
       .frameLocator("iframe")
@@ -61,6 +57,7 @@ test.describe("Wallet is connected", () => {
       'input[data-testid="requested-amount-editor"]',
       "300"
     );
+    await page.getByTestId("requested-amount-editor").fill("300");
     await page.click('button:has-text("Submit")');
     await expect(page.locator("div.modal-body code")).toHaveText(
       JSON.stringify(
