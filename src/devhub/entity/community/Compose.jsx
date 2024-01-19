@@ -1,4 +1,5 @@
-if (!context.accountId) {
+const accountId = props.accountId;
+if (!accountId) {
   return <></>;
 }
 
@@ -10,7 +11,7 @@ State.init({
   mentionsArray: [], // all the mentions in the description
 });
 
-const profile = Social.getr(`${context.accountId}/profile`);
+const profile = Social.getr(`${accountId}/profile`);
 const autocompleteEnabled = true;
 
 const content = {
@@ -39,7 +40,7 @@ function extractMentions(text) {
 
 function extractTagNotifications(text, item) {
   return extractMentions(text || "")
-    .filter((accountId) => accountId !== context.accountId)
+    .filter((accountId) => accountId !== accountId)
     .map((accountId) => ({
       key: accountId,
       value: {
@@ -66,7 +67,7 @@ function composeData() {
 
   const notifications = extractTagNotifications(state.text, {
     type: "social",
-    path: `${context.accountId}/post/main`,
+    path: `${accountId}/post/main`,
   });
 
   if (notifications.length) {
@@ -211,10 +212,6 @@ const Textarea = styled.div`
 
     &:empty + p {
       display: block;
-    }
-
-    &:focus {
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.05);
     }
   }
 `;
@@ -366,7 +363,7 @@ return (
           src="${REPL_NEAR}/widget/v1.Posts.Post"
           loading={<div className="w-100" style={{ height: "200px" }} />}
           props={{
-            accountId: context.accountId,
+            accountId: accountId,
             blockHeight: "now",
             content,
           }}

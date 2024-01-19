@@ -79,6 +79,7 @@ return (
                   src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                   props={{
                     onSubmit: (v) => setCommunitySocialDB({ handle, data: v }),
+                    accountId: `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
                   }}
                 />
               </div>
