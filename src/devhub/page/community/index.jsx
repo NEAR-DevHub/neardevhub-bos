@@ -47,7 +47,7 @@ if (!href) {
 }
 
 if (!tab) {
-  tab = "Activity";
+  tab = "Announcements";
 }
 
 tab = normalize(tab);
@@ -55,6 +55,13 @@ tab = normalize(tab);
 const [isLinkCopied, setLinkCopied] = useState(false);
 
 const tabs = [
+  {
+    title: "Announcements",
+    view: "${REPL_DEVHUB}/widget/devhub.entity.community.Announcements",
+    params: {
+      handle: community.handle,
+    },
+  },
   {
     title: "Activity",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Activity",

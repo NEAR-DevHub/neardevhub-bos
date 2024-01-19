@@ -1,8 +1,10 @@
 {
   "REPL_DEVHUB": "devhub-dev.testnet",
   "REPL_DEVHUB_LEGACY": "devhub-dev.testnet",
-  "REPL_DEVHUB_CONTRACT": "thomaspreview.testnet",
+  "REPL_DEVHUB_CONTRACT": "bodevhub.testnet",
   "REPL_NEAR": "discom.testnet",
   "REPL_MOB": "eugenethedream",
-  "REPL_EFIZ": "efiz.testnet"
+  "REPL_EFIZ": "efiz.testnet",
+  "REPL_DEVS": "nearbuilders.testnet",
+  "REPL_SOCIAL_CONTRACT": "v1.social08.testnet"
 }

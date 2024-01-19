@@ -31,10 +31,6 @@ const [sort, setSort] = useState("");
 
 const communitiesMetadata = getAllCommunitiesMetadata();
 
-if (!communitiesMetadata) {
-  return <p>Loading...</p>;
-}
-
 const SortedAndFiltered = (searchKey, sortBy) => {
   let communities = (communitiesMetadata ?? []).reverse();
 

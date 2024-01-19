@@ -41,6 +41,7 @@ return community === null ? (
       props={{
         fullWidth: true,
         minHeight: 0,
+        noBorder: true,
         children: <CommunitySummary />,
         style: { marginTop: "0.5rem" },
       }}
@@ -62,6 +63,7 @@ return community === null ? (
 
         fullWidth: true,
         minHeight: 0,
+        noBorder: true,
       }}
     />
   </div>
