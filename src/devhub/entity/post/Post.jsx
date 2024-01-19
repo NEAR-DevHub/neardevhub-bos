@@ -1,7 +1,11 @@
 // Ideally, this would be a page
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+const { getDepositAmountForWriteAccess } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.common"
+);
 
+getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 const { draftState, onDraftStateChange } = VM.require(
   "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
 );
@@ -30,7 +34,7 @@ const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
 
 const post =
   props.post ??
-  Near.view("${REPL_DEVHUB_CONTRACT}", "get_post", { post_id: postId });
+  Near.view("${REPL_DEVHUB_LEGACY}", "get_post", { post_id: postId });
 
 if (!post) {
   return <div>Loading ...</div>;
@@ -60,12 +64,12 @@ const compareSnapshot =
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
 
-const parentId = Near.view("${REPL_DEVHUB_CONTRACT}", "get_parent_id", {
+const parentId = Near.view("${REPL_DEVHUB_LEGACY}", "get_parent_id", {
   post_id: postId,
 });
 
 const childPostIdsUnordered =
-  Near.view("${REPL_DEVHUB_CONTRACT}", "get_children_ids", {
+  Near.view("${REPL_DEVHUB_LEGACY}", "get_children_ids", {
     post_id: postId,
   }) ?? [];
 
@@ -107,7 +111,7 @@ const searchKeywords = props.searchKeywords ? (
 
 const allowedToEdit =
   !props.isPreview &&
-  Near.view("${REPL_DEVHUB_CONTRACT}", "is_allowed_to_edit", {
+  Near.view("${REPL_DEVHUB_LEGACY}", "is_allowed_to_edit", {
     post_id: postId,
     editor: context.accountId,
   });
@@ -262,12 +266,24 @@ const containsLike = props.isPreview
 const likeBtnClass = containsLike ? fillIcons.Like : emptyIcons.Like;
 // This must be outside onLike, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onLike, it will give `null` and we cannot tell the result is true or false.
-let grantNotify = Near.view("social.near", "is_write_permission_granted", {
-  predecessor_id: "${REPL_DEVHUB_CONTRACT}",
-  key: context.accountId + "/index/notify",
-});
+let grantNotify = Near.view(
+  "${REPL_SOCIAL_CONTRACT}",
+  "is_write_permission_granted",
+  {
+    predecessor_id: "${REPL_DEVHUB_LEGACY}",
+    key: context.accountId + "/index/notify",
+  }
+);
 
-if (grantNotify === null) {
+const userStorageDeposit = Near.view(
+  "${REPL_SOCIAL_CONTRACT}",
+  "storage_balance_of",
+  {
+    account_id: context.accountId,
+  }
+);
+
+if (grantNotify === null || userStorageDeposit === null) {
   return;
 }
 
@@ -278,7 +294,7 @@ const onLike = () => {
 
   let likeTxn = [
     {
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "add_like",
       args: {
         post_id: postId,
@@ -289,14 +305,14 @@ const onLike = () => {
 
   if (grantNotify === false) {
     likeTxn.unshift({
-      contractName: "social.near",
+      contractName: "${REPL_SOCIAL_CONTRACT}",
       methodName: "grant_write_permission",
       args: {
-        predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+        predecessor_id: "${REPL_DEVHUB_LEGACY}",
         keys: [context.accountId + "/index/notify"],
       },
       gas: Big(10).pow(14),
-      deposit: Big(10).pow(22),
+      deposit: getDepositAmountForWriteAccess(userStorageDeposit),
     });
   }
 

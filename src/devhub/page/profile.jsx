@@ -6,6 +6,6 @@ if (!accountId) {
 
 return (
   <div className="w-100 bg-white overflow-hidden px-3">
-    <Widget src="mob.near/widget/ProfilePage" props={{ accountId }} />
+    <Widget src="${REPL_MOB}/widget/ProfilePage" props={{ accountId }} />
   </div>
 );

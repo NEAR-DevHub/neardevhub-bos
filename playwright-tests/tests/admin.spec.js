@@ -12,12 +12,12 @@ test.describe("Wallet is connected", () => {
     await page.goto("/devhub.near/widget/app?page=admin");
 
     const buttonSelector = `button[data-testid="preview-homepage"]`;
-    // Wait for the first post history button to be visible
+    // Wait for the preview homepage to appear
     await page.waitForSelector(buttonSelector, {
       state: "visible",
     });
 
-    // Click on the first post history button
+    // Click on Community handle input
     await page.getByPlaceholder("Community handle").nth(4).click();
     await page
       .getByPlaceholder("Community handle")

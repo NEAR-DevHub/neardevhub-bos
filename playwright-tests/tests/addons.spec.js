@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+const { test } = require("@playwright/test");
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -7,7 +7,7 @@ test.describe("Wallet is connected", () => {
 
   test.describe("AddonsConfigurator", () => {
     const baseUrl =
-      "/devgovgigs.near/widget/app?page=community.configuration&handle=devhub-test";
+      "/devhub.near/widget/app?page=community.configuration&handle=devhub-test";
     // const dropdownSelector =
     //   'input[data-component="near/widget/DIG.InputSelect"]';
     // const addButtonSelector = "button.btn-success:has(i.bi.bi-plus)";

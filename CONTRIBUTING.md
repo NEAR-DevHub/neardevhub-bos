@@ -1,10 +1,23 @@
 # Contribution Guidelines for DevHub Repos
 
 ## Introduction
-
 At DevHub, we value the contributions of each individual. This document provides an overview of the developer setup and deployment process to help you contribute to our project. We also recommend familiarizing yourself with [how we work](https://github.com/near/devgigsboard-widgets/blob/main/docs/how-we-work.md) to learn about our development process and enhance your contribution experience.
 
 ## Developer Setup
+
+You can set up everything manually as described further down, or you can use the dev container setup which has everything out of the box and will get you started quickly.
+
+### Using a dev container
+
+This project is configured for developing with github codespaces or a locally hosted [devcontainer](https://containers.dev/). If using one of these options you get all the dev setup you need out of the box, and you don't have to spend time on installing any dependencies.
+
+Once your dev container is started you can run the test suite, which is a good check to verify that all is running as expected:
+
+`npm run test:watch:codespaces`
+
+This will give you a web interface for all the tests, and you can run them to see how everything is expected to work. You should also use the test suite when developing new functionality, as it is a much more efficient workflow for the testing and development iterations. Also it prevents future regression if you develop the test driven way.
+
+If your work requires changes to the developer setup, you should also include and test them in the devcontainer setup so that this is always up to date.
 
 ### Prerequisites
 
@@ -29,24 +42,10 @@ npm install
 
 #### Run the dev script
 
-To initiate the development environment, you can use the following script. This script will first check if bos-loader is installed and, if not, install it. Then, it will serve the default development environment and watch for changes inside `./src`.
+To initiate the development environment, you can use the following script. This script will first check if bos-loader is installed and, if not, install it. Then, it will serve the default development environment.
 
 ```sh
 npm run dev
-```
-
-This runs the bos-loader and the watcher together. You can also run testnet by running:
-
-```sh
-npm run dev:testnet
-```
-
-While testing the testnet, it's necessary to manually execute the watch script yourself to ensure that changes to files trigger the rebuilding process.
-
-Open another terminal and run:
-
-```sh
-npm run watch
 ```
 
 #### Customizing Creator ID, Contract ID, or Network
@@ -59,26 +58,24 @@ If you need to customize the account ID, override the contract ID, or specify a 
 
 Here's how you can use these flags:
 
-> [!IMPORTANT]
-> You will have to change the replace script flags in package.json in order for the watch script to keep using the right flags.
-
 ```sh
-npm run replace -a your_account_id -c your_contract_id -n your_network
+npm run dev -a your_account_id -c your_contract_id -n your_network
 ```
 
 For example:
 
 ```sh
-npm run replace -a bob.near -c contract.bobs.near -n mainnet
+npm run dev -a bob.near -c contract.bobs.near -n mainnet
 ```
 
 By using these flags, you have the flexibility to customize the development environment according to your specific needs.
 
+
 #### Developing across multiple environments
 
-When referencing a component or any parameter that depends on the network, please use the placeholders defined in replacements.\*.json. There are three such files that correspond to different environments:
+When referencing a component or any parameter that depends on the network, please use the placeholders defined in replacements.*.json. There are three such files that correspond to different environments:
 
-`replacements.dev.json` - deploys the develop branch, to testnet @ test.beta.near.org
+`replacements.dev.json` - deploys the develop branch, to testnet @ test.beta.near.org 
 
 `replacements.testnet.json` - deploys main branch, to testnet @ test.near.org
 
@@ -102,39 +99,25 @@ Currently, there is no local development environment, so we use [testnet NEAR So
 
 Before deploying the widgets you need to make the needed replacements with references to the account that will host the widgets:
 
-Edit the line in package.json that looks like this:
-
-```json
-"replace": "node ./scripts/replace.js -a devhub.near -c devgovgigs.near -n mainnet",
 ```
-
-to something like this:
-
-```json
-"replace": "node ./scripts/replace.js -a devgovgigs.petersalomonsen.near -c devgovgigs.near -n mainnet",
-```
-
-Run:
-
-```sh
-npm run build
+npm run build:preview -- -a devgovgigs.petersalomonsen.near -c devgovgigs.near
 ```
 
 Then make sure you stay in the `build` directory when deploying
 
-```sh
+```
 cd build
 ```
 
 To deploy the widgets, we use [`bos` CLI](https://github.com/FroVolod/bos-cli-rs). Start with this command and follow the interactive questionnaire:
 
-```sh
+```
 bos components deploy
 ```
 
 After successful deployment, you will see a full command that could be used to re-deploy the widgets without interactive questionnaire, like this:
 
-```sh
+```
 bos components deploy gigs.frol14.testnet sign-as gigs.frol14.testnet network-config testnet sign-with-macos-keychain send
 ```
 
@@ -154,7 +137,6 @@ There is GitHub Actions automation that deploys all the widgets to [`devgovgigs.
 Thus, once a PR is merged, you should see the new version of the widgets on [DevHub](https://neardevhub.org) in less than 15 seconds.
 
 ### Before Publishing
-
 Before publishing, make sure that you’ve go through this section.
 
 #### Code Style and Formatting
@@ -169,7 +151,19 @@ npm run fmt
 
 We use [Playwright](https://playwright.dev) for tests, which are located in the [playwright-tests](./playwright-tests/) folder. For each change or addition to the codebase you should also make sure that your changes are covered by tests in order to ensure that other developers will not break it in the future. Also you should write tests to accelerate your own development, so that you don't have to do manual coding/test interations via the browser.
 
-See the [test-pipeline](./.github/workflows/continuous-integration-workflow.yml) for what dependencies that needs to be installed on your workstation for tests to run.
+Use the [dev-container](#using-a-dev-container) setup mentioned above for getting quick access to a complete development environment with test dependencies included, or see the [test-pipeline](./.github/workflows/continuous-integration-workflow.yml) for what dependencies that needs to be installed on your workstation for tests to run.
+
+Currently, none of the tests post actual transactions to the smart contracts. Still you should try writing your tests so that they do the actual function call, but just skip the final step of sending the transaction. You can do this by capturing the transaction confirmation popup provided by the NEAR social VM.
+
+Here is an example snippet to capture the VM confirmation popup:
+
+```javascript
+const transactionObj = JSON.parse(
+    await page.locator("div.modal-body code").innerText()
+);
+```
+
+This will parse the text contents into the javascript object that we here call `transactionObj`. You can then make assertions on the properties. See the test called "should edit a community" in [community.spec.js](./playwright-tests/tests/community.spec.js) for a full example.
 
 #### Storage Deposit
 
@@ -179,4 +173,4 @@ Sometimes there is a need to deposit extra tokens to cover the widgets’ storag
 bos social-db prepaid-storage deposit
 ```
 
-NOTE: `bos` CLI will interactively ask all the rest of the details to prepare the transaction.
+NOTE: `bos` CLI will interactively ask all the rest of the details to prepare the transaction. 

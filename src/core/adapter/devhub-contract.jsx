@@ -1,20 +1,25 @@
 function getRootMembers() {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_root_members") ?? null;
+  return Near.view("${REPL_DEVHUB_LEGACY}", "get_root_members") ?? null;
 }
 
 function removeMember(member) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "remove_member", { member });
+  return Near.call("${REPL_DEVHUB_LEGACY}", "remove_member", { member });
 }
 
 function hasModerator({ account_id }) {
   return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", { account_id }) ??
-    null
+    Near.view("${REPL_DEVHUB_LEGACY}", "has_moderator", { account_id }) ?? null
   );
 }
 
 function createCommunity({ inputs }) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "create_community", { inputs });
+  return Near.call(
+    "${REPL_DEVHUB_CONTRACT}",
+    "create_community",
+    { inputs },
+    Big(10).pow(14), // gas
+    Big(2) * Big(10).pow(24) // deposit (2N)
+  );
 }
 
 function getCommunity({ handle }) {
@@ -24,9 +29,7 @@ function getCommunity({ handle }) {
 }
 
 function getFeaturedCommunities() {
-  return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_featured_communities") ?? null
-  );
+  return Near.view("${REPL_DEVHUB_LEGACY}", "get_featured_communities") ?? null;
 }
 
 function setFeaturedCommunities({ handles }) {
@@ -83,13 +86,11 @@ function getAllAddons() {
 }
 
 function getAccessControlInfo() {
-  return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_access_control_info") ?? null
-  );
+  return Near.view("${REPL_DEVHUB_LEGACY}", "get_access_control_info") ?? null;
 }
 
 function getAllAuthors() {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_authors") ?? null;
+  return Near.view("${REPL_DEVHUB_LEGACY}", "get_all_authors") ?? null;
 }
 
 function getAllCommunitiesMetadata() {
@@ -99,24 +100,33 @@ function getAllCommunitiesMetadata() {
 }
 
 function getAllLabels() {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_all_labels") ?? null;
+  return Near.view("${REPL_DEVHUB_LEGACY}", "get_all_labels") ?? null;
 }
 
 function getPost({ post_id }) {
-  return Near.view("${REPL_DEVHUB_CONTRACT}", "get_post", { post_id }) ?? null;
+  return Near.view("${REPL_DEVHUB_LEGACY}", "get_post", { post_id }) ?? null;
 }
 
 function getPostsByAuthor({ author }) {
   return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_author", { author }) ??
+    Near.view("${REPL_DEVHUB_LEGACY}", "get_posts_by_author", { author }) ??
     null
   );
 }
 
 function getPostsByLabel({ label }) {
   return (
-    Near.view("${REPL_DEVHUB_CONTRACT}", "get_posts_by_label", {
+    Near.view("${REPL_DEVHUB_LEGACY}", "get_posts_by_label", {
       label,
+    }) ?? null
+  );
+}
+
+function setCommunitySocialDB({ handle, data }) {
+  return (
+    Near.call("${REPL_DEVHUB_CONTRACT}", "set_community_socialdb", {
+      handle,
+      data,
     }) ?? null
   );
 }
@@ -127,7 +137,7 @@ function useQuery(name, params) {
   const cacheState = useCache(
     () =>
       Near.asyncView(
-        "${REPL_DEVHUB_CONTRACT}",
+        "${REPL_DEVHUB_LEGACY}",
         ["get", name].join("_"),
         params ?? {}
       )
@@ -170,5 +180,6 @@ return {
   getPost,
   getPostsByAuthor,
   getPostsByLabel,
+  setCommunitySocialDB,
   useQuery,
 };

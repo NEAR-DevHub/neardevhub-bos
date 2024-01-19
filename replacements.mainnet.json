@@ -1,9 +1,11 @@
 {
   "REPL_DEVHUB": "devhub.near",
   "REPL_DEVHUB_LEGACY": "devgovgigs.near",
-  "REPL_DEVHUB_CONTRACT": "devgovgigs.near",
+  "REPL_DEVHUB_CONTRACT": "devhub.near",
   "REPL_NEAR": "near",
   "REPL_MOB": "mob.near",
   "REPL_EFIZ": "efiz.near",
-  "REPL_TREASURY_CONTRACT": "treasury.dhthomas.testnet"
+  "REPL_TREASURY_CONTRACT": "treasury.dhthomas.testnet",
+  "REPL_DEVS": "devs.near",
+  "REPL_SOCIAL_CONTRACT": "social.near"
 }

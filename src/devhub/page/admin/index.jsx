@@ -58,7 +58,7 @@ function createEditTeam({
     if (!membersAndTeams.includes(member)) {
       // Add member
       txn.push({
-        contractName: "${REPL_DEVHUB_CONTRACT}",
+        contractName: "${REPL_DEVHUB_LEGACY}",
         methodName: "add_member",
         args: {
           member: member,
@@ -79,7 +79,7 @@ function createEditTeam({
   Near.call([
     ...txn,
     {
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: contractCall, // add_member || edit_member
       args: {
         member: `team:${teamName}`,
