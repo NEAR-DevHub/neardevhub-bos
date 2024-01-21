@@ -173,6 +173,41 @@ test.describe("Wallet is connected", () => {
     );
     expect(newToken).toBeTruthy();
   });
+  test("should create idea post", async ({ page }) => {
+    await page.goto("/devhub.near/widget/app?page=create");
+    await page.click('button:has-text("Idea")');
+    await page.getByTestId("name-editor").fill("A test idea");
+
+    await page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea")
+      .fill("My description of the idea");
+
+    const labelsInput = await page.locator(".rbt-input-multi");
+    await labelsInput.focus();
+    await labelsInput.pressSequentially("ai", { delay: 100 });
+    await labelsInput.press("Tab");
+    await labelsInput.pressSequentially("webassemblymus", { delay: 100 });
+    await labelsInput.press("Tab");
+
+    await page.getByTestId("submit-create-post").click();
+    await expect(page.locator("div.modal-body code")).toHaveText(
+      JSON.stringify(
+        {
+          parent_id: null,
+          labels: ["ai", "webassemblymusic"],
+          body: {
+            name: "A test idea",
+            description: "My description of the idea",
+            idea_version: "V1",
+            post_type: "Idea",
+          },
+        },
+        null,
+        1
+      )
+    );
+  });
 });
 
 test.describe("Admin is connected", () => {
