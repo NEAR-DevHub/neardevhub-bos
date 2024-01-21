@@ -77,99 +77,113 @@ const Container = styled.div`
 `;
 
 // filter transfer proposals
-const transferProposals = proposals.filter(
-  (item) => item.kind?.FunctionCall?.actions?.[0]?.method_name === "ft_transfer"
-);
+const transferProposals = proposals.filter((item) => {
+  if (item.kind?.FunctionCall?.actions?.[0]?.method_name) {
+    return (
+      item.kind.FunctionCall.actions[0].method_name === "ft_transfer" &&
+      item.status === "InProgress"
+    );
+  }
+  return false;
+});
 
 const ProposalsComponent = () => {
-  transferProposals?.map((item, index) => {
-    // decode args
-    const actions = item.kind?.FunctionCall?.actions?.[0];
-    const args = JSON.parse(atob(actions?.args ?? ""));
-    const isReceiverkycbVerified = true;
-    const isNEAR = true;
-    const address = item.token;
-    let ftMetadata = {
-      symbol: "NEAR",
-      decimals: 24,
-    };
-    if (!isNEAR) {
-      ftMetadata = Near.view(address, "ft_metadata", {});
-      if (ftMetadata === null) return null;
-    }
-    let amount = amountWithDecimals;
-    if (amountWithoutDecimals !== undefined) {
-      amount = Big(amountWithoutDecimals)
-        .div(Big(10).pow(ftMetadata.decimals))
-        .toString();
-    }
+  return (
+    <tbody>
+      {transferProposals?.map((item, index) => {
+        // decode args
+        const actions = item.kind?.FunctionCall?.actions?.[0];
+        const args = JSON.parse(atob(actions?.args ?? ""));
+        const isReceiverkycbVerified = true;
+        const isNEAR = true;
+        const address = item.token;
+        let ftMetadata = {
+          symbol: "NEAR",
+          decimals: 24,
+        };
+        if (!isNEAR) {
+          ftMetadata = Near.view(address, "ft_metadata", {});
+          if (ftMetadata === null) return null;
+        }
+        // let amount = amountWithDecimals;
+        // if (amountWithoutDecimals !== undefined) {
+        //   amount = Big(amountWithoutDecimals)
+        //     .div(Big(10).pow(ftMetadata.decimals))
+        //     .toString();
+        // }
 
-    return (
-      <tr className={expandSummaryIndex[index] ? "text-grey-100" : ""}>
-        <td>{item.id}</td>
-        <td>
-          <div className="d-flex flex-row gap-2">
-            <div
-              className="d-flex flex-column gap-2 flex-wrap"
-              style={{ maxWidth: 320 }}
-            >
-              <div
-                className={
-                  "text-size-2 bold max-w-100" +
-                  (!expandSummaryIndex[index] && " text-truncate")
-                }
-              >
-                {args.title}
+        return (
+          <tr className={expandSummaryIndex[index] ? "text-grey-100" : ""}>
+            <td>{item.id}</td>
+            <td>
+              <div className="d-flex flex-row gap-2">
+                <div
+                  className="d-flex flex-column gap-2 flex-wrap"
+                  style={{ maxWidth: 320 }}
+                >
+                  <div
+                    className={
+                      "text-size-2 bold max-w-100" +
+                      (!expandSummaryIndex[index] && " text-truncate")
+                    }
+                  >
+                    {args.title}
+                  </div>
+                  {expandSummaryIndex[index] && (
+                    <div className={"text-dark-grey max-w-100"}>
+                      {args.summary}
+                    </div>
+                  )}
+                </div>
+                <div className="cursor">
+                  <img
+                    src={
+                      expandSummaryIndex[index]
+                        ? "https://ipfs.near.social/ipfs/bafkreic35n4yddasdpl532oqcxjwore66jrjx2qc433hqdh5wi2ijy4ida"
+                        : "https://ipfs.near.social/ipfs/bafkreiaujwid7iigy6sbkrt6zkwmafz5umocvzglndugvofcz2fpw5ur3y"
+                    }
+                    onClick={() =>
+                      setExpandSummary((prevState) => ({
+                        ...prevState,
+                        [index]: !prevState[index],
+                      }))
+                    }
+                    height={20}
+                  />
+                </div>
               </div>
-              {expandSummaryIndex[index] && (
-                <div className={"text-dark-grey max-w-100"}>{args.summary}</div>
+            </td>
+            <td className="text-truncate bold" style={{ maxWidth: 150 }}>
+              {treasuryDaoID}
+            </td>
+            <td className="text-truncate bold" style={{ maxWidth: 150 }}>
+              {args.receiver_id}
+            </td>
+            <td className="text-center">
+              {isReceiverkycbVerified ? (
+                <img
+                  src="https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm"
+                  height={30}
+                />
+              ) : (
+                "Need icon"
               )}
-            </div>
-            <div className="cursor">
-              <img
-                src={
-                  expandSummaryIndex[index]
-                    ? "https://ipfs.near.social/ipfs/bafkreic35n4yddasdpl532oqcxjwore66jrjx2qc433hqdh5wi2ijy4ida"
-                    : "https://ipfs.near.social/ipfs/bafkreiaujwid7iigy6sbkrt6zkwmafz5umocvzglndugvofcz2fpw5ur3y"
-                }
-                onClick={() =>
-                  setExpandSummary((prevState) => ({
-                    ...prevState,
-                    [index]: !prevState[index],
-                  }))
-                }
-                height={20}
-              />
-            </div>
-          </div>
-        </td>
-        <td className="text-truncate bold" style={{ maxWidth: 150 }}>
-          {treasuryDaoID}
-        </td>
-        <td className="text-truncate bold" style={{ maxWidth: 150 }}>
-          {args.receiver_id}
-        </td>
-        <td className="text-center">
-          {isReceiverkycbVerified ? (
-            <img
-              src="https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm"
-              height={30}
-            />
-          ) : (
-            "Need icon"
-          )}
-        </td>
-        <td className="bold">{item.token}</td>
-        <td className="bold">
-          {parseFloat(args.amount).toLocaleString("en-US")}
-        </td>
-        <td className="text-grey">{getRelativeTime(item.submission_time)}</td>
-        <td>
-          <button onClick={() => onPay(item.id)}>Pay</button>
-        </td>
-      </tr>
-    );
-  });
+            </td>
+            <td className="bold">{item.token}</td>
+            <td className="bold">
+              {parseFloat(args.amount).toLocaleString("en-US")}
+            </td>
+            <td className="text-grey">
+              {getRelativeTime(item.submission_time)}
+            </td>
+            <td>
+              <button onClick={() => onPay(item.id)}>Pay</button>
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  );
 };
 
 return (
@@ -193,9 +207,7 @@ return (
             <td>PAY</td>
           </tr>
         </thead>
-        <tbody>
-          <ProposalsComponent />
-        </tbody>
+        <ProposalsComponent />
       </table>
     </div>
     <div className="d-flex align-items-center justify-content-center">

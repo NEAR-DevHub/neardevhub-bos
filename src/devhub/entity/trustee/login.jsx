@@ -22,7 +22,7 @@ return (
         <i class="bi bi-person-circle"></i>
         <div className="h5">Login Below</div>
         <div
-          onClick={() => props.setIsTrustee(true)}
+          onClick={() => {}} // do login?
           className="rounded-4 bg-grey p-2 text-center d-flex gap-2 flex-row justify-content-center align-items-center cursor"
           style={{ width: 230 }}
         >
