@@ -92,7 +92,7 @@ return (
             </div>
             {selectedTab === tabKeys.TRUSTEES ? (
               <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.trustee.dashboard"}
+                src={"${REPL_DEVHUB}/widget/devhub.entity.trustee.Dashboard"}
                 props={{ ...passProps, setIsTrustee, tab }}
               />
             ) : (
