@@ -49,7 +49,7 @@ const tabs = [
 ];
 
 if (!tab) {
-  tab = normalize("Need Approvals");
+  tab = normalize(tabs[0].title);
 }
 
 let currentTab = tabs.find((it) => normalize(it.title) === tab);
