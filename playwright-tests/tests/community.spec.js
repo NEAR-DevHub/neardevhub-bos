@@ -100,7 +100,6 @@ test.describe("Wallet is not connected", () => {
   });
 });
 
-
 test.describe("Is community admin", () => {
   test.use({
     storageState:
