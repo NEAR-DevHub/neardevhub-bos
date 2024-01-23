@@ -63,6 +63,13 @@ const tabs = [
     },
   },
   {
+    title: "Activity",
+    view: "${REPL_DEVHUB}/widget/devhub.entity.community.Activity",
+    params: {
+      handle: community.handle,
+    },
+  },
+  {
     title: "Teams",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Teams",
     params: {

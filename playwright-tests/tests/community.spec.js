@@ -33,6 +33,74 @@ test("should load an error page if handle does not exist", async ({ page }) => {
   expect(communityNotFound).not.toBeNull();
 });
 
+test.describe("Wallet is connected", () => {
+  test.use({
+    storageState: "playwright-tests/storage-states/wallet-connected.json",
+  });
+
+  test("should allow connected user to post from community page", async ({
+    page,
+  }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community&handle=devhub-test&tab=activity"
+    );
+
+    const postButtonSelector = 'a:has-text("Post")';
+
+    await page.waitForSelector(postButtonSelector, {
+      state: "visible",
+    });
+
+    // Click the Post button and wait for the load state to be 'networkidle'
+    await Promise.all([
+      page.click(postButtonSelector),
+      page.waitForLoadState("networkidle"),
+    ]);
+
+    // Verify that the URL is the expected one.
+    expect(page.url()).toBe(
+      "http://localhost:8080/devhub.near/widget/app?page=create&labels=devhub-test"
+    );
+
+    // Wait for the Typeahead field to render.
+    const typeaheadSelector = ".rbt-input-main";
+    await page.waitForSelector(typeaheadSelector, { state: "visible" });
+
+    const typeaheadValueSelector = ".rbt-token-label";
+
+    // Wait for prepoluated label to appear.
+    await page.waitForSelector(typeaheadValueSelector, { state: "visible" });
+
+    // Fetch the element and its text content.
+    const element = await page.$(typeaheadValueSelector);
+    const elementText = await element.textContent();
+
+    expect(element).toBeTruthy();
+    expect(elementText).toBe("devhub-test");
+  });
+});
+
+test.describe("Wallet is not connected", () => {
+  test.use({
+    storageState: "playwright-tests/storage-states/wallet-not-connected.json",
+  });
+
+  test("should not allow unconnected user to post from community page", async ({
+    page,
+  }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community&handle=devhub-test"
+    );
+
+    const createCommunityButtonSelector = 'button:has-text("Post")';
+
+    await page.waitForSelector(createCommunityButtonSelector, {
+      state: "detached",
+    });
+  });
+});
+
+
 test.describe("Is community admin", () => {
   test.use({
     storageState:
