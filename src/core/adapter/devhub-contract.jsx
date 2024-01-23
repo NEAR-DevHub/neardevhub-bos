@@ -131,6 +131,15 @@ function setCommunitySocialDB({ handle, data }) {
   );
 }
 
+function setCommunityDiscussionSocialDB({ handle, data }) {
+  return (
+    Near.call("${REPL_DEVHUB_CONTRACT}", "set_discussions_community_socialdb", {
+      handle,
+      data,
+    }) ?? null
+  );
+}
+
 function useQuery(name, params) {
   const initialState = { data: null, error: null, isLoading: true };
 
