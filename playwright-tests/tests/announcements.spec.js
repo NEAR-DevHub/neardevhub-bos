@@ -92,7 +92,7 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=devhub-test"
     );
-    const postLocator = page.locator(".post");
+    const postLocator = page.locator(".post").first();
     await postLocator.focus();
   });
 
