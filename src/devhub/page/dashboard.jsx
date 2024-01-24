@@ -47,8 +47,7 @@ const Tabs = styled.div`
 
   .flex-item {
     flex: 1;
-    padding-block: 1rem;
-    padding-inline: 0.5rem;
+    padding: 1rem;
     font-weight: 600;
     font-size: 18;
   }
@@ -96,7 +95,10 @@ return (
                 props={{ ...passProps, setIsTrustee, tab }}
               />
             ) : (
-              <div>Moderators Dashboard</div>
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.entity.moderator.Dashboard"}
+                props={{ ...passProps, setIsTrustee, tab }}
+              />
             )}
           </Tabs>
         </div>
