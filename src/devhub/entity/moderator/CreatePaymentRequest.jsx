@@ -75,7 +75,7 @@ const VerificationIconContainer = ({ isVerified, label }) => {
 
 return (
   <Container className="d-flex gap-3 flex-column">
-    <div className="h5 bold mb-0">Create Payment Request</div>
+    <div className="h5 bold mb-2">Create Payment Request</div>
     <Widget
       src={`${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch`}
       props={{
@@ -115,9 +115,9 @@ return (
         isVerified={true}
         label="Test Transaction Confirmed"
       />
-      <p className="text-grey">
+      <div className="text-grey">
         You can add new recipients in the Manage Recipients tab.
-      </p>
+      </div>
     </div>
     <Widget
       src={`${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch`}

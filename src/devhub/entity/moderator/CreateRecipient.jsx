@@ -83,7 +83,7 @@ const VerificationIconContainer = ({ isVerified, label }) => {
 
 return (
   <Container className="d-flex gap-3 flex-column">
-    <div className="h5 bold mb-0">Create New Recipient</div>
+    <div className="h5 bold mb-2">Create New Recipient</div>
     <Widget
       src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
       props={{
