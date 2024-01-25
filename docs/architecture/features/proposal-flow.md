@@ -66,16 +66,38 @@ So that I can see all the proposals and search for specific ones
 
 ### Proposal timeline
 
-
-### Create recipient
+As a moderator
+I need checkboxes and radio buttons to control the progress of the proposal timeline
+So that I can provide feedback to the proposer on the status of the proposal
 
 ### Manage recipients
 
+As a moderator
+I need a table of recipients with the possiblity of editing and removing recipients
+So that I can manage the known recipients of funds granted to proposals
+
+#### Create recipient
+
+As a moderator
+I need a form for registering a recipient
+So that I can add a receiver of proposal grants to the list of known recipients
+
 ### Transaction history
+
+As a moderator
+I need a list of payment transactions from payment requests
+So that I can track the payment status of the payment requests I've made
+
+### Create payment request
+
+As a moderator
+I need a for for creating a payment request
+So that I can register the details of recipient, amount, currency etc of a grant to be paid out to a recipient
 
 ## Trustees
 
 ### Need approvals
+
 
 ### Payment history
 
