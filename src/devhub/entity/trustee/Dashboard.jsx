@@ -48,11 +48,16 @@ const tabs = [
   },
 ];
 
-if (!tab) {
-  tab = normalize("Need Approvals");
+function findTab(tabTitle) {
+  return tabs.find((it) => normalize(it.title) === tabTitle);
 }
 
-let currentTab = tabs.find((it) => normalize(it.title) === tab);
+const defaultTab = tabs[0].title;
+let currentTab = findTab(tab ?? normalize(defaultTab));
+// in case tab is not provided, or tab is of modertors page
+if (!currentPage) {
+  currentTab = findTab(normalize(defaultTab));
+}
 
 return (
   <div>
@@ -72,7 +77,9 @@ return (
                 })}
                 className={[
                   "d-inline-flex gap-2",
-                  tab === normalize(title) ? "nav-link active" : "nav-link",
+                  normalize(currentTab.title) === normalize(title)
+                    ? "nav-link active"
+                    : "nav-link",
                 ].join(" ")}
               >
                 <span>{title}</span>
