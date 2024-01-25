@@ -47,7 +47,7 @@ const TextInput = ({
   const renderedLabels = [
     (label?.length ?? 0) > 0 ? (
       <span className="d-inline-flex gap-1 text-wrap">
-        <span>{label}</span>
+        <label>{label}</label>
 
         {inputProps.required ? <span className="text-danger">*</span> : null}
       </span>

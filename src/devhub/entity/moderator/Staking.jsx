@@ -1,1 +1,1 @@
-return <div></div>;
+return <div>Staking Page</div>;

@@ -38,8 +38,10 @@ const tabs = [
   },
   {
     title: "Transaction History",
-    view: "TransactionHistory",
-    props: {},
+    view: "History",
+    props: {
+      title: "Transaction History",
+    },
   },
   {
     title: "Manage Recipients",
@@ -94,7 +96,9 @@ return (
     {currentTab && (
       <div className="w-100 h-100 mt-4" key={currentTab.title}>
         <Widget
-          src={`${REPL_DEVHUB}/widget/devhub.entity.moderator.${currentTab.view}`}
+          src={`${REPL_DEVHUB}/widget/devhub.entity.${
+            currentTab.view === "History" ? "trustee" : "moderator"
+          }.${currentTab.view}`}
           props={currentTab.props}
         />
       </div>

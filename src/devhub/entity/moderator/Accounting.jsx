@@ -1,1 +1,1 @@
-return <div></div>;
+return <div>Accounting Page</div>;

@@ -14,8 +14,8 @@ const Pagination = styled.div`
 
   div {
     display: flex;
-    height: 40px;
-    min-width: 40px;
+    height: 30px;
+    min-width: 30px;
     padding: 12px;
     justify-content: center;
     align-items: center;

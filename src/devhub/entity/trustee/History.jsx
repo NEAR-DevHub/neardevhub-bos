@@ -166,7 +166,7 @@ const ProposalsComponent = () => {
 return (
   <Container className="d-flex flex-column gap-4">
     <div className="d-flex flex-row gap-2 align-items-center justify-content-between">
-      <div className="h5 bold mb-0">Payment History</div>
+      <div className="h5 bold mb-0">{props.title ?? "Payment History"}</div>
       {/* currently we don't support any filter */}
       {/* <div>
         <button className="btn btn-outline-primary d-flex gap-2 align-items-center justify-content-center p-2 px-3">
