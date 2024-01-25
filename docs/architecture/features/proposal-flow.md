@@ -98,8 +98,18 @@ So that I can register the details of recipient, amount, currency etc of a grant
 
 ### Need approvals
 
+As a trustee
+I need a table of pending payment requests
+So that I can review the requests and make the payments
 
 ### Payment history
 
+As a trustee
+I need a table of historic payment transactions
+So that I can keep a log of the payments I've made
+
 ### Treasury
 
+As a trustee
+I need a view of my treasury balances
+So that I can see how much funds I'm managing
