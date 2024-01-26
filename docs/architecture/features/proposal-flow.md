@@ -42,6 +42,8 @@ So that I can register and edit my proposal, and submit it for review
 - Verify that it is possible to provide funding details as specified in Figma
 - Verify that after submission, and marked as ready for review, the form is not editable anymore
 - Verify that only the proposer can edit the proposal form, both in the UI, and also on the contract side
+- Verify that a submitted (not draft) proposal also is a post to SocialDB
+- Verify that likes and comments are from SocialDB
 
 #### Link proposal
 
@@ -71,6 +73,12 @@ So that I can follow the progress of my proposal
 As a user of the proposals functionality
 I need a feed page
 So that I can see all the proposals and search for specific ones
+
+### Proposal comments
+
+As a user on BOS
+I need to be able to proposal comment under DevHUB
+so that I can see the comments together with the proposal timeline and links
 
 ## Moderators
 
