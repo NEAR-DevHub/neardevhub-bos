@@ -23,7 +23,7 @@ The actual user stories are presented below, but first, here are someacceptance 
 - Verify backend automatic tests
     - Verify that there are unit test on the detailed level covering multiple variants of input and expectations
     - Verify that there are integration tests using near-workspaces-rs for covering the scenarios of input and expected output from the frontend
-    - Bonus: Verify that the playwright tests send transactions into near-workspaces-rs by implementing a HTTP server on top of it that responds as NEAR RPC
+    - Verify that the playwright tests interacts with a testnet contract, to show the full end-to-end flow
 
 ## Proposals
 
@@ -38,6 +38,7 @@ So that I can register and edit my proposal, and submit it for review
 - Verify that there is a form where the proposer can select category, type the title, write a summary and a description, as shown in the Figma illustration
 - Verify that the proposal form page has final consent checkboxes as shown in Figma 
 - Verify that it is possible to provide funding details as specified in Figma
+- Verify that after submission, and marked as ready for review, the form is not editable anymore
 
 #### Link proposal
 
@@ -56,6 +57,11 @@ As a proposer
 I need a timeline of the milestones in the proposal flow
 So that I can follow the progress of my proposal
 
+**Acceptance criterias**
+
+- Verify that I can see the radio buttons and checkboxes as in the Figma design, but not modify them
+- Verify that the timeline progress is updated according to the stage of the proposal
+
 ### Proposal feed
 
 As a user of the proposals functionality
@@ -70,11 +76,20 @@ As a moderator
 I need checkboxes and radio buttons to control the progress of the proposal timeline
 So that I can provide feedback to the proposer on the status of the proposal
 
+**Acceptance criterias**
+
+- Verify that only a moderator can modify the timeline state
+- Verify that the access restrictions are implemented both in the contract and the UI
+
 ### Manage recipients
 
 As a moderator
 I need a table of recipients with the possiblity of editing and removing recipients
 So that I can manage the known recipients of funds granted to proposals
+
+**Acceptance criterias**
+
+- Verify that only moderators can access the UI and the contract methods
 
 #### Create recipient
 
