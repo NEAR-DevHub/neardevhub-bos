@@ -67,6 +67,28 @@ const Tag = styled.div`
 
 const [sort, setSort] = useState("timedesc");
 
+let grantNotify = Near.view(
+  "${REPL_SOCIAL_CONTRACT}",
+  "is_write_permission_granted",
+  {
+    predecessor_id: "${REPL_DEVHUB_LEGACY}",
+    key: context.accountId + "/index/notify",
+  }
+);
+
+let grantRepost = Near.view(
+  "${REPL_SOCIAL_CONTRACT}",
+  "is_write_permission_granted",
+  {
+    predecessor_id: "${REPL_DEVHUB_LEGACY}",
+    key: context.accountId + "/index/repost",
+  }
+);
+
+if (grantNotify === null || grantRepost === null) {
+  return;
+}
+
 return (
   <div className="w-100" style={{ maxWidth: "100%" }}>
     <Container className="d-flex gap-3 m-3 pl-2">
@@ -77,11 +99,38 @@ return (
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                 props={{
-                  onSubmit: (v) =>
-                    createDiscussion({
-                      handle,
-                      data: v,
-                    }),
+                  onSubmit: (v) => {
+                    let createDiscussionTx = [
+                      {
+                        contractName: "${REPL_DEVHUB_CONTRACT}",
+                        methodName: "create_discussion",
+                        args: {
+                          handle,
+                          data: v,
+                        },
+                        gas: Big(10).pow(14),
+                      },
+                    ];
+
+                    if (grantNotify === false || grantRepost === false) {
+                      createDiscussionTx.unshift({
+                        contractName: "${REPL_SOCIAL_CONTRACT}",
+                        methodName: "grant_write_permission",
+                        args: {
+                          // @ailisp this shouldn't be legacy right? because with notification it is
+                          predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+                          keys: [
+                            context.accountId + "/index/notify",
+                            context.accountId + "/index/repost",
+                          ],
+                        },
+                        gas: Big(10).pow(14),
+                        deposit:
+                          getDepositAmountForWriteAccess(userStorageDeposit),
+                      });
+                    }
+                    Near.call(createDiscussionTx);
+                  },
                 }}
               />
             </div>
