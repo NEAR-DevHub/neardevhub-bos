@@ -117,7 +117,6 @@ return (
                         contractName: "${REPL_SOCIAL_CONTRACT}",
                         methodName: "grant_write_permission",
                         args: {
-                          // @ailisp this shouldn't be legacy right? because with notification it is
                           predecessor_id: "${REPL_DEVHUB_CONTRACT}",
                           keys: [
                             context.accountId + "/index/notify",
