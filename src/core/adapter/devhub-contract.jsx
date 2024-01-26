@@ -131,9 +131,9 @@ function setCommunitySocialDB({ handle, data }) {
   );
 }
 
-function setCommunityDiscussionSocialDB({ handle, data }) {
+function createDiscussion({ handle, data }) {
   return (
-    Near.call("${REPL_DEVHUB_CONTRACT}", "set_discussions_community_socialdb", {
+    Near.call("${REPL_DEVHUB_CONTRACT}", "create_discussion", {
       handle,
       data,
     }) ?? null

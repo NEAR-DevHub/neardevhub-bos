@@ -8,6 +8,14 @@ setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 
 const communityData = getCommunity({ handle });
 
+const result = Social.get("thomasguntenaar.near/post/**", {
+  with_block_height: true,
+});
+
+if (result) {
+  console.log({ result });
+}
+
 const MainContent = styled.div`
   padding-left: 2rem;
   flex: 3;
@@ -78,7 +86,7 @@ return (
                 src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                 props={{
                   onSubmit: (v) =>
-                    setCommunityDiscussionSocialDB({
+                    createDiscussion({
                       handle,
                       data: v,
                     }),
@@ -110,8 +118,9 @@ return (
             src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
             props={{
               showFlagAccountFeature: true,
+              action: "repost",
               filteredAccountIds: [
-                `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
               ],
               sort: sort,
             }}
