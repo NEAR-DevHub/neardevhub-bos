@@ -8,14 +8,6 @@ setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 
 const communityData = getCommunity({ handle });
 
-const result = Social.get("thomasguntenaar.near/post/**", {
-  with_block_height: true,
-});
-
-if (result) {
-  console.log({ result });
-}
-
 const MainContent = styled.div`
   padding-left: 2rem;
   flex: 3;
