@@ -8,9 +8,8 @@ The "Proposal flow" consist of functionality for:
     - the moderators/sponsors that reviews and approves the applications, register the recipients, and make the payment requests
     - the trustees that make the actual payment
 
-# User stories 
 
-The actual user stories are presented below, but first, here are someacceptance criterias that apply to all user stories.
+# Overall acceptance criterias ( applies to each user story ))
 
 - Verify that the UI implementation corresponds to the Figma design
 - Verify frontend automatic tests
@@ -24,6 +23,9 @@ The actual user stories are presented below, but first, here are someacceptance 
     - Verify that there are unit test on the detailed level covering multiple variants of input and expectations
     - Verify that there are integration tests using near-workspaces-rs for covering the scenarios of input and expected output from the frontend
     - Verify that the playwright tests interacts with a testnet contract, to show the full end-to-end flow
+- Before merge: Verify that the functionality, test coverage (as shown by the screen recording), is according to expectations of the product owner.
+
+# User stories 
 
 ## Proposals
 
@@ -39,6 +41,7 @@ So that I can register and edit my proposal, and submit it for review
 - Verify that the proposal form page has final consent checkboxes as shown in Figma 
 - Verify that it is possible to provide funding details as specified in Figma
 - Verify that after submission, and marked as ready for review, the form is not editable anymore
+- Verify that only the proposer can edit the proposal form, both in the UI, and also on the contract side
 
 #### Link proposal
 
@@ -50,6 +53,7 @@ So that I have the option to create links to other relevant proposals
 
 - Verify that it is possible to search for other proposals
 - Verify that it is possible to select another proposal from search, and that it will be added as a link
+- Verify that only the proposer can add links to other proposals
 
 #### Proposal timeline
 
@@ -89,7 +93,8 @@ So that I can manage the known recipients of funds granted to proposals
 
 **Acceptance criterias**
 
-- Verify that only moderators can access the UI and the contract methods
+- Verify that only moderators can access the UI and the transactional contract methods
+- Verify that the recipients are stored on the contract for the sponsoring DAO
 
 #### Create recipient
 
@@ -97,17 +102,33 @@ As a moderator
 I need a form for registering a recipient
 So that I can add a receiver of proposal grants to the list of known recipients
 
+**Acceptance criterias**
+
+- Verify that only moderators can access the UI and transactional contract methods
+- Verify that the recipients are stored on the contract for the sponsoring DAO
+
 ### Transaction history
 
 As a moderator
 I need a list of payment transactions from payment requests
 So that I can track the payment status of the payment requests I've made
 
+**Acceptance criterias**
+
+- Verify that only moderators can access the UI
+- Verify that the transaction history is retrieved from the DAO contract
+
 ### Create payment request
 
 As a moderator
 I need a for for creating a payment request
 So that I can register the details of recipient, amount, currency etc of a grant to be paid out to a recipient
+
+**Acceptance criterias**
+
+- Verify that only moderators can access the UI
+- Verify that only moderators can access the contract methods for creating a payment request
+- Verify that the payment request is crated on the DAO contract
 
 ## Trustees
 
@@ -117,14 +138,27 @@ As a trustee
 I need a table of pending payment requests
 So that I can review the requests and make the payments
 
+**Acceptance criterias**
+
+- Verify that only trustees can access the UI
+- Verify that only trustees can call the DAO contract method behind the "Pay" button
+
 ### Payment history
 
 As a trustee
 I need a table of historic payment transactions
 So that I can keep a log of the payments I've made
 
+**Acceptance criterias**
+
+- Verify that only trustees can access the UI
+
 ### Treasury
 
 As a trustee
 I need a view of my treasury balances
 So that I can see how much funds I'm managing
+
+**Acceptance criterias**
+
+- Verify that only trustees can access the UI
