@@ -5,9 +5,7 @@ This document presents the high level overview / outline of backlog items to be 
 
 The "Proposal flow" consist of functionality for:
     - those making a proposal and applying for funding
-    - the moderators/sponsors that reviews and approves the applications, register the recipients, and make the payment requests
-    - the trustees that make the actual payment
-
+    - the moderators/sponsors that reviews and approves the proposals
 
 # Overall acceptance criterias ( applies to each user story ))
 
@@ -42,7 +40,7 @@ So that I can register and edit my proposal, and submit it for review
 - Verify that it is possible to provide funding details as specified in Figma
 - Verify that after submission, and marked as ready for review, the form is not editable anymore
 - Verify that only the proposer can edit the proposal form, both in the UI, and also on the contract side
-- Verify that a submitted (not draft) proposal also is a post to SocialDB
+- Verify that a posted proposal also is a post to SocialDB
 - Verify that likes and comments are from SocialDB
 
 #### Link proposal
@@ -92,81 +90,3 @@ So that I can provide feedback to the proposer on the status of the proposal
 
 - Verify that only a moderator can modify the timeline state
 - Verify that the access restrictions are implemented both in the contract and the UI
-
-### Manage recipients
-
-As a moderator
-I need a table of recipients with the possiblity of editing and removing recipients
-So that I can manage the known recipients of funds granted to proposals
-
-**Acceptance criterias**
-
-- Verify that only moderators can access the UI and the transactional contract methods
-- Verify that the recipients are stored on the contract for the sponsoring DAO
-
-#### Create recipient
-
-As a moderator
-I need a form for registering a recipient
-So that I can add a receiver of proposal grants to the list of known recipients
-
-**Acceptance criterias**
-
-- Verify that only moderators can access the UI and transactional contract methods
-- Verify that the recipients are stored on the contract for the sponsoring DAO
-
-### Transaction history
-
-As a moderator
-I need a list of payment transactions from payment requests
-So that I can track the payment status of the payment requests I've made
-
-**Acceptance criterias**
-
-- Verify that only moderators can access the UI
-- Verify that the transaction history is retrieved from the DAO contract
-
-### Create payment request
-
-As a moderator
-I need a for for creating a payment request
-So that I can register the details of recipient, amount, currency etc of a grant to be paid out to a recipient
-
-**Acceptance criterias**
-
-- Verify that only moderators can access the UI
-- Verify that only moderators can access the contract methods for creating a payment request
-- Verify that the payment request is crated on the DAO contract
-
-## Trustees
-
-### Need approvals
-
-As a trustee
-I need a table of pending payment requests
-So that I can review the requests and make the payments
-
-**Acceptance criterias**
-
-- Verify that only trustees can access the UI
-- Verify that only trustees can call the DAO contract method behind the "Pay" button
-
-### Payment history
-
-As a trustee
-I need a table of historic payment transactions
-So that I can keep a log of the payments I've made
-
-**Acceptance criterias**
-
-- Verify that only trustees can access the UI
-
-### Treasury
-
-As a trustee
-I need a view of my treasury balances
-So that I can see how much funds I'm managing
-
-**Acceptance criterias**
-
-- Verify that only trustees can access the UI
