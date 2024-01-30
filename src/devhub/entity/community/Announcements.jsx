@@ -89,15 +89,15 @@ return (
                 />
               </div>
             )}
-          <div
-            className={
-              postsExists
-                ? "d-flex flex-wrap justify-content-between"
-                : "display-none"
-            }
-          >
+          <div className="d-flex flex-wrap justify-content-between">
             <Heading>Announcements</Heading>
-            <div className="d-flex align-items-center gap-2">
+            <div
+              className={
+                postsExists
+                  ? "d-flex align-items-center gap-2"
+                  : " display-none"
+              }
+            >
               <select
                 name="sort"
                 id="sort"
@@ -114,6 +114,11 @@ return (
               </select>
             </div>
           </div>
+          {!postsExists && (
+            <div>
+              <h6>No announcements exists.</h6>
+            </div>
+          )}
           <div className={postsExists && "card p-4"}>
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
