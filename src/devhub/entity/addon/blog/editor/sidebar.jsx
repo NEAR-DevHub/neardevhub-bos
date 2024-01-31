@@ -1,4 +1,4 @@
-const { items, handleItemClick, selectedItem } = props;
+const { editPostId, handleItemClick, selectedItem } = props;
 
 const SidebarContainer = styled.div`
   background-color: #f0f0f0;
@@ -30,17 +30,7 @@ return (
   <SidebarContainer id="edit-blog-sidebar">
     <p>Blog posts</p>
     <SidebarButton onClick={() => handleItemClick(null)} id="create-new-blog">
-      New
+      {editPostId ? "Id: " + editPostId : "New"}
     </SidebarButton>
-    {(items || []).map((it) => (
-      <SidebarButton
-        id={`edit-blog-selector-${it.post_id}`}
-        key={it.post_id}
-        selected={selectedItem.id === it.post_id}
-        onClick={() => handleItemClick(it.post_id)}
-      >
-        {it.post_id}
-      </SidebarButton>
-    ))}
   </SidebarContainer>
 );

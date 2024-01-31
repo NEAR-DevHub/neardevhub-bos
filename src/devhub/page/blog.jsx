@@ -4,11 +4,24 @@ const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Page") ||
   (() => <></>);
 
-if (id) {
+const [showEditScreenData, setShowEditScreen] = useState(null);
+
+if (id && !showEditScreenData) {
   return (
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.entity.post.Postv2"
-      props={{ postKey: id, template: (p) => <Page {...(p || {})} /> }}
+      props={{
+        postKey: id,
+        template: (p) => (
+          <Page
+            {...(p || {})}
+            onEdit={() => {
+              setShowEditScreen(p);
+            }}
+            accountId={context.accountId}
+          />
+        ),
+      }}
     />
   );
 }
@@ -49,6 +62,17 @@ const BlogContainer = styled.div`
 // that "Latest Blog Posts" carries over... // TOOD: create a common blog
 // feed... I think the addon.blog.Feed naming is confusing, as this should be a
 // generic feed component.
+
+if (showEditScreenData) {
+  return (
+    <Widget
+      src={`${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator`}
+      props={{
+        ...showEditScreenData,
+      }}
+    />
+  );
+}
 return (
   <div className="w-100">
     <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
