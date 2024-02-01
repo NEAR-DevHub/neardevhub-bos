@@ -16,7 +16,7 @@ if (id && !showEditScreenData) {
           <Page
             {...(p || {})}
             onEdit={() => {
-              setShowEditScreen(p);
+              setShowEditScreen({ ...p, data: { ...p.data, id: id } });
             }}
             accountId={context.accountId}
           />
@@ -58,6 +58,19 @@ const BlogContainer = styled.div`
   }
 `;
 
+const EditorContainer = styled.div`
+  position: relative;
+  width: 100%;
+  padding: 20px;
+  .cancel-icon {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    font-size: 25px;
+    cursor: pointer;
+  }
+`;
+
 // I like that this reduces duplicate code with the Viewer, but I don't like
 // that "Latest Blog Posts" carries over... // TOOD: create a common blog
 // feed... I think the addon.blog.Feed naming is confusing, as this should be a
@@ -65,12 +78,18 @@ const BlogContainer = styled.div`
 
 if (showEditScreenData) {
   return (
-    <Widget
-      src={`${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator`}
-      props={{
-        ...showEditScreenData,
-      }}
-    />
+    <EditorContainer>
+      <div className="cancel-icon" onClick={() => setShowEditScreen(null)}>
+        <i class="bi bi-x-circle"></i>
+      </div>
+      <Widget
+        src={`${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator`}
+        props={{
+          ...showEditScreenData,
+          handle: showEditScreenData?.labels?.[1], // community-handle
+        }}
+      />
+    </EditorContainer>
   );
 }
 return (
