@@ -1,5 +1,6 @@
 let theme = props.theme;
 let variables = props.variables;
+const editData = props.data;
 
 if (!variables) {
   variables = ``;
@@ -48,16 +49,25 @@ return (
                 src="${REPL_DEVHUB}/widget/devhub.entity.addon.blog.editor.layout"
                 props={{
                   getData,
+                  editData: editData,
                   Sidebar: (p) => (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blog.editor.sidebar"
-                      props={{ items: data, ...p }}
+                      props={{
+                        ...p,
+                        ...providerProps,
+                      }}
                     />
                   ),
                   Content: (p) => (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blog.editor.content"
-                      props={{ onChange, onCancel, onSubmit, ...p }}
+                      props={{
+                        onChange,
+                        onCancel,
+                        onSubmit,
+                        ...p,
+                      }}
                     />
                   ),
                 }}
