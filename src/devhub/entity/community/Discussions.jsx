@@ -161,7 +161,7 @@ return (
               showFlagAccountFeature: true,
               action: "repost",
               filteredAccountIds: [
-                `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
               ],
               sort: sort,
             }}
