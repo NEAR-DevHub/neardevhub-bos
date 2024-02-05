@@ -2,11 +2,6 @@ const { handle } = props;
 const { getCommunity, setCommunitySocialDB } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
-const { getDepositAmountForWriteAccess } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common"
-);
-
-getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 
 getCommunity = getCommunity || (() => <></>);
 setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
@@ -72,27 +67,6 @@ const Tag = styled.div`
 
 const [sort, setSort] = useState("timedesc");
 
-const grantPost = Near.view(
-  "${REPL_SOCIAL_CONTRACT}",
-  "is_write_permission_granted",
-  {
-    predecessor_id: "${REPL_DEVHUB_LEGACY}",
-    key: context.accountId + "/main/post",
-  }
-);
-
-const userStorageDeposit = Near.view(
-  "${REPL_SOCIAL_CONTRACT}",
-  "storage_balance_of",
-  {
-    account_id: context.accountId,
-  }
-);
-
-if (grantPost === null || userStorageDeposit === null) {
-  return;
-}
-
 return (
   <div className="w-100" style={{ maxWidth: "100%" }}>
     <Container className="d-flex gap-3 m-3 pl-2">
@@ -104,32 +78,31 @@ return (
                 src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                 props={{
                   onSubmit: (v) => {
-                    let createDiscussionTx = [
+                    const result = Social.set(
+                      `${context.accountId}/post/main`,
+                      v,
                       {
-                        contractName: "${REPL_DEVHUB_CONTRACT}",
-                        methodName: "create_discussion",
-                        args: {
-                          handle,
-                          data: v,
+                        onCommit: (data) => {
+                          // Near.get(
+                          //   "${REPL_DEVHUB_CONTRACT}",
+                          //   "get_block_height",
+                          //   {
+                          //     onReturn: (blockHeight) => {
+                          //       Near.call(
+                          //         "${REPL_DEVHUB_CONTRACT}",
+                          //         "create_discussion",
+                          //         {
+                          //           community_handle: "...",
+                          //           near_social_post_block_height: blockHeight,
+                          //         }
+                          //       );
+                          //     },
+                          //   }
+                          // );
                         },
-                        gas: Big(10).pow(14),
-                      },
-                    ];
-
-                    if (grantPost === false) {
-                      createDiscussionTx.unshift({
-                        contractName: "${REPL_SOCIAL_CONTRACT}",
-                        methodName: "grant_write_permission",
-                        args: {
-                          predecessor_id: "${REPL_DEVHUB_CONTRACT}",
-                          keys: [context.accountId + "/post/main"],
-                        },
-                        gas: Big(10).pow(14),
-                        deposit:
-                          getDepositAmountForWriteAccess(userStorageDeposit),
-                      });
-                    }
-                    Near.call(createDiscussionTx);
+                      }
+                    );
+                    console.log("result", result);
                   },
                 }}
               />
