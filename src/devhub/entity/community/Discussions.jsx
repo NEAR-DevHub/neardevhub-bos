@@ -67,32 +67,6 @@ const Tag = styled.div`
 
 const [sort, setSort] = useState("timedesc");
 
-function fetchGraphQL(operationsDoc, operationName, variables) {
-  return asyncFetch(`${GRAPHQL_ENDPOINT}/v1/graphql`, {
-    method: "POST",
-    headers: { "x-hasura-role": "dataplatform_near" },
-    body: JSON.stringify({
-      query: operationsDoc,
-      variables: variables,
-      operationName: operationName,
-    }),
-  });
-}
-let lastPostSocialApi = Social.index("post", "main", {
-  limit: 1,
-  order: "desc",
-});
-
-if (lastPostSocialApi == null) {
-  return "Loading...";
-}
-
-// console.log("context", context.accountId);
-// let test = Social.get(`${context.accountId}/post/main`, {
-//   options: { with_block_height: true },
-// });
-// console.log("test", test);
-
 function repostOnDiscussions(blockHeight) {
   Near.call([
     {
@@ -125,6 +99,40 @@ function repostOnDiscussions(blockHeight) {
   ]);
 }
 
+function setSocialDbAndRepost(v) {
+  console.log("v", v);
+  // Post to users social db
+  // `${context.accountId}/post/main`,
+  const result = Social.set(v, {
+    onCommit: (data) => {
+      console.log("onCommit");
+      console.log("data", data);
+
+      let testSocialGet = Social.get(`${context.accountId}/post/main`, null, {
+        with_block_height: true,
+      });
+      console.log("testSocialGet", testSocialGet);
+
+      // TODO move to devhub-contract when it works
+      let getData = Near.view("${REPL_SOCIAL_CONTRACT}", "get", {
+        keys: [`${context.accountId}/post/main`],
+        options: {
+          with_block_height: true,
+        },
+      });
+      console.log("getData", getData);
+      getData.blockHeight = getData.blockHeight || 0;
+      if (getData.blockHeight) {
+        repostOnDiscussions(getData.blockHeight);
+      } else {
+        // TODO remove
+        repostOnDiscussions(94381896);
+      }
+    },
+  });
+  console.log("result", result);
+}
+
 return (
   <div className="w-100" style={{ maxWidth: "100%" }}>
     <Container className="d-flex gap-3 m-3 pl-2">
@@ -135,76 +143,7 @@ return (
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                 props={{
-                  onSubmit: (v) => {
-                    // Post to users social db
-                    const result = Social.set(
-                      `${context.accountId}/post/main`,
-                      v,
-                      {
-                        onCommit: (data) => {
-                          // TODO remove
-                          console.log("onCommit");
-                          console.log("data", data);
-                          // TODO get the block height in another way
-                          const lastPostQuery = `
-                            query IndexerQuery {
-                              dataplatform_near_social_feed_posts( limit: 1, order_by: { block_height: desc }) {
-                                  block_height
-                              }
-                            }
-                            `;
-
-                          fetchGraphQL(lastPostQuery, "IndexerQuery", {})
-                            .then((feedIndexerResponse) => {
-                              // TODO remove
-                              console.log(
-                                "feedIndexerResponse",
-                                feedIndexerResponse
-                              );
-                              if (
-                                feedIndexerResponse &&
-                                feedIndexerResponse.body.data
-                                  .dataplatform_near_social_feed_posts.length >
-                                  0
-                              ) {
-                                const nearSocialBlockHeight =
-                                  lastPostSocialApi[0].blockHeight;
-                                const feedIndexerBlockHeight =
-                                  feedIndexerResponse.body.data
-                                    .dataplatform_near_social_feed_posts[0]
-                                    .block_height;
-                                // TODO necessary?
-                                const lag =
-                                  nearSocialBlockHeight -
-                                  feedIndexerBlockHeight;
-                                let shouldFallback =
-                                  lag > 2 || !feedIndexerBlockHeight;
-                                if (shouldFallback === true) {
-                                  console.log(
-                                    "Falling back to Social index feed. Block difference is: ",
-                                    nearSocialBlockHeight -
-                                      feedIndexerBlockHeight
-                                  );
-                                }
-
-                                repostOnDiscussions(nearSocialBlockHeight);
-                              } else {
-                                console.log(
-                                  "Falling back to Social index feed. No QueryApi data received."
-                                );
-                              }
-                            })
-                            .catch((error) => {
-                              console.log(
-                                "Error while fetching QueryApi feed (falling back to index feed): ",
-                                error
-                              );
-                            });
-                        },
-                      }
-                    );
-                    console.log("result", result);
-                  },
+                  onSubmit: setSocialDbAndRepost,
                 }}
               />
             </div>
@@ -228,7 +167,6 @@ return (
               </select>
             </div>
           </div>
-
           <Widget
             src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
             props={{
@@ -236,7 +174,6 @@ return (
               action: "repost",
               filteredAccountIds: [
                 `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
-                // "thomasguntenaar.near", // TODO: get index/repost
               ],
               sort: sort,
             }}

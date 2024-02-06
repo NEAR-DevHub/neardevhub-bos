@@ -99,6 +99,10 @@ function getAllCommunitiesMetadata() {
   );
 }
 
+function getSocialWithBlockHeight(data) {
+  return Near.view("${REPL_SOCIAL_CONTRACT}", "get", data) ?? null;
+}
+
 function getAllLabels() {
   return Near.view("${REPL_DEVHUB_LEGACY}", "get_all_labels") ?? null;
 }
