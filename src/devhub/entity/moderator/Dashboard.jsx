@@ -67,7 +67,7 @@ function findTab(tabTitle) {
 const defaultTab = tabs[0].title;
 let currentTab = findTab(tab ?? normalize(defaultTab));
 // in case tab is not provided, or tab is of trustees page
-if (!currentPage) {
+if (!currentTab) {
   currentTab = findTab(normalize(defaultTab));
 }
 
