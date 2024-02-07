@@ -74,25 +74,7 @@ function repostOnDiscussions(blockHeight) {
       methodName: "create_discussion",
       args: {
         handle,
-        data: {
-          [`discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`]: {
-            index: {
-              repost: JSON.stringify([
-                {
-                  key: "main",
-                  value: {
-                    type: "repost",
-                    item: {
-                      type: "social",
-                      path: context.accountId + "/post/main",
-                      blockHeight,
-                    },
-                  },
-                },
-              ]),
-            },
-          },
-        },
+        blockHeight,
       },
       gas: Big(10).pow(14),
     },
@@ -100,36 +82,27 @@ function repostOnDiscussions(blockHeight) {
 }
 
 function setSocialDbAndRepost(v) {
+  // TODO remove
   console.log("v", v);
   // Post to users social db
-  // `${context.accountId}/post/main`,
   const result = Social.set(v, {
     onCommit: (data) => {
-      console.log("onCommit");
-      console.log("data", data);
-
-      let testSocialGet = Social.get(`${context.accountId}/post/main`, null, {
-        with_block_height: true,
-      });
-      console.log("testSocialGet", testSocialGet);
-
-      // TODO move to devhub-contract when it works
-      let getData = Near.view("${REPL_SOCIAL_CONTRACT}", "get", {
-        keys: [`${context.accountId}/post/main`],
+      console.log("onCommit data", data);
+      // TODO move to devhub-contract.jsx
+      Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
+        keys: [`${context.accountId}/**`],
         options: {
           with_block_height: true,
         },
-      });
-      console.log("getData", getData);
-      getData.blockHeight = getData.blockHeight || 0;
-      if (getData.blockHeight) {
-        repostOnDiscussions(getData.blockHeight);
-      } else {
-        // TODO remove
-        repostOnDiscussions(94381896);
-      }
+      })
+        .then((response) => {
+          let blockHeight = response[context.accountId]["post"][":block"];
+          repostOnDiscussions(blockHeight);
+        })
+        .catch(console.log);
     },
   });
+  // TODO remove
   console.log("result", result);
 }
 
