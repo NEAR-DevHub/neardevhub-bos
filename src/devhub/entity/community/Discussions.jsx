@@ -149,7 +149,7 @@ return (
             </div>
           )}
           <div className="d-flex flex-wrap justify-content-between">
-            <Heading>Announcements</Heading>
+            <Heading>Discussions</Heading>
             <div className="d-flex align-items-center gap-2">
               <select
                 name="sort"
