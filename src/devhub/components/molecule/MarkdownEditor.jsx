@@ -1,4 +1,4 @@
-const MarkdownEditor = ({ data, onChange }) => {
+const MarkdownEditor = ({ data, onChange, autoFocus }) => {
   return (
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDE"}
@@ -19,6 +19,7 @@ const MarkdownEditor = ({ data, onChange }) => {
         ],
         statusConfig: [],
         spellChecker: false,
+        autoFocus: autoFocus,
       }}
     />
   );

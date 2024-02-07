@@ -1,8 +1,9 @@
 const { Feed } = VM.require("${REPL_DEVS}/widget/Feed");
 Feed = Feed || (() => <></>);
+const setPostExists = props.setPostExists ?? (() => {});
+const showFlagAccountFeature = props.showFlagAccountFeature ?? false;
 
 const filteredAccountIds = props.filteredAccountIds ?? [];
-const [showCard, setShowCard] = useState(false);
 
 const GRAPHQL_ENDPOINT =
   props.GRAPHQL_ENDPOINT ?? "https://near-queryapi.api.pagoda.co";
@@ -78,8 +79,7 @@ fetchGraphQL(lastPostQuery, "IndexerQuery", {})
   });
 
 return (
-  // display card only when a post exists
-  <div className={showCard && "card p-4"}>
+  <div>
     {state.shouldFallback ? (
       <Feed
         index={[
@@ -97,9 +97,8 @@ return (
           },
         ]}
         Item={(item) => {
-          if (!showCard) {
-            setShowCard(true);
-          }
+          setPostExists(true);
+
           return (
             <Widget
               src="${REPL_NEAR}/widget/v1.Posts.Post"
@@ -120,7 +119,8 @@ return (
           GRAPHQL_ENDPOINT,
           showFlagAccountFeature: true,
           filteredAccountIds: filteredAccountIds,
-          setShowCard: setShowCard,
+          setPostExists: setPostExists,
+          showFlagAccountFeature: showFlagAccountFeature,
         }}
       />
     )}
