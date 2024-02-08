@@ -7,6 +7,7 @@ getCommunity = getCommunity || (() => <></>);
 setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 
 const communityData = getCommunity({ handle });
+const [postsExists, setPostExists] = useState(false);
 
 const MainContent = styled.div`
   padding-left: 2rem;
@@ -47,6 +48,10 @@ const Container = styled.div`
   .card {
     border-radius: 1rem !important;
   }
+
+  .display-none {
+    display: none;
+  }
 `;
 
 const Tag = styled.div`
@@ -77,18 +82,23 @@ function repostOnDiscussions(blockHeight) {
         blockHeight,
       },
       gas: Big(10).pow(14),
+      deposit: Big(10).pow(22),
     },
   ]);
 }
 
+/**
+ * I'm posting this message in the discussions of community devhub-test.
+ * Which posts this to my profile @thomasguntenaar.near and reposts it
+ * to discusssions.devhub-test.community.devhub.near by getting the latest
+ * blockheight from my profile and reposting that message.
+ */
+
 function setSocialDbAndRepost(v) {
-  // TODO remove
-  console.log("v", v);
   // Post to users social db
-  const result = Social.set(v, {
+  Social.set(v, {
     onCommit: (data) => {
       console.log("onCommit data", data);
-      // TODO move to devhub-contract.jsx
       Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
         keys: [`${context.accountId}/**`],
         options: {
@@ -102,9 +112,8 @@ function setSocialDbAndRepost(v) {
         .catch(console.log);
     },
   });
-  // TODO remove
-  console.log("result", result);
 }
+console.log(`discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`);
 
 return (
   <div className="w-100" style={{ maxWidth: "100%" }}>
@@ -113,17 +122,25 @@ return (
         <div className="d-flex flex-column gap-4">
           {context.accountId && (
             <div className="card p-4">
+              {/* TODO: compose is only used for post not repost */}
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                 props={{
-                  onSubmit: setSocialDbAndRepost,
+                  onSubmit: (v) => setSocialDbAndRepost(v),
+                  communityAccountId: `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
                 }}
               />
             </div>
           )}
           <div className="d-flex flex-wrap justify-content-between">
             <Heading>Discussions</Heading>
-            <div className="d-flex align-items-center gap-2">
+            <div
+              className={
+                postsExists
+                  ? "d-flex align-items-center gap-2"
+                  : " display-none"
+              }
+            >
               <select
                 name="sort"
                 id="sort"
@@ -140,17 +157,26 @@ return (
               </select>
             </div>
           </div>
-          <Widget
-            src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
-            props={{
-              showFlagAccountFeature: true,
-              action: "repost",
-              filteredAccountIds: [
-                `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
-              ],
-              sort: sort,
-            }}
-          />
+          {!postsExists && (
+            <div>
+              <h6>No discussions exists.</h6>
+            </div>
+          )}
+          <div className={postsExists && "card p-4"}>
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
+              props={{
+                showFlagAccountFeature: true,
+                action: "repost",
+                filteredAccountIds: [
+                  `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                ],
+                sort: sort,
+                setPostExists: setPostExists,
+                showFlagAccountFeature: true,
+              }}
+            />
+          </div>
         </div>
       </MainContent>
       <SidebarContainer>
