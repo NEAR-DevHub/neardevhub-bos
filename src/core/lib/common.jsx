@@ -13,4 +13,13 @@ function getDepositAmountForWriteAccess(userStorageDeposit) {
   return depositAmt;
 }
 
-return { getDepositAmountForWriteAccess };
+function readableDate(timestamp) {
+  var a = new Date(timestamp);
+  return (
+    a.toDateString() +
+    " " +
+    a.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  ).substring(4);
+}
+
+return { getDepositAmountForWriteAccess, readableDate };
