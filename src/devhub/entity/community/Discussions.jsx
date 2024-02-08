@@ -163,6 +163,17 @@ return (
             </div>
           )}
           <div className={postsExists && "card p-4"}>
+            {/* TODO: this feed is from https://near.org/near/widget/ComponentDetailsPage?src=mob.near/widget/ProfileTabs */}
+            <Widget
+              key="feed"
+              src="mob.near/widget/MainPage.N.Feed"
+              props={{
+                accounts: [
+                  `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                ],
+              }}
+            />
+            {/* This is our custom feed which uses the one from near builders which should also show reposts! */}
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
               props={{
