@@ -4,8 +4,8 @@ const tabKeys = {
   TRUSTEES: "trustees",
   MODERATORS: "moderators",
 };
-const treasuryDaoID = "${REPL_TREASURY_CONTRACT}";
-const councilInfo = Near.view(treasuryDaoID, "get_policy");
+
+const councilInfo = Near.view("${REPL_TREASURY_CONTRACT}", "get_policy");
 const [selectedTab, setSelectedTab] = useState(accountType ?? tabKeys.TRUSTEES);
 const [isTrustee, setIsTrustee] = useState(false);
 const [isModerator, setIsModerator] = useState(false);
@@ -15,15 +15,17 @@ if (councilInfo === null) {
 }
 
 if (context.accountId) {
-  councilInfo.roles.map((item) => {
-    // trustees or moderators
-    if (item.name === tabKeys.TRUSTEES) {
-      setIsTrustee(item.kind.Group.includes(context.accountId));
-    }
-    if (item.name === tabKeys.MODERATORS) {
-      setIsModerator(item.kind.Group.includes(context.accountId));
-    }
-  });
+  if (Array.isArray(councilInfo.roles)) {
+    councilInfo.roles.map((item) => {
+      // trustees or moderators
+      if (item.name === tabKeys.TRUSTEES) {
+        setIsTrustee(item.kind.Group.includes(context.accountId));
+      }
+      if (item.name === tabKeys.MODERATORS) {
+        setIsModerator(item.kind.Group.includes(context.accountId));
+      }
+    });
+  }
 }
 
 const Container = styled.div`
@@ -63,7 +65,7 @@ return (
     <div className="mt-3">
       {showLoginWindow ? (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.entity.trustee.login"}
+          src={"${REPL_DEVHUB}/widget/devhub.entity.trustee.Login"}
           props={{ ...passProps, setIsTrustee }}
         />
       ) : (

@@ -6,6 +6,7 @@
   "REPL_MOB": "eugenethedream",
   "REPL_EFIZ": "efiz.testnet",
   "REPL_TREASURY_CONTRACT": "treasury.dhthomas.testnet",
+  "REPL_PROPOSAL_CONTRACT": "proposal_feature.testnet",
   "REPL_DEVS": "nearbuilders.testnet",
   "REPL_SOCIAL_CONTRACT": "v1.social08.testnet"
 }

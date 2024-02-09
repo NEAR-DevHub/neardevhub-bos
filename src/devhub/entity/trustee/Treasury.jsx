@@ -24,10 +24,14 @@ const Container = styled.div`
   }
 `;
 
+function numberWithCommas(number) {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function convertYoctoToNear(yoctoNear) {
   return (
     <div className="d-flex gap-2 align-items-center">
-      {Big(yoctoNear).div(Big(10).pow(24)).toFixed(3)}
+      {numberWithCommas(Big(yoctoNear).div(Big(10).pow(24)).toFixed(3))}
       <img
         src="https://ipfs.near.social/ipfs/bafkreify3fv4w3yq2vmqe2nobsznpd4pdtkjolaia2c3wfx627zykxvmdi"
         height={15}
@@ -37,6 +41,25 @@ function convertYoctoToNear(yoctoNear) {
 }
 
 const accountId = "devhub.near";
+const tokensRes = fetch(
+  `https://api.nearblocks.io/v1/account/${accountId}/tokens`
+);
+const tokensAndBalances = [];
+const tokens = tokensRes.body.tokens.fts ?? [];
+for (const token of tokens) {
+  const balance = Near.view(token, "ft_balance_of", { account_id: accountId });
+  const ftMetadata = Near.view(token, "ft_metadata");
+  if (balance !== null) {
+    tokensAndBalances.push({
+      token,
+      balance: numberWithCommas(
+        Big(balance).div(Big(10).pow(ftMetadata.decimals)).toFixed()
+      ),
+      symbol: ftMetadata.symbol,
+      icon: ftMetadata.icon,
+    });
+  }
+}
 const res = fetch(`https://api.nearblocks.io/v1/account/${accountId}`);
 const txns = fetch(
   `https://api.nearblocks.io/v1/account/${accountId}/ft-txns/count`
@@ -59,11 +82,19 @@ return (
       </div>
       <div className="flex-item d-flex gap-10 text-small">
         <div>
-          <p>Balance</p>
+          <p>NEAR</p>
           <p className="h5 bold">
             {convertYoctoToNear(res.body?.account[0]?.amount)}
           </p>
         </div>
+        {tokensAndBalances.map((item) => (
+          <div>
+            <p>{item.symbol}</p>
+            <p className="h5 bold">
+              {item.balance} {item.icon && <img src={item.icon} height={20} />}
+            </p>
+          </div>
+        ))}
         <div>
           <p>Transactions</p>
           <p className="h5 bold">{txns?.body?.txns?.[0]?.count}</p>

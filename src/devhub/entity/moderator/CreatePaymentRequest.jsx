@@ -1,19 +1,43 @@
-const [form, setForm] = useState(null);
-
 // dropdown options
 const [fromWalletOptions, setFromWalletOptions] = useState([
-  { label: "devhub.near", value: "devhub.near" },
-  { label: "devgovgigs.near", value: "devgovgigs.near" },
+  { label: "treasury.dhthomas.testnet", value: "treasury.dhthomas.testnet" },
+  { label: "treasurydevhub.near", value: "treasurydevhub.near" },
 ]);
-const [proposals, setProposals] = useState([]);
+const [proposalsOptions, setProposalsOptions] = useState([]);
 const [recipientsOptions, setReceientsOptions] = useState([
   { label: "devhub.near", value: "devhub.near" },
   { label: "devgovgigs.near", value: "devgovgigs.near" },
 ]);
 const [tokensOptions, setTokenOptions] = useState([
-  { label: "NEAR", value: "near" },
-  { label: "USDT", value: "usdt" },
+  { label: "NEAR", value: "" },
+  { label: "USDT", value: "usdt.tether-token.near" },
+  {
+    label: "USDC",
+    value: "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+  },
 ]);
+
+const [sender, setSender] = useState(fromWalletOptions[0].value);
+const [tokenId, setTokenId] = useState(null);
+const [receiver, setReceiver] = useState(null);
+const [memo, setMemo] = useState(null);
+const [selectedProposalId, setSelectedProposalId] = useState(null);
+const [amount, setAmount] = useState(null);
+const [proposalsArray, setProposalsArray] = useState([]);
+
+const proposalsData = Near.view("${REPL_PROPOSAL_CONTRACT}", "get_proposals");
+if (proposalsData !== null && Array.isArray(proposalsData)) {
+  setProposalsArray(proposalsData);
+  const data = [];
+  const receiverArray = [];
+  for (const prop of proposalsData) {
+    const account = prop.snapshot.receiver_account;
+    data.push({ label: prop.snapshot.name, value: prop.id });
+    receiverArray.push({ label: account, value: account });
+  }
+  setProposalsOptions(data);
+  setReceientsOptions(receiverArray);
+}
 
 const Container = styled.div`
   margin-top: 10px;
@@ -53,9 +77,48 @@ const Container = styled.div`
   }
 `;
 
+function onSelectProposal(id) {
+  const proposal = proposalsArray.find((item) => item.id === id);
+  if (proposal !== null) {
+    const token =
+      tokensOptions.find(
+        (i) => i.label === proposal.snapshot.requested_sponsorship_token
+      )?.value ?? "";
+    setReceiver(proposal.snapshot.receiver_account);
+    setAmount(proposal.snapshot.requested_sponsorship_amount);
+    setTokenId(token);
+    setSelectedProposalId(id);
+  }
+}
+
 function onCancelClick() {}
 
-function onSubmitClick() {}
+function onSubmitClick() {
+  const policy = Near.view(sender, "get_policy");
+  const gas = 200000000000000;
+  const deposit = policy?.proposal_bond || 100000000000000000000000;
+  Near.call([
+    {
+      contractName: sender,
+      methodName: "add_proposal",
+      args: {
+        proposal: {
+          description: `[${selectedProposalId}]`,
+          kind: {
+            Transfer: {
+              token_id: tokenId,
+              receiver_id: receiver,
+              amount: amount,
+              msg: memo,
+            },
+          },
+        },
+      },
+      gas: gas,
+      deposit: deposit,
+    },
+  ]);
+}
 
 const VerificationIconContainer = ({ isVerified, label }) => {
   return (
@@ -79,33 +142,33 @@ return (
     <Widget
       src={`${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch`}
       props={{
-        selectedValue: form,
-        onChange: () => {},
+        selectedValue: sender,
+        onChange: (v) => setSender(v),
         label: "From Wallet",
         options: fromWalletOptions,
-        showSearch: true,
-        defaultLabel: "neardevhub.near",
+        showSearch: false,
+        defaultLabel: "treasury.near",
       }}
     />
     <Widget
       src={`${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch`}
       props={{
-        selectedValue: form,
-        onChange: () => {},
+        selectedValue: selectedProposalId,
+        onChange: onSelectProposal,
         label: "Choose Proposal",
-        options: proposals,
-        showSearch: true,
+        options: proposalsOptions,
+        showSearch: false,
         defaultLabel: "Seach proposals",
       }}
     />
     <Widget
       src={`${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch`}
       props={{
-        selectedValue: form,
-        onChange: () => {},
+        selectedValue: receiver,
+        onChange: (v) => setReceiver(v),
         label: "To Wallet (Recipient)",
         options: recipientsOptions,
-        showSearch: true,
+        showSearch: false,
         defaultLabel: "neardevhub.near",
       }}
     />
@@ -122,12 +185,12 @@ return (
     <Widget
       src={`${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch`}
       props={{
-        selectedValue: form,
-        onChange: () => {},
+        selectedValue: tokenId,
+        onChange: (v) => setTokenId(v),
         label: "Currency",
         options: tokensOptions,
         showSearch: false,
-        defaultLabel: "NEAR Tokens",
+        defaultLabel: "Near",
       }}
     />
     <Widget
@@ -136,9 +199,9 @@ return (
         className: "flex-grow-1",
         key: `total-amount`,
         label: "Total Amount",
-        onChange: () => {},
+        onChange: (e) => setAmount(e.target.value),
         placeholder: "Enter amount",
-        value: form,
+        value: amount,
         inputProps: {
           type: "number",
         },
@@ -150,9 +213,9 @@ return (
         className: "flex-grow-1",
         key: `notes`,
         label: "Notes",
-        onChange: () => {},
+        onChange: (e) => setMemo(e.target.value),
         placeholder: "Enter memo",
-        value: form,
+        value: memo,
       }}
     />
     <div className="d-flex mt-4 gap-3 justify-content-end">
@@ -168,7 +231,8 @@ return (
         src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
         props={{
           classNames: { root: "green-btn" },
-          disabled: false, // add checks
+          disabled:
+            !amount || !sender || !receiver || !selectedProposalId?.toString(),
           label: "Submit",
           onClick: onSubmitClick,
         }}

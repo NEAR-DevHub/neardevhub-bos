@@ -11,6 +11,21 @@ const [selectedOption, setSelectedOption] = useState({
   value: defaultLabel,
 });
 
+useEffect(() => {
+  if (selectedOption.value !== selectedValue) {
+    setSelectedOption({
+      label:
+        options?.find((item) => item.value === selectedValue)?.label ??
+        defaultLabel,
+      value: defaultLabel,
+    });
+  }
+}, [selectedValue]);
+
+useEffect(() => {
+  setFilteredOptions(options);
+}, [options]);
+
 const handleSearch = (event) => {
   const searchTerm = event.target.value.toLowerCase();
   setSearchTerm(searchTerm);
@@ -29,7 +44,7 @@ const toggleDropdown = () => {
 const handleOptionClick = (option) => {
   setSelectedOption(option);
   setIsOpen(false);
-  onChange(option);
+  onChange(option.value);
 };
 const Container = styled.div`
   .custom-select {
