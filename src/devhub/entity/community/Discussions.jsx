@@ -94,25 +94,77 @@ function repostOnDiscussions(blockHeight) {
  * blockheight from my profile and reposting that message.
  */
 
+// https://near.org/devhub.near/widget/app?page=community&handle=devhub-test&tab=discussions&transactionHashes=Gx1QLChBRWenfZFHos9pf9nqpavfeeQEQEb8DoEsFp6p
 function setSocialDbAndRepost(v) {
   // Post to users social db
   Social.set(v, {
     onCommit: (data) => {
       console.log("onCommit data", data);
-      Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
-        keys: [`${context.accountId}/**`],
-        options: {
-          with_block_height: true,
-        },
-      })
-        .then((response) => {
-          let blockHeight = response[context.accountId]["post"][":block"];
-          repostOnDiscussions(blockHeight);
-        })
-        .catch(console.log);
+      // onCommit is dead after redirect to near wallet
     },
   });
 }
+
+function checkHashes() {
+  console.log("checking..");
+  if (props.transactionHashes) {
+    console.log("passed first check props.transactionHashes");
+    const transaction = useCache(
+      () =>
+        asyncFetch("https://rpc.mainnet.near.org", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: "dontcare",
+            method: "tx",
+            params: [props.transactionHashes, context.accountId],
+          }),
+        }).then((res) => res),
+      props.transactionHashes + context.accountId,
+      { subscribe: false }
+    );
+
+    console.log("transaction", transaction);
+
+    if (transaction !== null) {
+      const transaction_method_name =
+        transaction?.body?.result?.transaction?.actions[0].FunctionCall
+          .method_name;
+
+      console.log("transaction_method_name", transaction_method_name);
+      if (transaction_method_name === "set") {
+        // props.onDraftStateChange(null);
+        console.log("getBlockHeightAndRepost");
+        getBlockHeightAndRepost();
+      }
+
+      // show the latest created post to user
+      if (transaction_method_name === "create_discussion") {
+        console.log("Discussions created in the last call, show it to user.");
+      }
+    }
+  }
+}
+
+function getBlockHeightAndRepost() {
+  Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
+    keys: [`${context.accountId}/**`],
+    options: {
+      with_block_height: true,
+    },
+  })
+    .then((response) => {
+      let blockHeight = response[context.accountId]["post"][":block"];
+      repostOnDiscussions(blockHeight);
+    })
+    .catch(console.log);
+}
+
+checkHashes();
+
 console.log(`discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`);
 
 return (
@@ -134,6 +186,8 @@ return (
           )}
           <div className="d-flex flex-wrap justify-content-between">
             <Heading>Discussions</Heading>
+            {/*  TODO: Remove */}
+            <p> This component props: {JSON.stringify(props)} </p>
             <div
               className={
                 postsExists
