@@ -64,11 +64,13 @@ const code = `
       margin: auto;
       font-family: ${fontFamily};
       overflow: visible;
+      font-size:14px;
   }
   
   .editor-toolbar {
       text-align: ${alignToolItems};
   }
+
   </style>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>

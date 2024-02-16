@@ -1,3 +1,7 @@
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+
+href || (href = () => {});
+
 const author = context.accountId;
 const Container = styled.div`
   .text-sm {
@@ -164,6 +168,24 @@ const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
   tokensOptions[0]
 );
 const [supervisor, setSupervisor] = useState(null);
+
+const [proposalsOptions, setProposalsOptions] = useState([]);
+const proposalsData = Near.view("satisfying-airplane.testnet", "get_proposals");
+
+if (
+  proposalsData !== null &&
+  Array.isArray(proposalsData) &&
+  !proposalsOptions.length
+) {
+  const data = [];
+  for (const prop of proposalsData) {
+    data.push({
+      label: "Id " + prop.id + " : " + prop.snapshot.name,
+      value: prop.id,
+    });
+  }
+  setProposalsOptions(data);
+}
 
 const InputContainer = ({ heading, description, children }) => {
   return (
@@ -378,14 +400,51 @@ return (
             }
             description="Link any relevant proposals (e.g. previous milestones)."
           >
+            {linkedProposals.map((proposal) => {
+              return (
+                <div className="d-flex gap-2 align-items-center">
+                  <a
+                    className="text-decoration-underline"
+                    href={href({
+                      widgetSrc: "${REPL_DEVHUB}/widget/app",
+                      params: {
+                        page: "proposal",
+                        id: proposal.value,
+                      },
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {proposal.label}
+                  </a>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      const updatedLinkedProposals = linkedProposals.filter(
+                        (item) => item.value !== proposal.value
+                      );
+                      setLinkedProposals(updatedLinkedProposals);
+                    }}
+                  >
+                    <i class="bi bi-trash3-fill"></i>
+                  </div>
+                </div>
+              );
+            })}
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch"
               props={{
-                selectedValue: linkedProposals,
-                onChange: (v) => setSender(v),
-                options: tokensOptions,
-                showSearch: false,
-                defaultLabel: "treasury.near",
+                selectedValue: "",
+                onChange: (v) => {
+                  if (!linkedProposals.some((item) => item.value === v.value)) {
+                    setLinkedProposals([...linkedProposals, v]);
+                  }
+                },
+                options: proposalsOptions,
+                showSearch: true,
+                searchInputPlaceholder: "Search by Id",
+                defaultLabel: "Search proposals",
+                searchByValue: true,
               }}
             />
           </InputContainer>

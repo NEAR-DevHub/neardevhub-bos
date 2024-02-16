@@ -1,5 +1,13 @@
-const { selectedValue, onChange, label, options, defaultLabel, showSearch } =
-  props;
+const {
+  selectedValue,
+  onChange,
+  options,
+  defaultLabel,
+  showSearch,
+  searchInputPlaceholder,
+  searchByLabel,
+  searchByValue,
+} = props;
 
 const [searchTerm, setSearchTerm] = useState("");
 const [filteredOptions, setFilteredOptions] = useState(options);
@@ -27,12 +35,17 @@ useEffect(() => {
 }, [options]);
 
 const handleSearch = (event) => {
-  const searchTerm = event.target.value.toLowerCase();
-  setSearchTerm(searchTerm);
+  const term = event.target.value.toLowerCase();
+  setSearchTerm(term);
 
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchTerm)
-  );
+  const filteredOptions = options.filter((option) => {
+    if (searchByLabel) {
+      return option.label.toLowerCase().includes(term);
+    }
+    if (searchByValue) {
+      return option.value.toLowerCase().includes(term);
+    }
+  });
 
   setFilteredOptions(filteredOptions);
 };
@@ -44,7 +57,7 @@ const toggleDropdown = () => {
 const handleOptionClick = (option) => {
   setSelectedOption(option);
   setIsOpen(false);
-  onChange(option.value);
+  onChange(option);
 };
 
 const Container = styled.div`
@@ -90,16 +103,13 @@ const Container = styled.div`
 
 return (
   <Container>
-    <label>{label}</label>
     <div className="custom-select" tabIndex="0" onBlur={() => setIsOpen(false)}>
-      <div
-        className="dropdown-toggle bg-white border rounded-2 btn drop-btn"
-        onClick={toggleDropdown}
-      >
+      <div className="dropdown-toggle bg-white border rounded-2 btn drop-btn">
         <div
           className={`selected-option ${
             selectedOption.label === defaultLabel ? "text-grey" : ""
           }`}
+          onClick={toggleDropdown}
         >
           {selectedOption.label}
         </div>
@@ -111,7 +121,7 @@ return (
             <input
               type="text"
               className="form-control mb-2"
-              placeholder="Search options"
+              placeholder={searchInputPlaceholder ?? "Search options"}
               value={searchTerm}
               onChange={handleSearch}
             />
