@@ -86,13 +86,6 @@ function repostOnDiscussions(blockHeight) {
   ]);
 }
 
-/**
- * I'm posting this message in the discussions of community devhub-test.
- * Which posts this to my profile @thomasguntenaar.near and reposts it
- * to discusssions.devhub-test.community.devhub.near by getting the latest
- * blockheight from my profile and reposting that message.
- */
-
 async function checkHashes() {
   if (props.transactionHashes) {
     asyncFetch("https://rpc.mainnet.near.org", {
@@ -153,7 +146,14 @@ return (
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                 props={{
-                  onSubmit: (v) => Social.set(v),
+                  onSubmit: (v) => {
+                    Social.set(v, {
+                      force: true,
+                      onCommit: () => {
+                        getBlockHeightAndRepost();
+                      },
+                    });
+                  },
                   communityAccountId: `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
                 }}
               />
