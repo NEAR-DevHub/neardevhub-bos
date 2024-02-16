@@ -63,6 +63,10 @@ const Container = styled.div`
     background-color: #04a46e !important;
     border: none;
     color: white;
+
+    &:active {
+      color: white;
+    }
   }
 `;
 
@@ -165,7 +169,7 @@ const FeedPage = () => {
   return (
     <Container className="w-100 p-4 d-flex flex-column gap-3">
       <Heading>
-        DevDAO Proposals <span className="text-muted"> (30)</span>
+        DevDAO Proposals <span className="text-muted"> {proposals.length}</span>
       </Heading>
       <div className="d-flex justify-content-between">
         <div className="d-flex gap-4 align-items-center">
@@ -199,20 +203,27 @@ const FeedPage = () => {
           />
         </div>
         <div>
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-            props={{
-              label: (
-                <div className="d-flex gap-2 align-items-center">
-                  <div>
-                    <i class="bi bi-plus-circle-fill"></i>
+          <Link
+            to={href({
+              widgetSrc: "${REPL_DEVHUB}/widget/app",
+              params: { page: "create-proposal" },
+            })}
+          >
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+              props={{
+                label: (
+                  <div className="d-flex gap-2 align-items-center">
+                    <div>
+                      <i class="bi bi-plus-circle-fill"></i>
+                    </div>
+                    New Proposal
                   </div>
-                  New Proposal
-                </div>
-              ),
-              classNames: { root: "green-btn" },
-            }}
-          />
+                ),
+                classNames: { root: "green-btn" },
+              }}
+            />
+          </Link>
         </div>
       </div>
       <hr />

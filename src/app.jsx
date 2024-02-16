@@ -125,6 +125,16 @@ function Page() {
         />
       );
     }
+
+    case "create-proposal": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Editor"}
+          props={{ ...passProps }}
+        />
+      );
+    }
+
     case "proposals": {
       return (
         <Widget

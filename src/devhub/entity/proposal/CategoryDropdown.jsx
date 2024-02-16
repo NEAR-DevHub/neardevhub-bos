@@ -1,4 +1,4 @@
-const { selectedValue, onChange, label, disabled } = props;
+const { selectedValue, onChange, disabled } = props;
 
 onChange = onChange || (() => {});
 
@@ -54,19 +54,43 @@ const options = [
 ];
 
 const [isOpen, setIsOpen] = useState(false);
-const [selectedOptionValue, setSelectedValue] = useState(selectedValue);
+const [selectedOptionValue, setSelectedValue] = useState(
+  selectedValue ? selectedValue : options[0].value
+);
 
 const toggleDropdown = () => {
   setIsOpen(!isOpen);
 };
 
 const handleOptionClick = (option) => {
-  setSelectedOption(option.value);
+  setSelectedValue(option.value);
   setIsOpen(false);
   onChange(option.value);
 };
 
 const Container = styled.div`
+  .drop-btn {
+    width: 100%;
+    text-align: left;
+    padding-inline: 10px;
+  }
+
+  .dropdown-toggle:after {
+    position: absolute;
+    top: 46%;
+    right: 2%;
+  }
+
+  .dropdown-menu {
+    width: 100%;
+  }
+
+  .dropdown-item.active,
+  .dropdown-item:active {
+    background-color: #f0f0f0 !important;
+    color: black;
+  }
+
   .disabled {
     background-color: #f8f8f8 !important;
     cursor: not-allowed !important;
@@ -76,38 +100,7 @@ const Container = styled.div`
   .custom-select {
     position: relative;
   }
-  .select-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border: 0.5px solid #ccc;
-    cursor: pointer;
-    background-color: #fff;
-  }
-  .options-card {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    padding: 0.5rem;
-    z-index: 9999;
-  }
 
-  .option {
-    padding: 10px;
-    cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
-    transition: background-color 0.3s ease;
-  }
-  .option:hover {
-    background-color: #f0f0f0; /* Custom hover effect color */
-  }
-  .option:last-child {
-    border-bottom: none;
-  }
   .selected {
     background-color: #f0f0f0;
   }
@@ -130,25 +123,26 @@ const selectedOption =
 
 return (
   <Container>
-    {label && <label>{label}</label>}
-    <div className="custom-select">
+    <div className="custom-select" tabIndex="0" onBlur={() => setIsOpen(false)}>
       <div
-        className={"select-header " + (disabled ? "disabled" : "")}
+        className={
+          "dropdown-toggle bg-white border rounded-2 btn drop-btn " +
+          (disabled ? "disabled" : "")
+        }
         onClick={!disabled && toggleDropdown}
       >
         <div className={`selected-option`}>
           <Item option={selectedOption} />
         </div>
-        {!disabled && <i class={`bi bi-chevron-${isOpen ? "up" : "down"}`}></i>}
       </div>
 
       {isOpen && (
-        <div className="options-card">
+        <div className="dropdown-menu dropdown-menu-end dropdown-menu-lg-start px-2 shadow show">
           <div>
             {options.map((option) => (
               <div
                 key={option.value}
-                className={`option ${
+                className={`dropdown-item my-1 ${
                   selectedOption.value === option.value ? "selected" : ""
                 }`}
                 onClick={() => handleOptionClick(option)}

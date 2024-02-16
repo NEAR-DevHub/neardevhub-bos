@@ -372,8 +372,7 @@ return (
                       "${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryDropdown"
                     }
                     props={{
-                      selectedValue: "Marketing",
-                      // selectedValue: snapshot.category,
+                      selectedValue: snapshot.category,
                       disabled: true,
                     }}
                   />
@@ -385,7 +384,11 @@ return (
                 <div className="text-muted h6 border-bottom pb-1 mt-3 mb-4">
                   DESCRIPTION
                 </div>
-                <div>{snapshot.description}</div>
+                <Widget
+                  src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+                  props={{ text: snapshot.description }}
+                />
+
                 <div className="d-flex gap-2 align-items-center mt-4">
                   <Widget
                     src="${REPL_NEAR}/widget/v1.LikeButton"

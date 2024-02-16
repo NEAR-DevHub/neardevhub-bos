@@ -9,7 +9,7 @@ function defaultOnChange(content) {
 
 const data = props.data;
 const onChange = props.onChange ?? defaultOnChange;
-const height = props.height ?? "405";
+const height = props.height ?? "380";
 const className = props.className ?? "w-100";
 
 State.init({
@@ -162,7 +162,7 @@ const code = `
               forceSync: true,
               autofocus: ${autoFocus},
               renderingConfig: ${renderingConfig},
-              placeholder: "${placeholder}",
+              placeholder: \`${placeholder}\`,
               status: ${statusConfig},
               spellChecker: ${spellChecker},
               tabSize: ${tabSize},
