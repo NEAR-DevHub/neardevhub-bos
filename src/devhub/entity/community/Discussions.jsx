@@ -130,7 +130,7 @@ function getBlockHeightAndRepost() {
       repostOnDiscussions(blockHeight);
     })
     .catch((error) => {
-      console.log("error", error);
+      console.log("DevHub Error [Discussions]: getBlockHeightAndRepost failed", error);
     });
 }
 
