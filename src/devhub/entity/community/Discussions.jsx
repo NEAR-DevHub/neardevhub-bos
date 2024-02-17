@@ -155,6 +155,7 @@ return (
                     });
                   },
                   communityAccountId: `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                  profileAccountId: context.accountId,
                 }}
               />
             </div>

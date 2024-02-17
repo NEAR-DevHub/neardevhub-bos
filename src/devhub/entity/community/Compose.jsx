@@ -1,5 +1,7 @@
 const communityAccountId = props.communityAccountId;
-if (!communityAccountId) {
+const profileAccountId = props.profileAccountId;
+
+if (!communityAccountId || !profileAccountId) {
   return <></>;
 }
 
@@ -11,7 +13,7 @@ State.init({
   mentionsArray: [], // all the mentions in the description
 });
 
-const profile = Social.getr(`${communityAccountId}/profile`);
+const profile = Social.getr(`${profileAccountId}/profile`);
 const autocompleteEnabled = true;
 
 const content = {
@@ -40,7 +42,10 @@ function extractMentions(text) {
 
 function extractTagNotifications(text, item) {
   return extractMentions(text || "")
-    .filter((accountId) => accountId !== communityAccountId)
+    .filter(
+      (accountId) =>
+        accountId !== communityAccountId && accountId !== profileAccountId
+    )
     .map((accountId) => ({
       key: accountId,
       value: {
@@ -65,6 +70,7 @@ function composeData() {
     },
   };
 
+  // TODO notification for discussions
   const notifications = extractTagNotifications(state.text, {
     type: "social",
     path: `${communityAccountId}/post/main`,
@@ -363,7 +369,7 @@ return (
           src="${REPL_NEAR}/widget/v1.Posts.Post"
           loading={<div className="w-100" style={{ height: "200px" }} />}
           props={{
-            accountId: communityAccountId,
+            accountId: profileAccountId,
             blockHeight: "now",
             content,
           }}
