@@ -7,7 +7,6 @@ getCommunity = getCommunity || (() => <></>);
 setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 
 const communityData = getCommunity({ handle });
-const [postsExists, setPostExists] = useState(false);
 
 const MainContent = styled.div`
   padding-left: 2rem;
@@ -130,7 +129,10 @@ function getBlockHeightAndRepost() {
       repostOnDiscussions(blockHeight);
     })
     .catch((error) => {
-      console.log("DevHub Error [Discussions]: getBlockHeightAndRepost failed", error);
+      console.log(
+        "DevHub Error [Discussions]: getBlockHeightAndRepost failed",
+        error
+      );
     });
 }
 
@@ -162,13 +164,7 @@ return (
           )}
           <div className="d-flex flex-wrap justify-content-between">
             <Heading>Discussions</Heading>
-            <div
-              className={
-                postsExists
-                  ? "d-flex align-items-center gap-2"
-                  : " display-none"
-              }
-            >
+            <div className={"d-flex align-items-center gap-2"}>
               <select
                 name="sort"
                 id="sort"
@@ -185,13 +181,10 @@ return (
               </select>
             </div>
           </div>
-          {/* TODO: add this with the new feed {!postsExists && (
-            <div>
-              <h6>No discussions exists.</h6>
-            </div>
-          )} */}
-          <div className={postsExists && "card p-4"}>
-            {/* TODO: this feed is from https://near.org/near/widget/ComponentDetailsPage?src=mob.near/widget/ProfileTabs */}
+
+          <div className={"card p-4"}>
+            {/* TODO: the current feed is from https://near.org/near/widget/ComponentDetailsPage?src=mob.near/widget/ProfileTabs 
+                We will replace this with our custom feed as soon as it can support reposts */}
             <Widget
               key="feed"
               src="mob.near/widget/MainPage.N.Feed"
@@ -199,20 +192,6 @@ return (
                 accounts: [
                   `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
                 ],
-              }}
-            />
-            {/* This is our custom feed which uses the one from near builders which should also show reposts! */}
-            <Widget
-              src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
-              props={{
-                showFlagAccountFeature: true,
-                action: "repost",
-                filteredAccountIds: [
-                  `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
-                ],
-                sort: sort,
-                setPostExists: setPostExists,
-                showFlagAccountFeature: true,
               }}
             />
           </div>
