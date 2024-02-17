@@ -1,7 +1,6 @@
-const communityAccountId = props.communityAccountId;
 const profileAccountId = props.profileAccountId;
 
-if (!communityAccountId || !profileAccountId) {
+if (!profileAccountId) {
   return <></>;
 }
 
@@ -42,10 +41,7 @@ function extractMentions(text) {
 
 function extractTagNotifications(text, item) {
   return extractMentions(text || "")
-    .filter(
-      (accountId) =>
-        accountId !== communityAccountId && accountId !== profileAccountId
-    )
+    .filter((accountId) => accountId !== profileAccountId)
     .map((accountId) => ({
       key: accountId,
       value: {
@@ -70,10 +66,9 @@ function composeData() {
     },
   };
 
-  // TODO notification for discussions
   const notifications = extractTagNotifications(state.text, {
     type: "social",
-    path: `${communityAccountId}/post/main`,
+    path: `${profileAccountId}/post/main`,
   });
 
   if (notifications.length) {
