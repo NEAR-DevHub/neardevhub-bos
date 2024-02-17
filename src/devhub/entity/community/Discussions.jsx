@@ -88,7 +88,7 @@ function repostOnDiscussions(blockHeight) {
 
 async function checkHashes() {
   if (props.transactionHashes) {
-    asyncFetch("https://rpc.mainnet.near.org", {
+    asyncFetch("${REPL_RPC_URL}", {
       method: "POST",
       headers: {
         "content-type": "application/json",
