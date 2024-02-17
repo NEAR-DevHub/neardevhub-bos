@@ -228,6 +228,8 @@ const descriptionPlaceholder = `-- REQUIRED FIELDS // Please remove this line--
   **BUDGET BREAKDOWN**
   Include a detailed breakdown on how you will use the funds and include rate justification. Our community values transparency, so be as specific as possible.`;
 
+const [descriptionEditorTab, setDescriptionEditorTab] = useState("editor");
+
 return (
   <Container className="w-100 p-4 d-flex flex-column gap-3">
     <Heading>Create Proposal</Heading>
@@ -300,16 +302,64 @@ return (
               heading="Description"
               description="Expand on your summary with any relevant details like your contribution timeline, key milestones, team background, and a clear breakdown of how the funds will be used. Proposals should be simple and clear (e.g. 1 month). For more complex projects, treat each milestone as a separate proposal."
             >
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
-                props={{
-                  data: description,
-                  onChange: setDescription,
-                  autocompleteEnabled: true,
-                  autoFocus: false,
-                  placeholder: descriptionPlaceholder,
-                }}
-              />
+              <div className="card">
+                <div className="card-header">
+                  <div>
+                    <ul class="nav nav-tabs">
+                      <li class="nav-item">
+                        <button
+                          class={`nav-link ${
+                            descriptionEditorTab === "editor" ? "active" : ""
+                          }`}
+                          onClick={() => setDescriptionEditorTab("editor")}
+                        >
+                          Editor
+                        </button>
+                      </li>
+                      <li class="nav-item">
+                        <button
+                          class={`nav-link ${
+                            descriptionEditorTab === "preview" ? "active" : ""
+                          }`}
+                          onClick={() => setDescriptionEditorTab("preview")}
+                        >
+                          Preview
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="card-body">
+                  {descriptionEditorTab === "editor" && (
+                    <>
+                      <Widget
+                        src={
+                          "${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"
+                        }
+                        props={{
+                          data: description,
+                          onChange: setDescription,
+                          autocompleteEnabled: true,
+                          autoFocus: false,
+                          placeholder: descriptionPlaceholder,
+                        }}
+                      />
+                    </>
+                  )}
+                  {descriptionEditorTab === "preview" && (
+                    <>
+                      <Widget
+                        src={
+                          "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+                        }
+                        props={{
+                          text: description,
+                        }}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
             </InputContainer>
             <InputContainer
               heading="Final Consent"
