@@ -84,7 +84,7 @@ return (
       <Feed
         index={[
           {
-            action: "post",
+            action: props.action ? props.action : "post",
             key: "main",
             options: {
               limit: 10,
