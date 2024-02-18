@@ -11,6 +11,7 @@ const data = props.data;
 const onChange = props.onChange ?? defaultOnChange;
 const height = props.height ?? "380";
 const className = props.className ?? "w-100";
+const embeddCSS = props.embeddCSS;
 
 State.init({
   iframeHeight: height,
@@ -70,6 +71,8 @@ const code = `
   .editor-toolbar {
       text-align: ${alignToolItems};
   }
+
+  ${embeddCSS}
 
   </style>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
