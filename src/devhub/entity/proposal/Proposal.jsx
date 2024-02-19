@@ -28,7 +28,7 @@ const Container = styled.div`
   }
 
   .text-sm {
-    font-size: 13px;
+    font-size: 13px !important;
   }
 
   .flex-1 {
@@ -75,6 +75,30 @@ const Container = styled.div`
   .form-check-input:checked {
     background-color: #04a46e !important;
     border-color: #04a46e !important;
+  }
+
+  .dropdown-toggle:after {
+    position: absolute;
+    top: 46%;
+    right: 5%;
+  }
+
+  .drop-btn {
+    max-width: none !important;
+  }
+
+  .dropdown-menu {
+    width: 100%;
+  }
+
+  .green-btn {
+    background-color: #04a46e !important;
+    border: none;
+    color: white;
+
+    &:active {
+      color: white;
+    }
   }
 `;
 
@@ -181,7 +205,67 @@ const SidePanelItem = ({ title, children }) => {
   );
 };
 
-const TimelineArray = ["DRAFT"];
+const proposalStatusOptions = [
+  {
+    label: "Draft",
+    value: { status: "DRAFT" },
+  },
+  {
+    label: "Review",
+    value: {
+      status: "REVIEW",
+      sponsor_requested_review: true,
+      reviewer_completed_attestation: false,
+    },
+  },
+  {
+    label: "Approved",
+    value: {
+      status: "APPROVED",
+      sponsor_requested_review: true,
+      reviewer_completed_attestation: false,
+    },
+  },
+  {
+    label: "Approved-Conditionally",
+    value: {
+      status: "APPROVED_CONDITIONALLY",
+      sponsor_requested_review: true,
+      reviewer_completed_attestation: false,
+    },
+  },
+  {
+    label: "Rejected",
+    value: {
+      status: "REJECTED",
+      sponsor_requested_review: true,
+      reviewer_completed_attestation: false,
+    },
+  },
+  {
+    label: "Payment-processing",
+    value: {
+      status: "PAYMENT_PROCESSING",
+      kyc_verified: false,
+      test_transaction_sent: false,
+      request_for_trustees_created: false,
+      sponsor_requested_review: true,
+      reviewer_completed_attestation: false,
+    },
+  },
+  {
+    label: "Funded",
+    value: {
+      status: "FUNDED",
+      trustees_released_payment: false,
+      kyc_verified: false,
+      test_transaction_sent: false,
+      request_for_trustees_created: false,
+      sponsor_requested_review: true,
+      reviewer_completed_attestation: false,
+    },
+  },
+];
 
 // "timeline": {"status": "DRAFT"}
 // "timeline": {"status": "REVIEW", "sponsor_requested_review": true, "reviewer_completed_attestation": false }
@@ -203,7 +287,9 @@ const TimelineItems = ({ title, children }) => {
       className="p-2 rounded-3"
       style={{
         backgroundColor:
-          statusToCheck === snapshot.timeline.status ? "#FEF6EE" : "none",
+          statusToCheck === updatedProposalStatus.value.status
+            ? "#FEF6EE"
+            : "none",
       }}
     >
       <div className="h6 text-black"> {title}</div>
@@ -324,7 +410,10 @@ const isAllowedToEditProposal = Near.view(
   { proposal_id: proposal.id, editor: accountId }
 );
 
-const onSubmitForReview = () => {
+const isModerator = true;
+// isAllowedToEditProposal && proposal.author_id !== accountId;
+
+const editProposalStatus = ({ timeline }) => {
   const body = {
     proposal_body_version: "V0",
     name: snapshot.title,
@@ -338,11 +427,7 @@ const onSubmitForReview = () => {
     supervisor: snapshot.supervisor,
     requested_sponsor: snapshot.requested_sponsor,
     payouts: snapshot.payouts,
-    timeline: {
-      status: "REVIEW",
-      sponsor_requested_review: true,
-      reviewer_completed_attestation: false,
-    },
+    timeline: timeline,
   };
 
   Near.call({
@@ -358,6 +443,12 @@ const onSubmitForReview = () => {
 };
 
 const [isReviewModalOpen, setReviewModal] = useState(false);
+const [showTimelineSetting, setShowTimelineSetting] = useState(false);
+const proposalStatus = proposalStatusOptions.find(
+  (i) => i.value.status === snapshot.timeline.status
+);
+const [updatedProposalStatus, setUpdatedProposalStatus] =
+  useState(proposalStatus);
 
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
@@ -368,7 +459,7 @@ return (
         onCancelClick: () => setReviewModal(false),
         onReviewClick: () => {
           setReviewModal(false);
-          onSubmitForReview();
+          editProposalStatus({ timeline: proposalStatusOptions[1].value });
         },
       }}
     />
@@ -644,114 +735,177 @@ return (
               "No Payouts yet"
             )}
           </SidePanelItem>
-          <SidePanelItem title="Timeline">
-            <div className="d-flex gap-3 mt-2">
-              <div className="d-flex flex-column">
-                {stepsArray.map((_, index) => (
-                  <div className="d-flex flex-column align-items-center gap-1">
-                    <div className="circle"></div>
+          <SidePanelItem
+            title={
+              <div>
+                <div className="d-flex justify-content-between align-content-center">
+                  Timeline
+                  {isModerator && (
+                    <div onClick={() => setShowTimelineSetting(true)}>
+                      <i class="bi bi-gear"></i>
+                    </div>
+                  )}
+                </div>
+                {showTimelineSetting && (
+                  <div className="mt-2 d-flex flex-column gap-2">
+                    <h6 className="mb-0">Proposal Status</h6>
+                    <Widget
+                      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
+                      props={{
+                        options: proposalStatusOptions,
+                        selectedValue: updatedProposalStatus,
+                        onUpdate: (v) => {
+                          setUpdatedProposalStatus(v);
+                        },
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            }
+          >
+            <div className="d-flex flex-column gap-3">
+              <div className="d-flex gap-3 mt-2">
+                <div className="d-flex flex-column">
+                  {stepsArray.map((_, index) => (
+                    <div className="d-flex flex-column align-items-center gap-1">
+                      <div className="circle"></div>
 
-                    {index !== stepsArray.length - 1 && (
-                      <div
-                        className={
-                          "vertical-line" +
-                          (index === stepsArray.length - 2 ? "-sm" : "")
+                      {index !== stepsArray.length - 1 && (
+                        <div
+                          className={
+                            "vertical-line" +
+                            (index === stepsArray.length - 2 ? "-sm" : "")
+                          }
+                        ></div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div className="d-flex flex-column gap-3">
+                  <TimelineItems title="1) Draft">
+                    <div>
+                      Once an author submits a proposal, it is in draft mode and
+                      open for community comments. The author can still make
+                      changes to the proposal during this stage and submit it
+                      for official review when ready.
+                    </div>
+                  </TimelineItems>
+                  <TimelineItems title="2) Review">
+                    <div className="d-flex flex-column gap-2">
+                      Sponsors who agree to consider the proposal may request
+                      attestations from work groups.
+                      <CheckBox
+                        value=""
+                        label="Sponsor provides feedback or requests reviews"
+                        isChecked={snapshot.timeline.sponsor_requested_review}
+                      />
+                      <CheckBox
+                        value=""
+                        label="Reviewer completes attestations (Optional)"
+                        isChecked={
+                          snapshot.timeline.reviewer_completed_attestation
                         }
-                      ></div>
-                    )}
-                  </div>
-                ))}
+                      />
+                    </div>
+                  </TimelineItems>
+                  <TimelineItems title="3) Decision">
+                    <div className="d-flex flex-column gap-2">
+                      <div>Sponsor makes a final decision:</div>
+                      <RadioButton
+                        value=""
+                        label="Approve"
+                        isChecked={
+                          snapshot.timeline.status === TIMELINE_STATUS.APPROVED
+                        }
+                      />
+                      <RadioButton
+                        value=""
+                        label={
+                          <>
+                            Approve - Conditional <br />
+                            <span>
+                              Require follow up from recipient after payment
+                            </span>{" "}
+                          </>
+                        }
+                        isChecked={
+                          snapshot.timeline.status ===
+                          TIMELINE_STATUS.APPROVED_CONDITIONALLY
+                        }
+                      />
+                      <RadioButton
+                        value="Reject"
+                        label="Reject"
+                        isChecked={
+                          snapshot.timeline.status === TIMELINE_STATUS.REJECTED
+                        }
+                      />
+                    </div>
+                  </TimelineItems>
+                  <TimelineItems title="4) Payment Processing">
+                    <div className="d-flex flex-column gap-2">
+                      <CheckBox
+                        value=""
+                        label="Sponsor verifies KYC/KYB"
+                        isChecked={snapshot.timeline.kyc_verified}
+                      />
+                      <CheckBox
+                        value=""
+                        label="Sponsor sends test transaction"
+                        isChecked={snapshot.timeline.test_transaction_sent}
+                      />
+                      <CheckBox
+                        value=""
+                        label="Sponsor creates funding request from Trustees"
+                        isChecked={
+                          snapshot.timeline.request_for_trustees_created
+                        }
+                      />
+                    </div>
+                  </TimelineItems>
+                  <TimelineItems title="5) Funded">
+                    <CheckBox
+                      value=""
+                      label="DevDAO Trustee Releases payment"
+                      isChecked={
+                        snapshot.timeline.status === TIMELINE_STATUS.FUNDED
+                      }
+                    />
+                  </TimelineItems>
+                </div>
               </div>
-              <div className="d-flex flex-column gap-3">
-                <TimelineItems title="1) Draft">
-                  <div>
-                    Once an author submits a proposal, it is in draft mode and
-                    open for community comments. The author can still make
-                    changes to the proposal during this stage and submit it for
-                    official review when ready.
-                  </div>
-                </TimelineItems>
-                <TimelineItems title="2) Review">
-                  <div className="d-flex flex-column gap-2">
-                    Sponsors who agree to consider the proposal may request
-                    attestations from work groups.
-                    <CheckBox
-                      value=""
-                      label="Sponsor provides feedback or requests reviews"
-                      isChecked={snapshot.timeline.sponsor_requested_review}
-                    />
-                    <CheckBox
-                      value=""
-                      label="Reviewer completes attestations (Optional)"
-                      isChecked={
-                        snapshot.timeline.reviewer_completed_attestation
-                      }
-                    />
-                  </div>
-                </TimelineItems>
-                <TimelineItems title="3) Decision">
-                  <div className="d-flex flex-column gap-2">
-                    <div>Sponsor makes a final decision:</div>
-                    <RadioButton
-                      value=""
-                      label="Approve"
-                      isChecked={
-                        snapshot.timeline.status === TIMELINE_STATUS.APPROVED
-                      }
-                    />
-                    <RadioButton
-                      value=""
-                      label={
-                        <>
-                          Approve - Conditional <br />
-                          <span>
-                            Require follow up from recipient after payment
-                          </span>{" "}
-                        </>
-                      }
-                      isChecked={
-                        snapshot.timeline.status ===
-                        TIMELINE_STATUS.APPROVED_CONDITIONALLY
-                      }
-                    />
-                    <RadioButton
-                      value="Reject"
-                      label="Reject"
-                      isChecked={
-                        snapshot.timeline.status === TIMELINE_STATUS.REJECTED
-                      }
-                    />
-                  </div>
-                </TimelineItems>
-                <TimelineItems title="4) Payment Processing">
-                  <div className="d-flex flex-column gap-2">
-                    <CheckBox
-                      value=""
-                      label="Sponsor verifies KYC/KYB"
-                      isChecked={snapshot.timeline.kyc_verified}
-                    />
-                    <CheckBox
-                      value=""
-                      label="Sponsor sends test transaction"
-                      isChecked={snapshot.timeline.test_transaction_sent}
-                    />
-                    <CheckBox
-                      value=""
-                      label="Sponsor creates funding request from Trustees"
-                      isChecked={snapshot.timeline.request_for_trustees_created}
-                    />
-                  </div>
-                </TimelineItems>
-                <TimelineItems title="5) Funded">
-                  <CheckBox
-                    value=""
-                    label="DevDAO Trustee Releases payment"
-                    isChecked={
-                      snapshot.timeline.status === TIMELINE_STATUS.FUNDED
+              {showTimelineSetting && (
+                <div className="d-flex gap-2 align-items-center justify-content-end text-sm">
+                  <Widget
+                    src={
+                      "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
                     }
+                    props={{
+                      label: "Cancel",
+                      classNames: { root: "btn-outline-danger" },
+                      onClick: () => {
+                        setShowTimelineSetting(false);
+                        setUpdatedProposalStatus(proposalStatus);
+                      },
+                    }}
                   />
-                </TimelineItems>
-              </div>
+                  <Widget
+                    src={
+                      "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                    }
+                    props={{
+                      label: "Save",
+                      classNames: { root: "green-btn" },
+                      onClick: () => {
+                        editProposalStatus({
+                          timeline: updatedProposalStatus.value,
+                        });
+                      },
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </SidePanelItem>
         </div>
