@@ -357,8 +357,21 @@ const onSubmitForReview = () => {
   });
 };
 
+const [isReviewModalOpen, setReviewModal] = useState(false);
+
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
+    <Widget
+      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal"}
+      props={{
+        isOpen: isReviewModalOpen,
+        onCancelClick: () => setReviewModal(false),
+        onReviewClick: () => {
+          setReviewModal(false);
+          onSubmitForReview();
+        },
+      }}
+    />
     <div className="d-flex justify-content-between">
       <div className="d-flex gap-2 align-items-center h3">
         <div>{snapshot.name}</div>
@@ -433,7 +446,7 @@ return (
               props={{
                 label: "Ready for review",
                 classNames: { root: "grey-btn" },
-                onClick: onSubmitForReview,
+                onClick: () => setReviewModal(true),
               }}
             />
           </div>
@@ -611,7 +624,25 @@ return (
             )}
           </SidePanelItem>
           <SidePanelItem title="Payouts">
-            {snapshot.payouts.length > 0 ? <div></div> : "No Payouts yet"}
+            {snapshot.payouts.length > 0 ? (
+              <div>
+                {snapshot.payouts.map((hash) => {
+                  const link = `https://nearblocks.io/blocks/${hash}`;
+                  return (
+                    <a
+                      href={link}
+                      style={{ textDecoration: "none" }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {link}
+                    </a>
+                  );
+                })}
+              </div>
+            ) : (
+              "No Payouts yet"
+            )}
           </SidePanelItem>
           <SidePanelItem title="Timeline">
             <div className="d-flex gap-3 mt-2">

@@ -344,6 +344,7 @@ const DraftBtnContainer = styled.div`
 `;
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
 const [selectedStatus, setSelectedStatus] = useState("draft");
+const [isReviewModalOpen, setReviewModal] = useState(false);
 
 const DraftBtn = () => {
   const btnOptions = [
@@ -358,6 +359,15 @@ const DraftBtn = () => {
 
   const toggleDropdown = () => {
     setDraftBtnOpen(!isDraftBtnOpen);
+  };
+
+  const handleSubmit = () => {
+    const isDraft = selectedStatus === "draft";
+    if (isDraft) {
+      onSubmit({ isDraft });
+    } else {
+      setReviewModal(true);
+    }
   };
 
   const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
@@ -386,19 +396,18 @@ const DraftBtn = () => {
           }
         >
           <div
-            onClick={() =>
-              !disabled && onSubmit({ isDraft: selectedStatus === "draft" })
-            }
+            onClick={() => !disabled && handleSubmit()}
             className="p-2 d-flex gap-2 align-items-center "
           >
             <div className={"circle " + selectedOption.iconColor}></div>
             <div className={`selected-option`}>{selectedOption.label}</div>
           </div>
-          <div className="h-100 p-2" style={{ borderLeft: "1px solid #ccc" }}>
-            <i
-              onClick={!disabled && toggleDropdown}
-              class={`bi bi-chevron-${isOpen ? "up" : "down"}`}
-            ></i>
+          <div
+            className="h-100 p-2"
+            style={{ borderLeft: "1px solid #ccc" }}
+            onClick={!disabled && toggleDropdown}
+          >
+            <i class={`bi bi-chevron-${isOpen ? "up" : "down"}`}></i>
           </div>
         </div>
 
@@ -510,6 +519,17 @@ const descriptionPlaceholder = `-- REQUIRED FIELDS // Please remove this line--
 return (
   <Container className="w-100 p-4 d-flex flex-column gap-3">
     <Heading>{isEditPage ? "Edit" : "Create"} Proposal</Heading>
+    <Widget
+      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal"}
+      props={{
+        isOpen: isReviewModalOpen,
+        onCancelClick: () => setReviewModal(false),
+        onReviewClick: () => {
+          setReviewModal(false);
+          onSubmit({ isDraft: false });
+        },
+      }}
+    />
     <div className="mt-4 d-flex gap-4">
       <div className="flex-2">
         <div className="d-flex gap-2">
