@@ -4,38 +4,6 @@ if (!href) {
   return <p>Loading modules...</p>;
 }
 
-const proposals = [
-  {
-    proposal_version: "V0",
-    id: 0,
-    author_id: "test_proposals.testnet",
-    social_db_post_block_height: "156868817",
-    snapshot: {
-      editor_id: "test_proposals.testnet",
-      timestamp: "1707244539703028078",
-      labels: ["test1", "test2"],
-      proposal_body_version: "V0",
-      name: "another post",
-      category: "Marketing",
-      summary: "sum",
-      description:
-        "Hello to @heytestpolyprogrammist.testnet and @psalomo.near. This is an idea with mentions.",
-      linked_proposals: [
-        { link_type: "PostId", id: 1 },
-        { link_type: "PostId", id: 3 },
-      ],
-      requested_sponsorship_amount: "1000000000",
-      requested_sponsorship_token: "USD",
-      receiver_account: "polyprogrammist.near",
-      requested_sponsor: null,
-      supervisor: "frol.near",
-      payouts: [],
-      timeline: { status: "DRAFT" },
-    },
-    snapshot_history: [],
-  },
-];
-
 const Container = styled.div`
   .text-sm {
     font-size: 13px;
@@ -156,12 +124,11 @@ const FeedItem = ({ proposal }) => {
 };
 
 const FeedPage = () => {
-  //   const proposals = Near.view(
-  //     "${REPL_PROPOSALS_CONTRACT}",
-  //     "get_proposals",
-  //     {}
-  //   );
-  //   console.log(proposals);
+  const proposals = Near.view(
+    "${REPL_PROPOSALS_CONTRACT}",
+    "get_proposals",
+    {}
+  );
 
   if (proposals === null || !Array.isArray(proposals) || !proposals.length) {
     return "Loading...";
@@ -238,9 +205,11 @@ const FeedPage = () => {
           NEAR ecosystem. Check out our Funding Guidelines for more details.
         </p>
       </div>
-      {proposals.map((item) => {
-        return <FeedItem proposal={item} />;
-      })}
+      <div>
+        {proposals.map((item) => {
+          return <FeedItem proposal={item} />;
+        })}
+      </div>
     </Container>
   );
 };

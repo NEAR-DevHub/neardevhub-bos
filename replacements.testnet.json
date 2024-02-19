@@ -7,5 +7,5 @@
   "REPL_EFIZ": "efiz.testnet",
   "REPL_DEVS": "nearbuilders.testnet",
   "REPL_SOCIAL_CONTRACT": "v1.social08.testnet",
-  "REPL_PROPOSALS_CONTRACT": "satisfying-airplane.testnet"
+  "REPL_PROPOSALS_CONTRACT": "moldy-month.testnet"
 }

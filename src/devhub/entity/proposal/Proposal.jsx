@@ -5,11 +5,22 @@ const { readableDate } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
 ) || { readableDate: () => {} };
 
+const accountId = context.accountId;
 /*
 ---props---
 props.id: number;
 props.timestamp: number; optional
 */
+
+const TIMELINE_STATUS = {
+  DRAFT: "DRAFT",
+  REVIEW: "REVIEW",
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
+  APPROVED_CONDITIONALLY: "APPROVED_CONDITIONALLY",
+  PAYMENT_PROCESSING: "PAYMENT_PROCESSING",
+  FUNDED: "FUNDED",
+};
 
 const Container = styled.div`
   .draft-info-container {
@@ -37,12 +48,12 @@ const Container = styled.div`
 
   .vertical-line {
     width: 2px;
-    height: 160px;
+    height: 190px;
     background-color: lightgrey;
   }
   .vertical-line-sm {
     width: 2px;
-    height: 90px;
+    height: 85px;
     background-color: lightgrey;
   }
 
@@ -59,6 +70,11 @@ const Container = styled.div`
     background-color: #687076;
     border: none;
     color: white;
+  }
+
+  .form-check-input:checked {
+    background-color: #04a46e !important;
+    border-color: #04a46e !important;
   }
 `;
 
@@ -112,49 +128,21 @@ const Avatar = styled.div`
 const stepsArray = [1, 2, 3, 4, 5];
 
 const { id, timestamp } = props;
-const proposal = {
-  proposal_version: "V0",
-  id: 0,
-  author_id: "test_proposals.testnet",
-  social_db_post_block_height: "156868817",
-  snapshot: {
-    editor_id: "test_proposals.testnet",
-    timestamp: "1707244539703028078",
-    labels: ["test1", "test2"],
-    proposal_body_version: "V0",
-    name: "another post",
-    category: "Marketing",
-    summary: "sum",
-    description:
-      "Hello to @heytestpolyprogrammist.testnet and @psalomo.near. This is an idea with mentions.",
-    linked_proposals: [
-      { link_type: "PostId", id: 1 },
-      { link_type: "PostId", id: 3 },
-    ],
-    requested_sponsorship_amount: "1000000000",
-    requested_sponsorship_token: "USD",
-    receiver_account: "polyprogrammist.near",
-    requested_sponsor: null,
-    supervisor: "frol.near",
-    payouts: [],
-    timeline: { status: "DRAFT" },
-  },
-  snapshot_history: [],
-};
-// Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
-//   proposal_id: id
-// });
+const proposal = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
+  proposal_id: parseInt(id),
+});
 
 if (!proposal) {
   return "Loading...";
 }
-if (timestamp) {
-  proposal.snapshot = proposal.snapshot_history.find(
-    (item) => item.timestamp === timestamp
-  );
+if (timestamp && proposal) {
+  proposal.snapshot =
+    proposal.snapshot_history.find((item) => item.timestamp === timestamp) ??
+    proposal.snapshot;
 }
 
 const { snapshot } = proposal;
+const [comment, setComment] = useState(null);
 const editorAccountId = snapshot.editor_id;
 const blockHeight = proposal.social_db_post_block_height;
 const item = {
@@ -193,9 +181,31 @@ const SidePanelItem = ({ title, children }) => {
   );
 };
 
+const TimelineArray = ["DRAFT"];
+
+// "timeline": {"status": "DRAFT"}
+// "timeline": {"status": "REVIEW", "sponsor_requested_review": true, "reviewer_completed_attestation": false }
+// "timeline": {"status": "APPROVED", "sponsor_requested_review": true, "reviewer_completed_attestation": false }
+// "timeline": {"status": "REJECTED", "sponsor_requested_review": true, "reviewer_completed_attestation": false }
+// "timeline": {"status": "APPROVED_CONDITIONALLY", "sponsor_requested_review": true, "reviewer_completed_attestation": false }
+// "timeline": {"status": "PAYMENT_PROCESSING", "kyc_verified": false, "test_transaction_sent": false, "request_for_trustees_created": false, "sponsor_requested_review": true, "reviewer_completed_attestation": false }
+// "timeline": {"status": "FUNDED", "trustees_released_payment": false, "kyc_verified": false, "test_transaction_sent": false, "request_for_trustees_created": false, "sponsor_requested_review": true, "reviewer_completed_attestation": false }
+
 const TimelineItems = ({ title, children }) => {
+  const statusToCheck = title
+    .split(")")[1]
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, "_");
+
   return (
-    <div>
+    <div
+      className="p-2 rounded-3"
+      style={{
+        backgroundColor:
+          statusToCheck === snapshot.timeline.status ? "#FEF6EE" : "none",
+      }}
+    >
       <div className="h6 text-black"> {title}</div>
       <div className="text-sm">{children}</div>
     </div>
@@ -205,16 +215,9 @@ const TimelineItems = ({ title, children }) => {
 const LinkedProposals = () => {
   const linkedProposalsData = [];
   snapshot.linked_proposals.map((item) => {
-    let data = null;
-    if (item.link_type === "PostId") {
-      data = Near.view("${REPL_DEVHUB_LEGACY}", "get_post", {
-        post_id: item.id,
-      });
-    } else {
-      data = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
-        proposal_id: item.id,
-      });
-    }
+    const data = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
+      proposal_id: item,
+    });
     if (data !== null) {
       linkedProposalsData.push(data);
     }
@@ -272,6 +275,88 @@ const RadioButton = ({ value, isChecked, label }) => {
   );
 };
 
+const tokenMapping = {
+  NEAR: "NEAR",
+  USDT: {
+    NEP141: {
+      address: "usdt.tether-token.near",
+    },
+  },
+  USDC: {
+    NEP141: {
+      address:
+        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    },
+  },
+};
+
+function findTokenNameByAddress(address) {
+  const foundToken = Object.entries(tokenMapping).find(
+    ([tokenName, tokenData]) => {
+      return (
+        JSON.stringify(tokenMapping[tokenName]) === JSON.stringify(address)
+      );
+    }
+  );
+
+  return foundToken ? foundToken[0] : null;
+}
+
+const ComposeEmbeddCSS = `
+  .CodeMirror {
+    border: none !important;
+    min-height: 50px !important;
+  }
+
+  .editor-toolbar {
+    border: none !important;
+  }
+
+  .CodeMirror-scroll{
+    min-height: 50px !important;
+  }
+`;
+
+const tokenName = findTokenNameByAddress(snapshot.requested_sponsorship_token);
+const isAllowedToEditProposal = Near.view(
+  "${REPL_PROPOSALS_CONTRACT}",
+  "is_allowed_to_edit_proposal",
+  { proposal_id: proposal.id, editor: accountId }
+);
+
+const onSubmitForReview = () => {
+  const body = {
+    proposal_body_version: "V0",
+    name: snapshot.title,
+    description: snapshot.description,
+    category: snapshot.category,
+    summary: snapshot.summary,
+    linked_proposals: snapshot.linked_proposals,
+    requested_sponsorship_amount: snapshot.requested_sponsorship_amount,
+    requested_sponsorship_token: snapshot.requested_sponsorship_token,
+    receiver_account: snapshot.receiver_account,
+    supervisor: snapshot.supervisor,
+    requested_sponsor: snapshot.requested_sponsor,
+    payouts: snapshot.payouts,
+    timeline: {
+      status: "REVIEW",
+      sponsor_requested_review: true,
+      reviewer_completed_attestation: false,
+    },
+  };
+
+  Near.call({
+    contractName: "${REPL_PROPOSALS_CONTRACT}",
+    methodName: "edit_proposal",
+    args: {
+      id: proposal.id,
+      labels: snapshot.labels,
+      body: body,
+    },
+    gas: 270000000000000,
+  });
+};
+
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
     <div className="d-flex justify-content-between">
@@ -283,7 +368,7 @@ return (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.History"}
           props={{
-            proposal,
+            id: proposal.id,
             timestamp: snapshot.timestamp,
           }}
         />
@@ -294,14 +379,27 @@ return (
             url: proposalURL,
           }}
         />
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-          props={{
-            label: "Edit",
-            classNames: { root: "grey-btn" },
-            onClick: () => {},
-          }}
-        />
+        {isAllowedToEditProposal && (
+          <Link
+            to={href({
+              widgetSrc: "${REPL_DEVHUB}/widget/app",
+              params: {
+                page: "create-proposal",
+                id: proposal.id,
+                timestamp: timestamp,
+              },
+            })}
+            style={{ textDecoration: "none" }}
+          >
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+              props={{
+                label: "Edit",
+                classNames: { root: "grey-btn" },
+              }}
+            />
+          </Link>
+        )}
       </div>
     </div>
     <div className="d-flex gap-2 align-items-center text-sm border-bottom pb-3">
@@ -317,15 +415,31 @@ return (
         {readableDate(snapshot.timestamp / 1000000)}
       </div>
     </div>
-    <div className="draft-info-container p-4">
-      <b>This proposal is in draft mode and open for community comments.</b>
-      <p className="text-sm text-muted mt-2">
-        The author can still refine the proposal and build consensus before
-        sharing it with sponsors. Click “Ready for review” when you want to
-        start the official review process. This will lock the editing function,
-        but comments are still open.
-      </p>
-    </div>
+    {snapshot.timeline.status === TIMELINE_STATUS.DRAFT && (
+      <div className="draft-info-container p-4 d-flex justify-content-between align-items-center gap-2">
+        <div>
+          <b>This proposal is in draft mode and open for community comments.</b>
+          <p className="text-sm text-muted mt-2">
+            The author can still refine the proposal and build consensus before
+            sharing it with sponsors. Click “Ready for review” when you want to
+            start the official review process. This will lock the editing
+            function, but comments are still open.
+          </p>
+        </div>
+        {isAllowedToEditProposal && (
+          <div style={{ minWidth: "fit-content" }}>
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+              props={{
+                label: "Ready for review",
+                classNames: { root: "grey-btn" },
+                onClick: onSubmitForReview,
+              }}
+            />
+          </div>
+        )}
+      </div>
+    )}
     <div className="mt-4">
       <div className="d-flex gap-4">
         <div className="flex-3">
@@ -425,11 +539,25 @@ return (
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
                 props={{
-                  accountId: context.accountId,
+                  accountId: accountId,
                 }}
               />
-              <div className="d-flex flex-column gap-4">
+              <div className="d-flex flex-column gap-4 w-100">
                 <b className="mt-1">Add a comment</b>
+                <Widget
+                  src={
+                    "${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"
+                  }
+                  props={{
+                    data: comment,
+                    onChange: setComment,
+                    autocompleteEnabled: true,
+                    autoFocus: false,
+                    placeholder: "Add your comment here...",
+                    height: "160",
+                    embeddCSS: ComposeEmbeddCSS,
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -457,8 +585,7 @@ return (
             <div className="h4 text-black">
               {snapshot.requested_sponsorship_amount && (
                 <>
-                  {snapshot.requested_sponsorship_amount}{" "}
-                  {snapshot.equested_sponsorship_token ?? "NEAR"}
+                  {snapshot.requested_sponsorship_amount} {tokenName ?? "NEAR"}
                 </>
               )}
             </div>
@@ -520,19 +647,27 @@ return (
                     <CheckBox
                       value=""
                       label="Sponsor provides feedback or requests reviews"
-                      isChecked={false}
+                      isChecked={snapshot.timeline.sponsor_requested_review}
                     />
                     <CheckBox
                       value=""
                       label="Reviewer completes attestations (Optional)"
-                      isChecked={false}
+                      isChecked={
+                        snapshot.timeline.reviewer_completed_attestation
+                      }
                     />
                   </div>
                 </TimelineItems>
                 <TimelineItems title="3) Decision">
                   <div className="d-flex flex-column gap-2">
                     <div>Sponsor makes a final decision:</div>
-                    <RadioButton value="" label="Approve" isChecked={false} />
+                    <RadioButton
+                      value=""
+                      label="Approve"
+                      isChecked={
+                        snapshot.timeline.status === TIMELINE_STATUS.APPROVED
+                      }
+                    />
                     <RadioButton
                       value=""
                       label={
@@ -543,9 +678,18 @@ return (
                           </span>{" "}
                         </>
                       }
-                      isChecked={false}
+                      isChecked={
+                        snapshot.timeline.status ===
+                        TIMELINE_STATUS.APPROVED_CONDITIONALLY
+                      }
                     />
-                    <RadioButton value="" label="Reject" isChecked={false} />
+                    <RadioButton
+                      value="Reject"
+                      label="Reject"
+                      isChecked={
+                        snapshot.timeline.status === TIMELINE_STATUS.REJECTED
+                      }
+                    />
                   </div>
                 </TimelineItems>
                 <TimelineItems title="4) Payment Processing">
@@ -553,17 +697,17 @@ return (
                     <CheckBox
                       value=""
                       label="Sponsor verifies KYC/KYB"
-                      isChecked={false}
+                      isChecked={snapshot.timeline.kyc_verified}
                     />
                     <CheckBox
                       value=""
                       label="Sponsor sends test transaction"
-                      isChecked={false}
+                      isChecked={snapshot.timeline.test_transaction_sent}
                     />
                     <CheckBox
                       value=""
                       label="Sponsor creates funding request from Trustees"
-                      isChecked={false}
+                      isChecked={snapshot.timeline.request_for_trustees_created}
                     />
                   </div>
                 </TimelineItems>
@@ -571,7 +715,9 @@ return (
                   <CheckBox
                     value=""
                     label="DevDAO Trustee Releases payment"
-                    isChecked={false}
+                    isChecked={
+                      snapshot.timeline.status === TIMELINE_STATUS.FUNDED
+                    }
                   />
                 </TimelineItems>
               </div>

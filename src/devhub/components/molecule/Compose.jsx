@@ -31,6 +31,7 @@ const Compose = ({
   autocompleteEnabled,
   placeholder,
   height,
+  embeddCSS,
 }) => {
   State.init({
     data: data,
@@ -142,7 +143,7 @@ const Compose = ({
                 autoFocus: autoFocus,
                 placeholder: placeholder,
                 height,
-                embeddCSS: EmbeddCSS,
+                embeddCSS: embeddCSS || EmbeddCSS,
               }}
             />
             {autocompleteEnabled && state.showAccountAutocomplete && (

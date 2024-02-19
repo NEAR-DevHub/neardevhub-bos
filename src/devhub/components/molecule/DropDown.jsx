@@ -19,6 +19,10 @@ const StyledDropdown = styled.div`
     background-color: #f0f0f0 !important;
     color: black;
   }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
 `;
 
 useEffect(() => {
@@ -41,7 +45,7 @@ return (
           {options.map((item) => (
             <li
               style={{ borderRadius: "5px" }}
-              class="dropdown-item link-underline link-underline-opacity-0"
+              class="dropdown-item cursor-pointer link-underline link-underline-opacity-0"
               onClick={() => setSelected(item)}
             >
               {item.label}

@@ -4,11 +4,10 @@ const InputContainer = styled.div`
   position: relative;
   width: 100%;
 `;
-
-const [input, setInput] = useState(null);
+const value = props.value;
+const [input, setInput] = useState(value);
 const onUpdate = props.onUpdate ?? (() => {});
 const onEnter = props.onEnter ?? (() => {});
-const value = props.value;
 
 useEffect(() => {
   if (input !== value) {

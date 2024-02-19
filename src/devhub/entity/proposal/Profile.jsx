@@ -1,7 +1,9 @@
 const accountId = props.accountId;
 const Avatar = styled.div`
-  width: 40px;
-  height: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  min-height: 40px;
+  max-height: 40px;
   pointer-events: none;
 
   img {

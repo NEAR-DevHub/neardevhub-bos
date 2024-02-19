@@ -62,10 +62,13 @@ const toggleDropdown = () => {
   setIsOpen(!isOpen);
 };
 
+useEffect(() => {
+  onChange(selectedOptionValue);
+}, [selectedOptionValue]);
+
 const handleOptionClick = (option) => {
   setSelectedValue(option.value);
   setIsOpen(false);
-  onChange(option.value);
 };
 
 const Container = styled.div`
@@ -103,6 +106,10 @@ const Container = styled.div`
 
   .selected {
     background-color: #f0f0f0;
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
   }
 `;
 
@@ -142,7 +149,7 @@ return (
             {options.map((option) => (
               <div
                 key={option.value}
-                className={`dropdown-item my-1 ${
+                className={`dropdown-item cursor-pointer my-1 ${
                   selectedOption.value === option.value ? "selected" : ""
                 }`}
                 onClick={() => handleOptionClick(option)}

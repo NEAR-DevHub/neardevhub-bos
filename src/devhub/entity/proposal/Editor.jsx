@@ -1,6 +1,20 @@
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+const { getDepositAmountForWriteAccess } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.common"
+);
 
+getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 href || (href = () => {});
+
+const { id, timestamp } = props;
+
+const isEditPage = typeof id === "string";
+let editProposalData = null;
+if (isEditPage) {
+  editProposalData = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
+    proposal_id: parseInt(id),
+  });
+}
 
 const author = context.accountId;
 const Container = styled.div`
@@ -122,6 +136,11 @@ const Container = styled.div`
     visibility: visible;
     opacity: 1;
   }
+
+  .form-check-input:checked {
+    background-color: #04a46e !important;
+    border-color: #04a46e !important;
+  }
 `;
 
 const Heading = styled.div`
@@ -153,15 +172,16 @@ const tokensOptions = [
   },
 ];
 
+const devdaoAccount = "neardevdao.near";
+
 const [category, setCategory] = useState(null);
-const [name, setName] = useState(null);
+const [title, setTitle] = useState(null);
 const [description, setDescription] = useState(null);
 const [summary, setSummary] = useState(null);
 const [consent, setConsent] = useState({ toc: false, coc: false });
 const [linkedProposals, setLinkedProposals] = useState([]);
-const [fundingAmount, setFundingAmount] = useState([]);
 const [receiverAccount, setReceiverAccount] = useState(null);
-const [requestedSponsor, setRequestedSponsor] = useState(null);
+const [requestedSponsor, setRequestedSponsor] = useState(devdaoAccount);
 const [requestedSponsorshipAmount, setRequestedSponsorshipAmount] =
   useState(null);
 const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
@@ -170,7 +190,48 @@ const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
 const [supervisor, setSupervisor] = useState(null);
 
 const [proposalsOptions, setProposalsOptions] = useState([]);
-const proposalsData = Near.view("satisfying-airplane.testnet", "get_proposals");
+const proposalsData = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposals");
+
+useEffect(() => {
+  if (editProposalData) {
+    if (timestamp) {
+      editProposalData.snapshot =
+        editProposalData.snapshot_history.find(
+          (item) => item.timestamp === timestamp
+        ) ?? editProposalData.snapshot;
+    }
+    const { snapshot } = editProposalData;
+    setCategory(snapshot.category);
+    setTitle(snapshot.name);
+    setSummary(snapshot.summary);
+    setDescription(snapshot.description);
+    setConsent({ toc: true, coc: true });
+
+    setReceiverAccount(snapshot.receiver_account);
+    setRequestedSponsor(snapshot.requested_sponsor);
+    setRequestedSponsorshipAmount(snapshot.requested_sponsorship_amount);
+    setSupervisor(snapshot.supervisor);
+
+    const token = tokensOptions.find(
+      (item) => item.value === snapshot.requested_sponsorship_token
+    );
+    setRequestedSponsorshipToken(token);
+  }
+}, [editProposalData]);
+
+useEffect(() => {
+  if (
+    proposalsOptions.length > 0 &&
+    editProposalData &&
+    editProposalData?.snapshot?.linked_proposals?.length > 0
+  ) {
+    let data = [];
+    editProposalData.snapshot.linked_proposals.map((item) => {
+      data.push(proposalsOptions.find((i) => i.value === item));
+    });
+    setLinkedProposals(data);
+  }
+}, [editProposalData, proposalsOptions]);
 
 if (
   proposalsData !== null &&
@@ -197,7 +258,8 @@ const InputContainer = ({ heading, description, children }) => {
   );
 };
 
-const CheckBox = ({ value, isChecked, label }) => {
+const CheckBox = ({ value, isChecked, label, onClick }) => {
+  let onChange = onClick || (() => {});
   return (
     <div className="d-flex gap-2 align-items-center">
       <input
@@ -205,10 +267,227 @@ const CheckBox = ({ value, isChecked, label }) => {
         type="checkbox"
         value={value}
         checked={isChecked}
+        onChange={onChange}
       />
       <label class="form-check-label text-sm">{label}</label>
     </div>
   );
+};
+
+const DraftBtnContainer = styled.div`
+  font-size: 14px;
+  min-width: 150px;
+
+  .custom-select {
+    position: relative;
+  }
+
+  .select-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius-top: 5px;
+    cursor: pointer;
+    background-color: #fff;
+    border-radius: 5px;
+  }
+
+  .options-card {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 0.5rem;
+    z-index: 9999;
+  }
+
+  .option {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.3s ease;
+  }
+
+  .option:hover {
+    background-color: #f0f0f0; /* Custom hover effect color */
+  }
+
+  .option:last-child {
+    border-bottom: none;
+  }
+
+  .selected {
+    background-color: #f0f0f0;
+  }
+
+  .disabled {
+    background-color: #f8f8f8 !important;
+    cursor: not-allowed !important;
+  }
+
+  .circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .grey {
+    background-color: #818181;
+  }
+
+  .green {
+    background-color: #04a46e;
+  }
+`;
+const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
+const [selectedStatus, setSelectedStatus] = useState("draft");
+
+const DraftBtn = () => {
+  const btnOptions = [
+    { iconColor: "grey", label: "Submit Draft", value: "draft" },
+    { iconColor: "green", label: "Ready for Review", value: "review" },
+  ];
+
+  const handleOptionClick = (option) => {
+    setDraftBtnOpen(false);
+    setSelectedStatus(option.value);
+  };
+
+  const toggleDropdown = () => {
+    setDraftBtnOpen(!isDraftBtnOpen);
+  };
+
+  const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
+  const disabled =
+    !title ||
+    !description ||
+    !summary ||
+    !category ||
+    !requestedSponsorshipAmount ||
+    !receiverAccount ||
+    !requestedSponsor ||
+    !consent.toc ||
+    !consent.coc;
+
+  return (
+    <DraftBtnContainer>
+      <div
+        className="custom-select"
+        tabIndex="0"
+        onBlur={() => setDraftBtnOpen(false)}
+      >
+        <div
+          className={
+            "select-header d-flex gap-1 align-items-center " +
+            (disabled && "disabled")
+          }
+        >
+          <div
+            onClick={() =>
+              !disabled && onSubmit({ isDraft: selectedStatus === "draft" })
+            }
+            className="p-2 d-flex gap-2 align-items-center "
+          >
+            <div className={"circle " + selectedOption.iconColor}></div>
+            <div className={`selected-option`}>{selectedOption.label}</div>
+          </div>
+          <div className="h-100 p-2" style={{ borderLeft: "1px solid #ccc" }}>
+            <i
+              onClick={!disabled && toggleDropdown}
+              class={`bi bi-chevron-${isOpen ? "up" : "down"}`}
+            ></i>
+          </div>
+        </div>
+
+        {isDraftBtnOpen && (
+          <div className="options-card">
+            {btnOptions.map((option) => (
+              <div
+                key={option.value}
+                className={`option d-flex gap-2 align-items-center ${
+                  selectedOption.value === option.value ? "selected" : ""
+                }`}
+                onClick={() => handleOptionClick(option)}
+              >
+                <div className={"circle " + option.iconColor}></div>
+                {option.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </DraftBtnContainer>
+  );
+};
+
+let grantNotify = Near.view(
+  "${REPL_SOCIAL_CONTRACT}",
+  "is_write_permission_granted",
+  {
+    predecessor_id: "${REPL_DEVHUB_LEGACY}",
+    key: context.accountId + "/index/notify",
+  }
+);
+
+const userStorageDeposit = Near.view(
+  "${REPL_SOCIAL_CONTRACT}",
+  "storage_balance_of",
+  {
+    account_id: context.accountId,
+  }
+);
+
+const onSubmit = ({ isDraft }) => {
+  const linkedProposalsIds = linkedProposals.map((item) => item.value) ?? [];
+  const body = {
+    proposal_body_version: "V0",
+    name: title,
+    description: description,
+    category: category,
+    summary: summary,
+    linked_proposals: linkedProposalsIds,
+    requested_sponsorship_amount: requestedSponsorshipAmount,
+    requested_sponsorship_token: requestedSponsorshipToken.value,
+    receiver_account: receiverAccount,
+    supervisor: supervisor,
+    requested_sponsor: requestedSponsor,
+    payouts: [],
+    timeline: isDraft
+      ? { status: "DRAFT" }
+      : {
+          status: "REVIEW",
+          sponsor_requested_review: true,
+          reviewer_completed_attestation: false,
+        },
+  };
+  const args = { labels: [], body: body };
+  if (isEditPage) {
+    args["id"] = editProposalData.id;
+  }
+  const calls = [
+    {
+      contractName: "${REPL_PROPOSALS_CONTRACT}",
+      methodName: isEditPage ? "edit_proposal" : "add_proposal",
+      args: args,
+      gas: 270000000000000,
+    },
+  ];
+  // if (grantNotify === false) {
+  //   calls.unshift({
+  //     contractName: "${REPL_SOCIAL_CONTRACT}",
+  //     methodName: "grant_write_permission",
+  //     args: {
+  //       predecessor_id: "${REPL_DEVHUB_LEGACY}",
+  //       keys: [context.accountId + "/index/notify"]
+  //     },
+  //     gas: Big(10).pow(14),
+  //     deposit: getDepositAmountForWriteAccess(userStorageDeposit)
+  //   });
+  // }
+  Near.call(calls);
 };
 
 const WarningImg =
@@ -230,7 +509,7 @@ const descriptionPlaceholder = `-- REQUIRED FIELDS // Please remove this line--
 
 return (
   <Container className="w-100 p-4 d-flex flex-column gap-3">
-    <Heading>Create Proposal</Heading>
+    <Heading>{isEditPage ? "Edit" : "Create"} Proposal</Heading>
     <div className="mt-4 d-flex gap-4">
       <div className="flex-2">
         <div className="d-flex gap-2">
@@ -263,14 +542,13 @@ return (
                 src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
                 props={{
                   className: "flex-grow-1",
-                  value: name,
-                  onChange: (e) => setName(e.target.value),
+                  value: title,
+                  onChange: (e) => setTitle(e.target.value),
                   skipPaddingGap: true,
                   placeholder: "Enter title here.",
                   inputProps: {
                     max: 80,
                     required: true,
-                    // disabled: true
                   },
                 }}
               />
@@ -291,7 +569,6 @@ return (
                   inputProps: {
                     max: 500,
                     required: true,
-                    // disabled: true
                   },
                 }}
               />
@@ -320,11 +597,23 @@ return (
                   value={consent.toc}
                   label="I’ve agree to DevHub’s Terms and Conditions and commit to honoring it"
                   isChecked={consent.toc}
+                  onClick={() =>
+                    setConsent((prevConsent) => ({
+                      ...prevConsent,
+                      toc: !prevConsent.toc,
+                    }))
+                  }
                 />
                 <CheckBox
                   value={consent.coc}
                   label="I’ve read DevHub’s Code of Conduct and commit to honoring it"
                   isChecked={consent.coc}
+                  onClick={() =>
+                    setConsent((prevConsent) => ({
+                      ...prevConsent,
+                      coc: !prevConsent.coc,
+                    }))
+                  }
                 />
               </div>
             </InputContainer>
@@ -339,6 +628,7 @@ return (
                   onClick: () => {},
                 }}
               />
+              <DraftBtn />
             </div>
           </div>
         </div>
@@ -469,13 +759,12 @@ return (
               src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
               props={{
                 className: "flex-grow-1",
-                value: summary,
-                onChange: (e) => setSummary(e.target.value),
+                value: requestedSponsorshipAmount,
+                onChange: (e) => setRequestedSponsorshipAmount(e.target.value),
                 skipPaddingGap: true,
                 placeholder: "Enter amount",
                 inputProps: {
                   type: "number",
-                  // disabled: true
                 },
               }}
             />

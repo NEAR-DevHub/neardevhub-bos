@@ -1,6 +1,5 @@
 /*
 ---props---
-props.proposal: {};
 props.id: number;
 props.newTab: boolean;
 props.timestamp: number;
@@ -12,12 +11,10 @@ const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
 const { readableDate } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
 ) || { readableDate: () => {} };
-const proposalId = props.proposal.id ?? (props.id ? parseInt(props.id) : 0);
-const proposal =
-  props.proposal ??
-  Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
-    proposal_id: proposalId,
-  });
+const proposalId = props.id ?? (props.id ? parseInt(props.id) : 0);
+const proposal = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
+  proposal_id: proposalId,
+});
 if (!proposal || !proposal.snapshot_history) {
   return <div class="bi bi-clock-history px-2"></div>;
 }

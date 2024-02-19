@@ -99,6 +99,10 @@ const Container = styled.div`
   input {
     background-color: #f8f9fa;
   }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
 `;
 
 return (
@@ -130,7 +134,7 @@ return (
             {filteredOptions.map((option) => (
               <div
                 key={option.value}
-                className={`dropdown-item ${
+                className={`dropdown-item cursor-pointer ${
                   selectedOption.value === option.value ? "selected" : ""
                 }`}
                 onClick={() => handleOptionClick(option)}
