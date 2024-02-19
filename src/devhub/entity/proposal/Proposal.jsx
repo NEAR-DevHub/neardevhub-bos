@@ -46,6 +46,16 @@ const Container = styled.div`
     border: 1px solid grey;
   }
 
+  .green-fill {
+    background-color: rgb(4, 164, 110) !important;
+    border-color: rgb(4, 164, 110) !important;
+    color: white !important;
+  }
+
+  .yellow-fill {
+    border-color: #ff7a00 !important;
+  }
+
   .vertical-line {
     width: 2px;
     height: 190px;
@@ -267,37 +277,6 @@ const proposalStatusOptions = [
   },
 ];
 
-// "timeline": {"status": "DRAFT"}
-// "timeline": {"status": "REVIEW", "sponsor_requested_review": true, "reviewer_completed_attestation": false }
-// "timeline": {"status": "APPROVED", "sponsor_requested_review": true, "reviewer_completed_attestation": false }
-// "timeline": {"status": "REJECTED", "sponsor_requested_review": true, "reviewer_completed_attestation": false }
-// "timeline": {"status": "APPROVED_CONDITIONALLY", "sponsor_requested_review": true, "reviewer_completed_attestation": false }
-// "timeline": {"status": "PAYMENT_PROCESSING", "kyc_verified": false, "test_transaction_sent": false, "request_for_trustees_created": false, "sponsor_requested_review": true, "reviewer_completed_attestation": false }
-// "timeline": {"status": "FUNDED", "trustees_released_payment": false, "kyc_verified": false, "test_transaction_sent": false, "request_for_trustees_created": false, "sponsor_requested_review": true, "reviewer_completed_attestation": false }
-
-const TimelineItems = ({ title, children }) => {
-  const statusToCheck = title
-    .split(")")[1]
-    .trim()
-    .toUpperCase()
-    .replace(/\s+/g, "_");
-
-  return (
-    <div
-      className="p-2 rounded-3"
-      style={{
-        backgroundColor:
-          statusToCheck === updatedProposalStatus.value.status
-            ? "#FEF6EE"
-            : "none",
-      }}
-    >
-      <div className="h6 text-black"> {title}</div>
-      <div className="text-sm">{children}</div>
-    </div>
-  );
-};
-
 const LinkedProposals = () => {
   const linkedProposalsData = [];
   snapshot.linked_proposals.map((item) => {
@@ -410,8 +389,7 @@ const isAllowedToEditProposal = Near.view(
   { proposal_id: proposal.id, editor: accountId }
 );
 
-const isModerator = true;
-// isAllowedToEditProposal && proposal.author_id !== accountId;
+const isModerator = isAllowedToEditProposal && proposal.author_id !== accountId;
 
 const editProposalStatus = ({ timeline }) => {
   const body = {
@@ -449,6 +427,54 @@ const proposalStatus = proposalStatusOptions.find(
 );
 const [updatedProposalStatus, setUpdatedProposalStatus] =
   useState(proposalStatus);
+
+const selectedStatusIndex = useMemo(
+  () =>
+    proposalStatusOptions.findIndex((i) => {
+      return updatedProposalStatus.value.status === i.value.status;
+    }),
+  [updatedProposalStatus]
+);
+
+const TimelineItems = ({ title, children, value, values }) => {
+  const indexOfCurrentItem = proposalStatusOptions.findIndex((i) =>
+    Array.isArray(values)
+      ? values.includes(i.value.status)
+      : value === i.value.status
+  );
+  let color = "transparent";
+  let statusIndex = selectedStatusIndex;
+
+  // index 2,3,4 is of decision
+  if (selectedStatusIndex === 3 || selectedStatusIndex === 2) {
+    statusIndex = 2;
+  }
+  if (statusIndex === indexOfCurrentItem) {
+    color = "#FEF6EE";
+  }
+  if (
+    statusIndex > indexOfCurrentItem ||
+    updatedProposalStatus.value.status === TIMELINE_STATUS.FUNDED
+  ) {
+    color = "#EEFEF0";
+  }
+  // reject
+  if (statusIndex === 4 && indexOfCurrentItem === 2) {
+    color = "#FF7F7F";
+  }
+
+  return (
+    <div
+      className="p-2 rounded-3"
+      style={{
+        backgroundColor: color,
+      }}
+    >
+      <div className="h6 text-black"> {title}</div>
+      <div className="text-sm">{children}</div>
+    </div>
+  );
+};
 
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
@@ -767,23 +793,61 @@ return (
             <div className="d-flex flex-column gap-3">
               <div className="d-flex gap-3 mt-2">
                 <div className="d-flex flex-column">
-                  {stepsArray.map((_, index) => (
-                    <div className="d-flex flex-column align-items-center gap-1">
-                      <div className="circle"></div>
-
-                      {index !== stepsArray.length - 1 && (
+                  {stepsArray.map((_, index) => {
+                    const indexOfCurrentItem = index;
+                    let color = "";
+                    let statusIndex = selectedStatusIndex;
+                    // index 2,3,4 is of decision
+                    if (
+                      selectedStatusIndex === 3 ||
+                      selectedStatusIndex === 2 ||
+                      selectedStatusIndex === 4
+                    ) {
+                      statusIndex = 2;
+                    }
+                    if (selectedStatusIndex === 5) {
+                      statusIndex = 3;
+                    }
+                    const current = statusIndex === indexOfCurrentItem;
+                    const completed =
+                      statusIndex > indexOfCurrentItem ||
+                      updatedProposalStatus.value.status ===
+                        TIMELINE_STATUS.FUNDED;
+                    return (
+                      <div className="d-flex flex-column align-items-center gap-1">
                         <div
                           className={
-                            "vertical-line" +
-                            (index === stepsArray.length - 2 ? "-sm" : "")
+                            "circle " +
+                            (completed && " green-fill ") +
+                            (current && " yellow-fill ")
                           }
-                        ></div>
-                      )}
-                    </div>
-                  ))}
+                        >
+                          {completed && (
+                            <div
+                              className="d-flex justify-content-center align-items-center"
+                              style={{ height: "110%" }}
+                            >
+                              <i class="bi bi-check"></i>
+                            </div>
+                          )}
+                        </div>
+
+                        {index !== stepsArray.length - 1 && (
+                          <div
+                            className={
+                              "vertical-line" +
+                              (index === stepsArray.length - 2 ? "-sm " : " ") +
+                              (completed && " green-fill ") +
+                              (current && " yellow-fill ")
+                            }
+                          ></div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
                 <div className="d-flex flex-column gap-3">
-                  <TimelineItems title="1) Draft">
+                  <TimelineItems title="1) Draft" value={TIMELINE_STATUS.DRAFT}>
                     <div>
                       Once an author submits a proposal, it is in draft mode and
                       open for community comments. The author can still make
@@ -791,32 +855,46 @@ return (
                       for official review when ready.
                     </div>
                   </TimelineItems>
-                  <TimelineItems title="2) Review">
+                  <TimelineItems
+                    title="2) Review"
+                    value={TIMELINE_STATUS.REVIEW}
+                  >
                     <div className="d-flex flex-column gap-2">
                       Sponsors who agree to consider the proposal may request
                       attestations from work groups.
                       <CheckBox
                         value=""
                         label="Sponsor provides feedback or requests reviews"
-                        isChecked={snapshot.timeline.sponsor_requested_review}
+                        isChecked={
+                          updatedProposalStatus.value.sponsor_requested_review
+                        }
                       />
                       <CheckBox
                         value=""
                         label="Reviewer completes attestations (Optional)"
                         isChecked={
-                          snapshot.timeline.reviewer_completed_attestation
+                          updatedProposalStatus.value
+                            .reviewer_completed_attestation
                         }
                       />
                     </div>
                   </TimelineItems>
-                  <TimelineItems title="3) Decision">
+                  <TimelineItems
+                    title="3) Decision"
+                    values={[
+                      TIMELINE_STATUS.APPROVED,
+                      TIMELINE_STATUS.APPROVED_CONDITIONALLY,
+                      TIMELINE_STATUS.REJECTED,
+                    ]}
+                  >
                     <div className="d-flex flex-column gap-2">
                       <div>Sponsor makes a final decision:</div>
                       <RadioButton
                         value=""
                         label="Approve"
                         isChecked={
-                          snapshot.timeline.status === TIMELINE_STATUS.APPROVED
+                          updatedProposalStatus.value.status ===
+                          TIMELINE_STATUS.APPROVED
                         }
                       />
                       <RadioButton
@@ -830,7 +908,7 @@ return (
                           </>
                         }
                         isChecked={
-                          snapshot.timeline.status ===
+                          updatedProposalStatus.value.status ===
                           TIMELINE_STATUS.APPROVED_CONDITIONALLY
                         }
                       />
@@ -838,38 +916,49 @@ return (
                         value="Reject"
                         label="Reject"
                         isChecked={
-                          snapshot.timeline.status === TIMELINE_STATUS.REJECTED
+                          updatedProposalStatus.value.status ===
+                          TIMELINE_STATUS.REJECTED
                         }
                       />
                     </div>
                   </TimelineItems>
-                  <TimelineItems title="4) Payment Processing">
+                  <TimelineItems
+                    title="4) Payment Processing"
+                    value={TIMELINE_STATUS.PAYMENT_PROCESSING}
+                  >
                     <div className="d-flex flex-column gap-2">
                       <CheckBox
                         value=""
                         label="Sponsor verifies KYC/KYB"
-                        isChecked={snapshot.timeline.kyc_verified}
+                        isChecked={updatedProposalStatus.value.kyc_verified}
                       />
                       <CheckBox
                         value=""
                         label="Sponsor sends test transaction"
-                        isChecked={snapshot.timeline.test_transaction_sent}
+                        isChecked={
+                          updatedProposalStatus.value.test_transaction_sent
+                        }
                       />
                       <CheckBox
                         value=""
                         label="Sponsor creates funding request from Trustees"
                         isChecked={
-                          snapshot.timeline.request_for_trustees_created
+                          updatedProposalStatus.value
+                            .request_for_trustees_created
                         }
                       />
                     </div>
                   </TimelineItems>
-                  <TimelineItems title="5) Funded">
+                  <TimelineItems
+                    title="5) Funded"
+                    value={TIMELINE_STATUS.FUNDED}
+                  >
                     <CheckBox
                       value=""
                       label="DevDAO Trustee Releases payment"
                       isChecked={
-                        snapshot.timeline.status === TIMELINE_STATUS.FUNDED
+                        updatedProposalStatus.value.status ===
+                        TIMELINE_STATUS.FUNDED
                       }
                     />
                   </TimelineItems>
