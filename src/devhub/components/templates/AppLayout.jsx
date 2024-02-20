@@ -45,7 +45,7 @@ const Footer = (props) => {
 function AppLayout({ page, children }) {
   return (
     <Theme>
-      <Container>
+      <Container className="container-xl">
         <AppHeader page={page} />
         <ContentContainer>{children}</ContentContainer>
         <Footer page={page} />
