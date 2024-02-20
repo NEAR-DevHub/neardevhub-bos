@@ -12,6 +12,7 @@ const ComposeEmbeddCSS = `
     min-height: 50px !important;
   }
 `;
+const notifyAccountId = props.notifyAccountId;
 const accountId = context.accountId;
 const item = props.item;
 const [comment, setComment] = useState(null);
@@ -70,6 +71,16 @@ function composeData() {
     path: `${accountId}/post/comment`,
   });
 
+  if (notifyAccountId && notifyAccountId !== context.accountId) {
+    notifications.push({
+      key: notifyAccountId,
+      value: {
+        type: "comment",
+        item,
+      },
+    });
+  }
+
   if (notifications.length) {
     data.index.notify = JSON.stringify(
       notifications.length > 1 ? notifications : notifications[0]
@@ -91,7 +102,7 @@ return (
         accountId: accountId,
       }}
     />
-    <div className="d-flex flex-column gap-4 w-100">
+    <div className="d-flex flex-column gap-2 w-100">
       <b className="mt-1">Add a comment</b>
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}

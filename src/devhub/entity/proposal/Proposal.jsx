@@ -555,7 +555,7 @@ return (
         )}
       </div>
     )}
-    <div className="mt-4">
+    <div className="my-4">
       <div className="d-flex gap-4">
         <div className="flex-3">
           <div className="d-flex gap-2 flex-1">

@@ -18,92 +18,112 @@ const Header = styled.div`
 `;
 
 const Comment = ({ commentItem }) => {
+  const [showReply, setShowReply] = useState(false);
   const { accountId, blockHeight } = commentItem;
   const item = {
     type: "social",
     path: `${accountId}/post/comment`,
     blockHeight,
   };
-  const content = JSON.parse(
-    Social.get(`${accountId}/post/comment`, blockHeight) ?? "null"
-  );
-
+  const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
+  console.log(content);
+  const extractNotifyAccountId = (item) => {
+    if (!item || item.type !== "social" || !item.path) {
+      return undefined;
+    }
+    const accountId = item.path.split("/")[0];
+    return `${accountId}/post/main` === item.path ? accountId : undefined;
+  };
+  const parentItem = content.item;
   const link = `/mob.near/widget/MainPage.N.Post.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
   return (
-    <div className="d-flex gap-2 flex-1">
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
-        props={{
-          accountId: accountId,
-        }}
-      />
-      <CommentContainer className="rounded-2 flex-1">
-        <Header className="d-flex gap-3 align-items-center p-2 px-3">
-          <div>
-            {accountId} commented
+    <div>
+      <div className="d-flex gap-2 flex-1">
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+          props={{
+            accountId: accountId,
+          }}
+        />
+        <CommentContainer className="rounded-2 flex-1">
+          <Header className="d-flex gap-3 align-items-center p-2 px-3">
+            <div>
+              {accountId} commented
+              <Widget
+                src="${REPL_NEAR}/widget/TimeAgo"
+                props={{
+                  blockHeight: blockHeight,
+                }}
+              />
+            </div>
+            <div className="menu">
+              <Widget
+                src="${REPL_NEAR}/widget/Posts.Menu"
+                props={{
+                  accountId: accountId,
+                  blockHeight: blockHeight,
+                  parentFunctions: {
+                    toggleEdit: () => {},
+                    optimisticallyHideItem: () => {},
+                    resolveHideItem: () => {},
+                    cancelHideItem: () => {},
+                  },
+                }}
+              />
+            </div>
+          </Header>
+          <div className="p-2 px-3">
             <Widget
-              src="${REPL_NEAR}/widget/TimeAgo"
+              src={
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+              }
               props={{
-                blockHeight: blockHeight,
+                text: content.text,
               }}
             />
+
+            <div className="d-flex gap-2 align-items-center mt-4">
+              <Widget
+                src="${REPL_NEAR}/widget/v1.LikeButton"
+                props={{
+                  item: item,
+                }}
+              />
+              <Widget
+                src="${REPL_NEAR}/widget/CommentButton"
+                props={{
+                  item: item,
+                  onClick: () => setShowReply(true),
+                }}
+              />
+              <Widget
+                src="${REPL_NEAR}/widget/CopyUrlButton"
+                props={{
+                  url: link,
+                }}
+              />
+              <Widget
+                src="${REPL_NEAR}/widget/ShareButton"
+                props={{
+                  postType: "post",
+                  url: link,
+                }}
+              />
+            </div>
           </div>
-          <div className="menu">
-            <Widget
-              src="${REPL_NEAR}/widget/Posts.Menu"
-              props={{
-                accountId: accountId,
-                blockHeight: blockHeight,
-                parentFunctions: {
-                  toggleEdit: () => {},
-                  optimisticallyHideItem: () => {},
-                  resolveHideItem: () => {},
-                  cancelHideItem: () => {},
-                },
-              }}
-            />
-          </div>
-        </Header>
-        <div className="p-2 px-3">
+        </CommentContainer>
+      </div>
+      {showReply && (
+        <div className="my-4" style={{ marginLeft: "50px" }} key="reply">
           <Widget
-            src={
-              "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
-            }
+            src="${REPL_DEVHUB}/widget/devhub.entity.proposal.ComposeComment"
             props={{
-              text: content.text,
+              notifyAccountId: extractNotifyAccountId(parentItem),
+              item: parentItem,
             }}
           />
-
-          <div className="d-flex gap-2 align-items-center mt-4">
-            <Widget
-              src="${REPL_NEAR}/widget/v1.LikeButton"
-              props={{
-                item,
-              }}
-            />
-            <Widget
-              src="${REPL_NEAR}/widget/CommentButton"
-              props={{
-                item,
-                onClick: () => {},
-              }}
-            />
-            <Widget
-              src="${REPL_NEAR}/widget/CopyUrlButton"
-              props={{
-                url: link,
-              }}
-            />
-            <Widget
-              src="${REPL_NEAR}/widget/ShareButton"
-              props={{
-                postType: "post",
-                url: link,
-              }}
-            />
-          </div>
         </div>
-      </CommentContainer>
+      )}
     </div>
   );
 };
