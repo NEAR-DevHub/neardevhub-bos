@@ -181,7 +181,7 @@ const editorAccountId = snapshot.editor_id;
 const blockHeight = proposal.social_db_post_block_height;
 const item = {
   type: "social",
-  path: `${editorAccountId}/post/main`,
+  path: `${REPL_PROPOSALS_CONTRACT}/post/main`,
   blockHeight,
 };
 const proposalURL = `${REPL_DEVHUB}/widget/devhub.entity.proposal.Proposal?id=${proposal.id}&timestamp=${snapshot.timestamp}`;
@@ -469,6 +469,14 @@ const resolveHideItem = (message) => {
 };
 const cancelHideItem = () => {};
 
+const extractNotifyAccountId = (item) => {
+  if (!item || item.type !== "social" || !item.path) {
+    return undefined;
+  }
+  const accountId = item.path.split("/")[0];
+  return `${accountId}/post/main` === item.path ? accountId : undefined;
+};
+
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
     <Widget
@@ -677,6 +685,7 @@ return (
                 }
                 props={{
                   item: item,
+                  notifyAccountId: extractNotifyAccountId(item),
                 }}
               />
             </div>
