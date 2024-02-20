@@ -1,5 +1,7 @@
 const socialComments = Social.index("comment", props.item);
 
+const [showReplyIndex, setShowReplyIndex] = useState(null);
+
 const CommentContainer = styled.div`
   border: 1px solid lightgrey;
 `;
@@ -17,8 +19,7 @@ const Header = styled.div`
   }
 `;
 
-const Comment = ({ commentItem }) => {
-  const [showReply, setShowReply] = useState(false);
+const Comment = ({ commentItem, arrayIndex }) => {
   const { accountId, blockHeight } = commentItem;
   const item = {
     type: "social",
@@ -35,7 +36,7 @@ const Comment = ({ commentItem }) => {
     return `${accountId}/post/main` === item.path ? accountId : undefined;
   };
   const parentItem = content.item;
-  const link = `/mob.near/widget/MainPage.N.Post.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
+  const link = `https://near.org/near/widget/PostPage?accountId=${accountId}&commentBlockHeight=${blockHeight}`;
   return (
     <div>
       <div className="d-flex gap-2 flex-1">
@@ -93,7 +94,7 @@ const Comment = ({ commentItem }) => {
                 src="${REPL_NEAR}/widget/CommentButton"
                 props={{
                   item: item,
-                  onClick: () => setShowReply(true),
+                  onClick: () => setShowReplyIndex(arrayIndex),
                 }}
               />
               <Widget
@@ -113,7 +114,7 @@ const Comment = ({ commentItem }) => {
           </div>
         </CommentContainer>
       </div>
-      {showReply && (
+      {showReplyIndex === arrayIndex && (
         <div className="my-4" style={{ marginLeft: "50px" }} key="reply">
           <Widget
             src="${REPL_DEVHUB}/widget/devhub.entity.proposal.ComposeComment"
@@ -131,8 +132,8 @@ const Comment = ({ commentItem }) => {
 if (socialComments.length) {
   return (
     <div className="d-flex flex-column gap-2">
-      {socialComments.map((i) => (
-        <Comment commentItem={i} />
+      {socialComments.map((i, index) => (
+        <Comment commentItem={i} arrayIndex={index} />
       ))}
     </div>
   );
