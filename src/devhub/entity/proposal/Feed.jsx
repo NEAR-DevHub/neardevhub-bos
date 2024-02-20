@@ -50,7 +50,7 @@ const FeedItem = ({ proposal }) => {
   const blockHeight = proposal.social_db_post_block_height;
   const item = {
     type: "social",
-    path: `${accountId}/post/main`,
+    path: `${REPL_PROPOSALS_CONTRACT}/post/main`,
     blockHeight,
   };
 
