@@ -1,69 +1,23 @@
 const page = props.page;
-const imageLink =
-  "https://ipfs.near.social/ipfs/bafkreiatybj6g6i4b4azcu3zoutlcxobrzpg3k4taazhkyd7sk5tuwmb5q";
 
 const Footer = styled.div`
   width: 100%;
   background-color: #00ec97;
-  padding: 1.5rem;
+  padding: 2rem;
+  margin-top: 2rem;
 `;
-
-const Title = styled.h5`
-  color: #151515;
-  text-align: center;
-  font-size: 1.75rem;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 120%; /* 43.2px */
-  margin: 0;
-`;
-
-const Description = styled.p`
-  color: #151515;
-  text-align: center;
-  font-size: 1rem;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 120%; /* 28.8px */
-  letter-spacing: -0.72px;
-  margin: 0;
-`;
-
-const MidContainer = styled.div`
-  width: 720px;
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: center;
-  ${(page === "community" || page === "communities" || page === "feed") &&
-  "display: none;"}
-`;
-
-// const CTA = styled.a`
-//   background: #151515;
-//   padding: 0.75rem 0.75rem;
-//   color: #00ec97 !important;
-//   font-size: 1rem;
-//   font-style: normal;
-//   font-weight: 700;
-//   line-height: 20px; /* 83.333% */
-//   &:hover {
-//     text-decoration: none;
-//   }
-// `;
 
 const CTA = styled.a`
   display: inline-flex;
-  padding: 0.875rem 1rem;
+  padding: 0.5rem 0.8rem;
   align-items: center;
   gap: 0.5rem;
 
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   border: 1px solid #151515;
 
   color: #151515 !important;
-  font-size: 1.25rem;
+  font-size: 0.8rem;
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 28.8px */
@@ -74,37 +28,6 @@ const CTA = styled.a`
     color: #f4f4f4 !important;
     text-decoration: none; // Remove underline on hover
   }
-
-  @media screen and (max-width: 768px) {
-    display: inline-flex;
-    padding: 8px 16px;
-    align-items: center;
-    gap: 8px;
-
-    border-radius: 16px;
-    background: #151515;
-
-    border: none;
-
-    color: #f4f4f4 !important;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 120%; /* 19.2px */
-    letter-spacing: -0.32px;
-
-    &:hover {
-      background: #151515;
-      color: #f4f4f4;
-      text-decoration: none; // Remove underline on hover
-    }
-  }
-`;
-
-const SocialLinks = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
 `;
 
 const XIcon = () => {
@@ -155,13 +78,6 @@ const YoutubeIcon = () => {
   );
 };
 
-const ImageContainer = styled.img`
-  ${page !== "home" && "display: none;"}
-  height: 280px;
-  width: 100%;
-  object-fit: cover;
-`;
-
 const MidContent = () => {
   return (
     <>
@@ -191,50 +107,30 @@ const MidContent = () => {
   );
 };
 
-const SmallContainer = styled.div`
-  display: none;
-  ${(page === "communities" || page === "community" || page === "feed") &&
-  "display: flex !important;"}
-  justify-content: space-between;
-  align-items: center;
-
-  @media screen and (max-width: 768px) {
-    flex-direction: column-reverse;
-    justify-content: center;
-    gap: 1rem;
-    align-items: center;
-  }
-`;
-const SmallContent = () => {
+const SocialLinksContainer = () => {
   return (
-    <SmallContainer>
-      <SocialLinks>
-        <a href="https://twitter.com/NEARDevHub" target="_blank">
-          <XIcon />
-        </a>
-        <a href="https://t.me/NEARDevHub" target="_blank">
-          <TelegramIcon />
-        </a>
-        <a href="https://www.youtube.com/@NEARDevHub" target="_blank">
-          <YoutubeIcon />
-        </a>
-      </SocialLinks>
-      <div className="d-flex align-items-center gap-3">
-        <h5 className="m-0">Subscribe to our newsletter</h5>
-        <CTA href="https://newsletter.neardevhub.org" target="no_blank">
-          Subscribe
-        </CTA>
-      </div>
-    </SmallContainer>
+    <div className="d-flex gap-4 align-items-center">
+      <a href="https://twitter.com/NEARDevHub" target="_blank">
+        <XIcon />
+      </a>
+      <a href="https://t.me/NEARDevHub" target="_blank">
+        <TelegramIcon />
+      </a>
+      <a href="https://www.youtube.com/@NEARDevHub" target="_blank">
+        <YoutubeIcon />
+      </a>
+    </div>
   );
 };
 
 return (
-  <>
-    <ImageContainer src={imageLink} />
-    <Footer>
-      <MidContent />
-      <SmallContent />
-    </Footer>
-  </>
+  <Footer className="d-flex justify-content-between">
+    <SocialLinksContainer />
+    <div className="d-flex align-items-center gap-3">
+      <h6 className="m-0">Subscribe to our newsletter</h6>
+      <CTA href="https://newsletter.neardevhub.org" target="no_blank">
+        Subscribe
+      </CTA>
+    </div>
+  </Footer>
 );
