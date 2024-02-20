@@ -130,9 +130,6 @@ const FeedPage = () => {
     {}
   );
 
-  if (proposals === null || !Array.isArray(proposals) || !proposals.length) {
-    return "Loading...";
-  }
   return (
     <Container className="w-100 p-4 d-flex flex-column gap-3">
       <Heading>
@@ -206,9 +203,10 @@ const FeedPage = () => {
         </p>
       </div>
       <div>
-        {proposals.map((item) => {
-          return <FeedItem proposal={item} />;
-        })}
+        {Array.isArray(proposals) &&
+          proposals.map((item) => {
+            return <FeedItem proposal={item} />;
+          })}
       </div>
     </Container>
   );

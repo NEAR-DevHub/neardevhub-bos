@@ -65,17 +65,9 @@ function composeData() {
     },
   };
 
-  const notifications = extractTagNotifications(state.text, {
+  const notifications = extractTagNotifications(comment, {
     type: "social",
     path: `${accountId}/post/comment`,
-  });
-
-  notifications.push({
-    key: accountId,
-    value: {
-      type: "comment",
-      item,
-    },
   });
 
   if (notifications.length) {

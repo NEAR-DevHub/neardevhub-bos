@@ -233,20 +233,22 @@ useEffect(() => {
   }
 }, [editProposalData, proposalsOptions]);
 
-if (
-  proposalsData !== null &&
-  Array.isArray(proposalsData) &&
-  !proposalsOptions.length
-) {
-  const data = [];
-  for (const prop of proposalsData) {
-    data.push({
-      label: "Id " + prop.id + " : " + prop.snapshot.name,
-      value: prop.id,
-    });
+useEffect(() => {
+  if (
+    proposalsData !== null &&
+    Array.isArray(proposalsData) &&
+    !proposalsOptions.length
+  ) {
+    const data = [];
+    for (const prop of proposalsData) {
+      data.push({
+        label: "Id " + prop.id + " : " + prop.snapshot.name,
+        value: prop.id,
+      });
+    }
+    setProposalsOptions(data);
   }
-  setProposalsOptions(data);
-}
+}, [proposalsData]);
 
 const InputContainer = ({ heading, description, children }) => {
   return (
@@ -658,10 +660,9 @@ return (
         <div className="d-flex flex-column gap-4">
           <InputContainer heading="Author">
             <Widget
-              src="${REPL_MOB}/widget/ProfileImage"
+              src="mob.near/widget/Profile.ShortInlineBlock"
               props={{
                 accountId: author,
-                style: { height: "1.8em", width: "1.8em", minWidth: "1.8em" },
               }}
             />
           </InputContainer>
