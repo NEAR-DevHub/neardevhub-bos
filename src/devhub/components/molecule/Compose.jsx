@@ -45,6 +45,12 @@ const Compose = ({
     onChange(state.data);
   }, [state.data]);
 
+  useEffect(() => {
+    if (data !== state.data) {
+      State.update({ data: data, handler: "autocompleteSelected" });
+    }
+  }, [data]);
+
   function textareaInputHandler(value) {
     const words = value.split(/\s+/);
     const allMentiones = words

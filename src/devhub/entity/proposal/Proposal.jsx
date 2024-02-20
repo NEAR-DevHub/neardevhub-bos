@@ -176,7 +176,7 @@ if (timestamp && proposal) {
 }
 
 const { snapshot } = proposal;
-const [comment, setComment] = useState(null);
+
 const editorAccountId = snapshot.editor_id;
 const blockHeight = proposal.social_db_post_block_height;
 const item = {
@@ -367,21 +367,6 @@ function findTokenNameByAddress(address) {
   return foundToken ? foundToken[0] : null;
 }
 
-const ComposeEmbeddCSS = `
-  .CodeMirror {
-    border: none !important;
-    min-height: 50px !important;
-  }
-
-  .editor-toolbar {
-    border: none !important;
-  }
-
-  .CodeMirror-scroll{
-    min-height: 50px !important;
-  }
-`;
-
 const tokenName = findTokenNameByAddress(snapshot.requested_sponsorship_token);
 const isAllowedToEditProposal = Near.view(
   "${REPL_PROPOSALS_CONTRACT}",
@@ -525,7 +510,7 @@ return (
               src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
                 label: "Edit",
-                classNames: { root: "grey-btn" },
+                classNames: { root: "grey-btn btn-sm" },
               }}
             />
           </Link>
@@ -562,7 +547,7 @@ return (
               src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
                 label: "Ready for review",
-                classNames: { root: "grey-btn" },
+                classNames: { root: "grey-btn btn-sm" },
                 onClick: () => setReviewModal(true),
               }}
             />
@@ -573,7 +558,7 @@ return (
     <div className="mt-4">
       <div className="d-flex gap-4">
         <div className="flex-3">
-          <div className="d-flex gap-2 flex-1 border-bottom pb-4">
+          <div className="d-flex gap-2 flex-1">
             <Widget
               src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
               props={{
@@ -664,32 +649,23 @@ return (
               </div>
             </ProposalContainer>
           </div>
+          <div className="border-bottom pb-4 mt-3">
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Comments"}
+              props={{
+                item: item,
+              }}
+            />
+          </div>
           <div className="mt-4">
-            <div className="d-flex gap-2">
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
-                props={{
-                  accountId: accountId,
-                }}
-              />
-              <div className="d-flex flex-column gap-4 w-100">
-                <b className="mt-1">Add a comment</b>
-                <Widget
-                  src={
-                    "${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"
-                  }
-                  props={{
-                    data: comment,
-                    onChange: setComment,
-                    autocompleteEnabled: true,
-                    autoFocus: false,
-                    placeholder: "Add your comment here...",
-                    height: "160",
-                    embeddCSS: ComposeEmbeddCSS,
-                  }}
-                />
-              </div>
-            </div>
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.entity.proposal.ComposeComment"
+              }
+              props={{
+                item: item,
+              }}
+            />
           </div>
         </div>
         <div className="d-flex flex-column gap-4 flex-1">
@@ -972,7 +948,9 @@ return (
                     }
                     props={{
                       label: "Cancel",
-                      classNames: { root: "btn-outline-danger" },
+                      classNames: {
+                        root: "btn-outline-danger border-0 shadow-none btn-sm",
+                      },
                       onClick: () => {
                         setShowTimelineSetting(false);
                         setUpdatedProposalStatus(proposalStatus);
@@ -985,7 +963,7 @@ return (
                     }
                     props={{
                       label: "Save",
-                      classNames: { root: "green-btn" },
+                      classNames: { root: "green-btn btn-sm" },
                       onClick: () => {
                         editProposalStatus({
                           timeline: updatedProposalStatus.value,
