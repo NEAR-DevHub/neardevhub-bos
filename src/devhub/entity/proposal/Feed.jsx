@@ -65,7 +65,7 @@ const FeedItem = ({ proposal }) => {
       })}
       style={{ textDecoration: "none" }}
     >
-      <div className="proposal-card d-flex justify-content-between text-muted cursor-pointer border-bottom py-3 px-2">
+      <div className="proposal-card d-flex justify-content-between text-muted cursor-pointer p-3">
         <div className="d-flex gap-4">
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
@@ -133,7 +133,8 @@ const FeedPage = () => {
   return (
     <Container className="w-100 p-4 d-flex flex-column gap-3">
       <Heading>
-        DevDAO Proposals <span className="text-muted"> {proposals.length}</span>
+        DevDAO Proposals{" "}
+        <span className="text-muted"> ({proposals.length})</span>
       </Heading>
       <div className="d-flex justify-content-between">
         <div className="d-flex gap-4 align-items-center">
@@ -191,22 +192,34 @@ const FeedPage = () => {
         </div>
       </div>
       <hr />
-      <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
-        <p className="d-flex gap-4 align-items-center mb-0">
-          <div>
-            <i class="bi bi-info-circle"></i>
+      <div className="card">
+        <div className="card-body">
+          <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
+            <p className="d-flex gap-4 align-items-center mb-0">
+              <div>
+                <i class="bi bi-info-circle"></i>
+              </div>
+              DevDAO is the primary organization behind DevHub, and we offer
+              sponsorships to contributors and projects that align with our goal
+              of fostering a self-sufficient community of developers for a
+              thriving NEAR ecosystem. Check out our Funding Guidelines for more
+              details.
+            </p>
           </div>
-          DevDAO is the primary organization behind DevHub, and we offer
-          sponsorships to contributors and projects that align with our goal of
-          fostering a self-sufficient community of developers for a thriving
-          NEAR ecosystem. Check out our Funding Guidelines for more details.
-        </p>
-      </div>
-      <div>
-        {Array.isArray(proposals) &&
-          proposals.map((item) => {
-            return <FeedItem proposal={item} />;
-          })}
+          <div className="mt-4">
+            {Array.isArray(proposals) &&
+              proposals.map((item, index) => {
+                return (
+                  <div
+                    key={index}
+                    className={"border " + (index === 0 && " rounded-top-2")}
+                  >
+                    <FeedItem proposal={item} />
+                  </div>
+                );
+              })}
+          </div>
+        </div>
       </div>
     </Container>
   );
