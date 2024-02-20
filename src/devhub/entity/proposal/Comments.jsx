@@ -27,7 +27,15 @@ const Comment = ({ commentItem, arrayIndex }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  console.log(content);
+
+  const optimisticallyHideItem = (message) => {
+    console.log(message);
+  };
+  const resolveHideItem = (message) => {
+    console.log(message);
+  };
+  const cancelHideItem = () => {};
+
   const extractNotifyAccountId = (item) => {
     if (!item || item.type !== "social" || !item.path) {
       return undefined;
@@ -63,11 +71,12 @@ const Comment = ({ commentItem, arrayIndex }) => {
                 props={{
                   accountId: accountId,
                   blockHeight: blockHeight,
+                  contentPath: `/post/comment`,
+                  contentType: "comment",
                   parentFunctions: {
-                    toggleEdit: () => {},
-                    optimisticallyHideItem: () => {},
-                    resolveHideItem: () => {},
-                    cancelHideItem: () => {},
+                    optimisticallyHideItem,
+                    resolveHideItem,
+                    cancelHideItem,
                   },
                 }}
               />
@@ -131,7 +140,7 @@ const Comment = ({ commentItem, arrayIndex }) => {
 
 if (socialComments.length) {
   return (
-    <div className="d-flex flex-column gap-2">
+    <div className="d-flex flex-column gap-4">
       {socialComments.map((i, index) => (
         <Comment commentItem={i} arrayIndex={index} />
       ))}

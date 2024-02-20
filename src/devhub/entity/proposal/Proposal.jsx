@@ -461,6 +461,14 @@ const TimelineItems = ({ title, children, value, values }) => {
   );
 };
 
+const optimisticallyHideItem = (message) => {
+  console.log(message);
+};
+const resolveHideItem = (message) => {
+  console.log(message);
+};
+const cancelHideItem = () => {};
+
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
     <Widget
@@ -582,10 +590,9 @@ return (
                       accountId: editorAccountId,
                       blockHeight: blockHeight,
                       parentFunctions: {
-                        toggleEdit: () => {},
-                        optimisticallyHideItem: () => {},
-                        resolveHideItem: () => {},
-                        cancelHideItem: () => {},
+                        optimisticallyHideItem,
+                        resolveHideItem,
+                        cancelHideItem,
                       },
                     }}
                   />
@@ -649,7 +656,7 @@ return (
               </div>
             </ProposalContainer>
           </div>
-          <div className="border-bottom pb-4 mt-3">
+          <div className="border-bottom pb-4 mt-4">
             <Widget
               src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Comments"}
               props={{
