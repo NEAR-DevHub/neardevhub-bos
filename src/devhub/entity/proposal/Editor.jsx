@@ -523,7 +523,7 @@ const descriptionPlaceholder = `-- REQUIRED FIELDS // Please remove this line--
   Include a detailed breakdown on how you will use the funds and include rate justification. Our community values transparency, so be as specific as possible.`;
 
 return (
-  <Container className="w-100 p-4 d-flex flex-column gap-3">
+  <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
     <Heading>{isEditPage ? "Edit" : "Create"} Proposal</Heading>
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal"}

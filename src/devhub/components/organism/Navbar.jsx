@@ -99,7 +99,7 @@ const MenuIcon = () => (
 );
 
 const Navbar = styled.div`
-  padding: 1.5rem 3rem;
+  padding: 1.5rem 0rem;
 
   display: flex;
   flex-direction: row;

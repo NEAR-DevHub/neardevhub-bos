@@ -131,7 +131,7 @@ const FeedPage = () => {
   );
 
   return (
-    <Container className="w-100 p-4 d-flex flex-column gap-3">
+    <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
       <Heading>
         DevDAO Proposals{" "}
         <span className="text-muted"> ({proposals.length})</span>
