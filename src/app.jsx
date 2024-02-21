@@ -65,7 +65,7 @@ function Page() {
     // ?page=community
     case "community": {
       return (
-        // Considering to consolsidate this into a single widget,
+        // Considering to consolidate this into a single widget,
         // where each level handles its own routing.
         // Modularizing a page just like we do with addons
         <Widget

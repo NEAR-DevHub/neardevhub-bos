@@ -44,7 +44,7 @@ const UserList = ({ name, users }) => (
 );
 
 return (
-  <div className="d-flex flex-column align-items-center gap-4 w-100">
+  <div className="d-flex flex-column align-items-center gap-4 w-100 px-2">
     <Tile className="p-3 w-100 bg-white mb-3" style={{ maxWidth: 960 }}>
       <div>
         <div
