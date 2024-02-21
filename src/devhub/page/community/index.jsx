@@ -114,6 +114,10 @@ const CommunityName = styled.span`
   font-style: normal;
   font-weight: 700;
   line-height: 100%; /* 48px */
+
+  @media screen and (max-width: 768px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const CommunityDetails = styled.span`

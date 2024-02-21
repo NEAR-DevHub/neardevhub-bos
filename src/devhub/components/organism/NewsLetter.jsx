@@ -5,6 +5,10 @@ const Footer = styled.div`
   background-color: #00ec97;
   padding: 2rem;
   margin-top: 2rem;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const CTA = styled.a`
@@ -109,7 +113,7 @@ const MidContent = () => {
 
 const SocialLinksContainer = () => {
   return (
-    <div className="d-flex gap-4 align-items-center">
+    <div className="d-flex gap-md-4 gap-2 align-items-center">
       <a href="https://twitter.com/NEARDevHub" target="_blank">
         <XIcon />
       </a>
@@ -124,7 +128,7 @@ const SocialLinksContainer = () => {
 };
 
 return (
-  <Footer className="d-flex justify-content-between">
+  <Footer className="d-flex gap-2 justify-content-between">
     <SocialLinksContainer />
     <div className="d-flex align-items-center gap-3">
       <h6 className="m-0">Subscribe to our newsletter</h6>

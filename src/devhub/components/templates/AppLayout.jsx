@@ -7,6 +7,9 @@ const Theme = styled.div`
   overflow-y: scroll;
   padding-top: calc(-1 * var(--body-top-padding));
   background: #f4f4f4;
+  .container-xl {
+    padding-inline: 0px !important;
+  }
 `;
 
 const Container = styled.div`
