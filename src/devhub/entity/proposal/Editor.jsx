@@ -141,6 +141,10 @@ const Container = styled.div`
     background-color: #04a46e !important;
     border-color: #04a46e !important;
   }
+
+  .gap-6 {
+    gap: 2.5rem;
+  }
 `;
 
 const Heading = styled.div`
@@ -532,8 +536,8 @@ return (
         },
       }}
     />
-    <div className="card card-body">
-      <div className="mt-4 d-flex gap-4">
+    <div className="card card-body p-4 rounded-0">
+      <div className="d-flex gap-6">
         <div className="flex-2">
           <div className="d-flex gap-2">
             <Widget

@@ -110,6 +110,10 @@ const Container = styled.div`
       color: white;
     }
   }
+
+  .gap-6 {
+    gap: 2.5rem;
+  }
 `;
 
 const ProposalContainer = styled.div`
@@ -206,9 +210,13 @@ const KycVerificationStatus = () => {
   );
 };
 
-const SidePanelItem = ({ title, children }) => {
+const SidePanelItem = ({ title, children, hideBorder }) => {
   return (
-    <div className="d-flex flex-column gap-2 pb-3 border-bottom">
+    <div
+      className={
+        "d-flex flex-column gap-2 pb-3 " + (!hideBorder && " border-bottom")
+      }
+    >
       <div className="h6 mb-0">{title} </div>
       <div className="text-muted">{children}</div>
     </div>
@@ -533,7 +541,7 @@ return (
         )}
       </div>
     </div>
-    <div className="d-flex gap-2 align-items-center text-sm border-bottom pb-3">
+    <div className="d-flex gap-2 align-items-center text-sm pb-3">
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
         props={{
@@ -546,10 +554,10 @@ return (
         {readableDate(snapshot.timestamp / 1000000)}
       </div>
     </div>
-    <div className="card card-body">
+    <div className="card card-body rounded-0 p-4">
       {snapshot.timeline.status === TIMELINE_STATUS.DRAFT &&
         isAllowedToEditProposal && (
-          <div className="draft-info-container p-4 d-flex justify-content-between align-items-center gap-2">
+          <div className="draft-info-container p-4 d-flex justify-content-between align-items-center gap-2 rounded-2">
             <div>
               <b>
                 This proposal is in draft mode and open for community comments.
@@ -578,7 +586,7 @@ return (
           </div>
         )}
       <div className="my-4">
-        <div className="d-flex gap-4">
+        <div className="d-flex gap-6">
           <div className="flex-3">
             <div className="d-flex gap-2 flex-1">
               <Widget
@@ -730,13 +738,15 @@ return (
               )}
             </SidePanelItem>
             <SidePanelItem title="Supervisor">
-              {snapshot.supervisor && (
+              {snapshot.supervisor ? (
                 <Widget
                   src="${REPL_NEAR}/widget/AccountProfile"
                   props={{
                     accountId: snapshot.supervisor,
                   }}
                 />
+              ) : (
+                "No Supervisor"
               )}
             </SidePanelItem>
             <SidePanelItem title="Payouts">
@@ -745,12 +755,7 @@ return (
                   {snapshot.payouts.map((hash) => {
                     const link = `https://nearblocks.io/blocks/${hash}`;
                     return (
-                      <a
-                        href={link}
-                        style={{ textDecoration: "none" }}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                      <a href={link} target="_blank" rel="noopener noreferrer">
                         {link}
                       </a>
                     );
@@ -761,6 +766,7 @@ return (
               )}
             </SidePanelItem>
             <SidePanelItem
+              hideBorder={true}
               title={
                 <div>
                   <div className="d-flex justify-content-between align-content-center">

@@ -191,8 +191,7 @@ const FeedPage = () => {
           </Link>
         </div>
       </div>
-      <hr />
-      <div className="card">
+      <div className="card rounded-0 p-1 mt-4">
         <div className="card-body">
           <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
             <p className="d-flex gap-4 align-items-center mb-0">
@@ -206,13 +205,16 @@ const FeedPage = () => {
               details.
             </p>
           </div>
-          <div className="mt-4">
+          <div className="mt-4 border rounded-2">
             {Array.isArray(proposals) &&
               proposals.map((item, index) => {
                 return (
                   <div
                     key={index}
-                    className={"border " + (index === 0 && " rounded-top-2")}
+                    className={
+                      (index !== proposals.length - 1 && "border-bottom ") +
+                      (index === 0 && " rounded-top-2")
+                    }
                   >
                     <FeedItem proposal={item} />
                   </div>
