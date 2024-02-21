@@ -379,7 +379,7 @@ const isModerator = isAllowedToEditProposal && proposal.author_id !== accountId;
 const editProposalStatus = ({ timeline }) => {
   const body = {
     proposal_body_version: "V0",
-    name: snapshot.title,
+    name: snapshot.name,
     description: snapshot.description,
     category: snapshot.category,
     summary: snapshot.summary,
