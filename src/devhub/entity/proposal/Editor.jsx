@@ -184,7 +184,7 @@ const [description, setDescription] = useState(null);
 const [summary, setSummary] = useState(null);
 const [consent, setConsent] = useState({ toc: false, coc: false });
 const [linkedProposals, setLinkedProposals] = useState([]);
-const [receiverAccount, setReceiverAccount] = useState(null);
+const [receiverAccount, setReceiverAccount] = useState(context.accountId);
 const [requestedSponsor, setRequestedSponsor] = useState(devdaoAccount);
 const [requestedSponsorshipAmount, setRequestedSponsorshipAmount] =
   useState(null);
