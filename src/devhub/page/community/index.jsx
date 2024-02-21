@@ -63,6 +63,14 @@ const tabs = [
     },
   },
   {
+    title: "Discussions",
+    view: "${REPL_DEVHUB}/widget/devhub.entity.community.Discussions",
+    params: {
+      handle: community.handle,
+      transactionHashes: props.transactionHashes,
+    },
+  },
+  {
     title: "Activity",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Activity",
     params: {

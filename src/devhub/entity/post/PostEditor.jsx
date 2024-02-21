@@ -175,7 +175,7 @@ const AutoComplete = styled.div`
 if (props.transactionHashes) {
   const transaction = useCache(
     () =>
-      asyncFetch("https://rpc.mainnet.near.org", {
+      asyncFetch("${REPL_RPC_URL}", {
         method: "POST",
         headers: {
           "content-type": "application/json",

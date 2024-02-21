@@ -238,7 +238,7 @@ return (
         aria-labelledby="preview-tab"
         style={{ position: "relative" }}
       >
-        <div style={{ position: "absolute", top: 10, right: 0 }}>
+        <div style={{ position: "absolute", top: 10, right: 0, zIndex: 9999 }}>
           <Widget
             src="${REPL_DEVHUB}/widget/devhub.components.molecule.Switch"
             props={{

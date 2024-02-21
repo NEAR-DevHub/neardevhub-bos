@@ -7,7 +7,6 @@ getCommunity = getCommunity || (() => <></>);
 setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 
 const communityData = getCommunity({ handle });
-const [postsExists, setPostExists] = useState(false);
 
 const MainContent = styled.div`
   padding-left: 2rem;
@@ -72,32 +71,99 @@ const Tag = styled.div`
 
 const [sort, setSort] = useState("timedesc");
 
+function repostOnDiscussions(blockHeight) {
+  Near.call([
+    {
+      contractName: "${REPL_DEVHUB_CONTRACT}",
+      methodName: "create_discussion",
+      args: {
+        handle,
+        block_height: blockHeight,
+      },
+      gas: Big(10).pow(14),
+    },
+  ]);
+}
+
+async function checkHashes() {
+  if (props.transactionHashes) {
+    asyncFetch("${REPL_RPC_URL}", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "dontcare",
+        method: "tx",
+        params: [props.transactionHashes, context.accountId],
+      }),
+    }).then((transaction) => {
+      if (transaction !== null) {
+        const transaction_method_name =
+          transaction?.body?.result?.transaction?.actions[0].FunctionCall
+            .method_name;
+
+        if (transaction_method_name === "set") {
+          getBlockHeightAndRepost();
+        }
+
+        // show the latest created post to user
+        if (transaction_method_name === "create_discussion") {
+          console.log("Discussions created in the last call, show it to user.");
+        }
+      }
+    });
+  }
+}
+
+function getBlockHeightAndRepost() {
+  Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
+    keys: [`${context.accountId}/post/**`],
+    options: {
+      with_block_height: true,
+    },
+  })
+    .then((response) => {
+      let blockHeight = response[context.accountId][":block"];
+      repostOnDiscussions(blockHeight);
+    })
+    .catch((error) => {
+      console.log(
+        "DevHub Error [Discussions]: getBlockHeightAndRepost failed",
+        error
+      );
+    });
+}
+
+checkHashes();
+
 return (
   <div className="w-100" style={{ maxWidth: "100%" }}>
     <Container className="d-flex gap-3 m-3 pl-2">
       <MainContent className="max-width-100">
         <div className="d-flex flex-column gap-4">
-          {context.accountId &&
-            (communityData?.admins ?? []).includes(context.accountId) && (
-              <div className="card p-4">
-                <Widget
-                  src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
-                  props={{
-                    onSubmit: (v) => setCommunitySocialDB({ handle, data: v }),
-                    profileAccountId: `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
-                  }}
-                />
-              </div>
-            )}
+          {context.accountId && (
+            <div className="card p-4">
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
+                props={{
+                  onSubmit: (v) => {
+                    Social.set(v, {
+                      force: true,
+                      onCommit: () => {
+                        getBlockHeightAndRepost();
+                      },
+                    });
+                  },
+                  profileAccountId: context.accountId,
+                }}
+              />
+            </div>
+          )}
           <div className="d-flex flex-wrap justify-content-between">
-            <Heading>Announcements</Heading>
-            <div
-              className={
-                postsExists
-                  ? "d-flex align-items-center gap-2"
-                  : " display-none"
-              }
-            >
+            <Heading>Discussions</Heading>
+            <div className={"d-flex align-items-center gap-2"}>
               <select
                 name="sort"
                 id="sort"
@@ -114,22 +180,17 @@ return (
               </select>
             </div>
           </div>
-          {!postsExists && (
-            <div>
-              <h6>No announcements exists.</h6>
-            </div>
-          )}
-          <div className={postsExists && "card p-4"}>
+
+          <div className={"card p-4"}>
+            {/* TODO: the current feed is from https://near.org/near/widget/ComponentDetailsPage?src=mob.near/widget/ProfileTabs 
+                We will replace this with our custom feed as soon as it can support reposts */}
             <Widget
-              src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
+              key="feed"
+              src="mob.near/widget/MainPage.N.Feed"
               props={{
-                showFlagAccountFeature: true,
-                filteredAccountIds: [
-                  `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                accounts: [
+                  `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
                 ],
-                sort: sort,
-                setPostExists: setPostExists,
-                showFlagAccountFeature: true,
               }}
             />
           </div>
