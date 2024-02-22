@@ -1,10 +1,12 @@
 import { test, expect } from "@playwright/test";
 
 test("should load a community page if handle exists", async ({ page }) => {
-  await page.goto("/devhub.near/widget/app?page=community&handle=devhub-test");
+  await page.goto(
+    "/devhub.near/widget/app?page=community&handle=webassemblymusic"
+  );
 
   // Using the <Link> that wraps the tabs to identify a community page loaded
-  const communityTabSelector = `a[href^="/devhub.near/widget/app?page=community&handle=devhub-test&tab="]`;
+  const communityTabSelector = `a[href^="/devhub.near/widget/app?page=community&handle=webassemblymusic&tab="]`;
 
   // Wait for the tab to be visible
   await page.waitForSelector(communityTabSelector, {
@@ -35,14 +37,14 @@ test("should load an error page if handle does not exist", async ({ page }) => {
 
 test.describe("Wallet is connected", () => {
   test.use({
-    storageState: "playwright-tests/storage-states/wallet-connected.json",
+    storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
 
   test("should allow connected user to post from community page", async ({
     page,
   }) => {
     await page.goto(
-      "/devhub.near/widget/app?page=community&handle=devhub-test&tab=activity"
+      "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=activity"
     );
 
     const postButtonSelector = 'a:has-text("Post")';
@@ -59,7 +61,7 @@ test.describe("Wallet is connected", () => {
 
     // Verify that the URL is the expected one.
     expect(page.url()).toBe(
-      "http://localhost:8080/devhub.near/widget/app?page=create&labels=devhub-test"
+      "http://localhost:8080/devhub.near/widget/app?page=create&labels=webassemblymusic"
     );
 
     // Wait for the Typeahead field to render.
@@ -76,7 +78,7 @@ test.describe("Wallet is connected", () => {
     const elementText = await element.textContent();
 
     expect(element).toBeTruthy();
-    expect(elementText).toBe("devhub-test");
+    expect(elementText).toBe("webassemblymusic");
   });
 });
 
@@ -89,7 +91,7 @@ test.describe("Wallet is not connected", () => {
     page,
   }) => {
     await page.goto(
-      "/devhub.near/widget/app?page=community&handle=devhub-test"
+      "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
 
     const createCommunityButtonSelector = 'button:has-text("Post")';
