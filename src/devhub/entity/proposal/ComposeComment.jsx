@@ -89,7 +89,9 @@ function composeData() {
 
   Social.set(data, {
     force: true,
-    onCommit: () => {},
+    onCommit: () => {
+      setComment("");
+    },
     onCancel: () => {},
   });
 }
@@ -117,16 +119,18 @@ return (
         }}
       />
       <div className="d-flex gap-2 align-content-center justify-content-end">
-        {/* <Widget
+        <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             label: "Cancel",
-            classNames: { root: "btn-outline-danger border-0 shadow-none btn-sm" },
+            classNames: {
+              root: "btn-outline-danger border-0 shadow-none btn-sm",
+            },
             onClick: () => {
-              setComment(null);
-            }
+              setComment("");
+            },
           }}
-        /> */}
+        />
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
