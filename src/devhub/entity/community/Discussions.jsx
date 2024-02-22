@@ -1,3 +1,5 @@
+const NEW_DISCUSSION_POSTED_CONTENT_STORAGE_KEY =
+  "new_discussion_posted_content";
 const { handle } = props;
 const { getCommunity, setCommunitySocialDB } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
@@ -86,6 +88,7 @@ function repostOnDiscussions(blockHeight) {
 }
 
 async function checkHashes() {
+  console.log("checkHashes", props.transactionHashes);
   if (props.transactionHashes) {
     asyncFetch("${REPL_RPC_URL}", {
       method: "POST",
@@ -118,6 +121,11 @@ async function checkHashes() {
 }
 
 function getBlockHeightAndRepost() {
+  const newDiscussionPostedContent = Storage.get(
+    NEW_DISCUSSION_POSTED_CONTENT_STORAGE_KEY
+  );
+  console.log("new discussion content", newDiscussionPostedContent);
+
   Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
     keys: [`${context.accountId}/post/**`],
     options: {
@@ -125,8 +133,16 @@ function getBlockHeightAndRepost() {
     },
   })
     .then((response) => {
-      let blockHeight = response[context.accountId][":block"];
-      repostOnDiscussions(blockHeight);
+      const post_main = response[context.accountId].post.main;
+      const content = post_main[""];
+      if (content === newDiscussionPostedContent) {
+        const blockHeight = post_main[":block"];
+        console.log("content matches", blockHeight, post_main);
+        repostOnDiscussions(blockHeight);
+      } else {
+        console.log("content does not match (yet)", post_main);
+        setTimeout(() => getBlockHeightAndRepost(), 500);
+      }
     })
     .catch((error) => {
       console.log(
@@ -149,6 +165,10 @@ return (
                 src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                 props={{
                   onSubmit: (v) => {
+                    Storage.set(
+                      NEW_DISCUSSION_POSTED_CONTENT_STORAGE_KEY,
+                      v.post.main
+                    );
                     Social.set(v, {
                       force: true,
                       onCommit: () => {
