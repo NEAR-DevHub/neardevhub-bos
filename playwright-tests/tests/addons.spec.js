@@ -2,12 +2,12 @@ const { test } = require("@playwright/test");
 
 test.describe("Wallet is connected", () => {
   test.use({
-    storageState: "playwright-tests/storage-states/wallet-connected.json",
+    storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
 
   test.describe("AddonsConfigurator", () => {
     const baseUrl =
-      "/devhub.near/widget/app?page=community.configuration&handle=devhub-test";
+      "/devhub.near/widget/app?page=community.configuration&handle=webassemblymusic";
     // const dropdownSelector =
     //   'input[data-component="near/widget/DIG.InputSelect"]';
     // const addButtonSelector = "button.btn-success:has(i.bi.bi-plus)";
