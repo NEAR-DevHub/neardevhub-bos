@@ -88,7 +88,6 @@ function repostOnDiscussions(blockHeight) {
 }
 
 async function checkHashes() {
-  console.log("checkHashes", props.transactionHashes);
   if (props.transactionHashes) {
     asyncFetch("${REPL_RPC_URL}", {
       method: "POST",
