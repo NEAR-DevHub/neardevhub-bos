@@ -43,7 +43,7 @@ const handleSearch = (event) => {
       return option.label.toLowerCase().includes(term);
     }
     if (searchByValue) {
-      return option.value.toLowerCase().includes(term);
+      return option.value.toString().toLowerCase().includes(term);
     }
   });
 
@@ -104,10 +104,18 @@ const Container = styled.div`
     cursor: pointer;
   }
 `;
-
+let searchFocused = false;
 return (
   <Container>
-    <div className="custom-select" tabIndex="0" onBlur={() => setIsOpen(false)}>
+    <div
+      className="custom-select"
+      tabIndex="0"
+      onBlur={() => {
+        setTimeout(() => {
+          setIsOpen(searchFocused || false);
+        }, 0);
+      }}
+    >
       <div className="dropdown-toggle bg-white border rounded-2 btn drop-btn">
         <div
           className={`selected-option ${
@@ -128,6 +136,14 @@ return (
               placeholder={searchInputPlaceholder ?? "Search options"}
               value={searchTerm}
               onChange={handleSearch}
+              onFocus={() => {
+                searchFocused = true;
+              }}
+              onBlur={() => {
+                setTimeout(() => {
+                  searchFocused = false;
+                }, 0);
+              }}
             />
           )}
           <div className="scroll-box">
