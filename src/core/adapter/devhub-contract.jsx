@@ -18,7 +18,7 @@ function createCommunity({ inputs }) {
     "create_community",
     { inputs },
     Big(10).pow(14), // gas
-    Big(2) * Big(10).pow(24) // deposit (2N)
+    Big(4) * Big(10).pow(24) // deposit (2N)
   );
 }
 
