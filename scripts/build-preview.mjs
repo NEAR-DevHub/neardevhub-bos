@@ -42,6 +42,13 @@ if (!ACCOUNT_ID) {
   console.error(
     "Error: Account is not provided. Please provide the account to deploy the widgets to."
   );
+console.log(`\nExample usage:\n
+npm run build:preview -- -a devgovgigs.petersalomonsen.near -c devhub.near
+
+Arguments: 
+-a account for deploying BOS components
+-c backend contract account
+`)
   process.exit(1);
 }
 
