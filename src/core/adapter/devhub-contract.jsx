@@ -18,7 +18,7 @@ function createCommunity({ inputs }) {
     "create_community",
     { inputs },
     Big(10).pow(14), // gas
-    Big(2) * Big(10).pow(24) // deposit (2N)
+    Big(4) * Big(10).pow(24) // deposit (2N)
   );
 }
 
@@ -99,6 +99,10 @@ function getAllCommunitiesMetadata() {
   );
 }
 
+function getSocialWithBlockHeight(data) {
+  return Near.view("${REPL_SOCIAL_CONTRACT}", "get", data) ?? null;
+}
+
 function getAllLabels() {
   return Near.view("${REPL_DEVHUB_LEGACY}", "get_all_labels") ?? null;
 }
@@ -125,6 +129,15 @@ function getPostsByLabel({ label }) {
 function setCommunitySocialDB({ handle, data }) {
   return (
     Near.call("${REPL_DEVHUB_CONTRACT}", "set_community_socialdb", {
+      handle,
+      data,
+    }) ?? null
+  );
+}
+
+function createDiscussion({ handle, data }) {
+  return (
+    Near.call("${REPL_DEVHUB_CONTRACT}", "create_discussion", {
       handle,
       data,
     }) ?? null

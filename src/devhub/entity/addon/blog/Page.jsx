@@ -1,8 +1,17 @@
+const { getAccountCommunityPermissions } = VM.require(
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+) || { getAccountCommunityPermissions: () => {} };
 const imagelink =
   "https://ipfs.near.social/ipfs/bafkreiajzvmy7574k7mp3if6u53mdukfr3hoc2kjkhjadt6x56vqhd5swy";
 
-function Page({ data }) {
+function Page({ data, onEdit, labels, accountId }) {
   const { category, title, description, subtitle, date, content } = data;
+  const handle = labels?.[1]; // community-handle
+  const permissions = getAccountCommunityPermissions({
+    account_id: accountId,
+    community_handle: handle,
+  });
+  const isAllowedToEdit = permissions?.can_configure ?? false;
   const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -10,7 +19,7 @@ function Page({ data }) {
 
     padding: 0 3rem;
     margin-bottom: 2rem;
-
+    position: relative;
     ${category &&
     `
     span.category {
@@ -56,6 +65,13 @@ function Page({ data }) {
       margin: 0;
     }
 
+    .edit-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+    }
+
     @media screen and (max-width: 768px) {
       padding: 0 1rem;
 
@@ -87,6 +103,11 @@ function Page({ data }) {
     <>
       <BackgroundImage src={imagelink} />
       <Container>
+        {isAllowedToEdit && (
+          <div className="edit-icon" onClick={onEdit}>
+            <div class="bi bi-pencil-square" style={{ fontSize: "30px" }}></div>
+          </div>
+        )}
         {category && <span className="category">{category}</span>}
         <h1>{title}</h1>
         <p className="subtitle">{subtitle}</p>

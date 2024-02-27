@@ -1,11 +1,12 @@
-const { Sidebar, Content, getData } = props;
+const { Sidebar, Content, getData, editData } = props;
 
-const [selectedItem, setSelectedItem] = useState(null);
+const [selectedItem, setSelectedItem] = useState(editData);
 
 const handleItemClick = (item) => {
   if (item) {
-    const data = getData(item);
-    setSelectedItem(data);
+    getData(item).then((item) => {
+      setSelectedItem(item);
+    });
   } else {
     setSelectedItem(null);
   }
