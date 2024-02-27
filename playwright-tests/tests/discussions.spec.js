@@ -43,7 +43,7 @@ test.describe("Wallet is connected", () => {
     );
     const socialdbpostblockheight =
       socialdbpost[socialdbaccount].post.main[":block"];
-    console.log("MAIN post", socialdbpostblockheight);
+
     const discussionPostEditor = await page.getByTestId("compose-announcement");
     await discussionPostEditor.scrollIntoViewIfNeeded();
     await discussionPostEditor.fill(socialdbpostcontent.text);
