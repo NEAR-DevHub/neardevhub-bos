@@ -41,12 +41,24 @@ test.describe("Wallet is connected", () => {
     const socialdbpostcontent = JSON.parse(
       socialdbpost[socialdbaccount].post.main[""]
     );
-
+    const socialdbpostblockheight =
+      socialdbpost[socialdbaccount].post.main[":block"];
+    console.log("MAIN post", socialdbpostblockheight);
     const discussionPostEditor = await page.getByTestId("compose-announcement");
     await discussionPostEditor.scrollIntoViewIfNeeded();
     await discussionPostEditor.fill(socialdbpostcontent.text);
 
     await page.getByTestId("post-btn").click();
+    await page.route("https://rpc.mainnet.near.org/", async (route) => {
+      const request = await route.request();
+
+      const requestPostData = request.postDataJSON();
+      if (requestPostData.method === "tx") {
+        await route.continue({ url: "https://archival-rpc.mainnet.near.org/" });
+      } else {
+        await route.continue();
+      }
+    });
 
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions&transactionHashes=mi2a1KwagRFZhpqBNKhKaCTkHVj98J8tZnxSr1NpxSQ"
@@ -56,7 +68,7 @@ test.describe("Wallet is connected", () => {
       JSON.stringify(
         {
           handle: "webassemblymusic",
-          block_height: 113362773,
+          block_height: socialdbpostblockheight,
         },
         null,
         1
@@ -111,6 +123,16 @@ test.describe("Wallet is connected", () => {
 
     await page.getByTestId("post-btn").click();
 
+    await page.route("https://rpc.mainnet.near.org/", async (route) => {
+      const request = await route.request();
+
+      const requestPostData = request.postDataJSON();
+      if (requestPostData.method === "tx") {
+        await route.continue({ url: "https://archival-rpc.mainnet.near.org/" });
+      } else {
+        await route.continue();
+      }
+    });
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions&transactionHashes=mi2a1KwagRFZhpqBNKhKaCTkHVj98J8tZnxSr1NpxSQ"
     );

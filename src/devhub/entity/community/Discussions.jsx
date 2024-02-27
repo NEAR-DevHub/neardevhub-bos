@@ -139,7 +139,11 @@ function getBlockHeightAndRepost() {
         console.log("content matches", blockHeight, post_main);
         repostOnDiscussions(blockHeight);
       } else {
-        console.log("content does not match (yet)", post_main);
+        console.log(
+          "content does not match (yet)",
+          post_main,
+          newDiscussionPostedContent
+        );
         setTimeout(() => getBlockHeightAndRepost(), 500);
       }
     })
