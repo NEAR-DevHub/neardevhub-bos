@@ -192,48 +192,47 @@ const FeedPage = () => {
           </Link>
         </div>
       </div>
-      {!Array.isArray(proposals) ? (
-        <div
-          style={{ height: "45vh" }}
-          className="d-flex justify-content-center align-items-center w-100"
-        >
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
-          />
-        </div>
-      ) : (
-        <div className="card rounded-0 p-1 mt-4">
-          <div className="card-body">
-            <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
-              <p className="d-flex gap-4 align-items-center mb-0">
-                <div>
-                  <i class="bi bi-info-circle"></i>
-                </div>
-                DevDAO is the primary organization behind DevHub, and we offer
-                sponsorships to contributors and projects that align with our
-                goal of fostering a self-sufficient community of developers for
-                a thriving NEAR ecosystem. Check out our Funding Guidelines for
-                more details.
-              </p>
-            </div>
-            <div className="mt-4 border rounded-2">
-              {proposals.map((item, index) => {
-                return (
-                  <div
-                    key={index}
-                    className={
-                      (index !== proposals.length - 1 && "border-bottom ") +
-                      (index === 0 && " rounded-top-2")
-                    }
-                  >
-                    <FeedItem proposal={item} />
+      <div style={{ minHeight: "45vh" }}>
+        {!Array.isArray(proposals) ? (
+          <div className="d-flex justify-content-center align-items-center w-100">
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
+            />
+          </div>
+        ) : (
+          <div className="card rounded-0 p-1 mt-4">
+            <div className="card-body">
+              <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
+                <p className="d-flex gap-4 align-items-center mb-0">
+                  <div>
+                    <i class="bi bi-info-circle"></i>
                   </div>
-                );
-              })}
+                  DevDAO is the primary organization behind DevHub, and we offer
+                  sponsorships to contributors and projects that align with our
+                  goal of fostering a self-sufficient community of developers
+                  for a thriving NEAR ecosystem. Check out our Funding
+                  Guidelines for more details.
+                </p>
+              </div>
+              <div className="mt-4 border rounded-2">
+                {proposals.map((item, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className={
+                        (index !== proposals.length - 1 && "border-bottom ") +
+                        (index === 0 && " rounded-top-2")
+                      }
+                    >
+                      <FeedItem proposal={item} />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </Container>
   );
 };
