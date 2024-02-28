@@ -182,7 +182,7 @@ if (timestamp && proposal) {
 const { snapshot } = proposal;
 
 const editorAccountId = snapshot.editor_id;
-const blockHeight = proposal.social_db_post_block_height;
+const blockHeight = parseInt(proposal.social_db_post_block_height);
 const item = {
   type: "social",
   path: `${REPL_PROPOSALS_CONTRACT}/post/main`,

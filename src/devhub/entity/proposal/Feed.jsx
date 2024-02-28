@@ -47,7 +47,7 @@ const FeedItem = ({ proposal }) => {
   const { snapshot } = proposal;
   const accountId = proposal.author_id;
   const profile = Social.get(`${accountId}/profile/**`, "final");
-  const blockHeight = proposal.social_db_post_block_height;
+  const blockHeight = parseInt(proposal.social_db_post_block_height);
   const item = {
     type: "social",
     path: `${REPL_PROPOSALS_CONTRACT}/post/main`,
