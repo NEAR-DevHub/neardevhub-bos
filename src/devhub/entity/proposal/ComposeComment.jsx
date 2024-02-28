@@ -122,18 +122,6 @@ return (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
-            label: "Cancel",
-            classNames: {
-              root: "btn-outline-danger border-0 shadow-none btn-sm",
-            },
-            onClick: () => {
-              setComment("");
-            },
-          }}
-        />
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-          props={{
             label: "Comment",
             classNames: { root: "green-btn btn-sm" },
             onClick: () => {

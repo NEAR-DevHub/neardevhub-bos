@@ -44,7 +44,7 @@ const Comment = ({ commentItem, arrayIndex }) => {
     return `${accountId}/post/main` === item.path ? accountId : undefined;
   };
   const parentItem = content.item;
-  const link = `https://near.org/near/widget/PostPage?accountId=${accountId}&commentBlockHeight=${blockHeight}`;
+  const link = `https://near.org/mob.near/widget/MainPage.N.Comment.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
   return (
     <div>
       <div className="d-flex gap-2 flex-1">
@@ -65,22 +65,24 @@ const Comment = ({ commentItem, arrayIndex }) => {
                 }}
               />
             </div>
-            <div className="menu">
-              <Widget
-                src="${REPL_NEAR}/widget/Posts.Menu"
-                props={{
-                  accountId: accountId,
-                  blockHeight: blockHeight,
-                  contentPath: `/post/comment`,
-                  contentType: "comment",
-                  parentFunctions: {
-                    optimisticallyHideItem,
-                    resolveHideItem,
-                    cancelHideItem,
-                  },
-                }}
-              />
-            </div>
+            {context.accountId && (
+              <div className="menu">
+                <Widget
+                  src="${REPL_NEAR}/widget/Posts.Menu"
+                  props={{
+                    accountId: accountId,
+                    blockHeight: blockHeight,
+                    contentPath: `/post/comment`,
+                    contentType: "comment",
+                    parentFunctions: {
+                      optimisticallyHideItem,
+                      resolveHideItem,
+                      cancelHideItem,
+                    },
+                  }}
+                />
+              </div>
+            )}
           </Header>
           <div className="p-2 px-3">
             <Widget

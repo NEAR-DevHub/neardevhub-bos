@@ -232,7 +232,7 @@ const proposalStatusOptions = [
     label: "Review",
     value: {
       status: "REVIEW",
-      sponsor_requested_review: true,
+      sponsor_requested_review: false,
       reviewer_completed_attestation: false,
     },
   },
@@ -275,10 +275,10 @@ const proposalStatusOptions = [
     label: "Funded",
     value: {
       status: "FUNDED",
-      trustees_released_payment: false,
-      kyc_verified: false,
-      test_transaction_sent: false,
-      request_for_trustees_created: false,
+      trustees_released_payment: true,
+      kyc_verified: true,
+      test_transaction_sent: true,
+      request_for_trustees_created: true,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -318,7 +318,7 @@ const LinkedProposals = () => {
   );
 };
 
-const CheckBox = ({ value, isChecked, label }) => {
+const CheckBox = ({ value, isChecked, label, disabled, onClick }) => {
   return (
     <div className="d-flex gap-2 align-items-center">
       <input
@@ -326,7 +326,8 @@ const CheckBox = ({ value, isChecked, label }) => {
         type="checkbox"
         value={value}
         checked={isChecked}
-        disabled={true}
+        disabled={disabled}
+        onChange={(e) => onClick(e.target.checked)}
       />
       <label class="form-check-label text-black">{label}</label>
     </div>
@@ -385,29 +386,12 @@ const isAllowedToEditProposal = Near.view(
 const isModerator = isAllowedToEditProposal && proposal.author_id !== accountId;
 
 const editProposalStatus = ({ timeline }) => {
-  const body = {
-    proposal_body_version: "V0",
-    name: snapshot.name,
-    description: snapshot.description,
-    category: snapshot.category,
-    summary: snapshot.summary,
-    linked_proposals: snapshot.linked_proposals,
-    requested_sponsorship_amount: snapshot.requested_sponsorship_amount,
-    requested_sponsorship_token: snapshot.requested_sponsorship_token,
-    receiver_account: snapshot.receiver_account,
-    supervisor: snapshot.supervisor,
-    requested_sponsor: snapshot.requested_sponsor,
-    payouts: snapshot.payouts,
-    timeline: timeline,
-  };
-
   Near.call({
     contractName: "${REPL_PROPOSALS_CONTRACT}",
-    methodName: "edit_proposal",
+    methodName: "edit_proposal_timeline",
     args: {
       id: proposal.id,
-      labels: snapshot.labels,
-      body: body,
+      timeline: timeline,
     },
     gas: 270000000000000,
   });
@@ -605,20 +589,22 @@ return (
                       blockTimestamp: snapshot.timestamp,
                     }}
                   />
-                  <div className="menu">
-                    <Widget
-                      src="${REPL_NEAR}/widget/Posts.Menu"
-                      props={{
-                        accountId: editorAccountId,
-                        blockHeight: blockHeight,
-                        parentFunctions: {
-                          optimisticallyHideItem,
-                          resolveHideItem,
-                          cancelHideItem,
-                        },
-                      }}
-                    />
-                  </div>
+                  {context.accountId && (
+                    <div className="menu">
+                      <Widget
+                        src="${REPL_NEAR}/widget/Posts.Menu"
+                        props={{
+                          accountId: editorAccountId,
+                          blockHeight: blockHeight,
+                          parentFunctions: {
+                            optimisticallyHideItem,
+                            resolveHideItem,
+                            cancelHideItem,
+                          },
+                        }}
+                      />
+                    </div>
+                  )}
                 </Header>
                 <div className="d-flex flex-column gap-1 p-2 px-3">
                   <div className="text-muted h6 border-bottom pb-1 mt-3">
@@ -874,6 +860,16 @@ return (
                         attestations from work groups.
                         <CheckBox
                           value=""
+                          disabled={selectedStatusIndex !== 1}
+                          onClick={(value) =>
+                            setUpdatedProposalStatus((prevState) => ({
+                              ...prevState,
+                              value: {
+                                ...prevState.value,
+                                sponsor_requested_review: value,
+                              },
+                            }))
+                          }
                           label="Sponsor provides feedback or requests reviews"
                           isChecked={
                             updatedProposalStatus.value.sponsor_requested_review
@@ -881,7 +877,17 @@ return (
                         />
                         <CheckBox
                           value=""
+                          disabled={selectedStatusIndex !== 1}
                           label="Reviewer completes attestations (Optional)"
+                          onClick={(value) =>
+                            setUpdatedProposalStatus((prevState) => ({
+                              ...prevState,
+                              value: {
+                                ...prevState.value,
+                                reviewer_completed_attestation: value,
+                              },
+                            }))
+                          }
                           isChecked={
                             updatedProposalStatus.value
                               .reviewer_completed_attestation
@@ -940,18 +946,48 @@ return (
                         <CheckBox
                           value=""
                           label="Sponsor verifies KYC/KYB"
+                          disabled={selectedStatusIndex !== 5}
+                          onClick={(value) =>
+                            setUpdatedProposalStatus((prevState) => ({
+                              ...prevState,
+                              value: {
+                                ...prevState.value,
+                                kyc_verified: value,
+                              },
+                            }))
+                          }
                           isChecked={updatedProposalStatus.value.kyc_verified}
                         />
                         <CheckBox
                           value=""
+                          disabled={selectedStatusIndex !== 5}
                           label="Sponsor sends test transaction"
+                          onClick={(value) =>
+                            setUpdatedProposalStatus((prevState) => ({
+                              ...prevState,
+                              value: {
+                                ...prevState.value,
+                                test_transaction_sent: value,
+                              },
+                            }))
+                          }
                           isChecked={
                             updatedProposalStatus.value.test_transaction_sent
                           }
                         />
                         <CheckBox
                           value=""
+                          disabled={selectedStatusIndex !== 5}
                           label="Sponsor creates funding request from Trustees"
+                          onClick={(value) =>
+                            setUpdatedProposalStatus((prevState) => ({
+                              ...prevState,
+                              value: {
+                                ...prevState.value,
+                                request_for_trustees_created: value,
+                              },
+                            }))
+                          }
                           isChecked={
                             updatedProposalStatus.value
                               .request_for_trustees_created
@@ -965,6 +1001,7 @@ return (
                     >
                       <CheckBox
                         value=""
+                        disabled={true}
                         label="DevDAO Trustee Releases payment"
                         isChecked={
                           updatedProposalStatus.value.status ===

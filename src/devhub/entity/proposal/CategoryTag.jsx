@@ -3,13 +3,15 @@ const getClassNameByCategory = () => {
   switch (category) {
     case "DevDAO Operations":
       return "purple";
+    case "DevDAO Platform":
+      return "yellow";
     case "Decentralized DevRel":
       return "cyan";
-    case "NEAR Campus":
+    case "Universities & Bootcamps":
       return "mustard";
-    case "Marketing":
+    case "Engagement & Awareness":
       return "red";
-    case "Events":
+    case "Events & Hackathons":
       return "green";
     case "Tooling & Infrastructure":
       return "pink";
@@ -27,6 +29,9 @@ const Container = styled.div`
   }
   .purple-bg {
     background-color: #7c66dc;
+  }
+  .yellow-bg {
+    background-color: #f2f0ce;
   }
   .cyan-bg {
     background-color: #0daebb;

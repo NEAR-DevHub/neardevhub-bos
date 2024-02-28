@@ -11,6 +11,27 @@ const options = [
     value: "DevDAO Operations",
   },
   {
+    icon: "https://ipfs.near.social/ipfs/bafkreiengkdru4fczwltjylfqeeypsdf4hb5fdxa6t67l3x2qtqgeo3pzq",
+    title: "DevDAO Platform",
+    description:
+      "Build & maintain the interface for DevHub’s community & funding activities.",
+    value: "DevDAO Platform",
+  },
+  {
+    icon: "https://ipfs.near.social/ipfs/bafkreicpt3ulwsmptzdbtkhvxodvo7pcajcpyr35tqcbfdnaipzrx5re7e",
+    title: "Events & Hackathons",
+    description:
+      "Organize or support events, hackathons, and local meet ups to grow communities.",
+    value: "Events & Hackathons",
+  },
+  {
+    icon: "https://ipfs.near.social/ipfs/bafkreibdrwhbouuutvrk4qt2udf4kumbyy5ebjkezobbahxvo7fyxo2ec4",
+    title: "Engagement & Awareness",
+    description:
+      "Create content from social posts to real world swag to drive awareness to NEAR.",
+    value: "Engagement & Awareness",
+  },
+  {
     icon: "https://ipfs.near.social/ipfs/bafkreiem2vjsp6wu3lkd4zagpm43f32egdjjzchmleky6rr2ydzhlkrxam",
     title: "Decentralized DevRel",
     description:
@@ -19,24 +40,10 @@ const options = [
   },
   {
     icon: "https://ipfs.near.social/ipfs/bafkreic3prsy52hwueugqj5rwualib4imguelezsbvgrxtezw4u33ldxqq",
-    title: "NEAR Campus",
+    title: "Universities & Bootcamps",
     description:
       "Engage with students and universities globally to encourage NEAR.",
-    value: "NEAR Campus",
-  },
-  {
-    icon: "https://ipfs.near.social/ipfs/bafkreibdrwhbouuutvrk4qt2udf4kumbyy5ebjkezobbahxvo7fyxo2ec4",
-    title: "Marketing",
-    description:
-      "Create social content to real world swag to drive awareness to NEAR.",
-    value: "Marketing",
-  },
-  {
-    icon: "https://ipfs.near.social/ipfs/bafkreicpt3ulwsmptzdbtkhvxodvo7pcajcpyr35tqcbfdnaipzrx5re7e",
-    title: "Events",
-    description:
-      "Organize or support events, hackathons, and local meet ups to grow communities.",
-    value: "Events",
+    value: "Universities & Bootcamps",
   },
   {
     icon: "https://ipfs.near.social/ipfs/bafkreigf7j5isssumbjl24zy4pr27ryfqivan3vuwu2uwsofcujhhkk7cq",
@@ -98,6 +105,10 @@ const Container = styled.div`
     background-color: #f8f8f8 !important;
     cursor: not-allowed !important;
     border-radius: 5px;
+  }
+
+  .disabled.dropdown-toggle::after {
+    display: none !important;
   }
 
   .custom-select {

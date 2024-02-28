@@ -2,21 +2,29 @@ const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const { getDepositAmountForWriteAccess } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
 );
-
+const draftKey = "PROPOSAL_EDIT";
 getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 href || (href = () => {});
 
 const { id, timestamp } = props;
 
 const isEditPage = typeof id === "string";
+const author = context.accountId;
+
+if (!author) {
+  return (
+    <Widget src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.LoginScreen"} />
+  );
+}
 let editProposalData = null;
+let draftProposalData = Storage.privateGet(draftKey);
+
 if (isEditPage) {
   editProposalData = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
     proposal_id: parseInt(id),
   });
 }
 
-const author = context.accountId;
 const Container = styled.div`
   .text-sm {
     font-size: 13px;
@@ -189,22 +197,61 @@ const [requestedSponsor, setRequestedSponsor] = useState(devdaoAccount);
 const [requestedSponsorshipAmount, setRequestedSponsorshipAmount] =
   useState(null);
 const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
-  tokensOptions[0]
+  tokensOptions[2]
 );
 const [supervisor, setSupervisor] = useState(null);
+const [allowDraft, setAllowDraft] = useState(true);
 
 const [proposalsOptions, setProposalsOptions] = useState([]);
 const proposalsData = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposals");
 
+const memoizedDraftData = useMemo(
+  () => ({
+    id: editProposalData.id ?? null,
+    snapshot: {
+      name: title,
+      description: description,
+      category: category,
+      summary: summary,
+      requested_sponsorship_amount: requestedSponsorshipAmount,
+      requested_sponsorship_token: requestedSponsorshipToken.value,
+      receiver_account: receiverAccount,
+      supervisor: supervisor,
+      requested_sponsor: requestedSponsor,
+    },
+  }),
+  [
+    title,
+    summary,
+    description,
+    category,
+    requestedSponsorshipAmount,
+    requestedSponsorshipToken,
+    receiverAccount,
+    supervisor,
+    requestedSponsor,
+  ]
+);
+
 useEffect(() => {
-  if (editProposalData) {
+  const data = editProposalData || JSON.parse(draftProposalData);
+  if (allowDraft && data) {
     if (timestamp) {
-      editProposalData.snapshot =
-        editProposalData.snapshot_history.find(
-          (item) => item.timestamp === timestamp
-        ) ?? editProposalData.snapshot;
+      data.snapshot =
+        data.snapshot_history.find((item) => item.timestamp === timestamp) ??
+        data.snapshot;
     }
-    const { snapshot } = editProposalData;
+    const { snapshot } = data;
+    if (
+      draftProposalData &&
+      editProposalData &&
+      editProposalData.id === JSON.parse(draftProposalData).id
+    ) {
+      data.snapshot = {
+        ...editProposalData.snapshot,
+        ...JSON.parse(draftProposalData).snapshot,
+      };
+    }
     setCategory(snapshot.category);
     setTitle(snapshot.name);
     setSummary(snapshot.summary);
@@ -217,11 +264,26 @@ useEffect(() => {
     setSupervisor(snapshot.supervisor);
 
     const token = tokensOptions.find(
-      (item) => item.value === snapshot.requested_sponsorship_token
+      (item) =>
+        JSON.stringify(item.value) ===
+        JSON.stringify(snapshot.requested_sponsorship_token)
     );
     setRequestedSponsorshipToken(token);
   }
-}, [editProposalData]);
+}, [editProposalData, draftProposalData]);
+
+useEffect(() => {
+  const handler = setTimeout(() => {
+    if (allowDraft) {
+      setAllowDraft(false);
+      Storage.privateSet(draftKey, JSON.stringify(memoizedDraftData));
+    }
+  }, 3000);
+
+  return () => {
+    clearTimeout(handler);
+  };
+}, [memoizedDraftData, draftKey]);
 
 useEffect(() => {
   if (
@@ -265,7 +327,6 @@ const InputContainer = ({ heading, description, children }) => {
 };
 
 const CheckBox = ({ value, isChecked, label, onClick }) => {
-  let onChange = onClick || (() => {});
   return (
     <div className="d-flex gap-2 align-items-center">
       <input
@@ -273,7 +334,7 @@ const CheckBox = ({ value, isChecked, label, onClick }) => {
         type="checkbox"
         value={value}
         checked={isChecked}
-        onChange={onChange}
+        onChange={(e) => onClick(e.target.checked)}
       />
       <label class="form-check-label text-sm">{label}</label>
     </div>
@@ -351,7 +412,7 @@ const DraftBtnContainer = styled.div`
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
 const [selectedStatus, setSelectedStatus] = useState("draft");
 const [isReviewModalOpen, setReviewModal] = useState(false);
-
+const [amountError, setAmountError] = useState(null);
 const DraftBtn = () => {
   const btnOptions = [
     { iconColor: "grey", label: "Submit Draft", value: "draft" },
@@ -371,6 +432,7 @@ const DraftBtn = () => {
     const isDraft = selectedStatus === "draft";
     if (isDraft) {
       onSubmit({ isDraft });
+      cleanDraft();
     } else {
       setReviewModal(true);
     }
@@ -505,22 +567,27 @@ const onSubmit = ({ isDraft }) => {
   Near.call(calls);
 };
 
+function cleanDraft() {
+  Storage.privateSet(draftKey, null);
+}
+
 const WarningImg =
   "https://ipfs.near.social/ipfs/bafkreieq4222tf3hkbccfnbw5kpgedm3bf2zcfgzbnmismxav2phqdwd7q";
 
-const descriptionPlaceholder = `-- REQUIRED FIELDS // Please remove this line--
+const descriptionPlaceholder = `**PROJECT DETAILS**
+Provide a clear overview of the scope, deliverables, and expected outcomes. What benefits will it provide to the NEAR community? How will you measure success?
 
-  **PROJECT DETAILS**
-  Provide a clear overview of the scope, deliverables, and expected outcomes. What benefits will it provide to the NEAR community? How will you measure success?
-  
-  **TIMELINE**
-  Describe the timeline of your project and key milestones, specifying if the work was already complete or not. Include your plans for reporting progress to the community.
-  -- OPTIONAL FIELDS // Please remove this line--
-  **TEAM**
-  Provide a list of who will be working on the project along with their relevant skillset and experience. You may include links to portfolios or profiles to help the community get to know who the DAO will fund and how their backgrounds will contribute to your project’s success.
-  
-  **BUDGET BREAKDOWN**
-  Include a detailed breakdown on how you will use the funds and include rate justification. Our community values transparency, so be as specific as possible.`;
+**TIMELINE**
+Describe the timeline of your project and key milestones, specifying if the work was already complete or not. Include your plans for reporting progress to the community.
+
+OPTIONAL FIELDS
+
+**TEAM**
+Provide a list of who will be working on the project along with their relevant skillset and experience. You may include links to portfolios or profiles to help the community get to know who the DAO will fund and how their backgrounds will contribute to your project’s success.
+
+**BUDGET BREAKDOWN**
+Include a detailed breakdown on how you will use the funds and include rate justification. Our community values transparency, so be as specific as possible.
+`;
 
 return (
   <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
@@ -532,6 +599,7 @@ return (
         onCancelClick: () => setReviewModal(false),
         onReviewClick: () => {
           setReviewModal(false);
+          cleanDraft();
           onSubmit({ isDraft: false });
         },
       }}
@@ -570,7 +638,9 @@ return (
                   props={{
                     className: "flex-grow-1",
                     value: title,
-                    onChange: (e) => setTitle(e.target.value),
+                    onChange: (e) => {
+                      etTitle(e.target.value);
+                    },
                     skipPaddingGap: true,
                     placeholder: "Enter title here.",
                     inputProps: {
@@ -590,7 +660,9 @@ return (
                     className: "flex-grow-1",
                     value: summary,
                     multiline: true,
-                    onChange: (e) => setSummary(e.target.value),
+                    onChange: (e) => {
+                      setSummary(e.target.value);
+                    },
                     skipPaddingGap: true,
                     placeholder: "Enter summary here.",
                     inputProps: {
@@ -626,10 +698,10 @@ return (
                     value={consent.toc}
                     label="I’ve agree to DevHub’s Terms and Conditions and commit to honoring it"
                     isChecked={consent.toc}
-                    onClick={() =>
+                    onClick={(value) =>
                       setConsent((prevConsent) => ({
                         ...prevConsent,
-                        toc: !prevConsent.toc,
+                        toc: value,
                       }))
                     }
                   />
@@ -638,25 +710,44 @@ return (
                     label="I’ve read DevHub’s Code of Conduct and commit to honoring it"
                     isChecked={consent.coc}
                     onClick={() =>
-                      setConsent((prevConsent) => ({
+                      setConsent((value) => ({
                         ...prevConsent,
-                        coc: !prevConsent.coc,
+                        coc: value,
                       }))
                     }
                   />
                 </div>
               </InputContainer>
               <div className="d-flex justify-content-end gap-2">
-                <Widget
-                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-                  props={{
-                    classNames: {
-                      root: "d-flex btn btn-outline-danger shadow-none border-0",
-                    },
-                    label: "Cancel",
-                    onClick: () => {},
-                  }}
-                />
+                <Link
+                  to={
+                    isEditPage
+                      ? href({
+                          widgetSrc: "${REPL_DEVHUB}/widget/app",
+                          params: {
+                            page: "proposal",
+                            id: parseInt(id),
+                          },
+                        })
+                      : href({
+                          widgetSrc: "${REPL_DEVHUB}/widget/app",
+                          params: {
+                            page: "proposals",
+                          },
+                        })
+                  }
+                >
+                  <Widget
+                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                    props={{
+                      classNames: {
+                        root: "d-flex btn btn-outline-danger shadow-none border-0",
+                      },
+                      label: "Cancel",
+                      onClick: cleanDraft,
+                    }}
+                  />
+                </Link>
                 <DraftBtn />
               </div>
             </div>
@@ -790,8 +881,16 @@ return (
                 props={{
                   className: "flex-grow-1",
                   value: requestedSponsorshipAmount,
-                  onChange: (e) =>
-                    setRequestedSponsorshipAmount(e.target.value),
+                  onChange: (e) => {
+                    const inputValue = e.target.value;
+                    // Check if the input value is a whole number
+                    if (!Number.isInteger(Number(inputValue))) {
+                      setAmountError("Please enter a whole number.");
+                    } else {
+                      setRequestedSponsorshipAmount(e.target.value);
+                      setAmountError("");
+                    }
+                  },
                   skipPaddingGap: true,
                   placeholder: "Enter amount",
                   inputProps: {
@@ -799,6 +898,11 @@ return (
                   },
                 }}
               />
+              {amountError && (
+                <div style={{ color: "red" }} className="text-sm">
+                  {amountError}
+                </div>
+              )}
             </InputContainer>
             <InputContainer heading="Currency" description="">
               <Widget
@@ -841,7 +945,7 @@ return (
                 src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
                 props={{
                   value: supervisor,
-                  placeholder: "DevDAO",
+                  placeholder: "Enter Supervisor",
                   onUpdate: setSupervisor,
                 }}
               />

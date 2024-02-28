@@ -55,14 +55,15 @@ const FeedItem = ({ proposal }) => {
   };
 
   return (
-    <Link
-      to={href({
+    <a
+      href={href({
         widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: {
           page: "proposal",
           id: proposal.id,
         },
       })}
+      onClick={(e) => e.stopPropagation()}
       style={{ textDecoration: "none" }}
     >
       <div className="proposal-card d-flex justify-content-between text-muted cursor-pointer p-3">
@@ -95,7 +96,7 @@ const FeedItem = ({ proposal }) => {
             </div>
             <div className="d-flex gap-2 align-items-center">
               <Widget
-                src="${REPL_NEAR}/widget/v1.LikeButton"
+                src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
                 props={{
                   item,
                 }}
@@ -119,7 +120,7 @@ const FeedItem = ({ proposal }) => {
           />
         </div>
       </div>
-    </Link>
+    </a>
   );
 };
 
