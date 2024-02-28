@@ -25,6 +25,19 @@ if (isEditPage) {
   });
 }
 
+if (isEditPage && !editProposalData) {
+  return (
+    <div
+      style={{ height: "45vh" }}
+      className="d-flex justify-content-center align-items-center w-100"
+    >
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
+      />
+    </div>
+  );
+}
+
 const Container = styled.div`
   .text-sm {
     font-size: 13px;
