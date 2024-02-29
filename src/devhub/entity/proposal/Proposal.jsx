@@ -17,7 +17,7 @@ const TIMELINE_STATUS = {
   REVIEW: "REVIEW",
   APPROVED: "APPROVED",
   REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
+  CANCELED: "CANCELED",
   APPROVED_CONDITIONALLY: "APPROVED_CONDITIONALLY",
   PAYMENT_PROCESSING: "PAYMENT_PROCESSING",
   FUNDED: "FUNDED",
@@ -26,6 +26,10 @@ const TIMELINE_STATUS = {
 const Container = styled.div`
   .draft-info-container {
     background-color: #ecf8fb;
+  }
+
+  .review-info-container {
+    background-color: #fef6ee;
   }
 
   .text-sm {
@@ -121,6 +125,10 @@ const Container = styled.div`
       var(--bs-border-color) !important;
     border-bottom: var(--bs-border-width) var(--bs-border-style)
       var(--bs-border-color) !important;
+  }
+
+  button.px-0 {
+    padding-inline: 0px !important;
   }
 `;
 
@@ -278,11 +286,9 @@ const proposalStatusOptions = [
     },
   },
   {
-    label: "Cancelled",
+    label: "Canceled",
     value: {
-      status: TIMELINE_STATUS.CANCELLED,
-      sponsor_requested_review: true,
-      reviewer_completed_attestation: false,
+      status: TIMELINE_STATUS.CANCELED,
     },
   },
   {
@@ -354,7 +360,9 @@ const CheckBox = ({ value, isChecked, label, disabled, onClick }) => {
         disabled={disabled}
         onChange={(e) => onClick(e.target.checked)}
       />
-      <label class="form-check-label text-black">{label}</label>
+      <label style={{ width: "90%" }} class="form-check-label text-black">
+        {label}
+      </label>
     </div>
   );
 };
@@ -423,6 +431,7 @@ const editProposalStatus = ({ timeline }) => {
 };
 
 const [isReviewModalOpen, setReviewModal] = useState(false);
+const [isCancelModalOpen, setCancelModal] = useState(false);
 const [showTimelineSetting, setShowTimelineSetting] = useState(false);
 const proposalStatus = useCallback(
   () =>
@@ -435,7 +444,7 @@ const [updatedProposalStatus, setUpdatedProposalStatus] = useState({
   ...proposalStatus(),
   value: { ...proposalStatus().value, ...snapshot.timeline },
 });
-const [paymentHash, setPaymentHash] = useState(null);
+const [paymentHashes, setPaymentHashes] = useState([""]);
 
 const selectedStatusIndex = useMemo(
   () =>
@@ -518,6 +527,17 @@ return (
         },
       }}
     />
+    <Widget
+      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmWithdrawModal"}
+      props={{
+        isOpen: isCancelModalOpen,
+        onCancelClick: () => setCancelModal(false),
+        onWithdrawClick: () => {
+          setCancelModal(false);
+          editProposalStatus({ timeline: proposalStatusOptions[5].value });
+        },
+      }}
+    />
     <div className="d-flex justify-content-between">
       <div className="d-flex gap-2 align-items-center h3">
         <div>{snapshot.name}</div>
@@ -589,20 +609,47 @@ return (
                 the editing function, but comments are still open.
               </p>
             </div>
-            {isAllowedToEditProposal && (
-              <div style={{ minWidth: "fit-content" }}>
-                <Widget
-                  src={
-                    "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                  }
-                  props={{
-                    label: "Ready for review",
-                    classNames: { root: "grey-btn btn-sm" },
-                    onClick: () => setReviewModal(true),
-                  }}
-                />
-              </div>
-            )}
+            <div style={{ minWidth: "fit-content" }}>
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+                props={{
+                  label: "Ready for review",
+                  classNames: { root: "grey-btn btn-sm" },
+                  onClick: () => setReviewModal(true),
+                }}
+              />
+            </div>
+          </div>
+        )}
+      {snapshot.timeline.status === TIMELINE_STATUS.REVIEW &&
+        isAllowedToEditProposal && (
+          <div className="review-info-container p-4 d-flex justify-content-between align-items-center gap-2 rounded-2">
+            <div>
+              <b>
+                This proposal is in review mode and still open for community
+                comments.
+              </b>
+              <p className="text-sm text-muted mt-2">
+                You can’t edit the proposal, but comments are open. Only
+                moderators can make changes. Click “Withdraw Proposal” to cancel
+                your proposal. This changes that status to Withdrawn, signaling
+                to sponsors that it’s no longer active or relevant.
+              </p>
+            </div>
+            <div style={{ minWidth: "fit-content" }}>
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+                props={{
+                  label: (
+                    <div className="d-flex align-items-center gap-1">
+                      <i class="bi bi-trash3"></i> Cancel Proposal
+                    </div>
+                  ),
+                  classNames: { root: "btn-outline-danger btn-sm" },
+                  onClick: () => setCancelModal(true),
+                }}
+              />
+            </div>
           </div>
         )}
       <div className="my-4">
@@ -964,11 +1011,11 @@ return (
                           }
                         />
                         <RadioButton
-                          value="Cancelled"
-                          label={<div className="fw-bold">Cancelled</div>}
+                          value="Canceled"
+                          label={<div className="fw-bold">Canceled</div>}
                           isChecked={
                             updatedProposalStatus.value.status ===
-                            TIMELINE_STATUS.CANCELLED
+                            TIMELINE_STATUS.CANCELED
                           }
                         />
                       </div>
@@ -979,7 +1026,7 @@ return (
                     >
                       <div className="d-flex flex-column gap-2">
                         <CheckBox
-                          value=""
+                          value={updatedProposalStatus.value.kyc_verified}
                           label="Sponsor verifies KYC/KYB"
                           disabled={selectedStatusIndex !== 6}
                           onClick={(value) =>
@@ -994,6 +1041,25 @@ return (
                           isChecked={updatedProposalStatus.value.kyc_verified}
                         />
                         <CheckBox
+                          value={
+                            updatedProposalStatus.value.test_transaction_sent
+                          }
+                          disabled={selectedStatusIndex !== 6}
+                          label="Sponsor confirmed sponsorship and shared funding steps with recipient"
+                          onClick={(value) =>
+                            setUpdatedProposalStatus((prevState) => ({
+                              ...prevState,
+                              value: {
+                                ...prevState.value,
+                                test_transaction_sent: value,
+                              },
+                            }))
+                          }
+                          isChecked={
+                            updatedProposalStatus.value.test_transaction_sent
+                          }
+                        />
+                        {/* <CheckBox
                           value=""
                           disabled={selectedStatusIndex !== 6}
                           label="Sponsor sends test transaction"
@@ -1002,8 +1068,8 @@ return (
                               ...prevState,
                               value: {
                                 ...prevState.value,
-                                test_transaction_sent: value,
-                              },
+                                test_transaction_sent: value
+                              }
                             }))
                           }
                           isChecked={
@@ -1019,41 +1085,55 @@ return (
                               ...prevState,
                               value: {
                                 ...prevState.value,
-                                request_for_trustees_created: value,
-                              },
+                                request_for_trustees_created: value
+                              }
                             }))
                           }
                           isChecked={
                             updatedProposalStatus.value
                               .request_for_trustees_created
                           }
-                        />
+                        /> */}
                       </div>
                     </TimelineItems>
                     <TimelineItems
                       title="5) Funded"
                       value={TIMELINE_STATUS.FUNDED}
                     >
-                      {snapshot.payouts.length > 0 ? (
-                        <div>
-                          {snapshot.payouts.map((hash) => {
-                            const link = `https://nearblocks.io/blocks/${hash}`;
-                            return (
-                              <a
-                                href={link}
-                                className="text-decoration-underline"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Payment Link
-                                <i class="bi bi-arrow-up-right"></i>
-                              </a>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        "No Payouts yet"
-                      )}
+                      <div className="d-flex flex-column gap-2">
+                        {paymentHashes?.length && paymentHashes[0] ? (
+                          paymentHashes.map((link) => (
+                            <a
+                              href={link}
+                              className="text-decoration-underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Payment Link
+                              <i class="bi bi-arrow-up-right"></i>
+                            </a>
+                          ))
+                        ) : updatedProposalStatus.value.payouts.length > 0 ? (
+                          <div>
+                            {updatedProposalStatus.value.payouts.map((hash) => {
+                              const link = `https://explorer.mainnet.near.org/transactions/${hash}`;
+                              return (
+                                <a
+                                  href={link}
+                                  className="text-decoration-underline"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  Payment Link
+                                  <i class="bi bi-arrow-up-right"></i>
+                                </a>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          "No Payouts yet"
+                        )}
+                      </div>
                     </TimelineItems>
                   </div>
                 </div>
@@ -1061,18 +1141,42 @@ return (
                   <div className="d-flex flex-column gap-2">
                     {updatedProposalStatus.value.status ===
                       TIMELINE_STATUS.FUNDED && (
-                      <div className="border-vertical py-3">
-                        <label>Payment Link</label>
+                      <div className="border-vertical py-3 my-2">
+                        <label className="text-black h6">Payment Link</label>
+                        <div className="d-flex flex-column gap-2">
+                          {paymentHashes.map((item, index) => (
+                            <Widget
+                              src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                              props={{
+                                className: "flex-grow-1",
+                                value: item,
+                                onChange: (e) => {
+                                  const updatedHashes = [...paymentHashes];
+                                  updatedHashes[index] = e.target.value;
+                                  setPaymentHashes(updatedHashes);
+                                },
+                                skipPaddingGap: true,
+                                placeholder: "Enter URL",
+                              }}
+                            />
+                          ))}
+                        </div>
                         <Widget
-                          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                          src={
+                            "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                          }
                           props={{
-                            className: "flex-grow-1",
-                            value: paymentHash,
-                            onChange: (e) => {
-                              setPaymentHash(e.target.value);
+                            classNames: {
+                              root: "btn-outline shadow-none border-0 px-0",
                             },
-                            skipPaddingGap: true,
-                            placeholder: "Enter URL",
+                            label: (
+                              <>
+                                <i class="bi bi-plus-circle-fill"></i>
+                                Add Payment Link
+                              </>
+                            ),
+                            onClick: () =>
+                              setPaymentHashes([...paymentHashes, ""]),
                           }}
                         />
                       </div>
@@ -1101,10 +1205,30 @@ return (
                           label: "Save",
                           classNames: { root: "green-btn btn-sm" },
                           onClick: () => {
-                            editProposalStatus({
-                              timeline: updatedProposalStatus.value,
-                            });
+                            if (
+                              updatedProposalStatus.value.status ===
+                              TIMELINE_STATUS.FUNDED
+                            ) {
+                              const hashes = paymentHashes.map((url) => {
+                                const split = url.split("/");
+                                const transactionID = split[split.length - 1];
+                                return transactionID;
+                              });
+                              editProposalStatus({
+                                timeline: {
+                                  ...updatedProposalStatus.value,
+                                  payouts: hashes,
+                                },
+                              });
+                            } else {
+                              editProposalStatus({
+                                timeline: updatedProposalStatus.value,
+                              });
+                            }
                           },
+                          disabled:
+                            updatedProposalStatus.value.status ===
+                              TIMELINE_STATUS.FUNDED && !paymentHashes[0],
                         }}
                       />
                     </div>

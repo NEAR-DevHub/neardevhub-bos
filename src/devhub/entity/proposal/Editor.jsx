@@ -30,6 +30,10 @@ const Container = styled.div`
     font-size: 13px;
   }
 
+  .text-xs {
+    font-size: 10px;
+  }
+
   .flex-2 {
     flex: 2;
   }
@@ -373,7 +377,7 @@ const DraftBtnContainer = styled.div`
     position: absolute;
     top: 100%;
     left: 0;
-    width: 100%;
+    width: 200%;
     border: 1px solid #ccc;
     background-color: #fff;
     padding: 0.5rem;
@@ -381,6 +385,7 @@ const DraftBtnContainer = styled.div`
   }
 
   .option {
+    margin-block: 5px;
     padding: 10px;
     cursor: pointer;
     border-bottom: 1px solid #f0f0f0;
@@ -422,11 +427,24 @@ const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
 const [selectedStatus, setSelectedStatus] = useState("draft");
 const [isReviewModalOpen, setReviewModal] = useState(false);
 const [amountError, setAmountError] = useState(null);
+const [isCancelModalOpen, setCancelModal] = useState(false);
 
 const DraftBtn = () => {
   const btnOptions = [
-    { iconColor: "grey", label: "Submit Draft", value: "draft" },
-    { iconColor: "green", label: "Ready for Review", value: "review" },
+    {
+      iconColor: "grey",
+      label: "Submit Draft",
+      description:
+        "The author can still edit the proposal and build consensus before sharing it with sponsors.",
+      value: "draft",
+    },
+    {
+      iconColor: "green",
+      label: "Ready for Review",
+      description:
+        "Start the official review process with sponsors. This will lock the editing function, but comments are still open.",
+      value: "review",
+    },
   ];
 
   const handleOptionClick = (option) => {
@@ -494,13 +512,16 @@ const DraftBtn = () => {
             {btnOptions.map((option) => (
               <div
                 key={option.value}
-                className={`option d-flex gap-2 align-items-center ${
+                className={`option ${
                   selectedOption.value === option.value ? "selected" : ""
                 }`}
                 onClick={() => handleOptionClick(option)}
               >
-                <div className={"circle " + option.iconColor}></div>
-                {option.label}
+                <div className={`d-flex gap-2 align-items-center`}>
+                  <div className={"circle " + option.iconColor}></div>
+                  <div className="fw-bold">{option.label}</div>
+                </div>
+                <div className="text-muted text-xs">{option.description}</div>
               </div>
             ))}
           </div>
@@ -527,7 +548,7 @@ const userStorageDeposit = Near.view(
   }
 );
 
-const onSubmit = ({ isDraft }) => {
+const onSubmit = ({ isDraft, isCancel }) => {
   const linkedProposalsIds = linkedProposals.map((item) => item.value) ?? [];
   const body = {
     proposal_body_version: "V0",
@@ -541,8 +562,9 @@ const onSubmit = ({ isDraft }) => {
     receiver_account: receiverAccount,
     supervisor: supervisor,
     requested_sponsor: requestedSponsor,
-    payouts: [],
-    timeline: isDraft
+    timeline: isCancel
+      ? { status: "CANCELED" }
+      : isDraft
       ? { status: "DRAFT" }
       : {
           status: "REVIEW",
@@ -624,6 +646,17 @@ return (
           setReviewModal(false);
           cleanDraft();
           onSubmit({ isDraft: false });
+        },
+      }}
+    />
+    <Widget
+      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmWithdrawModal"}
+      props={{
+        isOpen: isCancelModalOpen,
+        onCancelClick: () => setCancelModal(false),
+        onWithdrawClick: () => {
+          setCancelModal(false);
+          onSubmit({ isCancel: true });
         },
       }}
     />
@@ -741,37 +774,57 @@ return (
                   />
                 </div>
               </InputContainer>
-              <div className="d-flex justify-content-end gap-2">
-                <Link
-                  to={
-                    isEditPage
-                      ? href({
-                          widgetSrc: "${REPL_DEVHUB}/widget/app",
-                          params: {
-                            page: "proposal",
-                            id: parseInt(id),
-                          },
-                        })
-                      : href({
-                          widgetSrc: "${REPL_DEVHUB}/widget/app",
-                          params: {
-                            page: "proposals",
-                          },
-                        })
-                  }
-                >
-                  <Widget
-                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-                    props={{
-                      classNames: {
-                        root: "d-flex btn btn-outline-danger shadow-none border-0",
-                      },
-                      label: "Cancel",
-                      onClick: cleanDraft,
-                    }}
-                  />
-                </Link>
-                <DraftBtn />
+              <div className="d-flex justify-content-between gap-2">
+                <div>
+                  {isEditPage && (
+                    <Widget
+                      src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                      props={{
+                        classNames: {
+                          root: "btn-outline-danger shadow-none border-0",
+                        },
+                        label: (
+                          <div className="d-flex align-items-center gap-1">
+                            <i class="bi bi-trash3"></i> Cancel Proposal
+                          </div>
+                        ),
+                        onClick: () => setCancelModal(true),
+                      }}
+                    />
+                  )}
+                </div>
+                <div className="d-flex gap-2">
+                  <Link
+                    to={
+                      isEditPage
+                        ? href({
+                            widgetSrc: "${REPL_DEVHUB}/widget/app",
+                            params: {
+                              page: "proposal",
+                              id: parseInt(id),
+                            },
+                          })
+                        : href({
+                            widgetSrc: "${REPL_DEVHUB}/widget/app",
+                            params: {
+                              page: "proposals",
+                            },
+                          })
+                    }
+                  >
+                    <Widget
+                      src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                      props={{
+                        classNames: {
+                          root: "d-flex text-muted fw-bold btn-outline shadow-none border-0",
+                        },
+                        label: "Discard Changes",
+                        onClick: cleanDraft,
+                      }}
+                    />
+                  </Link>
+                  <DraftBtn />
+                </div>
               </div>
             </div>
           </div>

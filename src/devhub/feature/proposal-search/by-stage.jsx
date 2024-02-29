@@ -4,7 +4,7 @@ const options = [
   { label: "Approved", value: "" },
   { label: "Approved  - Conditional", value: "" },
   { label: "Rejected", value: "" },
-  { label: "Cancelled", value: "" },
+  { label: "Canceled", value: "" },
   { label: "Payment Processing", value: "" },
   { label: "Funded", value: "" },
 ];

@@ -134,12 +134,13 @@ const FeedPage = () => {
 
   return (
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
-      <Heading>
-        DevDAO Proposals{" "}
-        <span className="text-muted"> ({proposals.length})</span>
-      </Heading>
       <div className="d-flex justify-content-between">
-        <div className="d-flex gap-4 align-items-center">
+        <Heading>
+          DevDAO Proposals{" "}
+          <span className="text-muted"> ({proposals.length})</span>
+        </Heading>
+        {/* Filters aren't supported yet */}
+        {/* <div className="d-flex gap-4 align-items-center">
           <Widget
             src={
               "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-input"
@@ -168,7 +169,7 @@ const FeedPage = () => {
             }
             props={{}}
           />
-        </div>
+        </div> */}
         <div>
           <Link
             to={href({
