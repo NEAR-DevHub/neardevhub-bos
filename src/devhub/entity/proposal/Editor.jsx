@@ -265,8 +265,6 @@ useEffect(() => {
     setTitle(snapshot.name);
     setSummary(snapshot.summary);
     setDescription(snapshot.description);
-    setConsent({ toc: true, coc: true });
-
     setReceiverAccount(snapshot.receiver_account);
     setRequestedSponsor(snapshot.requested_sponsor);
     setRequestedSponsorshipAmount(snapshot.requested_sponsorship_amount);
