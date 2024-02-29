@@ -13,6 +13,7 @@ const getClassNameByStatus = () => {
     case "FUNDED":
       return "green";
     case "REJECTED":
+    case "CANCELLED":
       return "green";
     default:
       return "green";

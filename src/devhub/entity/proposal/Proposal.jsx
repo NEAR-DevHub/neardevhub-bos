@@ -17,6 +17,7 @@ const TIMELINE_STATUS = {
   REVIEW: "REVIEW",
   APPROVED: "APPROVED",
   REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
   APPROVED_CONDITIONALLY: "APPROVED_CONDITIONALLY",
   PAYMENT_PROCESSING: "PAYMENT_PROCESSING",
   FUNDED: "FUNDED",
@@ -58,12 +59,12 @@ const Container = styled.div`
 
   .vertical-line {
     width: 2px;
-    height: 190px;
+    height: 205px;
     background-color: lightgrey;
   }
   .vertical-line-sm {
     width: 2px;
-    height: 85px;
+    height: 80px;
     background-color: lightgrey;
   }
 
@@ -113,6 +114,13 @@ const Container = styled.div`
 
   .gap-6 {
     gap: 2.5rem;
+  }
+
+  .border-vertical {
+    border-top: var(--bs-border-width) var(--bs-border-style)
+      var(--bs-border-color) !important;
+    border-bottom: var(--bs-border-width) var(--bs-border-style)
+      var(--bs-border-color) !important;
   }
 `;
 
@@ -235,12 +243,12 @@ const SidePanelItem = ({ title, children, hideBorder }) => {
 const proposalStatusOptions = [
   {
     label: "Draft",
-    value: { status: "DRAFT" },
+    value: { status: TIMELINE_STATUS.DRAFT },
   },
   {
     label: "Review",
     value: {
-      status: "REVIEW",
+      status: TIMELINE_STATUS.REVIEW,
       sponsor_requested_review: false,
       reviewer_completed_attestation: false,
     },
@@ -248,7 +256,7 @@ const proposalStatusOptions = [
   {
     label: "Approved",
     value: {
-      status: "APPROVED",
+      status: TIMELINE_STATUS.APPROVED,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -256,7 +264,7 @@ const proposalStatusOptions = [
   {
     label: "Approved-Conditionally",
     value: {
-      status: "APPROVED_CONDITIONALLY",
+      status: TIMELINE_STATUS.APPROVED_CONDITIONALLY,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -264,7 +272,15 @@ const proposalStatusOptions = [
   {
     label: "Rejected",
     value: {
-      status: "REJECTED",
+      status: TIMELINE_STATUS.REJECTED,
+      sponsor_requested_review: true,
+      reviewer_completed_attestation: false,
+    },
+  },
+  {
+    label: "Cancelled",
+    value: {
+      status: TIMELINE_STATUS.CANCELLED,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -272,7 +288,7 @@ const proposalStatusOptions = [
   {
     label: "Payment-processing",
     value: {
-      status: "PAYMENT_PROCESSING",
+      status: TIMELINE_STATUS.PAYMENT_PROCESSING,
       kyc_verified: false,
       test_transaction_sent: false,
       request_for_trustees_created: false,
@@ -283,7 +299,7 @@ const proposalStatusOptions = [
   {
     label: "Funded",
     value: {
-      status: "FUNDED",
+      status: TIMELINE_STATUS.FUNDED,
       trustees_released_payment: true,
       kyc_verified: true,
       test_transaction_sent: true,
@@ -408,11 +424,18 @@ const editProposalStatus = ({ timeline }) => {
 
 const [isReviewModalOpen, setReviewModal] = useState(false);
 const [showTimelineSetting, setShowTimelineSetting] = useState(false);
-const proposalStatus = proposalStatusOptions.find(
-  (i) => i.value.status === snapshot.timeline.status
+const proposalStatus = useCallback(
+  () =>
+    proposalStatusOptions.find(
+      (i) => i.value.status === snapshot.timeline.status
+    ),
+  [snapshot]
 );
-const [updatedProposalStatus, setUpdatedProposalStatus] =
-  useState(proposalStatus);
+const [updatedProposalStatus, setUpdatedProposalStatus] = useState({
+  ...proposalStatus(),
+  value: { ...proposalStatus().value, ...snapshot.timeline },
+});
+const [paymentHash, setPaymentHash] = useState(null);
 
 const selectedStatusIndex = useMemo(
   () =>
@@ -431,8 +454,12 @@ const TimelineItems = ({ title, children, value, values }) => {
   let color = "transparent";
   let statusIndex = selectedStatusIndex;
 
-  // index 2,3,4 is of decision
-  if (selectedStatusIndex === 3 || selectedStatusIndex === 2) {
+  // index 2,3,4,5  is of decision
+  if (
+    selectedStatusIndex === 3 ||
+    selectedStatusIndex === 2 ||
+    selectedStatusIndex === 5
+  ) {
     statusIndex = 2;
   }
   if (statusIndex === indexOfCurrentItem) {
@@ -702,9 +729,6 @@ return (
                 }}
               />
             </SidePanelItem>
-            {/* <SidePanelItem title="Verification Status">
-              <KycVerificationStatus />
-            </SidePanelItem> */}
             <SidePanelItem
               title={
                 "Linked Proposals " + `(${snapshot.linked_proposals.length})`
@@ -744,33 +768,17 @@ return (
                 "No Supervisor"
               )}
             </SidePanelItem>
-            <SidePanelItem title="Payouts">
-              {snapshot.payouts.length > 0 ? (
-                <div>
-                  {snapshot.payouts.map((hash) => {
-                    const link = `https://nearblocks.io/blocks/${hash}`;
-                    return (
-                      <a href={link} target="_blank" rel="noopener noreferrer">
-                        {link}
-                      </a>
-                    );
-                  })}
-                </div>
-              ) : (
-                "No Payouts yet"
-              )}
-            </SidePanelItem>
             <SidePanelItem
               hideBorder={true}
               title={
                 <div>
                   <div className="d-flex justify-content-between align-content-center">
                     Timeline
-                    {isModerator && (
-                      <div onClick={() => setShowTimelineSetting(true)}>
-                        <i class="bi bi-gear"></i>
-                      </div>
-                    )}
+                    {/* {isModerator && ( */}
+                    <div onClick={() => setShowTimelineSetting(true)}>
+                      <i class="bi bi-gear"></i>
+                    </div>
+                    {/* )} */}
                   </div>
                   {showTimelineSetting && (
                     <div className="mt-2 d-flex flex-column gap-2">
@@ -781,7 +789,13 @@ return (
                           options: proposalStatusOptions,
                           selectedValue: updatedProposalStatus,
                           onUpdate: (v) => {
-                            setUpdatedProposalStatus(v);
+                            setUpdatedProposalStatus({
+                              ...v,
+                              value: {
+                                ...updatedProposalStatus.value,
+                                status: v.value.status,
+                              },
+                            });
                           },
                         }}
                       />
@@ -790,7 +804,7 @@ return (
                 </div>
               }
             >
-              <div className="d-flex flex-column gap-3">
+              <div className="d-flex flex-column gap-2">
                 <div className="d-flex gap-3 mt-2">
                   <div className="d-flex flex-column">
                     {stepsArray.map((_, index) => {
@@ -801,11 +815,12 @@ return (
                       if (
                         selectedStatusIndex === 3 ||
                         selectedStatusIndex === 2 ||
-                        selectedStatusIndex === 4
+                        selectedStatusIndex === 4 ||
+                        selectedStatusIndex === 5
                       ) {
                         statusIndex = 2;
                       }
-                      if (selectedStatusIndex === 5) {
+                      if (selectedStatusIndex === 6) {
                         statusIndex = 3;
                       }
                       const current = statusIndex === indexOfCurrentItem;
@@ -916,7 +931,7 @@ return (
                         <div>Sponsor makes a final decision:</div>
                         <RadioButton
                           value=""
-                          label="Approve"
+                          label={<div className="fw-bold">Approved</div>}
                           isChecked={
                             updatedProposalStatus.value.status ===
                             TIMELINE_STATUS.APPROVED
@@ -926,10 +941,12 @@ return (
                           value=""
                           label={
                             <>
-                              Approve - Conditional <br />
+                              <div className="fw-bold">
+                                Approved - Conditional{" "}
+                              </div>
                               <span>
                                 Require follow up from recipient after payment
-                              </span>{" "}
+                              </span>
                             </>
                           }
                           isChecked={
@@ -939,10 +956,18 @@ return (
                         />
                         <RadioButton
                           value="Reject"
-                          label="Reject"
+                          label={<div className="fw-bold">Rejected</div>}
                           isChecked={
                             updatedProposalStatus.value.status ===
                             TIMELINE_STATUS.REJECTED
+                          }
+                        />
+                        <RadioButton
+                          value="Cancelled"
+                          label={<div className="fw-bold">Cancelled</div>}
+                          isChecked={
+                            updatedProposalStatus.value.status ===
+                            TIMELINE_STATUS.CANCELLED
                           }
                         />
                       </div>
@@ -955,7 +980,7 @@ return (
                         <CheckBox
                           value=""
                           label="Sponsor verifies KYC/KYB"
-                          disabled={selectedStatusIndex !== 5}
+                          disabled={selectedStatusIndex !== 6}
                           onClick={(value) =>
                             setUpdatedProposalStatus((prevState) => ({
                               ...prevState,
@@ -969,7 +994,7 @@ return (
                         />
                         <CheckBox
                           value=""
-                          disabled={selectedStatusIndex !== 5}
+                          disabled={selectedStatusIndex !== 6}
                           label="Sponsor sends test transaction"
                           onClick={(value) =>
                             setUpdatedProposalStatus((prevState) => ({
@@ -986,7 +1011,7 @@ return (
                         />
                         <CheckBox
                           value=""
-                          disabled={selectedStatusIndex !== 5}
+                          disabled={selectedStatusIndex !== 6}
                           label="Sponsor creates funding request from Trustees"
                           onClick={(value) =>
                             setUpdatedProposalStatus((prevState) => ({
@@ -1008,49 +1033,80 @@ return (
                       title="5) Funded"
                       value={TIMELINE_STATUS.FUNDED}
                     >
-                      <CheckBox
-                        value=""
-                        disabled={true}
-                        label="DevDAO Trustee Releases payment"
-                        isChecked={
-                          updatedProposalStatus.value.status ===
-                          TIMELINE_STATUS.FUNDED
-                        }
-                      />
+                      {snapshot.payouts.length > 0 ? (
+                        <div>
+                          {snapshot.payouts.map((hash) => {
+                            const link = `https://nearblocks.io/blocks/${hash}`;
+                            return (
+                              <a
+                                href={link}
+                                className="text-decoration-underline"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Payment Link
+                                <i class="bi bi-arrow-up-right"></i>
+                              </a>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        "No Payouts yet"
+                      )}
                     </TimelineItems>
                   </div>
                 </div>
                 {showTimelineSetting && (
-                  <div className="d-flex gap-2 align-items-center justify-content-end text-sm">
-                    <Widget
-                      src={
-                        "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                      }
-                      props={{
-                        label: "Cancel",
-                        classNames: {
-                          root: "btn-outline-danger border-0 shadow-none btn-sm",
-                        },
-                        onClick: () => {
-                          setShowTimelineSetting(false);
-                          setUpdatedProposalStatus(proposalStatus);
-                        },
-                      }}
-                    />
-                    <Widget
-                      src={
-                        "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                      }
-                      props={{
-                        label: "Save",
-                        classNames: { root: "green-btn btn-sm" },
-                        onClick: () => {
-                          editProposalStatus({
-                            timeline: updatedProposalStatus.value,
-                          });
-                        },
-                      }}
-                    />
+                  <div className="d-flex flex-column gap-2">
+                    {updatedProposalStatus.value.status ===
+                      TIMELINE_STATUS.FUNDED && (
+                      <div className="border-vertical py-3">
+                        <label>Payment Link</label>
+                        <Widget
+                          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                          props={{
+                            className: "flex-grow-1",
+                            value: paymentHash,
+                            onChange: (e) => {
+                              setPaymentHash(e.target.value);
+                            },
+                            skipPaddingGap: true,
+                            placeholder: "Enter URL",
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className="d-flex gap-2 align-items-center justify-content-end text-sm">
+                      <Widget
+                        src={
+                          "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                        }
+                        props={{
+                          label: "Cancel",
+                          classNames: {
+                            root: "btn-outline-danger border-0 shadow-none btn-sm",
+                          },
+                          onClick: () => {
+                            setShowTimelineSetting(false);
+                            setUpdatedProposalStatus(proposalStatus);
+                          },
+                        }}
+                      />
+                      <Widget
+                        src={
+                          "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                        }
+                        props={{
+                          label: "Save",
+                          classNames: { root: "green-btn btn-sm" },
+                          onClick: () => {
+                            editProposalStatus({
+                              timeline: updatedProposalStatus.value,
+                            });
+                          },
+                        }}
+                      />
+                    </div>
                   </div>
                 )}
               </div>

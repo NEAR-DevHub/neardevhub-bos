@@ -787,57 +787,6 @@ return (
                 }}
               />
             </InputContainer>
-            {/* <InputContainer
-              heading={
-                <div className="d-flex gap-2 align-items-center">
-                  Verification Status
-                  <div className="custom-tooltip">
-                    <i class="bi bi-info-circle-fill"></i>
-                    <span class="tooltiptext">
-                      To get approved and receive payments on our platform, you
-                      must complete KYC/KYB verification using Fractal, a
-                      trusted identity verification solution. This helps others
-                      trust transactions with your account. Click "Get Verified"
-                      to start. <br />
-                      <br />
-                      Once verified, your profile will display a badge, which is
-                      valid for 365 days from the date of your verification. You
-                      must renew your verification upon expiration OR if any of
-                      your personal information changes.
-                    </span>
-                  </div>
-                </div>
-              }
-              description=""
-            >
-              <div className="border-1 p-3 rounded-2">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div className="d-flex gap-4 ">
-                    <img
-                      className="align-self-center"
-                      src={WarningImg}
-                      height={30}
-                    />
-                    <div className="d-flex flex-column justify-content-center">
-                      <div className="h6 mb-0">Fractal</div>
-                      <div className="text-muted text-sm">Not Verified</div>
-                    </div>
-                  </div>
-                  <Widget
-                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-                    props={{
-                      classNames: { root: "black-btn" },
-                      label: (
-                        <div className="d-flex align-items-center gap-1">
-                          Get Verified
-                          <i class="bi bi-box-arrow-up-right"></i>
-                        </div>
-                      ),
-                    }}
-                  />
-                </div>
-              </div>
-            </InputContainer> */}
             <InputContainer
               heading={
                 <div className="text-muted">Link Proposals (Optional)</div>
