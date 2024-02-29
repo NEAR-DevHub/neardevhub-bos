@@ -932,7 +932,7 @@ return (
             </InputContainer>
             <InputContainer
               heading="Currency"
-              description="Select your preferred currency for receiving funds. Note: NEAR token conversion will be based on the exchange rate at the time of payment."
+              description="Select your preferred currency for receiving funds. Note: The exchange rate for NEAR tokens will be the closing rate at the day of the invoice."
             >
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
