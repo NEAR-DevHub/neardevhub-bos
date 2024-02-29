@@ -830,11 +830,11 @@ return (
                 <div>
                   <div className="d-flex justify-content-between align-content-center">
                     Timeline
-                    {/* {isModerator && ( */}
-                    <div onClick={() => setShowTimelineSetting(true)}>
-                      <i class="bi bi-gear"></i>
-                    </div>
-                    {/* )} */}
+                    {isModerator && (
+                      <div onClick={() => setShowTimelineSetting(true)}>
+                        <i class="bi bi-gear"></i>
+                      </div>
+                    )}
                   </div>
                   {showTimelineSetting && (
                     <div className="mt-2 d-flex flex-column gap-2">
