@@ -716,6 +716,7 @@ return (
                 props={{
                   item: item,
                   notifyAccountId: extractNotifyAccountId(item),
+                  id: proposal.id,
                 }}
               />
             </div>

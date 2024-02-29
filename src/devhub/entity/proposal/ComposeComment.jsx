@@ -1,3 +1,7 @@
+const proposalId = props.id;
+const draftKey = "COMMENT_DRAFT" + proposalId;
+const draftComment = Storage.privateGet(draftKey);
+
 const ComposeEmbeddCSS = `
   .CodeMirror {
     border: none !important;
@@ -15,7 +19,25 @@ const ComposeEmbeddCSS = `
 const notifyAccountId = props.notifyAccountId;
 const accountId = context.accountId;
 const item = props.item;
+const [allowGetDraft, setAllowGetDraft] = useState(true);
 const [comment, setComment] = useState(null);
+
+useEffect(() => {
+  if (draftComment && allowGetDraft) {
+    setComment(draftComment);
+    setAllowGetDraft(false);
+  }
+}, [draftComment]);
+
+useEffect(() => {
+  const handler = setTimeout(() => {
+    if (comment !== draftComment) Storage.privateSet(draftKey, comment);
+  }, 2000);
+
+  return () => {
+    clearTimeout(handler);
+  };
+}, [comment, draftKey]);
 
 if (!accountId) {
   return (
