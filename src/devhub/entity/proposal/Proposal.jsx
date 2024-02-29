@@ -130,6 +130,10 @@ const Container = styled.div`
   button.px-0 {
     padding-inline: 0px !important;
   }
+
+  red-icon i {
+    color: red;
+  }
 `;
 
 const ProposalContainer = styled.div`
@@ -1145,40 +1149,63 @@ return (
                         <label className="text-black h6">Payment Link</label>
                         <div className="d-flex flex-column gap-2">
                           {paymentHashes.map((item, index) => (
-                            <Widget
-                              src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                              props={{
-                                className: "flex-grow-1",
-                                value: item,
-                                onChange: (e) => {
-                                  const updatedHashes = [...paymentHashes];
-                                  updatedHashes[index] = e.target.value;
-                                  setPaymentHashes(updatedHashes);
-                                },
-                                skipPaddingGap: true,
-                                placeholder: "Enter URL",
-                              }}
-                            />
+                            <div className="d-flex gap-2 justify-content-between align-items-center">
+                              <Widget
+                                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                                props={{
+                                  className: "flex-grow-1",
+                                  value: item,
+                                  onChange: (e) => {
+                                    const updatedHashes = [...paymentHashes];
+                                    updatedHashes[index] = e.target.value;
+                                    setPaymentHashes(updatedHashes);
+                                  },
+                                  skipPaddingGap: true,
+                                  placeholder: "Enter URL",
+                                }}
+                              />
+                              <div style={{ minWidth: 20 }}>
+                                {index !== paymentHashes.length - 1 ? (
+                                  <Widget
+                                    src={
+                                      "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                                    }
+                                    props={{
+                                      classNames: {
+                                        root: "btn-outline-danger shadow-none w-100",
+                                      },
+                                      label: <i class="bi bi-trash3 h6"></i>,
+                                      onClick: () => {
+                                        const updatedHashes = [
+                                          ...paymentHashes,
+                                        ];
+                                        updatedHashes.splice(index, 1);
+                                        setPaymentHashes(updatedHashes);
+                                      },
+                                    }}
+                                  />
+                                ) : (
+                                  <Widget
+                                    src={
+                                      "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                                    }
+                                    props={{
+                                      classNames: {
+                                        root: "green-btn shadow-none border-0 w-100",
+                                      },
+                                      label: <i class="bi bi-plus-lg"></i>,
+                                      onClick: () =>
+                                        setPaymentHashes([
+                                          ...paymentHashes,
+                                          "",
+                                        ]),
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            </div>
                           ))}
                         </div>
-                        <Widget
-                          src={
-                            "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                          }
-                          props={{
-                            classNames: {
-                              root: "btn-outline shadow-none border-0 px-0",
-                            },
-                            label: (
-                              <>
-                                <i class="bi bi-plus-circle-fill"></i>
-                                Add Payment Link
-                              </>
-                            ),
-                            onClick: () =>
-                              setPaymentHashes([...paymentHashes, ""]),
-                          }}
-                        />
                       </div>
                     )}
                     <div className="d-flex gap-2 align-items-center justify-content-end text-sm">
@@ -1217,7 +1244,7 @@ return (
                               editProposalStatus({
                                 timeline: {
                                   ...updatedProposalStatus.value,
-                                  payouts: hashes,
+                                  payouts: !hashes[0] ? [] : hashes,
                                 },
                               });
                             } else {
@@ -1226,9 +1253,6 @@ return (
                               });
                             }
                           },
-                          disabled:
-                            updatedProposalStatus.value.status ===
-                              TIMELINE_STATUS.FUNDED && !paymentHashes[0],
                         }}
                       />
                     </div>
