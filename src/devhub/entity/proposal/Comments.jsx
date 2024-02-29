@@ -1,4 +1,20 @@
 const socialComments = Social.index("comment", props.item);
+const snapshotHistory = props.snapshotHistory;
+
+const Wrapper = styled.div`
+  position: relative;
+  .log-line {
+    position: absolute;
+    left: 7%;
+    top: -30px;
+    bottom: 0;
+    z-index: 1;
+    width: 1px;
+    height: 100%;
+    background-color: var(--bs-border-color);
+    z-index: 1;
+  }
+`;
 
 const CommentContainer = styled.div`
   border: 1px solid lightgrey;
@@ -36,7 +52,7 @@ const Comment = ({ commentItem }) => {
 
   const link = `https://near.org/mob.near/widget/MainPage.N.Comment.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
   return (
-    <div>
+    <div style={{ zIndex: 99, background: "white" }}>
       <div className="d-flex gap-2 flex-1">
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
@@ -114,10 +130,13 @@ const Comment = ({ commentItem }) => {
 
 if (socialComments.length) {
   return (
-    <div className="d-flex flex-column gap-4">
-      {socialComments.map((i) => (
-        <Comment commentItem={i} />
-      ))}
-    </div>
+    <Wrapper>
+      <div className="log-line"> </div>
+      <div className="d-flex flex-column gap-4">
+        {socialComments.map((i) => (
+          <Comment commentItem={i} />
+        ))}
+      </div>
+    </Wrapper>
   );
 }

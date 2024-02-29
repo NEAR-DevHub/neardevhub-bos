@@ -650,11 +650,11 @@ return (
       }}
     />
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmWithdrawModal"}
+      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmCancelModal"}
       props={{
         isOpen: isCancelModalOpen,
         onCancelClick: () => setCancelModal(false),
-        onWithdrawClick: () => {
+        onConfirmClick: () => {
           setCancelModal(false);
           onSubmit({ isCancel: true });
         },

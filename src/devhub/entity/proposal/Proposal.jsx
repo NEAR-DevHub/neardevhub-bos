@@ -532,11 +532,11 @@ return (
       }}
     />
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmWithdrawModal"}
+      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmCancelModal"}
       props={{
         isOpen: isCancelModalOpen,
         onCancelClick: () => setCancelModal(false),
-        onWithdrawClick: () => {
+        onConfirmClick: () => {
           setCancelModal(false);
           editProposalStatus({ timeline: proposalStatusOptions[5].value });
         },
@@ -635,9 +635,9 @@ return (
               </b>
               <p className="text-sm text-muted mt-2">
                 You can’t edit the proposal, but comments are open. Only
-                moderators can make changes. Click “Withdraw Proposal” to cancel
-                your proposal. This changes that status to Withdrawn, signaling
-                to sponsors that it’s no longer active or relevant.
+                moderators can make changes. Click “Cancel Proposal” to cancel
+                your proposal. This changes the status to Canceled, signaling to
+                sponsors that it’s no longer active or relevant.
               </p>
             </div>
             <div style={{ minWidth: "fit-content" }}>
@@ -659,7 +659,10 @@ return (
       <div className="my-4">
         <div className="d-flex gap-6">
           <div className="flex-3">
-            <div className="d-flex gap-2 flex-1">
+            <div
+              className="d-flex gap-2 flex-1"
+              style={{ zIndex: 99, background: "white", position: "relative" }}
+            >
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
                 props={{
@@ -756,6 +759,7 @@ return (
                 src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Comments"}
                 props={{
                   item: item,
+                  snapshotHistory: [...proposal.snapshot_history, snapshot],
                 }}
               />
             </div>
@@ -1119,8 +1123,7 @@ return (
                           ))
                         ) : updatedProposalStatus.value.payouts.length > 0 ? (
                           <div>
-                            {updatedProposalStatus.value.payouts.map((hash) => {
-                              const link = `https://explorer.mainnet.near.org/transactions/${hash}`;
+                            {updatedProposalStatus.value.payouts.map((link) => {
                               return (
                                 <a
                                   href={link}
@@ -1236,15 +1239,12 @@ return (
                               updatedProposalStatus.value.status ===
                               TIMELINE_STATUS.FUNDED
                             ) {
-                              const hashes = paymentHashes.map((url) => {
-                                const split = url.split("/");
-                                const transactionID = split[split.length - 1];
-                                return transactionID;
-                              });
                               editProposalStatus({
                                 timeline: {
                                   ...updatedProposalStatus.value,
-                                  payouts: !hashes[0] ? [] : hashes,
+                                  payouts: !paymentHashes[0]
+                                    ? []
+                                    : paymentHashes,
                                 },
                               });
                             } else {

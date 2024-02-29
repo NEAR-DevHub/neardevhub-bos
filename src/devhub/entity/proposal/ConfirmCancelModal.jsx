@@ -1,6 +1,6 @@
 const isOpen = props.isOpen;
 const onCancelClick = props.onCancelClick;
-const onWithdrawClick = props.onWithdrawClick;
+const onConfirmClick = props.onConfirmClick;
 
 const Modal = styled.div`
   display: ${({ hidden }) => (hidden ? "none" : "flex")};
@@ -38,6 +38,7 @@ const ModalDialog = styled.div`
   overflow-y: auto;
   max-height: 85%;
   margin-top: 5%;
+  width: 50%;
   @media (width < 720px) {
     width: 100%;
   }
@@ -110,11 +111,13 @@ return (
       <ModalBackdrop />
       <ModalDialog className="card">
         <ModalHeader>
-          <h5 className="mb-0">Confirm proposal withdrawl</h5>
+          <h5 className="mb-0">Confirm proposal cancellation</h5>
         </ModalHeader>
         <ModalContent>
-          Withdrawing your proposal will change the status to Withdrawn.
-          Comments remain open, but you can’t reopen or make more changes.
+          If you cancel this proposal, the status will change to Cancelled and
+          indicate to sponsors that this proposal is no longer active or
+          relevant. Comments are still open, but you cannot reopen this proposal
+          or make additional changes.
           <br /> Are you sure you want to proceed?
         </ModalContent>
         <div className="d-flex gap-2 align-items-center justify-content-end mt-2">
@@ -130,8 +133,8 @@ return (
             src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
             props={{
               classNames: { root: "btn-danger" },
-              label: "Ready to Withdraw",
-              onClick: onWithdrawClick,
+              label: "Ready to Cancel",
+              onClick: onConfirmClick,
             }}
           />
         </div>
