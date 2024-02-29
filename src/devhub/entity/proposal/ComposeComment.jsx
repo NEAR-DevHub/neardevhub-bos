@@ -44,16 +44,16 @@ if (!accountId) {
     <div
       style={{
         marginLeft: 10,
-        backgroundColor: "#FFF8C4",
-        border: "1px solid #EBE3C3",
+        backgroundColor: "#ECF8FB",
+        border: "1px solid #E2E6EC",
       }}
-      className="d-flex align-items-center gap-1 p-3 rounded-2"
+      className="d-flex align-items-center gap-1 p-4 rounded-2"
     >
       <Link to="https://near.org/signup">
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
-            classNames: { root: "green-btn btn-sm" },
+            classNames: { root: "grey-btn" },
             label: "Sign up",
           }}
         />
@@ -61,7 +61,7 @@ if (!accountId) {
       <div className="fw-bold">to join this conversation.</div>
       <div>Already have an account?</div>
       <a className="text-decoration-underline" href="https://near.org/signin">
-        Sign in to comment
+        Log in to comment
       </a>
     </div>
   );
