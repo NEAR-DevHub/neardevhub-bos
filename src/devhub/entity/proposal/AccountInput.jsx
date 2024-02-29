@@ -11,16 +11,19 @@ const AutoComplete = styled.div`
 return (
   <div>
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.InputWithIcon"
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
       props={{
-        icon: <div className="input-icon">@</div>,
+        className: "flex-grow-1",
         value: value,
-        placeholder: placeholder,
-        onUpdate: (v) => {
-          onUpdate(v);
+        onChange: (e) => {
+          onUpdate(e.target.value);
           setAutoComplete(true);
         },
-        onEnter: () => {},
+        skipPaddingGap: true,
+        placeholder: placeholder,
+        inputProps: {
+          prefix: "@",
+        },
       }}
     />
     {showAccountAutocomplete && (

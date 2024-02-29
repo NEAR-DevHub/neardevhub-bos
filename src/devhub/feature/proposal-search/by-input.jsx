@@ -19,13 +19,18 @@ useEffect(() => {
 
 return (
   <Widget
-    src="${REPL_DEVHUB}/widget/devhub.components.molecule.InputWithIcon"
+    src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
     props={{
-      icon: <i class="bi bi-search m-auto"></i>,
+      className: "flex-grow-1",
       value: search,
+      onChange: (e) => {
+        updateInput(e.target.value);
+      },
+      skipPaddingGap: true,
       placeholder: "Search by content",
-      onUpdate: updateInput,
-      onEnter: onEnter,
+      inputProps: {
+        prefix: <i class="bi bi-search m-auto"></i>,
+      },
     }}
   />
 );

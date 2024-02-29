@@ -777,7 +777,7 @@ return (
           </div>
         </div>
         <div className="flex-1">
-          <div className="h5 text-muted">Author Details</div>
+          <div className="h5 text-muted mb-4">Author Details</div>
           <div className="d-flex flex-column gap-4">
             <InputContainer heading="Author">
               <Widget
@@ -787,7 +787,7 @@ return (
                 }}
               />
             </InputContainer>
-            <InputContainer
+            {/* <InputContainer
               heading={
                 <div className="d-flex gap-2 align-items-center">
                   Verification Status
@@ -837,7 +837,7 @@ return (
                   />
                 </div>
               </div>
-            </InputContainer>
+            </InputContainer> */}
             <InputContainer
               heading={
                 <div className="text-muted">Link Proposals (Optional)</div>
@@ -894,10 +894,10 @@ return (
                 }}
               />
             </InputContainer>
-            <div className="h5 text-muted">Funding Details</div>
+            <div className="h5 mb-0 text-muted">Funding Details</div>
             <InputContainer
               heading="Total Amount"
-              description="Enter the exact amount you are seeking. See Funding Documentation for guidelines."
+              description="Enter the exact amount you are seeking. See Funding Documentation for guidelines.."
             >
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
@@ -918,6 +918,7 @@ return (
                   placeholder: "Enter amount",
                   inputProps: {
                     type: "number",
+                    prefix: "$",
                   },
                 }}
               />
@@ -927,7 +928,10 @@ return (
                 </div>
               )}
             </InputContainer>
-            <InputContainer heading="Currency" description="">
+            <InputContainer
+              heading="Currency"
+              description="Select your preferred currency for receiving funds. Note: NEAR token conversion will be based on the exchange rate at the time of payment."
+            >
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
                 props={{

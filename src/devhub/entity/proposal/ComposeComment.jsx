@@ -17,6 +17,34 @@ const accountId = context.accountId;
 const item = props.item;
 const [comment, setComment] = useState(null);
 
+if (!accountId) {
+  return (
+    <div
+      style={{
+        marginLeft: 10,
+        backgroundColor: "#FFF8C4",
+        border: "1px solid #EBE3C3",
+      }}
+      className="d-flex align-items-center gap-1 p-3 rounded-2"
+    >
+      <Link to="https://near.org/signup">
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+          props={{
+            classNames: { root: "green-btn btn-sm" },
+            label: "Sign up",
+          }}
+        />
+      </Link>
+      <div className="fw-bold">to join this conversation.</div>
+      <div>Already have an account?</div>
+      <a className="text-decoration-underline" href="https://near.org/signin">
+        Sign in to comment
+      </a>
+    </div>
+  );
+}
+
 function extractMentions(text) {
   const mentionRegex =
     /@((?:(?:[a-z\d]+[-_])*[a-z\d]+\.)*(?:[a-z\d]+[-_])*[a-z\d]+)/gi;

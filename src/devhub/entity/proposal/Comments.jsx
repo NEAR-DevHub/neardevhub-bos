@@ -1,7 +1,5 @@
 const socialComments = Social.index("comment", props.item);
 
-const [showReplyIndex, setShowReplyIndex] = useState(null);
-
 const CommentContainer = styled.div`
   border: 1px solid lightgrey;
 `;
@@ -19,7 +17,7 @@ const Header = styled.div`
   }
 `;
 
-const Comment = ({ commentItem, arrayIndex }) => {
+const Comment = ({ commentItem }) => {
   const { accountId, blockHeight } = commentItem;
   const item = {
     type: "social",
@@ -36,14 +34,6 @@ const Comment = ({ commentItem, arrayIndex }) => {
   };
   const cancelHideItem = () => {};
 
-  const extractNotifyAccountId = (item) => {
-    if (!item || item.type !== "social" || !item.path) {
-      return undefined;
-    }
-    const accountId = item.path.split("/")[0];
-    return `${accountId}/post/main` === item.path ? accountId : undefined;
-  };
-  const parentItem = content.item;
   const link = `https://near.org/mob.near/widget/MainPage.N.Comment.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
   return (
     <div>
@@ -102,13 +92,6 @@ const Comment = ({ commentItem, arrayIndex }) => {
                 }}
               />
               <Widget
-                src="${REPL_NEAR}/widget/CommentButton"
-                props={{
-                  item: item,
-                  onClick: () => setShowReplyIndex(arrayIndex),
-                }}
-              />
-              <Widget
                 src="${REPL_NEAR}/widget/CopyUrlButton"
                 props={{
                   url: link,
@@ -125,17 +108,6 @@ const Comment = ({ commentItem, arrayIndex }) => {
           </div>
         </CommentContainer>
       </div>
-      {showReplyIndex === arrayIndex && (
-        <div className="my-4" style={{ marginLeft: "50px" }} key="reply">
-          <Widget
-            src="${REPL_DEVHUB}/widget/devhub.entity.proposal.ComposeComment"
-            props={{
-              notifyAccountId: extractNotifyAccountId(parentItem),
-              item: parentItem,
-            }}
-          />
-        </div>
-      )}
     </div>
   );
 };
@@ -143,8 +115,8 @@ const Comment = ({ commentItem, arrayIndex }) => {
 if (socialComments.length) {
   return (
     <div className="d-flex flex-column gap-4">
-      {socialComments.map((i, index) => (
-        <Comment commentItem={i} arrayIndex={index} />
+      {socialComments.map((i) => (
+        <Comment commentItem={i} />
       ))}
     </div>
   );

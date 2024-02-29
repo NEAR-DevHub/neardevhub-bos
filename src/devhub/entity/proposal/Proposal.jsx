@@ -702,9 +702,9 @@ return (
                 }}
               />
             </SidePanelItem>
-            <SidePanelItem title="Verification Status">
+            {/* <SidePanelItem title="Verification Status">
               <KycVerificationStatus />
-            </SidePanelItem>
+            </SidePanelItem> */}
             <SidePanelItem
               title={
                 "Linked Proposals " + `(${snapshot.linked_proposals.length})`
