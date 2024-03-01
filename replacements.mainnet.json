@@ -7,6 +7,5 @@
   "REPL_EFIZ": "efiz.near",
   "REPL_DEVS": "devs.near",
   "REPL_SOCIAL_CONTRACT": "social.near",
-  "REPL_PROPOSALS_CONTRACT": "truedove38.near",
   "REPL_RPC_URL": "https://rpc.mainnet.near.org"
 }

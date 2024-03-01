@@ -50,7 +50,7 @@ const FeedItem = ({ proposal }) => {
   const blockHeight = parseInt(proposal.social_db_post_block_height);
   const item = {
     type: "social",
-    path: `${REPL_PROPOSALS_CONTRACT}/post/main`,
+    path: `${REPL_DEVHUB_CONTRACT}/post/main`,
     blockHeight,
   };
 
@@ -126,11 +126,7 @@ const FeedItem = ({ proposal }) => {
 };
 
 const FeedPage = () => {
-  const proposals = Near.view(
-    "${REPL_PROPOSALS_CONTRACT}",
-    "get_proposals",
-    {}
-  );
+  const proposals = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals", {});
 
   return (
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">

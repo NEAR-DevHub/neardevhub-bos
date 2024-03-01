@@ -22,7 +22,7 @@ let editProposalData = null;
 let draftProposalData = null;
 
 if (isEditPage) {
-  editProposalData = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
+  editProposalData = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
     proposal_id: parseInt(id),
   });
 }
@@ -179,6 +179,7 @@ const tokenMapping = {
         "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
     },
   },
+  OTHER: "OTHER",
 };
 
 const tokensOptions = [
@@ -187,6 +188,10 @@ const tokensOptions = [
   {
     label: "USDC",
     value: tokenMapping.USDC,
+  },
+  {
+    label: "Other",
+    value: tokenMapping.OTHER,
   },
 ];
 
@@ -209,7 +214,7 @@ const [supervisor, setSupervisor] = useState(null);
 const [allowDraft, setAllowDraft] = useState(true);
 
 const [proposalsOptions, setProposalsOptions] = useState([]);
-const proposalsData = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposals");
+const proposalsData = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals");
 const [loading, setLoading] = useState(true);
 
 if (allowDraft) {
@@ -224,8 +229,8 @@ const memoizedDraftData = useMemo(
       description: description,
       category: category,
       summary: summary,
-      requested_sponsorship_token: requestedSponsorshipAmount,
-      requested_sponsorship_token: requestedSponsorshipToken.value,
+      requested_sponsorship_usd_amount: requestedSponsorshipAmount,
+      requested_sponsorship_paid_in_currency: requestedSponsorshipToken.value,
       receiver_account: receiverAccount,
       supervisor: supervisor,
       requested_sponsor: requestedSponsor,
@@ -269,13 +274,13 @@ useEffect(() => {
     setDescription(snapshot.description);
     setReceiverAccount(snapshot.receiver_account);
     setRequestedSponsor(snapshot.requested_sponsor);
-    setRequestedSponsorshipAmount(snapshot.requested_sponsorship_token);
+    setRequestedSponsorshipAmount(snapshot.requested_sponsorship_usd_amount);
     setSupervisor(snapshot.supervisor);
 
     const token = tokensOptions.find(
       (item) =>
         JSON.stringify(item.value) ===
-        JSON.stringify(snapshot.requested_sponsorship_token)
+        JSON.stringify(snapshot.requested_sponsorship_paid_in_currency)
     );
     setRequestedSponsorshipToken(token);
   }
@@ -535,7 +540,7 @@ let grantNotify = Near.view(
   "${REPL_SOCIAL_CONTRACT}",
   "is_write_permission_granted",
   {
-    predecessor_id: "${REPL_DEVHUB_LEGACY}",
+    predecessor_id: "${REPL_DEVHUB_CONTRACT}",
     key: context.accountId + "/index/notify",
   }
 );
@@ -557,8 +562,8 @@ const onSubmit = ({ isDraft, isCancel }) => {
     category: category,
     summary: summary,
     linked_proposals: linkedProposalsIds,
-    requested_sponsorship_token: requestedSponsorshipAmount,
-    requested_sponsorship_token: requestedSponsorshipToken.value,
+    requested_sponsorship_usd_amount: requestedSponsorshipAmount,
+    requested_sponsorship_paid_in_currency: requestedSponsorshipToken.value,
     receiver_account: receiverAccount,
     supervisor: supervisor || null,
     requested_sponsor: requestedSponsor,
@@ -568,7 +573,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
       ? { status: "DRAFT" }
       : {
           status: "REVIEW",
-          sponsor_requested_review: true,
+          sponsor_requested_review: false,
           reviewer_completed_attestation: false,
         },
   };
@@ -578,24 +583,24 @@ const onSubmit = ({ isDraft, isCancel }) => {
   }
   const calls = [
     {
-      contractName: "${REPL_PROPOSALS_CONTRACT}",
+      contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: isEditPage ? "edit_proposal" : "add_proposal",
       args: args,
       gas: 270000000000000,
     },
   ];
-  // if (grantNotify === false) {
-  //   calls.unshift({
-  //     contractName: "${REPL_SOCIAL_CONTRACT}",
-  //     methodName: "grant_write_permission",
-  //     args: {
-  //       predecessor_id: "${REPL_DEVHUB_LEGACY}",
-  //       keys: [context.accountId + "/index/notify"]
-  //     },
-  //     gas: Big(10).pow(14),
-  //     deposit: getDepositAmountForWriteAccess(userStorageDeposit)
-  //   });
-  // }
+  if (grantNotify === false) {
+    calls.unshift({
+      contractName: "${REPL_SOCIAL_CONTRACT}",
+      methodName: "grant_write_permission",
+      args: {
+        predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+        keys: [context.accountId + "/index/notify"],
+      },
+      gas: Big(10).pow(14),
+      deposit: getDepositAmountForWriteAccess(userStorageDeposit),
+    });
+  }
   Near.call(calls);
 };
 

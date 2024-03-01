@@ -12,7 +12,7 @@ const { readableDate } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
 ) || { readableDate: () => {} };
 const proposalId = props.id ?? (props.id ? parseInt(props.id) : 0);
-const proposal = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
+const proposal = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
   proposal_id: proposalId,
 });
 if (!proposal || !proposal.snapshot_history) {

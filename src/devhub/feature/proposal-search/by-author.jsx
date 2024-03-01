@@ -4,7 +4,7 @@ const [selectedAuthor, setSelectedAuthor] = useState(null);
 if (!authorsOptions.length) {
   const data = [];
   const authors = Near.view(
-    "${REPL_PROPOSALS_CONTRACT}",
+    "${REPL_DEVHUB_CONTRACT}",
     "get_all_proposal_authors",
     {}
   );

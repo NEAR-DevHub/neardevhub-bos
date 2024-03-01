@@ -186,7 +186,7 @@ const Avatar = styled.div`
 const stepsArray = [1, 2, 3, 4, 5];
 
 const { id, timestamp } = props;
-const proposal = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
+const proposal = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
   proposal_id: parseInt(id),
 });
 
@@ -214,7 +214,7 @@ const editorAccountId = snapshot.editor_id;
 const blockHeight = parseInt(proposal.social_db_post_block_height);
 const item = {
   type: "social",
-  path: `${REPL_PROPOSALS_CONTRACT}/post/main`,
+  path: `${REPL_DEVHUB_CONTRACT}/post/main`,
   blockHeight,
 };
 const proposalURL = `${REPL_DEVHUB}/widget/devhub.entity.proposal.Proposal?id=${proposal.id}&timestamp=${snapshot.timestamp}`;
@@ -325,7 +325,7 @@ const proposalStatusOptions = [
 const LinkedProposals = () => {
   const linkedProposalsData = [];
   snapshot.linked_proposals.map((item) => {
-    const data = Near.view("${REPL_PROPOSALS_CONTRACT}", "get_proposal", {
+    const data = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
       proposal_id: item,
     });
     if (data !== null) {
@@ -401,6 +401,7 @@ const tokenMapping = {
         "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
     },
   },
+  OTHER: "OTHER",
 };
 
 function findTokenNameByAddress(address) {
@@ -415,9 +416,11 @@ function findTokenNameByAddress(address) {
   return foundToken ? foundToken[0] : null;
 }
 
-const tokenName = findTokenNameByAddress(snapshot.requested_sponsorship_token);
+const tokenName = findTokenNameByAddress(
+  snapshot.requested_sponsorship_paid_in_currency
+);
 const isAllowedToEditProposal = Near.view(
-  "${REPL_PROPOSALS_CONTRACT}",
+  "${REPL_DEVHUB_CONTRACT}",
   "is_allowed_to_edit_proposal",
   { proposal_id: proposal.id, editor: accountId }
 );
@@ -426,7 +429,7 @@ const isModerator = isAllowedToEditProposal && proposal.author_id !== accountId;
 
 const editProposalStatus = ({ timeline }) => {
   Near.call({
-    contractName: "${REPL_PROPOSALS_CONTRACT}",
+    contractName: "${REPL_DEVHUB_CONTRACT}",
     methodName: "edit_proposal_timeline",
     args: {
       id: proposal.id,
@@ -785,9 +788,9 @@ return (
             </SidePanelItem>
             <SidePanelItem title="Funding Ask">
               <div className="h4 text-black">
-                {snapshot.requested_sponsorship_amount && (
+                {snapshot.requested_sponsorship_usd_amount && (
                   <div className="d-flex flex-column gap-1">
-                    <div>{snapshot.requested_sponsorship_amount} USD</div>
+                    <div>{snapshot.requested_sponsorship_usd_amount} USD</div>
                     <div className="text-sm text-muted">
                       Requested in {tokenName ?? "NEAR"}
                     </div>
