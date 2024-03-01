@@ -10,6 +10,8 @@ const { id, timestamp } = props;
 
 const isEditPage = typeof id === "string";
 const author = context.accountId;
+const FundingDocs =
+  "https://docs.google.com/document/d/1kR1YbaQE4mmHcf-BHo7NwO7vmGx4EciHK-QjelCufI8/edit?usp=sharing";
 
 if (!author) {
   return (
@@ -222,7 +224,7 @@ const memoizedDraftData = useMemo(
       description: description,
       category: category,
       summary: summary,
-      requested_sponsorship_amount: requestedSponsorshipAmount,
+      requested_sponsorship_token: requestedSponsorshipAmount,
       requested_sponsorship_token: requestedSponsorshipToken.value,
       receiver_account: receiverAccount,
       supervisor: supervisor,
@@ -267,7 +269,7 @@ useEffect(() => {
     setDescription(snapshot.description);
     setReceiverAccount(snapshot.receiver_account);
     setRequestedSponsor(snapshot.requested_sponsor);
-    setRequestedSponsorshipAmount(snapshot.requested_sponsorship_amount);
+    setRequestedSponsorshipAmount(snapshot.requested_sponsorship_token);
     setSupervisor(snapshot.supervisor);
 
     const token = tokensOptions.find(
@@ -555,7 +557,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
     category: category,
     summary: summary,
     linked_proposals: linkedProposalsIds,
-    requested_sponsorship_amount: requestedSponsorshipAmount,
+    requested_sponsorship_token: requestedSponsorshipAmount,
     requested_sponsorship_token: requestedSponsorshipToken.value,
     receiver_account: receiverAccount,
     supervisor: supervisor || null,
@@ -671,7 +673,20 @@ return (
             <div className="d-flex flex-column gap-4">
               <InputContainer
                 heading="Category"
-                description="Select the category that best aligns with your contribution to the NEAR developer community. Need guidance? See Funding Docs."
+                description={
+                  <>
+                    Select the category that best aligns with your contribution
+                    to the NEAR developer community. Need guidance? See{" "}
+                    <a
+                      href={FundingDocs}
+                      className="text-decoration-underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Funding Docs.
+                    </a>
+                  </>
+                }
               >
                 <Widget
                   src={
@@ -927,7 +942,20 @@ return (
             <div className="h5 mb-0 text-muted">Funding Details</div>
             <InputContainer
               heading="Total Amount (USD)"
-              description="Enter the exact amount you are seeking. See Funding Documentation for guidelines.."
+              description={
+                <>
+                  Enter the exact amount you are seeking. See
+                  <a
+                    href={FundingDocs}
+                    className="text-decoration-underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Funding Documentation
+                  </a>
+                  for guidelines.
+                </>
+              }
             >
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
