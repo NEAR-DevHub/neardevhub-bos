@@ -166,32 +166,16 @@ const Heading = styled.div`
   font-weight: 700;
 `;
 
-const tokenMapping = {
-  NEAR: "NEAR",
-  USDT: {
-    NEP141: {
-      address: "usdt.tether-token.near",
-    },
-  },
-  USDC: {
-    NEP141: {
-      address:
-        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
-    },
-  },
-  OTHER: "OTHER",
-};
-
 const tokensOptions = [
-  { label: "NEAR", value: tokenMapping.NEAR },
-  { label: "USDT", value: tokenMapping.USDT },
+  { label: "NEAR", value: "NEAR" },
+  { label: "USDT", value: "USDT" },
   {
     label: "USDC",
-    value: tokenMapping.USDC,
+    value: "USDC",
   },
   {
     label: "Other",
-    value: tokenMapping.OTHER,
+    value: "OTHER",
   },
 ];
 

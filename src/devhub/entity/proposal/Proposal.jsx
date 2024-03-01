@@ -388,34 +388,6 @@ const RadioButton = ({ value, isChecked, label }) => {
   );
 };
 
-const tokenMapping = {
-  NEAR: "NEAR",
-  USDT: {
-    NEP141: {
-      address: "usdt.tether-token.near",
-    },
-  },
-  USDC: {
-    NEP141: {
-      address:
-        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
-    },
-  },
-  OTHER: "OTHER",
-};
-
-function findTokenNameByAddress(address) {
-  const foundToken = Object.entries(tokenMapping).find(([name]) => {
-    return JSON.stringify(tokenMapping[name]) === JSON.stringify(address);
-  });
-
-  return foundToken ? foundToken[0] : null;
-}
-
-const tokenName =
-  findTokenNameByAddress(snapshot.requested_sponsorship_paid_in_currency) ??
-  snapshot.requested_sponsorship_paid_in_currency;
-
 const isAllowedToEditProposal = Near.view(
   "${REPL_DEVHUB_CONTRACT}",
   "is_allowed_to_edit_proposal",
@@ -789,7 +761,8 @@ return (
                   <div className="d-flex flex-column gap-1">
                     <div>{snapshot.requested_sponsorship_usd_amount} USD</div>
                     <div className="text-sm text-muted">
-                      Requested in {tokenName ?? "NEAR"}
+                      Requested in{" "}
+                      {snapshot.requested_sponsorship_paid_in_currency}
                     </div>
                   </div>
                 )}
