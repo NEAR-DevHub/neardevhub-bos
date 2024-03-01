@@ -17,7 +17,7 @@ const TIMELINE_STATUS = {
   REVIEW: "REVIEW",
   APPROVED: "APPROVED",
   REJECTED: "REJECTED",
-  CANCELED: "CANCELED",
+  CANCELED: "CANCELLED",
   APPROVED_CONDITIONALLY: "APPROVED_CONDITIONALLY",
   PAYMENT_PROCESSING: "PAYMENT_PROCESSING",
   FUNDED: "FUNDED",
@@ -293,6 +293,8 @@ const proposalStatusOptions = [
     label: "Canceled",
     value: {
       status: TIMELINE_STATUS.CANCELED,
+      sponsor_requested_review: false,
+      reviewer_completed_attestation: false,
     },
   },
   {
@@ -562,7 +564,9 @@ return (
             url: proposalURL,
           }}
         />
-        {isAllowedToEditProposal && (
+        {((isAllowedToEditProposal &&
+          snapshot.timeline.status === TIMELINE_STATUS.DRAFT) ||
+          isModerator) && (
           <Link
             to={href({
               widgetSrc: "${REPL_DEVHUB}/widget/app",
@@ -795,10 +799,12 @@ return (
             <SidePanelItem title="Funding Ask">
               <div className="h4 text-black">
                 {snapshot.requested_sponsorship_amount && (
-                  <>
-                    {snapshot.requested_sponsorship_amount}{" "}
-                    {tokenName ?? "NEAR"}
-                  </>
+                  <div className="d-flex flex-column gap-1">
+                    <div>{snapshot.requested_sponsorship_amount} USD</div>
+                    <div className="text-sm text-muted">
+                      Requested in {tokenName ?? "NEAR"}
+                    </div>
+                  </div>
                 )}
               </div>
             </SidePanelItem>
