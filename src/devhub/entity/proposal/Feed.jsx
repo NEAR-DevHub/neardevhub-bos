@@ -190,7 +190,7 @@ const FeedPage = () => {
           </Link>
         </div>
       </div>
-      <div style={{ minHeight: "45vh" }}>
+      <div style={{ minHeight: "50vh" }}>
         {!Array.isArray(proposals) ? (
           <div className="d-flex justify-content-center align-items-center w-100">
             <Widget

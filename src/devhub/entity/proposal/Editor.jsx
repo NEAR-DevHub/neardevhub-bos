@@ -629,7 +629,7 @@ Include a detailed breakdown on how you will use the funds and include rate just
 if (loading) {
   return (
     <div
-      style={{ height: "45vh" }}
+      style={{ height: "50vh" }}
       className="d-flex justify-content-center align-items-center w-100"
     >
       <Widget

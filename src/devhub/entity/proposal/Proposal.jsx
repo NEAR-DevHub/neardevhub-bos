@@ -193,7 +193,7 @@ const proposal = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
 if (!proposal) {
   return (
     <div
-      style={{ height: "45vh" }}
+      style={{ height: "50vh" }}
       className="d-flex justify-content-center align-items-center w-100"
     >
       <Widget
