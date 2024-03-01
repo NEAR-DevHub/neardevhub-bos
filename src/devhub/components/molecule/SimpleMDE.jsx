@@ -9,8 +9,9 @@ function defaultOnChange(content) {
 
 const data = props.data;
 const onChange = props.onChange ?? defaultOnChange;
-const height = props.height ?? "405";
+const height = props.height ?? "380";
 const className = props.className ?? "w-100";
+const embeddCSS = props.embeddCSS;
 
 State.init({
   iframeHeight: height,
@@ -64,11 +65,15 @@ const code = `
       margin: auto;
       font-family: ${fontFamily};
       overflow: visible;
+      font-size:14px;
   }
   
   .editor-toolbar {
       text-align: ${alignToolItems};
   }
+
+  ${embeddCSS}
+
   </style>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
@@ -162,7 +167,7 @@ const code = `
               forceSync: true,
               autofocus: ${autoFocus},
               renderingConfig: ${renderingConfig},
-              placeholder: "${placeholder}",
+              placeholder: \`${placeholder}\`,
               status: ${statusConfig},
               spellChecker: ${spellChecker},
               tabSize: ${tabSize},
