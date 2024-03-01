@@ -405,20 +405,17 @@ const tokenMapping = {
 };
 
 function findTokenNameByAddress(address) {
-  const foundToken = Object.entries(tokenMapping).find(
-    ([tokenName, tokenData]) => {
-      return (
-        JSON.stringify(tokenMapping[tokenName]) === JSON.stringify(address)
-      );
-    }
-  );
+  const foundToken = Object.entries(tokenMapping).find(([name]) => {
+    return JSON.stringify(tokenMapping[name]) === JSON.stringify(address);
+  });
 
   return foundToken ? foundToken[0] : null;
 }
 
-const tokenName = findTokenNameByAddress(
-  snapshot.requested_sponsorship_paid_in_currency
-);
+const tokenName =
+  findTokenNameByAddress(snapshot.requested_sponsorship_paid_in_currency) ??
+  snapshot.requested_sponsorship_paid_in_currency;
+
 const isAllowedToEditProposal = Near.view(
   "${REPL_DEVHUB_CONTRACT}",
   "is_allowed_to_edit_proposal",
