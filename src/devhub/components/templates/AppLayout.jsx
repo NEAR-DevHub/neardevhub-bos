@@ -1,13 +1,19 @@
-const Container = styled.div`
+const Theme = styled.div`
+  position: fixed;
+  inset: 73px 0px 0px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-
+  overflow-y: scroll;
+  padding-top: calc(-1 * var(--body-top-padding));
   background: #f4f4f4;
+  .container-xl {
+    padding-inline: 0px !important;
+  }
+`;
 
-  margin-top: calc(-1 * var(--body-top-padding));
+const Container = styled.div`
+  width: 100%;
 `;
 
 const ContentContainer = styled.div`
@@ -41,13 +47,13 @@ const Footer = (props) => {
 
 function AppLayout({ page, children }) {
   return (
-    <>
-      <Container>
+    <Theme>
+      <Container className="container-xl">
         <AppHeader page={page} />
         <ContentContainer>{children}</ContentContainer>
         <Footer page={page} />
       </Container>
-    </>
+    </Theme>
   );
 }
 

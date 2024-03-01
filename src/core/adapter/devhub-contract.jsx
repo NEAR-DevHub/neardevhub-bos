@@ -17,8 +17,8 @@ function createCommunity({ inputs }) {
     "${REPL_DEVHUB_CONTRACT}",
     "create_community",
     { inputs },
-    Big(10).pow(14), // gas
-    Big(4) * Big(10).pow(24) // deposit (2N)
+    250000000000000, // gas (250Tgas)
+    Big(4) * Big(10).pow(24) // deposit (4N)
   );
 }
 
