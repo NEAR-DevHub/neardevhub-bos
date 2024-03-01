@@ -694,9 +694,12 @@ return (
                       }}
                     />
                     <Widget
-                      src="${REPL_NEAR}/widget/CommentButton"
+                      src={
+                        "${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentIcon"
+                      }
                       props={{
                         item,
+                        showOverlay: false,
                         onClick: () => {},
                       }}
                     />
