@@ -94,6 +94,7 @@ const [postIdList, setPostIdList] = useState(null); // to show updated post afte
 const [showPostPage, setShowPostPage] = useState(false); // show newly created post
 const [postId, setPostId] = useState(props.postId ?? null);
 const [postData, setPostData] = useState(null); // for capturing edit post change
+const [isTxnCreated, setCreateTxn] = useState(false);
 
 useEffect(() => {
   if (mode == "Edit") {
@@ -114,6 +115,7 @@ useEffect(() => {
       setPostIdList(postIds);
     }
     if (
+      isTxnCreated &&
       postIdList?.length > 0 &&
       postIds.length > 0 &&
       postIdList.length !== postIds.length
@@ -382,6 +384,7 @@ const onSubmit = () => {
         deposit: getDepositAmountForWriteAccess(userStorageDeposit),
       });
     }
+    setCreateTxn(true);
     Near.call(txn);
   }
 };
