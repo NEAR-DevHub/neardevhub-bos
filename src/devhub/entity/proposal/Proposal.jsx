@@ -1060,6 +1060,7 @@ return (
                             updatedProposalStatus.value.test_transaction_sent
                           }
                         />
+                        {/* Not needed for Alpha testing */}
                         {/* <CheckBox
                           value=""
                           disabled={selectedStatusIndex !== 6}

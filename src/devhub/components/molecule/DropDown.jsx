@@ -4,8 +4,6 @@ const onUpdate = props.onUpdate ?? (() => {});
 const selectedValue = props.selectedValue;
 const [selected, setSelected] = useState(selectedValue);
 
-const DropdownContainer = styled.div``;
-
 const StyledDropdown = styled.div`
   .drop-btn {
     width: 100%;
@@ -30,7 +28,7 @@ useEffect(() => {
 }, [selected]);
 
 return (
-  <DropdownContainer>
+  <div>
     <div class="dropdown w-100">
       <StyledDropdown>
         <button
@@ -54,5 +52,5 @@ return (
         </ul>
       </StyledDropdown>
     </div>
-  </DropdownContainer>
+  </div>
 );
