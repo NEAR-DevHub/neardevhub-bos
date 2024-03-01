@@ -470,11 +470,7 @@ const TimelineItems = ({ title, children, value, values }) => {
   let statusIndex = selectedStatusIndex;
 
   // index 2,3,4,5  is of decision
-  if (
-    selectedStatusIndex === 3 ||
-    selectedStatusIndex === 2 ||
-    selectedStatusIndex === 5
-  ) {
+  if (selectedStatusIndex === 3 || selectedStatusIndex === 2) {
     statusIndex = 2;
   }
   if (statusIndex === indexOfCurrentItem) {
@@ -490,6 +486,10 @@ const TimelineItems = ({ title, children, value, values }) => {
   if (statusIndex === 4 && indexOfCurrentItem === 2) {
     color = "#FF7F7F";
   }
+  // cancelled
+  if (statusIndex === 5 && indexOfCurrentItem === 2) {
+    color = "#F4F4F4";
+  }
 
   return (
     <div
@@ -503,14 +503,6 @@ const TimelineItems = ({ title, children, value, values }) => {
     </div>
   );
 };
-
-const optimisticallyHideItem = (message) => {
-  console.log(message);
-};
-const resolveHideItem = (message) => {
-  console.log(message);
-};
-const cancelHideItem = () => {};
 
 const extractNotifyAccountId = (item) => {
   if (!item || item.type !== "social" || !item.path) {
@@ -690,11 +682,6 @@ return (
                         props={{
                           accountId: editorAccountId,
                           blockHeight: blockHeight,
-                          parentFunctions: {
-                            optimisticallyHideItem,
-                            resolveHideItem,
-                            cancelHideItem,
-                          },
                         }}
                       />
                     </div>

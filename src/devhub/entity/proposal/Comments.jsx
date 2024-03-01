@@ -42,14 +42,6 @@ const Comment = ({ commentItem }) => {
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
 
-  const optimisticallyHideItem = (message) => {
-    console.log(message);
-  };
-  const resolveHideItem = (message) => {
-    console.log(message);
-  };
-  const cancelHideItem = () => {};
-
   const link = `https://near.org/mob.near/widget/MainPage.N.Comment.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
   return (
     <div style={{ zIndex: 99, background: "white" }}>
@@ -80,11 +72,6 @@ const Comment = ({ commentItem }) => {
                     blockHeight: blockHeight,
                     contentPath: `/post/comment`,
                     contentType: "comment",
-                    parentFunctions: {
-                      optimisticallyHideItem,
-                      resolveHideItem,
-                      cancelHideItem,
-                    },
                   }}
                 />
               </div>
