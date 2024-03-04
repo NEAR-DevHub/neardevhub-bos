@@ -265,7 +265,7 @@ useEffect(() => {
       const token = tokensOptions.find(
         (item) => item.value === snapshot.requested_sponsorship_paid_in_currency
       );
-      setRequestedSponsorshipToken(token ?? tokensOptions);
+      setRequestedSponsorshipToken(token ?? tokensOptions[2]);
     }
     setLoading(false);
   }
@@ -418,7 +418,7 @@ const [isReviewModalOpen, setReviewModal] = useState(false);
 const [amountError, setAmountError] = useState(null);
 const [isCancelModalOpen, setCancelModal] = useState(false);
 
-const DraftBtn = () => {
+const SubmitBtn = () => {
   const btnOptions = [
     {
       iconColor: "grey",
@@ -859,7 +859,7 @@ return (
                       }}
                     />
                   </Link>
-                  <DraftBtn />
+                  <SubmitBtn />
                 </div>
               </div>
             </div>
@@ -957,11 +957,11 @@ return (
                   value: requestedSponsorshipAmount,
                   onChange: (e) => {
                     const inputValue = e.target.value;
-                    // Check if the input value is a whole number
-                    if (!Number.isInteger(Number(inputValue))) {
-                      setAmountError("Please enter a whole number.");
+                    const isValidInput = /^\d+$/.test(inputValue);
+                    if (!isValidInput || Number(inputValue) < 0) {
+                      setAmountError("Please enter a positive whole number.");
                     } else {
-                      setRequestedSponsorshipAmount(e.target.value);
+                      setRequestedSponsorshipAmount(inputValue);
                       setAmountError("");
                     }
                   },

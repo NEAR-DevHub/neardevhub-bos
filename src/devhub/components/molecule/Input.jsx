@@ -13,6 +13,26 @@ const TextInput = ({
   style,
   ...otherProps
 }) => {
+  State.init({
+    data: value,
+  });
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      onChange({ target: { value: state.data } });
+    }, 30);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [state.data]);
+
+  useEffect(() => {
+    if (value !== state.data) {
+      State.update({ data: value });
+    }
+  }, [value]);
+
   const typeAttribute =
     type === "text" ||
     type === "password" ||
@@ -22,21 +42,21 @@ const TextInput = ({
       : "text";
 
   const isValid = () => {
-    if (!value || value.length === 0) {
+    if (!state.data || state.data.length === 0) {
       return !inputProps.required;
-    } else if (inputProps.min && inputProps.min > value?.length) {
+    } else if (inputProps.min && inputProps.min > state.data?.length) {
       return false;
-    } else if (inputProps.max && inputProps.max < value?.length) {
+    } else if (inputProps.max && inputProps.max < state.data?.length) {
       return false;
     } else if (
       inputProps.allowCommaAndSpace === false &&
-      /^[^,\s]*$/.test(value) === false
+      /^[^,\s]*$/.test(state.data) === false
     ) {
       return false;
     } else if (
       inputProps.validUrl === true &&
       /^(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/.test(
-        value
+        state.data
       ) === false
     ) {
       return false;
@@ -72,7 +92,7 @@ const TextInput = ({
       <span
         className={`d-inline-flex ${isValid() ? "text-muted" : "text-danger"}`}
         style={{ fontSize: 12 }}
-      >{`${value?.length ?? 0} / ${inputProps.max}`}</span>
+      >{`${state.data?.length ?? 0} / ${inputProps.max}`}</span>
     ) : null,
   ].filter((label) => label !== null);
 
@@ -109,7 +129,9 @@ const TextInput = ({
             )}
             type={typeAttribute}
             maxLength={inputProps.max}
-            {...{ onChange, placeholder, value, ...inputProps }}
+            value={state.data}
+            onChange={(e) => State.update({ data: e.target.value })}
+            {...{ placeholder, ...inputProps }}
           />
         </div>
       ) : (
@@ -124,7 +146,9 @@ const TextInput = ({
           style={{ resize: inputProps.resize ?? "vertical" }}
           type={typeAttribute}
           maxLength={inputProps.max}
-          {...{ onChange, placeholder, value, ...inputProps }}
+          value={state.data}
+          onChange={(e) => State.update({ data: e.target.value })}
+          {...{ placeholder, ...inputProps }}
         />
       )}
     </div>
