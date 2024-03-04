@@ -61,6 +61,7 @@ function Page() {
         />
       );
     }
+
     // ?page=community
     case "community": {
       return (
@@ -121,6 +122,32 @@ function Page() {
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
           props={{ ...passProps, isCreatePostPage: true, onDraftStateChange }}
+        />
+      );
+    }
+
+    case "create-proposal": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Editor"}
+          props={{ ...passProps }}
+        />
+      );
+    }
+
+    case "proposals": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.page.proposals"}
+          props={passProps}
+        />
+      );
+    }
+    case "proposal": {
+      return (
+        <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Proposal"}
+          props={passProps}
         />
       );
     }
