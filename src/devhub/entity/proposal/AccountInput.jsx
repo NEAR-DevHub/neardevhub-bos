@@ -17,6 +17,9 @@ return (
         value: value,
         onChange: (e) => {
           onUpdate(e.target.value);
+          if (e.target.value.includes(".near")) {
+            return;
+          }
           setAutoComplete(true);
         },
         skipPaddingGap: true,

@@ -31,7 +31,7 @@ const Container = styled.div`
     background-color: #7c66dc;
   }
   .yellow-bg {
-    background-color: #f2f0ce;
+    background-color: #dcc266;
   }
   .cyan-bg {
     background-color: #0daebb;

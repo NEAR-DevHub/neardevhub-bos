@@ -70,9 +70,9 @@ const history = (
               <a
                 class="dropdown-item"
                 href={href({
-                  widgetSrc:
-                    "${REPL_DEVHUB}/widget/devhub.entity.proposal.Proposal",
+                  widgetSrc: "${REPL_DEVHUB}/widget",
                   params: {
+                    page: "proposal",
                     id: proposalId,
                     timestamp: item.timestamp,
                     compareTimestamp: null,
@@ -102,9 +102,9 @@ const history = (
             <a
               class="dropdown-item"
               href={href({
-                widgetSrc:
-                  "${REPL_DEVHUB}/widget/devhub.entity.proposal.Proposal",
+                widgetSrc: "${REPL_DEVHUB}/widget/app",
                 params: {
+                  page: "proposal",
                   id: proposalId,
                   timestamp: currentTimestamp,
                   compareTimestamp: item.timestamp,

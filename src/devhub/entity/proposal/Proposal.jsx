@@ -4,6 +4,10 @@ const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
 const { readableDate } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
 ) || { readableDate: () => {} };
+const { getDepositAmountForWriteAccess } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.common"
+);
+getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 
 const accountId = context.accountId;
 /*
@@ -217,7 +221,16 @@ const item = {
   path: `${REPL_DEVHUB_CONTRACT}/post/main`,
   blockHeight,
 };
-const proposalURL = `${REPL_DEVHUB}/widget/devhub.entity.proposal.Proposal?id=${proposal.id}&timestamp=${snapshot.timestamp}`;
+const proposalURL = `https://near.org/${REPL_DEVHUB}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`;
+
+let grantNotify = Near.view(
+  "${REPL_SOCIAL_CONTRACT}",
+  "is_write_permission_granted",
+  {
+    predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+    key: context.accountId + "/index/notify",
+  }
+);
 
 const KycVerificationStatus = () => {
   const isVerified = true;
@@ -363,7 +376,7 @@ const CheckBox = ({ value, isChecked, label, disabled, onClick }) => {
         type="checkbox"
         value={value}
         checked={isChecked}
-        disabled={disabled}
+        disabled={!isModerator || disabled}
         onChange={(e) => onClick(e.target.checked)}
       />
       <label style={{ width: "90%" }} class="form-check-label text-black">
@@ -397,18 +410,35 @@ const isAllowedToEditProposal = Near.view(
   }
 );
 
-const isModerator = isAllowedToEditProposal && proposal.author_id !== accountId;
+const isModerator = Near.view("${REPL_DEVHUB_LEGACY}", "has_moderator", {
+  account_id: accountId,
+});
 
 const editProposalStatus = ({ timeline }) => {
-  Near.call({
-    contractName: "${REPL_DEVHUB_CONTRACT}",
-    methodName: "edit_proposal_timeline",
-    args: {
-      id: proposal.id,
-      timeline: timeline,
+  const calls = [
+    {
+      contractName: "${REPL_DEVHUB_CONTRACT}",
+      methodName: "edit_proposal_timeline",
+      args: {
+        id: proposal.id,
+        timeline: timeline,
+      },
+      gas: 270000000000000,
     },
-    gas: 270000000000000,
-  });
+  ];
+  if (grantNotify === false) {
+    calls.unshift({
+      contractName: "${REPL_SOCIAL_CONTRACT}",
+      methodName: "grant_write_permission",
+      args: {
+        predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+        keys: [context.accountId + "/index/notify"],
+      },
+      gas: Big(10).pow(14),
+      deposit: getDepositAmountForWriteAccess(userStorageDeposit),
+    });
+  }
+  Near.call(calls);
 };
 
 const [isReviewModalOpen, setReviewModal] = useState(false);

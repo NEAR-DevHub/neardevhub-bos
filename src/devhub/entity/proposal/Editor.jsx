@@ -234,42 +234,42 @@ const memoizedDraftData = useMemo(
 );
 
 useEffect(() => {
-  let data = editProposalData || JSON.parse(draftProposalData);
-  let snapshot = data.snapshot;
-  if (allowDraft && data) {
-    if (timestamp) {
-      snapshot =
-        data.snapshot_history.find((item) => item.timestamp === timestamp) ??
-        data.snapshot;
-    }
-    if (
-      draftProposalData &&
-      editProposalData &&
-      editProposalData.id === JSON.parse(draftProposalData).id
-    ) {
-      snapshot = {
-        ...editProposalData.snapshot,
-        ...JSON.parse(draftProposalData).snapshot,
-      };
-    }
-    setCategory(snapshot.category);
-    setTitle(snapshot.name);
-    setSummary(snapshot.summary);
-    setDescription(snapshot.description);
-    setReceiverAccount(snapshot.receiver_account);
-    setRequestedSponsor(snapshot.requested_sponsor);
-    setRequestedSponsorshipAmount(snapshot.requested_sponsorship_usd_amount);
-    setSupervisor(snapshot.supervisor);
+  if (allowDraft) {
+    let data = editProposalData || JSON.parse(draftProposalData);
+    let snapshot = data.snapshot;
+    if (data) {
+      if (timestamp) {
+        snapshot =
+          data.snapshot_history.find((item) => item.timestamp === timestamp) ??
+          data.snapshot;
+      }
+      if (
+        draftProposalData &&
+        editProposalData &&
+        editProposalData.id === JSON.parse(draftProposalData).id
+      ) {
+        snapshot = {
+          ...editProposalData.snapshot,
+          ...JSON.parse(draftProposalData).snapshot,
+        };
+      }
+      setCategory(snapshot.category);
+      setTitle(snapshot.name);
+      setSummary(snapshot.summary);
+      setDescription(snapshot.description);
+      setReceiverAccount(snapshot.receiver_account);
+      setRequestedSponsor(snapshot.requested_sponsor);
+      setRequestedSponsorshipAmount(snapshot.requested_sponsorship_usd_amount);
+      setSupervisor(snapshot.supervisor);
 
-    const token = tokensOptions.find(
-      (item) =>
-        JSON.stringify(item.value) ===
-        JSON.stringify(snapshot.requested_sponsorship_paid_in_currency)
-    );
-    setRequestedSponsorshipToken(token);
+      const token = tokensOptions.find(
+        (item) => item.value === snapshot.requested_sponsorship_paid_in_currency
+      );
+      setRequestedSponsorshipToken(token ?? tokensOptions);
+    }
+    setLoading(false);
   }
-  setLoading(false);
-}, [editProposalData, draftProposalData]);
+}, [editProposalData, draftProposalData, allowDraft]);
 
 useEffect(() => {
   if (draftProposalData) {
@@ -552,7 +552,11 @@ const onSubmit = ({ isDraft, isCancel }) => {
     supervisor: supervisor || null,
     requested_sponsor: requestedSponsor,
     timeline: isCancel
-      ? { status: "CANCELLED" }
+      ? {
+          status: "CANCELLED",
+          sponsor_requested_review: false,
+          reviewer_completed_attestation: false,
+        }
       : isDraft
       ? { status: "DRAFT" }
       : {
