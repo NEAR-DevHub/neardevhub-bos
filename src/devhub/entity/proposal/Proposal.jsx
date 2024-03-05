@@ -223,15 +223,6 @@ const item = {
 };
 const proposalURL = `https://near.org/${REPL_DEVHUB}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`;
 
-let grantNotify = Near.view(
-  "${REPL_SOCIAL_CONTRACT}",
-  "is_write_permission_granted",
-  {
-    predecessor_id: "${REPL_DEVHUB_CONTRACT}",
-    key: context.accountId + "/index/notify",
-  }
-);
-
 const KycVerificationStatus = () => {
   const isVerified = true;
   return (
@@ -414,6 +405,23 @@ const isModerator = Near.view("${REPL_DEVHUB_LEGACY}", "has_moderator", {
   account_id: accountId,
 });
 
+let grantNotify = Near.view(
+  "${REPL_SOCIAL_CONTRACT}",
+  "is_write_permission_granted",
+  {
+    predecessor_id: "${REPL_DEVHUB_CONTRACT}",
+    key: accountId + "/index/notify",
+  }
+);
+
+const userStorageDeposit = Near.view(
+  "${REPL_SOCIAL_CONTRACT}",
+  "storage_balance_of",
+  {
+    account_id: accountId,
+  }
+);
+
 const editProposalStatus = ({ timeline }) => {
   const calls = [
     {
@@ -432,7 +440,7 @@ const editProposalStatus = ({ timeline }) => {
       methodName: "grant_write_permission",
       args: {
         predecessor_id: "${REPL_DEVHUB_CONTRACT}",
-        keys: [context.accountId + "/index/notify"],
+        keys: [accountId + "/index/notify"],
       },
       gas: Big(10).pow(14),
       deposit: getDepositAmountForWriteAccess(userStorageDeposit),
@@ -850,6 +858,7 @@ return (
                             setUpdatedProposalStatus({
                               ...v,
                               value: {
+                                ...v.value,
                                 ...updatedProposalStatus.value,
                                 status: v.value.status,
                               },
