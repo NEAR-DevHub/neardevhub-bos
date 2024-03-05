@@ -200,6 +200,12 @@ const [allowDraft, setAllowDraft] = useState(true);
 const [proposalsOptions, setProposalsOptions] = useState([]);
 const proposalsData = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals");
 const [loading, setLoading] = useState(true);
+const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
+const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
+const [selectedStatus, setSelectedStatus] = useState("draft");
+const [isReviewModalOpen, setReviewModal] = useState(false);
+const [amountError, setAmountError] = useState(null);
+const [isCancelModalOpen, setCancelModal] = useState(false);
 
 if (allowDraft) {
   draftProposalData = Storage.privateGet(draftKey);
@@ -278,6 +284,18 @@ useEffect(() => {
 }, [draftProposalData]);
 
 useEffect(() => {
+  setDisabledSubmitBtn(
+    amountError ||
+      !title ||
+      !description ||
+      !summary ||
+      !category ||
+      !requestedSponsorshipAmount ||
+      !receiverAccount ||
+      !requestedSponsor ||
+      !consent.toc ||
+      !consent.coc
+  );
   const handler = setTimeout(() => {
     Storage.privateSet(draftKey, JSON.stringify(memoizedDraftData));
   }, 3000);
@@ -285,7 +303,7 @@ useEffect(() => {
   return () => {
     clearTimeout(handler);
   };
-}, [memoizedDraftData, draftKey, draftProposalData]);
+}, [memoizedDraftData, draftKey, draftProposalData, consent, amountError]);
 
 useEffect(() => {
   if (
@@ -412,11 +430,6 @@ const DraftBtnContainer = styled.div`
     background-color: #04a46e;
   }
 `;
-const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
-const [selectedStatus, setSelectedStatus] = useState("draft");
-const [isReviewModalOpen, setReviewModal] = useState(false);
-const [amountError, setAmountError] = useState(null);
-const [isCancelModalOpen, setCancelModal] = useState(false);
 
 const SubmitBtn = () => {
   const btnOptions = [
@@ -456,16 +469,6 @@ const SubmitBtn = () => {
   };
 
   const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
-  const disabled =
-    !title ||
-    !description ||
-    !summary ||
-    !category ||
-    !requestedSponsorshipAmount ||
-    !receiverAccount ||
-    !requestedSponsor ||
-    !consent.toc ||
-    !consent.coc;
 
   return (
     <DraftBtnContainer>
@@ -477,11 +480,11 @@ const SubmitBtn = () => {
         <div
           className={
             "select-header d-flex gap-1 align-items-center " +
-            (disabled && "disabled")
+            (disabledSubmitBtn && "disabled")
           }
         >
           <div
-            onClick={() => !disabled && handleSubmit()}
+            onClick={() => !disabledSubmitBtn && handleSubmit()}
             className="p-2 d-flex gap-2 align-items-center "
           >
             <div className={"circle " + selectedOption.iconColor}></div>
@@ -490,7 +493,7 @@ const SubmitBtn = () => {
           <div
             className="h-100 p-2"
             style={{ borderLeft: "1px solid #ccc" }}
-            onClick={!disabled && toggleDropdown}
+            onClick={!disabledSubmitBtn && toggleDropdown}
           >
             <i class={`bi bi-chevron-${isOpen ? "up" : "down"}`}></i>
           </div>
