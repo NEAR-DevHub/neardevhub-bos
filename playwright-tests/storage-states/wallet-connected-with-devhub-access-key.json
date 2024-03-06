@@ -17,6 +17,10 @@
           "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
         },
         {
+          "name": "near-api-js:keystore:petersalomonsen.near:mainnet",
+          "value": "ed25519:4SViyksDtdDdCPkkyzMg4HYADEQ3t5YGEd3EBoSADxdaAzDasZ7qJbxr2wNSFkWipya6C2eVJJucK1vkyoGndiyt"
+        },
+        {
           "name": "devgovgigs.near:keystore:petersalomonsen.near:mainnet",
           "value": "ed25519:4SViyksDtdDdCPkkyzMg4HYADEQ3t5YGEd3EBoSADxdaAzDasZ7qJbxr2wNSFkWipya6C2eVJJucK1vkyoGndiyt"
         },

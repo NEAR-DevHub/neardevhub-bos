@@ -81,7 +81,7 @@ async function setDontAskAgainCacheValues(page) {
 }
 test.describe("Wallet is connected with devhub access key", () => {
   test.use({
-    storageState: "playwright-tests/storage-states/wallet-connected.json",
+    storageState: "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
 
   test("should like a post", async ({ page }) => {
