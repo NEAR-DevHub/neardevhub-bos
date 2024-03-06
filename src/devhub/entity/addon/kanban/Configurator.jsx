@@ -110,7 +110,9 @@ const KanbanViewConfigurator = ({ handle, data, permissions, onSubmit }) => {
         (res) => res
       ),
     handle,
-    { subscribe: false }
+    {
+      subscribe: false,
+    }
   );
 
   if (!data) {
