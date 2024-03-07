@@ -167,6 +167,9 @@ test.describe("Wallet is connected with devhub access key", () => {
     });
 
     const submitbutton = await page.getByTestId("submit-create-post");
+    await submitbutton.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+
     await submitbutton.click();
     await pauseIfVideoRecording(page);
     await submitbutton.waitFor({ state: 'detached', timeout: 500 });
