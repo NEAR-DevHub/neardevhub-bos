@@ -26,7 +26,11 @@
         },
         {
           "name": "near-social-vm:v01::accountId:",
-          "value": "petersalomonsen.near"
+          "value": "\"petersalomonsen.near\""
+        },
+        {
+          "name": "near-wallet-selector:recentlySignedInWallets",
+          "value": "[]"
         },
         {
           "name": "flags",

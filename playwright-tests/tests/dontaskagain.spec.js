@@ -34,9 +34,9 @@ async function setDontAskAgainCacheValues(page) {
       };
     });
   });
-  console.log("Don't ask again configured. Reloading.");
-  await page.reload();
+}
 
+async function getDontAskAgainCacheValues(page) {
   const storedData = await page.evaluate(async () => {
     return await new Promise((resolve) => {
       // Replace 'yourDatabaseName', 'yourObjectStoreName', and 'yourKey' with your specific values
@@ -77,21 +77,14 @@ async function setDontAskAgainCacheValues(page) {
       };
     });
   });
-  expect(storedData).toEqual({ add_post: true });
+  return storedData;
 }
+
 test.describe("Wallet is connected with devhub access key", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
 
-  test("should like a post", async ({ page }) => {
-    await page.goto("/devhub.near/widget/app?page=post&id=2731");
-//    await setDontAskAgainCacheValues(page);
-
-    const likeButton = await page.getByRole('button', { name: ' Peter Salomonsen @petersalomonsen.near' });
-    await likeButton.click();
-    await page.waitForTimeout(2000);
-  });
   test("should comment to a post", async ({ page }) => {
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
     await setDontAskAgainCacheValues(page);
@@ -111,18 +104,27 @@ test.describe("Wallet is connected with devhub access key", () => {
     await commentArea.focus();
     await commentArea.fill("Some comment");
 
-    await page.getByTestId("submit-create-post").click();
+    expect(await getDontAskAgainCacheValues(page)).toEqual({ add_post: true });
+
+    await page.getByTestId('submit-create-post').click();
     await page.waitForTimeout(5000);
   });
+
+  test("should like a post", async ({ page }) => {
+    await page.goto("/devhub.near/widget/app?page=post&id=2731");
+
+    const likeButton = await page.getByRole('button', { name: ' Peter Salomonsen @petersalomonsen.near' });
+    await likeButton.click();
+    await page.waitForTimeout(2000);
+  });
+
   test("should comment to a long thread with don't ask again feature enabled", async ({
     page,
   }) => {
     test.setTimeout(120000);
     await page.goto("/devhub.near/widget/app?page=post&id=1033");
 
-    // {"action":"LocalStorage","domain":{"page":"confirm_transactions"},"key":{"widgetSrc":"devhub.near/widget/devhub.entity.post.PostEditor","contractId":"devgovgigs.near","type":"send_transaction_without_confirmation"}}
-
-    //await setDontAskAgainCacheValues(page);
+    await setDontAskAgainCacheValues(page);
 
     const postToReplyButton = await page
       .locator("#collapseChildPosts1041")
