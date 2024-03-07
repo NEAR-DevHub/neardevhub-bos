@@ -31,10 +31,6 @@
         {
           "name": "near-wallet-selector:recentlySignedInWallets",
           "value": "[]"
-        },
-        {
-          "name": "flags",
-          "value": "{\"bosLoaderUrl\":\"http://127.0.0.1:3030\"}"
         }
       ]
     }
