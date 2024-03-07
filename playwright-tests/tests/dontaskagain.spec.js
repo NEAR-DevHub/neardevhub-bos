@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { pauseIfVideoRecording } from '../testUtils.js';
 
 async function setDontAskAgainCacheValues(page) {
   await page.evaluate(async () => {
@@ -127,16 +128,19 @@ test.describe("Wallet is connected with devhub access key", () => {
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
     await setDontAskAgainCacheValues(page);
 
+    await pauseIfVideoRecording(page);
     const postToReplyButton = await page.getByRole("button", {
       name: "↪ Reply",
     });
     await postToReplyButton.click();
 
+    await pauseIfVideoRecording(page);
     const commentButton = await page.getByRole("button", {
       name: " Comment Ask a question, provide information, or share a resource that is relevant to the thread.",
     });
 
     await commentButton.click();
+    await pauseIfVideoRecording(page);
 
     const commentArea = await page
       .frameLocator("iframe")
@@ -144,6 +148,7 @@ test.describe("Wallet is connected with devhub access key", () => {
     await commentArea.focus();
     await commentArea.fill("Some comment");
 
+    await pauseIfVideoRecording(page);
     expect(await getDontAskAgainCacheValues(page)).toEqual({ add_post: true });
 
     await page.route("https://rpc.mainnet.near.org/", async (route) => {
@@ -163,12 +168,14 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     const submitbutton = await page.getByTestId("submit-create-post");
     await submitbutton.click();
-    await submitbutton.waitFor({state: 'detached', timeout: 100});
+    await pauseIfVideoRecording(page);
+    await submitbutton.waitFor({ state: 'detached', timeout: 500 });
     expect(
       await page
         .getByText("Calling contract devgovgigs.near with method add_post")
         .isVisible()
     ).toBeTruthy();
+    await pauseIfVideoRecording(page);
   });
 
   test("should like a post", async ({ page }) => {
