@@ -5,7 +5,7 @@ export const pauseIfVideoRecording = async (page) => {
   if (isVideoRecorded) {
     await page.waitForTimeout(500);
   }
-}
+};
 
 export const setInputAndAssert = async (page, selector, value) => {
   await page.fill(selector, value);

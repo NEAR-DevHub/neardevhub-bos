@@ -1,85 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { pauseIfVideoRecording } from '../testUtils.js';
-
-async function setDontAskAgainCacheValues(page) {
-  await page.evaluate(async () => {
-    await new Promise((resolve) => {
-      const dbName = "cacheDb";
-      const storeName = "cache-v1";
-      const key =
-        '{"action":"LocalStorage","domain":{"page":"confirm_transactions"},"key":{"widgetSrc":"devhub.near/widget/devhub.entity.post.PostEditor","contractId":"devgovgigs.near","type":"send_transaction_without_confirmation"}}';
-      const newValue = { add_post: true };
-
-      const request = indexedDB.open(dbName);
-
-      request.onerror = function (event) {
-        console.error("Database error: ", event.target.error);
-      };
-
-      request.onsuccess = function (event) {
-        const db = event.target.result;
-
-        const transaction = db.transaction([storeName], "readwrite");
-        const objectStore = transaction.objectStore(storeName);
-
-        const updateRequest = objectStore.put(newValue, key);
-
-        updateRequest.onerror = function (event) {
-          console.error("Error updating data: ", event.target.error);
-        };
-
-        updateRequest.onsuccess = function (event) {
-          console.log("Data updated for key:", key);
-          resolve();
-        };
-      };
-    });
-  });
-}
-
-async function getDontAskAgainCacheValues(page) {
-  const storedData = await page.evaluate(async () => {
-    return await new Promise((resolve) => {
-      // Replace 'yourDatabaseName', 'yourObjectStoreName', and 'yourKey' with your specific values
-      const dbName = "cacheDb";
-      const storeName = "cache-v1";
-      const key =
-        '{"action":"LocalStorage","domain":{"page":"confirm_transactions"},"key":{"widgetSrc":"devhub.near/widget/devhub.entity.post.PostEditor","contractId":"devgovgigs.near","type":"send_transaction_without_confirmation"}}';
-
-      // Opening the database
-      const request = indexedDB.open(dbName);
-
-      request.onerror = function (event) {
-        console.error("Database error: ", event.target.error);
-      };
-
-      request.onsuccess = function (event) {
-        const db = event.target.result;
-
-        // Opening a transaction and getting the object store
-        const transaction = db.transaction([storeName], "readonly");
-        const objectStore = transaction.objectStore(storeName);
-
-        // Getting the data by key
-        const dataRequest = objectStore.get(key);
-
-        dataRequest.onerror = function (event) {
-          console.error("Error fetching data: ", event.target.error);
-        };
-
-        dataRequest.onsuccess = function (event) {
-          if (dataRequest.result) {
-            console.log("Found data: ", dataRequest.result);
-            resolve(dataRequest.result);
-          } else {
-            console.log("No data found for key:", key);
-          }
-        };
-      };
-    });
-  });
-  return storedData;
-}
+import { pauseIfVideoRecording } from "../testUtils.js";
+import {
+  getDontAskAgainCacheValues,
+  setDontAskAgainCacheValues,
+} from "../util/cache.js";
 
 test.describe("Wallet is connected with devhub access key", () => {
   test.use({
@@ -172,7 +96,7 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     await submitbutton.click();
     await pauseIfVideoRecording(page);
-    await submitbutton.waitFor({ state: 'detached', timeout: 500 });
+    await submitbutton.waitFor({ state: "detached", timeout: 500 });
     expect(
       await page
         .getByText("Calling contract devgovgigs.near with method add_post")

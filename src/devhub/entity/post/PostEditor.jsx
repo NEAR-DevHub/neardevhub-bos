@@ -3,8 +3,8 @@ const { getDepositAmountForWriteAccess } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
 );
 
-getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => { });
-normalize || (normalize = () => { });
+getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
+normalize || (normalize = () => {});
 
 const CenteredMessage = styled.div`
   display: flex;
@@ -48,9 +48,9 @@ const userStorageDeposit = Near.view(
 const cleanDescription = (description) => {
   return description
     ? description.replace(
-      /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
-      ""
-    )
+        /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
+        ""
+      )
     : description;
 };
 
@@ -784,19 +784,20 @@ return (
                     <div class="d-flex flex-row gap-2">
                       {Object.values(postTypeOptions).map((option) => (
                         <button
-                          className={`btn btn-${state.postType === option.name
+                          className={`btn btn-${
+                            state.postType === option.name
                               ? "primary"
                               : "outline-secondary"
-                            }`}
+                          }`}
                           data-testid={`btn-${option.name.toLowerCase()}`}
                           key={option.name}
                           onClick={() => typeSwitch(option.name)}
                           style={
                             state.postType === option.name
                               ? {
-                                backgroundColor: "#0C7283",
-                                color: "#f3f3f3",
-                              }
+                                  backgroundColor: "#0C7283",
+                                  color: "#f3f3f3",
+                                }
                               : null
                           }
                           type="button"
@@ -862,12 +863,12 @@ return (
                         description:
                           state.postType == "Solution"
                             ? generateDescription(
-                              state.description,
-                              state.amount,
-                              state.token,
-                              state.supervisor,
-                              state.seekingFunding
-                            )
+                                state.description,
+                                state.amount,
+                                state.token,
+                                state.supervisor,
+                                state.seekingFunding
+                              )
                             : state.description,
                         amount: state.amount,
                         sponsorship_token: state.token,
@@ -879,7 +880,7 @@ return (
                 />
               </div>
             )}
-            {!isSubmittingTransaction ?
+            {!isSubmittingTransaction ? (
               <>
                 <button
                   data-testid="submit-create-post"
@@ -889,7 +890,8 @@ return (
                     color: "#f3f3f3",
                   }}
                   disabled={
-                    (state.seekingFunding && (!state.amount || state.amount < 1)) ||
+                    (state.seekingFunding &&
+                      (!state.amount || state.amount < 1)) ||
                     (isCreatePostPage &&
                       (state.name === "" || state.description === ""))
                   }
@@ -912,10 +914,9 @@ return (
                   </button>
                 )}
               </>
-              :
-              <>
-              </>
-            }
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       )}
