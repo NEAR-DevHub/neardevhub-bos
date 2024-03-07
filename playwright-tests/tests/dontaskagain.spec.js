@@ -82,32 +82,43 @@ async function getDontAskAgainCacheValues(page) {
 
 test.describe("Wallet is connected with devhub access key", () => {
   test.use({
-    storageState: "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
 
   test("should comment to a post", async ({ page }) => {
-    const devComponents = (await fetch('http://localhost:3030').then(r => r.json())).components;
+    const devComponents = (
+      await fetch("http://localhost:3030").then((r) => r.json())
+    ).components;
 
     await page.route("https://rpc.mainnet.near.org/", async (route) => {
       const request = await route.request();
 
       const requestPostData = request.postDataJSON();
-      if (requestPostData.params && requestPostData.params.account_id ==='social.near'
-        && requestPostData.params.method_name ==='get') {
-        const social_get_key = JSON.parse(atob(requestPostData.params.args_base64)).keys[0];
+      if (
+        requestPostData.params &&
+        requestPostData.params.account_id === "social.near" &&
+        requestPostData.params.method_name === "get"
+      ) {
+        const social_get_key = JSON.parse(
+          atob(requestPostData.params.args_base64)
+        ).keys[0];
 
         const response = await route.fetch();
         const json = await response.json();
 
         if (devComponents[social_get_key]) {
-          console.log('using local dev widget', social_get_key);
-          const social_get_key_parts = social_get_key.split('/');
+          console.log("using local dev widget", social_get_key);
+          const social_get_key_parts = social_get_key.split("/");
           const devWidget = {};
-          devWidget[social_get_key_parts[0]] = { widget: {}};
-          devWidget[social_get_key_parts[0]].widget[social_get_key_parts[2]] = devComponents[social_get_key].code;
-          json.result.result = Array.from(new TextEncoder().encode(JSON.stringify(devWidget)));
-        } 
-        await route.fulfill({response, json});
+          devWidget[social_get_key_parts[0]] = { widget: {} };
+          devWidget[social_get_key_parts[0]].widget[social_get_key_parts[2]] =
+            devComponents[social_get_key].code;
+          json.result.result = Array.from(
+            new TextEncoder().encode(JSON.stringify(devWidget))
+          );
+        }
+        await route.fulfill({ response, json });
       } else {
         await route.continue();
       }
@@ -116,7 +127,9 @@ test.describe("Wallet is connected with devhub access key", () => {
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
     await setDontAskAgainCacheValues(page);
 
-    const postToReplyButton = await page.getByRole('button', { name: '↪ Reply' });
+    const postToReplyButton = await page.getByRole("button", {
+      name: "↪ Reply",
+    });
     await postToReplyButton.click();
 
     const commentButton = await page.getByRole("button", {
@@ -137,7 +150,10 @@ test.describe("Wallet is connected with devhub access key", () => {
       const request = await route.request();
 
       const requestPostData = request.postDataJSON();
-      if (requestPostData.params && requestPostData.params.request_type ==='view_access_key_list') {
+      if (
+        requestPostData.params &&
+        requestPostData.params.request_type === "view_access_key_list"
+      ) {
         console.log("Failing on viewing access keys");
         await route.abort();
       } else {
@@ -145,14 +161,22 @@ test.describe("Wallet is connected with devhub access key", () => {
       }
     });
 
-    await page.getByTestId('submit-create-post').click();
-    expect(await page.getByText('Calling contract devgovgigs.near with method add_post').isVisible()).toBeTruthy();
+    const submitbutton = await page.getByTestId("submit-create-post");
+    await submitbutton.click();
+    await submitbutton.waitFor({state: 'detached', timeout: 100});
+    expect(
+      await page
+        .getByText("Calling contract devgovgigs.near with method add_post")
+        .isVisible()
+    ).toBeTruthy();
   });
 
   test("should like a post", async ({ page }) => {
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
 
-    const likeButton = await page.getByRole('button', { name: ' Peter Salomonsen @petersalomonsen.near' });
+    const likeButton = await page.getByRole("button", {
+      name: " Peter Salomonsen @petersalomonsen.near",
+    });
     await likeButton.click();
     await page.waitForTimeout(2000);
   });

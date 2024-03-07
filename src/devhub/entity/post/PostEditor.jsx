@@ -3,8 +3,8 @@ const { getDepositAmountForWriteAccess } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
 );
 
-getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
-normalize || (normalize = () => {});
+getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => { });
+normalize || (normalize = () => { });
 
 const CenteredMessage = styled.div`
   display: flex;
@@ -48,9 +48,9 @@ const userStorageDeposit = Near.view(
 const cleanDescription = (description) => {
   return description
     ? description.replace(
-        /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
-        ""
-      )
+      /###### Requested amount: .+?\n###### Requested sponsor: @[^\s]+\n/g,
+      ""
+    )
     : description;
 };
 
@@ -95,6 +95,7 @@ const [showPostPage, setShowPostPage] = useState(false); // show newly created p
 const [postId, setPostId] = useState(props.postId ?? null);
 const [postData, setPostData] = useState(null); // for capturing edit post change
 const [isTxnCreated, setCreateTxn] = useState(false);
+const [isSubmittingTransaction, setIsSubmittingTransaction] = useState(false);
 
 useEffect(() => {
   if (mode == "Edit") {
@@ -298,6 +299,7 @@ const tokenMapping = {
 };
 
 const onSubmit = () => {
+  setIsSubmittingTransaction(true);
   let labels = state.labelStrings;
   var body = {
     Comment: { description: state.description, comment_version: "V2" },
@@ -782,20 +784,19 @@ return (
                     <div class="d-flex flex-row gap-2">
                       {Object.values(postTypeOptions).map((option) => (
                         <button
-                          className={`btn btn-${
-                            state.postType === option.name
+                          className={`btn btn-${state.postType === option.name
                               ? "primary"
                               : "outline-secondary"
-                          }`}
+                            }`}
                           data-testid={`btn-${option.name.toLowerCase()}`}
                           key={option.name}
                           onClick={() => typeSwitch(option.name)}
                           style={
                             state.postType === option.name
                               ? {
-                                  backgroundColor: "#0C7283",
-                                  color: "#f3f3f3",
-                                }
+                                backgroundColor: "#0C7283",
+                                color: "#f3f3f3",
+                              }
                               : null
                           }
                           type="button"
@@ -861,12 +862,12 @@ return (
                         description:
                           state.postType == "Solution"
                             ? generateDescription(
-                                state.description,
-                                state.amount,
-                                state.token,
-                                state.supervisor,
-                                state.seekingFunding
-                              )
+                              state.description,
+                              state.amount,
+                              state.token,
+                              state.supervisor,
+                              state.seekingFunding
+                            )
                             : state.description,
                         amount: state.amount,
                         sponsorship_token: state.token,
@@ -878,36 +879,43 @@ return (
                 />
               </div>
             )}
-            <button
-              data-testid="submit-create-post"
-              style={{
-                width: "7rem",
-                backgroundColor: "#0C7283",
-                color: "#f3f3f3",
-              }}
-              disabled={
-                (state.seekingFunding && (!state.amount || state.amount < 1)) ||
-                (isCreatePostPage &&
-                  (state.name === "" || state.description === ""))
-              }
-              className="btn btn-light mb-2 p-3"
-              onClick={onSubmit}
-            >
-              Submit
-            </button>
-            {!isCreatePostPage && (
-              <button
-                style={{
-                  width: "7rem",
-                  backgroundColor: "#fff",
-                  color: "#000",
-                }}
-                className="btn btn-light mb-2 p-3"
-                onClick={() => props.setEditorState(false)}
-              >
-                Cancel
-              </button>
-            )}
+            {!isSubmittingTransaction ?
+              <>
+                <button
+                  data-testid="submit-create-post"
+                  style={{
+                    width: "7rem",
+                    backgroundColor: "#0C7283",
+                    color: "#f3f3f3",
+                  }}
+                  disabled={
+                    (state.seekingFunding && (!state.amount || state.amount < 1)) ||
+                    (isCreatePostPage &&
+                      (state.name === "" || state.description === ""))
+                  }
+                  className="btn btn-light mb-2 p-3"
+                  onClick={onSubmit}
+                >
+                  Submit
+                </button>
+                {!isCreatePostPage && (
+                  <button
+                    style={{
+                      width: "7rem",
+                      backgroundColor: "#fff",
+                      color: "#000",
+                    }}
+                    className="btn btn-light mb-2 p-3"
+                    onClick={() => props.setEditorState(false)}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </>
+              :
+              <>
+              </>
+            }
           </div>
         </div>
       )}
