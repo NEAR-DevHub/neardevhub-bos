@@ -83,8 +83,23 @@ test.describe("Wallet is connected with devhub access key", () => {
         requestPostData.params &&
         requestPostData.params.request_type === "view_access_key_list"
       ) {
-        console.log("Failing on viewing access keys");
-        await route.abort();
+        
+        const response = await route.fetch();
+        const json = await response.json();
+        json.result.keys = [{
+          "access_key": {
+            "nonce": 109629226000005, "permission": {
+              "FunctionCall": {
+                "allowance": "241917078840755500000000", "method_names": [],
+                "receiver_id": "devgovgigs.near"
+              }
+            }
+          },
+          "public_key": "ed25519:EQr7NpVYFu1XcVZ23Lb4Ga3KbDQgrYeTMTgBsYa26Bne"
+        }];
+
+        console.log("Replacing RPC response when viewing access keys", JSON.stringify(requestPostData));
+        await route.fulfill(json);
       } else {
         await route.continue();
       }
@@ -103,6 +118,7 @@ test.describe("Wallet is connected with devhub access key", () => {
         .isVisible()
     ).toBeTruthy();
     await pauseIfVideoRecording(page);
+    await page.waitForTimeout(5000);
   });
 
   test("should like a post", async ({ page }) => {
