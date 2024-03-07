@@ -106,8 +106,20 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     expect(await getDontAskAgainCacheValues(page)).toEqual({ add_post: true });
 
+    await page.route("https://rpc.mainnet.near.org/", async (route) => {
+      const request = await route.request();
+
+      const requestPostData = request.postDataJSON();
+      if (requestPostData.params && requestPostData.params.request_type ==='view_access_key_list') {
+        console.log("Failing on viewing access keys");
+        await route.abort();
+      } else {
+        await route.continue();
+      }
+    });
+
     await page.getByTestId('submit-create-post').click();
-    await page.waitForTimeout(5000);
+    expect(await page.getByText('Calling contract devgovgigs.near with method add_post').isVisible()).toBeTruthy();
   });
 
   test("should like a post", async ({ page }) => {
