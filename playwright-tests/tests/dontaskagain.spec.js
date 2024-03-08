@@ -4,6 +4,9 @@ import {
   getDontAskAgainCacheValues,
   setDontAskAgainCacheValues,
 } from "../util/cache.js";
+import {
+  modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader
+} from "../util/bos-loader.js";
 
 test.describe("Wallet is connected with devhub access key", () => {
   test.use({
@@ -12,42 +15,7 @@ test.describe("Wallet is connected with devhub access key", () => {
   });
 
   test("should comment to a post", async ({ page }) => {
-    const devComponents = (
-      await fetch("http://localhost:3030").then((r) => r.json())
-    ).components;
-
-    await page.route("https://rpc.mainnet.near.org/", async (route) => {
-      const request = await route.request();
-
-      const requestPostData = request.postDataJSON();
-      if (
-        requestPostData.params &&
-        requestPostData.params.account_id === "social.near" &&
-        requestPostData.params.method_name === "get"
-      ) {
-        const social_get_key = JSON.parse(
-          atob(requestPostData.params.args_base64)
-        ).keys[0];
-
-        const response = await route.fetch();
-        const json = await response.json();
-
-        if (devComponents[social_get_key]) {
-          console.log("using local dev widget", social_get_key);
-          const social_get_key_parts = social_get_key.split("/");
-          const devWidget = {};
-          devWidget[social_get_key_parts[0]] = { widget: {} };
-          devWidget[social_get_key_parts[0]].widget[social_get_key_parts[2]] =
-            devComponents[social_get_key].code;
-          json.result.result = Array.from(
-            new TextEncoder().encode(JSON.stringify(devWidget))
-          );
-        }
-        await route.fulfill({ response, json });
-      } else {
-        await route.continue();
-      }
-    });
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(page);
 
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
     await setDontAskAgainCacheValues(page);
@@ -75,6 +43,10 @@ test.describe("Wallet is connected with devhub access key", () => {
     await pauseIfVideoRecording(page);
     expect(await getDontAskAgainCacheValues(page)).toEqual({ add_post: true });
 
+    const submitbutton = await page.getByTestId("submit-create-post");
+    await submitbutton.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+
     await page.route("https://rpc.mainnet.near.org/", async (route) => {
       const request = await route.request();
 
@@ -83,7 +55,7 @@ test.describe("Wallet is connected with devhub access key", () => {
         requestPostData.params &&
         requestPostData.params.request_type === "view_access_key_list"
       ) {
-        
+
         const response = await route.fetch();
         const json = await response.json();
         json.result.keys = [{
@@ -98,25 +70,73 @@ test.describe("Wallet is connected with devhub access key", () => {
           "public_key": "ed25519:EQr7NpVYFu1XcVZ23Lb4Ga3KbDQgrYeTMTgBsYa26Bne"
         }];
 
-        console.log("Replacing RPC response when viewing access keys", JSON.stringify(requestPostData));
-        await route.fulfill(json);
+        console.log("Replacing RPC response when listing access keys", JSON.stringify(json));
+        await route.fulfill({ response, json });
+      } else if (requestPostData.params &&
+        requestPostData.params.request_type === "view_access_key") {
+        const response = await route.fetch();
+        const json = await response.json();
+
+        json.result = {
+          "nonce": 85,
+          "permission": {
+            "FunctionCall": {
+              "allowance": "241917078840755500000000",
+              "receiver_id": "devgovgigs.near",
+              "method_names": []
+            }
+          },
+          "block_height": 19884918,
+          "block_hash": "GGJQ8yjmo7aEoj8ZpAhGehnq9BSWFx4xswHYzDwwAP2n"
+        };
+
+        console.log("Replacing RPC response when viewing access key", JSON.stringify(json));
+        await route.fulfill({ response, json });
+      } else if (requestPostData.method == 'broadcast_tx_commit') {
+        console.log("Replacing RPC response when broadcasting tx");
+        await route.fulfill({
+          json: {
+            "jsonrpc": "2.0",
+            "result": {
+              "status": {
+                "SuccessValue": ""
+              },
+              "transaction_outcome": {
+                "proof": [],
+                "block_hash": "9MzuZrRPW1BGpFnZJUJg6SzCrixPpJDfjsNeUobRXsLe",
+                "id": "ASS7oYwGiem9HaNwJe6vS2kznx2CxueKDvU9BAYJRjNR",
+                "outcome": {
+                  "logs": [],
+                  "receipt_ids": ["BLV2q6p8DX7pVgXRtGtBkyUNrnqkNyU7iSksXG7BjVZh"],
+                  "gas_burnt": 223182562500,
+                  "tokens_burnt": "22318256250000000000",
+                  "executor_id": "sender.testnet",
+                  "status": {
+                    "SuccessReceiptId": "BLV2q6p8DX7pVgXRtGtBkyUNrnqkNyU7iSksXG7BjVZh"
+                  }
+                }
+              },
+              "receipts_outcome": [
+
+              ]
+            }
+          }
+        });
       } else {
+        console.log('unmodified', JSON.stringify(requestPostData));
         await route.continue();
       }
     });
 
-    const submitbutton = await page.getByTestId("submit-create-post");
-    await submitbutton.scrollIntoViewIfNeeded();
-    await pauseIfVideoRecording(page);
-
     await submitbutton.click();
     await pauseIfVideoRecording(page);
     await submitbutton.waitFor({ state: "detached", timeout: 500 });
+    const callContractToast = await page.getByText("Calling contract devgovgigs.near with method add_post");
     expect(
-      await page
-        .getByText("Calling contract devgovgigs.near with method add_post")
+      callContractToast
         .isVisible()
-    ).toBeTruthy();
+    ).toBeTruthy();    
+    await callContractToast.waitFor({state: "detached"});
     await pauseIfVideoRecording(page);
     await page.waitForTimeout(5000);
   });
