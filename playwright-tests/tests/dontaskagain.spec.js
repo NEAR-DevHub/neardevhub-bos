@@ -58,7 +58,7 @@ test.describe("Wallet is connected with devhub access key", () => {
     await submitbutton.click();
     await pauseIfVideoRecording(page);
     await submitbutton.waitFor({ state: "detached", timeout: 500 });
-    const loadingIndicator = await page.locator("#accordion2731 span").first();
+    const loadingIndicator = await page.locator('.submit-post-loading-indicator').first();
     expect(loadingIndicator).toBeVisible();
     const callContractToast = await page.getByText(
       `Calling contract ${RECEIVER_ID} with method add_post`
@@ -89,7 +89,11 @@ test.describe("Wallet is connected with devhub access key", () => {
   test("should comment to a long thread with don't ask again feature enabled", async ({
     page,
   }) => {
-    test.setTimeout(120000);
+    test.setTimeout(180000);
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+
     await page.goto("/devhub.near/widget/app?page=post&id=1033");
 
     await setDontAskAgainCacheValues(page);
@@ -99,7 +103,9 @@ test.describe("Wallet is connected with devhub access key", () => {
       .getByRole("button", { name: "↪ Reply" })
       .nth(1);
     await postToReplyButton.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
     await postToReplyButton.click();
+    await pauseIfVideoRecording(page);
 
     const commentButton = await page.getByRole("button", {
       name: " Comment Ask a question, provide information, or share a resource that is relevant to the thread.",
@@ -107,6 +113,7 @@ test.describe("Wallet is connected with devhub access key", () => {
     await commentButton.scrollIntoViewIfNeeded();
     await commentButton.click();
 
+    await pauseIfVideoRecording(page);
     const commentArea = await page
       .frameLocator("iframe")
       .locator(".CodeMirror textarea");
@@ -114,7 +121,29 @@ test.describe("Wallet is connected with devhub access key", () => {
     await commentArea.focus();
     await commentArea.fill("Some comment");
 
-    await page.getByTestId("submit-create-post").click();
-    await page.waitForTimeout(5000);
+    await pauseIfVideoRecording(page);
+    await mockTransactionSubmitRPCResponses(page, RECEIVER_ID);
+    const submitbutton = await page.getByTestId("submit-create-post");
+    await submitbutton.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+    await submitbutton.click();
+    await pauseIfVideoRecording(page);
+    await submitbutton.waitFor({ state: "detached", timeout: 500 });
+    const loadingIndicator = await page.locator('.submit-post-loading-indicator').first();
+    expect(loadingIndicator).toBeVisible();
+    const callContractToast = await page.getByText(
+      `Calling contract ${RECEIVER_ID} with method add_post`
+    );
+    expect(callContractToast.isVisible()).toBeTruthy();
+    await callContractToast.waitFor({ state: "detached" });
+    expect(loadingIndicator).toBeVisible();
+
+    await page
+      .getByText('Editor Preview Create Comment')
+      .waitFor({ state: "detached" });
+
+    expect(loadingIndicator).not.toBeVisible();
+
+    await pauseIfVideoRecording(page);
   });
 });

@@ -17,7 +17,7 @@ const CenteredMessage = styled.div`
 
 const Loading = (
   <span
-    className="spinner-grow spinner-grow-sm me-1"
+    className="submit-post-loading-indicator spinner-grow spinner-grow-sm me-1"
     role="status"
     aria-hidden="true"
   />
