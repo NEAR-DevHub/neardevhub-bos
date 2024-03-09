@@ -15,6 +15,14 @@ const CenteredMessage = styled.div`
   height: 384px;
 `;
 
+const Loading = (
+  <span
+    className="spinner-grow spinner-grow-sm me-1"
+    role="status"
+    aria-hidden="true"
+  />
+);
+
 function initLabels() {
   const labels = [];
   if (typeof props.labels === "string") {
@@ -915,7 +923,7 @@ return (
                 )}
               </>
             ) : (
-              <></>
+              <>{Loading}</>
             )}
           </div>
         </div>

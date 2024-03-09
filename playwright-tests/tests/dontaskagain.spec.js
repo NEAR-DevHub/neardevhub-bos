@@ -58,15 +58,21 @@ test.describe("Wallet is connected with devhub access key", () => {
     await submitbutton.click();
     await pauseIfVideoRecording(page);
     await submitbutton.waitFor({ state: "detached", timeout: 500 });
-
+    const loadingIndicator = await page.locator("#accordion2731 span").first();
+    expect(loadingIndicator).toBeVisible();
     const callContractToast = await page.getByText(
       `Calling contract ${RECEIVER_ID} with method add_post`
     );
     expect(callContractToast.isVisible()).toBeTruthy();
     await callContractToast.waitFor({ state: "detached" });
+    expect(loadingIndicator).toBeVisible();
+
     await page
       .getByText("Editor Preview Create Comment")
       .waitFor({ state: "detached" });
+
+    expect(loadingIndicator).not.toBeVisible();
+
     await pauseIfVideoRecording(page);
   });
 
