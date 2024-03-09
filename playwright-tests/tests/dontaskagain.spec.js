@@ -22,7 +22,11 @@ test.describe("Wallet is connected with devhub access key", () => {
     );
 
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
-    await setDontAskAgainCacheValues(page);
+    await setDontAskAgainCacheValues(
+      page,
+      "devhub.near/widget/devhub.entity.post.PostEditor",
+      "add_post"
+    );
 
     await pauseIfVideoRecording(page);
     const postToReplyButton = await page.getByRole("button", {
@@ -45,7 +49,12 @@ test.describe("Wallet is connected with devhub access key", () => {
     await commentArea.fill("Some comment");
 
     await pauseIfVideoRecording(page);
-    expect(await getDontAskAgainCacheValues(page)).toEqual({ add_post: true });
+    expect(
+      await getDontAskAgainCacheValues(
+        page,
+        "devhub.near/widget/devhub.entity.post.PostEditor"
+      )
+    ).toEqual({ add_post: true });
 
     const submitbutton = await page.getByTestId("submit-create-post");
     await submitbutton.scrollIntoViewIfNeeded();
@@ -58,7 +67,9 @@ test.describe("Wallet is connected with devhub access key", () => {
     await submitbutton.click();
     await pauseIfVideoRecording(page);
     await submitbutton.waitFor({ state: "detached", timeout: 500 });
-    const loadingIndicator = await page.locator('.submit-post-loading-indicator').first();
+    const loadingIndicator = await page
+      .locator(".submit-post-loading-indicator")
+      .first();
     expect(loadingIndicator).toBeVisible();
     const callContractToast = await page.getByText(
       `Calling contract ${RECEIVER_ID} with method add_post`
@@ -77,13 +88,37 @@ test.describe("Wallet is connected with devhub access key", () => {
   });
 
   test("should like a post", async ({ page }) => {
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
 
-    const likeButton = await page.getByRole("button", {
-      name: " Peter Salomonsen @petersalomonsen.near",
-    });
+    await setDontAskAgainCacheValues(
+      page,
+      "devhub.near/widget/devhub.entity.post.Post",
+      "add_like"
+    );
+
+    const likeButton = await page.locator(".bi-heart-fill");
+    await likeButton.waitFor({ state: "visible" });
+    await mockTransactionSubmitRPCResponses(page, RECEIVER_ID);
+
+    await pauseIfVideoRecording(page);
     await likeButton.click();
-    await page.waitForTimeout(2000);
+    const loadingIndicator = await page.locator(".spinner-grow").first();
+
+    expect(loadingIndicator).toBeVisible();
+    const callContractToast = await page.getByText(
+      `Calling contract ${RECEIVER_ID} with method add_like`
+    );
+    expect(callContractToast.isVisible()).toBeTruthy();
+    expect(loadingIndicator).toBeVisible();
+
+    await callContractToast.waitFor({ state: "detached" });
+
+    // Should loading indicator still be visible?
+    await pauseIfVideoRecording(page);
   });
 
   test("should comment to a long thread with don't ask again feature enabled", async ({
@@ -96,7 +131,11 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     await page.goto("/devhub.near/widget/app?page=post&id=1033");
 
-    await setDontAskAgainCacheValues(page);
+    await setDontAskAgainCacheValues(
+      page,
+      "devhub.near/widget/devhub.entity.post.PostEditor",
+      "add_post"
+    );
 
     const postToReplyButton = await page
       .locator("#collapseChildPosts1041")
@@ -126,11 +165,13 @@ test.describe("Wallet is connected with devhub access key", () => {
     const submitbutton = await page.getByTestId("submit-create-post");
     await submitbutton.scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
-    await submitbutton.click();    
+    await submitbutton.click();
     await submitbutton.waitFor({ state: "detached", timeout: 500 });
 
     await pauseIfVideoRecording(page);
-    const loadingIndicator = await page.locator('.submit-post-loading-indicator').first();
+    const loadingIndicator = await page
+      .locator(".submit-post-loading-indicator")
+      .first();
     expect(loadingIndicator).toBeVisible();
     const callContractToast = await page.getByText(
       `Calling contract ${RECEIVER_ID} with method add_post`
@@ -140,7 +181,7 @@ test.describe("Wallet is connected with devhub access key", () => {
     expect(loadingIndicator).toBeVisible();
 
     await page
-      .getByText('Editor Preview Create Comment')
+      .getByText("Editor Preview Create Comment")
       .waitFor({ state: "detached" });
 
     expect(loadingIndicator).not.toBeVisible();

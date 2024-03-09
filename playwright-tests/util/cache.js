@@ -48,49 +48,70 @@ export async function findKeysInCache(page, searchFor) {
   }, searchFor);
 }
 
-export async function setDontAskAgainCacheValues(page) {
-  await page.evaluate(async () => {
-    await new Promise((resolve) => {
-      const dbName = "cacheDb";
-      const storeName = "cache-v1";
-      const key =
-        '{"action":"LocalStorage","domain":{"page":"confirm_transactions"},"key":{"widgetSrc":"devhub.near/widget/devhub.entity.post.PostEditor","contractId":"devgovgigs.near","type":"send_transaction_without_confirmation"}}';
-      const newValue = { add_post: true };
+export async function setDontAskAgainCacheValues(page, widgetSrc, methodname) {
+  await page.evaluate(
+    async (args) => {
+      const { widgetSrc, methodname } = args;
+      await new Promise((resolve) => {
+        const dbName = "cacheDb";
+        const storeName = "cache-v1";
+        const key = JSON.stringify({
+          action: "LocalStorage",
+          domain: {
+            page: "confirm_transactions",
+          },
+          key: {
+            widgetSrc,
+            contractId: "devgovgigs.near",
+            type: "send_transaction_without_confirmation",
+          },
+        });
+        const newValue = {};
+        newValue[methodname] = true;
 
-      const request = indexedDB.open(dbName);
+        const request = indexedDB.open(dbName);
 
-      request.onerror = function (event) {
-        console.error("Database error: ", event.target.error);
-      };
-
-      request.onsuccess = function (event) {
-        const db = event.target.result;
-
-        const transaction = db.transaction([storeName], "readwrite");
-        const objectStore = transaction.objectStore(storeName);
-
-        const updateRequest = objectStore.put(newValue, key);
-
-        updateRequest.onerror = function (event) {
-          console.error("Error updating data: ", event.target.error);
+        request.onerror = function (event) {
+          console.error("Database error: ", event.target.error);
         };
 
-        updateRequest.onsuccess = function (event) {
-          console.log("Data updated for key:", key);
-          resolve();
+        request.onsuccess = function (event) {
+          const db = event.target.result;
+
+          const transaction = db.transaction([storeName], "readwrite");
+          const objectStore = transaction.objectStore(storeName);
+
+          const updateRequest = objectStore.put(newValue, key);
+
+          updateRequest.onerror = function (event) {
+            console.error("Error updating data: ", event.target.error);
+          };
+
+          updateRequest.onsuccess = function (event) {
+            console.log("Data updated for key:", key);
+            resolve();
+          };
         };
-      };
-    });
-  });
+      });
+    },
+    { widgetSrc, methodname }
+  );
 }
 
-export async function getDontAskAgainCacheValues(page) {
-  const storedData = await page.evaluate(async () => {
+export async function getDontAskAgainCacheValues(page, widgetSrc) {
+  const storedData = await page.evaluate(async (widgetSrc) => {
     return await new Promise((resolve) => {
       const dbName = "cacheDb";
       const storeName = "cache-v1";
-      const key =
-        '{"action":"LocalStorage","domain":{"page":"confirm_transactions"},"key":{"widgetSrc":"devhub.near/widget/devhub.entity.post.PostEditor","contractId":"devgovgigs.near","type":"send_transaction_without_confirmation"}}';
+      const key = JSON.stringify({
+        action: "LocalStorage",
+        domain: { page: "confirm_transactions" },
+        key: {
+          widgetSrc,
+          contractId: "devgovgigs.near",
+          type: "send_transaction_without_confirmation",
+        },
+      });
 
       // Opening the database
       const request = indexedDB.open(dbName);
@@ -123,6 +144,6 @@ export async function getDontAskAgainCacheValues(page) {
         };
       };
     });
-  });
+  }, widgetSrc);
   return storedData;
 }

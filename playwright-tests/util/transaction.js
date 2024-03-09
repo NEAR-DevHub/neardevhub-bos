@@ -61,6 +61,8 @@ export async function mockTransactionSubmitRPCResponses(page, receiver_id) {
         "Replacing RPC response when broadcasting tx",
         JSON.stringify(requestPostData)
       );
+      await page.waitForTimeout(500);
+
       await route.fulfill({
         json: {
           jsonrpc: "2.0",
@@ -110,6 +112,18 @@ export async function mockTransactionSubmitRPCResponses(page, receiver_id) {
         new TextEncoder().encode(JSON.stringify(existing_post_ids.slice(1)))
       );
       console.log("modified post_ids", json.result.result);
+      await route.fulfill({ response, json });
+    } else if (
+      transaction_completed &&
+      requestPostData.params &&
+      requestPostData.params.method_name === "get_post"
+    ) {
+      const response = await route.fetch();
+      const json = await response.json();
+      console.log(
+        "get_post response",
+        JSON.parse(new TextDecoder().decode(new Uint8Array(json.result.result)))
+      );
       await route.fulfill({ response, json });
     } else {
       console.log("unmodified", JSON.stringify(requestPostData));
