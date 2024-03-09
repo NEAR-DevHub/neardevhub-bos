@@ -4,7 +4,6 @@ export async function findKeysInCache(page, searchFor) {
     const storeName = "cache-v1";
 
     return await new Promise((resolve) => {
-
       // Opening the database
       request = indexedDB.open(dbName);
 

@@ -3,14 +3,12 @@ import { pauseIfVideoRecording } from "../testUtils.js";
 import {
   getDontAskAgainCacheValues,
   setDontAskAgainCacheValues,
-  findKeysInCache
+  findKeysInCache,
 } from "../util/cache.js";
-import {
-  modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader
-} from "../util/bos-loader.js";
-import { mockTransactionSubmitRPCResponses } from '../util/transaction.js';
+import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
+import { mockTransactionSubmitRPCResponses } from "../util/transaction.js";
 
-const RECEIVER_ID = 'devgovgigs.near';
+const RECEIVER_ID = "devgovgigs.near";
 
 test.describe("Wallet is connected with devhub access key", () => {
   test.use({
@@ -19,7 +17,9 @@ test.describe("Wallet is connected with devhub access key", () => {
   });
 
   test("should comment to a post", async ({ page }) => {
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(page);
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
 
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
     await setDontAskAgainCacheValues(page);
@@ -52,22 +52,22 @@ test.describe("Wallet is connected with devhub access key", () => {
     await pauseIfVideoRecording(page);
 
     const cachedValues = await findKeysInCache(page, RECEIVER_ID);
-    console.log('cached values', cachedValues);
+    console.log("cached values", cachedValues);
     await mockTransactionSubmitRPCResponses(page, RECEIVER_ID);
 
     await submitbutton.click();
     await pauseIfVideoRecording(page);
     await submitbutton.waitFor({ state: "detached", timeout: 500 });
 
-    const callContractToast = await page.getByText(`Calling contract ${RECEIVER_ID} with method add_post`);
-    expect(
-      callContractToast
-        .isVisible()
-    ).toBeTruthy();    
-    await callContractToast.waitFor({state: "detached"});
+    const callContractToast = await page.getByText(
+      `Calling contract ${RECEIVER_ID} with method add_post`
+    );
+    expect(callContractToast.isVisible()).toBeTruthy();
+    await callContractToast.waitFor({ state: "detached" });
+    await page
+      .getByText("Editor Preview Create Comment")
+      .waitFor({ state: "detached" });
     await pauseIfVideoRecording(page);
-    
-    await page.waitForTimeout(5000);
   });
 
   test("should like a post", async ({ page }) => {
