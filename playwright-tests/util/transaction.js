@@ -120,9 +120,15 @@ export async function mockTransactionSubmitRPCResponses(page, receiver_id) {
     ) {
       const response = await route.fetch();
       const json = await response.json();
-      console.log(
-        "get_post response",
-        JSON.parse(new TextDecoder().decode(new Uint8Array(json.result.result)))
+      const get_post_response = JSON.parse(
+        new TextDecoder().decode(new Uint8Array(json.result.result))
+      );
+      get_post_response.likes.push({
+        author_id: "webassemblymusic.near",
+        timestamp: "1709379904623715535",
+      });
+      json.result.result = Array.from(
+        new TextEncoder().encode(JSON.stringify(get_post_response))
       );
       await route.fulfill({ response, json });
     } else {

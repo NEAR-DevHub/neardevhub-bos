@@ -30,7 +30,18 @@ const ButtonWithHover = styled.button`
   }
 `;
 
+const Loading = (
+  <span
+    className="like-loading-indicator spinner-grow spinner-grow-sm me-1"
+    role="status"
+    aria-hidden="true"
+  />
+);
+
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
+
+const [isLikeClicked, setIsLikeClicked] = useState(false);
+const [numLikes, setNumLikes] = useState(null);
 
 const post =
   props.post ??
@@ -39,6 +50,12 @@ const post =
 if (!post) {
   return <div>Loading ...</div>;
 }
+
+if (isLikeClicked && numLikes !== post.likes.length) {
+  setIsLikeClicked(false);
+}
+
+setNumLikes(post.likes.length);
 
 const referral = props.referral;
 const currentTimestamp = props.timestamp ?? post.snapshot.timestamp;
@@ -316,6 +333,7 @@ const onLike = () => {
     });
   }
 
+  setIsLikeClicked(true);
   Near.call(likeTxn);
 };
 
@@ -353,118 +371,122 @@ const FooterButtonsContianer = styled.div`
 
 const buttonsFooter = props.isPreview ? null : (
   <div class="row" key="buttons-footer">
-    <FooterButtonsContianer>
-      <div class="btn-group" role="group" aria-label="Basic outlined example">
-        <ButtonWithHover
-          type="button"
-          class="btn d-flex align-items-center"
-          style={{ border: "0px" }}
-          onClick={onLike}
-        >
-          <i class={`bi ${likeBtnClass}`}> </i>
-          {post.likes.length == 0 ? (
-            "Like"
-          ) : (
-            <Widget
-              src="${REPL_DEVHUB}/widget/devhub.components.layout.LikeButton.Faces"
-              props={{
-                likesByUsers: Object.fromEntries(
-                  post.likes.map(({ author_id }) => [author_id, ""])
-                ),
-              }}
-            />
-          )}
-        </ButtonWithHover>
-
-        <div class="btn-group" role="group">
+    {!isLikeClicked ? (
+      <FooterButtonsContianer>
+        <div class="btn-group" role="group" aria-label="Basic outlined example">
           <ButtonWithHover
             type="button"
-            class="btn"
+            class="btn d-flex align-items-center"
             style={{ border: "0px" }}
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
+            onClick={onLike}
           >
-            ↪ Reply
+            <i class={`bi ${likeBtnClass}`}> </i>
+            {post.likes.length == 0 ? (
+              "Like"
+            ) : (
+              <Widget
+                src="${REPL_DEVHUB}/widget/devhub.components.layout.LikeButton.Faces"
+                props={{
+                  likesByUsers: Object.fromEntries(
+                    post.likes.map(({ author_id }) => [author_id, ""])
+                  ),
+                }}
+              />
+            )}
           </ButtonWithHover>
-          <ul class="dropdown-menu">
-            {btnCreatorWidget(
-              "Idea",
-              emptyIcons.Idea,
-              "Idea",
-              "Get feedback from the community about a problem, opportunity, or need."
-            )}
-            {btnCreatorWidget(
-              "Solution",
-              emptyIcons.Solution,
-              "Solution",
-              "Provide a specific proposal or implementation to an idea, optionally requesting funding."
-            )}
-            {btnCreatorWidget(
-              "Attestation",
-              emptyIcons.Attestation,
-              "Attestation",
-              "Formally review or validate a solution as a recognized expert."
-            )}
-            {btnCreatorWidget(
-              "Sponsorship",
-              emptyIcons.Sponsorship,
-              "Sponsorship",
-              "Offer to fund projects, events, or proposals that match your needs."
-            )}
-            <li>
-              <hr class="dropdown-divider" />
-            </li>
-            {btnCreatorWidget(
-              "Comment",
-              emptyIcons.Comment,
-              "Comment",
-              "Ask a question, provide information, or share a resource that is relevant to the thread."
-            )}
-          </ul>
-        </div>
-        {childPostIds.length > 0 && (
-          <ButtonWithHover
-            type="button"
-            class="btn"
-            style={{ border: "0px" }}
-            data-bs-toggle="collapse"
-            href={`#collapseChildPosts${postId}`}
-            aria-expanded={defaultExpanded}
-            aria-controls={`collapseChildPosts${postId}`}
-            onClick={() =>
-              State.update({ expandReplies: !state.expandReplies })
-            }
-          >
-            <i
-              class={`bi bi-chevron-${state.expandReplies ? "up" : "down"}`}
-            ></i>{" "}
-            {`${state.expandReplies ? "Collapse" : "Expand"} Replies (${
-              childPostIds.length
-            })`}
-          </ButtonWithHover>
-        )}
 
-        {isUnderPost || !parentId ? (
-          <div key="link-to-parent"></div>
-        ) : (
-          <Link
-            to={href({
-              widgetSrc: "${REPL_DEVHUB}/widget/app",
-              params: { page: "post", id: parentId },
-            })}
-          >
+          <div class="btn-group" role="group">
             <ButtonWithHover
               type="button"
+              class="btn"
               style={{ border: "0px" }}
-              className="btn"
-              key="link-to-parent"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
             >
-              <i class="bi bi-arrow-90deg-up"></i>Go to parent
+              ↪ Reply
             </ButtonWithHover>
-          </Link>
-        )}
-      </div>
-    </FooterButtonsContianer>
+            <ul class="dropdown-menu">
+              {btnCreatorWidget(
+                "Idea",
+                emptyIcons.Idea,
+                "Idea",
+                "Get feedback from the community about a problem, opportunity, or need."
+              )}
+              {btnCreatorWidget(
+                "Solution",
+                emptyIcons.Solution,
+                "Solution",
+                "Provide a specific proposal or implementation to an idea, optionally requesting funding."
+              )}
+              {btnCreatorWidget(
+                "Attestation",
+                emptyIcons.Attestation,
+                "Attestation",
+                "Formally review or validate a solution as a recognized expert."
+              )}
+              {btnCreatorWidget(
+                "Sponsorship",
+                emptyIcons.Sponsorship,
+                "Sponsorship",
+                "Offer to fund projects, events, or proposals that match your needs."
+              )}
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              {btnCreatorWidget(
+                "Comment",
+                emptyIcons.Comment,
+                "Comment",
+                "Ask a question, provide information, or share a resource that is relevant to the thread."
+              )}
+            </ul>
+          </div>
+          {childPostIds.length > 0 && (
+            <ButtonWithHover
+              type="button"
+              class="btn"
+              style={{ border: "0px" }}
+              data-bs-toggle="collapse"
+              href={`#collapseChildPosts${postId}`}
+              aria-expanded={defaultExpanded}
+              aria-controls={`collapseChildPosts${postId}`}
+              onClick={() =>
+                State.update({ expandReplies: !state.expandReplies })
+              }
+            >
+              <i
+                class={`bi bi-chevron-${state.expandReplies ? "up" : "down"}`}
+              ></i>{" "}
+              {`${state.expandReplies ? "Collapse" : "Expand"} Replies (${
+                childPostIds.length
+              })`}
+            </ButtonWithHover>
+          )}
+
+          {isUnderPost || !parentId ? (
+            <div key="link-to-parent"></div>
+          ) : (
+            <Link
+              to={href({
+                widgetSrc: "${REPL_DEVHUB}/widget/app",
+                params: { page: "post", id: parentId },
+              })}
+            >
+              <ButtonWithHover
+                type="button"
+                style={{ border: "0px" }}
+                className="btn"
+                key="link-to-parent"
+              >
+                <i class="bi bi-arrow-90deg-up"></i>Go to parent
+              </ButtonWithHover>
+            </Link>
+          )}
+        </div>
+      </FooterButtonsContianer>
+    ) : (
+      <>{Loading}</>
+    )}
   </div>
 );
 

@@ -106,7 +106,9 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     await pauseIfVideoRecording(page);
     await likeButton.click();
-    const loadingIndicator = await page.locator(".spinner-grow").first();
+    const loadingIndicator = await page
+      .locator(".like-loading-indicator")
+      .first();
 
     expect(loadingIndicator).toBeVisible();
     const callContractToast = await page.getByText(
@@ -117,8 +119,17 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     await callContractToast.waitFor({ state: "detached" });
 
-    // Should loading indicator still be visible?
-    await pauseIfVideoRecording(page);
+    expect(loadingIndicator).toBeVisible();
+
+    await page
+      .getByRole("link", {
+        name: "WebAssembly Music @webassemblymusic.near",
+      })
+      .waitFor({ state: "visible" });
+
+    expect(loadingIndicator).not.toBeVisible();
+
+    await page.waitForTimeout(500);
   });
 
   test("should comment to a long thread with don't ask again feature enabled", async ({
