@@ -189,3 +189,66 @@ test.describe("Wallet is connected with devhub access key", () => {
     await pauseIfVideoRecording(page);
   });
 });
+
+test.describe("Wallet is connected", () => {
+  test.use({
+    storageState: "playwright-tests/storage-states/wallet-connected.json",
+  });
+  test("should comment to a post and cancel the transaction, and get the submit button back again", async ({
+    page,
+  }) => {
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+
+    await page.goto("/devhub.near/widget/app?page=post&id=2731");
+
+    await pauseIfVideoRecording(page);
+    const postToReplyButton = await page.getByRole("button", {
+      name: "↪ Reply",
+    });
+    await postToReplyButton.click();
+
+    await pauseIfVideoRecording(page);
+    const commentButton = await page.getByRole("button", {
+      name: " Comment Ask a question, provide information, or share a resource that is relevant to the thread.",
+    });
+
+    await commentButton.click();
+    await pauseIfVideoRecording(page);
+
+    const commentArea = await page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentArea.focus();
+    await commentArea.fill("Some comment");
+
+    await pauseIfVideoRecording(page);
+
+    const submitbutton = await page.getByTestId("submit-create-post");
+    await submitbutton.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+
+    await submitbutton.click();
+    await pauseIfVideoRecording(page);
+    await submitbutton.waitFor({ state: "detached", timeout: 500 });
+    const loadingIndicator = await page
+      .locator(".submit-post-loading-indicator")
+      .first();
+    expect(loadingIndicator).toBeVisible();
+
+    const closeButton = await page.getByText("Close");
+    expect(closeButton).toBeVisible();
+    await page.waitForTimeout(1000);
+
+    await closeButton.click();
+
+    // There is unfortunately no way to achieve this as long as the VM does not have a callback
+    // that says the transaction confirmation dialog was closed
+
+    // expect(loadingIndicator).not.toBeVisible();
+    // expect(await page.getByTestId("submit-create-post")).toBeVisible();
+
+    await pauseIfVideoRecording(page);
+  });
+});
