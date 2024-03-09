@@ -1,49 +1,52 @@
-const dbName = "cacheDb";
-const storeName = "cache-v1";
+export async function findKeysInCache(page, searchFor) {
+  await page.evaluate(async (searchFor) => {
+    const dbName = "cacheDb";
+    const storeName = "cache-v1";
 
-export async function findKeysInCache(searchFor) {
-  return await new Promise((resolve) => {
-    // Opening the database
-    request = indexedDB.open(dbName);
+    return await new Promise((resolve) => {
 
-    request.onerror = function (event) {
-      console.error("Database error: ", event.target.error);
-    };
+      // Opening the database
+      request = indexedDB.open(dbName);
 
-    request.onsuccess = function (event) {
-      const db = event.target.result;
-
-      // Opening a transaction and getting the object store
-      const transaction = db.transaction([storeName], "readonly");
-      const objectStore = transaction.objectStore(storeName);
-
-      // Opening a cursor to iterate over all items in the store
-      const cursorRequest = objectStore.openCursor();
-
-      cursorRequest.onerror = function (event) {
-        console.error("Cursor opening error: ", event.target.error);
+      request.onerror = function (event) {
+        console.error("Database error: ", event.target.error);
       };
 
-      const foundEntries = [];
-      cursorRequest.onsuccess = function (event) {
-        const cursor = event.target.result;
-        if (cursor) {
-          // Convert the cursor key to a string and search for the partial string
-          const keyAsString = JSON.stringify(cursor.key);
-          if (keyAsString.includes(searchFor)) {
-            console.log("Found key", cursor.key);
-            console.log("Found entry with matching key: ", cursor.value);
-            foundEntries.push({ key: cursor.key, value: cursor.value });
+      request.onsuccess = function (event) {
+        const db = event.target.result;
+
+        // Opening a transaction and getting the object store
+        const transaction = db.transaction([storeName], "readonly");
+        const objectStore = transaction.objectStore(storeName);
+
+        // Opening a cursor to iterate over all items in the store
+        const cursorRequest = objectStore.openCursor();
+
+        cursorRequest.onerror = function (event) {
+          console.error("Cursor opening error: ", event.target.error);
+        };
+
+        const foundEntries = [];
+        cursorRequest.onsuccess = function (event) {
+          const cursor = event.target.result;
+          if (cursor) {
+            // Convert the cursor key to a string and search for the partial string
+            const keyAsString = JSON.stringify(cursor.key);
+            if (keyAsString.includes(searchFor)) {
+              console.log("Found key", cursor.key);
+              console.log("Found entry with matching key: ", cursor.value);
+              foundEntries.push({ key: cursor.key, value: cursor.value });
+            }
+            cursor.continue(); // Move to the next item in the store
+          } else {
+            // No more entries
+            resolve(foundEntries);
+            console.log("Finished searching the object store.");
           }
-          cursor.continue(); // Move to the next item in the store
-        } else {
-          // No more entries
-          resolve(foundEntries);
-          console.log("Finished searching the object store.");
-        }
+        };
       };
-    };
-  });
+    });
+  }, searchFor);
 }
 
 export async function setDontAskAgainCacheValues(page) {
@@ -85,7 +88,6 @@ export async function setDontAskAgainCacheValues(page) {
 export async function getDontAskAgainCacheValues(page) {
   const storedData = await page.evaluate(async () => {
     return await new Promise((resolve) => {
-      // Replace 'yourDatabaseName', 'yourObjectStoreName', and 'yourKey' with your specific values
       const dbName = "cacheDb";
       const storeName = "cache-v1";
       const key =
