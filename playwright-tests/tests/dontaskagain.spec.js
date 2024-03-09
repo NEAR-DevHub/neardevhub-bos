@@ -186,7 +186,7 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     expect(loadingIndicator).not.toBeVisible();
 
-    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(500);
   });
 });
 
