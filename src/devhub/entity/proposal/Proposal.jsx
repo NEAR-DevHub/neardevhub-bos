@@ -391,7 +391,10 @@ const RadioButton = ({ value, isChecked, label }) => {
 const isAllowedToEditProposal = Near.view(
   "${REPL_DEVHUB_CONTRACT}",
   "is_allowed_to_edit_proposal",
-  { proposal_id: proposal.id, editor: accountId }
+  {
+    proposal_id: proposal.id,
+    editor: accountId,
+  }
 );
 
 const isModerator = isAllowedToEditProposal && proposal.author_id !== accountId;
