@@ -10,13 +10,18 @@ const Modal = styled.div`
   align-items: center;
   opacity: 1;
   z-index: 999;
-
   .black-btn {
     background-color: #000 !important;
     border: none;
     color: white;
     &:active {
       color: white;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    h5 {
+      font-size: 16px !important;
     }
   }
 
@@ -39,7 +44,9 @@ const ModalDialog = styled.div`
   max-height: 85%;
   margin-top: 5%;
   width: 50%;
-  @media (width < 720px) {
+
+  @media screen and (max-width: 768px) {
+    margin: 2rem;
     width: 100%;
   }
 `;
@@ -95,6 +102,10 @@ const ModalContent = styled.div`
   margin-bottom: 4px;
   overflow-y: auto;
   max-height: 50%;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px !important;
+  }
 `;
 
 const NoButton = styled.button`

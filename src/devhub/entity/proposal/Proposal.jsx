@@ -70,6 +70,13 @@ const Container = styled.div`
     height: 205px;
     background-color: lightgrey;
   }
+
+  @media screen and (max-width: 768px) {
+    .vertical-line {
+      height: 170px;
+    }
+  }
+
   .vertical-line-sm {
     width: 2px;
     height: 80px;
@@ -214,7 +221,7 @@ if (timestamp && proposal) {
 
 const { snapshot } = proposal;
 
-const editorAccountId = snapshot.editor_id;
+const authorId = proposal.author_id;
 const blockHeight = parseInt(proposal.social_db_post_block_height);
 const item = {
   type: "social",
@@ -549,7 +556,7 @@ return (
         },
       }}
     />
-    <div className="d-flex justify-content-between">
+    <div className="d-flex px-2 px-sm-0 justify-content-between">
       <div className="d-flex gap-2 align-items-center h3">
         <div>{snapshot.name}</div>
         <div className="text-muted">#{proposal.id}</div>
@@ -594,7 +601,7 @@ return (
         )}
       </div>
     </div>
-    <div className="d-flex gap-2 align-items-center text-sm pb-3">
+    <div className="d-flex px-2 px-sm-0 gap-2 align-items-center text-sm pb-3">
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
         props={{
@@ -603,15 +610,15 @@ return (
         }}
       />
       <div>
-        <b>{proposal.author_id} </b> created on{" "}
+        <b>{authorId} </b> created on{" "}
         {readableDate(snapshot.timestamp / 1000000)}
       </div>
     </div>
-    <div className="card card-body rounded-0 p-4">
+    <div className="card card-body p-2 rounded-0 p-sm-4">
       {snapshot.timeline.status === TIMELINE_STATUS.DRAFT &&
         isAllowedToEditProposal && (
-          <div className="draft-info-container p-4 d-flex justify-content-between align-items-center gap-2 rounded-2">
-            <div>
+          <div className="draft-info-container p-4 d-flex flex-wrap justify-content-between align-items-center gap-2 rounded-2">
+            <div style={{ minWidth: "300px" }}>
               <b>
                 This proposal is in draft mode and open for community comments.
               </b>
@@ -636,8 +643,8 @@ return (
         )}
       {snapshot.timeline.status === TIMELINE_STATUS.REVIEW &&
         isAllowedToEditProposal && (
-          <div className="review-info-container p-4 d-flex justify-content-between align-items-center gap-2 rounded-2">
-            <div>
+          <div className="review-info-container p-4 d-flex flex-wrap justify-content-between align-items-center gap-2 rounded-2">
+            <div style={{ minWidth: "300px" }}>
               <b>
                 This proposal is in review mode and still open for community
                 comments.
@@ -666,21 +673,23 @@ return (
           </div>
         )}
       <div className="my-4">
-        <div className="d-flex gap-6">
-          <div className="flex-3">
+        <div className="d-flex flex-wrap gap-6">
+          <div className="flex-3 order-2 order-sm-1">
             <div
               className="d-flex gap-2 flex-1"
               style={{ zIndex: 99, background: "white", position: "relative" }}
             >
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
-                props={{
-                  accountId: editorAccountId,
-                }}
-              />
+              <div className="d-none d-sm-flex">
+                <Widget
+                  src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+                  props={{
+                    accountId: authorId,
+                  }}
+                />
+              </div>
               <ProposalContainer className="rounded-2 flex-1">
                 <Header className="d-flex gap-3 align-items-center p-2 px-3">
-                  {snapshot.editor_id} ･{" "}
+                  {authorId} ･{" "}
                   <Widget
                     src="${REPL_NEAR}/widget/TimeAgo"
                     props={{
@@ -693,7 +702,7 @@ return (
                       <Widget
                         src="${REPL_NEAR}/widget/Posts.Menu"
                         props={{
-                          accountId: editorAccountId,
+                          accountId: authorId,
                           blockHeight: blockHeight,
                         }}
                       />
@@ -783,12 +792,12 @@ return (
               />
             </div>
           </div>
-          <div className="d-flex flex-column gap-4 flex-1">
+          <div className="d-flex flex-column gap-4 flex-1 order-1 order-sm-2">
             <SidePanelItem title="Author">
               <Widget
                 src="${REPL_NEAR}/widget/AccountProfile"
                 props={{
-                  accountId: editorAccountId,
+                  accountId: authorId,
                 }}
               />
             </SidePanelItem>
