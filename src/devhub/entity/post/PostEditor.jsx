@@ -15,12 +15,12 @@ const CenteredMessage = styled.div`
   height: 384px;
 `;
 
-const Loading = (
+const LoadingButtonSpinner = (
   <span
-    className="submit-post-loading-indicator spinner-grow spinner-grow-sm me-1"
+    class="submit-post-loading-indicator spinner-border spinner-border-sm"
     role="status"
     aria-hidden="true"
-  />
+  ></span>
 );
 
 function initLabels() {
@@ -888,43 +888,42 @@ return (
                 />
               </div>
             )}
-            {!isSubmittingTransaction ? (
-              <>
+
+            <>
+              <button
+                data-testid="submit-create-post"
+                style={{
+                  width: "7rem",
+                  backgroundColor: "#0C7283",
+                  color: "#f3f3f3",
+                }}
+                disabled={
+                  (state.seekingFunding &&
+                    (!state.amount || state.amount < 1)) ||
+                  (isCreatePostPage &&
+                    (state.name === "" || state.description === ""))
+                }
+                className="btn btn-light mb-2 p-3"
+                onClick={onSubmit}
+                disabled={isSubmittingTransaction}
+              >
+                {isSubmittingTransaction ? LoadingButtonSpinner : <></>}
+                Submit
+              </button>
+              {!isCreatePostPage && (
                 <button
-                  data-testid="submit-create-post"
                   style={{
                     width: "7rem",
-                    backgroundColor: "#0C7283",
-                    color: "#f3f3f3",
+                    backgroundColor: "#fff",
+                    color: "#000",
                   }}
-                  disabled={
-                    (state.seekingFunding &&
-                      (!state.amount || state.amount < 1)) ||
-                    (isCreatePostPage &&
-                      (state.name === "" || state.description === ""))
-                  }
                   className="btn btn-light mb-2 p-3"
-                  onClick={onSubmit}
+                  onClick={() => props.setEditorState(false)}
                 >
-                  Submit
+                  Cancel
                 </button>
-                {!isCreatePostPage && (
-                  <button
-                    style={{
-                      width: "7rem",
-                      backgroundColor: "#fff",
-                      color: "#000",
-                    }}
-                    className="btn btn-light mb-2 p-3"
-                    onClick={() => props.setEditorState(false)}
-                  >
-                    Cancel
-                  </button>
-                )}
-              </>
-            ) : (
-              <>{Loading}</>
-            )}
+              )}
+            </>
           </div>
         </div>
       )}
