@@ -32,6 +32,28 @@ const Container = styled.div`
     font-size: 13px;
   }
 
+  @media screen and (max-width: 768px) {
+    .h6 {
+      font-size: 14px !important;
+    }
+
+    .h5 {
+      font-size: 16px !important;
+    }
+
+    .text-sm {
+      font-size: 11px;
+    }
+
+    .gap-6 {
+      gap: 0.5rem !important;
+    }
+
+    .border-sm-bottom {
+      border-bottom: var(--bs-card-border-width) solid
+        var(--bs-card-border-color);
+    }
+  }
   .text-xs {
     font-size: 10px;
   }
@@ -164,6 +186,10 @@ const Container = styled.div`
 const Heading = styled.div`
   font-size: 24px;
   font-weight: 700;
+
+  @media screen and (max-width: 768px) {
+    font-size: 18px;
+  }
 `;
 
 const tokensOptions = [
@@ -338,9 +364,11 @@ useEffect(() => {
 
 const InputContainer = ({ heading, description, children }) => {
   return (
-    <div className="d-flex flex-column gap-2">
+    <div className="d-flex flex-column gap-1 gap-sm-2 w-100">
       <b className="h6 mb-0">{heading}</b>
-      {description && <div className="text-muted text-sm">{description}</div>}
+      {description && (
+        <div className="text-muted w-100 text-sm">{description}</div>
+      )}
       {children}
     </div>
   );
@@ -362,7 +390,7 @@ const CheckBox = ({ value, isChecked, label, onClick }) => {
 };
 
 const DraftBtnContainer = styled.div`
-  font-size: 14px;
+  font-size: 13px;
   min-width: 150px;
 
   .custom-select {
@@ -389,6 +417,14 @@ const DraftBtnContainer = styled.div`
     background-color: #fff;
     padding: 0.5rem;
     z-index: 9999;
+    font-size: 13px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .options-card {
+      right: 0 !important;
+      left: auto !important;
+    }
   }
 
   .option {
@@ -630,9 +666,44 @@ if (loading) {
   );
 }
 
+const [collapseState, setCollapseState] = useState({});
+
+const CollapsibleContainer = ({ title, children }) => {
+  return (
+    <div>
+      <div
+        className={
+          "d-flex justify-content-between " +
+          (collapseState[title] && " border-sm-bottom")
+        }
+      >
+        <div className="h5 text-muted mb-2 mb-sm-3">{title}</div>
+        <div
+          className="d-flex d-sm-none cursor-pointer"
+          onClick={() =>
+            setCollapseState((prevState) => ({
+              ...prevState,
+              [title]: !prevState[title],
+            }))
+          }
+        >
+          {!collapseState[title] ? (
+            <i class="bi bi-chevron-up h4"></i>
+          ) : (
+            <i class="bi bi-chevron-down h4"></i>
+          )}
+        </div>
+      </div>
+      <div className={!collapseState[title] ? "" : "d-none"}>{children}</div>
+    </div>
+  );
+};
+
 return (
-  <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
-    <Heading>{isEditPage ? "Edit" : "Create"} Proposal</Heading>
+  <Container className="w-100 py-4 px-0 px-sm-2 d-flex flex-column gap-3">
+    <Heading className="px-2 px-sm-0">
+      {isEditPage ? "Edit" : "Create"} Proposal
+    </Heading>
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal"}
       props={{
@@ -656,17 +727,19 @@ return (
         },
       }}
     />
-    <div className="card card-body p-4 rounded-0">
-      <div className="d-flex gap-6">
-        <div className="flex-2">
-          <div className="d-flex gap-2">
-            <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
-              props={{
-                accountId: author,
-              }}
-            />
-            <div className="d-flex flex-column gap-4">
+    <div className="card card-body p-3 p-sm-4 rounded-0 w-100">
+      <div className="d-flex flex-wrap gap-6 w-100">
+        <div className="flex-2 w-100 order-2 order-sm-1">
+          <div className="d-flex gap-2 w-100">
+            <div className="d-none d-sm-flex">
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+                props={{
+                  accountId: author,
+                }}
+              />
+            </div>
+            <div className="d-flex flex-column gap-2 gap-sm-4 w-100">
               <InputContainer
                 heading="Category"
                 description={
@@ -813,14 +886,14 @@ return (
                   />
                 </div>
               </InputContainer>
-              <div className="d-flex justify-content-between gap-2">
+              <div className="d-flex justify-content-between gap-2 align-items-center">
                 <div>
                   {isEditPage && (
                     <Widget
                       src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                       props={{
                         classNames: {
-                          root: "btn-outline-danger shadow-none border-0",
+                          root: "btn-outline-danger shadow-none border-0 btn-sm",
                         },
                         label: (
                           <div className="d-flex align-items-center gap-1">
@@ -855,7 +928,7 @@ return (
                       src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                       props={{
                         classNames: {
-                          root: "d-flex text-muted fw-bold btn-outline shadow-none border-0",
+                          root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
                         },
                         label: "Discard Changes",
                         onClick: cleanDraft,
@@ -868,169 +941,181 @@ return (
             </div>
           </div>
         </div>
-        <div className="flex-1">
-          <div className="h5 text-muted mb-4">Author Details</div>
-          <div className="d-flex flex-column gap-4">
-            <InputContainer heading="Author">
-              <Widget
-                src="mob.near/widget/Profile.ShortInlineBlock"
-                props={{
-                  accountId: author,
-                }}
-              />
-            </InputContainer>
-            <InputContainer
-              heading={
-                <div className="text-muted">Link Proposals (Optional)</div>
-              }
-              description="Link any relevant proposals (e.g. previous milestones)."
-            >
-              {linkedProposals.map((proposal) => {
-                return (
-                  <div className="d-flex gap-2 align-items-center">
-                    <a
-                      className="text-decoration-underline"
-                      href={href({
-                        widgetSrc: "${REPL_DEVHUB}/widget/app",
-                        params: {
-                          page: "proposal",
-                          id: proposal.value,
-                        },
-                      })}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {proposal.label}
-                    </a>
-                    <div
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const updatedLinkedProposals = linkedProposals.filter(
-                          (item) => item.value !== proposal.value
-                        );
-                        setLinkedProposals(updatedLinkedProposals);
-                      }}
-                    >
-                      <i class="bi bi-trash3-fill"></i>
-                    </div>
-                  </div>
-                );
-              })}
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch"
-                props={{
-                  selectedValue: "",
-                  onChange: (v) => {
-                    if (
-                      !linkedProposals.some((item) => item.value === v.value)
-                    ) {
-                      setLinkedProposals([...linkedProposals, v]);
-                    }
-                  },
-                  options: proposalsOptions,
-                  showSearch: true,
-                  searchInputPlaceholder: "Search by Id",
-                  defaultLabel: "Search proposals",
-                  searchByValue: true,
-                }}
-              />
-            </InputContainer>
-            <div className="h5 mb-0 text-muted">Funding Details</div>
-            <InputContainer
-              heading="Total Amount (USD)"
-              description={
-                <>
-                  Enter the exact amount you are seeking. See
-                  <a
-                    href={FundingDocs}
-                    className="text-decoration-underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Funding Documentation
-                  </a>
-                  for guidelines.
-                </>
-              }
-            >
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                props={{
-                  className: "flex-grow-1",
-                  value: requestedSponsorshipAmount,
-                  onChange: (e) => {
-                    const inputValue = e.target.value;
-                    const isValidInput = /^\d+$/.test(inputValue);
-                    if (!isValidInput || Number(inputValue) < 0) {
-                      setAmountError("Please enter a positive whole number.");
-                    } else {
-                      setRequestedSponsorshipAmount(inputValue);
-                      setAmountError("");
-                    }
-                  },
-                  skipPaddingGap: true,
-                  placeholder: "Enter amount",
-                  inputProps: {
-                    type: "number",
-                    prefix: "$",
-                  },
-                }}
-              />
-              {amountError && (
-                <div style={{ color: "red" }} className="text-sm">
-                  {amountError}
+        <div className="flex-1 w-100 order-1 order-sm-2">
+          <CollapsibleContainer title="Author Details">
+            <div className="d-flex flex-column gap-3 gap-sm-4">
+              <InputContainer heading="Author">
+                <Widget
+                  src="mob.near/widget/Profile.ShortInlineBlock"
+                  props={{
+                    accountId: author,
+                  }}
+                />
+              </InputContainer>
+            </div>
+          </CollapsibleContainer>
+          <div className="my-4 my-sm-3">
+            <CollapsibleContainer title="Link Proposals (Optional)">
+              <div className="d-flex flex-column gap-1">
+                <div className="text-muted w-100 text-sm">
+                  Link any relevant proposals (e.g. previous milestones).
                 </div>
-              )}
-            </InputContainer>
-            <InputContainer
-              heading="Currency"
-              description="Select your preferred currency for receiving funds. Note: The exchange rate for NEAR tokens will be the closing rate at the day of the invoice."
-            >
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
-                props={{
-                  options: tokensOptions,
-                  selectedValue: requestedSponsorshipToken,
-                  onUpdate: (v) => {
-                    setRequestedSponsorshipToken(v);
-                  },
-                }}
-              />
-            </InputContainer>
-
-            <InputContainer
-              heading="NEAR Wallet Address"
-              description="Enter the address that will receive the funds. We’ll need this to send a test transaction once your proposal is approved."
-            >
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
-                props={{
-                  value: receiverAccount,
-                  placeholder: devdaoAccount,
-                  onUpdate: setReceiverAccount,
-                }}
-              />
-            </InputContainer>
-            <InputContainer heading="Requested Sponsor" description="">
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
-                props={{
-                  value: requestedSponsor,
-                  placeholder: "DevDAO",
-                  onUpdate: setRequestedSponsor,
-                }}
-              />
-            </InputContainer>
-            <InputContainer heading="Supervisor (Optional)" description="">
-              <Widget
-                src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
-                props={{
-                  value: supervisor,
-                  placeholder: "Enter Supervisor",
-                  onUpdate: setSupervisor,
-                }}
-              />
-            </InputContainer>
+                {linkedProposals.map((proposal) => {
+                  return (
+                    <div className="d-flex gap-2 align-items-center">
+                      <a
+                        className="text-decoration-underline"
+                        href={href({
+                          widgetSrc: "${REPL_DEVHUB}/widget/app",
+                          params: {
+                            page: "proposal",
+                            id: proposal.value,
+                          },
+                        })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {proposal.label}
+                      </a>
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => {
+                          const updatedLinkedProposals = linkedProposals.filter(
+                            (item) => item.value !== proposal.value
+                          );
+                          setLinkedProposals(updatedLinkedProposals);
+                        }}
+                      >
+                        <i class="bi bi-trash3-fill"></i>
+                      </div>
+                    </div>
+                  );
+                })}
+                <Widget
+                  src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch"
+                  props={{
+                    selectedValue: "",
+                    onChange: (v) => {
+                      if (
+                        !linkedProposals.some((item) => item.value === v.value)
+                      ) {
+                        setLinkedProposals([...linkedProposals, v]);
+                      }
+                    },
+                    options: proposalsOptions,
+                    showSearch: true,
+                    searchInputPlaceholder: "Search by Id",
+                    defaultLabel: "Search proposals",
+                    searchByValue: true,
+                  }}
+                />
+              </div>
+            </CollapsibleContainer>
+          </div>
+          <div className="my-4 my-sm-3">
+            <CollapsibleContainer title="Funding Details">
+              <div className="d-flex flex-column gap-3 gap-sm-4">
+                <InputContainer
+                  heading="Total Amount (USD)"
+                  description={
+                    <>
+                      Enter the exact amount you are seeking. See
+                      <a
+                        href={FundingDocs}
+                        className="text-decoration-underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Funding Documentation
+                      </a>
+                      for guidelines.
+                    </>
+                  }
+                >
+                  <Widget
+                    src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                    props={{
+                      className: "flex-grow-1",
+                      value: requestedSponsorshipAmount,
+                      onChange: (e) => {
+                        const inputValue = e.target.value;
+                        const isValidInput = /^\d+$/.test(inputValue);
+                        if (inputValue.trim() === "") {
+                          return;
+                        }
+                        if (!isValidInput || Number(inputValue) < 0) {
+                          setAmountError(
+                            "Please enter a positive whole number."
+                          );
+                        } else {
+                          setRequestedSponsorshipAmount(inputValue);
+                          setAmountError("");
+                        }
+                      },
+                      skipPaddingGap: true,
+                      placeholder: "Enter amount",
+                      inputProps: {
+                        type: "number",
+                        prefix: "$",
+                      },
+                    }}
+                  />
+                  {amountError && (
+                    <div style={{ color: "red" }} className="text-sm">
+                      {amountError}
+                    </div>
+                  )}
+                </InputContainer>
+                <InputContainer
+                  heading="Currency"
+                  description="Select your preferred currency for receiving funds. Note: The exchange rate for NEAR tokens will be the closing rate at the day of the invoice."
+                >
+                  <Widget
+                    src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
+                    props={{
+                      options: tokensOptions,
+                      selectedValue: requestedSponsorshipToken,
+                      onUpdate: (v) => {
+                        setRequestedSponsorshipToken(v);
+                      },
+                    }}
+                  />
+                </InputContainer>
+                <InputContainer
+                  heading="NEAR Wallet Address"
+                  description="Enter the address that will receive the funds. We’ll need this to send a test transaction once your proposal is approved."
+                >
+                  <Widget
+                    src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
+                    props={{
+                      value: receiverAccount,
+                      placeholder: devdaoAccount,
+                      onUpdate: setReceiverAccount,
+                    }}
+                  />
+                </InputContainer>
+                <InputContainer heading="Requested Sponsor" description="">
+                  <Widget
+                    src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
+                    props={{
+                      value: requestedSponsor,
+                      placeholder: "DevDAO",
+                      onUpdate: setRequestedSponsor,
+                    }}
+                  />
+                </InputContainer>
+                <InputContainer heading="Supervisor (Optional)" description="">
+                  <Widget
+                    src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
+                    props={{
+                      value: supervisor,
+                      placeholder: "Enter Supervisor",
+                      onUpdate: setSupervisor,
+                    }}
+                  />
+                </InputContainer>
+              </div>
+            </CollapsibleContainer>
           </div>
         </div>
       </div>

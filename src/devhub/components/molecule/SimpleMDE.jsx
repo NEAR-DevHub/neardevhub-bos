@@ -9,7 +9,7 @@ function defaultOnChange(content) {
 
 const data = props.data;
 const onChange = props.onChange ?? defaultOnChange;
-const height = props.height ?? "380";
+const height = props.height ?? "390";
 const className = props.className ?? "w-100";
 const embeddCSS = props.embeddCSS;
 
@@ -66,6 +66,12 @@ const code = `
       font-family: ${fontFamily};
       overflow: visible;
       font-size:14px;
+  }
+
+  @media screen and (max-width: 768px) {
+    body {
+      font-size: 12px;
+    }
   }
   
   .editor-toolbar {

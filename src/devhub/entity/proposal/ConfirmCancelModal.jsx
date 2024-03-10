@@ -20,6 +20,12 @@ const Modal = styled.div`
     }
   }
 
+  @media screen and (max-width: 768px) {
+    h5 {
+      font-size: 16px !important;
+    }
+  }
+
   .btn {
     font-size: 14px;
   }
@@ -39,7 +45,9 @@ const ModalDialog = styled.div`
   max-height: 85%;
   margin-top: 5%;
   width: 50%;
-  @media (width < 720px) {
+
+  @media screen and (max-width: 768px) {
+    margin: 2rem;
     width: 100%;
   }
 `;
@@ -95,6 +103,10 @@ const ModalContent = styled.div`
   margin-bottom: 4px;
   overflow-y: auto;
   max-height: 50%;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px !important;
+  }
 `;
 
 const NoButton = styled.button`
