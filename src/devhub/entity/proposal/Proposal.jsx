@@ -67,7 +67,7 @@ const Container = styled.div`
 
   .vertical-line {
     width: 2px;
-    height: 205px;
+    height: 200px;
     background-color: lightgrey;
   }
 
@@ -79,7 +79,7 @@ const Container = styled.div`
 
   .vertical-line-sm {
     width: 2px;
-    height: 80px;
+    height: 70px;
     background-color: lightgrey;
   }
 
@@ -772,7 +772,9 @@ return (
             </div>
             <div className="border-bottom pb-4 mt-4">
               <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Comments"}
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentsAndLogs"
+                }
                 props={{
                   item: item,
                   snapshotHistory: [...proposal.snapshot_history, snapshot],
