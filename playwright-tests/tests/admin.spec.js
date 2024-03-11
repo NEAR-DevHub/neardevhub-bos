@@ -29,11 +29,8 @@ test.describe("Wallet is connected", () => {
     await page.getByRole("button", { name: "" }).nth(3).click();
     await page.getByRole("button", { name: " Submit" }).click();
     await page.getByText("Can't set fewer than 4 communities").click();
-    await page
-      .getByText(
-        "NEAR BOS embeddable custom element /admin /communities /activity feed /about ↓ H"
-      )
-      .press("Escape");
+    await page.getByLabel("Close").click();
+
     await page.getByRole("button", { name: "Cancel" }).click();
 
     await page.getByTestId("preview-homepage").click();

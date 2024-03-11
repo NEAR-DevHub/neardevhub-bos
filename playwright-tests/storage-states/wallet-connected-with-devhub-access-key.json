@@ -1,0 +1,39 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:8080",
+      "localStorage": [
+        {
+          "name": "near-wallet-selector:selectedWalletId",
+          "value": "\"my-near-wallet\""
+        },
+        {
+          "name": "near_app_wallet_auth_key",
+          "value": "{\"accountId\":\"petersalomonsen.near\"}"
+        },
+        {
+          "name": "devgovgigs.near_wallet_auth_key",
+          "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
+        },
+        {
+          "name": "near-api-js:keystore:petersalomonsen.near:mainnet",
+          "value": "ed25519:4SViyksDtdDdCPkkyzMg4HYADEQ3t5YGEd3EBoSADxdaAzDasZ7qJbxr2wNSFkWipya6C2eVJJucK1vkyoGndiyt"
+        },
+        {
+          "name": "devgovgigs.near:keystore:petersalomonsen.near:mainnet",
+          "value": "ed25519:4SViyksDtdDdCPkkyzMg4HYADEQ3t5YGEd3EBoSADxdaAzDasZ7qJbxr2wNSFkWipya6C2eVJJucK1vkyoGndiyt"
+        },
+        {
+          "name": "near-social-vm:v01::accountId:",
+          "value": "\"petersalomonsen.near\""
+        },
+        {
+          "name": "near-wallet-selector:recentlySignedInWallets",
+          "value": "[]"
+        }
+      ]
+    }
+  ],
+  "sessionStorage": []
+}

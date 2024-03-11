@@ -15,6 +15,14 @@ const CenteredMessage = styled.div`
   height: 384px;
 `;
 
+const LoadingButtonSpinner = (
+  <span
+    class="submit-post-loading-indicator spinner-border spinner-border-sm"
+    role="status"
+    aria-hidden="true"
+  ></span>
+);
+
 function initLabels() {
   const labels = [];
   if (typeof props.labels === "string") {
@@ -95,6 +103,7 @@ const [showPostPage, setShowPostPage] = useState(false); // show newly created p
 const [postId, setPostId] = useState(props.postId ?? null);
 const [postData, setPostData] = useState(null); // for capturing edit post change
 const [isTxnCreated, setCreateTxn] = useState(false);
+const [isSubmittingTransaction, setIsSubmittingTransaction] = useState(false);
 
 useEffect(() => {
   if (mode == "Edit") {
@@ -298,6 +307,7 @@ const tokenMapping = {
 };
 
 const onSubmit = () => {
+  setIsSubmittingTransaction(true);
   let labels = state.labelStrings;
   var body = {
     Comment: { description: state.description, comment_version: "V2" },
@@ -878,36 +888,42 @@ return (
                 />
               </div>
             )}
-            <button
-              data-testid="submit-create-post"
-              style={{
-                width: "7rem",
-                backgroundColor: "#0C7283",
-                color: "#f3f3f3",
-              }}
-              disabled={
-                (state.seekingFunding && (!state.amount || state.amount < 1)) ||
-                (isCreatePostPage &&
-                  (state.name === "" || state.description === ""))
-              }
-              className="btn btn-light mb-2 p-3"
-              onClick={onSubmit}
-            >
-              Submit
-            </button>
-            {!isCreatePostPage && (
+
+            <>
               <button
+                data-testid="submit-create-post"
                 style={{
                   width: "7rem",
-                  backgroundColor: "#fff",
-                  color: "#000",
+                  backgroundColor: "#0C7283",
+                  color: "#f3f3f3",
                 }}
+                disabled={
+                  (state.seekingFunding &&
+                    (!state.amount || state.amount < 1)) ||
+                  (isCreatePostPage &&
+                    (state.name === "" || state.description === ""))
+                }
                 className="btn btn-light mb-2 p-3"
-                onClick={() => props.setEditorState(false)}
+                onClick={onSubmit}
+                disabled={isSubmittingTransaction}
               >
-                Cancel
+                {isSubmittingTransaction ? LoadingButtonSpinner : <></>}
+                Submit
               </button>
-            )}
+              {!isCreatePostPage && (
+                <button
+                  style={{
+                    width: "7rem",
+                    backgroundColor: "#fff",
+                    color: "#000",
+                  }}
+                  className="btn btn-light mb-2 p-3"
+                  onClick={() => props.setEditorState(false)}
+                >
+                  Cancel
+                </button>
+              )}
+            </>
           </div>
         </div>
       )}
