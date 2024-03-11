@@ -302,6 +302,15 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
   }
 };
 
+const LogIconContainer = styled.div`
+  margin-left: 50px;
+  z-index: 99;
+
+  @media screen and (max-width: 768px) {
+    margin-left: 10px;
+  }
+`;
+
 const Log = ({ timestamp }) => {
   const updatedData = useMemo(
     () =>
@@ -322,10 +331,7 @@ const Log = ({ timestamp }) => {
   }
 
   return (
-    <div
-      style={{ zIndex: 99, marginLeft: 50 }}
-      className="d-flex gap-3 align-items-center"
-    >
+    <LogIconContainer className="d-flex gap-3 align-items-center">
       <img
         src="https://ipfs.near.social/ipfs/bafkreiffqrxdi4xqu7erf46gdlwuodt6dm6rji2jtixs3iionjvga6rhdi"
         height={30}
@@ -347,7 +353,7 @@ const Log = ({ timestamp }) => {
           }
         })}
       </div>
-    </div>
+    </LogIconContainer>
   );
 };
 

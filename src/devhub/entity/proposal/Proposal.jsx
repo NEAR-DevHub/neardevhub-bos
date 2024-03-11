@@ -75,6 +75,10 @@ const Container = styled.div`
     .vertical-line {
       height: 170px;
     }
+
+    .gap-6 {
+      gap: 0.5rem !important;
+    }
   }
 
   .vertical-line-sm {
@@ -617,7 +621,7 @@ return (
     <div className="card card-body p-2 rounded-0 p-sm-4">
       {snapshot.timeline.status === TIMELINE_STATUS.DRAFT &&
         isAllowedToEditProposal && (
-          <div className="draft-info-container p-4 d-flex flex-wrap justify-content-between align-items-center gap-2 rounded-2">
+          <div className="draft-info-container p-3 p-sm-4 d-flex flex-wrap flex-sm-nowrap justify-content-between align-items-center gap-2 rounded-2">
             <div style={{ minWidth: "300px" }}>
               <b>
                 This proposal is in draft mode and open for community comments.
@@ -643,7 +647,7 @@ return (
         )}
       {snapshot.timeline.status === TIMELINE_STATUS.REVIEW &&
         isAllowedToEditProposal && (
-          <div className="review-info-container p-4 d-flex flex-wrap justify-content-between align-items-center gap-2 rounded-2">
+          <div className="review-info-container p-3 p-sm-4 d-flex flex-wrap flex-sm-nowrap justify-content-between align-items-center gap-2 rounded-2">
             <div style={{ minWidth: "300px" }}>
               <b>
                 This proposal is in review mode and still open for community

@@ -54,6 +54,7 @@ const Container = styled.div`
         var(--bs-card-border-color);
     }
   }
+
   .text-xs {
     font-size: 10px;
   }
