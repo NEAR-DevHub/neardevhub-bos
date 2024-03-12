@@ -560,23 +560,6 @@ const SubmitBtn = () => {
   );
 };
 
-let grantNotify = Near.view(
-  "${REPL_SOCIAL_CONTRACT}",
-  "is_write_permission_granted",
-  {
-    predecessor_id: "${REPL_DEVHUB_CONTRACT}",
-    key: context.accountId + "/index/notify",
-  }
-);
-
-const userStorageDeposit = Near.view(
-  "${REPL_SOCIAL_CONTRACT}",
-  "storage_balance_of",
-  {
-    account_id: context.accountId,
-  }
-);
-
 const onSubmit = ({ isDraft, isCancel }) => {
   const linkedProposalsIds = linkedProposals.map((item) => item.value) ?? [];
   const body = {
@@ -609,27 +592,15 @@ const onSubmit = ({ isDraft, isCancel }) => {
   if (isEditPage) {
     args["id"] = editProposalData.id;
   }
-  const calls = [
+
+  Near.call([
     {
       contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: isEditPage ? "edit_proposal" : "add_proposal",
       args: args,
       gas: 270000000000000,
     },
-  ];
-  if (grantNotify === false) {
-    calls.unshift({
-      contractName: "${REPL_SOCIAL_CONTRACT}",
-      methodName: "grant_write_permission",
-      args: {
-        predecessor_id: "${REPL_DEVHUB_CONTRACT}",
-        keys: [context.accountId + "/index/notify"],
-      },
-      gas: Big(10).pow(14),
-      deposit: getDepositAmountForWriteAccess(userStorageDeposit),
-    });
-  }
-  Near.call(calls);
+  ]);
 };
 
 function cleanDraft() {

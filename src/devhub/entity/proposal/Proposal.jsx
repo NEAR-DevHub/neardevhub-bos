@@ -416,25 +416,8 @@ const isModerator = Near.view("${REPL_DEVHUB_LEGACY}", "has_moderator", {
   account_id: accountId,
 });
 
-let grantNotify = Near.view(
-  "${REPL_SOCIAL_CONTRACT}",
-  "is_write_permission_granted",
-  {
-    predecessor_id: "${REPL_DEVHUB_CONTRACT}",
-    key: accountId + "/index/notify",
-  }
-);
-
-const userStorageDeposit = Near.view(
-  "${REPL_SOCIAL_CONTRACT}",
-  "storage_balance_of",
-  {
-    account_id: accountId,
-  }
-);
-
 const editProposalStatus = ({ timeline }) => {
-  const calls = [
+  Near.call([
     {
       contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "edit_proposal_timeline",
@@ -444,20 +427,7 @@ const editProposalStatus = ({ timeline }) => {
       },
       gas: 270000000000000,
     },
-  ];
-  if (grantNotify === false) {
-    calls.unshift({
-      contractName: "${REPL_SOCIAL_CONTRACT}",
-      methodName: "grant_write_permission",
-      args: {
-        predecessor_id: "${REPL_DEVHUB_CONTRACT}",
-        keys: [accountId + "/index/notify"],
-      },
-      gas: Big(10).pow(14),
-      deposit: getDepositAmountForWriteAccess(userStorageDeposit),
-    });
-  }
-  Near.call(calls);
+  ]);
 };
 
 const [isReviewModalOpen, setReviewModal] = useState(false);
@@ -526,14 +496,6 @@ const TimelineItems = ({ title, children, value, values }) => {
       <div className="text-sm">{children}</div>
     </div>
   );
-};
-
-const extractNotifyAccountId = (item) => {
-  if (!item || item.type !== "social" || !item.path) {
-    return undefined;
-  }
-  const accountId = item.path.split("/")[0];
-  return `${accountId}/post/main` === item.path ? accountId : undefined;
 };
 
 return (
@@ -742,9 +704,11 @@ return (
 
                   <div className="d-flex gap-2 align-items-center mt-4">
                     <Widget
-                      src="${REPL_NEAR}/widget/v1.LikeButton"
+                      src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
                       props={{
                         item,
+                        proposalId: proposal.id,
+                        notifyAccountId: authorId,
                       }}
                     />
                     <Widget
@@ -792,7 +756,7 @@ return (
                 }
                 props={{
                   item: item,
-                  notifyAccountId: extractNotifyAccountId(item),
+                  notifyAccountId: authorId,
                   id: proposal.id,
                 }}
               />
