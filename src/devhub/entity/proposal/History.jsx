@@ -44,13 +44,13 @@ const history = (
     <ul class="dropdown-menu">
       <a
         class="d-flex text-muted"
-        style={{ fontSize: "12px", textDecoration: "none", cursor: "default" }}
+        style={{ fontSize: "11px", textDecoration: "none", cursor: "default" }}
       >
         <a
           style={{
             textAlign: "center",
-            minWidth: "290px",
-            maxWidth: "290px",
+            minWidth: "250px",
+            maxWidth: "250px",
           }}
         >
           Edit History
@@ -63,8 +63,8 @@ const history = (
           <li style={{ display: "flex" }}>
             <div
               style={{
-                minWidth: "290px",
-                maxWidth: "290px",
+                minWidth: "250px",
+                maxWidth: "250px",
               }}
             >
               <a
