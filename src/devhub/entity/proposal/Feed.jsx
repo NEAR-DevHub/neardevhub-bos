@@ -114,6 +114,8 @@ const FeedItem = ({ proposal }) => {
                 src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
                 props={{
                   item,
+                  proposalId: proposal.id,
+                  notifyAccountId: accountId,
                 }}
               />
               <Widget
