@@ -30,7 +30,18 @@ const ButtonWithHover = styled.button`
   }
 `;
 
+const LikeLoadingSpinner = (
+  <span
+    className="like-loading-indicator spinner-border spinner-border-sm"
+    role="status"
+    aria-hidden="true"
+  />
+);
+
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
+
+const [isLikeClicked, setIsLikeClicked] = useState(false);
+const [numLikes, setNumLikes] = useState(null);
 
 const post =
   props.post ??
@@ -39,6 +50,12 @@ const post =
 if (!post) {
   return <div>Loading ...</div>;
 }
+
+if (isLikeClicked && numLikes !== post.likes.length) {
+  setIsLikeClicked(false);
+}
+
+setNumLikes(post.likes.length);
 
 const referral = props.referral;
 const currentTimestamp = props.timestamp ?? post.snapshot.timestamp;
@@ -316,6 +333,7 @@ const onLike = () => {
     });
   }
 
+  setIsLikeClicked(true);
   Near.call(likeTxn);
 };
 
@@ -360,8 +378,10 @@ const buttonsFooter = props.isPreview ? null : (
           class="btn d-flex align-items-center"
           style={{ border: "0px" }}
           onClick={onLike}
+          disabled={isLikeClicked}
         >
           <i class={`bi ${likeBtnClass}`}> </i>
+          {isLikeClicked ? LikeLoadingSpinner : <></>}
           {post.likes.length == 0 ? (
             "Like"
           ) : (
@@ -465,6 +485,7 @@ const buttonsFooter = props.isPreview ? null : (
         )}
       </div>
     </FooterButtonsContianer>
+    )
   </div>
 );
 

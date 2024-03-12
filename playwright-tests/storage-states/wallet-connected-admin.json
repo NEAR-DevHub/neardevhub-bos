@@ -6,7 +6,7 @@
       "localStorage": [
         {
           "name": "near-wallet-selector:selectedWalletId",
-          "value": "near-wallet"
+          "value": "\"my-near-wallet\""
         },
         {
           "name": "near_app_wallet_auth_key",

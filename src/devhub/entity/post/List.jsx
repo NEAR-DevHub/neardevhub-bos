@@ -17,7 +17,9 @@ const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
 
 const queryName =
   props.queryName ?? `bo_near_devhub_v36_posts_with_latest_snapshot`;
-
+const totalQueryName =
+  props.totalQueryName ??
+  "bo_near_devhub_v36_posts_with_latest_snapshot_aggregate";
 const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
       limit: $limit
@@ -26,6 +28,17 @@ const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $wher
       where: $where
     ) {
       post_id
+    }
+  }
+`;
+
+const totalQuery = `query DevhubTotalPostsQuery($where: ${queryName}_bool_exp = {}) {
+  ${totalQueryName}(
+      where: $where
+    ) {
+      aggregate {
+        count
+      }
     }
   }
 `;
@@ -61,7 +74,16 @@ function updateSearchCondition() {
   });
 }
 
-function getPostIds(tag) {
+const initialRenderLimit = props.initialRenderLimit ?? 3;
+const addDisplayCount = props.nextLimit ?? initialRenderLimit;
+
+State.init({
+  period: "week",
+  totalItems: 0,
+  displayCount: initialRenderLimit,
+});
+
+function getPostIds(tag, offset) {
   if (searchConditionChanged()) {
     updateSearchCondition();
   }
@@ -112,33 +134,42 @@ function getPostIds(tag) {
     ...where,
   };
 
-  console.log("searching for", where);
+  if (!offset) {
+    fetchGraphQL(totalQuery, "DevhubTotalPostsQuery", {
+      where,
+    }).then((result) => {
+      const data = result.body.data[totalQueryName];
+      State.update({
+        totalItems: data.aggregate.count,
+      });
+    });
+  }
+
   fetchGraphQL(query, "DevhubPostsQuery", {
-    limit: 100,
-    offset: 0,
+    limit: 50,
+    offset: offset ?? 0,
     where,
   }).then((result) => {
     if (result.status === 200) {
-      console.log("search success");
       if (result.body.data) {
         const data = result.body.data[queryName];
-        State.update({
-          postIds: data.map((p) => p.post_id),
-          loading: false,
-        });
-        console.log("found:");
-        console.log(data);
+        if (offset) {
+          State.update({
+            postIds: state.postIds.concat(data.map((p) => p.post_id)),
+            loading: false,
+          });
+        } else {
+          State.update({
+            postIds: data.map((p) => p.post_id),
+            loading: false,
+          });
+        }
       }
     } else {
-      console.error("error:", result.body);
       State.update({ loading: false });
     }
   });
 }
-
-State.init({
-  period: "week",
-});
 
 if (!state.items || searchConditionChanged()) {
   getPostIds();
@@ -194,9 +225,6 @@ const cachedRenderItem = (item, i) => {
   return state.cachedItems[key];
 };
 
-const initialRenderLimit = props.initialRenderLimit ?? 3;
-const addDisplayCount = props.nextLimit ?? initialRenderLimit;
-
 const ONE_DAY = 60 * 60 * 24 * 1000;
 const ONE_WEEK = 60 * 60 * 24 * 1000 * 7;
 const ONE_MONTH = 60 * 60 * 24 * 1000 * 30;
@@ -240,26 +268,6 @@ if (postIds === null) {
   return loader;
 }
 const initialItems = postIds;
-//const initialItems = postIds.map(postId => ({ id: postId, ...Near.view(nearDevGovGigsContractAccountId, "get_post", { post_id: postId }) }));
-
-// const computeFetchFrom = (items, limit) => {
-//   if (!items || items.length < limit) {
-//     return false;
-//   }
-//   const blockHeight = items[items.length - 1].blockHeight;
-//   return index.options.order === "desc" ? blockHeight - 1 : blockHeight + 1;
-// };
-
-// const mergeItems = (newItems) => {
-//   const items = [
-//     ...new Set([...newItems, ...state.items].map((i) => JSON.stringify(i))),
-//   ].map((i) => JSON.parse(i));
-//   items.sort((a, b) => a.blockHeight - b.blockHeight);
-//   if (index.options.order === "desc") {
-//     items.reverse();
-//   }
-//   return items;
-// };
 
 const jInitialItems = JSON.stringify(initialItems);
 if (state.jInitialItems !== jInitialItems) {
@@ -269,39 +277,8 @@ if (state.jInitialItems !== jInitialItems) {
     jIndex,
     jInitialItems,
     items: initialItems,
-    fetchFrom: false,
-    //nextFetchFrom: computeFetchFrom(initialItems, index.options.limit),
-    nextFetchFrom: false,
-    displayCount: initialRenderLimit,
     cachedItems: {},
   });
-  // } else {
-  //   State.update({
-  //     jInitialItems,
-  //     items: mergeItems(initialItems),
-  //   });
-  // }
-}
-
-if (state.fetchFrom) {
-  // TODO: fetchFrom
-  // const limit = addDisplayCount;
-  // const newItems = Social.index(
-  //   index.action,
-  //   index.key,
-  //   Object.assign({}, index.options, {
-  //     from: state.fetchFrom,
-  //     subscribe: undefined,
-  //     limit,
-  //   })
-  // );
-  // if (newItems !== null) {
-  //   State.update({
-  //     items: mergeItems(newItems),
-  //     fetchFrom: false,
-  //     nextFetchFrom: computeFetchFrom(newItems, limit),
-  //   });
-  // }
 }
 
 const makeMoreItems = () => {
@@ -309,31 +286,15 @@ const makeMoreItems = () => {
     displayCount: state.displayCount + addDisplayCount,
   });
   if (
-    state.items.length - state.displayCount < addDisplayCount * 2 &&
-    !state.fetchFrom &&
-    state.nextFetchFrom &&
-    state.nextFetchFrom !== state.fetchFrom
+    state.items.length - state.displayCount < addDisplayCount * 5 &&
+    !state.loading
   ) {
-    State.update({
-      fetchFrom: state.nextFetchFrom,
-    });
+    State.update({ loading: true });
+    getPostIds(null, state.items.length);
   }
 };
 
-const fetchMore =
-  props.manual &&
-  (state.fetchFrom && state.items.length < state.displayCount
-    ? loader
-    : state.displayCount < state.items.length && (
-        <div key={"loader more"}>
-          <a href="javascript:void" onClick={(e) => makeMoreItems()}>
-            {props.loadMoreText ?? "Load more..."}
-          </a>
-        </div>
-      ));
-
 const items = state.items ? state.items.slice(0, state.displayCount) : [];
-
 const renderedItems = items.map(cachedRenderItem);
 
 const Head =
@@ -419,10 +380,9 @@ return (
         <InfiniteScroll
           pageStart={0}
           loadMore={makeMoreItems}
-          hasMore={state.displayCount < state.items.length}
+          hasMore={state.totalItems > state.items.length}
           loader={loader}
           useWindow={false}
-          useCapture={ture}
         >
           {renderedItems}
         </InfiniteScroll>
