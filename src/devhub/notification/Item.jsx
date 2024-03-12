@@ -2,7 +2,7 @@ const { value } = props;
 
 return (
   <Widget
-    src="mob.near/widget/Notification.Item.LR"
+    src="devhub.near/widget/devhub.notification.LR"
     props={{
       L: (
         <Widget
