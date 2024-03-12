@@ -749,7 +749,14 @@ return (
                 }}
               />
             </div>
-            <div className="mt-4">
+            <div
+              style={{
+                position: "relative",
+                zIndex: 99,
+                backgroundColor: "white",
+              }}
+              className="pt-4"
+            >
               <Widget
                 src={
                   "${REPL_DEVHUB}/widget/devhub.entity.proposal.ComposeComment"
