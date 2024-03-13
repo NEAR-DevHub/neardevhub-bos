@@ -21,17 +21,20 @@ const getClassNameByCategory = () => {
 };
 
 const Container = styled.div`
+  @media screen and (max-width: 768px) {
+    font-size: 11px;
+  }
+  font-size: 13px;
   .tag {
     color: white;
     padding-inline: 6px;
     padding-block: 3px;
-    font-size: 13px;
   }
   .purple-bg {
     background-color: #7c66dc;
   }
   .yellow-bg {
-    background-color: #f2f0ce;
+    background-color: #dcc266;
   }
   .cyan-bg {
     background-color: #0daebb;

@@ -6,6 +6,12 @@ const Container = styled.div`
     background-color: white;
   }
 
+  @media screen and (max-width: 768px) {
+    .card-custom {
+      margin: 2rem;
+    }
+  }
+
   .bg-grey {
     background-color: #f3f3f2;
   }
@@ -30,10 +36,9 @@ return (
       <div class="card-body p-4 d-flex flex-column gap-2 justify-content-center align-items-center">
         <i class="bi bi-person-circle h2"></i>
         <div className="h5">Not Logged in</div>
-        <p className="text-muted">
+        <p className="text-muted text-center">
           You must log in to create or interact with proposals.
         </p>
-
         <div className="d-flex gap-2 align-items-center justify-content-end mt-2">
           <Link to="https://near.org/signin">
             <Widget

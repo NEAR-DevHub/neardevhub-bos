@@ -125,8 +125,9 @@ function composeData() {
     notifications.push({
       key: notifyAccountId,
       value: {
-        type: "comment",
+        type: "devhub/reply",
         item,
+        proposal: proposalId,
       },
     });
   }

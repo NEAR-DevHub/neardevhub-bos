@@ -70,7 +70,15 @@ const toggleDropdown = () => {
 };
 
 useEffect(() => {
-  onChange(selectedOptionValue);
+  if (selectedValue && selectedValue !== selectedOptionValue) {
+    setSelectedValue(selectedValue);
+  }
+}, [selectedValue]);
+
+useEffect(() => {
+  if (selectedValue !== selectedOptionValue) {
+    onChange(selectedOptionValue);
+  }
 }, [selectedOptionValue]);
 
 const handleOptionClick = (option) => {
@@ -122,15 +130,22 @@ const Container = styled.div`
   .cursor-pointer {
     cursor: pointer;
   }
+
+  .text-wrap {
+    overflow: hidden;
+    white-space: normal;
+  }
 `;
 
 const Item = ({ option }) => {
   return (
-    <div className="d-flex gap-3 align-items-center">
+    <div className="d-flex gap-3 align-items-center w-100">
       <img src={option.icon} height={30} />
-      <div className="d-flex flex-column gap-1">
+      <div className="d-flex flex-column gap-1 w-100 text-wrap">
         <div className="h6 mb-0"> {option.title}</div>
-        <div className="text-sm tetx-muted">{option.description}</div>
+        <div className="text-sm text-muted w-100 text-wrap">
+          {option.description}
+        </div>
       </div>
     </div>
   );
@@ -141,10 +156,14 @@ const selectedOption =
 
 return (
   <Container>
-    <div className="custom-select" tabIndex="0" onBlur={() => setIsOpen(false)}>
+    <div
+      className="custom-select w-100"
+      tabIndex="0"
+      onBlur={() => setIsOpen(false)}
+    >
       <div
         className={
-          "dropdown-toggle bg-white border rounded-2 btn drop-btn " +
+          "dropdown-toggle bg-white border rounded-2 btn drop-btn w-100 " +
           (disabled ? "disabled" : "")
         }
         onClick={!disabled && toggleDropdown}
@@ -155,12 +174,12 @@ return (
       </div>
 
       {isOpen && (
-        <div className="dropdown-menu dropdown-menu-end dropdown-menu-lg-start px-2 shadow show">
+        <div className="dropdown-menu dropdown-menu-end dropdown-menu-lg-start px-2 shadow show w-100">
           <div>
             {options.map((option) => (
               <div
                 key={option.value}
-                className={`dropdown-item cursor-pointer my-1 ${
+                className={`dropdown-item cursor-pointer w-100 my-1 ${
                   selectedOption.value === option.value ? "selected" : ""
                 }`}
                 onClick={() => handleOptionClick(option)}

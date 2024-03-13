@@ -5,6 +5,10 @@ if (!href) {
 }
 
 const Container = styled.div`
+  @media screen and (max-width: 768px) {
+    font-size: 13px;
+  }
+
   .text-sm {
     font-size: 13px;
   }
@@ -36,11 +40,22 @@ const Container = styled.div`
       color: white;
     }
   }
+
+  @media screen and (max-width: 768px) {
+    .green-btn {
+      padding: 0.5rem 0.8rem !important;
+      min-height: 32px;
+    }
+  }
 `;
 
 const Heading = styled.div`
   font-size: 24px;
   font-weight: 700;
+
+  @media screen and (max-width: 768px) {
+    font-size: 18px;
+  }
 `;
 
 const FeedItem = ({ proposal }) => {
@@ -66,7 +81,7 @@ const FeedItem = ({ proposal }) => {
       onClick={(e) => e.stopPropagation()}
       style={{ textDecoration: "none" }}
     >
-      <div className="proposal-card d-flex justify-content-between text-muted cursor-pointer p-3">
+      <div className="proposal-card d-flex justify-content-between gap-2 text-muted cursor-pointer p-3">
         <div className="d-flex gap-4">
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
@@ -75,7 +90,7 @@ const FeedItem = ({ proposal }) => {
             }}
           />
           <div className="d-flex flex-column gap-2">
-            <div className="d-flex gap-2 align-items-center">
+            <div className="d-flex gap-2 align-items-center flex-wrap">
               <div className="h6 mb-0 text-black">{snapshot.name}</div>
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryTag"}
@@ -99,6 +114,8 @@ const FeedItem = ({ proposal }) => {
                 src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
                 props={{
                   item,
+                  proposalId: proposal.id,
+                  notifyAccountId: accountId,
                 }}
               />
               <Widget
@@ -130,7 +147,7 @@ const FeedPage = () => {
 
   return (
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
         <Heading>
           DevDAO Proposals{" "}
           <span className="text-muted"> ({proposals.length})</span>
@@ -199,7 +216,7 @@ const FeedPage = () => {
           </div>
         ) : (
           <div className="card rounded-0 p-1 mt-4">
-            <div className="card-body">
+            <div className="p-2 p-sm-4">
               <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
                 <p className="d-flex gap-4 align-items-center mb-0">
                   <div>
