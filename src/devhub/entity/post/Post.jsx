@@ -485,7 +485,6 @@ const buttonsFooter = props.isPreview ? null : (
         )}
       </div>
     </FooterButtonsContianer>
-    )
   </div>
 );
 
