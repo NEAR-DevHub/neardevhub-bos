@@ -1,4 +1,5 @@
 const item = props.item;
+const proposalId = props.proposalId;
 
 if (!item) {
   return "";
@@ -95,8 +96,9 @@ const likeClick = (e) => {
     data.index.notify = JSON.stringify({
       key: props.notifyAccountId,
       value: {
-        type: "like",
+        type: "devhub/like",
         item,
+        proposal: proposalId,
       },
     });
   }

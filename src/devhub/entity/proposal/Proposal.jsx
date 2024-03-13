@@ -4,6 +4,10 @@ const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
 const { readableDate } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
 ) || { readableDate: () => {} };
+const { getDepositAmountForWriteAccess } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.common"
+);
+getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 
 const accountId = context.accountId;
 /*
@@ -63,12 +67,23 @@ const Container = styled.div`
 
   .vertical-line {
     width: 2px;
-    height: 205px;
+    height: 200px;
     background-color: lightgrey;
   }
+
+  @media screen and (max-width: 768px) {
+    .vertical-line {
+      height: 170px;
+    }
+
+    .gap-6 {
+      gap: 0.5rem !important;
+    }
+  }
+
   .vertical-line-sm {
     width: 2px;
-    height: 80px;
+    height: 70px;
     background-color: lightgrey;
   }
 
@@ -210,14 +225,14 @@ if (timestamp && proposal) {
 
 const { snapshot } = proposal;
 
-const editorAccountId = snapshot.editor_id;
+const authorId = proposal.author_id;
 const blockHeight = parseInt(proposal.social_db_post_block_height);
 const item = {
   type: "social",
   path: `${REPL_DEVHUB_CONTRACT}/post/main`,
   blockHeight,
 };
-const proposalURL = `${REPL_DEVHUB}/widget/devhub.entity.proposal.Proposal?id=${proposal.id}&timestamp=${snapshot.timestamp}`;
+const proposalURL = `https://near.org/${REPL_DEVHUB}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`;
 
 const KycVerificationStatus = () => {
   const isVerified = true;
@@ -363,7 +378,7 @@ const CheckBox = ({ value, isChecked, label, disabled, onClick }) => {
         type="checkbox"
         value={value}
         checked={isChecked}
-        disabled={disabled}
+        disabled={!isModerator || disabled}
         onChange={(e) => onClick(e.target.checked)}
       />
       <label style={{ width: "90%" }} class="form-check-label text-black">
@@ -397,18 +412,22 @@ const isAllowedToEditProposal = Near.view(
   }
 );
 
-const isModerator = isAllowedToEditProposal && proposal.author_id !== accountId;
+const isModerator = Near.view("${REPL_DEVHUB_LEGACY}", "has_moderator", {
+  account_id: accountId,
+});
 
 const editProposalStatus = ({ timeline }) => {
-  Near.call({
-    contractName: "${REPL_DEVHUB_CONTRACT}",
-    methodName: "edit_proposal_timeline",
-    args: {
-      id: proposal.id,
-      timeline: timeline,
+  Near.call([
+    {
+      contractName: "${REPL_DEVHUB_CONTRACT}",
+      methodName: "edit_proposal_timeline",
+      args: {
+        id: proposal.id,
+        timeline: timeline,
+      },
+      gas: 270000000000000,
     },
-    gas: 270000000000000,
-  });
+  ]);
 };
 
 const [isReviewModalOpen, setReviewModal] = useState(false);
@@ -479,14 +498,6 @@ const TimelineItems = ({ title, children, value, values }) => {
   );
 };
 
-const extractNotifyAccountId = (item) => {
-  if (!item || item.type !== "social" || !item.path) {
-    return undefined;
-  }
-  const accountId = item.path.split("/")[0];
-  return `${accountId}/post/main` === item.path ? accountId : undefined;
-};
-
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
     <Widget
@@ -511,7 +522,7 @@ return (
         },
       }}
     />
-    <div className="d-flex justify-content-between">
+    <div className="d-flex px-2 px-sm-0 justify-content-between">
       <div className="d-flex gap-2 align-items-center h3">
         <div>{snapshot.name}</div>
         <div className="text-muted">#{proposal.id}</div>
@@ -556,7 +567,7 @@ return (
         )}
       </div>
     </div>
-    <div className="d-flex gap-2 align-items-center text-sm pb-3">
+    <div className="d-flex px-2 px-sm-0 gap-2 align-items-center text-sm pb-3">
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
         props={{
@@ -565,15 +576,15 @@ return (
         }}
       />
       <div>
-        <b>{proposal.author_id} </b> created on{" "}
+        <b>{authorId} </b> created on{" "}
         {readableDate(snapshot.timestamp / 1000000)}
       </div>
     </div>
-    <div className="card card-body rounded-0 p-4">
+    <div className="card card-body p-2 rounded-0 p-sm-4">
       {snapshot.timeline.status === TIMELINE_STATUS.DRAFT &&
         isAllowedToEditProposal && (
-          <div className="draft-info-container p-4 d-flex justify-content-between align-items-center gap-2 rounded-2">
-            <div>
+          <div className="draft-info-container p-3 p-sm-4 d-flex flex-wrap flex-sm-nowrap justify-content-between align-items-center gap-2 rounded-2">
+            <div style={{ minWidth: "300px" }}>
               <b>
                 This proposal is in draft mode and open for community comments.
               </b>
@@ -598,8 +609,8 @@ return (
         )}
       {snapshot.timeline.status === TIMELINE_STATUS.REVIEW &&
         isAllowedToEditProposal && (
-          <div className="review-info-container p-4 d-flex justify-content-between align-items-center gap-2 rounded-2">
-            <div>
+          <div className="review-info-container p-3 p-sm-4 d-flex flex-wrap flex-sm-nowrap justify-content-between align-items-center gap-2 rounded-2">
+            <div style={{ minWidth: "300px" }}>
               <b>
                 This proposal is in review mode and still open for community
                 comments.
@@ -628,21 +639,23 @@ return (
           </div>
         )}
       <div className="my-4">
-        <div className="d-flex gap-6">
-          <div className="flex-3">
+        <div className="d-flex flex-wrap gap-6">
+          <div className="flex-3 order-2 order-sm-1">
             <div
               className="d-flex gap-2 flex-1"
               style={{ zIndex: 99, background: "white", position: "relative" }}
             >
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
-                props={{
-                  accountId: editorAccountId,
-                }}
-              />
+              <div className="d-none d-sm-flex">
+                <Widget
+                  src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+                  props={{
+                    accountId: authorId,
+                  }}
+                />
+              </div>
               <ProposalContainer className="rounded-2 flex-1">
                 <Header className="d-flex gap-3 align-items-center p-2 px-3">
-                  {snapshot.editor_id} ･{" "}
+                  {authorId} ･{" "}
                   <Widget
                     src="${REPL_NEAR}/widget/TimeAgo"
                     props={{
@@ -655,7 +668,7 @@ return (
                       <Widget
                         src="${REPL_NEAR}/widget/Posts.Menu"
                         props={{
-                          accountId: editorAccountId,
+                          accountId: authorId,
                           blockHeight: blockHeight,
                         }}
                       />
@@ -691,9 +704,11 @@ return (
 
                   <div className="d-flex gap-2 align-items-center mt-4">
                     <Widget
-                      src="${REPL_NEAR}/widget/v1.LikeButton"
+                      src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
                       props={{
                         item,
+                        proposalId: proposal.id,
+                        notifyAccountId: authorId,
                       }}
                     />
                     <Widget
@@ -725,32 +740,41 @@ return (
             </div>
             <div className="border-bottom pb-4 mt-4">
               <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Comments"}
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentsAndLogs"
+                }
                 props={{
                   item: item,
                   snapshotHistory: [...proposal.snapshot_history, snapshot],
                 }}
               />
             </div>
-            <div className="mt-4">
+            <div
+              style={{
+                position: "relative",
+                zIndex: 99,
+                backgroundColor: "white",
+              }}
+              className="pt-4"
+            >
               <Widget
                 src={
                   "${REPL_DEVHUB}/widget/devhub.entity.proposal.ComposeComment"
                 }
                 props={{
                   item: item,
-                  notifyAccountId: extractNotifyAccountId(item),
+                  notifyAccountId: authorId,
                   id: proposal.id,
                 }}
               />
             </div>
           </div>
-          <div className="d-flex flex-column gap-4 flex-1">
+          <div className="d-flex flex-column gap-4 flex-1 order-1 order-sm-2">
             <SidePanelItem title="Author">
               <Widget
                 src="${REPL_NEAR}/widget/AccountProfile"
                 props={{
-                  accountId: editorAccountId,
+                  accountId: authorId,
                 }}
               />
             </SidePanelItem>
@@ -820,6 +844,7 @@ return (
                             setUpdatedProposalStatus({
                               ...v,
                               value: {
+                                ...v.value,
                                 ...updatedProposalStatus.value,
                                 status: v.value.status,
                               },
