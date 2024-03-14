@@ -22,11 +22,11 @@ test.describe("Wallet is connected with devhub access key", () => {
     );
 
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
-    await setDontAskAgainCacheValues(
+    await setDontAskAgainCacheValues({
       page,
-      "devhub.near/widget/devhub.entity.post.PostEditor",
-      "add_post"
-    );
+      widgetSrc: "devhub.near/widget/devhub.entity.post.PostEditor",
+      methodName: "add_post",
+    });
 
     await pauseIfVideoRecording(page);
     const postToReplyButton = await page.getByRole("button", {
@@ -49,11 +49,13 @@ test.describe("Wallet is connected with devhub access key", () => {
     await commentArea.fill("Some comment");
 
     await pauseIfVideoRecording(page);
+
     expect(
-      await getDontAskAgainCacheValues(
+      await getDontAskAgainCacheValues({
         page,
-        "devhub.near/widget/devhub.entity.post.PostEditor"
-      )
+        widgetSrc: "devhub.near/widget/devhub.entity.post.PostEditor",
+        methodName: "add_post",
+      })
     ).toEqual({ add_post: true });
 
     const submitbutton = await page.getByTestId("submit-create-post");
@@ -95,11 +97,11 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
 
-    await setDontAskAgainCacheValues(
+    await setDontAskAgainCacheValues({
       page,
-      "devhub.near/widget/devhub.entity.post.Post",
-      "add_like"
-    );
+      widgetSrc: "devhub.near/widget/devhub.entity.post.Post",
+      methodName: "add_like",
+    });
 
     const likeButton = await page.locator(".bi-heart-fill");
     await likeButton.waitFor({ state: "visible" });
@@ -143,11 +145,11 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     await page.goto("/devhub.near/widget/app?page=post&id=2261");
 
-    await setDontAskAgainCacheValues(
+    await setDontAskAgainCacheValues({
       page,
-      "devhub.near/widget/devhub.entity.post.PostEditor",
-      "add_post"
-    );
+      widgetSrc: "devhub.near/widget/devhub.entity.post.PostEditor",
+      methodName: "add_post",
+    });
 
     const postToReplyButton = await page
       .getByRole("button", { name: "↪ Reply" })

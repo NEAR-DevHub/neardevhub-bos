@@ -48,26 +48,12 @@ export async function findKeysInCache(page, searchFor) {
   }, searchFor);
 }
 
-export async function setDontAskAgainCacheValues(page, widgetSrc, methodname) {
+export async function setCacheValue({ page, key, value }) {
   await page.evaluate(
-    async (args) => {
-      const { widgetSrc, methodname } = args;
+    async ({ key, value }) => {
       await new Promise((resolve) => {
         const dbName = "cacheDb";
         const storeName = "cache-v1";
-        const key = JSON.stringify({
-          action: "LocalStorage",
-          domain: {
-            page: "confirm_transactions",
-          },
-          key: {
-            widgetSrc,
-            contractId: "devgovgigs.near",
-            type: "send_transaction_without_confirmation",
-          },
-        });
-        const newValue = {};
-        newValue[methodname] = true;
 
         const request = indexedDB.open(dbName);
 
@@ -81,7 +67,7 @@ export async function setDontAskAgainCacheValues(page, widgetSrc, methodname) {
           const transaction = db.transaction([storeName], "readwrite");
           const objectStore = transaction.objectStore(storeName);
 
-          const updateRequest = objectStore.put(newValue, key);
+          const updateRequest = objectStore.put(value, key);
 
           updateRequest.onerror = function (event) {
             console.error("Error updating data: ", event.target.error);
@@ -94,24 +80,15 @@ export async function setDontAskAgainCacheValues(page, widgetSrc, methodname) {
         };
       });
     },
-    { widgetSrc, methodname }
+    { key, value }
   );
 }
 
-export async function getDontAskAgainCacheValues(page, widgetSrc) {
-  const storedData = await page.evaluate(async (widgetSrc) => {
+export async function getCacheValue(key) {
+  const storedData = await page.evaluate(async (key) => {
     return await new Promise((resolve) => {
       const dbName = "cacheDb";
       const storeName = "cache-v1";
-      const key = JSON.stringify({
-        action: "LocalStorage",
-        domain: { page: "confirm_transactions" },
-        key: {
-          widgetSrc,
-          contractId: "devgovgigs.near",
-          type: "send_transaction_without_confirmation",
-        },
-      });
 
       // Opening the database
       const request = indexedDB.open(dbName);
@@ -144,6 +121,106 @@ export async function getDontAskAgainCacheValues(page, widgetSrc) {
         };
       };
     });
-  }, widgetSrc);
+  }, key);
+}
+
+export async function setCommitWritePermissionDontAskAgainCacheValues({
+  page,
+  widgetSrc,
+  accountId,
+}) {
+  const key = JSON.stringify({
+    action: "LocalStorage",
+    domain: { page: "commit" },
+    key: {
+      widgetSrc,
+      accountId,
+      type: "write_permission",
+    },
+  });
+  const value = { post: { main: true }, index: { post: true } };
+  await setCacheValue({ page, key, value });
+}
+
+export async function setDontAskAgainCacheValues({
+  page,
+  widgetSrc,
+  contractId = "devgovgigs.near",
+  methodName,
+}) {
+  const value = {};
+  value[methodName] = true;
+
+  await setCacheValue({
+    page,
+    key: JSON.stringify({
+      action: "LocalStorage",
+      domain: {
+        page: "confirm_transactions",
+      },
+      key: {
+        widgetSrc,
+        contractId,
+        type: "send_transaction_without_confirmation",
+      },
+    }),
+    value,
+  });
+}
+
+export async function getDontAskAgainCacheValues({
+  page,
+  widgetSrc,
+  contractId = "devgovgigs.near",
+}) {
+  const storedData = await page.evaluate(
+    async ({ widgetSrc, contractId }) => {
+      return await new Promise((resolve) => {
+        const dbName = "cacheDb";
+        const storeName = "cache-v1";
+        const key = JSON.stringify({
+          action: "LocalStorage",
+          domain: { page: "confirm_transactions" },
+          key: {
+            widgetSrc,
+            contractId,
+            type: "send_transaction_without_confirmation",
+          },
+        });
+
+        // Opening the database
+        const request = indexedDB.open(dbName);
+
+        request.onerror = function (event) {
+          console.error("Database error: ", event.target.error);
+        };
+
+        request.onsuccess = function (event) {
+          const db = event.target.result;
+
+          // Opening a transaction and getting the object store
+          const transaction = db.transaction([storeName], "readonly");
+          const objectStore = transaction.objectStore(storeName);
+
+          // Getting the data by key
+          const dataRequest = objectStore.get(key);
+
+          dataRequest.onerror = function (event) {
+            console.error("Error fetching data: ", event.target.error);
+          };
+
+          dataRequest.onsuccess = function (event) {
+            if (dataRequest.result) {
+              console.log("Found data: ", dataRequest.result);
+              resolve(dataRequest.result);
+            } else {
+              console.log("No data found for key:", key);
+            }
+          };
+        };
+      });
+    },
+    { widgetSrc, contractId }
+  );
   return storedData;
 }

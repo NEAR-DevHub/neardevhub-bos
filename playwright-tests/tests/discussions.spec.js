@@ -1,4 +1,10 @@
 import { test, expect } from "@playwright/test";
+import {
+  setDontAskAgainCacheValues,
+  getDontAskAgainCacheValues,
+  findKeysInCache,
+  setCommitWritePermissionDontAskAgainCacheValues,
+} from "../util/cache.js";
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -140,5 +146,99 @@ test.describe("Wallet is connected", () => {
     const transactionConfirmationModal = page.locator("div.modal-body code");
     await page.waitForTimeout(4000);
     expect(await transactionConfirmationModal.isVisible()).toBeFalsy();
+  });
+});
+
+test.describe("Don't ask again enabled", () => {
+  test.use({
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
+  });
+
+  test("should create a discussion when content matches", async ({ page }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions"
+    );
+
+    const widgetSrc = "devhub.near/widget/devhub.entity.community.Discussions";
+    await setDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      methodName: "create_discussion",
+      contractId: "devhub.near",
+    });
+
+    expect(
+      await getDontAskAgainCacheValues({
+        page,
+        widgetSrc,
+        methodName: "create_discussion",
+        contractId: "devhub.near",
+      })
+    ).toEqual({ create_discussion: true });
+
+    await setCommitWritePermissionDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      accountId: "petersalomonsen.near",
+    });
+    const socialdbaccount = "petersalomonsen.near";
+    const viewsocialdbpostresult = await fetch("https://rpc.mainnet.near.org", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "dontcare",
+        method: "query",
+        params: {
+          request_type: "call_function",
+          finality: "final",
+          account_id: "social.near",
+          method_name: "get",
+          args_base64: btoa(
+            JSON.stringify({
+              keys: [socialdbaccount + "/post/main"],
+              options: { with_block_height: true },
+            })
+          ),
+        },
+      }),
+    }).then((r) => r.json());
+
+    const socialdbpost = JSON.parse(
+      new TextDecoder().decode(
+        new Uint8Array(viewsocialdbpostresult.result.result)
+      )
+    );
+    const socialdbpostcontent = JSON.parse(
+      socialdbpost[socialdbaccount].post.main[""]
+    );
+    const socialdbpostblockheight =
+      socialdbpost[socialdbaccount].post.main[":block"];
+
+    const discussionPostEditor = await page.getByTestId("compose-announcement");
+    await discussionPostEditor.scrollIntoViewIfNeeded();
+    await discussionPostEditor.fill(socialdbpostcontent.text);
+
+    await page.getByTestId("post-btn").click();
+    await page.route("https://rpc.mainnet.near.org/", async (route) => {
+      const request = await route.request();
+
+      const requestPostData = request.postDataJSON();
+      if (requestPostData.method === "tx") {
+        await route.continue({ url: "https://archival-rpc.mainnet.near.org/" });
+      } else {
+        await route.continue();
+      }
+    });
+
+    console.log(
+      "keys in cache",
+      await findKeysInCache(
+        page,
+        "devhub.near/widget/devhub.entity.community.Discussions"
+      )
+    );
+    await page.waitForTimeout(500);
   });
 });
