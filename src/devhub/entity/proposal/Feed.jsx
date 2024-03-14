@@ -59,14 +59,15 @@ const Heading = styled.div`
 `;
 
 const FeedItem = ({ proposal }) => {
-  const { snapshot } = proposal;
   const accountId = proposal.author_id;
   const profile = Social.get(`${accountId}/profile/**`, "final");
+  // FIXME: social_db_post_block_height is only know in proposal not the body. Which means it won't be indexed.
+  // We will have to get the proposal from the contract to get the block height.
   const blockHeight = parseInt(proposal.social_db_post_block_height);
   const item = {
     type: "social",
     path: `${REPL_DEVHUB_CONTRACT}/post/main`,
-    blockHeight,
+    blockHeight: blockHeight,
   };
 
   return (
@@ -75,7 +76,7 @@ const FeedItem = ({ proposal }) => {
         widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: {
           page: "proposal",
-          id: proposal.id,
+          id: proposal.proposal_id,
         },
       })}
       onClick={(e) => e.stopPropagation()}
@@ -91,11 +92,11 @@ const FeedItem = ({ proposal }) => {
           />
           <div className="d-flex flex-column gap-2">
             <div className="d-flex gap-2 align-items-center flex-wrap">
-              <div className="h6 mb-0 text-black">{snapshot.name}</div>
+              <div className="h6 mb-0 text-black">{proposal.name}</div>
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryTag"}
                 props={{
-                  category: snapshot.category,
+                  category: proposal.category,
                 }}
               />
             </div>
@@ -105,7 +106,7 @@ const FeedItem = ({ proposal }) => {
                 src="${REPL_NEAR}/widget/TimeAgo"
                 props={{
                   blockHeight,
-                  blockTimestamp: snapshot.timestamp,
+                  blockTimestamp: proposal.timestamp,
                 }}
               />
             </div>
@@ -118,6 +119,7 @@ const FeedItem = ({ proposal }) => {
                   notifyAccountId: accountId,
                 }}
               />
+
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentIcon"}
                 props={{
@@ -133,7 +135,7 @@ const FeedItem = ({ proposal }) => {
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
             props={{
-              timelineStatus: snapshot.timeline.status,
+              timelineStatus: proposal.timeline.status,
             }}
           />
         </div>
@@ -142,17 +144,83 @@ const FeedItem = ({ proposal }) => {
   );
 };
 
+const getProposal = (proposal_id) => {
+  return Near.asyncView("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
+    proposal_id,
+  });
+};
+
 const FeedPage = () => {
-  const proposals = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals", {});
+  const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
+
+  State.init({
+    data: [],
+  });
+
+  const query = `query GetLatestSnapshot($offset: Int, $limit: Int) {
+    thomasguntenaar_near_devhub_proposals_mining_proposals_with_latest_snapshot(
+      offset: $offset
+      limit: $limit
+      order_by: {proposal_id: asc}
+    ) {
+      author_id
+      block_height
+      name
+      category
+      summary
+      editor_id
+      name
+      proposal_id
+      ts
+      timeline
+    }
+  }`;
+  function fetchGraphQL(operationsDoc, operationName, variables) {
+    return asyncFetch(QUERYAPI_ENDPOINT, {
+      method: "POST",
+      headers: { "x-hasura-role": `thomasguntenaar_near` },
+      body: JSON.stringify({
+        query: operationsDoc,
+        variables: variables,
+        operationName: operationName,
+      }),
+    });
+  }
+
+  fetchGraphQL(query, "GetLatestSnapshot", {}).then(async (result) => {
+    if (result.status === 200) {
+      if (result.body.data) {
+        const data =
+          result.body.data
+            .thomasguntenaar_near_devhub_proposals_mining_proposals_with_latest_snapshot;
+        console.log({ data });
+        // Parse timeline
+        fetchBlockHeights(data);
+      }
+    }
+  });
+
+  const fetchBlockHeights = (data) => {
+    let promises = data.map((item) => getProposal(item.proposal_id));
+    Promise.all(promises).then((blockHeights) => {
+      data = data.map((item, index) => ({
+        ...item,
+        timeline: JSON.parse(item.timeline),
+        social_db_post_block_height:
+          blockHeights[index].social_db_post_block_height,
+      }));
+      State.update({ data });
+    });
+  };
 
   return (
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
       <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
         <Heading>
           DevDAO Proposals{" "}
-          <span className="text-muted"> ({proposals.length})</span>
+          <span className="text-muted"> ({state.data.length})</span>
         </Heading>
-        {/* Filters aren't supported yet */}
+        {/* FIXME: Filters aren't supported yet */}
         {/* <div className="d-flex gap-4 align-items-center">
           <Widget
             src={
@@ -208,7 +276,7 @@ const FeedPage = () => {
         </div>
       </div>
       <div style={{ minHeight: "50vh" }}>
-        {!Array.isArray(proposals) ? (
+        {!Array.isArray(state.data) ? (
           <div className="d-flex justify-content-center align-items-center w-100">
             <Widget
               src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
@@ -230,12 +298,12 @@ const FeedPage = () => {
                 </p>
               </div>
               <div className="mt-4 border rounded-2">
-                {proposals.map((item, index) => {
+                {state.data.map((item, index) => {
                   return (
                     <div
                       key={index}
                       className={
-                        (index !== proposals.length - 1 && "border-bottom ") +
+                        (index !== state.data.length - 1 && "border-bottom ") +
                         (index === 0 && " rounded-top-2")
                       }
                     >
