@@ -96,6 +96,8 @@ const TextInput = ({
     ) : null,
   ].filter((label) => label !== null);
 
+  const onKeyDown = props.onKeyDown ?? (() => {});
+
   return (
     <div
       className={[
@@ -131,6 +133,7 @@ const TextInput = ({
             maxLength={inputProps.max}
             value={state.data}
             onChange={(e) => State.update({ data: e.target.value })}
+            onKeyDown={onKeyDown}
             {...{ placeholder, ...inputProps }}
           />
         </div>
@@ -148,6 +151,7 @@ const TextInput = ({
           maxLength={inputProps.max}
           value={state.data}
           onChange={(e) => State.update({ data: e.target.value })}
+          onKeyDown={onKeyDown}
           {...{ placeholder, ...inputProps }}
         />
       )}
