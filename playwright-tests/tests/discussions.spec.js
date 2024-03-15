@@ -2,9 +2,9 @@ import { test, expect } from "@playwright/test";
 import {
   setDontAskAgainCacheValues,
   getDontAskAgainCacheValues,
-  findKeysInCache,
   setCommitWritePermissionDontAskAgainCacheValues,
 } from "../util/cache.js";
+import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -156,6 +156,10 @@ test.describe("Don't ask again enabled", () => {
   });
 
   test("should create a discussion when content matches", async ({ page }) => {
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions"
     );
@@ -220,7 +224,9 @@ test.describe("Don't ask again enabled", () => {
     await discussionPostEditor.scrollIntoViewIfNeeded();
     await discussionPostEditor.fill(socialdbpostcontent.text);
 
-    await page.getByTestId("post-btn").click();
+    const postButton = await page.getByTestId("post-btn");
+    await postButton.click();
+
     await page.route("https://rpc.mainnet.near.org/", async (route) => {
       const request = await route.request();
 
@@ -232,13 +238,12 @@ test.describe("Don't ask again enabled", () => {
       }
     });
 
-    console.log(
-      "keys in cache",
-      await findKeysInCache(
-        page,
-        "devhub.near/widget/devhub.entity.community.Discussions"
-      )
-    );
+    const loadingIndicator = await page
+      .locator(".submit-post-loading-indicator")
+      .first();
+
+    await expect(loadingIndicator).toBeVisible();
+    await expect(postButton).toBeDisabled();
     await page.waitForTimeout(500);
   });
 });

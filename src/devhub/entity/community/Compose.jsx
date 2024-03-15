@@ -12,6 +12,7 @@ State.init({
   mentionsArray: [], // all the mentions in the description
 });
 
+const [isSubmittingTransaction, setIsSubmittingTransaction] = useState(false);
 const profile = Social.getr(`${profileAccountId}/profile`);
 const autocompleteEnabled = true;
 
@@ -81,6 +82,7 @@ function composeData() {
 }
 
 const handleSubmit = () => {
+  setIsSubmittingTransaction(true);
   const data = composeData();
   if (props.onSubmit) {
     props.onSubmit(data);
@@ -142,6 +144,14 @@ const Wrapper = styled.div`
     --padding: 12px;
   }
 `;
+
+const LoadingButtonSpinner = (
+  <span
+    class="submit-post-loading-indicator spinner-border spinner-border-sm"
+    role="status"
+    aria-hidden="true"
+  ></span>
+);
 
 const Avatar = styled.div`
   width: 40px;
@@ -447,10 +457,11 @@ return (
 
       <button
         data-testid="post-btn"
-        disabled={!state.text && !state.image}
+        disabled={isSubmittingTransaction || (!state.text && !state.image)}
         onClick={handleSubmit}
         className="commit-post-button"
       >
+        {isSubmittingTransaction ? LoadingButtonSpinner : <></>}
         Post
       </button>
     </Actions>
