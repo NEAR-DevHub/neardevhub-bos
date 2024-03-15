@@ -155,13 +155,23 @@ const FeedPage = () => {
 
   State.init({
     data: [],
+    author: "",
+    stage: "",
+    sort: "",
+    category: "",
+    input: "",
+    loading: false,
+    aggregatedCount: 0,
   });
 
-  const query = `query GetLatestSnapshot($offset: Int, $limit: Int) {
-    thomasguntenaar_near_devhub_proposals_mining_proposals_with_latest_snapshot(
+  const queryName =
+    "thomasguntenaar_near_devhub_proposals_november_proposals_with_latest_snapshot";
+  const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
+    ${queryName}(
       offset: $offset
       limit: $limit
       order_by: {proposal_id: asc}
+      where: $where
     ) {
       author_id
       block_height
@@ -173,6 +183,16 @@ const FeedPage = () => {
       proposal_id
       ts
       timeline
+    }
+    ${queryName}_aggregate(
+      offset: $offset
+      limit: $limit
+      order_by: {proposal_id: asc}
+      where: $where
+    )  {
+      aggregate {
+        count
+      }
     }
   }`;
   function fetchGraphQL(operationsDoc, operationName, variables) {
@@ -187,18 +207,73 @@ const FeedPage = () => {
     });
   }
 
-  fetchGraphQL(query, "GetLatestSnapshot", {}).then(async (result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const data =
-          result.body.data
-            .thomasguntenaar_near_devhub_proposals_mining_proposals_with_latest_snapshot;
-        console.log({ data });
-        // Parse timeline
-        fetchBlockHeights(data);
-      }
+  const buildWhereClause = () => {
+    let where = {};
+    if (state.author) {
+      where = { author_id: { _eq: state.author }, ...where };
     }
-  });
+
+    if (state.category) {
+      where = { category: { _eq: state.category }, ...where };
+    }
+
+    if (state.stage) {
+      // timeline is stored as jsonb
+      where = {
+        timeline: { _cast: { String: { _ilike: `%${state.stage}%` } } },
+      };
+      // where = { timeline: { _ilike: `%${state.stage}%` }, ...where };
+    }
+
+    if (state.input) {
+      where = { description: { _ilike: `%${state.input}%` }, ...where };
+    }
+
+    return where;
+  };
+
+  const buildOrderByClause = () => {
+    // TODO
+    /**
+     * Most recent ->
+     * Most viewed ->
+     * Most commented -> edit indexer
+     * Unanswered ->
+     */
+  };
+
+  const fetchProposals = (offset) => {
+    if (!offset) {
+      offset = 0;
+    }
+    if (state.loading) return;
+    State.update({ data });
+    const DISPLAY_LIMIT = 10;
+    const variables = {
+      limit: DISPLAY_LIMIT,
+      offset,
+      where: buildWhereClause(),
+    };
+    fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
+      if (result.status === 200) {
+        if (result.body.data) {
+          const data =
+            result.body.data
+              .thomasguntenaar_near_devhub_proposals_november_proposals_with_latest_snapshot;
+          const totalResult =
+            result.body.data
+              .thomasguntenaar_near_devhub_proposals_november_proposals_with_latest_snapshot_aggregate;
+          State.update({ aggregatedCount: totalResult.aggregate.count });
+          // Parse timeline
+          fetchBlockHeights(data);
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    fetchProposals();
+  }, [state.author, state.sort, state.category, state.stage]);
 
   const fetchBlockHeights = (data) => {
     let promises = data.map((item) => getProposal(item.proposal_id));
@@ -218,39 +293,66 @@ const FeedPage = () => {
       <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
         <Heading>
           DevDAO Proposals{" "}
-          <span className="text-muted"> ({state.data.length})</span>
+          <span className="text-muted">
+            {" "}
+            ({aggregatedCount ?? state.data.length})
+          </span>
         </Heading>
-        {/* FIXME: Filters aren't supported yet */}
-        {/* <div className="d-flex gap-4 align-items-center">
+        <div className="d-flex gap-4 align-items-center">
           <Widget
             src={
               "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-input"
             }
-            props={{}}
+            props={{
+              search: state.input,
+              onSearch: (input) => {
+                State.update({ input });
+              },
+              onEnter: () => {
+                fetchProposals();
+              },
+            }}
           />
-          <Widget
+          {/* TODO: */}
+          {/* <Widget
             src={"${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-sort"}
-            props={{}}
-          />
+            props={{
+              onStateChange: (select) => {
+                State.update({ sort: select.value });
+              },
+            }}
+          /> */}
           <Widget
             src={
               "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-category"
             }
-            props={{}}
+            props={{
+              onStateChange: (select) => {
+                State.update({ category: select.value });
+              },
+            }}
           />
           <Widget
             src={
               "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-stage"
             }
-            props={{}}
+            props={{
+              onStateChange: (select) => {
+                State.update({ stage: select.value });
+              },
+            }}
           />
           <Widget
             src={
               "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-author"
             }
-            props={{}}
+            props={{
+              onAuthorChange: (select) => {
+                State.update({ author: select.value });
+              },
+            }}
           />
-        </div> */}
+        </div>
         <div>
           <Link
             to={href({
