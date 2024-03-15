@@ -1,9 +1,18 @@
 const accountId = props.accountId;
+const size = props.size ?? "md";
 const Avatar = styled.div`
-  min-width: 40px;
-  max-width: 40px;
-  min-height: 40px;
-  max-height: 40px;
+  &.sm {
+    min-width: 30px;
+    max-width: 30px;
+    min-height: 30px;
+    max-height: 30px;
+  }
+  &.md {
+    min-width: 40px;
+    max-width: 40px;
+    min-height: 40px;
+    max-height: 40px;
+  }
   pointer-events: none;
 
   img {
@@ -16,7 +25,7 @@ const Avatar = styled.div`
 const profile = Social.get(`${accountId}/profile/**`, "final");
 
 return (
-  <Avatar>
+  <Avatar className={size}>
     <Widget
       src="${REPL_MOB}/widget/Image"
       props={{

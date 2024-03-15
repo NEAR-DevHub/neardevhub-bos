@@ -113,6 +113,7 @@ const Container = styled.div`
     background-color: #f8f8f8 !important;
     cursor: not-allowed !important;
     border-radius: 5px;
+    opacity: inherit !important;
   }
 
   .disabled.dropdown-toggle::after {

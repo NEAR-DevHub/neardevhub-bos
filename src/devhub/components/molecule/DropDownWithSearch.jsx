@@ -119,7 +119,7 @@ return (
       <div className="dropdown-toggle bg-white border rounded-2 btn drop-btn">
         <div
           className={`selected-option ${
-            selectedOption.label === defaultLabel ? "text-grey" : ""
+            selectedOption.label === defaultLabel ? "text-muted" : ""
           }`}
           onClick={toggleDropdown}
         >

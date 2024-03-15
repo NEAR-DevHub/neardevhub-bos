@@ -28,6 +28,23 @@ if (isEditPage) {
 }
 
 const Container = styled.div`
+  input {
+    font-size: 14px !important;
+  }
+
+  textarea {
+    font-size: 14px !important;
+  }
+
+  .full-width-div {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
   .text-sm {
     font-size: 13px;
   }
@@ -48,11 +65,10 @@ const Container = styled.div`
     .gap-6 {
       gap: 0.5rem !important;
     }
+  }
 
-    .border-sm-bottom {
-      border-bottom: var(--bs-card-border-width) solid
-        var(--bs-card-border-color);
-    }
+  .border-bottom {
+    border-bottom: var(--bs-card-border-width) solid var(--bs-card-border-color);
   }
 
   .text-xs {
@@ -299,6 +315,9 @@ useEffect(() => {
         (item) => item.value === snapshot.requested_sponsorship_paid_in_currency
       );
       setRequestedSponsorshipToken(token ?? tokensOptions[2]);
+      if (isEditPage) {
+        setConsent({ toc: true, coc: true });
+      }
     }
     setLoading(false);
   }
@@ -390,7 +409,7 @@ const CheckBox = ({ value, isChecked, label, onClick }) => {
   );
 };
 
-const DraftBtnContainer = styled.div`
+const DropdowntBtnContainer = styled.div`
   font-size: 13px;
   min-width: 150px;
 
@@ -409,6 +428,10 @@ const DraftBtnContainer = styled.div`
     border-radius: 5px;
   }
 
+  .no-border {
+    border: none !important;
+  }
+
   .options-card {
     position: absolute;
     top: 100%;
@@ -419,6 +442,11 @@ const DraftBtnContainer = styled.div`
     padding: 0.5rem;
     z-index: 9999;
     font-size: 13px;
+  }
+
+  .left {
+    right: 0 !important;
+    left: auto !important;
   }
 
   @media screen and (max-width: 768px) {
@@ -466,7 +494,94 @@ const DraftBtnContainer = styled.div`
   .green {
     background-color: #04a46e;
   }
+
+  a:hover {
+    text-decoration: none;
+  }
 `;
+
+const [kycOptionsOpen, setKycOptions] = useState(false);
+
+const VerificationBtn = () => {
+  const btnOptions = [
+    {
+      src: "https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm",
+      label: "KYC",
+      description: "Choose this if you are an individual.",
+      value: "KYC",
+    },
+    {
+      src: "https://ipfs.near.social/ipfs/bafkreic5ksax6b45pelvxm6a2v2j465jgbitpzrxtzpmn6zehl23gocwxm",
+      label: "KYB",
+      description: "Choose this if you are a business or corporate entity..",
+      value: "KYB",
+    },
+  ];
+
+  const toggleDropdown = () => {
+    setKycOptions(!kycOptionsOpen);
+  };
+
+  return (
+    <DropdowntBtnContainer>
+      <div
+        className="custom-select"
+        tabIndex="0"
+        onBlur={() => setKycOptions(false)}
+      >
+        <div className={"select-header no-border"}>
+          <Widget
+            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+            props={{
+              classNames: { root: "black-btn" },
+              label: (
+                <div className="d-flex align-items-center gap-1">
+                  Get Verified
+                  <i class="bi bi-box-arrow-up-right"></i>
+                </div>
+              ),
+              onClick: toggleDropdown,
+            }}
+          />
+        </div>
+
+        {kycOptionsOpen && (
+          <div className="options-card left">
+            {btnOptions.map((option) => (
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={
+                  option.value === "KYC"
+                    ? "https://go.fractal.id/near-social-kyc"
+                    : "https://go.fractal.id/near-social-kyb"
+                }
+              >
+                <div
+                  key={option.value}
+                  className={`option ${
+                    selectedOption.value === option.value ? "selected" : ""
+                  }`}
+                  onClick={() => setKycOptions(false)}
+                >
+                  <div className={`d-flex gap-2 align-items-center`}>
+                    <img src={option.src} height={30} />
+                    <div>
+                      <div className="fw-bold">{option.label}</div>
+                      <div className="text-muted text-xs">
+                        {option.description}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </DropdowntBtnContainer>
+  );
+};
 
 const SubmitBtn = () => {
   const btnOptions = [
@@ -508,7 +623,7 @@ const SubmitBtn = () => {
   const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
 
   return (
-    <DraftBtnContainer>
+    <DropdowntBtnContainer>
       <div
         className="custom-select"
         tabIndex="0"
@@ -556,7 +671,7 @@ const SubmitBtn = () => {
           </div>
         )}
       </div>
-    </DraftBtnContainer>
+    </DropdowntBtnContainer>
   );
 };
 
@@ -640,15 +755,16 @@ if (loading) {
 
 const [collapseState, setCollapseState] = useState({});
 
-const CollapsibleContainer = ({ title, children }) => {
+const CollapsibleContainer = ({ title, children, noPaddingTop }) => {
   return (
-    <div>
-      <div
-        className={
-          "d-flex justify-content-between " +
-          (collapseState[title] && " border-sm-bottom")
-        }
-      >
+    <div
+      className={
+        "border-bottom py-4 " +
+        (noPaddingTop && "pt-0 ") +
+        (collapseState[title] && " pb-0")
+      }
+    >
+      <div className={"d-flex justify-content-between "}>
         <div className="h5 text-muted mb-2 mb-sm-3">{title}</div>
         <div
           className="d-flex d-sm-none cursor-pointer"
@@ -670,6 +786,20 @@ const CollapsibleContainer = ({ title, children }) => {
     </div>
   );
 };
+
+const [verificationStatus, setVerificationStatus] = useState(null);
+useEffect(() => {
+  if (receiverAccount) {
+    useCache(
+      () =>
+        asyncFetch(
+          `https://neardevhub-kyc-proxy.shuttleapp.rs/kyc/${receiverAccount}`
+        ).then((res) => setVerificationStatus(res.body.kyc_status)),
+      "ky-check" + receiverAccount,
+      { subscribe: false }
+    );
+  }
+}, [receiverAccount]);
 
 return (
   <Container className="w-100 py-4 px-0 px-sm-2 d-flex flex-column gap-3">
@@ -699,9 +829,12 @@ return (
         },
       }}
     />
-    <div className="card card-body p-3 p-sm-4 rounded-0 w-100">
-      <div className="d-flex flex-wrap gap-6 w-100">
-        <div className="flex-2 w-100 order-2 order-sm-1">
+    <div className="card rounded-0 px-2 p-lg-0 full-width-div">
+      <div className="container-xl py-4 d-flex flex-wrap gap-6 w-100">
+        <div
+          style={{ minWidth: "350px" }}
+          className="flex-2 w-100 order-2 order-md-1"
+        >
           <div className="d-flex gap-2 w-100">
             <div className="d-none d-sm-flex">
               <Widget
@@ -799,10 +932,7 @@ return (
                   }}
                 />
               </InputContainer>
-              <InputContainer
-                heading="Final Consent"
-                description="Expand on your summary with any relevant details like your contribution timeline, key milestones, team background, and a clear breakdown of how the funds will be used. Proposals should be simple and clear (e.g. 1 month). For more complex projects, treat each milestone as a separate proposal."
-              >
+              <InputContainer heading="Final Consent">
                 <div className="d-flex flex-column gap-2">
                   <CheckBox
                     value={consent.toc}
@@ -913,8 +1043,11 @@ return (
             </div>
           </div>
         </div>
-        <div className="flex-1 w-100 order-1 order-sm-2">
-          <CollapsibleContainer title="Author Details">
+        <div
+          style={{ minWidth: "350px" }}
+          className="flex-1 w-100 order-1 order-md-2"
+        >
+          <CollapsibleContainer noPaddingTop={true} title="Author Details">
             <div className="d-flex flex-column gap-3 gap-sm-4">
               <InputContainer heading="Author">
                 <Widget
@@ -926,7 +1059,7 @@ return (
               </InputContainer>
             </div>
           </CollapsibleContainer>
-          <div className="my-4 my-sm-3">
+          <div className="my-2">
             <CollapsibleContainer title="Link Proposals (Optional)">
               <div className="d-flex flex-column gap-1">
                 <div className="text-muted w-100 text-sm">
@@ -984,9 +1117,63 @@ return (
               </div>
             </CollapsibleContainer>
           </div>
-          <div className="my-4 my-sm-3">
+          <div className="my-2">
             <CollapsibleContainer title="Funding Details">
               <div className="d-flex flex-column gap-3 gap-sm-4">
+                <InputContainer
+                  heading="Recipient NEAR Wallet Address"
+                  description="Enter the address that will receive the funds. We’ll need this to send a test transaction once your proposal is approved."
+                >
+                  <Widget
+                    src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
+                    props={{
+                      value: receiverAccount,
+                      placeholder: devdaoAccount,
+                      onUpdate: setReceiverAccount,
+                    }}
+                  />
+                </InputContainer>
+                <InputContainer
+                  heading={
+                    <div className="d-flex gap-2 align-items-center">
+                      Recipient Verification Status
+                      <div className="custom-tooltip">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <span class="tooltiptext">
+                          To get approved and receive payments on our platform,
+                          you must complete KYC/KYB verification using Fractal,
+                          a trusted identity verification solution. This helps
+                          others trust transactions with your account. Click
+                          "Get Verified" to start. <br />
+                          <br />
+                          Once verified, your profile will display a badge,
+                          which is valid for 365 days from the date of your
+                          verification. You must renew your verification upon
+                          expiration OR if any of your personal information
+                          changes.
+                        </span>
+                      </div>
+                    </div>
+                  }
+                  description=""
+                >
+                  <div className="border-1 p-3 rounded-2">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="d-flex gap-4 ">
+                        <img
+                          className="align-self-center"
+                          src={WarningImg}
+                          height={30}
+                        />
+                        <div className="d-flex flex-column justify-content-center">
+                          <div className="h6 mb-0">Fractal</div>
+                          <div className="text-muted text-sm">Not Verified</div>
+                        </div>
+                      </div>
+                      <VerificationBtn />
+                    </div>
+                  </div>
+                </InputContainer>
                 <InputContainer
                   heading="Total Amount (USD)"
                   description={
@@ -1050,19 +1237,6 @@ return (
                       onUpdate: (v) => {
                         setRequestedSponsorshipToken(v);
                       },
-                    }}
-                  />
-                </InputContainer>
-                <InputContainer
-                  heading="NEAR Wallet Address"
-                  description="Enter the address that will receive the funds. We’ll need this to send a test transaction once your proposal is approved."
-                >
-                  <Widget
-                    src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
-                    props={{
-                      value: receiverAccount,
-                      placeholder: devdaoAccount,
-                      onUpdate: setReceiverAccount,
                     }}
                   />
                 </InputContainer>

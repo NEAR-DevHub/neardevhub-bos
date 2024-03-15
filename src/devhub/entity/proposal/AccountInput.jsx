@@ -40,7 +40,7 @@ return (
       }}
     />
     {value && !isValidAccount && (
-      <div style={{ color: "red" }} className="text-sm">
+      <div style={{ color: "red" }} className="text-sm mt-1">
         Please enter valid account ID
       </div>
     )}

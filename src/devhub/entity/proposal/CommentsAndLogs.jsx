@@ -9,7 +9,6 @@ const Wrapper = styled.div`
     bottom: 0;
     z-index: 1;
     width: 1px;
-    height: 110%;
     background-color: var(--bs-border-color);
     z-index: 1;
   }
@@ -126,7 +125,7 @@ const Comment = ({ commentItem }) => {
 
   const link = `https://near.org/mob.near/widget/MainPage.N.Comment.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
   return (
-    <div style={{ zIndex: 99, background: "white" }}>
+    <div style={{ zIndex: 9999, background: "white" }}>
       <div className="d-flex gap-2 flex-1">
         <div className="d-none d-sm-flex">
           <Widget
@@ -150,12 +149,15 @@ const Comment = ({ commentItem }) => {
             {context.accountId && (
               <div className="menu">
                 <Widget
-                  src="${REPL_NEAR}/widget/Posts.Menu"
+                  src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Menu"}
                   props={{
                     accountId: accountId,
                     blockHeight: blockHeight,
                     contentPath: `/post/comment`,
                     contentType: "comment",
+                    parentFunctions: {
+                      copyLink: () => clipboard.writeText(link),
+                    },
                   }}
                 />
               </div>
@@ -181,13 +183,6 @@ const Comment = ({ commentItem }) => {
               <Widget
                 src="${REPL_NEAR}/widget/CopyUrlButton"
                 props={{
-                  url: link,
-                }}
-              />
-              <Widget
-                src="${REPL_NEAR}/widget/ShareButton"
-                props={{
-                  postType: "post",
                   url: link,
                 }}
               />
@@ -337,7 +332,19 @@ const Log = ({ timestamp }) => {
         height={30}
       />
       <div className="flex-1 w-100 text-wrap">
-        {editorId}
+        <span
+          style={{ display: "inline-flex" }}
+          className="gap-1 align-items-center"
+        >
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+            props={{
+              accountId: editorId,
+              size: "sm",
+            }}
+          />
+          {editorId}
+        </span>
         {valuesArray.map((i, index) => {
           if (i.key && i.key !== "timestamp") {
             return (
@@ -347,11 +354,20 @@ const Log = ({ timestamp }) => {
                   i.modifiedValue,
                   i.originalValue
                 )}
-                {index < valuesArray.length - 2 ? ", " : "."}
+                {index < valuesArray.length - 2 && ", "}
               </span>
             );
           }
         })}
+        <span>
+          ･{" "}
+          <Widget
+            src="${REPL_NEAR}/widget/TimeAgo"
+            props={{
+              blockTimestamp: timestamp * 1000000,
+            }}
+          />
+        </span>
       </div>
     </LogIconContainer>
   );
@@ -360,7 +376,10 @@ const Log = ({ timestamp }) => {
 if (Array.isArray(state.data)) {
   return (
     <Wrapper>
-      <div className="log-line"> </div>
+      <div
+        className="log-line"
+        style={{ height: state.data.length > 4 ? "120%" : "150%" }}
+      ></div>
       <div className="d-flex flex-column gap-4">
         {state.data.map((i, index) => {
           if (i.blockHeight) {
