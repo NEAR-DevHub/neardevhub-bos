@@ -26,6 +26,7 @@ return (
       onChange: (e) => {
         updateInput(e.target.value);
       },
+      onKeyDown: (e) => e.key == "Enter" && onEnter(),
       skipPaddingGap: true,
       placeholder: "Search by content",
       inputProps: {

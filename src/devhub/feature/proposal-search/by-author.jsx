@@ -26,7 +26,9 @@ return (
         label: "Author",
         onUpdate: (v) => {
           setSelectedAuthor(v);
+          props.onAuthorChange(v);
         },
+        selectedValue: props.author,
       }}
     />
   </div>
