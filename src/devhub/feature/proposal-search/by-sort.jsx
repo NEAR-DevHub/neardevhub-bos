@@ -1,11 +1,11 @@
 const options = [
-  { label: "Most recent", value: "" },
-  { label: "Most viewed", value: "" },
-  { label: "Most commented", value: "" },
-  { label: "Unanswered", value: "" },
+  { label: "Most recent", value: "" }, // proposal_id desc
+  { label: "Most viewed", value: "" }, // views desc
+  { label: "Most commented", value: "" }, // comments desc
+  { label: "Unanswered", value: "" }, // where comments = 0
 ];
 
-const [selected, setSelected] = useState(null);
+const setSelected = props.onStateChange ?? (() => {});
 
 return (
   <div>
