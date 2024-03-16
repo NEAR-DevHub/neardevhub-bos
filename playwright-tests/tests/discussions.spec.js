@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { pauseIfVideoRecording } from "../testUtils.js";
 import {
   setDontAskAgainCacheValues,
   getDontAskAgainCacheValues,
@@ -228,6 +229,7 @@ test.describe("Don't ask again enabled", () => {
     const discussionPostEditor = await page.getByTestId("compose-announcement");
     await discussionPostEditor.scrollIntoViewIfNeeded();
     await discussionPostEditor.fill(socialdbpostcontent.text);
+    await pauseIfVideoRecording(page);
 
     await mockTransactionSubmitRPCResponses(
       page,
@@ -283,7 +285,7 @@ test.describe("Don't ask again enabled", () => {
     await expect(postButton).not.toBeDisabled();
 
     await expect(await discussionPostEditor.textContent()).toEqual("");
-    await page.waitForTimeout(100);
-    expect(transaction_toast).not.toBeVisible();
+    await transaction_toast.waitFor({ state: "detached", timeout: 100 });
+    await pauseIfVideoRecording(page);
   });
 });
