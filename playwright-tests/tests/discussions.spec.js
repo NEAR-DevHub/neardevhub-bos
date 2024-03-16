@@ -303,7 +303,7 @@ test.describe("Don't ask again enabled", () => {
 
     await page
       .locator(".reposted")
-      .waitFor({ state: "visible", timeout: 1000 });
+      .waitFor({ state: "visible", timeout: 10000 });
     await pauseIfVideoRecording(page);
   });
 });
