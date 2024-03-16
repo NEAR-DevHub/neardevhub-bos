@@ -40,8 +40,17 @@ const access_keys = [
   },
 ];
 
-export async function mockTransactionSubmitRPCResponses(page) {
+export function decodeResultJSON(resultArray) {
+  return JSON.parse(new TextDecoder().decode(new Uint8Array(resultArray)));
+}
+
+export function encodeResultJSON(resultObj) {
+  return Array.from(new TextEncoder().encode(JSON.stringify(resultObj)));
+}
+
+export async function mockTransactionSubmitRPCResponses(page, customhandler) {
   let transaction_completed = false;
+  let last_receiver_id;
   let lastViewedAccessKey;
   await page.route("https://rpc.mainnet.near.org/", async (route) => {
     const request = await route.request();
@@ -68,13 +77,11 @@ export async function mockTransactionSubmitRPCResponses(page) {
       );
       json.result = lastViewedAccessKey.access_key;
 
-      console.log(
-        "Replacing RPC response when viewing access key",
-        JSON.stringify(json)
-      );
       await route.fulfill({ response, json });
     } else if (requestPostData.method == "broadcast_tx_commit") {
       transaction_completed = false;
+      last_receiver_id =
+        lastViewedAccessKey.access_key.permission.FunctionCall.receiver_id;
       await page.waitForTimeout(1000);
 
       await route.fulfill({
@@ -85,9 +92,7 @@ export async function mockTransactionSubmitRPCResponses(page) {
               SuccessValue: "",
             },
             transaction: {
-              receiver_id:
-                lastViewedAccessKey.access_key.permission.FunctionCall
-                  .receiver_id,
+              receiver_id: last_receiver_id,
             },
             transaction_outcome: {
               proof: [],
@@ -146,14 +151,14 @@ export async function mockTransactionSubmitRPCResponses(page) {
         new TextEncoder().encode(JSON.stringify(get_post_response))
       );
       await route.fulfill({ response, json });
+    } else if (customhandler) {
+      await customhandler({
+        route,
+        request,
+        transaction_completed,
+        last_receiver_id,
+      });
     } else {
-      if (requestPostData.params?.args_base64) {
-        console.log(
-          "RPC",
-          JSON.stringify(requestPostData),
-          atob(requestPostData.params.args_base64)
-        );
-      }
       await route.continue();
     }
   });

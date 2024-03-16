@@ -81,10 +81,6 @@ function composeData() {
   return data;
 }
 
-if (props.isFinished && props.isFinished() && isSubmittingTransaction) {
-  setIsSubmittingTransaction(false);
-}
-
 const handleSubmit = () => {
   if (props.isFinished) {
     setIsSubmittingTransaction(true);
@@ -100,6 +96,11 @@ function resetState() {
     image: {},
     text: "",
   });
+}
+
+if (props.isFinished && props.isFinished() && isSubmittingTransaction) {
+  resetState();
+  setIsSubmittingTransaction(false);
 }
 
 function textareaInputHandler(value) {

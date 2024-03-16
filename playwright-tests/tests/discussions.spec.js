@@ -5,7 +5,11 @@ import {
   setCommitWritePermissionDontAskAgainCacheValues,
 } from "../util/cache.js";
 import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
-import { mockTransactionSubmitRPCResponses } from "../util/transaction.js";
+import {
+  mockTransactionSubmitRPCResponses,
+  decodeResultJSON,
+  encodeResultJSON,
+} from "../util/transaction.js";
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -225,7 +229,35 @@ test.describe("Don't ask again enabled", () => {
     await discussionPostEditor.scrollIntoViewIfNeeded();
     await discussionPostEditor.fill(socialdbpostcontent.text);
 
-    await mockTransactionSubmitRPCResponses(page);
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        const postData = request.postDataJSON();
+        const args_base64 = postData.params?.args_base64;
+        if (args_base64) {
+          const args = atob(args_base64);
+          if (
+            args.indexOf(
+              "discussions.webassemblymusic.community.devhub.near/index/**"
+            ) > -1
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+
+            if (!transaction_completed || last_receiver_id !== "devhub.near") {
+              const resultObj = decodeResultJSON(json.result.result);
+              resultObj[
+                "discussions.webassemblymusic.community.devhub.near"
+              ].index.repost = "[]";
+              json.result.result = encodeResultJSON(resultObj);
+            }
+            await route.fulfill({ response, json });
+            return;
+          }
+        }
+        await route.continue();
+      }
+    );
 
     const postButton = await page.getByTestId("post-btn");
     await postButton.click();
@@ -242,10 +274,16 @@ test.describe("Don't ask again enabled", () => {
     );
     expect(transaction_toast).toBeVisible();
 
+    await expect(loadingIndicator).toBeVisible();
+    await expect(postButton).toBeDisabled();
+
     await transaction_toast.waitFor({ state: "detached" });
+    expect(transaction_toast).not.toBeVisible();
     await loadingIndicator.waitFor({ state: "detached" });
     await expect(postButton).not.toBeDisabled();
 
+    await expect(await discussionPostEditor.textContent()).toEqual("");
     await page.waitForTimeout(100);
+    expect(transaction_toast).not.toBeVisible();
   });
 });
