@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, request } from "@playwright/test";
 import { pauseIfVideoRecording } from "../testUtils.js";
 import {
   setDontAskAgainCacheValues,
@@ -11,6 +11,7 @@ import {
   decodeResultJSON,
   encodeResultJSON,
 } from "../util/transaction.js";
+import { mockSocialIndexResponses } from "../util/socialapi.js";
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -21,7 +22,6 @@ test.describe("Wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions"
     );
-
     const socialdbaccount = "petersalomonsen.near";
     const viewsocialdbpostresult = await fetch("https://rpc.mainnet.near.org", {
       method: "POST",
@@ -161,10 +161,24 @@ test.describe("Don't ask again enabled", () => {
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
 
-  test("should create a discussion when content matches", async ({ page }) => {
+  const communitydiscussionaccount =
+    "discussions.webassemblymusic.community.devhub.near";
+
+  test("should create a discussion", async ({ page }) => {
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
+
+    let discussion_created = false;
+    await mockSocialIndexResponses(page, ({ requestPostData, json }) => {
+      if (
+        requestPostData.action === "repost" &&
+        requestPostData.options?.accountId?.[0] === communitydiscussionaccount
+      ) {
+        console.log("Returning discussions from index", discussion_created);
+        return discussion_created ? [json[0]] : [];
+      }
+    });
 
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions"
@@ -248,10 +262,10 @@ test.describe("Don't ask again enabled", () => {
 
             if (!transaction_completed || last_receiver_id !== "devhub.near") {
               const resultObj = decodeResultJSON(json.result.result);
-              resultObj[
-                "discussions.webassemblymusic.community.devhub.near"
-              ].index.repost = "[]";
+              resultObj[communitydiscussionaccount].index.repost = "[]";
               json.result.result = encodeResultJSON(resultObj);
+
+              discussion_created = true;
             }
             await route.fulfill({ response, json });
             return;
@@ -286,6 +300,10 @@ test.describe("Don't ask again enabled", () => {
 
     await expect(await discussionPostEditor.textContent()).toEqual("");
     await transaction_toast.waitFor({ state: "detached", timeout: 100 });
+
+    await page
+      .locator(".reposted")
+      .waitFor({ state: "visible", timeout: 1000 });
     await pauseIfVideoRecording(page);
   });
 });
