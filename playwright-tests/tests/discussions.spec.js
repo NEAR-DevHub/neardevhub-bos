@@ -5,6 +5,7 @@ import {
   setCommitWritePermissionDontAskAgainCacheValues,
 } from "../util/cache.js";
 import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
+import { mockTransactionSubmitRPCResponses } from "../util/transaction.js";
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -224,19 +225,10 @@ test.describe("Don't ask again enabled", () => {
     await discussionPostEditor.scrollIntoViewIfNeeded();
     await discussionPostEditor.fill(socialdbpostcontent.text);
 
+    await mockTransactionSubmitRPCResponses(page);
+
     const postButton = await page.getByTestId("post-btn");
     await postButton.click();
-
-    await page.route("https://rpc.mainnet.near.org/", async (route) => {
-      const request = await route.request();
-
-      const requestPostData = request.postDataJSON();
-      if (requestPostData.method === "tx") {
-        await route.continue({ url: "https://archival-rpc.mainnet.near.org/" });
-      } else {
-        await route.continue();
-      }
-    });
 
     const loadingIndicator = await page
       .locator(".submit-post-loading-indicator")
@@ -244,6 +236,16 @@ test.describe("Don't ask again enabled", () => {
 
     await expect(loadingIndicator).toBeVisible();
     await expect(postButton).toBeDisabled();
-    await page.waitForTimeout(500);
+
+    const transaction_toast = await page.getByText(
+      "Calling contract devhub.near with method create_discussion"
+    );
+    expect(transaction_toast).toBeVisible();
+
+    await transaction_toast.waitFor({ state: "detached" });
+    await loadingIndicator.waitFor({ state: "detached" });
+    await expect(postButton).not.toBeDisabled();
+
+    await page.waitForTimeout(100);
   });
 });

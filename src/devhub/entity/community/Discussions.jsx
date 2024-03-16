@@ -72,6 +72,30 @@ const Tag = styled.div`
 `;
 
 const [sort, setSort] = useState("timedesc");
+const [isTransactionFinished, setIsTransactionFinished] = useState(false);
+
+function checkIfReposted(blockHeight) {
+  const discussionsAccountId =
+    "discussions." + handle + ".community.${REPL_DEVHUB_CONTRACT}";
+  Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
+    keys: [`${discussionsAccountId}/index/**`],
+  })
+    .then((response) => {
+      const repost = response[discussionsAccountId].index.repost;
+
+      if (repost && repost.indexOf(`"blockHeight":${blockHeight}`) > -1) {
+        setIsTransactionFinished(true);
+      } else {
+        setTimeout(() => checkIfReposted(), 500);
+      }
+    })
+    .catch((error) => {
+      console.error(
+        "DevHub Error [Discussions]: checkIfReposted failed",
+        error
+      );
+    });
+}
 
 function repostOnDiscussions(blockHeight) {
   Near.call([
@@ -85,6 +109,7 @@ function repostOnDiscussions(blockHeight) {
       gas: Big(10).pow(14),
     },
   ]);
+  checkIfReposted(blockHeight);
 }
 
 async function checkHashes() {
@@ -167,11 +192,14 @@ return (
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                 props={{
+                  isFinished: () => isTransactionFinished,
                   onSubmit: (v) => {
+                    console.log("ON SUBMIT");
                     Storage.set(
                       NEW_DISCUSSION_POSTED_CONTENT_STORAGE_KEY,
                       v.post.main
                     );
+
                     Social.set(v, {
                       force: true,
                       onCommit: () => {

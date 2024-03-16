@@ -81,8 +81,14 @@ function composeData() {
   return data;
 }
 
+if (props.isFinished && props.isFinished() && isSubmittingTransaction) {
+  setIsSubmittingTransaction(false);
+}
+
 const handleSubmit = () => {
-  setIsSubmittingTransaction(true);
+  if (props.isFinished) {
+    setIsSubmittingTransaction(true);
+  }
   const data = composeData();
   if (props.onSubmit) {
     props.onSubmit(data);

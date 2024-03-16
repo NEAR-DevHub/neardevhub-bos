@@ -64,7 +64,7 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     const cachedValues = await findKeysInCache(page, RECEIVER_ID);
     console.log("cached values", cachedValues);
-    await mockTransactionSubmitRPCResponses(page, RECEIVER_ID);
+    await mockTransactionSubmitRPCResponses(page);
 
     await submitbutton.click();
     await expect(submitbutton).toBeDisabled();
@@ -105,7 +105,7 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     const likeButton = await page.locator(".bi-heart-fill");
     await likeButton.waitFor({ state: "visible" });
-    await mockTransactionSubmitRPCResponses(page, RECEIVER_ID);
+    await mockTransactionSubmitRPCResponses(page);
 
     await pauseIfVideoRecording(page);
     await likeButton.click();
@@ -174,7 +174,7 @@ test.describe("Wallet is connected with devhub access key", () => {
     await commentArea.fill("Some comment");
 
     await pauseIfVideoRecording(page);
-    await mockTransactionSubmitRPCResponses(page, RECEIVER_ID);
+    await mockTransactionSubmitRPCResponses(page);
     const submitbutton = await page.getByTestId("submit-create-post");
     await submitbutton.scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
