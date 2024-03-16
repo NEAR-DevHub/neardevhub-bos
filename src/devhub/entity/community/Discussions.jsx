@@ -238,7 +238,7 @@ return (
                 We will replace this with our custom feed as soon as it can support reposts */}
             <Widget
               key="feed"
-              src="${REPL_DEVHUB_CONTRACT}/widget/devhub.components.feed.SubscribedFeed"
+              src="${REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
               props={{
                 accounts: [
                   `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
