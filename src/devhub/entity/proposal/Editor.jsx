@@ -477,8 +477,14 @@ const DropdowntBtnContainer = styled.div`
   }
 
   .disabled {
-    background-color: #f8f8f8 !important;
+    background-color: #f4f4f4 !important;
     cursor: not-allowed !important;
+    font-weight: 500;
+    color: #b3b3b3;
+  }
+
+  .disabled .circle {
+    opacity: 0.5;
   }
 
   .circle {
@@ -1204,7 +1210,7 @@ return (
                         }
                         if (!isValidInput || Number(inputValue) < 0) {
                           setAmountError(
-                            "Please enter a positive whole number."
+                            "Please enter the nearest positive whole number."
                           );
                         } else {
                           setRequestedSponsorshipAmount(inputValue);

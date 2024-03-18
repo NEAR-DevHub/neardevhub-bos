@@ -429,6 +429,34 @@ const isModerator = Near.view("${REPL_DEVHUB_LEGACY}", "has_moderator", {
   account_id: accountId,
 });
 
+const editProposal = ({ timeline }) => {
+  const body = {
+    proposal_body_version: "V0",
+    name: snapshot.title,
+    description: snapshot.description,
+    category: snapshot.category,
+    summary: snapshot.summary,
+    linked_proposals: snapshot.linked_proposals,
+    requested_sponsorship_usd_amount: snapshot.requested_sponsorship_usd_amount,
+    requested_sponsorship_paid_in_currency:
+      snapshot.requested_sponsorship_paid_in_currency,
+    receiver_account: snapshot.receiver_account,
+    supervisor: supervisor || null,
+    requested_sponsor: snapshot.requested_sponsor,
+    timeline: timeline,
+  };
+  const args = { labels: [], body: body, id: proposal.id };
+
+  Near.call([
+    {
+      contractName: "${REPL_DEVHUB_CONTRACT}",
+      methodName: "edit_proposal",
+      args: args,
+      gas: 270000000000000,
+    },
+  ]);
+};
+
 const editProposalStatus = ({ timeline }) => {
   Near.call([
     {
@@ -458,6 +486,7 @@ const [updatedProposalStatus, setUpdatedProposalStatus] = useState({
   value: { ...proposalStatus().value, ...snapshot.timeline },
 });
 const [paymentHashes, setPaymentHashes] = useState([""]);
+const [supervisor, setSupervisor] = useState(snapshot.supervisor);
 
 const selectedStatusIndex = useMemo(
   () =>
@@ -1165,6 +1194,17 @@ return (
                   </div>
                   {showTimelineSetting && (
                     <div className="d-flex flex-column gap-2">
+                      <div className="border-vertical py-3 my-2">
+                        <label className="text-black h6">Supervisor</label>
+                        <Widget
+                          src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
+                          props={{
+                            value: supervisor,
+                            placeholder: "Enter Supervisor",
+                            onUpdate: setSupervisor,
+                          }}
+                        />
+                      </div>
                       {updatedProposalStatus.value.status ===
                         TIMELINE_STATUS.FUNDED && (
                         <div className="border-vertical py-3 my-2">
@@ -1252,9 +1292,17 @@ return (
                           }
                           props={{
                             label: "Save",
+                            disabled: !supervisor,
                             classNames: { root: "green-btn btn-sm" },
                             onClick: () => {
-                              if (
+                              if (!supervisor) {
+                                return;
+                              }
+                              if (snapshot.supervisor !== supervisor) {
+                                editProposal({
+                                  timeline: updatedProposalStatus.value,
+                                });
+                              } else if (
                                 updatedProposalStatus.value.status ===
                                 TIMELINE_STATUS.FUNDED
                               ) {
@@ -1263,7 +1311,9 @@ return (
                                     ...updatedProposalStatus.value,
                                     payouts: !paymentHashes[0]
                                       ? []
-                                      : paymentHashes,
+                                      : paymentHashes.filter(
+                                          (item) => item !== ""
+                                        ),
                                   },
                                 });
                               } else {
