@@ -226,6 +226,7 @@ const [allowDraft, setAllowDraft] = useState(true);
 
 const [proposalsOptions, setProposalsOptions] = useState([]);
 const proposalsData = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals");
+console.log("LENGTH", proposalsData.length);
 const [loading, setLoading] = useState(true);
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
@@ -233,6 +234,7 @@ const [selectedStatus, setSelectedStatus] = useState("draft");
 const [isReviewModalOpen, setReviewModal] = useState(false);
 const [amountError, setAmountError] = useState(null);
 const [isCancelModalOpen, setCancelModal] = useState(false);
+const [isSubmittingTransaction, setIsSubmittingTransaction] = useState(false);
 
 if (allowDraft) {
   draftProposalData = Storage.privateGet(draftKey);
@@ -312,7 +314,8 @@ useEffect(() => {
 
 useEffect(() => {
   setDisabledSubmitBtn(
-    amountError ||
+    isSubmittingTransaction ||
+      amountError ||
       !title ||
       !description ||
       !summary ||
@@ -347,6 +350,12 @@ useEffect(() => {
 }, [editProposalData, proposalsOptions]);
 
 useEffect(() => {
+  // Trigger when proposals data change, which will happen on cache invalidation
+  setIsSubmittingTransaction(false);
+  console.log("Proposals data change");
+}, [proposalsData]);
+
+useEffect(() => {
   if (
     proposalsData !== null &&
     Array.isArray(proposalsData) &&
@@ -362,6 +371,8 @@ useEffect(() => {
     setProposalsOptions(data);
   }
 }, [proposalsData]);
+
+useEffect(() => {});
 
 const InputContainer = ({ heading, description, children }) => {
   return (
@@ -468,6 +479,14 @@ const DraftBtnContainer = styled.div`
   }
 `;
 
+const LoadingButtonSpinner = (
+  <span
+    class="submit-proposal-draft-loading-indicator spinner-border spinner-border-sm"
+    role="status"
+    aria-hidden="true"
+  ></span>
+);
+
 const SubmitBtn = () => {
   const btnOptions = [
     {
@@ -516,7 +535,7 @@ const SubmitBtn = () => {
       >
         <div
           className={
-            "select-header d-flex gap-1 align-items-center " +
+            "select-header d-flex gap-1 align-items-center submit-draft-button " +
             (disabledSubmitBtn && "disabled")
           }
         >
@@ -524,7 +543,11 @@ const SubmitBtn = () => {
             onClick={() => !disabledSubmitBtn && handleSubmit()}
             className="p-2 d-flex gap-2 align-items-center "
           >
-            <div className={"circle " + selectedOption.iconColor}></div>
+            {isSubmittingTransaction ? (
+              LoadingButtonSpinner
+            ) : (
+              <div className={"circle " + selectedOption.iconColor}></div>
+            )}
             <div className={`selected-option`}>{selectedOption.label}</div>
           </div>
           <div
@@ -561,6 +584,8 @@ const SubmitBtn = () => {
 };
 
 const onSubmit = ({ isDraft, isCancel }) => {
+  setIsSubmittingTransaction(true);
+  console.log("submitting transaction");
   const linkedProposalsIds = linkedProposals.map((item) => item.value) ?? [];
   const body = {
     proposal_body_version: "V0",
