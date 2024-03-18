@@ -107,7 +107,10 @@ test.describe("Don't ask again enabled", () => {
 
     const submitButton = await page.getByText("Submit Draft");
     await submitButton.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(100);
+    await expect(await page.locator(".submit-draft-button")).not.toHaveClass(
+      "disabled"
+    );
+
     await submitButton.click();
     const loadingIndicator = await page.locator(
       ".submit-proposal-draft-loading-indicator"
@@ -117,17 +120,17 @@ test.describe("Don't ask again enabled", () => {
       await page.locator(".submit-draft-button.disabled")
     ).toBeVisible();
 
-    const transaction_toast = page.getByText(
+    const transaction_toast = await page.getByText(
       "Calling contract devhub.near with method add_proposal"
     );
     await expect(transaction_toast).toBeVisible();
 
-    await transaction_toast.waitFor({ state: "detached" });
+    await transaction_toast.waitFor({ state: "detached", timeout: 10000 });
     await expect(transaction_toast).not.toBeVisible();
     //await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
     //await expect(loadingIndicator).not.toBeVisible();
 
-    //await page.waitForTimeout(100);
-    //await pauseIfVideoRecording(page);
+    await page.waitForTimeout(100);
+    await pauseIfVideoRecording(page);
   });
 });

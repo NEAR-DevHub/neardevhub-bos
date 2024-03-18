@@ -333,7 +333,14 @@ useEffect(() => {
   return () => {
     clearTimeout(handler);
   };
-}, [memoizedDraftData, draftKey, draftProposalData, consent, amountError]);
+}, [
+  memoizedDraftData,
+  draftKey,
+  draftProposalData,
+  consent,
+  amountError,
+  isSubmittingTransaction,
+]);
 
 useEffect(() => {
   if (
