@@ -84,9 +84,27 @@ const Container = styled.div`
     background-color: lightgrey;
   }
 
-  @media screen and (max-width: 870px) {
+  @media screen and (max-width: 970px) {
     .vertical-line {
-      height: 155px;
+      height: 135px !important;
+    }
+
+    .vertical-line-sm {
+      height: 70px !important;
+    }
+
+    .gap-6 {
+      gap: 0.5rem !important;
+    }
+  }
+
+  @media screen and (max-width: 570px) {
+    .vertical-line {
+      height: 180px !important;
+    }
+
+    .vertical-line-sm {
+      height: 75px !important;
     }
 
     .gap-6 {

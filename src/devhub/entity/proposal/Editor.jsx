@@ -1075,7 +1075,7 @@ return (
                   return (
                     <div className="d-flex gap-2 align-items-center">
                       <a
-                        className="text-decoration-underline"
+                        className="text-decoration-underline flex-1"
                         href={href({
                           widgetSrc: "${REPL_DEVHUB}/widget/app",
                           params: {
