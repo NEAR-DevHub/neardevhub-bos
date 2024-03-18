@@ -730,15 +730,10 @@ return (
                     {context.accountId && (
                       <div className="menu">
                         <Widget
-                          src={
-                            "${REPL_DEVHUB}/widget/devhub.entity.proposal.Menu"
-                          }
+                          src="${REPL_NEAR}/widget/Posts.Menu"
                           props={{
                             accountId: authorId,
                             blockHeight: blockHeight,
-                            parentFunctions: {
-                              copyLink: () => clipboard.writeText(link),
-                            },
                           }}
                         />
                       </div>

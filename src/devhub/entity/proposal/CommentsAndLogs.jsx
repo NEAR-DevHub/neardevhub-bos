@@ -149,15 +149,12 @@ const Comment = ({ commentItem }) => {
             {context.accountId && (
               <div className="menu">
                 <Widget
-                  src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Menu"}
+                  src="${REPL_NEAR}/widget/Posts.Menu"
                   props={{
                     accountId: accountId,
                     blockHeight: blockHeight,
                     contentPath: `/post/comment`,
                     contentType: "comment",
-                    parentFunctions: {
-                      copyLink: () => clipboard.writeText(link),
-                    },
                   }}
                 />
               </div>
