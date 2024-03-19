@@ -226,7 +226,7 @@ const [allowDraft, setAllowDraft] = useState(true);
 
 const [proposalsOptions, setProposalsOptions] = useState([]);
 const proposalsData = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals");
-console.log("LENGTH", proposalsData.length);
+
 const [loading, setLoading] = useState(true);
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
@@ -359,7 +359,7 @@ useEffect(() => {
 useEffect(() => {
   // Trigger when proposals data change, which will happen on cache invalidation
   setIsSubmittingTransaction(false);
-  console.log("Proposals data change");
+  console.log("Proposals data change, assume transaction completed");
 }, [proposalsData]);
 
 useEffect(() => {
