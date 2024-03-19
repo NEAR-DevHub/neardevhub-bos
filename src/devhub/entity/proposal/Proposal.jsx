@@ -269,14 +269,14 @@ const KycVerificationStatus = () => {
   const isVerified = true;
   return (
     <div className="d-flex gap-2 align-items-center">
-      {isVerified ? (
-        <img
-          src="https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm"
-          height={40}
-        />
-      ) : (
-        "Need icon"
-      )}
+      <img
+        src={
+          isVerified
+            ? "https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm"
+            : "https://ipfs.near.social/ipfs/bafkreieq4222tf3hkbccfnbw5kpgedm3bf2zcfgzbnmismxav2phqdwd7q"
+        }
+        height={40}
+      />
       <div className="d-flex flex-column">
         <div className="h6 mb-0">KYC Verified</div>
         <div className="text-sm">Expires on Aug 24, 2024</div>
@@ -381,22 +381,27 @@ const LinkedProposals = () => {
 
   return (
     <div className="d-flex flex-column gap-3">
-      {linkedProposalsData.map((item) => (
-        <div className="d-flex gap-2">
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
-            props={{
-              accountId: item.snapshot.editor_id,
-            }}
-          />
-          <div className="d-flex flex-column" style={{ maxWidth: 250 }}>
-            <b className="text-truncate">{item.snapshot.name}</b>
-            <div className="text-sm text-muted">
-              created on {readableDate(item.snapshot.timestamp / 1000000)}
+      {linkedProposalsData.map((item) => {
+        const link = `https://near.org/devhub.near/widget/app?page=proposal&id=${item.id}`;
+        return (
+          <a href={link} target="_blank" rel="noopener noreferrer">
+            <div className="d-flex gap-2">
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+                props={{
+                  accountId: item.snapshot.editor_id,
+                }}
+              />
+              <div className="d-flex flex-column" style={{ maxWidth: 250 }}>
+                <b className="text-truncate">{item.snapshot.name}</b>
+                <div className="text-sm text-muted">
+                  created on {readableDate(item.snapshot.timestamp / 1000000)}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      ))}
+          </a>
+        );
+      })}
     </div>
   );
 };
@@ -409,7 +414,7 @@ const CheckBox = ({ value, isChecked, label, disabled, onClick }) => {
         type="checkbox"
         value={value}
         checked={isChecked}
-        disabled={!isModerator || disabled}
+        disabled={!isModerator || !showTimelineSetting || disabled}
         onChange={(e) => onClick(e.target.checked)}
       />
       <label style={{ width: "90%" }} class="form-check-label text-black">
@@ -857,6 +862,25 @@ return (
                     </div>
                   )}
                 </div>
+              </SidePanelItem>
+              <SidePanelItem title="Recipient Wallet Address">
+                <Widget
+                  src="${REPL_NEAR}/widget/AccountProfile"
+                  props={{
+                    accountId: snapshot.receiver_account,
+                  }}
+                />
+              </SidePanelItem>
+              <SidePanelItem title="Recipient Verification Status">
+                <Widget
+                  src="${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus"
+                  props={{
+                    receiverAccount: snapshot.receiver_account,
+                    showGetVerifiedBtn:
+                      accountId === snapshot.receiver_account ||
+                      accountId === authorId,
+                  }}
+                />
               </SidePanelItem>
               <SidePanelItem title="Requested Sponsor">
                 {snapshot.requested_sponsor && (

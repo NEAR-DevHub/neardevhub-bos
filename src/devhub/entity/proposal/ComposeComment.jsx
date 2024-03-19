@@ -174,6 +174,7 @@ return (
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             label: "Comment",
+            disabled: !comment,
             classNames: { root: "green-btn btn-sm" },
             onClick: () => {
               composeData();

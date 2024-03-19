@@ -192,7 +192,8 @@ const Comment = ({ commentItem }) => {
 };
 
 function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  const updated = string.replace("_", " ");
+  return updated.charAt(0).toUpperCase() + updated.slice(1).toLowerCase();
 }
 
 function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
@@ -207,21 +208,23 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
         </span>
       );
     case "sponsor_requested_review":
-      return !oldValue && newValue && <span>completed review </span>;
+      return !oldValue && newValue && <span>completed review</span>;
     case "reviewer_completed_attestation":
-      return !oldValue && newValue && <span>completed attestation </span>;
-    case "reviewer_completed_attestation":
-      return !oldValue && newValue && <span>completed attestation </span>;
+      return !oldValue && newValue && <span>completed attestation</span>;
+    case "kyc_verified":
+      return !oldValue && newValue && <span>verified KYC/KYB</span>;
     case "test_transaction_sent":
       return (
         !oldValue &&
-        newValue && <span>successfully sent test transaction </span>
+        newValue && (
+          <span>
+            confirmed sponsorship and shared funding steps with recipient
+          </span>
+        )
       );
-    case "request_for_trustees_created":
-      return (
-        !oldValue &&
-        newValue && <span>successfully created request for trustees </span>
-      );
+    // we don't have this step for now
+    // case "request_for_trustees_created":
+    //   return !oldValue && newValue && <span>successfully created request for trustees</span>;
     default:
       return null;
   }
@@ -284,7 +287,7 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
             {text &&
               originalKeys.length > 1 &&
               index < modifiedKeys.length - 1 &&
-              ", "}
+              "･"}
           </span>
         );
       });
@@ -345,19 +348,18 @@ const Log = ({ timestamp }) => {
         {valuesArray.map((i, index) => {
           if (i.key && i.key !== "timestamp") {
             return (
-              <span>
+              <span key={index}>
                 {parseProposalKeyAndValue(
                   i.key,
                   i.modifiedValue,
                   i.originalValue
                 )}
-                {index < valuesArray.length - 2 && ", "}
+                {i.key !== "timeline" && "･"}
               </span>
             );
           }
         })}
         <span>
-          ･{" "}
           <Widget
             src="${REPL_NEAR}/widget/TimeAgo"
             props={{

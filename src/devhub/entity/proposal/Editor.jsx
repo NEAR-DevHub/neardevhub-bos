@@ -504,90 +504,9 @@ const DropdowntBtnContainer = styled.div`
   a:hover {
     text-decoration: none;
   }
+
+}
 `;
-
-const [kycOptionsOpen, setKycOptions] = useState(false);
-
-const VerificationBtn = () => {
-  const btnOptions = [
-    {
-      src: "https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm",
-      label: "KYC",
-      description: "Choose this if you are an individual.",
-      value: "KYC",
-    },
-    {
-      src: "https://ipfs.near.social/ipfs/bafkreic5ksax6b45pelvxm6a2v2j465jgbitpzrxtzpmn6zehl23gocwxm",
-      label: "KYB",
-      description: "Choose this if you are a business or corporate entity..",
-      value: "KYB",
-    },
-  ];
-
-  const toggleDropdown = () => {
-    setKycOptions(!kycOptionsOpen);
-  };
-
-  return (
-    <DropdowntBtnContainer>
-      <div
-        className="custom-select"
-        tabIndex="0"
-        onBlur={() => setKycOptions(false)}
-      >
-        <div className={"select-header no-border"}>
-          <Widget
-            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-            props={{
-              classNames: { root: "black-btn" },
-              label: (
-                <div className="d-flex align-items-center gap-1">
-                  Get Verified
-                  <i class="bi bi-box-arrow-up-right"></i>
-                </div>
-              ),
-              onClick: toggleDropdown,
-            }}
-          />
-        </div>
-
-        {kycOptionsOpen && (
-          <div className="options-card left">
-            {btnOptions.map((option) => (
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href={
-                  option.value === "KYC"
-                    ? "https://go.fractal.id/near-social-kyc"
-                    : "https://go.fractal.id/near-social-kyb"
-                }
-              >
-                <div
-                  key={option.value}
-                  className={`option ${
-                    selectedOption.value === option.value ? "selected" : ""
-                  }`}
-                  onClick={() => setKycOptions(false)}
-                >
-                  <div className={`d-flex gap-2 align-items-center`}>
-                    <img src={option.src} height={30} />
-                    <div>
-                      <div className="fw-bold">{option.label}</div>
-                      <div className="text-muted text-xs">
-                        {option.description}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-    </DropdowntBtnContainer>
-  );
-};
 
 const SubmitBtn = () => {
   const btnOptions = [
@@ -728,9 +647,6 @@ function cleanDraft() {
   Storage.privateSet(draftKey, null);
 }
 
-const WarningImg =
-  "https://ipfs.near.social/ipfs/bafkreieq4222tf3hkbccfnbw5kpgedm3bf2zcfgzbnmismxav2phqdwd7q";
-
 const descriptionPlaceholder = `**PROJECT DETAILS**
 Provide a clear overview of the scope, deliverables, and expected outcomes. What benefits will it provide to the NEAR community? How will you measure success?
 
@@ -792,20 +708,6 @@ const CollapsibleContainer = ({ title, children, noPaddingTop }) => {
     </div>
   );
 };
-
-const [verificationStatus, setVerificationStatus] = useState(null);
-useEffect(() => {
-  if (receiverAccount) {
-    useCache(
-      () =>
-        asyncFetch(
-          `https://neardevhub-kyc-proxy.shuttleapp.rs/kyc/${receiverAccount}`
-        ).then((res) => setVerificationStatus(res.body.kyc_status)),
-      "ky-check" + receiverAccount,
-      { subscribe: false }
-    );
-  }
-}, [receiverAccount]);
 
 return (
   <Container className="w-100 py-4 px-0 px-sm-2 d-flex flex-column gap-3">
@@ -1163,21 +1065,14 @@ return (
                   }
                   description=""
                 >
-                  <div className="border-1 p-3 rounded-2">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="d-flex gap-4 ">
-                        <img
-                          className="align-self-center"
-                          src={WarningImg}
-                          height={30}
-                        />
-                        <div className="d-flex flex-column justify-content-center">
-                          <div className="h6 mb-0">Fractal</div>
-                          <div className="text-muted text-sm">Not Verified</div>
-                        </div>
-                      </div>
-                      <VerificationBtn />
-                    </div>
+                  <div className="border border-1 p-3 rounded-2">
+                    <Widget
+                      src="${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus"
+                      props={{
+                        receiverAccount: receiverAccount,
+                        showGetVerifiedBtn: true,
+                      }}
+                    />
                   </div>
                 </InputContainer>
                 <InputContainer

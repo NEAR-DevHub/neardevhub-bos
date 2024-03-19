@@ -11,7 +11,7 @@ const AutoComplete = styled.div`
 
 useEffect(() => {
   const handler = setTimeout(() => {
-    const valid = value.length === 64 || value.includes(".near");
+    const valid = value.length === 64 || (value ?? "").includes(".near");
     setValidAccount(valid);
     setAutoComplete(!valid);
   }, 100);

@@ -14,12 +14,17 @@ const Avatar = styled.div`
     max-height: 40px;
   }
   pointer-events: none;
+  flex-shrink: 0;
+  border: 1px solid #eceef0;
+  overflow: hidden;
+  border-radius: 40px;
+  transition: border-color 200ms;
 
   img {
     object-fit: cover;
-    border-radius: 40px;
     width: 100%;
     height: 100%;
+    margin: 0 !important;
   }
 `;
 const profile = Social.get(`${accountId}/profile/**`, "final");
