@@ -36,6 +36,14 @@ test.describe("Don't ask again enabled", () => {
     await titleArea.blur();
     await pauseIfVideoRecording(page);
 
+    const categoryDropdown = await page.locator(".dropdown-toggle").first();
+    await categoryDropdown.click();
+    await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
+
+    const disabledSubmitButton = await page.locator(
+      ".submit-draft-button.disabled"
+    );
+
     const summary = await page.getByPlaceholder("Enter summary here.");
     await summary.fill("Test proposal summary 123456789");
     await summary.blur();
@@ -53,8 +61,10 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
     await page.getByRole("checkbox").first().click();
     await pauseIfVideoRecording(page);
+    await expect(disabledSubmitButton).toBeAttached();
     await page.getByRole("checkbox").nth(1).click();
     await pauseIfVideoRecording(page);
+    await expect(disabledSubmitButton).not.toBeAttached();
 
     await mockTransactionSubmitRPCResponses(
       page,
@@ -111,18 +121,15 @@ test.describe("Don't ask again enabled", () => {
 
     const submitButton = await page.getByText("Submit Draft");
     await submitButton.scrollIntoViewIfNeeded();
-    await expect(await page.locator(".submit-draft-button")).not.toHaveClass(
-      "disabled"
-    );
-
+    await submitButton.hover();
+    await pauseIfVideoRecording(page);
     await submitButton.click();
+    await expect(disabledSubmitButton).toBeAttached();
+
     const loadingIndicator = await page.locator(
       ".submit-proposal-draft-loading-indicator"
     );
     await expect(loadingIndicator).toBeAttached();
-    await expect(
-      await page.locator(".submit-draft-button.disabled")
-    ).toBeAttached();
 
     const transaction_toast = await page.getByText(
       "Calling contract devhub.near with method add_proposal"
@@ -135,6 +142,7 @@ test.describe("Don't ask again enabled", () => {
     await expect(loadingIndicator).not.toBeVisible();
 
     await page.waitForTimeout(100);
+    await pauseIfVideoRecording(page);
     await pauseIfVideoRecording(page);
   });
 });
