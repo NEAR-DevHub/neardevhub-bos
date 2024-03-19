@@ -66,7 +66,7 @@ test.describe("Wallet is connected", () => {
 
       const requestPostData = request.postDataJSON();
       if (requestPostData.method === "tx") {
-        await route.continue({ url: "https://archival-rpc.mainnet.near.org/" });
+        await route.continue({ url: "https://1rpc.io/near" });
       } else {
         await route.continue();
       }
