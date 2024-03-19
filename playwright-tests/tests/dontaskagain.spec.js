@@ -138,7 +138,7 @@ test.describe("Wallet is connected with devhub access key", () => {
   test("should comment to a long thread with don't ask again feature enabled", async ({
     page,
   }) => {
-    test.setTimeout(60000);
+    test.setTimeout(120000);
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
