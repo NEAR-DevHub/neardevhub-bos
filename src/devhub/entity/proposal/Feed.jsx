@@ -195,6 +195,7 @@ const FeedPage = () => {
     }
   }`;
   function fetchGraphQL(operationsDoc, operationName, variables) {
+    console.log({ variables });
     return asyncFetch(QUERYAPI_ENDPOINT, {
       method: "POST",
       headers: { "x-hasura-role": `thomasguntenaar_near` },
@@ -221,7 +222,6 @@ const FeedPage = () => {
       where = {
         timeline: { _cast: { String: { _ilike: `%${state.stage}%` } } },
       };
-      // where = { timeline: { _ilike: `%${state.stage}%` }, ...where };
     }
 
     if (state.input) {
@@ -232,12 +232,11 @@ const FeedPage = () => {
   };
 
   const buildOrderByClause = () => {
-    // TODO
     /**
-     * Most recent ->
-     * Most viewed ->
+     * Most recent -> Based on the biggest proposal_id
+     * Most viewed -> views added in indexer version 'papa'
      * Most commented -> edit indexer
-     * Unanswered ->
+     * Unanswered -> 0 comments
      */
   };
 
@@ -253,6 +252,7 @@ const FeedPage = () => {
       offset,
       where: buildWhereClause(),
     };
+    console.log({ variables });
     fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
       if (result.status === 200) {
         if (result.body.data) {
@@ -262,6 +262,7 @@ const FeedPage = () => {
           const totalResult =
             result.body.data
               .thomasguntenaar_near_devhub_proposals_november_proposals_with_latest_snapshot_aggregate;
+          console.log({ data, count: totalResult.aggregate.count });
           State.update({ aggregatedCount: totalResult.aggregate.count });
           // Parse timeline
           fetchBlockHeights(data);
