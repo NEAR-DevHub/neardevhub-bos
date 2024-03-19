@@ -61,7 +61,6 @@ const Heading = styled.div`
 const FeedItem = ({ proposal }) => {
   const accountId = proposal.author_id;
   const profile = Social.get(`${accountId}/profile/**`, "final");
-  // FIXME: social_db_post_block_height is only know in proposal not the body. Which means it won't be indexed.
   // We will have to get the proposal from the contract to get the block height.
   const blockHeight = parseInt(proposal.social_db_post_block_height);
   const item = {
