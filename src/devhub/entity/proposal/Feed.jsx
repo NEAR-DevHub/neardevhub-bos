@@ -5,6 +5,15 @@ if (!href) {
 }
 
 const Container = styled.div`
+  .full-width-div {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
   @media screen and (max-width: 768px) {
     font-size: 13px;
   }
@@ -52,6 +61,10 @@ const Container = styled.div`
 const Heading = styled.div`
   font-size: 24px;
   font-weight: 700;
+
+  .text-normal {
+    font-weight: normal !important;
+  }
 
   @media screen and (max-width: 768px) {
     font-size: 18px;
@@ -150,7 +163,7 @@ const FeedPage = () => {
       <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
         <Heading>
           DevDAO Proposals{" "}
-          <span className="text-muted"> ({proposals.length})</span>
+          <span className="text-muted text-normal"> ({proposals.length})</span>
         </Heading>
         {/* Filters aren't supported yet */}
         {/* <div className="d-flex gap-4 align-items-center">
@@ -215,8 +228,8 @@ const FeedPage = () => {
             />
           </div>
         ) : (
-          <div className="card rounded-0 p-1 mt-4">
-            <div className="p-2 p-sm-4">
+          <div className="card rounded-0 mt-4 py-3 full-width-div">
+            <div className="container-xl">
               <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
                 <p className="d-flex gap-4 align-items-center mb-0">
                   <div>

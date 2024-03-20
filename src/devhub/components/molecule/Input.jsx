@@ -124,9 +124,7 @@ const TextInput = ({
             aria-describedby={key}
             data-testid={key}
             aria-label={label}
-            className={["form-control border border-2", inputClassName].join(
-              " "
-            )}
+            className={["form-control border", inputClassName].join(" ")}
             type={typeAttribute}
             maxLength={inputProps.max}
             value={state.data}
@@ -139,7 +137,7 @@ const TextInput = ({
           aria-describedby={key}
           data-testid={key}
           aria-label={label}
-          className={["form-control border border-2", inputClassName].join(" ")}
+          className={["form-control border", inputClassName].join(" ")}
           placeholder={
             placeholder + (inputProps.required ? " ( required )" : "")
           }

@@ -147,6 +147,12 @@ function composeData() {
   });
 }
 
+useEffect(() => {
+  if (props.transactionHashes && comment) {
+    setComment("");
+  }
+}, [props.transactionHashes, comment]);
+
 return (
   <div className="d-flex gap-2">
     <Widget
@@ -174,6 +180,7 @@ return (
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             label: "Comment",
+            disabled: !comment,
             classNames: { root: "green-btn btn-sm" },
             onClick: () => {
               composeData();
