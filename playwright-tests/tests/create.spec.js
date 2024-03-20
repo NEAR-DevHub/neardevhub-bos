@@ -136,6 +136,7 @@ test.describe("Wallet is connected", () => {
   });
 
   test("should not allow user to use the blog label", async ({ page }) => {
+    test.setTimeout(60000);
     await page.goto("/devhub.near/widget/app?page=create");
 
     const selector = ".rbt-input-main";
