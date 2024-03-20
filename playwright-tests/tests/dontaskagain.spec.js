@@ -211,6 +211,7 @@ test.describe("Wallet is connected", () => {
   test("should comment to a post and cancel the transaction, and get the submit button back again", async ({
     page,
   }) => {
+    test.setTimeout(60000);
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );

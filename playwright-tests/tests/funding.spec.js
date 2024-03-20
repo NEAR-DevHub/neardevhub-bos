@@ -62,7 +62,12 @@ test.describe("Wallet is connected", () => {
 
     await page.waitForTimeout(1000);
     await submitbutton.click();
-    await expect(page.locator("div.modal-body code")).toHaveText(
+    const transactionText = JSON.stringify(
+      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      null,
+      1
+    );
+    await expect(transactionText).toEqual(
       JSON.stringify(
         {
           parent_id: null,
@@ -76,7 +81,7 @@ test.describe("Wallet is connected", () => {
           },
         },
         null,
-        2
+        1
       )
     );
 
