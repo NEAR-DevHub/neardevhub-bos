@@ -571,6 +571,7 @@ const link = href({
     timestamp: timestamp,
   },
 });
+
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
     <Widget
@@ -824,6 +825,7 @@ return (
                     "${REPL_DEVHUB}/widget/devhub.entity.proposal.ComposeComment"
                   }
                   props={{
+                    ...props,
                     item: item,
                     notifyAccountId: authorId,
                     id: proposal.id,
