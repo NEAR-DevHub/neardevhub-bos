@@ -139,6 +139,7 @@ const Container = styled.div`
 
   .dropdown-menu {
     width: 100%;
+    border-radius: 0.375rem !important;
   }
 
   .input-icon {
@@ -533,6 +534,7 @@ const DropdowntBtnContainer = styled.div`
     padding: 0.5rem;
     z-index: 9999;
     font-size: 13px;
+    border-radius:0.375rem !important;
   }
 
   .left {
@@ -553,6 +555,7 @@ const DropdowntBtnContainer = styled.div`
     cursor: pointer;
     border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.3s ease;
+    border-radius: 0.375rem !important;
   }
 
   .option:hover {
