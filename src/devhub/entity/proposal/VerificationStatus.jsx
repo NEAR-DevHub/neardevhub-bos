@@ -229,16 +229,16 @@ const VerificationBtn = () => {
 
 return (
   <div>
-    <div className="d-flex justify-content-between align-items-center">
-      <div className="d-flex gap-4 ">
+    <div className="d-flex text-black justify-content-between align-items-center">
+      <div className="d-flex" style={{ gap: "12px" }}>
         <img
-          className="align-self-center"
+          className="align-self-center object-fit-cover"
           src={verificationStatus === "Verified" ? SuccessImg : WarningImg}
-          height={30}
+          height={40}
         />
         <div className="d-flex flex-column justify-content-center">
           <div className="h6 mb-0">Fractal</div>
-          <div className="text-muted text-sm">{verificationStatus}</div>
+          <div className="text-sm text-muted">{verificationStatus}</div>
         </div>
       </div>
       {verificationStatus !== "Verified" && showGetVerifiedBtn && (

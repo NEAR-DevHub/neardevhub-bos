@@ -14,6 +14,12 @@ const Container = styled.div`
     margin-right: -50vw;
   }
 
+  .card.no-border {
+    border-left: none !important;
+    border-right: none !important;
+    margin-bottom: -3.5rem;
+  }
+
   @media screen and (max-width: 768px) {
     font-size: 13px;
   }
@@ -465,7 +471,7 @@ const FeedPage = () => {
         {!Array.isArray(state.data) ? (
           loader
         ) : (
-          <div className="card rounded-0 mt-4 py-3 full-width-div">
+          <div className="card no-border rounded-0 mt-4 py-3 full-width-div">
             <div className="container-xl">
               <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
                 <p className="d-flex gap-4 align-items-center mb-0">
