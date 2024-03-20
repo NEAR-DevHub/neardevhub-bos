@@ -118,7 +118,7 @@ test.describe("Wallet is connected with devhub access key", () => {
     const callContractToast = await page.getByText(
       `Calling contract ${RECEIVER_ID} with method add_like`
     );
-    expect(callContractToast.isVisible()).toBeTruthy();
+    await expect(callContractToast.isVisible()).toBeTruthy();
     await expect(loadingIndicator).toBeVisible();
 
     await callContractToast.waitFor({ state: "detached" });
@@ -190,15 +190,15 @@ test.describe("Wallet is connected with devhub access key", () => {
     const callContractToast = await page.getByText(
       `Calling contract ${RECEIVER_ID} with method add_post`
     );
-    expect(callContractToast.isVisible()).toBeTruthy();
+    await expect(callContractToast.isVisible()).toBeTruthy();
     await callContractToast.waitFor({ state: "detached" });
-    expect(loadingIndicator).toBeVisible();
+    await expect(loadingIndicator).toBeVisible();
 
     await page
       .getByText("Editor Preview Create Comment")
       .waitFor({ state: "detached" });
 
-    expect(loadingIndicator).not.toBeVisible();
+    await expect(loadingIndicator).not.toBeVisible();
 
     await page.waitForTimeout(500);
   });
