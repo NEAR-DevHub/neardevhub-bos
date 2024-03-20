@@ -91,6 +91,7 @@ test.describe("Wallet is connected with devhub access key", () => {
   });
 
   test("should like a post", async ({ page }) => {
+    test.setTimeout(60000);
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );

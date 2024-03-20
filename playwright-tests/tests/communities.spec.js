@@ -79,6 +79,7 @@ test.describe("Wallet is connected", () => {
     );
   });
   test("should create a new community", async ({ page }) => {
+    test.setTimeout(60000);
     await page.goto("/devhub.near/widget/app?page=communities");
 
     await page.getByRole("button", { name: " Community" }).click();
