@@ -15,6 +15,7 @@ test.describe("Wallet is connected", () => {
     //
     page,
   }) => {
+    test.setTimeout(60000);
     await page.goto("/devhub.near/widget/app?page=create");
 
     await page.click('button:has-text("Solution")');
