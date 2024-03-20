@@ -221,6 +221,7 @@ const FeedPage = () => {
       // timeline is stored as jsonb
       where = {
         timeline: { _cast: { String: { _ilike: `%${state.stage}%` } } },
+        ...where,
       };
     }
 
@@ -307,6 +308,7 @@ const FeedPage = () => {
               search: state.input,
               onSearch: (input) => {
                 State.update({ input });
+                fetchProposals();
               },
               onEnter: () => {
                 fetchProposals();

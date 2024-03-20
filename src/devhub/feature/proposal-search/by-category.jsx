@@ -31,6 +31,10 @@ const options = [
     label: "Other",
     value: "Other",
   },
+  {
+    label: "None",
+    value: "",
+  },
 ];
 
 const setSelected = props.onStateChange ?? (() => {});

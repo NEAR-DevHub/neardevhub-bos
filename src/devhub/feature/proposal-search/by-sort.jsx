@@ -3,6 +3,7 @@ const options = [
   { label: "Most viewed", value: "" }, // views desc
   { label: "Most commented", value: "" }, // comments desc
   { label: "Unanswered", value: "" }, // where comments = 0
+  { label: "None", value: "" }, // where comments = 0
 ];
 
 const setSelected = props.onStateChange ?? (() => {});
