@@ -187,7 +187,7 @@ const FeedPage = () => {
     ${queryName}_aggregate(
       offset: $offset
       limit: $limit
-      order_by: {proposal_id: asc}
+      order_by: {proposal_id: desc}
       where: $where
     )  {
       aggregate {
