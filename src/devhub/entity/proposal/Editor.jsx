@@ -32,6 +32,12 @@ const Container = styled.div`
     font-size: 14px !important;
   }
 
+  .card.no-border {
+    border-left: none !important;
+    border-right: none !important;
+    margin-bottom: -3.5rem;
+  }
+
   textarea {
     font-size: 14px !important;
   }
@@ -816,7 +822,7 @@ if (showProposalPage) {
           },
         }}
       />
-      <div className="card rounded-0 px-2 p-lg-0 full-width-div">
+      <div className="card no-border rounded-0 px-2 p-lg-0 full-width-div">
         <div className="container-xl py-4 d-flex flex-wrap gap-6 w-100">
           <div
             style={{ minWidth: "350px" }}
@@ -1182,7 +1188,7 @@ if (showProposalPage) {
                         value: requestedSponsorshipAmount,
                         onChange: (e) => {
                           const inputValue = e.target.value;
-                          const isValidInput = /^\d+$/.test(inputValue);
+                          const isValidInput = /^[1-9][0-9]*$/.test(inputValue);
                           if (inputValue.trim() === "") {
                             return;
                           }
@@ -1200,6 +1206,8 @@ if (showProposalPage) {
                         inputProps: {
                           type: "number",
                           prefix: "$",
+                          inputmode: "numeric",
+                          pattern: "[0-9]*",
                         },
                       }}
                     />

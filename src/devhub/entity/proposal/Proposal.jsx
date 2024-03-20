@@ -37,6 +37,16 @@ const Container = styled.div`
     margin-right: -50vw;
   }
 
+  .fw-bold {
+    font-weight: 600 !important;
+  }
+
+  .card.no-border {
+    border-left: none !important;
+    border-right: none !important;
+    margin-bottom: -3.5rem;
+  }
+
   .description-box {
     font-size: 14px;
   }
@@ -184,6 +194,7 @@ const Container = styled.div`
 
 const ProposalContainer = styled.div`
   border: 1px solid lightgrey;
+  overflow: auto;
 `;
 
 const Header = styled.div`
@@ -289,7 +300,7 @@ const SidePanelItem = ({ title, children, hideBorder }) => {
   return (
     <div
       className={
-        "d-flex flex-column gap-2 pb-3 " + (!hideBorder && " border-bottom")
+        "d-flex flex-column gap-3 pb-3 " + (!hideBorder && " border-bottom")
       }
     >
       <div className="h6 mb-0">{title} </div>
@@ -637,7 +648,7 @@ return (
         {readableDate(snapshot.timestamp / 1000000)}
       </div>
     </div>
-    <div className="card rounded-0 full-width-div px-3 px-lg-0">
+    <div className="card no-border rounded-0 full-width-div px-3 px-lg-0">
       <div className="container-xl py-4">
         {snapshot.timeline.status === TIMELINE_STATUS.DRAFT &&
           isAllowedToEditProposal && (
@@ -724,15 +735,18 @@ return (
                   />
                 </div>
                 <ProposalContainer className="rounded-2 flex-1">
-                  <Header className="d-flex gap-3 align-items-center p-2 px-3">
-                    {authorId} ･{" "}
-                    <Widget
-                      src="${REPL_NEAR}/widget/TimeAgo"
-                      props={{
-                        blockHeight,
-                        blockTimestamp: snapshot.timestamp,
-                      }}
-                    />
+                  <Header className="d-flex gap-1 align-items-center p-2 px-3">
+                    <div className="fw-bold">{authorId}</div>
+                    <div className="text-muted">
+                      ･{" "}
+                      <Widget
+                        src="${REPL_NEAR}/widget/TimeAgo"
+                        props={{
+                          blockHeight,
+                          blockTimestamp: snapshot.timestamp,
+                        }}
+                      />
+                    </div>
                     {context.accountId && (
                       <div className="menu">
                         <Widget
@@ -842,6 +856,7 @@ return (
                   src="${REPL_NEAR}/widget/AccountProfile"
                   props={{
                     accountId: authorId,
+                    noOverlay: true,
                   }}
                 />
               </SidePanelItem>
@@ -856,7 +871,12 @@ return (
                 <div className="h4 text-black">
                   {snapshot.requested_sponsorship_usd_amount && (
                     <div className="d-flex flex-column gap-1">
-                      <div>{snapshot.requested_sponsorship_usd_amount} USD</div>
+                      <div>
+                        {parseInt(
+                          snapshot.requested_sponsorship_usd_amount
+                        ).toLocaleString()}{" "}
+                        USD
+                      </div>
                       <div className="text-sm text-muted">
                         Requested in{" "}
                         {snapshot.requested_sponsorship_paid_in_currency}
@@ -870,6 +890,7 @@ return (
                   src="${REPL_NEAR}/widget/AccountProfile"
                   props={{
                     accountId: snapshot.receiver_account,
+                    noOverlay: true,
                   }}
                 />
               </SidePanelItem>
@@ -890,6 +911,7 @@ return (
                     src="${REPL_NEAR}/widget/AccountProfile"
                     props={{
                       accountId: snapshot.requested_sponsor,
+                      noOverlay: true,
                     }}
                   />
                 )}
@@ -900,6 +922,7 @@ return (
                     src="${REPL_NEAR}/widget/AccountProfile"
                     props={{
                       accountId: snapshot.supervisor,
+                      noOverlay: true,
                     }}
                   />
                 ) : (

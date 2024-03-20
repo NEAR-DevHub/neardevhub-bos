@@ -15,11 +15,15 @@ function getDepositAmountForWriteAccess(userStorageDeposit) {
 
 function readableDate(timestamp) {
   var a = new Date(timestamp);
-  return (
-    a.toDateString() +
-    " " +
-    a.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  ).substring(4);
+  var options = {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC",
+  };
+  return a.toLocaleString("en-US", options) + " UTC";
 }
 
 return { getDepositAmountForWriteAccess, readableDate };

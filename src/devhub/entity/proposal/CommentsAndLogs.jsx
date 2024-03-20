@@ -17,10 +17,21 @@ const Wrapper = styled.div`
     overflow: hidden;
     white-space: normal;
   }
+
+  .fw-bold {
+    font-weight: 600 !important;
+  }
+
+  .inline-flex {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+  }
 `;
 
 const CommentContainer = styled.div`
   border: 1px solid lightgrey;
+  overflow: auto;
 `;
 
 const Header = styled.div`
@@ -137,8 +148,9 @@ const Comment = ({ commentItem }) => {
         </div>
         <CommentContainer className="rounded-2 flex-1">
           <Header className="d-flex gap-3 align-items-center p-2 px-3">
-            <div>
-              {accountId} commented
+            <div className="text-muted">
+              <span className="fw-bold text-black">{accountId}</span> commented
+              ･{" "}
               <Widget
                 src="${REPL_NEAR}/widget/TimeAgo"
                 props={{
@@ -202,9 +214,22 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
   switch (timeline) {
     case "status":
       return (
-        <span>
-          moved proposal from {capitalizeFirstLetter(oldValue)} to{" "}
-          {capitalizeFirstLetter(newValue)} stage
+        <span className="inline-flex">
+          moved proposal from{" "}
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+            props={{
+              timelineStatus: oldValue,
+            }}
+          />
+          to{" "}
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+            props={{
+              timelineStatus: newValue,
+            }}
+          />
+          stage
         </span>
       );
     case "sponsor_requested_review":
@@ -230,9 +255,25 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
   }
 }
 
+const AccountProfile = ({ accountId }) => {
+  return (
+    <span className="inline-flex fw-bold text-black">
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+        props={{
+          accountId: accountId,
+          size: "sm",
+        }}
+      />
+      {accountId}
+    </span>
+  );
+};
+
 const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
   switch (key) {
     case "name":
+      return <span>changed title</span>;
     case "summary":
     case "description":
       return <span>changed {key}</span>;
@@ -258,22 +299,31 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
       );
     case "receiver_account":
       return (
-        <span>
-          changed receiver account from {originalValue} to {modifiedValue}
+        <span className="inline-flex">
+          changed receiver account from{" "}
+          <AccountProfile accountId={originalValue} />
+          to <AccountProfile accountId={modifiedValue} />
         </span>
       );
     case "supervisor":
       return !originalValue && modifiedValue ? (
-        <span>added {modifiedValue} as supervisor</span>
+        <span className="inline-flex">
+          added
+          <AccountProfile accountId={modifiedValue} />
+          as supervisor
+        </span>
       ) : (
-        <span>
-          changed receiver account from {originalValue} to {modifiedValue}
+        <span className="inline-flex">
+          changed receiver account from{" "}
+          <AccountProfile accountId={originalValue} />
+          to <AccountProfile accountId={modifiedValue} />
         </span>
       );
     case "requested_sponsor":
       return (
-        <span>
-          changed sponsor from {originalValue} to {modifiedValue}
+        <span className="inline-flex">
+          changed sponsor from <AccountProfile accountId={originalValue} />
+          to <AccountProfile accountId={modifiedValue} />
         </span>
       );
     case "timeline": {
@@ -282,13 +332,15 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
       return modifiedKeys.map((i, index) => {
         const text = parseTimelineKeyAndValue(i, originalValue, modifiedValue);
         return (
-          <span>
-            {text}
-            {text &&
-              originalKeys.length > 1 &&
-              index < modifiedKeys.length - 1 &&
-              "･"}
-          </span>
+          text && (
+            <span key={index} className="inline-flex">
+              {text}
+              {text &&
+                originalKeys.length > 1 &&
+                index < modifiedKeys.length - 1 &&
+                "･"}
+            </span>
+          )
         );
       });
     }
@@ -325,51 +377,50 @@ const Log = ({ timestamp }) => {
     return <></>;
   }
 
-  return (
-    <LogIconContainer className="d-flex gap-3 align-items-center">
-      <img
-        src="https://ipfs.near.social/ipfs/bafkreiffqrxdi4xqu7erf46gdlwuodt6dm6rji2jtixs3iionjvga6rhdi"
-        height={30}
-      />
-      <div className="flex-1 w-100 text-wrap">
-        <span
-          style={{ display: "inline-flex" }}
-          className="gap-1 align-items-center"
+  return valuesArray.map((i, index) => {
+    if (i.key && i.key !== "timestamp") {
+      return (
+        <LogIconContainer
+          className="d-flex gap-3 align-items-center"
+          key={index}
         >
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
-            props={{
-              accountId: editorId,
-              size: "sm",
-            }}
+          <img
+            src="https://ipfs.near.social/ipfs/bafkreiffqrxdi4xqu7erf46gdlwuodt6dm6rji2jtixs3iionjvga6rhdi"
+            height={30}
           />
-          {editorId}
-        </span>
-        {valuesArray.map((i, index) => {
-          if (i.key && i.key !== "timestamp") {
-            return (
-              <span key={index}>
-                {parseProposalKeyAndValue(
-                  i.key,
-                  i.modifiedValue,
-                  i.originalValue
-                )}
-                {i.key !== "timeline" && "･"}
-              </span>
-            );
-          }
-        })}
-        <span>
-          <Widget
-            src="${REPL_NEAR}/widget/TimeAgo"
-            props={{
-              blockTimestamp: timestamp * 1000000,
+          <div
+            style={{
+              display:
+                i.key === "timeline" &&
+                Object.keys(i.originalValue ?? {}).length > 1
+                  ? ""
+                  : "inline-flex",
             }}
-          />
-        </span>
-      </div>
-    </LogIconContainer>
-  );
+            className="flex-1 gap-1 w-100 text-wrap text-muted align-items-center"
+          >
+            <span className="inline-flex fw-bold text-black">
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+                props={{
+                  accountId: editorId,
+                  size: "sm",
+                }}
+              />
+              {editorId}
+            </span>
+            {parseProposalKeyAndValue(i.key, i.modifiedValue, i.originalValue)}
+            on
+            <Widget
+              src="${REPL_NEAR}/widget/TimeAgo"
+              props={{
+                blockTimestamp: timestamp * 1000000,
+              }}
+            />
+          </div>
+        </LogIconContainer>
+      );
+    }
+  });
 };
 
 if (Array.isArray(state.data)) {
