@@ -52,6 +52,7 @@ const Container = styled.div`
 const Heading = styled.div`
   font-size: 24px;
   font-weight: 700;
+  width: 100%;
 
   @media screen and (max-width: 768px) {
     font-size: 18px;
@@ -195,7 +196,6 @@ const FeedPage = () => {
     }
   }`;
   function fetchGraphQL(operationsDoc, operationName, variables) {
-    console.log({ variables });
     return asyncFetch(QUERYAPI_ENDPOINT, {
       method: "POST",
       headers: { "x-hasura-role": `thomasguntenaar_near` },
@@ -253,7 +253,6 @@ const FeedPage = () => {
       offset,
       where: buildWhereClause(),
     };
-    console.log({ variables });
     fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
       if (result.status === 200) {
         if (result.body.data) {
@@ -263,7 +262,6 @@ const FeedPage = () => {
           const totalResult =
             result.body.data
               .thomasguntenaar_near_devhub_proposals_november_proposals_with_latest_snapshot_aggregate;
-          console.log({ data, count: totalResult.aggregate.count });
           State.update({ aggregatedCount: totalResult.aggregate.count });
           // Parse timeline
           fetchBlockHeights(data);
@@ -293,19 +291,19 @@ const FeedPage = () => {
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
       <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
         <Heading>
-          DevDAO Proposals{" "}
+          DevDAO Proposals
           <span className="text-muted">
-            {" "}
             ({aggregatedCount ?? state.data.length})
           </span>
         </Heading>
-        <div className="d-flex gap-4 align-items-center">
+        <div className="d-flex flex-wrap gap-4 align-items-center">
           <Widget
             src={
               "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-input"
             }
             props={{
               search: state.input,
+              className: "w-xs-100",
               onSearch: (input) => {
                 State.update({ input });
                 fetchProposals();
@@ -324,38 +322,40 @@ const FeedPage = () => {
               },
             }}
           /> */}
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-category"
-            }
-            props={{
-              onStateChange: (select) => {
-                State.update({ category: select.value });
-              },
-            }}
-          />
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-stage"
-            }
-            props={{
-              onStateChange: (select) => {
-                State.update({ stage: select.value });
-              },
-            }}
-          />
-          <Widget
-            src={
-              "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-author"
-            }
-            props={{
-              onAuthorChange: (select) => {
-                State.update({ author: select.value });
-              },
-            }}
-          />
+          <div className="d-flex gap-4 align-items-center">
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-category"
+              }
+              props={{
+                onStateChange: (select) => {
+                  State.update({ category: select.value });
+                },
+              }}
+            />
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-stage"
+              }
+              props={{
+                onStateChange: (select) => {
+                  State.update({ stage: select.value });
+                },
+              }}
+            />
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-author"
+              }
+              props={{
+                onAuthorChange: (select) => {
+                  State.update({ author: select.value });
+                },
+              }}
+            />
+          </div>
         </div>
-        <div>
+        <div className="mt-2 mt-xs-0">
           <Link
             to={href({
               widgetSrc: "${REPL_DEVHUB}/widget/app",

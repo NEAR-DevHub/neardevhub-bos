@@ -17,11 +17,13 @@ useEffect(() => {
   }
 }, [search]);
 
+const className = props.className ?? "";
+
 return (
   <Widget
     src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
     props={{
-      className: "flex-grow-1",
+      className: "flex-grow-1 w-100" + className,
       value: search,
       onChange: (e) => {
         updateInput(e.target.value);
