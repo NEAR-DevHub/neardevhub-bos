@@ -160,6 +160,7 @@ const Container = styled.div`
 
   .dropdown-menu {
     width: 100%;
+    border-radius: 0.375rem !important;
   }
 
   .green-btn {
@@ -299,9 +300,8 @@ const KycVerificationStatus = () => {
 const SidePanelItem = ({ title, children, hideBorder }) => {
   return (
     <div
-      className={
-        "d-flex flex-column gap-3 pb-3 " + (!hideBorder && " border-bottom")
-      }
+      style={{ gap: "8px" }}
+      className={"d-flex flex-column pb-3 " + (!hideBorder && " border-bottom")}
     >
       <div className="h6 mb-0">{title} </div>
       <div className="text-muted">{children}</div>
