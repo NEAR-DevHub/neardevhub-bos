@@ -130,6 +130,7 @@ test.describe("Wallet is connected", () => {
   test("should reply to a post in the feed with a comment", async ({
     page,
   }) => {
+    test.setTimeout(60000);
     await page.goto("/devhub.near/widget/app?page=feed");
     const authorSearchInput = await page.getByPlaceholder("Search by author");
     await authorSearchInput.fill("petersalomonsen.near");

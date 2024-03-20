@@ -256,7 +256,6 @@ const [isSubmittingTransaction, setIsSubmittingTransaction] = useState(false);
 const [showProposalPage, setShowProposalPage] = useState(false); // when user creates/edit a proposal and confirm the txn, this is true
 const [proposalId, setProposalId] = useState(null);
 
-
 if (allowDraft) {
   draftProposalData = Storage.privateGet(draftKey);
 }

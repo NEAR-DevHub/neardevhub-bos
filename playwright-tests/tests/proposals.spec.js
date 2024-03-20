@@ -141,8 +141,7 @@ test.describe("Don't ask again enabled", () => {
     await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
     await expect(loadingIndicator).not.toBeVisible();
 
-    await page.waitForTimeout(100);
-    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(1000);
     await pauseIfVideoRecording(page);
   });
 });
