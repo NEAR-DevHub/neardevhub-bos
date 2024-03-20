@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { selectAndAssert, setInputAndAssert } from "../testUtils";
+import {
+  pauseIfVideoRecording,
+  selectAndAssert,
+  setInputAndAssert,
+} from "../testUtils";
 
 test.describe("Wallet is connected", () => {
   // sign in to wallet
@@ -14,21 +18,31 @@ test.describe("Wallet is connected", () => {
     await page.goto("/devhub.near/widget/app?page=create");
 
     await page.click('button:has-text("Solution")');
+    await pauseIfVideoRecording(page);
 
-    await page.getByTestId("name-editor").fill("The test title");
+    const titlefield = await page.getByTestId("name-editor");
+    expect(titlefield).toBeVisible();
+    await titlefield.scrollIntoViewIfNeeded();
+    await titlefield.fill("The test title");
+    await pauseIfVideoRecording(page);
 
     const descriptionInput = page
       .frameLocator("iframe")
       .locator(".CodeMirror textarea");
     await descriptionInput.focus();
+    await descriptionInput.scrollIntoViewIfNeeded();
     await descriptionInput.fill("Developer contributor report by somebody");
+    await descriptionInput.blur();
+    await pauseIfVideoRecording(page);
 
     const tagsInput = page.locator(".rbt-input-multi");
+    await tagsInput.scrollIntoViewIfNeeded();
     await tagsInput.focus();
     await tagsInput.pressSequentially("paid-cont", { delay: 100 });
     await tagsInput.press("Tab");
     await tagsInput.pressSequentially("developer-da", { delay: 100 });
     await tagsInput.press("Tab");
+    await pauseIfVideoRecording(page);
 
     await page.click('label:has-text("Yes") button');
     await selectAndAssert(page, 'div:has-text("Currency") select', "USDT");
@@ -37,9 +51,17 @@ test.describe("Wallet is connected", () => {
       'input[data-testid="requested-amount-editor"]',
       "300"
     );
+    await pauseIfVideoRecording(page);
     await page.getByTestId("requested-amount-editor").fill("300");
+    await pauseIfVideoRecording(page);
 
-    await page.click('button:has-text("Submit")');
+    const submitbutton = await page.locator('button:has-text("Submit")');
+    await submitbutton.scrollIntoViewIfNeeded();
+
+    await pauseIfVideoRecording(page);
+
+    await page.waitForTimeout(1000);
+    await submitbutton.click();
     await expect(page.locator("div.modal-body code")).toHaveText(
       JSON.stringify(
         {
@@ -57,6 +79,8 @@ test.describe("Wallet is connected", () => {
         2
       )
     );
+
+    await pauseIfVideoRecording(page);
   });
 });
 
