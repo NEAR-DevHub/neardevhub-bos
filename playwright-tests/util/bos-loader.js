@@ -21,7 +21,7 @@ export async function modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFrom
         atob(requestPostData.params.args_base64)
       ).keys[0];
 
-      const response = await route.fetch();
+      const response = await route.fetch({ url: "https://near.lava.build/" });
       const json = await response.json();
 
       if (devComponents[social_get_key]) {

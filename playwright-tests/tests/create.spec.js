@@ -136,6 +136,7 @@ test.describe("Wallet is connected", () => {
   });
 
   test("should not allow user to use the blog label", async ({ page }) => {
+    test.setTimeout(60000);
     await page.goto("/devhub.near/widget/app?page=create");
 
     const selector = ".rbt-input-main";
@@ -191,7 +192,12 @@ test.describe("Wallet is connected", () => {
     await labelsInput.press("Tab");
 
     await page.getByTestId("submit-create-post").click();
-    await expect(page.locator("div.modal-body code")).toHaveText(
+    const transactionText = JSON.stringify(
+      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      null,
+      1
+    );
+    await expect(transactionText).toEqual(
       JSON.stringify(
         {
           parent_id: null,

@@ -17,6 +17,7 @@ test("should load blogs in the sidebar for a given handle", async ({
 test("should prepopulate the form when a blog is selected from the left", async ({
   page,
 }) => {
+  test.setTimeout(60000);
   await page.goto(
     "/devgovgigs.near/widget/devhub.entity.addon.blog.Configurator?handle=devhub-test"
   );

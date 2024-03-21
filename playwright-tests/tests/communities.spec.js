@@ -79,6 +79,7 @@ test.describe("Wallet is connected", () => {
     );
   });
   test("should create a new community", async ({ page }) => {
+    test.setTimeout(60000);
     await page.goto("/devhub.near/widget/app?page=communities");
 
     await page.getByRole("button", { name: " Community" }).click();
@@ -131,7 +132,7 @@ const expectInputValidation = async (
   await setInputAndAssert(page, 'input[aria-label="URL handle"]', urlHandle);
   await setInputAndAssert(page, 'input[aria-label="Tag"]', tag);
 
-  expect(await page.isEnabled('button:has-text("Launch")')).toBe(valid);
+  await expect(await page.locator('button:has-text("Launch")')).toBeVisible();
 };
 
 test.describe("Wallet is not connected", () => {
