@@ -474,15 +474,43 @@ const FeedPage = () => {
           <div className="card no-border rounded-0 mt-4 py-3 full-width-div">
             <div className="container-xl">
               <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
-                <p className="d-flex gap-4 align-items-center mb-0">
+                <p className="d-flex gap-3 align-items-center mb-0">
                   <div>
                     <i class="bi bi-info-circle"></i>
                   </div>
-                  DevDAO is the primary organization behind DevHub, and we offer
-                  sponsorships to contributors and projects that align with our
-                  goal of fostering a self-sufficient community of developers
-                  for a thriving NEAR ecosystem. Check out our Funding
-                  Guidelines for more details.
+                  <div>
+                    <a
+                      href="https://near.social/devhub.near/widget/app?page=community&handle=developer-dao&tab=overview"
+                      className="fw-bold"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Welcome to DevDAO’s New Proposal Feed!
+                    </a>{" "}
+                    This dedicated space replaces the old activity feed, making
+                    it easier to submit and track funding requests from DevDAO,
+                    the primary organization behind DevHub. To submit a formal
+                    proposal, click New Proposal. See our{" "}
+                    <a
+                      href="https://near.org/devhub.near/widget/app?page=community&handle=developer-dao&tab=funding"
+                      className="text-decoration-underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      guidelines
+                    </a>{" "}
+                    for details. For discussions and brainstorming, please
+                    utilize the relevant{" "}
+                    <a
+                      href="https://near.org/devhub.near/widget/app?page=communities"
+                      className="text-decoration-underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      communities
+                    </a>
+                    .
+                  </div>
                 </p>
               </div>
               <div className="mt-4 border rounded-2">
