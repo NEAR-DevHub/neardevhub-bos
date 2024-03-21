@@ -9,6 +9,7 @@ import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } f
 import { mockTransactionSubmitRPCResponses } from "../util/transaction.js";
 
 const RECEIVER_ID = "devgovgigs.near";
+test.afterEach(async ({ page }) => await page.unrouteAll());
 
 test.describe("Wallet is connected with devhub access key", () => {
   test.use({

@@ -8,6 +8,8 @@ import {
   encodeResultJSON,
 } from "../util/transaction.js";
 
+test.afterEach(async ({ page }) => await page.unrouteAll());
+
 test.describe("Don't ask again enabled", () => {
   test.use({
     storageState:
