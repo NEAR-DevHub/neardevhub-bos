@@ -13,7 +13,9 @@ import {
 } from "../util/transaction.js";
 import { mockSocialIndexResponses } from "../util/socialapi.js";
 
-test.afterEach(async ({ page }) => await page.unrouteAll());
+test.afterEach(
+  async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
+);
 
 test.describe("Wallet is connected", () => {
   test.use({

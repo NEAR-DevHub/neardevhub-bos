@@ -8,7 +8,9 @@ import {
   encodeResultJSON,
 } from "../util/transaction.js";
 
-test.afterEach(async ({ page }) => await page.unrouteAll());
+test.afterEach(
+  async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
+);
 
 test.describe("Don't ask again enabled", () => {
   test.use({
