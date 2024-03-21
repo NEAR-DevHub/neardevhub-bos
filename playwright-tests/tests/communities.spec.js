@@ -79,7 +79,6 @@ test.describe("Wallet is connected", () => {
     );
   });
   test("should create a new community", async ({ page }) => {
-    test.setTimeout(60000);
     await page.goto("/devhub.near/widget/app?page=communities");
 
     await page.getByRole("button", { name: " Community" }).click();
@@ -90,7 +89,10 @@ test.describe("Wallet is connected", () => {
       .fill("A very nice community to be in");
     await page.getByTestId("0-handle--editable").fill("mynewcommunity");
     await page.getByTestId("2-tag--editable").fill("mynewcommunity");
-    await page.getByText("Launch").click();
+
+    const launchButton = await page.getByText("Launch");
+    await launchButton.scrollIntoViewIfNeeded();
+    await launchButton.click();
     const transactionText = JSON.stringify(
       JSON.parse(await page.locator("div.modal-body code").innerText()),
       null,
