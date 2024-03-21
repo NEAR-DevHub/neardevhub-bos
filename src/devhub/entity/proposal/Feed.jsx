@@ -62,6 +62,10 @@ const Container = styled.div`
       min-height: 32px;
     }
   }
+
+  a.no-space {
+    display: inline-block;
+  }
 `;
 
 const Heading = styled.div`
@@ -242,31 +246,41 @@ const FeedPage = () => {
                     <i class="bi bi-info-circle"></i>
                   </div>
                   <div>
+                    <span className="fw-bold">
+                      Welcome to
+                      <a
+                        href="https://near.social/devhub.near/widget/app?page=community&handle=developer-dao&tab=overview"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        DevDAO’s New Proposal Feed!
+                      </a>
+                    </span>
+                    This dedicated space replaces the
                     <a
-                      href="https://near.social/devhub.near/widget/app?page=community&handle=developer-dao&tab=overview"
-                      className="fw-bold"
+                      href="https://near.org/devhub.near/widget/app?page=feed"
+                      className="text-decoration-underline no-space"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Welcome to DevDAO’s New Proposal Feed!
-                    </a>{" "}
-                    This dedicated space replaces the old activity feed, making
-                    it easier to submit and track funding requests from DevDAO,
-                    the primary organization behind DevHub. To submit a formal
-                    proposal, click New Proposal. See our{" "}
+                      old activity feed
+                    </a>
+                    , making it easier to submit and track funding requests from
+                    DevDAO, the primary organization behind DevHub. To submit a
+                    formal proposal, click New Proposal. See our{" "}
                     <a
                       href="https://near.org/devhub.near/widget/app?page=community&handle=developer-dao&tab=funding"
-                      className="text-decoration-underline"
+                      className="text-decoration-underline no-space"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       guidelines
-                    </a>{" "}
+                    </a>
                     for details. For discussions and brainstorming, please
                     utilize the relevant{" "}
                     <a
                       href="https://near.org/devhub.near/widget/app?page=communities"
-                      className="text-decoration-underline"
+                      className="text-decoration-underline no-space"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
