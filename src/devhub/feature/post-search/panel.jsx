@@ -92,8 +92,8 @@ return (
             <div>
               <div className="fw-bold">This page is now archived! </div>
               <div className="text-sm">
-                For submitting formal funding proposals from DevDAO, visit the
-                new{" "}
+                For submitting formal funding proposals from DevDAO, please
+                visit the new{" "}
                 <a
                   href="https://near.org/devhub.near/widget/app?page=proposals"
                   className="text-decoration-underline"
@@ -101,8 +101,8 @@ return (
                   rel="noopener noreferrer"
                 >
                   Proposal Feed
-                </a>{" "}
-                . To brainstorm and share ideas, visit the relevant{" "}
+                </a>
+                . To brainstorm and share ideas, please visit the relevant{" "}
                 <a
                   href="https://near.org/devhub.near/widget/app?page=communities"
                   className="text-decoration-underline"

@@ -57,11 +57,15 @@ const Container = styled.div`
     border: 1px solid #04a46e !important;
     color: #04a46e !important;
   }
+
+  .fw-bold {
+    font-weight: 600 !important;
+  }
 `;
 
 return (
   <Container size={size}>
-    <div className={getClassNameByStatus() + "-tag rounded-2 p-1 px-2"}>
+    <div className={getClassNameByStatus() + "-tag fw-bold rounded-2 p-1 px-2"}>
       {(timelineStatus ?? "").replace("_", " ")}
     </div>
   </Container>
