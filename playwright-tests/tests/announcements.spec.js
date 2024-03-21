@@ -48,6 +48,7 @@ test.describe("Admin wallet is connected", () => {
     await page.waitForSelector(postButtonSelector, {
       state: "visible",
     });
+    await page.waitForTimeout(1000);
     await page.click(postButtonSelector);
     await expect(page.locator("div.modal-body code")).toHaveText(
       JSON.stringify(

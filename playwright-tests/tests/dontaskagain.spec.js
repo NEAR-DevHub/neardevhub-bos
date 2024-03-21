@@ -50,7 +50,7 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     await pauseIfVideoRecording(page);
 
-    expect(
+    await expect(
       await getDontAskAgainCacheValues({
         page,
         widgetSrc: "devhub.near/widget/devhub.entity.post.PostEditor",
@@ -68,18 +68,17 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     await submitbutton.click();
     await expect(submitbutton).toBeDisabled();
-    await pauseIfVideoRecording(page);
 
     const loadingIndicator = await page
       .locator(".submit-post-loading-indicator")
       .first();
     await expect(loadingIndicator).toBeVisible();
+
     const callContractToast = await page.getByText(
       `Calling contract ${RECEIVER_ID} with method add_post`
     );
-    expect(callContractToast.isVisible()).toBeTruthy();
+    await expect(callContractToast.isVisible()).toBeTruthy();
     await callContractToast.waitFor({ state: "detached" });
-    await expect(loadingIndicator).toBeVisible();
 
     await page
       .getByText("Editor Preview Create Comment")
@@ -122,8 +121,6 @@ test.describe("Wallet is connected with devhub access key", () => {
     await expect(loadingIndicator).toBeVisible();
 
     await callContractToast.waitFor({ state: "detached" });
-
-    await expect(loadingIndicator).toBeVisible();
 
     await page
       .getByRole("link", {

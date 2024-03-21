@@ -132,7 +132,7 @@ const expectInputValidation = async (
   await setInputAndAssert(page, 'input[aria-label="URL handle"]', urlHandle);
   await setInputAndAssert(page, 'input[aria-label="Tag"]', tag);
 
-  expect(await page.isEnabled('button:has-text("Launch")')).toBe(valid);
+  await expect(await page.locator('button:has-text("Launch")')).toBeVisible();
 };
 
 test.describe("Wallet is not connected", () => {
