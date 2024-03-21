@@ -103,6 +103,11 @@ const Container = styled.div`
   .cursor-pointer {
     cursor: pointer;
   }
+
+  .text-wrap {
+    overflow: hidden;
+    white-space: normal;
+  }
 `;
 let searchFocused = false;
 return (
@@ -118,8 +123,8 @@ return (
     >
       <div className="dropdown-toggle bg-white border rounded-2 btn drop-btn">
         <div
-          className={`selected-option ${
-            selectedOption.label === defaultLabel ? "text-grey" : ""
+          className={`selected-option w-100 text-wrap ${
+            selectedOption.label === defaultLabel ? "text-muted" : ""
           }`}
           onClick={toggleDropdown}
         >
@@ -150,7 +155,7 @@ return (
             {filteredOptions.map((option) => (
               <div
                 key={option.value}
-                className={`dropdown-item cursor-pointer ${
+                className={`dropdown-item cursor-pointer w-100 text-wrap ${
                   selectedOption.value === option.value ? "selected" : ""
                 }`}
                 onClick={() => handleOptionClick(option)}

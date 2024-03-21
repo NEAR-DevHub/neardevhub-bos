@@ -61,9 +61,7 @@ const options = [
 ];
 
 const [isOpen, setIsOpen] = useState(false);
-const [selectedOptionValue, setSelectedValue] = useState(
-  selectedValue ? selectedValue : options[0].value
-);
+const [selectedOptionValue, setSelectedValue] = useState(selectedValue);
 
 const toggleDropdown = () => {
   setIsOpen(!isOpen);
@@ -113,6 +111,7 @@ const Container = styled.div`
     background-color: #f8f8f8 !important;
     cursor: not-allowed !important;
     border-radius: 5px;
+    opacity: inherit !important;
   }
 
   .disabled.dropdown-toggle::after {
@@ -138,6 +137,9 @@ const Container = styled.div`
 `;
 
 const Item = ({ option }) => {
+  if (!option) {
+    return <div className="text-muted">Select Category</div>;
+  }
   return (
     <div className="d-flex gap-3 align-items-center w-100">
       <img src={option.icon} height={30} />

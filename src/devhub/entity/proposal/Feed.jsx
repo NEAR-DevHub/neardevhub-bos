@@ -5,6 +5,15 @@ if (!href) {
 }
 
 const Container = styled.div`
+  .full-width-div {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
   @media screen and (max-width: 768px) {
     font-size: 13px;
   }
@@ -53,6 +62,10 @@ const Heading = styled.div`
   font-size: 24px;
   font-weight: 700;
   width: 100%;
+
+  .text-normal {
+    font-weight: normal !important;
+  }
 
   @media screen and (max-width: 768px) {
     font-size: 18px;
@@ -362,7 +375,7 @@ const FeedPage = () => {
       <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
         <Heading>
           DevDAO Proposals
-          <span className="text-muted">
+          <span className="text-muted text-normal">
             ({state.aggregatedCount ?? state.data.length}){" "}
           </span>
         </Heading>
@@ -452,8 +465,8 @@ const FeedPage = () => {
         {!Array.isArray(state.data) ? (
           loader
         ) : (
-          <div className="card rounded-0 p-1 mt-4">
-            <div className="p-2 p-sm-4">
+          <div className="card rounded-0 mt-4 py-3 full-width-div">
+            <div className="container-xl">
               <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
                 <p className="d-flex gap-4 align-items-center mb-0">
                   <div>
