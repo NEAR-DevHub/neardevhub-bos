@@ -155,22 +155,25 @@ const FeedPage = () => {
 
   State.init({
     data: [],
+    cachedItems: {},
     author: "",
     stage: "",
     sort: "",
     category: "",
     input: "",
     loading: false,
+    loadingMore: false,
     aggregatedCount: 0,
+    currentlyDisplaying: 0,
   });
 
   const queryName =
-    "thomasguntenaar_near_devhub_proposals_november_proposals_with_latest_snapshot";
+    "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot";
   const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
       offset: $offset
       limit: $limit
-      order_by: {proposal_id: asc}
+      order_by: {proposal_id: desc}
       where: $where
     ) {
       author_id
@@ -183,6 +186,7 @@ const FeedPage = () => {
       proposal_id
       ts
       timeline
+      views
     }
     ${queryName}_aggregate(
       order_by: {proposal_id: desc}
@@ -193,6 +197,7 @@ const FeedPage = () => {
       }
     }
   }`;
+
   function fetchGraphQL(operationsDoc, operationName, variables) {
     return asyncFetch(QUERYAPI_ENDPOINT, {
       method: "POST",
@@ -232,11 +237,15 @@ const FeedPage = () => {
 
   const buildOrderByClause = () => {
     /**
-     * Most recent -> Based on the biggest proposal_id
-     * Most viewed -> views added in indexer version 'papa'
-     * Most commented -> edit indexer
+     * TODO
+     * Most commented -> edit contract and indexer
      * Unanswered -> 0 comments
      */
+  };
+
+  const makeMoreItems = () => {
+    if (state.aggregatedCount <= state.currentlyDisplaying) return;
+    fetchProposals(state.data.length);
   };
 
   const fetchProposals = (offset) => {
@@ -244,10 +253,9 @@ const FeedPage = () => {
       offset = 0;
     }
     if (state.loading) return;
-    State.update({ data });
-    const DISPLAY_LIMIT = 10;
+    const FETCH_LIMIT = 10;
     const variables = {
-      limit: DISPLAY_LIMIT,
+      limit: FETCH_LIMIT,
       offset,
       where: buildWhereClause(),
     };
@@ -256,23 +264,64 @@ const FeedPage = () => {
         if (result.body.data) {
           const data =
             result.body.data
-              .thomasguntenaar_near_devhub_proposals_november_proposals_with_latest_snapshot;
+              .thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot;
           const totalResult =
             result.body.data
-              .thomasguntenaar_near_devhub_proposals_november_proposals_with_latest_snapshot_aggregate;
+              .thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot_aggregate;
           State.update({ aggregatedCount: totalResult.aggregate.count });
           // Parse timeline
-          fetchBlockHeights(data);
+          fetchBlockHeights(data, offset);
         }
       }
     });
+  };
+
+  const renderItem = (item, index) => (
+    <div
+      key={item.proposal_id}
+      className={
+        (index !== state.data.length - 1 && "border-bottom ") + index === 0 &&
+        " rounded-top-2"
+      }
+    >
+      <FeedItem proposal={item} />
+    </div>
+  );
+  const cachedRenderItem = (item, index) => {
+    if (props.term) {
+      return renderItem(item, {
+        searchKeywords: [props.term],
+      });
+    }
+
+    const key = JSON.stringify(item);
+
+    if (!(key in state.cachedItems)) {
+      state.cachedItems[key] = renderItem(item, index);
+      State.update();
+    }
+    return state.cachedItems[key];
   };
 
   useEffect(() => {
     fetchProposals();
   }, [state.author, state.sort, state.category, state.stage]);
 
-  const fetchBlockHeights = (data) => {
+  const mergeItems = (newItems) => {
+    const items = [
+      ...new Set([...newItems, ...state.data].map((i) => JSON.stringify(i))),
+    ].map((i) => JSON.parse(i));
+    // Sorting in the front end
+    if (state.sort === "proposal_id" || state.sort === "") {
+      items.sort((a, b) => b.proposal_id - a.proposal_id);
+    } else if (state.sort === "views") {
+      items.sort((a, b) => b.views - a.views);
+    }
+
+    return items;
+  };
+
+  const fetchBlockHeights = (data, offset) => {
     let promises = data.map((item) => getProposal(item.proposal_id));
     Promise.all(promises).then((blockHeights) => {
       data = data.map((item, index) => ({
@@ -281,9 +330,32 @@ const FeedPage = () => {
         social_db_post_block_height:
           blockHeights[index].social_db_post_block_height,
       }));
-      State.update({ data });
+      if (offset) {
+        let newData = mergeItems(data);
+        State.update({
+          data: newData,
+          currentlyDisplaying: newData.length,
+          loading: false,
+        });
+      } else {
+        State.update({
+          data,
+          currentlyDisplaying: data.length,
+          loading: false,
+        });
+      }
     });
   };
+
+  const loader = (
+    <div className="d-flex justify-content-center align-items-center w-100">
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
+      />
+    </div>
+  );
+
+  const renderedItems = state.data ? state.data.map(cachedRenderItem) : null;
 
   return (
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
@@ -291,7 +363,7 @@ const FeedPage = () => {
         <Heading>
           DevDAO Proposals
           <span className="text-muted">
-            ({aggregatedCount ?? state.data.length})
+            ({state.aggregatedCount ?? state.data.length}){" "}
           </span>
         </Heading>
         <div className="d-flex flex-wrap gap-4 align-items-center">
@@ -311,15 +383,14 @@ const FeedPage = () => {
               },
             }}
           />
-          {/* TODO: */}
-          {/* <Widget
+          <Widget
             src={"${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-sort"}
             props={{
               onStateChange: (select) => {
                 State.update({ sort: select.value });
               },
             }}
-          /> */}
+          />
           <div className="d-flex gap-4 align-items-center">
             <Widget
               src={
@@ -379,11 +450,7 @@ const FeedPage = () => {
       </div>
       <div style={{ minHeight: "50vh" }}>
         {!Array.isArray(state.data) ? (
-          <div className="d-flex justify-content-center align-items-center w-100">
-            <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
-            />
-          </div>
+          loader
         ) : (
           <div className="card rounded-0 p-1 mt-4">
             <div className="p-2 p-sm-4">
@@ -400,19 +467,20 @@ const FeedPage = () => {
                 </p>
               </div>
               <div className="mt-4 border rounded-2">
-                {state.data.map((item, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className={
-                        (index !== state.data.length - 1 && "border-bottom ") +
-                        (index === 0 && " rounded-top-2")
-                      }
-                    >
-                      <FeedItem proposal={item} />
-                    </div>
-                  );
-                })}
+                {state.data.length > 0 ? (
+                  <InfiniteScroll
+                    pageStart={0}
+                    loadMore={makeMoreItems}
+                    hasMore={state.aggregatedCount > state.data.length}
+                    loader={loader}
+                    useWindow={false}
+                    threshold={100}
+                  >
+                    {renderedItems}
+                  </InfiniteScroll>
+                ) : (
+                  loader
+                )}
               </div>
             </div>
           </div>
