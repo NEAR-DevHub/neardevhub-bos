@@ -44,7 +44,13 @@ return (
             <li
               style={{ borderRadius: "5px" }}
               class="dropdown-item cursor-pointer link-underline link-underline-opacity-0"
-              onClick={() => setSelected(item)}
+              onClick={() => {
+                if (selected.label !== item.label) {
+                  setSelected(item);
+                } else {
+                  setSelected(null);
+                }
+              }}
             >
               {item.label}
             </li>
