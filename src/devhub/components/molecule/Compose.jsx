@@ -5,7 +5,8 @@ const AutoComplete = styled.div`
 
 const EmbeddCSS = `
   .CodeMirror {
-    border: none !important;
+   margin-inline:10px;
+   border-radius:5px;
   }
 
   .editor-toolbar {
