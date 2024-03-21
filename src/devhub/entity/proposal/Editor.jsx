@@ -689,7 +689,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
     category: category,
     summary: summary,
     linked_proposals: linkedProposalsIds,
-    requested_sponsorship_usd_amount: requestedSponsorshipAmount,
+    requested_sponsorship_usd_amount: parseInt(requestedSponsorshipAmount),
     requested_sponsorship_paid_in_currency: requestedSponsorshipToken.value,
     receiver_account: receiverAccount,
     supervisor: supervisor || null,
@@ -1192,11 +1192,11 @@ if (showProposalPage) {
                         value: requestedSponsorshipAmount,
                         onChange: (e) => {
                           const inputValue = e.target.value;
-                          const isValidInput = /^[1-9][0-9]*$/.test(inputValue);
-                          if (inputValue.trim() === "") {
+                          if (!inputValue) {
                             return;
                           }
-                          if (!isValidInput || Number(inputValue) < 0) {
+                          let isValidInteger = /^[1-9][0-9]*$/.test(inputValue);
+                          if (!isValidInteger) {
                             setAmountError(
                               "Please enter the nearest positive whole number."
                             );
@@ -1208,7 +1208,7 @@ if (showProposalPage) {
                         skipPaddingGap: true,
                         placeholder: "Enter amount",
                         inputProps: {
-                          type: "number",
+                          type: "text",
                           prefix: "$",
                           inputmode: "numeric",
                           pattern: "[0-9]*",

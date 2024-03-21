@@ -214,23 +214,25 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
   switch (timeline) {
     case "status":
       return (
-        <span className="inline-flex">
-          moved proposal from{" "}
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
-            props={{
-              timelineStatus: oldValue,
-            }}
-          />
-          to{" "}
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
-            props={{
-              timelineStatus: newValue,
-            }}
-          />
-          stage
-        </span>
+        oldValue !== newValue && (
+          <span className="inline-flex">
+            moved proposal from{" "}
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+              props={{
+                timelineStatus: oldValue,
+              }}
+            />
+            to{" "}
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+              props={{
+                timelineStatus: newValue,
+              }}
+            />
+            stage
+          </span>
+        )
       );
     case "sponsor_requested_review":
       return !oldValue && newValue && <span>completed review</span>;
