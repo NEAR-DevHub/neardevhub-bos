@@ -11,7 +11,7 @@ const { id, timestamp } = props;
 const isEditPage = typeof id === "string";
 const author = context.accountId;
 const FundingDocs =
-  "https://docs.google.com/document/d/1kR1YbaQE4mmHcf-BHo7NwO7vmGx4EciHK-QjelCufI8/edit?usp=sharing";
+  "https://near.social/devhub.near/widget/app?page=community&handle=developer-dao&tab=funding";
 
 if (!author) {
   return (
@@ -854,8 +854,9 @@ if (showProposalPage) {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Funding Docs.
+                        Funding Docs
                       </a>
+                      .
                     </>
                   }
                 >

@@ -428,7 +428,7 @@ if (Array.isArray(state.data)) {
     <Wrapper>
       <div
         className="log-line"
-        style={{ height: state.data.length > 4 ? "120%" : "150%" }}
+        style={{ height: state.data.length > 4 ? "110%" : "150%" }}
       ></div>
       <div className="d-flex flex-column gap-4">
         {state.data.map((i, index) => {
