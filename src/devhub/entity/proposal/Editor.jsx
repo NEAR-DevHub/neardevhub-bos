@@ -844,7 +844,7 @@ if (showProposalPage) {
                   }}
                 />
               </div>
-              <div className="d-flex flex-column gap-2 gap-sm-4 w-100">
+              <div className="d-flex flex-column gap-4 w-100">
                 <InputContainer
                   heading="Category"
                   description={
@@ -1183,6 +1183,7 @@ if (showProposalPage) {
                         props={{
                           receiverAccount: receiverAccount,
                           showGetVerifiedBtn: true,
+                          imageSize: 30,
                         }}
                       />
                     </div>

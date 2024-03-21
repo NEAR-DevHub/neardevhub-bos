@@ -1,6 +1,7 @@
 const receiverAccount = props.receiverAccount;
 const showGetVerifiedBtn = props.showGetVerifiedBtn;
 const [verificationStatus, setVerificationStatus] = useState(null);
+const imageSize = props.imageSize ?? 40;
 
 const WarningImg =
   "https://ipfs.near.social/ipfs/bafkreieq4222tf3hkbccfnbw5kpgedm3bf2zcfgzbnmismxav2phqdwd7q";
@@ -236,7 +237,7 @@ return (
         <img
           className="align-self-center object-fit-cover"
           src={verificationStatus === "Verified" ? SuccessImg : WarningImg}
-          height={40}
+          height={imageSize}
         />
         <div className="d-flex flex-column justify-content-center">
           <div className="h6 mb-0">Fractal</div>
