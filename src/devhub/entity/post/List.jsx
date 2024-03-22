@@ -16,10 +16,10 @@ if (!href) {
 const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
 
 const queryName =
-  props.queryName ?? `bo_near_devhub_v36_posts_with_latest_snapshot`;
+  props.queryName ?? `bo_near_devhub_v38_posts_with_latest_snapshot`;
 const totalQueryName =
   props.totalQueryName ??
-  "bo_near_devhub_v36_posts_with_latest_snapshot_aggregate";
+  "bo_near_devhub_v38_posts_with_latest_snapshot_aggregate";
 const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
       limit: $limit
