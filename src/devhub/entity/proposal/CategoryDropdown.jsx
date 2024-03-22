@@ -176,7 +176,7 @@ return (
       </div>
 
       {isOpen && (
-        <div className="dropdown-menu dropdown-menu-end dropdown-menu-lg-start px-2 shadow show w-100">
+        <div className="dropdown-menu rounded-2 dropdown-menu-end dropdown-menu-lg-start px-2 shadow show w-100">
           <div>
             {options.map((option) => (
               <div

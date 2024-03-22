@@ -14,6 +14,12 @@ const Container = styled.div`
     margin-right: -50vw;
   }
 
+  .card.no-border {
+    border-left: none !important;
+    border-right: none !important;
+    margin-bottom: -3.5rem;
+  }
+
   @media screen and (max-width: 768px) {
     font-size: 13px;
   }
@@ -35,6 +41,9 @@ const Container = styled.div`
   }
 
   .proposal-card {
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
     &:hover {
       background-color: #f4f4f4;
     }
@@ -56,6 +65,10 @@ const Container = styled.div`
       min-height: 32px;
     }
   }
+
+  a.no-space {
+    display: inline-block;
+  }
 `;
 
 const Heading = styled.div`
@@ -72,7 +85,7 @@ const Heading = styled.div`
   }
 `;
 
-const FeedItem = ({ proposal }) => {
+const FeedItem = ({ proposal, index }) => {
   const accountId = proposal.author_id;
   const profile = Social.get(`${accountId}/profile/**`, "final");
   // We will have to get the proposal from the contract to get the block height.
@@ -95,7 +108,12 @@ const FeedItem = ({ proposal }) => {
       onClick={(e) => e.stopPropagation()}
       style={{ textDecoration: "none" }}
     >
-      <div className="proposal-card d-flex justify-content-between gap-2 text-muted cursor-pointer p-3">
+      <div
+        className={
+          "proposal-card d-flex justify-content-between gap-2 text-muted cursor-pointer p-3 " +
+          (index !== 0 && " border")
+        }
+      >
         <div className="d-flex gap-4">
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
@@ -297,7 +315,7 @@ const FeedPage = () => {
         " rounded-top-2"
       }
     >
-      <FeedItem proposal={item} />
+      <FeedItem proposal={item} index={index} />
     </div>
   );
   const cachedRenderItem = (item, index) => {
@@ -465,18 +483,56 @@ const FeedPage = () => {
         {!Array.isArray(state.data) ? (
           loader
         ) : (
-          <div className="card rounded-0 mt-4 py-3 full-width-div">
+          <div className="card no-border rounded-0 mt-4 py-3 full-width-div">
             <div className="container-xl">
               <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
-                <p className="d-flex gap-4 align-items-center mb-0">
+                <p className="d-flex gap-3 align-items-center mb-0">
                   <div>
                     <i class="bi bi-info-circle"></i>
                   </div>
-                  DevDAO is the primary organization behind DevHub, and we offer
-                  sponsorships to contributors and projects that align with our
-                  goal of fostering a self-sufficient community of developers
-                  for a thriving NEAR ecosystem. Check out our Funding
-                  Guidelines for more details.
+                  <div>
+                    <span className="fw-bold">
+                      Welcome to
+                      <a
+                        href="https://near.social/devhub.near/widget/app?page=community&handle=developer-dao&tab=overview"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        DevDAO’s New Proposal Feed!
+                      </a>
+                    </span>
+                    This dedicated space replaces the
+                    <a
+                      href="https://near.org/devhub.near/widget/app?page=feed"
+                      className="text-decoration-underline no-space"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      old activity feed
+                    </a>
+                    , making it easier to submit and track funding requests from
+                    DevDAO, the primary organization behind DevHub. To submit a
+                    formal proposal, click New Proposal. See our{" "}
+                    <a
+                      href="https://near.org/devhub.near/widget/app?page=community&handle=developer-dao&tab=funding"
+                      className="text-decoration-underline no-space"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      guidelines
+                    </a>
+                    for details. For discussions and brainstorming, please
+                    utilize the relevant{" "}
+                    <a
+                      href="https://near.org/devhub.near/widget/app?page=communities"
+                      className="text-decoration-underline no-space"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      communities
+                    </a>
+                    .
+                  </div>
                 </p>
               </div>
               <div className="mt-4 border rounded-2">
