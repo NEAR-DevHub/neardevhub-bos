@@ -129,3 +129,30 @@ test.describe("Is community admin", () => {
     );
   });
 });
+
+test.describe("Is chain-abstraction community admin", () => {
+  test.use({
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-chain-abstraction-community-admin.json",
+  });
+  test("should edit about section of a community", async ({ page }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community.configuration&handle=chain-abstraction"
+    );
+    await page.locator('h5:has-text("Community Information")').waitFor();
+    await page.getByRole("button", { name: " Edit" }).nth(1).click();
+
+    await page
+      .getByTestId("0-bio_markdown--editable")
+      .fill("Chain-abstraction is very abstract");
+
+    await page.getByRole("button", { name: " Submit" }).click();
+    await page.getByRole("button", { name: "Save" }).click();
+    const transactionObj = JSON.parse(
+      await page.locator("div.modal-body code").innerText()
+    );
+    expect(transactionObj.community.description).toBe(
+      "Music written in stone on NEAR"
+    );
+  });
+});
