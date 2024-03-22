@@ -1,4 +1,17 @@
 import { test, expect } from "@playwright/test";
+import { pauseIfVideoRecording } from "../testUtils.js";
+import {
+  setDontAskAgainCacheValues,
+  getDontAskAgainCacheValues,
+  setCommitWritePermissionDontAskAgainCacheValues,
+} from "../util/cache.js";
+import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
+import {
+  mockTransactionSubmitRPCResponses,
+  decodeResultJSON,
+  encodeResultJSON,
+} from "../util/transaction.js";
+import { mockSocialIndexResponses } from "../util/socialapi.js";
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -9,7 +22,6 @@ test.describe("Wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions"
     );
-
     const socialdbaccount = "petersalomonsen.near";
     const viewsocialdbpostresult = await fetch("https://rpc.mainnet.near.org", {
       method: "POST",
@@ -54,7 +66,7 @@ test.describe("Wallet is connected", () => {
 
       const requestPostData = request.postDataJSON();
       if (requestPostData.method === "tx") {
-        await route.continue({ url: "https://archival-rpc.mainnet.near.org/" });
+        await route.continue({ url: "https://1rpc.io/near" });
       } else {
         await route.continue();
       }
@@ -140,5 +152,158 @@ test.describe("Wallet is connected", () => {
     const transactionConfirmationModal = page.locator("div.modal-body code");
     await page.waitForTimeout(4000);
     expect(await transactionConfirmationModal.isVisible()).toBeFalsy();
+  });
+});
+
+test.describe("Don't ask again enabled", () => {
+  test.use({
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
+  });
+
+  const communitydiscussionaccount =
+    "discussions.webassemblymusic.community.devhub.near";
+
+  test("should create a discussion", async ({ page }) => {
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+
+    let discussion_created = false;
+    await mockSocialIndexResponses(page, ({ requestPostData, json }) => {
+      if (
+        requestPostData.action === "repost" &&
+        requestPostData.options?.accountId?.[0] === communitydiscussionaccount
+      ) {
+        console.log("Returning discussions from index", discussion_created);
+        return discussion_created ? [json[0]] : [];
+      }
+    });
+
+    await page.goto(
+      "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions"
+    );
+
+    const widgetSrc = "devhub.near/widget/devhub.entity.community.Discussions";
+    await setDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      methodName: "create_discussion",
+      contractId: "devhub.near",
+    });
+
+    expect(
+      await getDontAskAgainCacheValues({
+        page,
+        widgetSrc,
+        methodName: "create_discussion",
+        contractId: "devhub.near",
+      })
+    ).toEqual({ create_discussion: true });
+
+    await setCommitWritePermissionDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      accountId: "petersalomonsen.near",
+    });
+    const socialdbaccount = "petersalomonsen.near";
+    const viewsocialdbpostresult = await fetch("https://rpc.mainnet.near.org", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "dontcare",
+        method: "query",
+        params: {
+          request_type: "call_function",
+          finality: "final",
+          account_id: "social.near",
+          method_name: "get",
+          args_base64: btoa(
+            JSON.stringify({
+              keys: [socialdbaccount + "/post/main"],
+              options: { with_block_height: true },
+            })
+          ),
+        },
+      }),
+    }).then((r) => r.json());
+
+    const socialdbpost = JSON.parse(
+      new TextDecoder().decode(
+        new Uint8Array(viewsocialdbpostresult.result.result)
+      )
+    );
+    const socialdbpostcontent = JSON.parse(
+      socialdbpost[socialdbaccount].post.main[""]
+    );
+    const socialdbpostblockheight =
+      socialdbpost[socialdbaccount].post.main[":block"];
+
+    const discussionPostEditor = await page.getByTestId("compose-announcement");
+    await discussionPostEditor.scrollIntoViewIfNeeded();
+    await discussionPostEditor.fill(socialdbpostcontent.text);
+    await pauseIfVideoRecording(page);
+
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        const postData = request.postDataJSON();
+        const args_base64 = postData.params?.args_base64;
+        if (args_base64) {
+          const args = atob(args_base64);
+          if (
+            args.indexOf(
+              "discussions.webassemblymusic.community.devhub.near/index/**"
+            ) > -1
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+
+            if (!transaction_completed || last_receiver_id !== "devhub.near") {
+              const resultObj = decodeResultJSON(json.result.result);
+              resultObj[communitydiscussionaccount].index.repost = "[]";
+              json.result.result = encodeResultJSON(resultObj);
+
+              discussion_created = true;
+            }
+            await route.fulfill({ response, json });
+            return;
+          }
+        }
+        await route.continue();
+      }
+    );
+
+    const postButton = await page.getByTestId("post-btn");
+    await postButton.click();
+
+    const loadingIndicator = await page
+      .locator(".submit-post-loading-indicator")
+      .first();
+
+    await expect(loadingIndicator).toBeVisible();
+    await expect(postButton).toBeDisabled();
+
+    const transaction_toast = await page.getByText(
+      "Calling contract devhub.near with method create_discussion"
+    );
+    expect(transaction_toast).toBeVisible();
+
+    await expect(loadingIndicator).toBeVisible();
+    await expect(postButton).toBeDisabled();
+
+    await transaction_toast.waitFor({ state: "detached" });
+    expect(transaction_toast).not.toBeVisible();
+    await loadingIndicator.waitFor({ state: "detached" });
+    await expect(postButton).not.toBeDisabled();
+
+    await expect(await discussionPostEditor.textContent()).toEqual("");
+    await transaction_toast.waitFor({ state: "detached", timeout: 100 });
+
+    await page
+      .locator(".reposted")
+      .waitFor({ state: "visible", timeout: 10000 });
+    await pauseIfVideoRecording(page);
   });
 });

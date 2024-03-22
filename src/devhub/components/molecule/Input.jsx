@@ -96,6 +96,8 @@ const TextInput = ({
     ) : null,
   ].filter((label) => label !== null);
 
+  const onKeyDown = props.onKeyDown ?? (() => {});
+
   return (
     <div
       className={[
@@ -118,19 +120,24 @@ const TextInput = ({
       {!multiline ? (
         <div className="input-group">
           {inputProps.prefix && (
-            <span className="input-group-text">{inputProps.prefix}</span>
+            <span className="input-group-text bg-white border-end-0">
+              {inputProps.prefix}
+            </span>
           )}
           <input
             aria-describedby={key}
             data-testid={key}
             aria-label={label}
-            className={["form-control border border-2", inputClassName].join(
-              " "
-            )}
+            className={[
+              "form-control border",
+              inputClassName,
+              inputProps.prefix ? "border-start-0" : "",
+            ].join(" ")}
             type={typeAttribute}
             maxLength={inputProps.max}
             value={state.data}
             onChange={(e) => State.update({ data: e.target.value })}
+            onKeyDown={onKeyDown}
             {...{ placeholder, ...inputProps }}
           />
         </div>
@@ -139,7 +146,7 @@ const TextInput = ({
           aria-describedby={key}
           data-testid={key}
           aria-label={label}
-          className={["form-control border border-2", inputClassName].join(" ")}
+          className={["form-control border", inputClassName].join(" ")}
           placeholder={
             placeholder + (inputProps.required ? " ( required )" : "")
           }
@@ -148,6 +155,7 @@ const TextInput = ({
           maxLength={inputProps.max}
           value={state.data}
           onChange={(e) => State.update({ data: e.target.value })}
+          onKeyDown={onKeyDown}
           {...{ placeholder, ...inputProps }}
         />
       )}

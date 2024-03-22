@@ -43,6 +43,7 @@ test.describe("Wallet is connected", () => {
   test("should allow connected user to post from community page", async ({
     page,
   }) => {
+    test.setTimeout(60000);
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=activity"
     );

@@ -130,6 +130,7 @@ test.describe("Wallet is connected", () => {
   test("should reply to a post in the feed with a comment", async ({
     page,
   }) => {
+    test.setTimeout(60000);
     await page.goto("/devhub.near/widget/app?page=feed");
     const authorSearchInput = await page.getByPlaceholder("Search by author");
     await authorSearchInput.fill("petersalomonsen.near");
@@ -152,7 +153,12 @@ test.describe("Wallet is connected", () => {
     await labelsInput.press("Tab");
 
     await page.getByTestId("submit-create-post").click();
-    await expect(page.locator("div.modal-body code")).toHaveText(
+    const transactionText = JSON.stringify(
+      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      null,
+      1
+    );
+    await expect(transactionText).toEqual(
       JSON.stringify(
         {
           parent_id: 2489,

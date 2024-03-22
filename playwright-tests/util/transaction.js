@@ -1,5 +1,57 @@
-export async function mockTransactionSubmitRPCResponses(page, receiver_id) {
+const access_keys = [
+  {
+    access_key: {
+      nonce: 109629226000005,
+      permission: {
+        FunctionCall: {
+          allowance: "241917078840755500000000",
+          method_names: [],
+          receiver_id: "social.near",
+        },
+      },
+    },
+    public_key: "ed25519:B4xZ7Behyw6kQjfohXBmvU96Drvg64KhvnoCzVEUzmyE",
+  },
+  {
+    access_key: {
+      nonce: 109629226000005,
+      permission: {
+        FunctionCall: {
+          allowance: "241917078840755500000000",
+          method_names: [],
+          receiver_id: "devhub.near",
+        },
+      },
+    },
+    public_key: "ed25519:GPphNAABcftyAH1tK9MCw69SprKHe5H1mTEncR6XBwL7",
+  },
+  {
+    access_key: {
+      nonce: 109629226000005,
+      permission: {
+        FunctionCall: {
+          allowance: "241917078840755500000000",
+          method_names: [],
+          receiver_id: "devgovgigs.near",
+        },
+      },
+    },
+    public_key: "ed25519:EQr7NpVYFu1XcVZ23Lb4Ga3KbDQgrYeTMTgBsYa26Bne",
+  },
+];
+
+export function decodeResultJSON(resultArray) {
+  return JSON.parse(new TextDecoder().decode(new Uint8Array(resultArray)));
+}
+
+export function encodeResultJSON(resultObj) {
+  return Array.from(new TextEncoder().encode(JSON.stringify(resultObj)));
+}
+
+export async function mockTransactionSubmitRPCResponses(page, customhandler) {
   let transaction_completed = false;
+  let last_receiver_id;
+  let lastViewedAccessKey;
   await page.route("https://rpc.mainnet.near.org/", async (route) => {
     const request = await route.request();
 
@@ -10,26 +62,8 @@ export async function mockTransactionSubmitRPCResponses(page, receiver_id) {
     ) {
       const response = await route.fetch();
       const json = await response.json();
-      json.result.keys = [
-        {
-          access_key: {
-            nonce: 109629226000005,
-            permission: {
-              FunctionCall: {
-                allowance: "241917078840755500000000",
-                method_names: [],
-                receiver_id,
-              },
-            },
-          },
-          public_key: "ed25519:EQr7NpVYFu1XcVZ23Lb4Ga3KbDQgrYeTMTgBsYa26Bne",
-        },
-      ];
+      json.result.keys = access_keys;
 
-      console.log(
-        "Replacing RPC response when listing access keys",
-        JSON.stringify(json)
-      );
       await route.fulfill({ response, json });
     } else if (
       requestPostData.params &&
@@ -38,30 +72,17 @@ export async function mockTransactionSubmitRPCResponses(page, receiver_id) {
       const response = await route.fetch();
       const json = await response.json();
 
-      json.result = {
-        nonce: 85,
-        permission: {
-          FunctionCall: {
-            allowance: "241917078840755500000000",
-            receiver_id,
-            method_names: [],
-          },
-        },
-        block_height: 19884918,
-        block_hash: "GGJQ8yjmo7aEoj8ZpAhGehnq9BSWFx4xswHYzDwwAP2n",
-      };
-
-      console.log(
-        "Replacing RPC response when viewing access key",
-        JSON.stringify(json)
+      lastViewedAccessKey = access_keys.find(
+        (k) => k.public_key === requestPostData.params.public_key
       );
+      json.result = lastViewedAccessKey.access_key;
+
       await route.fulfill({ response, json });
     } else if (requestPostData.method == "broadcast_tx_commit") {
-      console.log(
-        "Replacing RPC response when broadcasting tx",
-        JSON.stringify(requestPostData)
-      );
-      await page.waitForTimeout(500);
+      transaction_completed = false;
+      last_receiver_id =
+        lastViewedAccessKey.access_key.permission.FunctionCall.receiver_id;
+      await page.waitForTimeout(1000);
 
       await route.fulfill({
         json: {
@@ -71,7 +92,7 @@ export async function mockTransactionSubmitRPCResponses(page, receiver_id) {
               SuccessValue: "",
             },
             transaction: {
-              receiver_id,
+              receiver_id: last_receiver_id,
             },
             transaction_outcome: {
               proof: [],
@@ -111,7 +132,6 @@ export async function mockTransactionSubmitRPCResponses(page, receiver_id) {
       json.result.result = Array.from(
         new TextEncoder().encode(JSON.stringify(existing_post_ids.slice(1)))
       );
-      console.log("modified post_ids", json.result.result);
       await route.fulfill({ response, json });
     } else if (
       transaction_completed &&
@@ -131,8 +151,14 @@ export async function mockTransactionSubmitRPCResponses(page, receiver_id) {
         new TextEncoder().encode(JSON.stringify(get_post_response))
       );
       await route.fulfill({ response, json });
+    } else if (customhandler) {
+      await customhandler({
+        route,
+        request,
+        transaction_completed,
+        last_receiver_id,
+      });
     } else {
-      console.log("unmodified", JSON.stringify(requestPostData));
       await route.continue();
     }
   });

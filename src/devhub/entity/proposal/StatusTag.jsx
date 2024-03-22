@@ -51,7 +51,7 @@ const Container = styled.div`
 return (
   <Container size={size}>
     <div className={getClassNameByStatus() + "-tag rounded-2 p-1"}>
-      {timelineStatus}
+      {(timelineStatus ?? "").replace("_", " ")}
     </div>
   </Container>
 );

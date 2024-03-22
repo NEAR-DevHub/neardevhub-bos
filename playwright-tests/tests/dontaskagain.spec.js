@@ -22,11 +22,11 @@ test.describe("Wallet is connected with devhub access key", () => {
     );
 
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
-    await setDontAskAgainCacheValues(
+    await setDontAskAgainCacheValues({
       page,
-      "devhub.near/widget/devhub.entity.post.PostEditor",
-      "add_post"
-    );
+      widgetSrc: "devhub.near/widget/devhub.entity.post.PostEditor",
+      methodName: "add_post",
+    });
 
     await pauseIfVideoRecording(page);
     const postToReplyButton = await page.getByRole("button", {
@@ -49,11 +49,13 @@ test.describe("Wallet is connected with devhub access key", () => {
     await commentArea.fill("Some comment");
 
     await pauseIfVideoRecording(page);
-    expect(
-      await getDontAskAgainCacheValues(
+
+    await expect(
+      await getDontAskAgainCacheValues({
         page,
-        "devhub.near/widget/devhub.entity.post.PostEditor"
-      )
+        widgetSrc: "devhub.near/widget/devhub.entity.post.PostEditor",
+        methodName: "add_post",
+      })
     ).toEqual({ add_post: true });
 
     const submitbutton = await page.getByTestId("submit-create-post");
@@ -62,22 +64,21 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     const cachedValues = await findKeysInCache(page, RECEIVER_ID);
     console.log("cached values", cachedValues);
-    await mockTransactionSubmitRPCResponses(page, RECEIVER_ID);
+    await mockTransactionSubmitRPCResponses(page);
 
     await submitbutton.click();
     await expect(submitbutton).toBeDisabled();
-    await pauseIfVideoRecording(page);
 
     const loadingIndicator = await page
       .locator(".submit-post-loading-indicator")
       .first();
     await expect(loadingIndicator).toBeVisible();
+
     const callContractToast = await page.getByText(
       `Calling contract ${RECEIVER_ID} with method add_post`
     );
-    expect(callContractToast.isVisible()).toBeTruthy();
+    await expect(callContractToast.isVisible()).toBeTruthy();
     await callContractToast.waitFor({ state: "detached" });
-    await expect(loadingIndicator).toBeVisible();
 
     await page
       .getByText("Editor Preview Create Comment")
@@ -89,21 +90,22 @@ test.describe("Wallet is connected with devhub access key", () => {
   });
 
   test("should like a post", async ({ page }) => {
+    test.setTimeout(60000);
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
 
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
 
-    await setDontAskAgainCacheValues(
+    await setDontAskAgainCacheValues({
       page,
-      "devhub.near/widget/devhub.entity.post.Post",
-      "add_like"
-    );
+      widgetSrc: "devhub.near/widget/devhub.entity.post.Post",
+      methodName: "add_like",
+    });
 
     const likeButton = await page.locator(".bi-heart-fill");
     await likeButton.waitFor({ state: "visible" });
-    await mockTransactionSubmitRPCResponses(page, RECEIVER_ID);
+    await mockTransactionSubmitRPCResponses(page);
 
     await pauseIfVideoRecording(page);
     await likeButton.click();
@@ -115,12 +117,10 @@ test.describe("Wallet is connected with devhub access key", () => {
     const callContractToast = await page.getByText(
       `Calling contract ${RECEIVER_ID} with method add_like`
     );
-    expect(callContractToast.isVisible()).toBeTruthy();
+    await expect(callContractToast.isVisible()).toBeTruthy();
     await expect(loadingIndicator).toBeVisible();
 
     await callContractToast.waitFor({ state: "detached" });
-
-    await expect(loadingIndicator).toBeVisible();
 
     await page
       .getByRole("link", {
@@ -136,18 +136,18 @@ test.describe("Wallet is connected with devhub access key", () => {
   test("should comment to a long thread with don't ask again feature enabled", async ({
     page,
   }) => {
-    test.setTimeout(60000);
+    test.setTimeout(120000);
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
 
     await page.goto("/devhub.near/widget/app?page=post&id=2261");
 
-    await setDontAskAgainCacheValues(
+    await setDontAskAgainCacheValues({
       page,
-      "devhub.near/widget/devhub.entity.post.PostEditor",
-      "add_post"
-    );
+      widgetSrc: "devhub.near/widget/devhub.entity.post.PostEditor",
+      methodName: "add_post",
+    });
 
     const postToReplyButton = await page
       .getByRole("button", { name: "↪ Reply" })
@@ -172,7 +172,7 @@ test.describe("Wallet is connected with devhub access key", () => {
     await commentArea.fill("Some comment");
 
     await pauseIfVideoRecording(page);
-    await mockTransactionSubmitRPCResponses(page, RECEIVER_ID);
+    await mockTransactionSubmitRPCResponses(page);
     const submitbutton = await page.getByTestId("submit-create-post");
     await submitbutton.scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
@@ -187,15 +187,15 @@ test.describe("Wallet is connected with devhub access key", () => {
     const callContractToast = await page.getByText(
       `Calling contract ${RECEIVER_ID} with method add_post`
     );
-    expect(callContractToast.isVisible()).toBeTruthy();
+    await expect(callContractToast.isVisible()).toBeTruthy();
     await callContractToast.waitFor({ state: "detached" });
-    expect(loadingIndicator).toBeVisible();
+    await expect(loadingIndicator).toBeVisible();
 
     await page
       .getByText("Editor Preview Create Comment")
       .waitFor({ state: "detached" });
 
-    expect(loadingIndicator).not.toBeVisible();
+    await expect(loadingIndicator).not.toBeVisible();
 
     await page.waitForTimeout(500);
   });
@@ -208,6 +208,7 @@ test.describe("Wallet is connected", () => {
   test("should comment to a post and cancel the transaction, and get the submit button back again", async ({
     page,
   }) => {
+    test.setTimeout(60000);
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );

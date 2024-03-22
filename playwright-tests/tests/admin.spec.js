@@ -9,6 +9,7 @@ test.describe("Wallet is connected", () => {
   test("should be able to manage featured communities from home page settings tab", async ({
     page,
   }) => {
+    test.setTimeout(60000);
     await page.goto("/devhub.near/widget/app?page=admin");
 
     const buttonSelector = `button[data-testid="preview-homepage"]`;

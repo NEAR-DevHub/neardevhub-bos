@@ -5,7 +5,7 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": []
+      "extensions": ["ms-playwright.playwright"]
     }
   },
   "postCreateCommand": ".devcontainer/post-create.sh"
