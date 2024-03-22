@@ -82,16 +82,24 @@ test.describe("Wallet is connected", () => {
     await page.goto("/devhub.near/widget/app?page=communities");
 
     await page.getByRole("button", { name: " Community" }).click();
-
-    await page.getByTestId("1-name--editable").fill("My new community");
+    await page
+      .getByTestId("1-name--editable")
+      .pressSequentially("My new community", { delay: 100 });
     await page
       .getByTestId("3-description--editable")
-      .fill("A very nice community to be in");
-    await page.getByTestId("0-handle--editable").fill("mynewcommunity");
-    await page.getByTestId("2-tag--editable").fill("mynewcommunity");
+      .pressSequentially("A very nice community to be in", { delay: 100 });
+    await page
+      .getByTestId("0-handle--editable")
+      .pressSequentially("mynewcommunity", { delay: 100 });
+    await page
+      .getByTestId("2-tag--editable")
+      .pressSequentially("mynewcommunity", { delay: 100 });
 
-    const launchButton = await page.getByText("Launch");
+    const launchButton = await page.getByRole("button", { name: "Launch" });
+    await expect(launchButton).toBeVisible();
+    await expect(launchButton).toBeEnabled();
     await launchButton.scrollIntoViewIfNeeded();
+
     await launchButton.click();
     const transactionText = JSON.stringify(
       JSON.parse(await page.locator("div.modal-body code").innerText()),

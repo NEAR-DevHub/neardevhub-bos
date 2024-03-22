@@ -80,7 +80,12 @@ test.describe("Wallet is connected", () => {
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions&transactionHashes=mi2a1KwagRFZhpqBNKhKaCTkHVj98J8tZnxSr1NpxSQ"
     );
 
-    await expect(page.locator("div.modal-body code")).toHaveText(
+    const transactionText = JSON.stringify(
+      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      null,
+      1
+    );
+    await expect(transactionText).toEqual(
       JSON.stringify(
         {
           handle: "webassemblymusic",
