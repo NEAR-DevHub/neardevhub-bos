@@ -35,7 +35,7 @@ test.describe("Don't ask again enabled", () => {
 
     await page.getByRole("button", { name: " New Proposal" }).click();
 
-    const titleArea = page.getByRole('textbox').first();
+    const titleArea = page.getByRole("textbox").first();
     await titleArea.fill("Test proposal 123456");
     await titleArea.blur();
     await pauseIfVideoRecording(page);
