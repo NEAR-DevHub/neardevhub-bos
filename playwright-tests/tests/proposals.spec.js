@@ -35,7 +35,7 @@ test.describe("Don't ask again enabled", () => {
 
     await page.getByRole("button", { name: " New Proposal" }).click();
 
-    const titleArea = await page.getByPlaceholder("Enter title here.");
+    const titleArea = page.getByRole('textbox').first();
     await titleArea.fill("Test proposal 123456");
     await titleArea.blur();
     await pauseIfVideoRecording(page);
@@ -48,7 +48,7 @@ test.describe("Don't ask again enabled", () => {
       ".submit-draft-button.disabled"
     );
 
-    const summary = await page.getByPlaceholder("Enter summary here.");
+    const summary = await page.locator('textarea[type="text"]');
     await summary.fill("Test proposal summary 123456789");
     await summary.blur();
     await pauseIfVideoRecording(page);
@@ -61,7 +61,7 @@ test.describe("Don't ask again enabled", () => {
     await descriptionArea.blur();
     await pauseIfVideoRecording(page);
 
-    await page.getByPlaceholder("Enter amount").fill("1000");
+    await page.locator('input[type="text"]').nth(2).fill("1000");
     await pauseIfVideoRecording(page);
     await page.getByRole("checkbox").first().click();
     await pauseIfVideoRecording(page);
