@@ -2,7 +2,7 @@ const [authorsOptions, setAuthorsOptions] = useState([]);
 const [selectedAuthor, setSelectedAuthor] = useState(null);
 
 if (!authorsOptions.length) {
-  const data = [];
+  const data = [{ label: "None", value: "" }];
   const authors = Near.view(
     "${REPL_DEVHUB_CONTRACT}",
     "get_all_proposal_authors",
@@ -26,7 +26,9 @@ return (
         label: "Author",
         onUpdate: (v) => {
           setSelectedAuthor(v);
+          props.onAuthorChange(v);
         },
+        selectedValue: props.author,
       }}
     />
   </div>

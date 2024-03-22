@@ -1,15 +1,43 @@
 const options = [
-  { label: "Awareness & Engagement", value: "" },
-  { label: "Community Groups / Work Groups", value: "" },
-  { label: "DevDAO Operations", value: "" },
-  { label: "Developer Relations", value: "" },
-  { label: "Events & Hackathons", value: "" },
-  { label: "Platform", value: "" },
-  { label: "Tooling & Infrastructure", value: "" },
-  { label: "Universities & Bootcamps", value: "" },
+  {
+    label: "DevDAO Operations",
+    value: "DevDAO Operations",
+  },
+  {
+    label: "DevDAO Platform",
+    value: "DevDAO Platform",
+  },
+  {
+    label: "Events & Hackathons",
+    value: "Events & Hackathons",
+  },
+  {
+    label: "Engagement & Awareness",
+    value: "Engagement & Awareness",
+  },
+  {
+    label: "Decentralized DevRel",
+    value: "Decentralized DevRel",
+  },
+  {
+    label: "Universities & Bootcamps",
+    value: "Universities & Bootcamps",
+  },
+  {
+    label: "Tooling & Infrastructure",
+    value: "Tooling & Infrastructure",
+  },
+  {
+    label: "Other",
+    value: "Other",
+  },
+  {
+    label: "None",
+    value: "",
+  },
 ];
 
-const [selected, setSelected] = useState(null);
+const setSelected = props.onStateChange ?? (() => {});
 
 return (
   <div>

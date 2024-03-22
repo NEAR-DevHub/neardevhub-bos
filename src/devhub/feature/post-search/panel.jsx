@@ -73,11 +73,48 @@ const StyledDropdown = styled.div`
   }
 `;
 
+const BannerWrapper = styled.div`
+  background-color: #ffd2d2;
+  .text-sm {
+    font-size: 13px;
+  }
+`;
+
 return (
   <>
     {!props.hideHeader && (
       <Container>
         <div className="w-100">
+          <BannerWrapper className="d-flex gap-3 align-items-center mb-4 p-3 rounded-3">
+            <div>
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div>
+              <div className="fw-bold">This page is now archived! </div>
+              <div className="text-sm">
+                For submitting formal funding proposals from DevDAO, please
+                visit the new{" "}
+                <a
+                  href="https://near.org/devhub.near/widget/app?page=proposals"
+                  className="text-decoration-underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Proposal Feed
+                </a>
+                . To brainstorm and share ideas, please visit the relevant{" "}
+                <a
+                  href="https://near.org/devhub.near/widget/app?page=communities"
+                  className="text-decoration-underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  communities
+                </a>
+                .
+              </div>
+            </div>
+          </BannerWrapper>
           <PageTitle>Activity Feed</PageTitle>
           <div>
             <div className="d-flex flex-column flex-md-row gap-4">
