@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { pauseIfVideoRecording } from "../testUtils.js";
 
 test("should load a community page if handle exists", async ({ page }) => {
   await page.goto(
@@ -142,9 +143,14 @@ test.describe("Is chain-abstraction community admin", () => {
     await page.locator('h5:has-text("Community Information")').waitFor();
     await page.getByRole("button", { name: " Edit" }).nth(1).click();
 
+    await pauseIfVideoRecording(page);
+
     await page
       .getByTestId("0-bio_markdown--editable")
       .fill("Chain-abstraction is very abstract");
+
+    await pauseIfVideoRecording(page);
+    await page.getByText("Cancel Submit").scrollIntoViewIfNeeded();
 
     await page.getByRole("button", { name: " Submit" }).click();
     await page.getByRole("button", { name: "Save" }).click();
