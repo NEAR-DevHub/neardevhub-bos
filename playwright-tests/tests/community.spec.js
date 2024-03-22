@@ -197,5 +197,6 @@ test.describe("Is chain-abstraction community admin", () => {
     expect(transactionObj.community.bio_markdown).toBe(
       "Chain-abstraction is very abstract"
     );
+    await pauseIfVideoRecording(page);
   });
 });
