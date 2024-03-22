@@ -1,0 +1,27 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:8080",
+      "localStorage": [
+        {
+          "name": "near-wallet-selector:selectedWalletId",
+          "value": "\"my-near-wallet\""
+        },
+        {
+          "name": "near_app_wallet_auth_key",
+          "value": "{\"accountId\":\"orangejoe.near\"}"
+        },
+        {
+          "name": "near-social-vm:v01::accountId:",
+          "value": "orangejoe.near"
+        },
+        {
+          "name": "flags",
+          "value": "{\"bosLoaderUrl\":\"http://127.0.0.1:3030\"}"
+        }
+      ]
+    }
+  ],
+  "sessionStorage": []
+}
