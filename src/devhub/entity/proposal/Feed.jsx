@@ -41,6 +41,9 @@ const Container = styled.div`
   }
 
   .proposal-card {
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
     &:hover {
       background-color: #f4f4f4;
     }
@@ -82,7 +85,7 @@ const Heading = styled.div`
   }
 `;
 
-const FeedItem = ({ proposal }) => {
+const FeedItem = ({ proposal, index }) => {
   const accountId = proposal.author_id;
   const profile = Social.get(`${accountId}/profile/**`, "final");
   // We will have to get the proposal from the contract to get the block height.
@@ -105,7 +108,12 @@ const FeedItem = ({ proposal }) => {
       onClick={(e) => e.stopPropagation()}
       style={{ textDecoration: "none" }}
     >
-      <div className="proposal-card d-flex justify-content-between gap-2 text-muted cursor-pointer p-3">
+      <div
+        className={
+          "proposal-card d-flex justify-content-between gap-2 text-muted cursor-pointer p-3 " +
+          (index !== 0 && " border")
+        }
+      >
         <div className="d-flex gap-4">
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
@@ -307,7 +315,7 @@ const FeedPage = () => {
         " rounded-top-2"
       }
     >
-      <FeedItem proposal={item} />
+      <FeedItem proposal={item} index={index} />
     </div>
   );
   const cachedRenderItem = (item, index) => {

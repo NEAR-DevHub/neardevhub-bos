@@ -459,7 +459,7 @@ const isAllowedToEditProposal = Near.view(
   }
 );
 
-const isModerator = Near.view("${REPL_DEVHUB_LEGACY}", "has_moderator", {
+const isModerator = Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", {
   account_id: accountId,
 });
 
