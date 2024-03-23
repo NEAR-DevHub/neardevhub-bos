@@ -466,7 +466,7 @@ const isModerator = Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", {
 const editProposal = ({ timeline }) => {
   const body = {
     proposal_body_version: "V0",
-    name: snapshot.title,
+    name: snapshot.name,
     description: snapshot.description,
     category: snapshot.category,
     summary: snapshot.summary,
@@ -635,7 +635,7 @@ return (
         )}
       </div>
     </div>
-    <div className="d-flex px-3 px-lg-0 gap-2 align-items-center text-sm pb-3">
+    <div className="d-flex flex-wrap flex-md-nowrap px-3 px-lg-0 gap-2 align-items-center text-sm pb-3 w-100">
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
         props={{
@@ -643,9 +643,9 @@ return (
           size: "sm",
         }}
       />
-      <div>
-        <b>{authorId} </b> created on{" "}
-        {readableDate(snapshot.timestamp / 1000000)}
+      <div className="w-100 d-flex flex-wrap flex-md-nowrap gap-1 align-items-center">
+        <div className="fw-bold text-truncate">{authorId} </div>
+        <div>created on {readableDate(snapshot.timestamp / 1000000)}</div>
       </div>
     </div>
     <div className="card no-border rounded-0 full-width-div px-3 px-lg-0">
@@ -735,9 +735,17 @@ return (
                   />
                 </div>
                 <ProposalContainer className="rounded-2 flex-1">
-                  <Header className="d-flex gap-1 align-items-center p-2 px-3">
-                    <div className="fw-bold">{authorId}</div>
-                    <div className="text-muted">
+                  <Header className="d-flex gap-1 align-items-center p-2 px-3 ">
+                    <div
+                      className="fw-bold text-truncate"
+                      style={{ maxWidth: "60%" }}
+                    >
+                      {authorId}
+                    </div>
+                    <div
+                      className="text-muted"
+                      style={{ minWidth: "fit-content" }}
+                    >
                       ･{" "}
                       <Widget
                         src="${REPL_NEAR}/widget/TimeAgo"
@@ -746,18 +754,18 @@ return (
                           blockTimestamp: snapshot.timestamp,
                         }}
                       />
+                      {context.accountId && (
+                        <div className="menu">
+                          <Widget
+                            src="${REPL_NEAR}/widget/Posts.Menu"
+                            props={{
+                              accountId: authorId,
+                              blockHeight: blockHeight,
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
-                    {context.accountId && (
-                      <div className="menu">
-                        <Widget
-                          src="${REPL_NEAR}/widget/Posts.Menu"
-                          props={{
-                            accountId: authorId,
-                            blockHeight: blockHeight,
-                          }}
-                        />
-                      </div>
-                    )}
                   </Header>
                   <div className="d-flex flex-column gap-1 p-2 px-3 description-box">
                     <div className="text-muted h6 border-bottom pb-1 mt-3">
