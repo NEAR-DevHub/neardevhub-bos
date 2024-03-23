@@ -110,19 +110,19 @@ const FeedItem = ({ proposal, index }) => {
     >
       <div
         className={
-          "proposal-card d-flex justify-content-between gap-2 text-muted cursor-pointer p-3 " +
+          "proposal-card d-flex justify-content-between gap-2 text-muted cursor-pointer p-3 w-100 flex-wrap flex-sm-nowrap " +
           (index !== 0 && " border")
         }
       >
-        <div className="d-flex gap-4">
+        <div className="d-flex gap-4 w-100 flex-wrap">
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
             props={{
               accountId,
             }}
           />
-          <div className="d-flex flex-column gap-2">
-            <div className="d-flex gap-2 align-items-center flex-wrap">
+          <div className="d-flex flex-column gap-2 w-100">
+            <div className="d-flex gap-2 align-items-center flex-wrap w-100">
               <div className="h6 mb-0 text-black">{proposal.name}</div>
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryTag"}
@@ -131,8 +131,10 @@ const FeedItem = ({ proposal, index }) => {
                 }}
               />
             </div>
-            <div className="d-flex gap-2 align-items-center text-sm">
-              <div>By {profile.name ?? accountId} ･ </div>
+            <div className="d-flex gap-2 align-items-center text-sm w-100">
+              <div className="text-truncate">
+                By {profile.name ?? accountId} ･{" "}
+              </div>
               <Widget
                 src="${REPL_NEAR}/widget/TimeAgo"
                 props={{
@@ -162,7 +164,7 @@ const FeedItem = ({ proposal, index }) => {
             </div>
           </div>
         </div>
-        <div className="align-self-center">
+        <div className="align-self-center" style={{ minWidth: "fit-content" }}>
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
             props={{
