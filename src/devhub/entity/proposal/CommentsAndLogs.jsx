@@ -30,7 +30,7 @@ const Wrapper = styled.div`
 
   @media screen and (max-width: 768px) {
     .inline-flex {
-      // display: flex !important;
+      display: flex !important;
     }
   }
 `;
