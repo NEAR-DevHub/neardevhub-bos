@@ -69,6 +69,11 @@ const Container = styled.div`
   a.no-space {
     display: inline-block;
   }
+
+  .text-wrap {
+    overflow: hidden;
+    white-space: normal;
+  }
 `;
 
 const Heading = styled.div`
@@ -114,14 +119,14 @@ const FeedItem = ({ proposal, index }) => {
           (index !== 0 && " border")
         }
       >
-        <div className="d-flex gap-4 w-100 flex-wrap">
+        <div className="d-flex gap-4 w-100">
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
             props={{
               accountId,
             }}
           />
-          <div className="d-flex flex-column gap-2 w-100">
+          <div className="d-flex flex-column gap-2 w-100 text-wrap">
             <div className="d-flex gap-2 align-items-center flex-wrap w-100">
               <div className="h6 mb-0 text-black">{proposal.name}</div>
               <Widget
