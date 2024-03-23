@@ -11,7 +11,7 @@ const { id, timestamp } = props;
 const isEditPage = typeof id === "string";
 const author = context.accountId;
 const FundingDocs =
-  "https://docs.google.com/document/d/1kR1YbaQE4mmHcf-BHo7NwO7vmGx4EciHK-QjelCufI8/edit?usp=sharing";
+  "https://near.social/devhub.near/widget/app?page=community&handle=developer-dao&tab=funding";
 
 if (!author) {
   return (
@@ -30,6 +30,12 @@ if (isEditPage) {
 const Container = styled.div`
   input {
     font-size: 14px !important;
+  }
+
+  .card.no-border {
+    border-left: none !important;
+    border-right: none !important;
+    margin-bottom: -3.5rem;
   }
 
   textarea {
@@ -133,6 +139,7 @@ const Container = styled.div`
 
   .dropdown-menu {
     width: 100%;
+    border-radius: 0.375rem !important;
   }
 
   .input-icon {
@@ -197,6 +204,10 @@ const Container = styled.div`
 
   .gap-6 {
     gap: 2.5rem;
+  }
+
+  a.no-space {
+    display: inline-block;
   }
 `;
 
@@ -527,6 +538,7 @@ const DropdowntBtnContainer = styled.div`
     padding: 0.5rem;
     z-index: 9999;
     font-size: 13px;
+    border-radius:0.375rem !important;
   }
 
   .left {
@@ -547,6 +559,7 @@ const DropdowntBtnContainer = styled.div`
     cursor: pointer;
     border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.3s ease;
+    border-radius: 0.375rem !important;
   }
 
   .option:hover {
@@ -708,7 +721,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
     category: category,
     summary: summary,
     linked_proposals: linkedProposalsIds,
-    requested_sponsorship_usd_amount: requestedSponsorshipAmount,
+    requested_sponsorship_usd_amount: parseInt(requestedSponsorshipAmount),
     requested_sponsorship_paid_in_currency: requestedSponsorshipToken.value,
     receiver_account: receiverAccount,
     supervisor: supervisor || null,
@@ -844,7 +857,7 @@ if (showProposalPage) {
           },
         }}
       />
-      <div className="card rounded-0 px-2 p-lg-0 full-width-div">
+      <div className="card no-border rounded-0 px-2 p-lg-0 full-width-div">
         <div className="container-xl py-4 d-flex flex-wrap gap-6 w-100">
           <div
             style={{ minWidth: "350px" }}
@@ -859,7 +872,7 @@ if (showProposalPage) {
                   }}
                 />
               </div>
-              <div className="d-flex flex-column gap-2 gap-sm-4 w-100">
+              <div className="d-flex flex-column gap-4 w-100">
                 <InputContainer
                   heading="Category"
                   description={
@@ -869,12 +882,13 @@ if (showProposalPage) {
                       guidance? See{" "}
                       <a
                         href={FundingDocs}
-                        className="text-decoration-underline"
+                        className="text-decoration-underline no-space"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Funding Docs.
+                        Funding Docs
                       </a>
+                      .
                     </>
                   }
                 >
@@ -901,7 +915,6 @@ if (showProposalPage) {
                         setTitle(e.target.value);
                       },
                       skipPaddingGap: true,
-                      placeholder: "Enter title here.",
                       inputProps: {
                         max: 80,
                         required: true,
@@ -923,7 +936,6 @@ if (showProposalPage) {
                         setSummary(e.target.value);
                       },
                       skipPaddingGap: true,
-                      placeholder: "Enter summary here.",
                       inputProps: {
                         max: 500,
                         required: true,
@@ -933,7 +945,25 @@ if (showProposalPage) {
                 </InputContainer>
                 <InputContainer
                   heading="Description"
-                  description="Expand on your summary with any relevant details like your contribution timeline, key milestones, team background, and a clear breakdown of how the funds will be used. Proposals should be simple and clear (e.g. 1 month). For more complex projects, treat each milestone as a separate proposal."
+                  description={
+                    <>
+                      Expand on your summary with any relevant details like your
+                      contribution timeline, key milestones, team background,
+                      and a clear breakdown of how the funds will be used.
+                      Proposals should be simple and clear (e.g. 1 month). For
+                      more complex projects, treat each milestone as a separate
+                      proposal. Need more guidance?
+                      <a
+                        href={FundingDocs}
+                        className="text-decoration-underline no-space"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        See Funding Docs
+                      </a>
+                      .
+                    </>
+                  }
                 >
                   <Widget
                     src={
@@ -944,7 +974,6 @@ if (showProposalPage) {
                       onChange: setDescription,
                       autocompleteEnabled: true,
                       autoFocus: false,
-                      placeholder: descriptionPlaceholder,
                     }}
                   />
                 </InputContainer>
@@ -1182,6 +1211,7 @@ if (showProposalPage) {
                         props={{
                           receiverAccount: receiverAccount,
                           showGetVerifiedBtn: true,
+                          imageSize: 30,
                         }}
                       />
                     </div>
@@ -1210,11 +1240,11 @@ if (showProposalPage) {
                         value: requestedSponsorshipAmount,
                         onChange: (e) => {
                           const inputValue = e.target.value;
-                          const isValidInput = /^\d+$/.test(inputValue);
-                          if (inputValue.trim() === "") {
+                          if (!inputValue) {
                             return;
                           }
-                          if (!isValidInput || Number(inputValue) < 0) {
+                          let isValidInteger = /^[1-9][0-9]*$/.test(inputValue);
+                          if (!isValidInteger) {
                             setAmountError(
                               "Please enter the nearest positive whole number."
                             );
@@ -1224,10 +1254,11 @@ if (showProposalPage) {
                           }
                         },
                         skipPaddingGap: true,
-                        placeholder: "Enter amount",
                         inputProps: {
-                          type: "number",
+                          type: "text",
                           prefix: "$",
+                          inputmode: "numeric",
+                          pattern: "[0-9]*",
                         },
                       }}
                     />
@@ -1270,7 +1301,6 @@ if (showProposalPage) {
                       src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
                       props={{
                         value: supervisor,
-                        placeholder: "Enter Supervisor",
                         onUpdate: setSupervisor,
                       }}
                     />

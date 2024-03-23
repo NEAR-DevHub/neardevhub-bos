@@ -13,6 +13,10 @@ import {
 } from "../util/transaction.js";
 import { mockSocialIndexResponses } from "../util/socialapi.js";
 
+test.afterEach(
+  async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
+);
+
 test.describe("Wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
@@ -76,7 +80,12 @@ test.describe("Wallet is connected", () => {
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions&transactionHashes=mi2a1KwagRFZhpqBNKhKaCTkHVj98J8tZnxSr1NpxSQ"
     );
 
-    await expect(page.locator("div.modal-body code")).toHaveText(
+    const transactionText = JSON.stringify(
+      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      null,
+      1
+    );
+    await expect(transactionText).toEqual(
       JSON.stringify(
         {
           handle: "webassemblymusic",
@@ -288,13 +297,13 @@ test.describe("Don't ask again enabled", () => {
     const transaction_toast = await page.getByText(
       "Calling contract devhub.near with method create_discussion"
     );
-    expect(transaction_toast).toBeVisible();
+    await expect(transaction_toast).toBeVisible();
 
     await expect(loadingIndicator).toBeVisible();
     await expect(postButton).toBeDisabled();
 
     await transaction_toast.waitFor({ state: "detached" });
-    expect(transaction_toast).not.toBeVisible();
+    await expect(transaction_toast).not.toBeVisible();
     await loadingIndicator.waitFor({ state: "detached" });
     await expect(postButton).not.toBeDisabled();
 

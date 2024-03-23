@@ -140,15 +140,10 @@ let links = [
     links: [],
   },
   {
-    title: "/activity feed",
-    href: "feed",
+    title: "/proposals",
+    href: "proposals",
     links: [],
   },
-  // {
-  //   title: "/proposals",
-  //   href: "proposals",
-  //   links: [],
-  // },
   {
     title: "/about",
     links: [

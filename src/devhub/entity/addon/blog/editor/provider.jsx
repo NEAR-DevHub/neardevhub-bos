@@ -19,7 +19,7 @@ const fetchGraphQL = (operationsDoc, operationName, variables) => {
 };
 
 const queryName =
-  props.queryName ?? `bo_near_devhub_v17_posts_with_latest_snapshot`;
+  props.queryName ?? `bo_near_devhub_v38_posts_with_latest_snapshot`;
 
 const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
@@ -131,7 +131,7 @@ const handleOnCancel = (v) => {
 
 return (
   <Layout
-    data={posts.body.data.bo_near_devhub_v17_posts_with_latest_snapshot || []}
+    data={posts.body.data.bo_near_devhub_v38_posts_with_latest_snapshot || []}
     getData={handleGetData}
     onChange={handleOnChange}
     onSubmit={handleOnSubmit}

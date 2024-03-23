@@ -1,6 +1,7 @@
 const receiverAccount = props.receiverAccount;
 const showGetVerifiedBtn = props.showGetVerifiedBtn;
 const [verificationStatus, setVerificationStatus] = useState(null);
+const imageSize = props.imageSize ?? 40;
 
 const WarningImg =
   "https://ipfs.near.social/ipfs/bafkreieq4222tf3hkbccfnbw5kpgedm3bf2zcfgzbnmismxav2phqdwd7q";
@@ -71,6 +72,7 @@ const DropdowntBtnContainer = styled.div`
     padding: 0.5rem;
     z-index: 9999;
     font-size: 13px;
+    border-radius: 0.375rem !important;
   }
 
   .left {
@@ -86,11 +88,12 @@ const DropdowntBtnContainer = styled.div`
   }
 
   .option {
-    margin-block: 5px;
-    padding: 10px;
+    margin-block: 2px;
+    padding: 5px;
     cursor: pointer;
     border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.3s ease;
+    border-radius: 0.375rem !important;
   }
 
   .option:hover {
@@ -229,16 +232,16 @@ const VerificationBtn = () => {
 
 return (
   <div>
-    <div className="d-flex justify-content-between align-items-center">
-      <div className="d-flex gap-4 ">
+    <div className="d-flex text-black justify-content-between align-items-center">
+      <div className="d-flex" style={{ gap: "12px" }}>
         <img
-          className="align-self-center"
+          className="align-self-center object-fit-cover"
           src={verificationStatus === "Verified" ? SuccessImg : WarningImg}
-          height={30}
+          height={imageSize}
         />
         <div className="d-flex flex-column justify-content-center">
           <div className="h6 mb-0">Fractal</div>
-          <div className="text-muted text-sm">{verificationStatus}</div>
+          <div className="text-sm text-muted">{verificationStatus}</div>
         </div>
       </div>
       {verificationStatus !== "Verified" && showGetVerifiedBtn && (
