@@ -27,6 +27,12 @@ const Wrapper = styled.div`
     align-items: center !important;
     gap: 0.25rem !important;
   }
+
+  @media screen and (max-width: 768px) {
+    .inline-flex {
+      display: flex !important;
+    }
+  }
 `;
 
 const CommentContainer = styled.div`
@@ -391,14 +397,13 @@ const Log = ({ timestamp }) => {
             height={30}
           />
           <div
-            style={{
-              display:
-                i.key === "timeline" &&
-                Object.keys(i.originalValue ?? {}).length > 1
-                  ? ""
-                  : "inline-flex",
-            }}
-            className="flex-1 gap-1 w-100 text-wrap text-muted align-items-center"
+            className={
+              "flex-1 gap-1 w-100 text-wrap text-muted align-items-center " +
+              (i.key === "timeline" &&
+              Object.keys(i.originalValue ?? {}).length > 1
+                ? ""
+                : "inline-flex")
+            }
           >
             <span className="inline-flex fw-bold text-black">
               <Widget
@@ -408,7 +413,9 @@ const Log = ({ timestamp }) => {
                   size: "sm",
                 }}
               />
-              {editorId}
+
+              {(editorId ?? "").substring(0, 15)}
+              {(editorId ?? "").length > 15 ? "..." : ""}
             </span>
             {parseProposalKeyAndValue(i.key, i.modifiedValue, i.originalValue)}
             on

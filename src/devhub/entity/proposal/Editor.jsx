@@ -721,7 +721,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
     category: category,
     summary: summary,
     linked_proposals: linkedProposalsIds,
-    requested_sponsorship_usd_amount: parseInt(requestedSponsorshipAmount),
+    requested_sponsorship_usd_amount: requestedSponsorshipAmount,
     requested_sponsorship_paid_in_currency: requestedSponsorshipToken.value,
     receiver_account: receiverAccount,
     supervisor: supervisor || null,

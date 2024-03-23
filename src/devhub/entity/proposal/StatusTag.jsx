@@ -33,6 +33,8 @@ const Container = styled.div`
     }
   }};
 
+  max-width: fit-content;
+
   .orange-tag {
     border: 1px solid #ff7a00 !important;
     color: #ff7a00 !important;
