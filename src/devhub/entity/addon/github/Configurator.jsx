@@ -66,15 +66,17 @@ const toMigrated = ({ metadata, id, ...restParams }) => ({
 });
 
 const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
-  const data = Object.values(kanbanBoards)?.[0];
+  kanbanBoards = [{}];
 
-  if (!data) {
+  if (!kanbanBoards) {
     return (
       <div class="alert alert-danger" role="alert">
         Loading...
       </div>
     );
   }
+
+  const data = Object.values(kanbanBoards)?.[0];
 
   const initialBoardState = Struct.typeMatch(data) ? toMigrated(data) : {};
 
@@ -478,8 +480,9 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
                   },
                   label: "New column",
                   disabled:
+                    parentState.columns &&
                     Object.keys(parentState.columns).length >=
-                    settings.maxColumnsNumber,
+                      settings.maxColumnsNumber,
                   icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
                   onClick: formUpdate({
                     path: ["columns"],
