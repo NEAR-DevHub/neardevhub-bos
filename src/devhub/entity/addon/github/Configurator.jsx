@@ -66,17 +66,15 @@ const toMigrated = ({ metadata, id, ...restParams }) => ({
 });
 
 const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
-  kanbanBoards = [{}];
+  const data = kanbanBoards ? Object.values(kanbanBoards)?.[0] : {};
 
-  if (!kanbanBoards) {
+  if (!data) {
     return (
       <div class="alert alert-danger" role="alert">
         Loading...
       </div>
     );
   }
-
-  const data = Object.values(kanbanBoards)?.[0];
 
   const initialBoardState = Struct.typeMatch(data) ? toMigrated(data) : {};
 
