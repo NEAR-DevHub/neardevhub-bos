@@ -200,3 +200,28 @@ test.describe("Is chain-abstraction community admin", () => {
     await pauseIfVideoRecording(page);
   });
 });
+
+test.describe("Is contract standards community admin", () => {
+  test.use({
+    storageState: "playwright-tests/storage-states/wallet-connected-admin.json",
+  });
+
+  test("should open github addon configuration", async ({ page }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community&handle=contract-standards&tab=github"
+    );
+    await pauseIfVideoRecording(page);
+    const configureButton = await page.getByRole("button", { name: "" });
+    await configureButton.scrollIntoViewIfNeeded();
+    await configureButton.click();
+    await pauseIfVideoRecording(page);
+    await expect(
+      await page.getByText("GitHub board configuration")
+    ).toBeVisible();
+
+    await expect(
+      await page.getByRole("button", { name: "Save" })
+    ).toBeVisible();
+    await pauseIfVideoRecording(page);
+  });
+});
