@@ -536,7 +536,7 @@ const DropdowntBtnContainer = styled.div`
     border: 1px solid #ccc;
     background-color: #fff;
     padding: 0.5rem;
-    z-index: 9999;
+    z-index: 99;
     font-size: 13px;
     border-radius:0.375rem !important;
   }

@@ -142,7 +142,7 @@ const Comment = ({ commentItem }) => {
 
   const link = `https://near.org/mob.near/widget/MainPage.N.Comment.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
   return (
-    <div style={{ zIndex: 9999, background: "white" }}>
+    <div style={{ zIndex: 99, background: "white" }}>
       <div className="d-flex gap-2 flex-1">
         <div className="d-none d-sm-flex">
           <Widget

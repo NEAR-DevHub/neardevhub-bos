@@ -721,7 +721,7 @@ return (
               <div
                 className="d-flex gap-2 flex-1"
                 style={{
-                  zIndex: 9999,
+                  zIndex: 99,
                   background: "white",
                   position: "relative",
                 }}
