@@ -90,6 +90,17 @@ const ButtonRow = styled.div`
 
 const [view, setView] = useState(props.view || "viewer");
 
+if ("${REPL_DEVHUB}" !== "devhub.near") {
+  addonMatch.configurator_widget = addonMatch.configurator_widget.replace(
+    "devhub.near/",
+    "${REPL_DEVHUB}/"
+  );
+  addonMatch.view_widget = addonMatch.view_widget.replace(
+    "devhub.near/",
+    "${REPL_DEVHUB}/"
+  );
+}
+
 return (
   <Container>
     {permissions.can_configure && (

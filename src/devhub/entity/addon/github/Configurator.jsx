@@ -66,7 +66,7 @@ const toMigrated = ({ metadata, id, ...restParams }) => ({
 });
 
 const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
-  const data = Object.values(kanbanBoards)?.[0];
+  const data = kanbanBoards ? Object.values(kanbanBoards)?.[0] : {};
 
   if (!data) {
     return (
@@ -478,8 +478,9 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
                   },
                   label: "New column",
                   disabled:
+                    parentState.columns &&
                     Object.keys(parentState.columns).length >=
-                    settings.maxColumnsNumber,
+                      settings.maxColumnsNumber,
                   icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
                   onClick: formUpdate({
                     path: ["columns"],
