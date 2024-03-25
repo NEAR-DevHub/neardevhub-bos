@@ -268,6 +268,7 @@ const [showProposalPage, setShowProposalPage] = useState(false); // when user cr
 const [proposalId, setProposalId] = useState(null);
 const [proposalIdsArray, setProposalIdsArray] = useState(null);
 const [isTxnCreated, setCreateTxn] = useState(false);
+const [oldProposalData, setOldProposalData] = useState(null);
 
 if (allowDraft) {
   draftProposalData = Storage.privateGet(draftKey);
@@ -436,21 +437,36 @@ const InputContainer = ({ heading, description, children }) => {
 // show proposal created after txn approval for popup wallet
 useEffect(() => {
   if (isTxnCreated) {
-    const proposalIds = Near.view(
-      "${REPL_DEVHUB_CONTRACT}",
-      "get_all_proposal_ids"
-    );
-    if (Array.isArray(proposalIds) && !proposalIdsArray) {
-      setProposalIdsArray(proposalIds);
-    }
-    if (
-      Array.isArray(proposalIds) &&
-      Array.isArray(proposalIdsArray) &&
-      proposalIds.length !== proposalIdsArray.length
-    ) {
-      setCreateTxn(false);
-      setProposalId(proposalIds.length - 1);
-      setShowProposalPage(true);
+    if (editProposalData) {
+      setOldProposalData(editProposalData);
+      if (
+        editProposalData &&
+        typeof editProposalData === "object" &&
+        oldProposalData &&
+        typeof oldProposalData === "object" &&
+        JSON.stringify(editProposalData) !== JSON.stringify(oldProposalData)
+      ) {
+        setCreateTxn(false);
+        setProposalId(editProposalData.id);
+        setShowProposalPage(true);
+      }
+    } else {
+      const proposalIds = Near.view(
+        "${REPL_DEVHUB_CONTRACT}",
+        "get_all_proposal_ids"
+      );
+      if (Array.isArray(proposalIds) && !proposalIdsArray) {
+        setProposalIdsArray(proposalIds);
+      }
+      if (
+        Array.isArray(proposalIds) &&
+        Array.isArray(proposalIdsArray) &&
+        proposalIds.length !== proposalIdsArray.length
+      ) {
+        setCreateTxn(false);
+        setProposalId(proposalIds.length - 1);
+        setShowProposalPage(true);
+      }
     }
   }
 });
