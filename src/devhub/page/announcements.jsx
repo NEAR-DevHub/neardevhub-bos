@@ -68,7 +68,6 @@ return (
     <Container className="d-flex gap-3 m-3 pl-2">
       <MainContent className="max-width-100">
         <div className="d-flex flex-column gap-4">
-          
           <div className="d-flex flex-wrap justify-content-between">
             <Heading>Announcements</Heading>
             <div
@@ -104,9 +103,7 @@ return (
               src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
               props={{
                 showFlagAccountFeature: true,
-                filteredAccountIds: [
-                  `community.${REPL_DEVHUB_CONTRACT}`,
-                ],
+                filteredAccountIds: [`community.${REPL_DEVHUB_CONTRACT}`],
                 sort: sort,
                 setPostExists: setPostExists,
                 showFlagAccountFeature: true,
@@ -125,7 +122,6 @@ return (
           </div>
           <div className="card p-4 d-flex flex-column gap-2">
             <SubHeading>Community Admins</SubHeading>
-            
           </div>
         </div>
       </SidebarContainer>

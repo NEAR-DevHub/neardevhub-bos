@@ -70,7 +70,6 @@ function Page() {
       );
     }
 
-
     // ?page=community
     case "community": {
       return (
