@@ -28,9 +28,7 @@ test.describe("Wallet is connected, but not KYC verified", () => {
 
     await expect(await page.getByText("notkycverified.near")).toBeVisible();
 
-    const getVerifiedButton = await page.getByRole("button", {
-      name: "Get Verified ",
-    });
+    const getVerifiedButton = await page.locator("#getVerifiedButton");
     await getVerifiedButton.scrollIntoViewIfNeeded();
     await getVerifiedButton.click();
 
@@ -39,7 +37,7 @@ test.describe("Wallet is connected, but not KYC verified", () => {
     );
     await expect(getVerifiedDropDown).toBeVisible();
     await pauseIfVideoRecording(page);
-    await getVerifiedDropDown.blur();
+    await getVerifiedButton.blur();
     await pauseIfVideoRecording(page);
     await expect(getVerifiedDropDown).not.toBeVisible();
     await pauseIfVideoRecording(page);
