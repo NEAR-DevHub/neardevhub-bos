@@ -145,9 +145,7 @@ const Comment = ({ commentItem }) => {
     props.accountId === accountId;
 
   return (
-    <div
-      style={{ zIndex: 9999, background: hightlightComment ? "red" : "white" }}
-    >
+    <div style={{ zIndex: 9999, background: "white" }}>
       <div className="d-flex gap-2 flex-1">
         <div className="d-none d-sm-flex">
           <Widget
@@ -157,7 +155,10 @@ const Comment = ({ commentItem }) => {
             }}
           />
         </div>
-        <CommentContainer className="rounded-2 flex-1">
+        <CommentContainer
+          style={{ border: hightlightComment ? "2px solid black" : "" }}
+          className="rounded-2 flex-1"
+        >
           <Header className="d-flex gap-3 align-items-center p-2 px-3">
             <div className="text-muted">
               <span className="fw-bold text-black">{accountId}</span> commented
