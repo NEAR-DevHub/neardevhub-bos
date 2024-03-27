@@ -14,6 +14,8 @@ const accountId = context.accountId;
 ---props---
 props.id: number;
 props.timestamp: number; optional
+accountId: string
+blockHeight:number
 */
 
 const TIMELINE_STATUS = {
@@ -829,6 +831,8 @@ return (
                     "${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentsAndLogs"
                   }
                   props={{
+                    ...props,
+                    id: proposal.id,
                     item: item,
                     snapshotHistory: [...proposal.snapshot_history, snapshot],
                   }}
