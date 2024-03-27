@@ -12,6 +12,37 @@ test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
 );
 
+test.describe("Wallet is connected, but not KYC verified", () => {
+  test.use({
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-not-kyc-verified-account.json",
+  });
+  test("should be able to blur 'get verified' drop-down", async ({ page }) => {
+    test.setTimeout(120000);
+    await page.goto("/devhub.near/widget/app?page=create-proposal");
+
+    const titleArea = await page.getByRole("textbox").first();
+    await titleArea.fill("Test proposal 123456");
+    await titleArea.blur();
+    await pauseIfVideoRecording(page);
+
+    await expect(await page.getByText("notkycverified.near")).toBeVisible();
+
+    const getVerifiedButton = await page.locator("#getVerifiedButton");
+    await getVerifiedButton.scrollIntoViewIfNeeded();
+    await getVerifiedButton.click();
+
+    const getVerifiedDropDown = await page.getByText(
+      "KYC Choose this if you are an individual. KYB Choose this if you are a business"
+    );
+    await expect(getVerifiedDropDown).toBeVisible();
+    await pauseIfVideoRecording(page);
+    await getVerifiedButton.blur();
+    await pauseIfVideoRecording(page);
+    await expect(getVerifiedDropDown).not.toBeVisible();
+    await pauseIfVideoRecording(page);
+  });
+});
 test.describe("Don't ask again enabled", () => {
   test.use({
     storageState:
@@ -35,7 +66,7 @@ test.describe("Don't ask again enabled", () => {
 
     await page.getByRole("button", { name: " New Proposal" }).click();
 
-    const titleArea = page.getByRole("textbox").first();
+    const titleArea = await page.getByRole("textbox").first();
     await titleArea.fill("Test proposal 123456");
     await titleArea.blur();
     await pauseIfVideoRecording(page);

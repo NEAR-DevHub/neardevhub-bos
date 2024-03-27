@@ -174,22 +174,23 @@ const VerificationBtn = () => {
       <div
         className="custom-select"
         tabIndex="0"
-        onBlur={() => setKycOptions(false)}
+        id="getVerifiedButton"
+        onClick={toggleDropdown}
+        onBlur={() => {
+          setTimeout(() => {
+            setKycOptions(false);
+          }, 0);
+        }}
       >
-        <div className={"select-header no-border"}>
-          <Widget
-            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-            props={{
-              classNames: { root: "black-btn" },
-              label: (
-                <div className="d-flex align-items-center gap-1">
-                  Get Verified
-                  <i class="bi bi-box-arrow-up-right"></i>
-                </div>
-              ),
-              onClick: toggleDropdown,
-            }}
-          />
+        <div
+          className={
+            "select-header no-border black-btn btn d-inline-flex align-items-center gap-2"
+          }
+        >
+          <div className="d-flex align-items-center gap-1">
+            Get Verified
+            <i class="bi bi-box-arrow-up-right"></i>
+          </div>
         </div>
 
         {kycOptionsOpen && (
