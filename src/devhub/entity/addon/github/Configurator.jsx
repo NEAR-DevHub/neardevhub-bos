@@ -41,7 +41,7 @@ const GithubKanbanBoardTicketTypesSchema = {
 
 const GithubKanbanBoardDefaults = {
   columns: {},
-  dataTypesIncluded: { Issue: false, PullRequest: true },
+  dataTypesIncluded: { issue: false, pullRequest: true },
   description: "",
   repoURL: "",
   ticketState: "all",
@@ -64,6 +64,32 @@ const toMigrated = ({ metadata, id, ...restParams }) => ({
   },
   ...restParams,
 });
+
+function extractOwnerAndRepo(url) {
+  // Remove any leading or trailing slashes and split the URL by "/"
+  const parts = url
+    .trim()
+    .replace(/^\/+|\/+$/g, "")
+    .split("/");
+
+  // Check if the URL matches the GitHub repository format
+  if (parts.length === 5 && parts[2] === "github.com") {
+    const owner = parts[3];
+    const repo = parts[4];
+    return { owner, repo };
+  } else {
+    return null;
+  }
+}
+
+function isValidGitHubRepoLink(url) {
+  // Regular expression to match GitHub repository URLs
+  const githubRepoRegex =
+    /^(?:https?:\/\/)?(?:www\.)?github\.com\/([^\/]+)\/([^\/]+)\/?$/;
+
+  // Check if the URL matches the GitHub repository format
+  return githubRepoRegex.test(url);
+}
 
 const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
   const data = kanbanBoards ? Object.values(kanbanBoards)?.[0] : {};
@@ -102,6 +128,36 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
   const [columnsState, setColumnsState] = useState(
     getColumnData(initialBoardState)
   );
+  const [repoLabels, setRepoLabels] = useState([]);
+
+  function fetchLabelsFromRepo(url) {
+    const data = extractOwnerAndRepo(url);
+    if (data) {
+      const { repo, owner } = data;
+      useCache(
+        () =>
+          asyncFetch(
+            `https://api.github.com/repos/${owner}/${repo}/labels`
+          ).then((res) => {
+            if (Array.isArray(res.body)) {
+              const labels = [];
+              res.body.map((item) => {
+                labels.push(item.name);
+              });
+              setRepoLabels(labels);
+            }
+          }),
+        owner + repo + "labels",
+        { subscribe: false }
+      );
+    }
+  }
+
+  useEffect(() => {
+    if (metadataState.repoURL && isValidGitHubRepoLink(metadataState.repoURL)) {
+      fetchLabelsFromRepo(metadataState.repoURL);
+    }
+  }, [metadataState]);
 
   const formUpdate =
     ({ path, via: customFieldUpdate, isColumnsUpdate, ...params }) =>
@@ -182,34 +238,31 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
   const formElement = (
     <>
       <div className="d-flex flex-column">
-        <div className="d-flex gap-1 flex-column flex-xl-row">
-          <Widget
-            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
-            props={{
-              className: "w-100",
-              key: `${metadataState.metadata.id}-repoURL`,
-              label: "Repository URL",
-              onChange: formUpdate({
-                path: ["repoURL"],
-                isColumnsUpdate: false,
-              }),
-              placeholder: "https://github.com/example-org/example-repo",
-              value: metadataState.repoURL,
-            }}
-          />
-          <Widget
-            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
-            props={{
-              className: "w-100",
-              key: `${metadataState.metadata.id}-title`,
-              label: "Title",
-              onChange: formUpdate({ path: ["title"], isColumnsUpdate: false }),
-              placeholder: "NEAR Protocol NEPs",
-              value: metadataState.title,
-            }}
-          />
-        </div>
-
+        <Widget
+          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+          props={{
+            className: "w-100",
+            key: `${metadataState.metadata.id}-repoURL`,
+            label: "Repository URL",
+            onChange: formUpdate({
+              path: ["repoURL"],
+              isColumnsUpdate: false,
+            }),
+            placeholder: "https://github.com/example-org/example-repo",
+            value: metadataState.repoURL,
+          }}
+        />
+        <Widget
+          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+          props={{
+            className: "w-100",
+            key: `${metadataState.metadata.id}-title`,
+            label: "Title",
+            onChange: formUpdate({ path: ["title"], isColumnsUpdate: false }),
+            placeholder: "NEAR Protocol NEPs",
+            value: metadataState.title,
+          }}
+        />
         <Widget
           src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
           props={{
@@ -225,56 +278,46 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
           }}
         />
       </div>
-
-      <div className="d-flex gap-4 flex-row flex-wrap justify-content-between">
+      <Widget
+        src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+        props={{
+          heading: "Ticket types",
+          classNames: { root: "col-12 col-md-4 h-auto" },
+          externalState: metadataState.dataTypesIncluded,
+          isActive: true,
+          isEmbedded: true,
+          isUnlocked: permissions.can_configure,
+          onChange: formUpdate({
+            path: ["dataTypesIncluded"],
+            isColumnsUpdate: false,
+          }),
+          schema: GithubKanbanBoardTicketTypesSchema,
+          hideSubmitBtn: true,
+        }}
+      />
+      <div>
+        <label>Select which state of tickets you want to display</label>
         <Widget
-          src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Switch`}
           props={{
-            heading: "Ticket types",
-            classNames: { root: "col-12 col-md-4 h-auto" },
-            externalState: metadataState.dataTypesIncluded,
-            isActive: true,
-            isEmbedded: true,
-            isUnlocked: permissions.can_configure,
+            currentValue: metadataState.ticketState,
+            key: "ticketState",
             onChange: formUpdate({
-              path: ["dataTypesIncluded"],
+              path: ["ticketState"],
               isColumnsUpdate: false,
             }),
-            schema: GithubKanbanBoardTicketTypesSchema,
-            hideSubmitBtn: true,
+            options: [
+              { label: "All", value: "all" },
+              { label: "Open", value: "open" },
+              { label: "Closed", value: "closed" },
+            ],
           }}
         />
-
-        <div
-          className={[
-            "col-12 col-md-3",
-            "d-flex gap-3 flex-column justify-content-center p-4",
-          ].join(" ")}
-        >
-          <span
-            className="d-inline-flex gap-2"
-            id={`${metadataState.metadata.id}-ticketState`}
-          >
-            <i class="bi bi-cone-striped" />
-            <span>Ticket state</span>
-          </span>
-          <Widget
-            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Switch`}
-            props={{
-              currentValue: metadataState.ticketState,
-              key: "ticketState",
-              onChange: formUpdate({
-                path: ["ticketState"],
-                isColumnsUpdate: false,
-              }),
-              options: [
-                { label: "All", value: "all" },
-                { label: "Open", value: "open" },
-                { label: "Closed", value: "closed" },
-              ],
-            }}
-          />
-        </div>
+      </div>
+      <div>
+        <label>
+          Select which items you want to display on each card in a column
+        </label>
         <Widget
           src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
           props={{
@@ -323,20 +366,22 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
                     value: title,
                   }}
                 />
-                <Widget
-                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
-                  props={{
-                    format: "comma-separated",
-                    key: `${metadataState.metadata.id}-column-${title}-labelSearchTerms`,
-                    label: `Search terms for all the labels
-											MUST be presented in included tickets`,
-                    onChange: formUpdate({
-                      path: ["columns", id, "labelSearchTerms"],
-                      isColumnsUpdate: true,
-                    }),
-                    placeholder: "WG-, draft, review, proposal, ...",
-                    value: labelSearchTerms.join(", "),
-                  }}
+                <label>
+                  Search terms for all the labels MUST be presented in included
+                  tickets
+                </label>
+                <Typeahead
+                  id="hashtags"
+                  onChange={formUpdate({
+                    path: ["columns", id, "labelSearchTerms"],
+                    isColumnsUpdate: true,
+                  })}
+                  selected={""}
+                  multiple
+                  labelKey="hashtags"
+                  emptyLabel="Find your unique label"
+                  placeholder="WG-, draft, review, proposal,"
+                  options={repoLabels}
                 />
                 <Widget
                   src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
@@ -460,12 +505,20 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
           />
         </div>
       ) : (
-        <div className={["d-flex flex-column gap-4 w-100"].join(" ")}>
-          <div className="d-flex align-items-center justify-content-between gap-3 w-100">
-            <h5 className="h5 d-inline-flex gap-2 m-0">
-              <i className="bi bi-gear-wide-connected" />
-              <span>GitHub board configuration</span>
-            </h5>
+        <div className={"d-flex flex-column gap-4 w-100"}>
+          <div className={"d-flex flex-column gap-2 w-100"}>
+            <div className="d-flex align-items-center justify-content-between gap-3 w-100">
+              <h5 className="h5 d-inline-flex gap-2 m-0">
+                <i className="bi bi-gear-wide-connected" />
+                <span>GitHub board configuration</span>
+              </h5>
+            </div>
+            <div>
+              This configuration enables integration of your GitHub repository
+              as a Kanban board, facilitating issue and pull request tracking.
+              You can create distinct columns to organize various items, each
+              with unique labels.
+            </div>
           </div>
           {Object.keys(parentState).length > 0 && (
             <div>
