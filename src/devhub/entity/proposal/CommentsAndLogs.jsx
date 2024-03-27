@@ -30,7 +30,7 @@ const Wrapper = styled.div`
 
   @media screen and (max-width: 768px) {
     .inline-flex {
-      display: flex !important;
+      display: -webkit-inline-box !important;
     }
   }
 `;
@@ -142,7 +142,7 @@ const Comment = ({ commentItem }) => {
 
   const link = `https://near.org/mob.near/widget/MainPage.N.Comment.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
   return (
-    <div style={{ zIndex: 9999, background: "white" }}>
+    <div style={{ zIndex: 99, background: "white" }}>
       <div className="d-flex gap-2 flex-1">
         <div className="d-none d-sm-flex">
           <Widget
@@ -437,7 +437,7 @@ if (Array.isArray(state.data)) {
     <Wrapper>
       <div
         className="log-line"
-        style={{ height: state.data.length > 4 ? "110%" : "150%" }}
+        style={{ height: state.data.length > 2 ? "110%" : "150%" }}
       ></div>
       <div className="d-flex flex-column gap-4">
         {state.data.map((i, index) => {

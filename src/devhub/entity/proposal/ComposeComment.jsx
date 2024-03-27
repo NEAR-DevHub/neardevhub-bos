@@ -47,7 +47,7 @@ if (!accountId) {
         backgroundColor: "#ECF8FB",
         border: "1px solid #E2E6EC",
       }}
-      className="d-flex align-items-center gap-1 p-4 rounded-2"
+      className="d-flex align-items-center gap-1 p-4 rounded-2 flex-wrap flex-md-nowrap"
     >
       <Link to="https://near.org/signup">
         <Widget
