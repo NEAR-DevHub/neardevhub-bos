@@ -1,6 +1,6 @@
 const onChange = props.onChange;
 const [proposalsOptions, setProposalsOptions] = useState([]);
-const [searchProposalId, setSearchProposalId] = useState(null);
+const [searchProposalId, setSearchProposalId] = useState("");
 const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
 const queryName =
   "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot";
@@ -16,10 +16,28 @@ ${queryName}(
 }
 }`;
 
+function separateNumberAndText(str) {
+  const numberRegex = /\d+/;
+
+  if (numberRegex.test(str)) {
+    const number = str.match(numberRegex)[0];
+    const text = str.replace(numberRegex, "").trim();
+    return { number: parseInt(number), text };
+  } else {
+    return { number: null, text: str.trim() };
+  }
+}
+
 const buildWhereClause = () => {
   let where = {};
-  if (searchProposalId) {
-    where = { proposal_id: { _eq: searchProposalId }, ...where };
+  const { number, text } = separateNumberAndText(searchProposalId);
+
+  if (number) {
+    where = { proposal_id: { _eq: number }, ...where };
+  }
+
+  if (text) {
+    where = { name: { _ilike: `%${text}%` }, ...where };
   }
 
   return where;
