@@ -97,7 +97,6 @@ test.describe("Don't ask again enabled", () => {
     await expect(postButton).toBeEnabled();
     await expect(composeTextarea).toBeEmpty();
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(5000);
   });
 });
 test.describe("Non authenticated user's wallet is connected", () => {
