@@ -1,5 +1,105 @@
 import { test, expect } from "@playwright/test";
+import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
+import { setDontAskAgainCacheValues } from "../util/cache.js";
+import { pauseIfVideoRecording } from "../testUtils";
+import {
+  mockTransactionSubmitRPCResponses,
+  decodeResultJSON,
+  encodeResultJSON,
+} from "../util/transaction.js";
 
+test.describe("Don't ask again enabled", () => {
+  test.use({
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+  });
+
+  test("Post announcement", async ({ page }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community&handle=webassemblymusic"
+    );
+    const widgetSrc =
+      "devhub.near/widget/devhub.entity.community.Announcements";
+    await setDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      methodName: "set_community_socialdb",
+      contractId: "devhub.near",
+    });
+
+    const composeTextarea = await page.locator(
+      `textarea[data-testid="compose-announcement"]`
+    );
+    await expect(composeTextarea).toBeVisible();
+    const announcementText =
+      "Announcements is live, though this is only an automated test!";
+    await composeTextarea.fill(announcementText);
+
+    const postButton = await page.locator(`button[data-testid="post-btn"]`);
+    await expect(postButton).toBeVisible();
+
+    await pauseIfVideoRecording(page);
+    const communityHandle = "webassemblymusic.community.devhub.near";
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        const postData = request.postDataJSON();
+        const args_base64 = postData.params?.args_base64;
+        if (transaction_completed && args_base64) {
+          const args = atob(args_base64);
+          if (
+            postData.params.account_id === "social.near" &&
+            postData.params.method_name === "get" &&
+            args === `{"keys":["${communityHandle}/post/**"]}`
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+
+            const resultObj = decodeResultJSON(json.result.result);
+            resultObj[communityHandle].post.main = JSON.stringify({
+              text: announcementText,
+            });
+            json.result.result = encodeResultJSON(resultObj);
+
+            await route.fulfill({ response, json });
+            return;
+          }
+        }
+        await route.continue();
+      }
+    );
+    await postButton.click();
+
+    const loadingIndicator = await page
+      .locator(".submit-post-loading-indicator")
+      .first();
+
+    await expect(loadingIndicator).toBeVisible();
+
+    await expect(postButton).toBeDisabled();
+
+    await expect(page.locator("div.modal-body code")).not.toBeVisible();
+
+    const transaction_toast = await page.getByText(
+      "Calling contract devhub.near with method set_community_socialdb"
+    );
+    await expect(transaction_toast).toBeVisible();
+
+    await expect(transaction_toast).not.toBeVisible();
+
+    await expect(loadingIndicator).not.toBeVisible();
+    await expect(postButton).toBeEnabled();
+    await expect(composeTextarea).toBeEmpty();
+    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(5000);
+  });
+});
 test.describe("Non authenticated user's wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
