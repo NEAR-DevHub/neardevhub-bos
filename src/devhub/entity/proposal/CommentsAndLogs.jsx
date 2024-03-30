@@ -139,8 +139,11 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
+  const link = `https://near.social/devhub.near/widget/app?page=proposal&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`;
+  const hightlightComment =
+    parseInt(props.blockHeight ?? "") === blockHeight &&
+    props.accountId === accountId;
 
-  const link = `https://near.org/mob.near/widget/MainPage.N.Comment.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
   return (
     <div style={{ zIndex: 9999, background: "white" }}>
       <div className="d-flex gap-2 flex-1">
@@ -152,7 +155,10 @@ const Comment = ({ commentItem }) => {
             }}
           />
         </div>
-        <CommentContainer className="rounded-2 flex-1">
+        <CommentContainer
+          style={{ border: hightlightComment ? "2px solid black" : "" }}
+          className="rounded-2 flex-1"
+        >
           <Header className="d-flex gap-3 align-items-center p-2 px-3">
             <div className="text-muted">
               <span className="fw-bold text-black">{accountId}</span> commented
