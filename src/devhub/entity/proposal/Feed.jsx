@@ -220,7 +220,6 @@ const FeedPage = () => {
       category
       summary
       editor_id
-      name
       proposal_id
       ts
       timeline
