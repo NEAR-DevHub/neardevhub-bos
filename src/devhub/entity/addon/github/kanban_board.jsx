@@ -32,8 +32,8 @@ const GithubKanbanBoard = ({
   metadata,
 }) => {
   State.init({
-    fetchedIssuesCount: 0,
-    fetchedPullsCount: 0,
+    fetchedIssuesCount: {},
+    fetchedPullsCount: {},
     ticketsByColumn: {},
     cachedItems: {},
     displayCount: 40,
@@ -43,16 +43,26 @@ const GithubKanbanBoard = ({
 
   const ticketStateFilter = ticketState ?? "all";
 
-  function fetchPullRequests(columnId, labels) {
-    const pageNumber =
-      state.fetchedPullsCount === 0
-        ? 1
-        : state.fetchedPullsCount / resPerPage + 1;
+  function fetchPullRequests(columnId, labelSearchTerms) {
+    const pageNumber = !state.fetchedPullsCount[columnId]
+      ? 1
+      : state.fetchedPullsCount[columnId] / resPerPage + 1;
     const { repo, owner } = extractOwnerAndRepo(repoURL);
+    // labels query doesn't exists for pull requests
     const res = fetch(
-      `https://api.github.com/repos/${owner}/${repo}/pulls?state=${ticketStateFilter}&per_page=${resPerPage}&page=${pageNumber}&labels=${labels}`
+      `https://api.github.com/repos/${owner}/${repo}/pulls?state=${ticketStateFilter}&per_page=${resPerPage}&page=${pageNumber}`
     );
     if (res !== null) {
+      res.body = res.body.filter((ticket) =>
+        (labelSearchTerms ?? []).every((searchTerm) =>
+          searchTerm.length > 0
+            ? ticket.labels.some((label) =>
+                label.name.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+            : false
+        )
+      );
+
       if (!res.body.length || res.body.length < resPerPage) {
         State.update({
           pullRequestsLastPage: true,
@@ -60,7 +70,11 @@ const GithubKanbanBoard = ({
       }
       State.update((lastKnownState) => ({
         ...lastKnownState,
-        fetchedPullsCount: lastKnownState.fetchedPullsCount + resPerPage,
+        fetchedPullsCount: {
+          ...lastKnownState.fetchedPullsCount,
+          [columnId]:
+            lastKnownState.fetchedPullsCount[columnId] ?? 0 + resPerPage,
+        },
         ticketsByColumn: {
           ...lastKnownState.ticketsByColumn,
           [columnId]: [
@@ -73,10 +87,9 @@ const GithubKanbanBoard = ({
   }
 
   function fetchIssues(columnId, labels) {
-    const pageNumber =
-      state.fetchedIssuesCount === 0
-        ? 1
-        : state.fetchedIssuesCount / resPerPage + 1;
+    const pageNumber = !state.fetchedIssuesCount[columnId]
+      ? 1
+      : state.fetchedIssuesCount[columnId] / resPerPage + 1;
     const { repo, owner } = extractOwnerAndRepo(repoURL);
     const res = fetch(
       `https://api.github.com/repos/${owner}/${repo}/issues?state=${ticketStateFilter}&per_page=${resPerPage}&page=${pageNumber}&labels=${labels}`
@@ -89,7 +102,11 @@ const GithubKanbanBoard = ({
       }
       State.update((lastKnownState) => ({
         ...lastKnownState,
-        fetchedIssuesCount: lastKnownState.fetchedIssuesCount + resPerPage,
+        fetchedIssuesCount: {
+          ...lastKnownState.fetchedIssuesCount,
+          [columnId]:
+            lastKnownState.fetchedIssuesCount[columnId] ?? 0 + resPerPage,
+        },
         ticketsByColumn: {
           ...lastKnownState.ticketsByColumn,
           [columnId]: [
@@ -101,13 +118,17 @@ const GithubKanbanBoard = ({
     }
   }
 
-  if (repoURL && !Object.keys(state.ticketsByColumn).length) {
+  if (
+    repoURL &&
+    Object.keys(state.ticketsByColumn).length !== Object.keys(columns).length
+  ) {
     Object.keys(columns).map((item) => {
       const columnId = item;
       const columnData = columns[columnId];
       const labels = (columnData?.labelSearchTerms ?? []).join(",");
       dataTypesIncluded.issue && fetchIssues(columnId, labels);
-      dataTypesIncluded.pullRequest && fetchPullRequests(columnId, labels);
+      dataTypesIncluded.pullRequest &&
+        fetchPullRequests(columnId, columnData?.labelSearchTerms);
     });
   }
 
@@ -138,18 +159,18 @@ const GithubKanbanBoard = ({
     const labels = (labelSearchTerms ?? []).join(",");
     if (
       dataTypesIncluded.issue &&
-      state.fetchedIssuesCount < 2 * newDisplayCount
+      state.fetchedIssuesCount[columnId] < 2 * newDisplayCount
     ) {
       fetchIssues(columnId, labels);
     }
     if (
       dataTypesIncluded.pullRequest &&
-      state.fetchedPullsCount < 2 * newDisplayCount
+      state.fetchedPullsCount[columnId] < 2 * newDisplayCount
     ) {
-      fetchPullRequests(columnId, labels);
+      fetchPullRequests(columnId, labelSearchTerms);
     }
   };
-
+  console.log(columns, state.ticketsByColumn, state.fetchedPullsCount);
   return (
     <div>
       <div className="d-flex flex-column align-items-center gap-2 pb-4">
@@ -198,8 +219,8 @@ const GithubKanbanBoard = ({
                     <p class="text-secondary m-0">{column.description}</p>
                   </span>
 
-                  {(state.fetchedIssuesCount > 0 ||
-                    state.fetchedPullsCount > 0) && (
+                  {(state.fetchedIssuesCount[column.id] > 0 ||
+                    state.fetchedPullsCount[column.id] > 0) && (
                     <InfiniteScroll
                       loadMore={() =>
                         makeMoreItems(column.id, column?.labelSearchTerms)

@@ -41,7 +41,7 @@ const GithubKanbanBoardTicketTypesSchema = {
 
 const GithubKanbanBoardDefaults = {
   columns: {},
-  dataTypesIncluded: { issue: false, pullRequest: true },
+  dataTypesIncluded: { issue: true, pullRequest: false },
   description: "",
   repoURL: "",
   ticketState: "all",
