@@ -3,33 +3,7 @@ const { DataRequest } = VM.require(
 );
 DataRequest || (DataRequest = { paginated: () => {} });
 
-const dataToColumns = (data, columns) =>
-  Object.values(columns).reduce(
-    (registry, column) => ({
-      ...registry,
-      [column.id]:
-        column.labelSearchTerms.length > 0
-          ? [
-              ...(registry[column.id] ?? []),
-              ...data.filter((ticket) =>
-                column.labelSearchTerms.every((searchTerm) =>
-                  searchTerm.length > 0
-                    ? ticket.labels.some((label) =>
-                        label.name
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
-                      )
-                    : false
-                )
-              ),
-            ]
-          : [],
-    }),
-
-    {}
-  );
-
-const withType = (type) => (data) => ({ ...data, type });
+const resPerPage = 100;
 
 function extractOwnerAndRepo(url) {
   // Remove any leading or trailing slashes and split the URL by "/"
@@ -57,65 +31,122 @@ const GithubKanbanBoard = ({
   dataTypesIncluded,
   metadata,
 }) => {
-  const ticketStateFilter = ticketState ?? "all";
-
   State.init({
+    fetchedIssuesCount: 0,
+    fetchedPullsCount: 0,
     ticketsByColumn: {},
+    cachedItems: {},
+    displayCount: 40,
+    issuesLastPage: false,
+    pullRequestsLastPage: false,
   });
 
-  if (repoURL) {
+  const ticketStateFilter = ticketState ?? "all";
+
+  function fetchPullRequests(columnId, labels) {
+    const pageNumber =
+      state.fetchedPullsCount === 0
+        ? 1
+        : state.fetchedPullsCount / resPerPage + 1;
     const { repo, owner } = extractOwnerAndRepo(repoURL);
+    const res = fetch(
+      `https://api.github.com/repos/${owner}/${repo}/pulls?state=${ticketStateFilter}&per_page=${resPerPage}&page=${pageNumber}&labels=${labels}`
+    );
+    if (res !== null) {
+      if (!res.body.length || res.body.length < resPerPage) {
+        State.update({
+          pullRequestsLastPage: true,
+        });
+      }
+      State.update((lastKnownState) => ({
+        ...lastKnownState,
+        fetchedPullsCount: lastKnownState.fetchedPullsCount + resPerPage,
+        ticketsByColumn: {
+          ...lastKnownState.ticketsByColumn,
+          [columnId]: [
+            ...(lastKnownState?.ticketsByColumn?.[columnId] ?? []),
+            ...res.body,
+          ],
+        },
+      }));
+    }
+  }
+
+  function fetchIssues(columnId, labels) {
+    const pageNumber =
+      state.fetchedIssuesCount === 0
+        ? 1
+        : state.fetchedIssuesCount / resPerPage + 1;
+    const { repo, owner } = extractOwnerAndRepo(repoURL);
+    const res = fetch(
+      `https://api.github.com/repos/${owner}/${repo}/issues?state=${ticketStateFilter}&per_page=${resPerPage}&page=${pageNumber}&labels=${labels}`
+    );
+    if (res !== null) {
+      if (!res.body.length || res.body.length < resPerPage) {
+        State.update({
+          issuesLastPage: true,
+        });
+      }
+      State.update((lastKnownState) => ({
+        ...lastKnownState,
+        fetchedIssuesCount: lastKnownState.fetchedIssuesCount + resPerPage,
+        ticketsByColumn: {
+          ...lastKnownState.ticketsByColumn,
+          [columnId]: [
+            ...(lastKnownState?.ticketsByColumn?.[columnId] ?? []),
+            ...res.body,
+          ],
+        },
+      }));
+    }
+  }
+
+  if (repoURL && !Object.keys(state.ticketsByColumn).length) {
     Object.keys(columns).map((item) => {
       const columnId = item;
       const columnData = columns[columnId];
       const labels = (columnData?.labelSearchTerms ?? []).join(",");
-      const pullRequests = dataTypesIncluded.pullRequest
-        ? DataRequest?.paginated(
-            (pageNumber) =>
-              useCache(
-                () =>
-                  asyncFetch(
-                    `https://api.github.com/repos/${owner}/${repo}/pulls?state=${ticketStateFilter}&per_page=100&page=${pageNumber}&labels=${labels}`
-                  ).then((res) => res?.body),
-                repoURL +
-                  ticketStateFilter +
-                  labels +
-                  dataTypesIncluded +
-                  pageNumber,
-                { subscribe: false }
-              ),
-            { startWith: 1 }
-          )
-        : [];
-
-      const issues = dataTypesIncluded.issue
-        ? DataRequest?.paginated(
-            (pageNumber) =>
-              useCache(
-                () =>
-                  asyncFetch(
-                    `https://api.github.com/repos/${owner}/${repo}/issues?state=${ticketStateFilter}&per_page=100&page=${pageNumber}&labels=${labels}`
-                  ).then((res) => res?.body),
-                repoURL +
-                  ticketStateFilter +
-                  labels +
-                  dataTypesIncluded +
-                  pageNumber,
-                { subscribe: false }
-              ),
-            { startWith: 1 }
-          ) ?? []
-        : [];
-
-      State.update((lastKnownState) => ({
-        ...lastKnownState,
-        ticketsByColumn: {
-          ...lastKnownState.ticketsByColumn,
-          [columnId]: [...issues, ...pullRequests],
-        },
-      }));
+      dataTypesIncluded.issue && fetchIssues(columnId, labels);
+      dataTypesIncluded.pullRequest && fetchPullRequests(columnId, labels);
     });
   }
+
+  const renderItem = (ticket) => (
+    <Widget
+      src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
+      props={{ metadata: metadata.ticket, payload: ticket }}
+      key={ticket.id}
+    />
+  );
+
+  const cachedRenderItem = (item, index) => {
+    const key = JSON.stringify(item);
+
+    if (!(key in state.cachedItems)) {
+      state.cachedItems[key] = renderItem(item, index);
+      State.update();
+    }
+    return state.cachedItems[key];
+  };
+
+  const makeMoreItems = (columnId, labelSearchTerms) => {
+    const addDisplayCount = 20;
+    const newDisplayCount = state.displayCount + addDisplayCount;
+    State.update({
+      displayCount: newDisplayCount,
+    });
+
+    const labels = (labelSearchTerms ?? []).join(",");
+    if (dataTypesIncluded.issue && state.fetchedIssuesCount < newDisplayCount) {
+      fetchIssues(columnId, labels);
+    }
+    if (
+      dataTypesIncluded.pullRequest &&
+      state.fetchedPullsCount < newDisplayCount
+    ) {
+      fetchPullRequests(columnId, labels);
+    }
+  };
 
   return (
     <div>
@@ -140,7 +171,10 @@ const GithubKanbanBoard = ({
           </div>
         ) : null}
         {Object.values(columns ?? {})?.map((column) => {
-          const tickets = state.ticketsByColumn[column.id] ?? [];
+          const tickets = state.ticketsByColumn[column.id]
+            ? state.ticketsByColumn[column.id].slice(0, state.displayCount)
+            : [];
+          const renderedItems = tickets.map(cachedRenderItem);
 
           return (
             <div
@@ -169,13 +203,20 @@ const GithubKanbanBoard = ({
                   </span>
 
                   <div class="d-flex flex-column gap-2">
-                    {tickets.map((ticket) => (
-                      <Widget
-                        src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
-                        props={{ metadata: metadata.ticket, payload: ticket }}
-                        key={ticket.id}
-                      />
-                    ))}
+                    {(state.fetchedIssuesCount > 0 ||
+                      state.fetchedPullsCount > 0) && (
+                      <InfiniteScroll
+                        // loadMore={() => makeMoreItems(column.id, column?.labelSearchTerms)}
+                        // hasMore={
+                        //   (dataTypesIncluded.issue && !state.issuesLastPage) ||
+                        //   (dataTypesIncluded.pullRequest && !state.pullRequestsLastPage)
+                        // }
+                        loader={<>Loading...</>}
+                        useWindow={false}
+                      >
+                        {renderedItems}
+                      </InfiniteScroll>
+                    )}
                   </div>
                 </div>
               </div>
