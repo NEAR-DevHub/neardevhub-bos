@@ -39,11 +39,15 @@ const GithubKanbanBoard = ({
     displayCount: 40,
     issuesLastPage: false,
     pullRequestsLastPage: false,
+    isLoading: false,
   });
 
   const ticketStateFilter = ticketState ?? "all";
 
   function fetchPullRequests(columnId, labels) {
+    State.update({
+      isLoading: true,
+    });
     const pageNumber =
       state.fetchedPullsCount === 0
         ? 1
@@ -61,6 +65,7 @@ const GithubKanbanBoard = ({
       State.update((lastKnownState) => ({
         ...lastKnownState,
         fetchedPullsCount: lastKnownState.fetchedPullsCount + resPerPage,
+        isLoading: false,
         ticketsByColumn: {
           ...lastKnownState.ticketsByColumn,
           [columnId]: [
@@ -73,6 +78,9 @@ const GithubKanbanBoard = ({
   }
 
   function fetchIssues(columnId, labels) {
+    State.update({
+      isLoading: true,
+    });
     const pageNumber =
       state.fetchedIssuesCount === 0
         ? 1
@@ -90,6 +98,7 @@ const GithubKanbanBoard = ({
       State.update((lastKnownState) => ({
         ...lastKnownState,
         fetchedIssuesCount: lastKnownState.fetchedIssuesCount + resPerPage,
+        loading: false,
         ticketsByColumn: {
           ...lastKnownState.ticketsByColumn,
           [columnId]: [
@@ -130,21 +139,25 @@ const GithubKanbanBoard = ({
   };
 
   const makeMoreItems = (columnId, labelSearchTerms) => {
-    const addDisplayCount = 20;
-    const newDisplayCount = state.displayCount + addDisplayCount;
-    State.update({
-      displayCount: newDisplayCount,
-    });
-
-    const labels = (labelSearchTerms ?? []).join(",");
-    if (dataTypesIncluded.issue && state.fetchedIssuesCount < newDisplayCount) {
-      fetchIssues(columnId, labels);
-    }
-    if (
-      dataTypesIncluded.pullRequest &&
-      state.fetchedPullsCount < newDisplayCount
-    ) {
-      fetchPullRequests(columnId, labels);
+    if (!state.isLoading) {
+      const addDisplayCount = 20;
+      const newDisplayCount = state.displayCount + addDisplayCount;
+      State.update({
+        displayCount: newDisplayCount,
+      });
+      const labels = (labelSearchTerms ?? []).join(",");
+      if (
+        dataTypesIncluded.issue &&
+        state.fetchedIssuesCount < newDisplayCount
+      ) {
+        fetchIssues(columnId, labels);
+      }
+      if (
+        dataTypesIncluded.pullRequest &&
+        state.fetchedPullsCount < newDisplayCount
+      ) {
+        fetchPullRequests(columnId, labels);
+      }
     }
   };
 
@@ -189,6 +202,7 @@ const GithubKanbanBoard = ({
                     "card-body d-flex flex-column gap-3 p-2",
                     "border border-1 rounded-4",
                   ].join(" ")}
+                  id={column.id}
                 >
                   <span className="d-flex flex-column py-1">
                     <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
@@ -202,22 +216,26 @@ const GithubKanbanBoard = ({
                     <p class="text-secondary m-0">{column.description}</p>
                   </span>
 
-                  <div class="d-flex flex-column gap-2">
-                    {(state.fetchedIssuesCount > 0 ||
-                      state.fetchedPullsCount > 0) && (
-                      <InfiniteScroll
-                        // loadMore={() => makeMoreItems(column.id, column?.labelSearchTerms)}
-                        // hasMore={
-                        //   (dataTypesIncluded.issue && !state.issuesLastPage) ||
-                        //   (dataTypesIncluded.pullRequest && !state.pullRequestsLastPage)
-                        // }
-                        loader={<>Loading...</>}
-                        useWindow={false}
-                      >
+                  {(state.fetchedIssuesCount > 0 ||
+                    state.fetchedPullsCount > 0) && (
+                    <InfiniteScroll
+                      loadMore={() =>
+                        makeMoreItems(column.id, column?.labelSearchTerms)
+                      }
+                      hasMore={
+                        (dataTypesIncluded.issue && !state.issuesLastPage) ||
+                        (dataTypesIncluded.pullRequest &&
+                          !state.pullRequestsLastPage)
+                      }
+                      loader={<>Loading...</>}
+                      useWindow={false}
+                      threshold={80}
+                    >
+                      <div class="d-flex flex-column gap-2">
                         {renderedItems}
-                      </InfiniteScroll>
-                    )}
-                  </div>
+                      </div>
+                    </InfiniteScroll>
+                  )}
                 </div>
               </div>
             </div>
