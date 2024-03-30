@@ -39,15 +39,11 @@ const GithubKanbanBoard = ({
     displayCount: 40,
     issuesLastPage: false,
     pullRequestsLastPage: false,
-    isLoading: false,
   });
 
   const ticketStateFilter = ticketState ?? "all";
 
   function fetchPullRequests(columnId, labels) {
-    State.update({
-      isLoading: true,
-    });
     const pageNumber =
       state.fetchedPullsCount === 0
         ? 1
@@ -65,7 +61,6 @@ const GithubKanbanBoard = ({
       State.update((lastKnownState) => ({
         ...lastKnownState,
         fetchedPullsCount: lastKnownState.fetchedPullsCount + resPerPage,
-        isLoading: false,
         ticketsByColumn: {
           ...lastKnownState.ticketsByColumn,
           [columnId]: [
@@ -78,9 +73,6 @@ const GithubKanbanBoard = ({
   }
 
   function fetchIssues(columnId, labels) {
-    State.update({
-      isLoading: true,
-    });
     const pageNumber =
       state.fetchedIssuesCount === 0
         ? 1
@@ -98,7 +90,6 @@ const GithubKanbanBoard = ({
       State.update((lastKnownState) => ({
         ...lastKnownState,
         fetchedIssuesCount: lastKnownState.fetchedIssuesCount + resPerPage,
-        loading: false,
         ticketsByColumn: {
           ...lastKnownState.ticketsByColumn,
           [columnId]: [
@@ -139,25 +130,23 @@ const GithubKanbanBoard = ({
   };
 
   const makeMoreItems = (columnId, labelSearchTerms) => {
-    if (!state.isLoading) {
-      const addDisplayCount = 20;
-      const newDisplayCount = state.displayCount + addDisplayCount;
-      State.update({
-        displayCount: newDisplayCount,
-      });
-      const labels = (labelSearchTerms ?? []).join(",");
-      if (
-        dataTypesIncluded.issue &&
-        state.fetchedIssuesCount < newDisplayCount
-      ) {
-        fetchIssues(columnId, labels);
-      }
-      if (
-        dataTypesIncluded.pullRequest &&
-        state.fetchedPullsCount < newDisplayCount
-      ) {
-        fetchPullRequests(columnId, labels);
-      }
+    const addDisplayCount = 20;
+    const newDisplayCount = state.displayCount + addDisplayCount;
+    State.update({
+      displayCount: newDisplayCount,
+    });
+    const labels = (labelSearchTerms ?? []).join(",");
+    if (
+      dataTypesIncluded.issue &&
+      state.fetchedIssuesCount < 2 * newDisplayCount
+    ) {
+      fetchIssues(columnId, labels);
+    }
+    if (
+      dataTypesIncluded.pullRequest &&
+      state.fetchedPullsCount < 2 * newDisplayCount
+    ) {
+      fetchPullRequests(columnId, labels);
     }
   };
 
@@ -197,7 +186,7 @@ const GithubKanbanBoard = ({
             >
               <div className="card rounded-4">
                 <div
-                  style={{ height: "75vh", overflow: "scroll" }}
+                  style={{ height: "75vh", overflow: "auto" }}
                   className={[
                     "card-body d-flex flex-column gap-3 p-2",
                     "border border-1 rounded-4",
@@ -205,14 +194,7 @@ const GithubKanbanBoard = ({
                   id={column.id}
                 >
                   <span className="d-flex flex-column py-1">
-                    <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
-                      {column.title}
-
-                      <span className="badge rounded-pill bg-secondary">
-                        {tickets.length}
-                      </span>
-                    </h6>
-
+                    <h6 className="card-title h6 m-0">{column.title}</h6>
                     <p class="text-secondary m-0">{column.description}</p>
                   </span>
 
