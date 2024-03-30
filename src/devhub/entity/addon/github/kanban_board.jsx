@@ -170,7 +170,7 @@ const GithubKanbanBoard = ({
       fetchPullRequests(columnId, labelSearchTerms);
     }
   };
-  console.log(columns, state.ticketsByColumn, state.fetchedPullsCount);
+
   return (
     <div>
       <div className="d-flex flex-column align-items-center gap-2 pb-4">
