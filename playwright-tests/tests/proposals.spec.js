@@ -180,3 +180,57 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
 });
+
+test.describe("Wallet is connected", () => {
+  test.use({
+    storageState: "playwright-tests/storage-states/wallet-connected.json",
+  });
+  test("editing proposal should not be laggy", async ({ page }) => {
+    test.setTimeout(120000);
+    await page.goto("/devhub.near/widget/app?page=create-proposal");
+
+    const titleArea = await page.getByRole("textbox").first();
+    await titleArea.fill("Test proposal 123456");
+    await titleArea.blur();
+    await pauseIfVideoRecording(page);
+
+    const categoryDropdown = await page.locator(".dropdown-toggle").first();
+    await categoryDropdown.click();
+    await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
+
+    const disabledSubmitButton = await page.locator(
+      ".submit-draft-button.disabled"
+    );
+
+    const summary = await page.locator('textarea[type="text"]');
+    await summary.fill("Test proposal summary 123456789");
+    await summary.blur();
+    await pauseIfVideoRecording(page);
+
+    const descriptionArea = await page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await descriptionArea.focus();
+    await descriptionArea.fill("The test proposal description.");
+    await descriptionArea.blur();
+    await pauseIfVideoRecording(page);
+
+    await page.locator('input[type="text"]').nth(2).fill("1000");
+    await pauseIfVideoRecording(page);
+    await page.getByRole("checkbox").first().click();
+    await pauseIfVideoRecording(page);
+    await expect(disabledSubmitButton).toBeAttached();
+    await page.getByRole("checkbox").nth(1).click();
+    await pauseIfVideoRecording(page);
+    await expect(disabledSubmitButton).not.toBeAttached();
+
+    const submitButton = await page.getByText("Submit Draft");
+    await submitButton.scrollIntoViewIfNeeded();
+    await submitButton.hover();
+    await pauseIfVideoRecording(page);
+    await submitButton.click();
+    await expect(disabledSubmitButton).toBeAttached();
+
+    await pauseIfVideoRecording(page);
+  });
+});
