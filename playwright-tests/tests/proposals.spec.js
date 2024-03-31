@@ -107,44 +107,17 @@ test.describe("Don't ask again enabled", () => {
         const postData = request.postDataJSON();
         if (
           transaction_completed &&
-          postData.params?.method_name === "get_proposals"
+          postData.params?.method_name === "get_all_proposal_ids"
         ) {
           const response = await route.fetch();
           const json = await response.json();
 
-          console.log("transaction completed, modifying get_proposals result");
+          console.log(
+            "transaction completed, modifying get_proposal_ids result"
+          );
           const resultObj = decodeResultJSON(json.result.result);
-          resultObj.push({
-            proposal_version: "V0",
-            id: 8,
-            author_id:
-              "8566fc4bb16e1a7446b5e9b1b8aea94b5751d5f8c658d7af18d8cdf642d7b31d",
-            social_db_post_block_height: "114956244",
-            snapshot: {
-              editor_id:
-                "8566fc4bb16e1a7446b5e9b1b8aea94b5751d5f8c658d7af18d8cdf642d7b31d",
-              timestamp: "1710767750951688236",
-              labels: [],
-              proposal_body_version: "V0",
-              name: "Test proposal ",
-              category: "Universities & Bootcamps",
-              summary: "Test proposal summary",
-              description: "the description",
-              linked_proposals: [],
-              requested_sponsorship_usd_amount: "3200",
-              requested_sponsorship_paid_in_currency: "USDC",
-              receiver_account:
-                "8566fc4bb16e1a7446b5e9b1b8aea94b5751d5f8c658d7af18d8cdf642d7b31d",
-              requested_sponsor: "neardevdao.near",
-              supervisor: "bpolania.near",
-              timeline: {
-                status: "REVIEW",
-                sponsor_requested_review: false,
-                reviewer_completed_attestation: false,
-              },
-            },
-            snapshot_history: [],
-          });
+          resultObj.push(1);
+          console.log(JSON.stringify(resultObj));
           json.result.result = encodeResultJSON(resultObj);
 
           await route.fulfill({ response, json });
@@ -191,7 +164,7 @@ test.describe("Wallet is connected", () => {
 
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
-    await titleArea.pressSequentially("Test proposal 123456", { delay: 10 });
+    await titleArea.pressSequentially("Test proposal 123456", { delay: 100 });
 
     await pauseIfVideoRecording(page);
 
@@ -205,7 +178,7 @@ test.describe("Wallet is connected", () => {
 
     const summary = await page.locator('textarea[type="text"]');
     await summary.pressSequentially("Test proposal summary 123456789", {
-      delay: 10,
+      delay: 100,
     });
 
     await pauseIfVideoRecording(page);
@@ -221,7 +194,7 @@ test.describe("Wallet is connected", () => {
     await page
       .locator('input[type="text"]')
       .nth(2)
-      .pressSequentially("12345", { delay: 10 });
+      .pressSequentially("12345", { delay: 100 });
     await pauseIfVideoRecording(page);
     await page.getByRole("checkbox").first().click();
     await pauseIfVideoRecording(page);

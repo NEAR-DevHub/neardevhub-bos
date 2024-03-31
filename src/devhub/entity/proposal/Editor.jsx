@@ -252,7 +252,7 @@ const [supervisor, setSupervisor] = useState(null);
 const [allowDraft, setAllowDraft] = useState(true);
 
 const [proposalsOptions, setProposalsOptions] = useState([]);
-const proposalsData = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals");
+//const proposalsData = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals");
 
 const [loading, setLoading] = useState(true);
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
@@ -261,8 +261,6 @@ const [selectedStatus, setSelectedStatus] = useState("draft");
 const [isReviewModalOpen, setReviewModal] = useState(false);
 const [amountError, setAmountError] = useState(null);
 const [isCancelModalOpen, setCancelModal] = useState(false);
-
-const [isSubmittingTransaction, setIsSubmittingTransaction] = useState(false);
 
 const [showProposalPage, setShowProposalPage] = useState(false); // when user creates/edit a proposal and confirm the txn, this is true
 const [proposalId, setProposalId] = useState(null);
@@ -354,7 +352,7 @@ useEffect(() => {
     return;
   }
   setDisabledSubmitBtn(
-    isSubmittingTransaction ||
+    isTxnCreated ||
       amountError ||
       !title ||
       !description ||
@@ -379,7 +377,7 @@ useEffect(() => {
   draftProposalData,
   consent,
   amountError,
-  isSubmittingTransaction,
+  isTxnCreated,
   showProposalPage,
 ]);
 
@@ -397,15 +395,7 @@ useEffect(() => {
   }
 }, [editProposalData, proposalsOptions]);
 
-useEffect(() => {
-  if (isSubmittingTransaction) {
-    // Trigger when proposals data change, which will happen on cache invalidation
-    setIsSubmittingTransaction(false);
-    console.log("Proposals data change, assume transaction completed");
-  }
-}, [proposalsData, isSubmittingTransaction]);
-
-useEffect(() => {
+/*useEffect(() => {
   if (
     proposalsData !== null &&
     Array.isArray(proposalsData) &&
@@ -420,7 +410,7 @@ useEffect(() => {
     }
     setProposalsOptions(data);
   }
-}, [proposalsData]);
+}, [proposalsData]);*/
 
 const InputContainer = ({ heading, description, children }) => {
   return (
@@ -464,7 +454,7 @@ useEffect(() => {
         proposalIds.length !== proposalIdsArray.length
       ) {
         setCreateTxn(false);
-        setProposalId(proposalIds.length - 1);
+        setProposalId(proposalIds[proposalIds.length - 1]);
         setShowProposalPage(true);
       }
     }
@@ -710,7 +700,7 @@ const SubmitBtn = () => {
             onClick={() => !disabledSubmitBtn && handleSubmit()}
             className="p-2 d-flex gap-2 align-items-center "
           >
-            {isSubmittingTransaction ? (
+            {isTxnCreated ? (
               LoadingButtonSpinner
             ) : (
               <div className={"circle " + selectedOption.iconColor}></div>
@@ -751,7 +741,6 @@ const SubmitBtn = () => {
 };
 
 const onSubmit = ({ isDraft, isCancel }) => {
-  setIsSubmittingTransaction(true);
   setCreateTxn(true);
   console.log("submitting transaction");
   const linkedProposalsIds = linkedProposals.map((item) => item.value) ?? [];
