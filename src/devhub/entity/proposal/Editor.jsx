@@ -251,9 +251,6 @@ const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
 const [supervisor, setSupervisor] = useState(null);
 const [allowDraft, setAllowDraft] = useState(true);
 
-const [proposalsOptions, setProposalsOptions] = useState([]);
-//const proposalsData = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals");
-
 const [loading, setLoading] = useState(true);
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
@@ -406,23 +403,6 @@ useEffect(() => {
     });
   }
 }, [editProposalData]);
-
-/*useEffect(() => {
-  if (
-    proposalsData !== null &&
-    Array.isArray(proposalsData) &&
-    !proposalsOptions.length
-  ) {
-    const data = [];
-    for (const prop of proposalsData) {
-      data.push({
-        label: "Id " + prop.id + " : " + prop.snapshot.name,
-        value: prop.id,
-      });
-    }
-    setProposalsOptions(data);
-  }
-}, [proposalsData]);*/
 
 const InputContainer = ({ heading, description, children }) => {
   return (

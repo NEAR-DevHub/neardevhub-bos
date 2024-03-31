@@ -164,7 +164,7 @@ test.describe("Wallet is connected", () => {
 
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
-    await titleArea.pressSequentially("Test proposal 123456", { delay: 100 });
+    await titleArea.pressSequentially("Test proposal 123456", { delay: 200 });
 
     await pauseIfVideoRecording(page);
 
@@ -177,8 +177,9 @@ test.describe("Wallet is connected", () => {
     );
 
     const summary = await page.locator('textarea[type="text"]');
+    await expect(summary).toBeEditable();
     await summary.pressSequentially("Test proposal summary 123456789", {
-      delay: 100,
+      delay: 200,
     });
 
     await pauseIfVideoRecording(page);
@@ -194,7 +195,7 @@ test.describe("Wallet is connected", () => {
     await page
       .locator('input[type="text"]')
       .nth(2)
-      .pressSequentially("12345", { delay: 100 });
+      .pressSequentially("12345", { delay: 200 });
     await pauseIfVideoRecording(page);
     await page.getByRole("checkbox").first().click();
     await pauseIfVideoRecording(page);
@@ -222,7 +223,7 @@ test.describe("Wallet is connected", () => {
             name: "Test proposal 123456",
             description: "The test proposal description.",
             category: "DevDAO Platform",
-            summary: "Tes proposal summary 123456789",
+            summary: "Test proposal summary 123456789",
             linked_proposals: [],
             requested_sponsorship_usd_amount: "12345",
             requested_sponsorship_paid_in_currency: "USDC",
