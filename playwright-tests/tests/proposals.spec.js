@@ -162,9 +162,12 @@ test.describe("Wallet is connected", () => {
     test.setTimeout(120000);
     await page.goto("/devhub.near/widget/app?page=create-proposal");
 
+    const delay_milliseconds_between_keypress_when_typing = 300;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
-    await titleArea.pressSequentially("Test proposal 123456", { delay: 200 });
+    await titleArea.pressSequentially("Test proposal 123456", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
 
     await pauseIfVideoRecording(page);
 
@@ -179,7 +182,7 @@ test.describe("Wallet is connected", () => {
     const summary = await page.locator('textarea[type="text"]');
     await expect(summary).toBeEditable();
     await summary.pressSequentially("Test proposal summary 123456789", {
-      delay: 200,
+      delay: delay_milliseconds_between_keypress_when_typing,
     });
 
     await pauseIfVideoRecording(page);
@@ -192,10 +195,9 @@ test.describe("Wallet is connected", () => {
 
     await pauseIfVideoRecording(page);
 
-    await page
-      .locator('input[type="text"]')
-      .nth(2)
-      .pressSequentially("12345", { delay: 200 });
+    await page.locator('input[type="text"]').nth(2).pressSequentially("12345", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
     await pauseIfVideoRecording(page);
     await page.getByRole("checkbox").first().click();
     await pauseIfVideoRecording(page);
