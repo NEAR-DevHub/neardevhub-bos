@@ -31,6 +31,23 @@ const dataToColumns = (data, columns) =>
 
 const withType = (type) => (data) => ({ ...data, type });
 
+function extractOwnerAndRepo(url) {
+  // Remove any leading or trailing slashes and split the URL by "/"
+  const parts = url
+    .trim()
+    .replace(/^\/+|\/+$/g, "")
+    .split("/");
+
+  // Check if the URL matches the GitHub repository format
+  if (parts.length === 5 && parts[2] === "github.com") {
+    const owner = parts[3];
+    const repo = parts[4];
+    return { owner, repo };
+  } else {
+    return null;
+  }
+}
+
 const GithubKanbanBoard = ({
   columns,
   title,
@@ -40,67 +57,64 @@ const GithubKanbanBoard = ({
   dataTypesIncluded,
   metadata,
 }) => {
-  const ticketStateFilter =
-    ticketState === "open" || ticketState === "closed" || ticketState === "all"
-      ? ticketState
-      : "all";
+  const ticketStateFilter = ticketState ?? "all";
 
   State.init({
     ticketsByColumn: {},
   });
 
   if (repoURL) {
-    const pullRequests = dataTypesIncluded.PullRequest
-      ? DataRequest?.paginated(
-          (pageNumber) =>
-            useCache(
-              () =>
-                asyncFetch(
-                  `https://api.github.com/repos/${repoURL
-                    .split("/")
-                    .slice(-2)
-                    .concat(["pulls"])
-                    .join(
-                      "/"
-                    )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-                ).then((res) => res?.body),
-              repoURL + pageNumber,
-              { subscribe: false }
-            ),
-          { startWith: 1 }
-        )
-      : [];
-
-    const issues = dataTypesIncluded.Issue
-      ? (
-          DataRequest?.paginated(
+    const { repo, owner } = extractOwnerAndRepo(repoURL);
+    Object.keys(columns).map((item) => {
+      const columnId = item;
+      const columnData = columns[columnId];
+      const labels = (columnData?.labelSearchTerms ?? []).join(",");
+      const pullRequests = dataTypesIncluded.pullRequest
+        ? DataRequest?.paginated(
             (pageNumber) =>
               useCache(
                 () =>
                   asyncFetch(
-                    `https://api.github.com/repos/${repoURL
-                      .split("/")
-                      .slice(-2)
-                      .concat(["issues"])
-                      .join(
-                        "/"
-                      )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
+                    `https://api.github.com/repos/${owner}/${repo}/pulls?state=${ticketStateFilter}&per_page=100&page=${pageNumber}&labels=${labels}`
                   ).then((res) => res?.body),
-                repoURL + pageNumber,
+                repoURL +
+                  ticketStateFilter +
+                  labels +
+                  dataTypesIncluded +
+                  pageNumber,
+                { subscribe: false }
+              ),
+            { startWith: 1 }
+          )
+        : [];
+
+      const issues = dataTypesIncluded.issue
+        ? DataRequest?.paginated(
+            (pageNumber) =>
+              useCache(
+                () =>
+                  asyncFetch(
+                    `https://api.github.com/repos/${owner}/${repo}/issues?state=${ticketStateFilter}&per_page=100&page=${pageNumber}&labels=${labels}`
+                  ).then((res) => res?.body),
+                repoURL +
+                  ticketStateFilter +
+                  labels +
+                  dataTypesIncluded +
+                  pageNumber,
                 { subscribe: false }
               ),
             { startWith: 1 }
           ) ?? []
-        )?.map(withType("Issue"))
-      : [];
+        : [];
 
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      ticketsByColumn: dataToColumns(
-        [...(issues ?? []), ...(pullRequests ?? [])],
-        columns
-      ),
-    }));
+      State.update((lastKnownState) => ({
+        ...lastKnownState,
+        ticketsByColumn: {
+          ...lastKnownState.ticketsByColumn,
+          [columnId]: [...issues, ...pullRequests],
+        },
+      }));
+    });
   }
 
   return (
