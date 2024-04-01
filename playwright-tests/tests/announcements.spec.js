@@ -33,12 +33,15 @@ test.describe("Don't ask again enabled", () => {
       contractId: "devhub.near",
     });
 
+    const feedArea = await page.locator(".card > div > div > div:nth-child(2)");
+    await expect(feedArea).toBeVisible({ timeout: 10000 });
+    await expect(feedArea).toContainText("WebAssembly Music");
     const composeTextarea = await page.locator(
       `textarea[data-testid="compose-announcement"]`
     );
     await expect(composeTextarea).toBeVisible();
     const announcementText =
-      "Announcements is live, though this is only an automated test!";
+      "Announcements are live, though this is only an automated test!";
     await composeTextarea.fill(announcementText);
 
     const postButton = await page.locator(`button[data-testid="post-btn"]`);
@@ -46,12 +49,14 @@ test.describe("Don't ask again enabled", () => {
 
     await pauseIfVideoRecording(page);
     const communityHandle = "webassemblymusic.community.devhub.near";
+    let is_transaction_completed = false;
     await mockTransactionSubmitRPCResponses(
       page,
       async ({ route, request, transaction_completed, last_receiver_id }) => {
         const postData = request.postDataJSON();
         const args_base64 = postData.params?.args_base64;
         if (transaction_completed && args_base64) {
+          is_transaction_completed = true;
           const args = atob(args_base64);
           if (
             postData.params.account_id === "social.near" &&
@@ -72,6 +77,45 @@ test.describe("Don't ask again enabled", () => {
           }
         }
         await route.continue();
+      }
+    );
+    let new_block_height;
+    await page.route(
+      "https://near-queryapi.api.pagoda.co/v1/graphql",
+      async (route) => {
+        const request = route.request();
+        const postData = request.postDataJSON();
+        if (is_transaction_completed) {
+          const response = await route.fetch();
+          const json = await response.json();
+
+          if (postData.query.indexOf("IndexerQuery") > -1) {
+            new_block_height =
+              json.data.dataplatform_near_social_feed_posts[0].block_height +
+              10;
+            json.data.dataplatform_near_social_feed_posts[0].block_height =
+              new_block_height;
+          } else if (postData.query.indexOf("FeedQuery") > -1) {
+            json.data.dataplatform_near_social_feed_moderated_posts = [
+              {
+                account_id: "webassemblymusic.community.devhub.near",
+                block_height: new_block_height,
+                block_timestamp: new Date().getTime() * 1_000_000,
+                content:
+                  '{"type":"md","text":"Announcements are live, though this is only an automated test"}',
+                receipt_id: "FeVQfzsNa2mCHumgPwv4CHkVDaRWCfPGEAev4iAh5CRY",
+                accounts_liked: [],
+                comments: [],
+              },
+            ];
+            json.data.dataplatform_near_social_feed_moderated_posts_aggregate =
+              {
+                aggregate: { count: 1 },
+              };
+          }
+
+          await route.fulfill({ response, json });
+        }
       }
     );
     await postButton.click();
@@ -96,7 +140,11 @@ test.describe("Don't ask again enabled", () => {
     await expect(loadingIndicator).not.toBeVisible();
     await expect(postButton).toBeEnabled();
     await expect(composeTextarea).toBeEmpty();
+    await expect(await page.locator(".post").first()).toContainText(
+      "Announcements are live, though this is only an automated test"
+    );
     await pauseIfVideoRecording(page);
+    await page.waitForTimeout(4000);
   });
 });
 test.describe("Non authenticated user's wallet is connected", () => {

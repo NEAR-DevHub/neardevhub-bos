@@ -8,6 +8,9 @@ setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 
 const communityData = getCommunity({ handle });
 const [postsExists, setPostExists] = useState(false);
+const [lastQueryRequestTimestamp, setLastQueryRequestTimestamp] = useState(
+  new Date().getTime()
+);
 const [submittedAnnouncementData, setSubmittedAnnouncementData] =
   useState(null);
 const communityAccountId = `${handle}.community.${REPL_DEVHUB_CONTRACT}`;
@@ -27,6 +30,7 @@ useEffect(() => {
           ).text;
           if (submittedAnnouncementText === lastAnnouncementTextFromSocialDB) {
             setSubmittedAnnouncementData(null);
+            setLastQueryRequestTimestamp(new Date().getTime());
             return;
           }
         } catch (e) {}
@@ -160,6 +164,7 @@ return (
                 sort: sort,
                 setPostExists: setPostExists,
                 showFlagAccountFeature: true,
+                lastQueryRequestTimestamp,
               }}
             />
           </div>
