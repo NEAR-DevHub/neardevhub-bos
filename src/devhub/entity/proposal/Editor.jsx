@@ -251,9 +251,6 @@ const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
 const [supervisor, setSupervisor] = useState(null);
 const [allowDraft, setAllowDraft] = useState(true);
 
-const [proposalsOptions, setProposalsOptions] = useState([]);
-//const proposalsData = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals");
-
 const [loading, setLoading] = useState(true);
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
@@ -383,34 +380,29 @@ useEffect(() => {
 
 useEffect(() => {
   if (
-    proposalsOptions.length > 0 &&
     editProposalData &&
     editProposalData?.snapshot?.linked_proposals?.length > 0
   ) {
-    let data = [];
     editProposalData.snapshot.linked_proposals.map((item) => {
-      data.push(proposalsOptions.find((i) => i.value === item));
+      useCache(
+        () =>
+          Near.asyncView("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
+            proposal_id: parseInt(item),
+          }).then((proposal) => {
+            setLinkedProposals([
+              ...linkedProposals,
+              {
+                label: "# " + proposal.id + " : " + proposal.snapshot.name,
+                value: proposal.id,
+              },
+            ]);
+          }),
+        item + "linked_proposals",
+        { subscribe: false }
+      );
     });
-    setLinkedProposals(data);
   }
-}, [editProposalData, proposalsOptions]);
-
-/*useEffect(() => {
-  if (
-    proposalsData !== null &&
-    Array.isArray(proposalsData) &&
-    !proposalsOptions.length
-  ) {
-    const data = [];
-    for (const prop of proposalsData) {
-      data.push({
-        label: "Id " + prop.id + " : " + prop.snapshot.name,
-        value: prop.id,
-      });
-    }
-    setProposalsOptions(data);
-  }
-}, [proposalsData]);*/
+}, [editProposalData]);
 
 const InputContainer = ({ heading, description, children }) => {
   return (
@@ -1173,9 +1165,8 @@ if (showProposalPage) {
                     );
                   })}
                   <Widget
-                    src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch"
+                    src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
                     props={{
-                      selectedValue: "",
                       onChange: (v) => {
                         if (
                           !linkedProposals.some(
@@ -1185,11 +1176,6 @@ if (showProposalPage) {
                           setLinkedProposals([...linkedProposals, v]);
                         }
                       },
-                      options: proposalsOptions,
-                      showSearch: true,
-                      searchInputPlaceholder: "Search by Id",
-                      defaultLabel: "Search proposals",
-                      searchByValue: true,
                     }}
                   />
                 </div>
