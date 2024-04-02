@@ -1,10 +1,10 @@
-const [postsExists, setPostExists] = useState(false);
-
 const MainContent = styled.div`
   padding-left: 2rem;
+  padding-right: 2rem;
   flex: 3;
   @media screen and (max-width: 960px) {
     padding-left: 0rem;
+    padding-right: 0rem;
   }
   .post:hover {
     background-color: inherit !important;
@@ -16,8 +16,9 @@ const SidebarContainer = styled.div`
 `;
 
 const Heading = styled.div`
-  font-size: 19px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 1rem;
 `;
 
 const SubHeading = styled.div`
@@ -28,6 +29,8 @@ const SubHeading = styled.div`
 const Container = styled.div`
   flex-wrap: no-wrap;
   max-width: 100%;
+
+  background: #fff;
 
   .max-width-100 {
     max-width: 100%;
@@ -61,22 +64,76 @@ const Tag = styled.div`
   font-weight: 800;
 `;
 
+const TabContainer = styled.div`
+  display: flex;
+  gap: 5px;
+  background-color: rgb(244, 244, 244);
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  padding: 3px;
+`;
+
+const Tab = styled.div`
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgb(153, 153, 153);
+  padding: 3px 10px;
+  border-radius: 5px;
+`;
+
+const Line = styled.div`
+  width: 100%;
+  border-bottom: 1px solid rgb(223, 223, 223);
+`;
+
+const tabs = ["All", "Announcements", "Discussions"];
+const [selectedTab, setSelectedTab] = useState("All");
 const [sort, setSort] = useState("timedesc");
+
+const followGraph = context.accountId
+  ? Social.keys(`community.devhub.near/graph/follow/*`, "final")
+  : null;
+const accountsFollowing =
+  props.accountsFollowing ??
+  (followGraph
+    ? Object.keys(followGraph["community.devhub.near"].graph.follow || {})
+    : null);
+
+const filteredAccountIds =
+  accountsFollowing &&
+  accountsFollowing.filter((account) => {
+    if (selectedTab === "All") return true;
+    if (selectedTab === "Announcements") {
+      return !account.includes("discussions");
+    }
+    if (selectedTab === "Discussions") {
+      return account.includes("discussions");
+    }
+  });
+
+console.log({ followGraph, accountsFollowing });
 
 return (
   <div className="w-100" style={{ maxWidth: "100%" }}>
-    <Container className="d-flex gap-3 m-3 pl-2">
+    <Heading>Activity Feed</Heading>
+    <Line />
+    <Container className="d-flex gap-3 px-2 py-4">
       <MainContent className="max-width-100">
         <div className="d-flex flex-column gap-4">
           <div className="d-flex flex-wrap justify-content-between">
-            <Heading>Announcements</Heading>
-            <div
-              className={
-                postsExists
-                  ? "d-flex align-items-center gap-2"
-                  : " display-none"
-              }
-            >
+            <TabContainer>
+              {tabs.map((tab) => (
+                <Tab
+                  className={selectedTab === tab ? "text-black bg-white" : ""}
+                  onClick={() => setSelectedTab(tab)}
+                >
+                  {tab}
+                </Tab>
+              ))}
+            </TabContainer>
+            <div className={"d-flex align-items-center gap-2"}>
               <select
                 name="sort"
                 id="sort"
@@ -93,38 +150,19 @@ return (
               </select>
             </div>
           </div>
-          {!postsExists && (
-            <div>
-              <h6>No announcements exists.</h6>
-            </div>
-          )}
-          <div className={postsExists && "card p-4"}>
+
+          <div className={"card p-4"}>
             <Widget
-              src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
+              key="feed"
+              src="${REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
               props={{
-                showFlagAccountFeature: true,
-                filteredAccountIds: [`community.${REPL_DEVHUB_CONTRACT}`],
+                accounts: filteredAccountIds,
                 sort: sort,
-                setPostExists: setPostExists,
-                showFlagAccountFeature: true,
               }}
             />
           </div>
         </div>
       </MainContent>
-      <SidebarContainer>
-        <div className="d-flex flex-column gap-3">
-          <div className="card p-4">
-            <div className="mb-2">description</div>
-            <div className="d-flex gap-2 flex-wrap">
-              <Tag>tag</Tag>
-            </div>
-          </div>
-          <div className="card p-4 d-flex flex-column gap-2">
-            <SubHeading>Community Admins</SubHeading>
-          </div>
-        </div>
-      </SidebarContainer>
     </Container>
   </div>
 );
