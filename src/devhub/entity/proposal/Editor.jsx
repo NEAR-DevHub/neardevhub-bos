@@ -251,9 +251,6 @@ const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
 const [supervisor, setSupervisor] = useState(null);
 const [allowDraft, setAllowDraft] = useState(true);
 
-const [proposalsOptions, setProposalsOptions] = useState([]);
-const proposalsData = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposals");
-
 const [loading, setLoading] = useState(true);
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
@@ -262,10 +259,11 @@ const [isReviewModalOpen, setReviewModal] = useState(false);
 const [amountError, setAmountError] = useState(null);
 const [isCancelModalOpen, setCancelModal] = useState(false);
 
-const [isSubmittingTransaction, setIsSubmittingTransaction] = useState(false);
-
 const [showProposalPage, setShowProposalPage] = useState(false); // when user creates/edit a proposal and confirm the txn, this is true
 const [proposalId, setProposalId] = useState(null);
+const [proposalIdsArray, setProposalIdsArray] = useState(null);
+const [isTxnCreated, setCreateTxn] = useState(false);
+const [oldProposalData, setOldProposalData] = useState(null);
 
 if (allowDraft) {
   draftProposalData = Storage.privateGet(draftKey);
@@ -351,7 +349,7 @@ useEffect(() => {
     return;
   }
   setDisabledSubmitBtn(
-    isSubmittingTransaction ||
+    isTxnCreated ||
       amountError ||
       !title ||
       !description ||
@@ -376,48 +374,35 @@ useEffect(() => {
   draftProposalData,
   consent,
   amountError,
-  isSubmittingTransaction,
+  isTxnCreated,
   showProposalPage,
 ]);
 
 useEffect(() => {
   if (
-    proposalsOptions.length > 0 &&
     editProposalData &&
     editProposalData?.snapshot?.linked_proposals?.length > 0
   ) {
-    let data = [];
     editProposalData.snapshot.linked_proposals.map((item) => {
-      data.push(proposalsOptions.find((i) => i.value === item));
+      useCache(
+        () =>
+          Near.asyncView("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
+            proposal_id: parseInt(item),
+          }).then((proposal) => {
+            setLinkedProposals([
+              ...linkedProposals,
+              {
+                label: "# " + proposal.id + " : " + proposal.snapshot.name,
+                value: proposal.id,
+              },
+            ]);
+          }),
+        item + "linked_proposals",
+        { subscribe: false }
+      );
     });
-    setLinkedProposals(data);
   }
-}, [editProposalData, proposalsOptions]);
-
-useEffect(() => {
-  // Trigger when proposals data change, which will happen on cache invalidation
-  setIsSubmittingTransaction(false);
-  console.log("Proposals data change, assume transaction completed");
-}, [proposalsData]);
-
-useEffect(() => {
-  if (
-    proposalsData !== null &&
-    Array.isArray(proposalsData) &&
-    !proposalsOptions.length
-  ) {
-    const data = [];
-    for (const prop of proposalsData) {
-      data.push({
-        label: "Id " + prop.id + " : " + prop.snapshot.name,
-        value: prop.id,
-      });
-    }
-    setProposalsOptions(data);
-  }
-}, [proposalsData]);
-
-useEffect(() => {});
+}, [editProposalData]);
 
 const InputContainer = ({ heading, description, children }) => {
   return (
@@ -430,6 +415,43 @@ const InputContainer = ({ heading, description, children }) => {
     </div>
   );
 };
+
+// show proposal created after txn approval for popup wallet
+useEffect(() => {
+  if (isTxnCreated) {
+    if (editProposalData) {
+      setOldProposalData(editProposalData);
+      if (
+        editProposalData &&
+        typeof editProposalData === "object" &&
+        oldProposalData &&
+        typeof oldProposalData === "object" &&
+        JSON.stringify(editProposalData) !== JSON.stringify(oldProposalData)
+      ) {
+        setCreateTxn(false);
+        setProposalId(editProposalData.id);
+        setShowProposalPage(true);
+      }
+    } else {
+      const proposalIds = Near.view(
+        "${REPL_DEVHUB_CONTRACT}",
+        "get_all_proposal_ids"
+      );
+      if (Array.isArray(proposalIds) && !proposalIdsArray) {
+        setProposalIdsArray(proposalIds);
+      }
+      if (
+        Array.isArray(proposalIds) &&
+        Array.isArray(proposalIdsArray) &&
+        proposalIds.length !== proposalIdsArray.length
+      ) {
+        setCreateTxn(false);
+        setProposalId(proposalIds[proposalIds.length - 1]);
+        setShowProposalPage(true);
+      }
+    }
+  }
+});
 
 useEffect(() => {
   if (props.transactionHashes) {
@@ -536,7 +558,7 @@ const DropdowntBtnContainer = styled.div`
     border: 1px solid #ccc;
     background-color: #fff;
     padding: 0.5rem;
-    z-index: 9999;
+    z-index: 99;
     font-size: 13px;
     border-radius:0.375rem !important;
   }
@@ -670,7 +692,7 @@ const SubmitBtn = () => {
             onClick={() => !disabledSubmitBtn && handleSubmit()}
             className="p-2 d-flex gap-2 align-items-center "
           >
-            {isSubmittingTransaction ? (
+            {isTxnCreated ? (
               LoadingButtonSpinner
             ) : (
               <div className={"circle " + selectedOption.iconColor}></div>
@@ -711,7 +733,7 @@ const SubmitBtn = () => {
 };
 
 const onSubmit = ({ isDraft, isCancel }) => {
-  setIsSubmittingTransaction(true);
+  setCreateTxn(true);
   console.log("submitting transaction");
   const linkedProposalsIds = linkedProposals.map((item) => item.value) ?? [];
   const body = {
@@ -1143,9 +1165,8 @@ if (showProposalPage) {
                     );
                   })}
                   <Widget
-                    src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch"
+                    src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
                     props={{
-                      selectedValue: "",
                       onChange: (v) => {
                         if (
                           !linkedProposals.some(
@@ -1155,11 +1176,6 @@ if (showProposalPage) {
                           setLinkedProposals([...linkedProposals, v]);
                         }
                       },
-                      options: proposalsOptions,
-                      showSearch: true,
-                      searchInputPlaceholder: "Search by Id",
-                      defaultLabel: "Search proposals",
-                      searchByValue: true,
                     }}
                   />
                 </div>
