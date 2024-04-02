@@ -3,33 +3,24 @@ const { DataRequest } = VM.require(
 );
 DataRequest || (DataRequest = { paginated: () => {} });
 
-const dataToColumns = (data, columns) =>
-  Object.values(columns).reduce(
-    (registry, column) => ({
-      ...registry,
-      [column.id]:
-        column.labelSearchTerms.length > 0
-          ? [
-              ...(registry[column.id] ?? []),
-              ...data.filter((ticket) =>
-                column.labelSearchTerms.every((searchTerm) =>
-                  searchTerm.length > 0
-                    ? ticket.labels.some((label) =>
-                        label.name
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
-                      )
-                    : false
-                )
-              ),
-            ]
-          : [],
-    }),
+const resPerPage = 100;
 
-    {}
-  );
+function extractOwnerAndRepo(url) {
+  // Remove any leading or trailing slashes and split the URL by "/"
+  const parts = url
+    .trim()
+    .replace(/^\/+|\/+$/g, "")
+    .split("/");
 
-const withType = (type) => (data) => ({ ...data, type });
+  // Check if the URL matches the GitHub repository format
+  if (parts.length === 5 && parts[2] === "github.com") {
+    const owner = parts[3];
+    const repo = parts[4];
+    return { owner, repo };
+  } else {
+    return null;
+  }
+}
 
 const GithubKanbanBoard = ({
   columns,
@@ -40,68 +31,145 @@ const GithubKanbanBoard = ({
   dataTypesIncluded,
   metadata,
 }) => {
-  const ticketStateFilter =
-    ticketState === "open" || ticketState === "closed" || ticketState === "all"
-      ? ticketState
-      : "all";
-
   State.init({
+    fetchedIssuesCount: {},
+    fetchedPullsCount: {},
     ticketsByColumn: {},
+    cachedItems: {},
+    displayCount: 40,
+    issuesLastPage: false,
+    pullRequestsLastPage: false,
   });
 
-  if (repoURL) {
-    const pullRequests = dataTypesIncluded.PullRequest
-      ? DataRequest?.paginated(
-          (pageNumber) =>
-            useCache(
-              () =>
-                asyncFetch(
-                  `https://api.github.com/repos/${repoURL
-                    .split("/")
-                    .slice(-2)
-                    .concat(["pulls"])
-                    .join(
-                      "/"
-                    )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-                ).then((res) => res?.body),
-              repoURL + pageNumber,
-              { subscribe: false }
-            ),
-          { startWith: 1 }
+  const ticketStateFilter = ticketState ?? "all";
+
+  function fetchPullRequests(columnId, labelSearchTerms) {
+    const pageNumber = !state.fetchedPullsCount[columnId]
+      ? 1
+      : state.fetchedPullsCount[columnId] / resPerPage + 1;
+    const { repo, owner } = extractOwnerAndRepo(repoURL);
+    // labels query doesn't exists for pull requests
+    const res = fetch(
+      `https://api.github.com/repos/${owner}/${repo}/pulls?state=${ticketStateFilter}&per_page=${resPerPage}&page=${pageNumber}`
+    );
+    if (res !== null) {
+      res.body = res.body.filter((ticket) =>
+        (labelSearchTerms ?? []).every((searchTerm) =>
+          searchTerm.length > 0
+            ? ticket.labels.some((label) =>
+                label.name.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+            : false
         )
-      : [];
+      );
 
-    const issues = dataTypesIncluded.Issue
-      ? (
-          DataRequest?.paginated(
-            (pageNumber) =>
-              useCache(
-                () =>
-                  asyncFetch(
-                    `https://api.github.com/repos/${repoURL
-                      .split("/")
-                      .slice(-2)
-                      .concat(["issues"])
-                      .join(
-                        "/"
-                      )}?state=${ticketStateFilter}&per_page=100&page=${pageNumber}`
-                  ).then((res) => res?.body),
-                repoURL + pageNumber,
-                { subscribe: false }
-              ),
-            { startWith: 1 }
-          ) ?? []
-        )?.map(withType("Issue"))
-      : [];
-
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      ticketsByColumn: dataToColumns(
-        [...(issues ?? []), ...(pullRequests ?? [])],
-        columns
-      ),
-    }));
+      if (!res.body.length || res.body.length < resPerPage) {
+        State.update({
+          pullRequestsLastPage: true,
+        });
+      }
+      State.update((lastKnownState) => ({
+        ...lastKnownState,
+        fetchedPullsCount: {
+          ...lastKnownState.fetchedPullsCount,
+          [columnId]:
+            lastKnownState.fetchedPullsCount[columnId] ?? 0 + resPerPage,
+        },
+        ticketsByColumn: {
+          ...lastKnownState.ticketsByColumn,
+          [columnId]: [
+            ...(lastKnownState?.ticketsByColumn?.[columnId] ?? []),
+            ...res.body,
+          ],
+        },
+      }));
+    }
   }
+
+  function fetchIssues(columnId, labels) {
+    const pageNumber = !state.fetchedIssuesCount[columnId]
+      ? 1
+      : state.fetchedIssuesCount[columnId] / resPerPage + 1;
+    const { repo, owner } = extractOwnerAndRepo(repoURL);
+    const res = fetch(
+      `https://api.github.com/repos/${owner}/${repo}/issues?state=${ticketStateFilter}&per_page=${resPerPage}&page=${pageNumber}&labels=${labels}`
+    );
+    if (res !== null) {
+      if (!res.body.length || res.body.length < resPerPage) {
+        State.update({
+          issuesLastPage: true,
+        });
+      }
+      State.update((lastKnownState) => ({
+        ...lastKnownState,
+        fetchedIssuesCount: {
+          ...lastKnownState.fetchedIssuesCount,
+          [columnId]:
+            lastKnownState.fetchedIssuesCount[columnId] ?? 0 + resPerPage,
+        },
+        ticketsByColumn: {
+          ...lastKnownState.ticketsByColumn,
+          [columnId]: [
+            ...(lastKnownState?.ticketsByColumn?.[columnId] ?? []),
+            ...res.body,
+          ],
+        },
+      }));
+    }
+  }
+
+  if (
+    repoURL &&
+    Object.keys(state.ticketsByColumn).length !== Object.keys(columns).length
+  ) {
+    Object.keys(columns).map((item) => {
+      const columnId = item;
+      const columnData = columns[columnId];
+      const labels = (columnData?.labelSearchTerms ?? []).join(",");
+      dataTypesIncluded.issue && fetchIssues(columnId, labels);
+      dataTypesIncluded.pullRequest &&
+        fetchPullRequests(columnId, columnData?.labelSearchTerms);
+    });
+  }
+
+  const renderItem = (ticket) => (
+    <Widget
+      src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
+      props={{ metadata: metadata.ticket, payload: ticket }}
+      key={ticket.id}
+    />
+  );
+
+  const cachedRenderItem = (item, index) => {
+    const key = JSON.stringify(item);
+
+    if (!(key in state.cachedItems)) {
+      state.cachedItems[key] = renderItem(item, index);
+      State.update();
+    }
+    return state.cachedItems[key];
+  };
+
+  const makeMoreItems = (columnId, labelSearchTerms) => {
+    const addDisplayCount = 20;
+    const newDisplayCount = state.displayCount + addDisplayCount;
+    State.update({
+      displayCount: newDisplayCount,
+    });
+    const labels = (labelSearchTerms ?? []).join(",");
+    if (
+      dataTypesIncluded.issue &&
+      state.fetchedIssuesCount[columnId] < 2 * newDisplayCount
+    ) {
+      fetchIssues(columnId, labels);
+    }
+    if (
+      dataTypesIncluded.pullRequest &&
+      state.fetchedPullsCount[columnId] < 2 * newDisplayCount
+    ) {
+      fetchPullRequests(columnId, labelSearchTerms);
+    }
+  };
 
   return (
     <div>
@@ -126,7 +194,10 @@ const GithubKanbanBoard = ({
           </div>
         ) : null}
         {Object.values(columns ?? {})?.map((column) => {
-          const tickets = state.ticketsByColumn[column.id] ?? [];
+          const tickets = state.ticketsByColumn[column.id]
+            ? state.ticketsByColumn[column.id].slice(0, state.displayCount)
+            : [];
+          const renderedItems = tickets.map(cachedRenderItem);
 
           return (
             <div
@@ -136,33 +207,38 @@ const GithubKanbanBoard = ({
             >
               <div className="card rounded-4">
                 <div
-                  style={{ height: "75vh", overflow: "scroll" }}
+                  style={{ height: "75vh", overflow: "auto" }}
                   className={[
                     "card-body d-flex flex-column gap-3 p-2",
                     "border border-1 rounded-4",
                   ].join(" ")}
+                  id={column.id}
                 >
                   <span className="d-flex flex-column py-1">
-                    <h6 className="card-title h6 d-flex align-items-center gap-2 m-0">
-                      {column.title}
-
-                      <span className="badge rounded-pill bg-secondary">
-                        {tickets.length}
-                      </span>
-                    </h6>
-
+                    <h6 className="card-title h6 m-0">{column.title}</h6>
                     <p class="text-secondary m-0">{column.description}</p>
                   </span>
 
-                  <div class="d-flex flex-column gap-2">
-                    {tickets.map((ticket) => (
-                      <Widget
-                        src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${metadata.ticket.type}`}
-                        props={{ metadata: metadata.ticket, payload: ticket }}
-                        key={ticket.id}
-                      />
-                    ))}
-                  </div>
+                  {(state.fetchedIssuesCount[column.id] > 0 ||
+                    state.fetchedPullsCount[column.id] > 0) && (
+                    <InfiniteScroll
+                      loadMore={() =>
+                        makeMoreItems(column.id, column?.labelSearchTerms)
+                      }
+                      hasMore={
+                        (dataTypesIncluded.issue && !state.issuesLastPage) ||
+                        (dataTypesIncluded.pullRequest &&
+                          !state.pullRequestsLastPage)
+                      }
+                      loader={<>Loading...</>}
+                      useWindow={false}
+                      threshold={80}
+                    >
+                      <div class="d-flex flex-column gap-2">
+                        {renderedItems}
+                      </div>
+                    </InfiniteScroll>
+                  )}
                 </div>
               </div>
             </div>

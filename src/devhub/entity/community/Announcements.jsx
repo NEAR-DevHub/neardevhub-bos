@@ -112,7 +112,7 @@ const Tag = styled.div`
   font-weight: 800;
 `;
 
-const [sort, setSort] = useState("timedesc");
+const [sort, setSort] = useState("desc");
 
 return (
   <div className="w-100" style={{ maxWidth: "100%" }}>
@@ -153,7 +153,7 @@ return (
                   setSort(e.target.value);
                 }}
               >
-                <option selected value="timedesc">
+                <option selected value="desc">
                   Latest
                 </option>
                 <option value="recentcommentdesc">Last Commented</option>
