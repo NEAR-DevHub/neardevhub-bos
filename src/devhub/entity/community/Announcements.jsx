@@ -129,7 +129,6 @@ return (
                 ],
                 sort: sort,
                 setPostExists: setPostExists,
-                showFlagAccountFeature: true,
               }}
             />
           </div>
