@@ -17,7 +17,7 @@ const SidebarContainer = styled.div`
 
 const Heading = styled.div`
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 1rem;
 `;
 
@@ -71,15 +71,15 @@ const TabContainer = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 5px;
-  padding: 3px;
+  padding: 0 3px;
 `;
 
 const Tab = styled.div`
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: rgb(153, 153, 153);
-  padding: 3px 10px;
+  padding: 5px 10px;
   border-radius: 5px;
 `;
 
@@ -90,7 +90,7 @@ const Line = styled.div`
 
 const tabs = ["All", "Announcements", "Discussions"];
 const [selectedTab, setSelectedTab] = useState("All");
-const [sort, setSort] = useState("timedesc");
+const [sort, setSort] = useState("desc");
 
 const followGraph = context.accountId
   ? Social.keys(`community.devhub.near/graph/follow/*`, "final")
@@ -112,8 +112,6 @@ const filteredAccountIds =
       return account.includes("discussions");
     }
   });
-
-console.log({ followGraph, accountsFollowing });
 
 return (
   <div className="w-100" style={{ maxWidth: "100%" }}>
@@ -137,13 +135,13 @@ return (
               <select
                 name="sort"
                 id="sort"
-                class="form-select"
+                class="form-select border-0"
                 value={sort}
                 onChange={(e) => {
                   setSort(e.target.value);
                 }}
               >
-                <option selected value="timedesc">
+                <option selected value="desc">
                   Latest
                 </option>
                 <option value="recentcommentdesc">Last Commented</option>
