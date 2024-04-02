@@ -8,7 +8,7 @@ const index = [
     key: indexKey,
     options: {
       limit: 10,
-      order: "desc",
+      order: props.sort ? props.sort : "desc",
       subscribe: true,
       accountId: props.accounts,
     },
@@ -21,7 +21,7 @@ const index = [
     key: indexKey,
     options: {
       limit: 10,
-      order: "desc",
+      order: props.sort ? props.sort : "desc",
       subscribe: true,
       accountId: props.accounts,
     },

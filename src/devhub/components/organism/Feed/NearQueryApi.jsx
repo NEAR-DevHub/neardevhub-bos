@@ -4,7 +4,7 @@ const setPostExists = props.setPostExists ?? (() => {});
 const GRAPHQL_ENDPOINT =
   props.GRAPHQL_ENDPOINT ?? "https://near-queryapi.api.pagoda.co";
 
-const sort = props.sort || "timedec";
+const sort = props.sort || "desc";
 
 // get the full list of posts that the current user has flagged so
 // they can be hidden
