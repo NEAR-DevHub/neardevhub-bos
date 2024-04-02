@@ -8,12 +8,21 @@ setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 
 const communityData = getCommunity({ handle });
 const [postsExists, setPostExists] = useState(false);
+const [newUnseenPosts, setNewUnseenPosts] = useState([]);
 const [lastQueryRequestTimestamp, setLastQueryRequestTimestamp] = useState(
   new Date().getTime()
 );
 const [submittedAnnouncementData, setSubmittedAnnouncementData] =
   useState(null);
 const communityAccountId = `${handle}.community.${REPL_DEVHUB_CONTRACT}`;
+
+let checkIndexerInterval;
+const onNewUnseenPosts = (newUnseenPosts) => {
+  if (newUnseenPosts.length > 0) {
+    clearInterval(checkIndexerInterval);
+    setSubmittedAnnouncementData(null);
+  }
+};
 
 useEffect(() => {
   if (submittedAnnouncementData) {
@@ -29,8 +38,9 @@ useEffect(() => {
             result[communityAccountId].post.main
           ).text;
           if (submittedAnnouncementText === lastAnnouncementTextFromSocialDB) {
-            setSubmittedAnnouncementData(null);
-            setLastQueryRequestTimestamp(new Date().getTime());
+            checkIndexerInterval = setInterval(() => {
+              setLastQueryRequestTimestamp(new Date().getTime());
+            }, 500);
             return;
           }
         } catch (e) {}
@@ -165,6 +175,7 @@ return (
                 setPostExists: setPostExists,
                 showFlagAccountFeature: true,
                 lastQueryRequestTimestamp,
+                onNewUnseenPosts,
               }}
             />
           </div>

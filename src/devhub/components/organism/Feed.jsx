@@ -121,6 +121,7 @@ return (
           filteredAccountIds: filteredAccountIds,
           setPostExists: setPostExists,
           showFlagAccountFeature: showFlagAccountFeature,
+          onNewUnseenPosts: props.onNewUnseenPosts,
         }}
       />
     )}

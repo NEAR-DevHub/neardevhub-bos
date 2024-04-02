@@ -239,6 +239,9 @@ useEffect(() => {
       posts: [...newUnseenPosts, ...postsData.posts],
       postsCountLeft: newTotalCount,
     });
+    if (props.onNewUnseenPosts) {
+      props.onNewUnseenPosts(newUnseenPosts);
+    }
     setNewUnseenPosts([]);
     setInitialQueryTime(initialQueryTime);
   }

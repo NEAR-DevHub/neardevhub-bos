@@ -21,6 +21,7 @@ test.describe("Don't ask again enabled", () => {
   });
 
   test("Post announcement", async ({ page }) => {
+    test.setTimeout(60000);
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
@@ -80,38 +81,44 @@ test.describe("Don't ask again enabled", () => {
       }
     );
     let new_block_height;
+    let indexerQueryRetry = 0;
     await page.route(
       "https://near-queryapi.api.pagoda.co/v1/graphql",
       async (route) => {
         const request = route.request();
         const postData = request.postDataJSON();
+
         if (is_transaction_completed) {
           const response = await route.fetch();
           const json = await response.json();
 
-          if (postData.query.indexOf("IndexerQuery") > -1) {
-            new_block_height =
-              json.data.dataplatform_near_social_feed_posts[0].block_height +
-              10;
-            json.data.dataplatform_near_social_feed_posts[0].block_height =
-              new_block_height;
-          } else if (postData.query.indexOf("FeedQuery") > -1) {
-            json.data.dataplatform_near_social_feed_moderated_posts = [
-              {
-                account_id: "webassemblymusic.community.devhub.near",
-                block_height: new_block_height,
-                block_timestamp: new Date().getTime() * 1_000_000,
-                content:
-                  '{"type":"md","text":"Announcements are live, though this is only an automated test"}',
-                receipt_id: "FeVQfzsNa2mCHumgPwv4CHkVDaRWCfPGEAev4iAh5CRY",
-                accounts_liked: [],
-                comments: [],
-              },
-            ];
-            json.data.dataplatform_near_social_feed_moderated_posts_aggregate =
-              {
-                aggregate: { count: 1 },
-              };
+          if (indexerQueryRetry < 4) {
+            indexerQueryRetry++;
+          } else {
+            if (postData.query.indexOf("IndexerQuery") > -1) {
+              new_block_height =
+                json.data.dataplatform_near_social_feed_posts[0].block_height +
+                10;
+              json.data.dataplatform_near_social_feed_posts[0].block_height =
+                new_block_height;
+            } else if (postData.query.indexOf("FeedQuery") > -1) {
+              json.data.dataplatform_near_social_feed_moderated_posts = [
+                {
+                  account_id: "webassemblymusic.community.devhub.near",
+                  block_height: new_block_height,
+                  block_timestamp: new Date().getTime() * 1_000_000,
+                  content:
+                    '{"type":"md","text":"Announcements are live, though this is only an automated test"}',
+                  receipt_id: "FeVQfzsNa2mCHumgPwv4CHkVDaRWCfPGEAev4iAh5CRY",
+                  accounts_liked: [],
+                  comments: [],
+                },
+              ];
+              json.data.dataplatform_near_social_feed_moderated_posts_aggregate =
+                {
+                  aggregate: { count: 1 },
+                };
+            }
           }
 
           await route.fulfill({ response, json });
@@ -137,14 +144,18 @@ test.describe("Don't ask again enabled", () => {
 
     await expect(transaction_toast).not.toBeVisible();
 
+    const firstPost = await page.locator(".post").first();
+    await firstPost.scrollIntoViewIfNeeded();
+    await expect(firstPost).toContainText(
+      "Announcements are live, though this is only an automated test",
+      { timeout: 10000 }
+    );
+
     await expect(loadingIndicator).not.toBeVisible();
     await expect(postButton).toBeEnabled();
     await expect(composeTextarea).toBeEmpty();
-    await expect(await page.locator(".post").first()).toContainText(
-      "Announcements are live, though this is only an automated test"
-    );
+
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(4000);
   });
 });
 test.describe("Non authenticated user's wallet is connected", () => {
