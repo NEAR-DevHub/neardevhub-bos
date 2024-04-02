@@ -20,7 +20,6 @@ let checkIndexerInterval;
 const onNewUnseenPosts = (newUnseenPosts) => {
   if (newUnseenPosts.length > 0) {
     clearInterval(checkIndexerInterval);
-    setSubmittedAnnouncementData(null);
   }
 };
 
@@ -38,6 +37,7 @@ useEffect(() => {
             result[communityAccountId].post.main
           ).text;
           if (submittedAnnouncementText === lastAnnouncementTextFromSocialDB) {
+            setSubmittedAnnouncementData(null);
             checkIndexerInterval = setInterval(() => {
               setLastQueryRequestTimestamp(new Date().getTime());
             }, 500);

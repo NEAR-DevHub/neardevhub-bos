@@ -88,6 +88,7 @@ return (
             key: "main",
             options: {
               limit: 10,
+              subscribe: props.onNewUnseenPosts ? true : false,
               order: props.sort ? props.sort : "desc",
               accountId: filteredAccountIds,
             },

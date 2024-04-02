@@ -143,6 +143,9 @@ test.describe("Don't ask again enabled", () => {
     await expect(transaction_toast).toBeVisible();
 
     await expect(transaction_toast).not.toBeVisible();
+    await expect(loadingIndicator).not.toBeVisible();
+    await expect(postButton).toBeEnabled();
+    await expect(composeTextarea).toBeEmpty();
 
     const firstPost = await page.locator(".post").first();
     await firstPost.scrollIntoViewIfNeeded();
@@ -150,10 +153,6 @@ test.describe("Don't ask again enabled", () => {
       "Announcements are live, though this is only an automated test",
       { timeout: 10000 }
     );
-
-    await expect(loadingIndicator).not.toBeVisible();
-    await expect(postButton).toBeEnabled();
-    await expect(composeTextarea).toBeEmpty();
 
     await pauseIfVideoRecording(page);
   });
