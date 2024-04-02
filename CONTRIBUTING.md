@@ -165,6 +165,20 @@ const transactionObj = JSON.parse(
 
 This will parse the text contents into the javascript object that we here call `transactionObj`. You can then make assertions on the properties. See the test called "should edit a community" in [community.spec.js](./playwright-tests/tests/community.spec.js) for a full example.
 
+##### Creating test videos
+
+In [playwright.config.js](./playwright.config.js) there's the `use` section where you find the `video` property.
+
+For generating test videos when you run the tests, set the `video` property to `on`:
+
+![Playwright video config](./docs/images/playwrightconfigvideo.png)
+
+Then run a test, the simplest is to run it using the Playwright vs code plugin:
+
+![Running a test with the Playwright vscode plugin](./docs/images/playwrightruntest.png)
+
+After running you can find the video in the [test-results](./test-results/) folder.
+
 #### Storage Deposit
 
 Sometimes there is a need to deposit extra tokens to cover the widgets’ storage cost. You can do that with [`bos` CLI](https://github.com/FroVolod/bos-cli-rs):
