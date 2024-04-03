@@ -250,8 +250,12 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
-    const postLocator = page.locator(".post").first();
-    await postLocator.focus();
+
+    const posts_section = await page.locator(".card").nth(1);
+    await posts_section.scrollIntoViewIfNeeded();
+    await expect(await posts_section).toContainText("WebAssembly Music", {
+      timeout: 10000,
+    });
   });
 
   // SKIPPING
