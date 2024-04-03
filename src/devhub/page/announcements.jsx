@@ -11,10 +11,6 @@ const MainContent = styled.div`
   }
 `;
 
-const SidebarContainer = styled.div`
-  flex: 1;
-`;
-
 const Heading = styled.div`
   font-size: 28px;
   font-weight: 600;
@@ -46,22 +42,6 @@ const Container = styled.div`
   .display-none {
     display: none;
   }
-`;
-
-const Tag = styled.div`
-  border-top-right-radius: 50px;
-  border-bottom-right-radius: 50px;
-  border-top-left-radius: 50px;
-  border-bottom-left-radius: 50px;
-  padding-inline: 0.8rem;
-  padding-block: 0.3rem;
-  display: flex;
-  gap: 0.5rem;
-  border-width: 1px;
-  border-style: solid;
-  font-size: 14px;
-  color: rgba(0, 236, 151, 1);
-  font-weight: 800;
 `;
 
 const TabContainer = styled.div`
