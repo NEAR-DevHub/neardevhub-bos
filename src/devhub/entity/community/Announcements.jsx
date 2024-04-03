@@ -8,6 +8,48 @@ setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 
 const communityData = getCommunity({ handle });
 const [postsExists, setPostExists] = useState(false);
+const [newUnseenPosts, setNewUnseenPosts] = useState([]);
+const [lastQueryRequestTimestamp, setLastQueryRequestTimestamp] = useState(
+  new Date().getTime()
+);
+const [submittedAnnouncementData, setSubmittedAnnouncementData] =
+  useState(null);
+const communityAccountId = `${handle}.community.${REPL_DEVHUB_CONTRACT}`;
+
+let checkIndexerInterval;
+const onNewUnseenPosts = (newUnseenPosts) => {
+  if (newUnseenPosts.length > 0) {
+    clearInterval(checkIndexerInterval);
+  }
+};
+
+useEffect(() => {
+  if (submittedAnnouncementData) {
+    const checkForAnnouncementInSocialDB = () => {
+      Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
+        keys: [`${communityAccountId}/post/**`],
+      }).then((result) => {
+        try {
+          const submittedAnnouncementText = JSON.parse(
+            submittedAnnouncementData.post.main
+          ).text;
+          const lastAnnouncementTextFromSocialDB = JSON.parse(
+            result[communityAccountId].post.main
+          ).text;
+          if (submittedAnnouncementText === lastAnnouncementTextFromSocialDB) {
+            setSubmittedAnnouncementData(null);
+            checkIndexerInterval = setInterval(() => {
+              setLastQueryRequestTimestamp(new Date().getTime());
+            }, 500);
+            return;
+          }
+        } catch (e) {}
+        setTimeout(() => checkForAnnouncementInSocialDB(), 1000);
+      });
+    };
+    checkForAnnouncementInSocialDB();
+  }
+}, [submittedAnnouncementData]);
 
 const MainContent = styled.div`
   padding-left: 2rem;
@@ -83,8 +125,12 @@ return (
                 <Widget
                   src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                   props={{
-                    onSubmit: (v) => setCommunitySocialDB({ handle, data: v }),
+                    onSubmit: (v) => {
+                      setSubmittedAnnouncementData(v);
+                      setCommunitySocialDB({ handle, data: v });
+                    },
                     profileAccountId: `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                    isFinished: () => submittedAnnouncementData === null,
                   }}
                 />
               </div>
@@ -124,12 +170,12 @@ return (
               src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
               props={{
                 showFlagAccountFeature: true,
-                filteredAccountIds: [
-                  `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
-                ],
+                filteredAccountIds: [communityAccountId],
                 sort: sort,
                 setPostExists: setPostExists,
                 showFlagAccountFeature: true,
+                lastQueryRequestTimestamp,
+                onNewUnseenPosts,
               }}
             />
           </div>

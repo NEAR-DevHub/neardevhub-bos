@@ -82,12 +82,12 @@ function composeData() {
 }
 
 const handleSubmit = () => {
-  if (props.isFinished) {
-    setIsSubmittingTransaction(true);
-  }
   const data = composeData();
   if (props.onSubmit) {
     props.onSubmit(data);
+  }
+  if (props.isFinished) {
+    setIsSubmittingTransaction(true);
   }
 };
 
@@ -98,10 +98,12 @@ function resetState() {
   });
 }
 
-if (props.isFinished && props.isFinished() && isSubmittingTransaction) {
-  resetState();
-  setIsSubmittingTransaction(false);
-}
+useEffect(() => {
+  if (props.isFinished && props.isFinished() && isSubmittingTransaction) {
+    resetState();
+    setIsSubmittingTransaction(false);
+  }
+}, [props.isFinished]);
 
 function textareaInputHandler(value) {
   const words = value.split(/\s+/);
