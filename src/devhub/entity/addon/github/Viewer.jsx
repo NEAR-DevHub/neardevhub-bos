@@ -17,7 +17,9 @@ if (!kanbanBoards || !data?.metadata) {
       style={{ height: 384 }}
     >
       <h5 className="h5 d-inline-flex gap-2 m-0">
-        Please add configuration for your board.
+        {permissions.can_configure
+          ? "You can configure the board by clicking on the settings icon."
+          : "This board isn't configured yet."}
       </h5>
     </div>
   );
