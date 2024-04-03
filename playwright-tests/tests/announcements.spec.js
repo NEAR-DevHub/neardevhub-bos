@@ -82,6 +82,8 @@ test.describe("Don't ask again enabled", () => {
     );
     let new_block_height;
     let indexerQueryRetry = 0;
+    /*  
+    // We can have this test when we can trust the indexer to be live, but it will fail if falling back to the social.index  
     await page.route(
       "https://near-queryapi.api.pagoda.co/v1/graphql",
       async (route) => {
@@ -124,7 +126,7 @@ test.describe("Don't ask again enabled", () => {
           await route.fulfill({ response, json });
         }
       }
-    );
+    );*/
     await postButton.click();
 
     const loadingIndicator = await page
@@ -147,13 +149,15 @@ test.describe("Don't ask again enabled", () => {
     await expect(postButton).toBeEnabled();
     await expect(composeTextarea).toBeEmpty();
 
+    /*
+    // We can have this test when we can trust the indexer to be live, but it will fail if falling back to the social.index
     const firstPost = await page.locator(".post").first();
     await firstPost.scrollIntoViewIfNeeded();
     await expect(firstPost).toContainText(
       "Announcements are live, though this is only an automated test",
       { timeout: 10000 }
     );
-
+  */
     await pauseIfVideoRecording(page);
   });
 });
