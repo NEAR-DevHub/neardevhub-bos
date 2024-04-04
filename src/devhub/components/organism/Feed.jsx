@@ -10,7 +10,7 @@ const GRAPHQL_ENDPOINT =
 
 let lastPostSocialApi = Social.index("post", "main", {
   limit: 1,
-  order: "desc",
+  order: props.sort ? props.sort : "desc",
 });
 
 if (lastPostSocialApi == null) {
@@ -88,7 +88,8 @@ return (
             key: "main",
             options: {
               limit: 10,
-              order: "desc",
+              subscribe: props.onNewUnseenPosts ? true : false,
+              order: props.sort ? props.sort : "desc",
               accountId: filteredAccountIds,
             },
             cacheOptions: {
@@ -121,6 +122,8 @@ return (
           filteredAccountIds: filteredAccountIds,
           setPostExists: setPostExists,
           showFlagAccountFeature: showFlagAccountFeature,
+          onNewUnseenPosts: props.onNewUnseenPosts,
+          sort: props.sort,
         }}
       />
     )}

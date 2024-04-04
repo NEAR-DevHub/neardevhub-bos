@@ -4,7 +4,7 @@ const setPostExists = props.setPostExists ?? (() => {});
 const GRAPHQL_ENDPOINT =
   props.GRAPHQL_ENDPOINT ?? "https://near-queryapi.api.pagoda.co";
 
-const sort = props.sort || "timedec";
+const sort = props.sort || "desc";
 
 // get the full list of posts that the current user has flagged so
 // they can be hidden
@@ -191,19 +191,6 @@ const loadMorePosts = (isUpdate) => {
   });
 };
 
-const displayNewPosts = () => {
-  if (newUnseenPosts.length > 0) {
-    stopFeedUpdates();
-    const initialQueryTime = newUnseenPosts[0].block_timestamp + 1000; // timestamp is getting rounded by 3 digits
-    const newTotalCount = postsData.postsCountLeft + newUnseenPosts.length;
-    setPostsData({
-      posts: [...newUnseenPosts, ...postsData.posts],
-      postsCountLeft: newTotalCount,
-    });
-    setNewUnseenPosts([]);
-    setInitialQueryTime(initialQueryTime);
-  }
-};
 const startFeedUpdates = () => {
   if (initialQueryTime === null) return;
 
@@ -242,6 +229,23 @@ useEffect(() => {
     startFeedUpdates();
   }
 }, [initialQueryTime]);
+
+useEffect(() => {
+  if (newUnseenPosts && newUnseenPosts.length > 0) {
+    stopFeedUpdates();
+    const initialQueryTime = newUnseenPosts[0].block_timestamp + 1000; // timestamp is getting rounded by 3 digits
+    const newTotalCount = postsData.postsCountLeft + newUnseenPosts.length;
+    setPostsData({
+      posts: [...newUnseenPosts, ...postsData.posts],
+      postsCountLeft: newTotalCount,
+    });
+    if (props.onNewUnseenPosts) {
+      props.onNewUnseenPosts(newUnseenPosts);
+    }
+    setNewUnseenPosts([]);
+    setInitialQueryTime(initialQueryTime);
+  }
+}, [newUnseenPosts]);
 
 const hasMore =
   postsData.postsCountLeft !== postsData.posts.length &&
