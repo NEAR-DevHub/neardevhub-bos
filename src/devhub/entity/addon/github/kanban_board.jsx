@@ -38,6 +38,7 @@ const GithubKanbanBoard = ({
     cachedItems: {},
     displayCount: 40,
     noTicketsFound: false,
+    error: null,
   });
 
   const ticketStateFilter = ticketState ?? "all";
@@ -66,31 +67,38 @@ const GithubKanbanBoard = ({
     );
 
     if (res !== null) {
-      if (!res.body.incomplete_results) {
+      if (res.status !== 200) {
         State.update({
-          ticketsLastPage: true,
-        });
-      }
-      if (res.body.total_count === 0) {
-        State.update({
-          noTicketsFound: true,
+          error:
+            "The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.",
         });
       } else {
-        State.update((lastKnownState) => ({
-          ...lastKnownState,
-          fetchedTicketsCount: {
-            ...lastKnownState.fetchedTicketsCount,
-            [columnId]:
-              lastKnownState.fetchedTicketsCount[columnId] ?? 0 + resPerPage,
-          },
-          ticketsByColumn: {
-            ...lastKnownState.ticketsByColumn,
-            [columnId]: [
-              ...(lastKnownState?.ticketsByColumn?.[columnId] ?? []),
-              ...res.body.items,
-            ],
-          },
-        }));
+        if (!res.body.incomplete_results) {
+          State.update({
+            ticketsLastPage: true,
+          });
+        }
+        if (res.body.total_count === 0) {
+          State.update({
+            noTicketsFound: true,
+          });
+        } else {
+          State.update((lastKnownState) => ({
+            ...lastKnownState,
+            fetchedTicketsCount: {
+              ...lastKnownState.fetchedTicketsCount,
+              [columnId]:
+                lastKnownState.fetchedTicketsCount[columnId] ?? 0 + resPerPage,
+            },
+            ticketsByColumn: {
+              ...lastKnownState.ticketsByColumn,
+              [columnId]: [
+                ...(lastKnownState?.ticketsByColumn?.[columnId] ?? []),
+                ...res.body.items,
+              ],
+            },
+          }));
+        }
       }
     }
   }
@@ -186,6 +194,11 @@ const GithubKanbanBoard = ({
                     <h6 className="card-title h6 m-0">{column.title}</h6>
                     <p class="text-secondary m-0">{column.description}</p>
                   </span>
+                  {state.error && (
+                    <div className="alert alert-danger">
+                      Error: {state.error}
+                    </div>
+                  )}
                   {state.noTicketsFound && <p>No tickets found</p>}
                   {state.fetchedTicketsCount[column.id] > 0 && (
                     <InfiniteScroll
