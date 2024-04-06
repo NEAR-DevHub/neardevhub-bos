@@ -3,7 +3,7 @@ const [proposalsOptions, setProposalsOptions] = useState([]);
 const [searchProposalId, setSearchProposalId] = useState("");
 const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
 const queryName =
-  "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot";
+  "thomasguntenaar_near_devhub_proposals_romeo_proposals_with_latest_snapshot";
 const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
 ${queryName}(
   offset: $offset
@@ -67,7 +67,7 @@ const fetchProposals = () => {
       if (result.body.data) {
         const proposalsData =
           result.body.data
-            .thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot;
+            .thomasguntenaar_near_devhub_proposals_romeo_proposals_with_latest_snapshot;
 
         const data = [];
         for (const prop of proposalsData) {
