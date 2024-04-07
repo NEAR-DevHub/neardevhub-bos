@@ -203,12 +203,12 @@ test.describe("Is chain-abstraction community admin", () => {
   });
 });
 
-test.describe("Is contract standards community admin", () => {
+test.describe("Is DevHUB platform community admin", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
 
-  test("should open github addon configuration", async ({ page }) => {
+  test("should configure github addon", async ({ page }) => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=github"
     );
@@ -224,6 +224,38 @@ test.describe("Is contract standards community admin", () => {
     await expect(
       await page.getByRole("button", { name: "Save" })
     ).toBeVisible();
+
+    await page
+      .getByTestId("-repoURL")
+      .fill("https://github.com/NEAR-DevHub/neardevhub-bos");
+    await pauseIfVideoRecording(page);
+    await page.getByTestId("-title").fill("DevHUB NEAR components");
+    await pauseIfVideoRecording(page);
+    await page
+      .getByTestId("-description")
+      .fill("DevHUB feature requests, ongoing work and bug reports");
+    await pauseIfVideoRecording(page);
+
+    const board = await page.locator(".boardconfiguration");
+    const boardTitleField = await board.locator(
+      'input[placeholder="👀 Review"]'
+    );
+    await boardTitleField.scrollIntoViewIfNeeded();
+    await boardTitleField.fill("Bugs");
+    await pauseIfVideoRecording(page);
+    const labelsInput = await board.locator(".rbt-input-multi");
+    await labelsInput.pressSequentially("bug");
+    await pauseIfVideoRecording(page);
+    await board.getByLabel("bug").click();
+    await pauseIfVideoRecording(page);
+    await page.getByRole("tab", { name: "Preview" }).click();
+    await expect(
+      await page.getByRole("heading", { name: "Bugs" })
+    ).toBeVisible();
+    await expect(await page.locator(".card-header").first()).toBeVisible();
+    await expect(await page.locator(".card-header").count()).toBeGreaterThan(1);
+
+    await page.waitForTimeout(5000);
     await pauseIfVideoRecording(page);
   });
 });

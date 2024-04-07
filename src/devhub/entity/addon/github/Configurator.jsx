@@ -362,7 +362,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
         </span>
       </div>
 
-      <div className="d-flex flex-column align-items-center gap-3 w-100">
+      <div className="d-flex flex-column align-items-center gap-3 w-100 boardconfiguration">
         {Object.values(columnsState ?? {}).map(
           (
             { id, description, labelSearchTerms, title, allLabelsMust },
