@@ -254,8 +254,7 @@ test.describe("Is DevHUB platform community admin", () => {
     ).toBeVisible();
     await expect(await page.locator(".card-header").first()).toBeVisible();
     await expect(await page.locator(".card-header").count()).toBeGreaterThan(1);
-
-    await page.waitForTimeout(5000);
+    await await page.locator(".card-header").nth(2).scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
   });
 });
