@@ -47,10 +47,10 @@ if (!href) {
 }
 
 if (!tab) {
-  tab = community.enabled_default_tabs.length
-    ? community.enabled_default_tabs[0]
-    : community.addons.length
-    ? community.addons[0].display_name
+  tab = community?.enabled_default_tabs.length
+    ? community?.enabled_default_tabs[0]
+    : community?.addons.length
+    ? community?.addons[0].display_name
     : "Announcements";
 }
 
@@ -59,14 +59,18 @@ tab = normalize(tab);
 const [isLinkCopied, setLinkCopied] = useState(false);
 
 const unorderedTabs = [
-  community.enabled_default_tabs.includes("Announcements") && {
+  (community.enabled_default_tabs || ["Announcements"]).includes(
+    "Announcements"
+  ) && {
     title: "Announcements",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Announcements",
     params: {
       handle: community.handle,
     },
   },
-  community.enabled_default_tabs.includes("Discussions") && {
+  (community.enabled_default_tabs || ["Discussions"]).includes(
+    "Discussions"
+  ) && {
     title: "Discussions",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Discussions",
     params: {
@@ -74,14 +78,14 @@ const unorderedTabs = [
       transactionHashes: props.transactionHashes,
     },
   },
-  community.enabled_default_tabs.includes("Activity") && {
+  (community.enabled_default_tabs || ["Activity"]).includes("Activity") && {
     title: "Activity",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Activity",
     params: {
       handle: community.handle,
     },
   },
-  community.enabled_default_tabs.includes("Teams") && {
+  (community.enabled_default_tabs || ["Teams"]).includes("Teams") && {
     title: "Teams",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Teams",
     params: {
