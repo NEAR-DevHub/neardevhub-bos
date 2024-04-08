@@ -27,7 +27,6 @@ export async function modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFrom
       const json = await response.json();
 
       if (devComponents[social_get_key]) {
-        console.log("using local dev widget", social_get_key);
         const social_get_key_parts = social_get_key.split("/");
         const devWidget = {};
         devWidget[social_get_key_parts[0]] = { widget: {} };
