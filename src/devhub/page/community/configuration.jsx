@@ -153,6 +153,35 @@ return (
         />
       </Tile>
     )}
+    {hasConfigurePermissions && (
+      <Tile className={"p-3 bg-white"}>
+        <Widget
+          src={
+            "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
+          }
+          props={{
+            title: "Default Tabs",
+            hasConfigurePermissions,
+            Configurator: (p) => (
+              <Widget
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.DefaultTabsConfigurator"
+                }
+                props={{
+                  data: communityData.enabled_default_tabs || [],
+                  onSubmit: (v) =>
+                    updateCommunity({
+                      handle,
+                      community: { ...communityData, enabled_default_tabs: v },
+                    }),
+                  ...p,
+                }}
+              />
+            ),
+          }}
+        />
+      </Tile>
+    )}
     {hasDeletePermissions && (
       <div
         className="d-flex justify-content-center gap-4 p-4 w-100"

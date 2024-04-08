@@ -48,10 +48,16 @@ function getAccountCommunityPermissions({ account_id, community_handle }) {
 }
 
 function updateCommunity({ handle, community }) {
-  return Near.call("${REPL_DEVHUB_CONTRACT}", "update_community", {
-    handle,
-    community,
-  });
+  return Near.call(
+    "${REPL_DEVHUB_CONTRACT}",
+    "update_community",
+    {
+      handle,
+      community,
+    },
+    30000000000000, // gas (30Tgas)
+    0
+  );
 }
 
 function deleteCommunity({ handle }) {

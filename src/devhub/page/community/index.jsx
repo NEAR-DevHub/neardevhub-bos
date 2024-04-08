@@ -47,22 +47,26 @@ if (!href) {
 }
 
 if (!tab) {
-  tab = "Announcements";
+  tab = community.enabled_default_tabs.length
+    ? community.enabled_default_tabs[0]
+    : community.addons.length
+    ? community.addons[0].display_name
+    : "Announcements";
 }
 
 tab = normalize(tab);
 
 const [isLinkCopied, setLinkCopied] = useState(false);
 
-const tabs = [
-  {
+const unorderedTabs = [
+  community.enabled_default_tabs.includes("Announcements") && {
     title: "Announcements",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Announcements",
     params: {
       handle: community.handle,
     },
   },
-  {
+  community.enabled_default_tabs.includes("Discussions") && {
     title: "Discussions",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Discussions",
     params: {
@@ -70,21 +74,39 @@ const tabs = [
       transactionHashes: props.transactionHashes,
     },
   },
-  {
+  community.enabled_default_tabs.includes("Activity") && {
     title: "Activity",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Activity",
     params: {
       handle: community.handle,
     },
   },
-  {
+  community.enabled_default_tabs.includes("Teams") && {
     title: "Teams",
     view: "${REPL_DEVHUB}/widget/devhub.entity.community.Teams",
     params: {
       handle: community.handle,
     },
   },
-];
+].filter((item) => item);
+
+const tabs = unorderedTabs.slice().sort((a, b) => {
+  const indexA = (community?.enabled_default_tabs || []).indexOf(a.title);
+  const indexB = (community?.enabled_default_tabs || []).indexOf(b.title);
+
+  if (indexA !== -1 && indexB !== -1) {
+    return indexA - indexB;
+  }
+
+  if (indexA !== -1) {
+    return -1;
+  }
+  if (indexB !== -1) {
+    return 1;
+  }
+
+  return 0;
+});
 
 (community.addons || []).map((addon) => {
   addon.enabled &&
