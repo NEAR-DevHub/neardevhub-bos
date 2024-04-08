@@ -119,6 +119,7 @@ const TabItem = ({ data, onUpdate, onMove, index, isTop, isBottom }) => {
               value: data.enabled,
               onChange: handleEnableChange,
               disabled: !isActive,
+              key: data.title,
             }}
           />
         </div>

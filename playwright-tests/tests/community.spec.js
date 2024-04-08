@@ -160,6 +160,38 @@ test.describe("Is community admin", () => {
       "WebAssembly Music is fantastic"
     );
   });
+
+  test("should be able to toggle default tabs section of a community", async ({
+    page,
+  }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community.configuration&handle=webassemblymusic"
+    );
+    await page.locator('h5:has-text("Default Tabs")').waitFor();
+    const editbutton = await page
+      .getByRole("button", { name: " Edit" })
+      .nth(4);
+    await editbutton.scrollIntoViewIfNeeded();
+    await editbutton.click();
+
+    await pauseIfVideoRecording(page);
+
+    // toggle all tabs
+    await page.locator("#toggle-Announcements").click();
+    await page.locator("#toggle-Discussions").click();
+    await page.locator("#toggle-Activity").click();
+    await page.locator("#toggle-Teams").click();
+
+    await pauseIfVideoRecording(page);
+
+    const submitbutton = await page.getByRole("button", { name: " Submit" });
+    await submitbutton.scrollIntoViewIfNeeded();
+    await submitbutton.click();
+
+    await pauseIfVideoRecording(page);
+    await page.getByText("Close").click();
+    await page.getByRole("button", { name: " Cancel" }).click();
+  });
 });
 
 test.describe("Is chain-abstraction community admin", () => {
