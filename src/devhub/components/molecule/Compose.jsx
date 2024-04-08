@@ -151,6 +151,7 @@ const Compose = ({
                 placeholder: placeholder,
                 height,
                 embeddCSS: embeddCSS || EmbeddCSS,
+                showAutoComplete: autocompleteEnabled,
               }}
             />
             {autocompleteEnabled && state.showAccountAutocomplete && (

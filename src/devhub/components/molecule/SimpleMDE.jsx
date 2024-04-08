@@ -34,6 +34,57 @@ const statusConfig = JSON.stringify(
 );
 const spellChecker = props.spellChecker ?? true;
 const tabSize = props.tabSize ?? 4;
+const showAutoComplete = props.showAutoComplete ?? false;
+
+// it keeps getting called
+function getSuggestedAccounts(v) {
+  const term = "ss"; // HOW DO WE GET THIS TERM
+  let results = [];
+  const profilesData = Social.get("*/profile/name", "final") || {};
+  const followingData = Social.get(
+    `${context.accountId}/graph/follow/**`,
+    "final"
+  );
+  if (!profilesData) return <></>;
+  const profiles = Object.entries(profilesData);
+  term = (term || "").replace(/\W/g, "").toLowerCase();
+  const limit = 5;
+
+  for (let i = 0; i < profiles.length; i++) {
+    let score = 0;
+    const accountId = profiles[i][0];
+    const accountIdSearch = profiles[i][0].replace(/\W/g, "").toLowerCase();
+    const nameSearch = (profiles[i][1]?.profile?.name || "")
+      .replace(/\W/g, "")
+      .toLowerCase();
+    const accountIdSearchIndex = accountIdSearch.indexOf(term);
+    const nameSearchIndex = nameSearch.indexOf(term);
+
+    if (accountIdSearchIndex > -1 || nameSearchIndex > -1) {
+      score += 10;
+
+      if (accountIdSearchIndex === 0) {
+        score += 10;
+      }
+      if (nameSearchIndex === 0) {
+        score += 10;
+      }
+      if (followingData[accountId] === "") {
+        score += 30;
+      }
+
+      results.push({
+        accountId,
+        score,
+      });
+    }
+  }
+
+  results.sort((a, b) => b.score - a.score);
+  results = results.slice(0, limit);
+
+  return results;
+}
 
 // Add or remove toolbar items
 // For adding unique items, configure the switch-case within the iframe
@@ -74,6 +125,20 @@ const code = `
     }
   }
   
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  .text-wrap {
+    overflow: hidden;
+    white-space: normal;
+  }
+
+  .dropdown-item:hover{
+    background-color:rgb(0, 236, 151) !important;
+    color:white !important;
+  }
+
   .editor-toolbar {
       text-align: ${alignToolItems};
   }
@@ -87,6 +152,8 @@ const code = `
   <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
   <script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
   
   <div id="react-root"></div>
   
@@ -206,9 +273,56 @@ const code = `
   
           // On Change
           simplemde.codemirror.on('change', () => {
-              updateContent();
-              updateIframeHeight();
+            updateContent();
+            updateIframeHeight();
+            
           });
+
+          if (${showAutoComplete}) {
+            simplemde.codemirror.on("keyup", function (cm, event) {
+              const cursor = cm.getCursor();
+              const token = cm.getTokenAt(cursor);
+              if (token.string === "@") {
+                // Calculate cursor position relative to the iframe's viewport
+                const rect = cm.charCoords(cursor);
+                const x = rect.left;
+                const y = rect.bottom;
+                const mentionInput = simplemde.value().split("@").pop()
+                // Create dropdown with options
+                const dropdown = document.createElement("div");
+                dropdown.className =
+                "autocomplete-dropdown dropdown-menu rounded-2 dropdown-menu-end dropdown-menu-lg-start px-2 shadow show";
+                dropdown.style.position = "absolute";
+                dropdown.style.top = y + "px";
+                dropdown.style.left = x + "px";
+                dropdown.style.background = "#f9f9f9";
+        
+               dropdown.innerHTML = "<div>${getSuggestedAccounts(mentionInput)
+                 .map(
+                   (item) =>
+                     `<li class=\'dropdown-item cursor-pointer w-100 text-wrap\'>${item?.accountId}</li>`
+                 )
+                 .join("")}</div>";
+                document.body.appendChild(dropdown);
+            
+                // Handle dropdown selection
+                dropdown.querySelectorAll("li").forEach((li) => {
+                  li.addEventListener("click", function () {
+                    const selectedText = this.textContent.trim();
+                    simplemde.codemirror.replaceSelection(selectedText);
+                    dropdown.remove();
+                  });
+                });
+            
+                // Close dropdown on outside click
+                document.addEventListener("click", function (event) {
+                  if (!dropdown.contains(event.target)) {
+                    dropdown.remove();
+                  }
+                });
+              }
+            });
+          }
       }, []);
   
       return React.createElement('textarea', { id: 'markdown-input', value: value, onChange: setValue });
@@ -240,16 +354,20 @@ return (
     message={data ?? { content: "" }}
     onMessage={(e) => {
       switch (e.handler) {
-        case "update": {
-          onChange(e.content);
-        }
-        case "resize": {
-          const offset = 0;
-          if (statusConfig.length) {
-            offset = 10;
+        case "update":
+          {
+            onChange(e.content);
           }
-          State.update({ iframeHeight: e.height + offset });
-        }
+          break;
+        case "resize":
+          {
+            const offset = 0;
+            if (statusConfig.length) {
+              offset = 10;
+            }
+            State.update({ iframeHeight: e.height + offset });
+          }
+          break;
       }
     }}
   />
