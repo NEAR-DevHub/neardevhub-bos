@@ -168,7 +168,12 @@ return (
                   "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.DefaultTabsConfigurator"
                 }
                 props={{
-                  data: communityData.enabled_default_tabs || [],
+                  data: communityData.enabled_default_tabs || [
+                    "Announcements",
+                    "Discussions",
+                    "Activity",
+                    "Teams",
+                  ],
                   onSubmit: (v) =>
                     updateCommunity({
                       handle,
