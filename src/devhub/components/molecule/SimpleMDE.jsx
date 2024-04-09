@@ -342,6 +342,16 @@ const code = `
                      "<li class='dropdown-item cursor-pointer w-100 text-wrap'>"+item?.accountId+"</li>"
                  )
                  .join("")+"</div>";
+
+                 dropdown.querySelectorAll("li").forEach((li) => {
+                  li.addEventListener("click", function () {
+                    const selectedText = this.textContent.trim();
+                    simplemde.codemirror.replaceSelection(selectedText);
+                    mentionToken = null;
+                    dropdown.remove();
+                  });
+                });
+            
               }
 
             });
@@ -368,7 +378,7 @@ const code = `
       followingData = event.data.followingData;
     }
     if (event.data.profilesData) {
-      profilesData = event.data.profilesData;
+      profilesData = JSON.parse(event.data.profilesData);
     }
   });
   </script>
@@ -383,7 +393,7 @@ return (
     message={{
       content: props.data?.content ?? "",
       followingData,
-      profilesData,
+      profilesData: JSON.stringify(profilesData),
     }}
     onMessage={(e) => {
       switch (e.handler) {
