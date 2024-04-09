@@ -132,7 +132,7 @@ const renderRepost = (a) => {
         }}
       >
         {repostSvg}{" "}
-        <span style={{ marginLeft: "8px" }}>
+        <span style={{ marginLeft: "8px" }} data-testid="repost">
           Reposted by{" "}
           <Widget
             loading={a.accountId}

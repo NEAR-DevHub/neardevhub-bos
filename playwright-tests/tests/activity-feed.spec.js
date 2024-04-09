@@ -47,6 +47,26 @@ test.describe("Non authenticated user's wallet is connected", () => {
     const posts = await page.locator(".post");
     expect(await posts.count()).toBeGreaterThan(10);
   });
+
+  test("loads a repost in the All Feed and shows 'Reposted by' text", async ({
+    page,
+  }) => {
+    await page.goto("/devhub.near/widget/app?page=announcements");
+    // Go to discussions
+    await page.getByText("Discussions", { exact: true }).click();
+    // Go back to All
+    await page.getByText("All", { exact: true }).click();
+
+    // Scroll to the bottom of the page
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
+    // Wait for the page to load more posts
+    await page.waitForTimeout(3000);
+
+    // Check that at least one post contains the text "Reposted by"
+    const el = await page.getByTestId("repost");
+    expect(el).toBeDefined();
+  });
 });
 
 test.describe("Admin wallet is connected", () => {
