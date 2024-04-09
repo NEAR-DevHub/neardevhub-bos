@@ -166,10 +166,9 @@ const renderRepost = (a) => {
 
 const renderItem = (item) =>
   item.action === "post" ? renderPost(item) : renderRepost(item);
-
 return (
   <Widget
-    src="mob.near/widget/MergedIndexFeed"
+    src="${REPL_DEVHUB}/widget/devhub.components.feed.MergedIndexFeed"
     props={{ index, renderItem, filter: props.filter, threshold: 800 }}
   />
 );
