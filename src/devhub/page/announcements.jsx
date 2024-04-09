@@ -134,8 +134,8 @@ return (
               key="feed"
               src="${REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
               props={{
-                accounts: filteredAccountIds,
                 sort: sort,
+                accounts: filteredAccountIds,
               }}
             />
           </div>
