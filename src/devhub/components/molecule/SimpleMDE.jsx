@@ -18,6 +18,12 @@ State.init({
   message: { handler: "init", content: props.data },
 });
 
+const profilesData = Social.get("*/profile/name", "final");
+const followingData = Social.get(
+  `${context.accountId}/graph/follow/**`,
+  "final"
+);
+
 // SIMPLEMDE CONFIG //
 const fontFamily = props.fontFamily ?? "sans-serif";
 const alignToolItems = props.alignToolItems ?? "right";
@@ -35,56 +41,6 @@ const statusConfig = JSON.stringify(
 const spellChecker = props.spellChecker ?? true;
 const tabSize = props.tabSize ?? 4;
 const showAutoComplete = props.showAutoComplete ?? false;
-
-// it keeps getting called
-function getSuggestedAccounts(v) {
-  const term = "ss"; // HOW DO WE GET THIS TERM
-  let results = [];
-  const profilesData = Social.get("*/profile/name", "final") || {};
-  const followingData = Social.get(
-    `${context.accountId}/graph/follow/**`,
-    "final"
-  );
-  if (!profilesData) return <></>;
-  const profiles = Object.entries(profilesData);
-  term = (term || "").replace(/\W/g, "").toLowerCase();
-  const limit = 5;
-
-  for (let i = 0; i < profiles.length; i++) {
-    let score = 0;
-    const accountId = profiles[i][0];
-    const accountIdSearch = profiles[i][0].replace(/\W/g, "").toLowerCase();
-    const nameSearch = (profiles[i][1]?.profile?.name || "")
-      .replace(/\W/g, "")
-      .toLowerCase();
-    const accountIdSearchIndex = accountIdSearch.indexOf(term);
-    const nameSearchIndex = nameSearch.indexOf(term);
-
-    if (accountIdSearchIndex > -1 || nameSearchIndex > -1) {
-      score += 10;
-
-      if (accountIdSearchIndex === 0) {
-        score += 10;
-      }
-      if (nameSearchIndex === 0) {
-        score += 10;
-      }
-      if (followingData[accountId] === "") {
-        score += 30;
-      }
-
-      results.push({
-        accountId,
-        score,
-      });
-    }
-  }
-
-  results.sort((a, b) => b.score - a.score);
-  results = results.slice(0, limit);
-
-  return results;
-}
 
 // Add or remove toolbar items
 // For adding unique items, configure the switch-case within the iframe
@@ -160,7 +116,53 @@ const code = `
   <script>
   let codeMirrorInstance;
   let isEditorInitialized = false;
+  let followingData = {};
+  let profilesData = {};
   
+  function getSuggestedAccounts(term) {
+    let results = [];
+
+    term = (term || "").replace(/\W/g, "").toLowerCase();
+    const limit = 5;
+  
+    const profiles = Object.entries(profilesData);
+
+    for (let i = 0; i < profiles.length; i++) {
+      let score = 0;
+      const accountId = profiles[i][0];
+      const accountIdSearch = profiles[i][0].replace(/\W/g, "").toLowerCase();
+      const nameSearch = (profiles[i][1]?.profile?.name || "")
+        .replace(/\W/g, "")
+        .toLowerCase();
+      const accountIdSearchIndex = accountIdSearch.indexOf(term);
+      const nameSearchIndex = nameSearch.indexOf(term);
+  
+      if (accountIdSearchIndex > -1 || nameSearchIndex > -1) {
+        score += 10;
+  
+        if (accountIdSearchIndex === 0) {
+          score += 10;
+        }
+        if (nameSearchIndex === 0) {
+          score += 10;
+        }
+        if (followingData[accountId] === "") {
+          score += 30;
+        }
+  
+        results.push({
+          accountId,
+          score,
+        });
+      }
+    }
+  
+    results.sort((a, b) => b.score - a.score);
+    results = results.slice(0, limit);
+  
+    return results;
+  }
+
   function MarkdownEditor(props) {
       const [value, setValue] = React.useState(props.initialText || "");
   
@@ -190,6 +192,7 @@ const code = `
                           function handleMention(editor) {
                               const cursorPos = editor.codemirror.getCursor();
                               editor.codemirror.replaceRange("@", cursorPos);
+
                           }
                           return {
                               name: "mention",
@@ -279,17 +282,23 @@ const code = `
           });
 
           if (${showAutoComplete}) {
+            let mentionToken;
+            let dropdown;
+
+            
             simplemde.codemirror.on("keyup", function (cm, event) {
               const cursor = cm.getCursor();
               const token = cm.getTokenAt(cursor);
-              if (token.string === "@") {
+
+              if (!mentionToken && token.string === "@") {
+                mentionToken = token;
                 // Calculate cursor position relative to the iframe's viewport
                 const rect = cm.charCoords(cursor);
                 const x = rect.left;
                 const y = rect.bottom;
-                const mentionInput = simplemde.value().split("@").pop()
+
                 // Create dropdown with options
-                const dropdown = document.createElement("div");
+                dropdown = document.createElement("div");
                 dropdown.className =
                 "autocomplete-dropdown dropdown-menu rounded-2 dropdown-menu-end dropdown-menu-lg-start px-2 shadow show";
                 dropdown.style.position = "absolute";
@@ -297,12 +306,12 @@ const code = `
                 dropdown.style.left = x + "px";
                 dropdown.style.background = "#f9f9f9";
         
-               dropdown.innerHTML = "<div>${getSuggestedAccounts(mentionInput)
+                dropdown.innerHTML = "<div>"+getSuggestedAccounts("")
                  .map(
                    (item) =>
-                     `<li class=\'dropdown-item cursor-pointer w-100 text-wrap\'>${item?.accountId}</li>`
+                     "<li class='dropdown-item cursor-pointer w-100 text-wrap'>"+item?.accountId+"</li>"
                  )
-                 .join("")}</div>";
+                 .join("")+"</div>";
                 document.body.appendChild(dropdown);
             
                 // Handle dropdown selection
@@ -310,6 +319,7 @@ const code = `
                   li.addEventListener("click", function () {
                     const selectedText = this.textContent.trim();
                     simplemde.codemirror.replaceSelection(selectedText);
+                    mentionToken = null;
                     dropdown.remove();
                   });
                 });
@@ -317,10 +327,23 @@ const code = `
                 // Close dropdown on outside click
                 document.addEventListener("click", function (event) {
                   if (!dropdown.contains(event.target)) {
+                    mentionToken = null;
                     dropdown.remove();
                   }
                 });
+              } else if (mentionToken && token.string.match(/[^a-z0-9]/)) {
+                mentionToken = null;
+                dropdown.remove();
+              } else if (mentionToken) {
+                const mentionInput = simplemde.value().split("@").pop();
+                dropdown.innerHTML = "<div>"+getSuggestedAccounts(mentionInput)
+                 .map(
+                   (item) =>
+                     "<li class='dropdown-item cursor-pointer w-100 text-wrap'>"+item?.accountId+"</li>"
+                 )
+                 .join("")+"</div>";
               }
+
             });
           }
       }, []);
@@ -341,6 +364,12 @@ const code = `
           codeMirrorInstance.getDoc().setValue(event.data.content);
         }
     }
+    if (event.data.followingData) {
+      followingData = event.data.followingData;
+    }
+    if (event.data.profilesData) {
+      profilesData = event.data.profilesData;
+    }
   });
   </script>
   `;
@@ -351,12 +380,16 @@ return (
       height: `${state.iframeHeight}px`,
     }}
     srcDoc={code}
-    message={data ?? { content: "" }}
+    message={{
+      content: props.data?.content ?? "",
+      followingData,
+      profilesData,
+    }}
     onMessage={(e) => {
       switch (e.handler) {
         case "update":
           {
-            onChange(e.content);
+            //onChange(e.content);
           }
           break;
         case "resize":
