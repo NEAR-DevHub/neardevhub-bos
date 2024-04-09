@@ -188,8 +188,39 @@ test.describe("Is community admin", () => {
     await submitbutton.scrollIntoViewIfNeeded();
     await submitbutton.click();
 
+    const transactionText = JSON.stringify(
+      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      null,
+      1
+    );
+    await pauseIfVideoRecording(page);
+    await expect(transactionText).toContain('"enabled_default_tabs": []');
+
     await pauseIfVideoRecording(page);
     await page.getByText("Close").click();
+
+    // toggle all tabs
+    await page.locator("#toggle-Announcements").click();
+    await page.locator("#toggle-Discussions").click();
+    await page.locator("#toggle-Activity").click();
+    await page.locator("#toggle-Teams").click();
+
+    await submitbutton.scrollIntoViewIfNeeded();
+    await submitbutton.click();
+
+    const transactionText2 = JSON.stringify(
+      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      null,
+      1
+    );
+    await pauseIfVideoRecording(page);
+    await expect(transactionText2).toContain("Announcements");
+    await expect(transactionText2).toContain("Discussions");
+    await expect(transactionText2).toContain("Activity");
+    await expect(transactionText2).toContain("Teams");
+    await pauseIfVideoRecording(page);
+    await page.getByText("Close").click();
+
     await page.getByRole("button", { name: " Cancel" }).click();
   });
 });
