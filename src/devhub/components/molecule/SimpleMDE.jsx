@@ -368,7 +368,7 @@ const code = `
       followingData = event.data.followingData;
     }
     if (event.data.profilesData) {
-      profilesData = event.data.profilesData;
+      profilesData = JSON.parse(event.data.profilesData);
     }
   });
   </script>
@@ -383,7 +383,7 @@ return (
     message={{
       content: props.data?.content ?? "",
       followingData,
-      profilesData,
+      profilesData: JSON.stringify(profilesData),
     }}
     onMessage={(e) => {
       switch (e.handler) {
