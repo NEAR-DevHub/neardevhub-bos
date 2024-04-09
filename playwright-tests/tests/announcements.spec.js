@@ -25,6 +25,8 @@ test.describe("Don't ask again enabled", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
+    await page.getByRole("link", { name: "Announcements" }).click();
+
     const widgetSrc =
       "devhub.near/widget/devhub.entity.community.Announcements";
     await setDontAskAgainCacheValues({
@@ -188,6 +190,8 @@ test.describe("Admin wallet is connected", () => {
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
 
+    await page.getByRole("link", { name: "Announcements" }).click();
+
     const composeTextareaSelector = `textarea[data-testid="compose-announcement"]`;
     await page.waitForSelector(composeTextareaSelector, {
       state: "visible",
@@ -198,6 +202,9 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
+
+    await page.getByRole("link", { name: "Announcements" }).click();
+
     const composeTextareaSelector = `textarea[data-testid="compose-announcement"]`;
     // Wait for the compose area to be visible
     await page.waitForSelector(composeTextareaSelector, {
@@ -234,6 +241,9 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
+
+    await page.getByRole("link", { name: "Announcements" }).click();
+
     const commentButtonSelector = `button[title="Add Comment"]`;
     await page.waitForSelector(commentButtonSelector, {
       state: "visible",
@@ -244,6 +254,9 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
+
+    await page.getByRole("link", { name: "Announcements" }).click();
+
     const likeButtonSelector = `button[title="Like"]`;
     await page.waitForSelector(likeButtonSelector, {
       state: "visible",
@@ -254,6 +267,8 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
+
+    await page.getByRole("link", { name: "Announcements" }).click();
 
     const posts_section = await page.locator(".card").nth(1);
     await posts_section.scrollIntoViewIfNeeded();
