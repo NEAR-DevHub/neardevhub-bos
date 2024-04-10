@@ -399,7 +399,7 @@ return (
       switch (e.handler) {
         case "update":
           {
-            //onChange(e.content);
+            onChange(e.content);
           }
           break;
         case "resize":

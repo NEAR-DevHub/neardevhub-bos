@@ -18,13 +18,13 @@ const TextInput = ({
   });
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      onChange({ target: { value: state.data } });
-    }, 30);
+    if (onChange) {
+      const handler = setTimeout(() => {
+        onChange({ target: { value: state.data } });
+      }, 500);
 
-    return () => {
-      clearTimeout(handler);
-    };
+      return () => clearTimeout(handler);
+    }
   }, [state.data]);
 
   useEffect(() => {
