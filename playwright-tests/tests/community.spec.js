@@ -205,12 +205,12 @@ test.describe("Is chain-abstraction community admin", () => {
 
 test.describe("Is contract standards community admin", () => {
   test.use({
-    storageState: "playwright-tests/storage-states/wallet-connected-admin.json",
+    storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
 
   test("should open github addon configuration", async ({ page }) => {
     await page.goto(
-      "/devhub.near/widget/app?page=community&handle=contract-standards&tab=github"
+      "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=github"
     );
     await pauseIfVideoRecording(page);
     const configureButton = await page.getByRole("button", { name: "" });
