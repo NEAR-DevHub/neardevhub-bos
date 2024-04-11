@@ -18,6 +18,12 @@ State.init({
   message: { handler: "init", content: props.data },
 });
 
+const profilesData = Social.get("*/profile/name", "final");
+const followingData = Social.get(
+  `${context.accountId}/graph/follow/**`,
+  "final"
+);
+
 // SIMPLEMDE CONFIG //
 const fontFamily = props.fontFamily ?? "sans-serif";
 const alignToolItems = props.alignToolItems ?? "right";
@@ -35,56 +41,6 @@ const statusConfig = JSON.stringify(
 const spellChecker = props.spellChecker ?? true;
 const tabSize = props.tabSize ?? 4;
 const showAutoComplete = props.showAutoComplete ?? false;
-
-// it keeps getting called
-function getSuggestedAccounts(v) {
-  const term = "ss"; // HOW DO WE GET THIS TERM
-  let results = [];
-  const profilesData = Social.get("*/profile/name", "final") || {};
-  const followingData = Social.get(
-    `${context.accountId}/graph/follow/**`,
-    "final"
-  );
-  if (!profilesData) return <></>;
-  const profiles = Object.entries(profilesData);
-  term = (term || "").replace(/\W/g, "").toLowerCase();
-  const limit = 5;
-
-  for (let i = 0; i < profiles.length; i++) {
-    let score = 0;
-    const accountId = profiles[i][0];
-    const accountIdSearch = profiles[i][0].replace(/\W/g, "").toLowerCase();
-    const nameSearch = (profiles[i][1]?.profile?.name || "")
-      .replace(/\W/g, "")
-      .toLowerCase();
-    const accountIdSearchIndex = accountIdSearch.indexOf(term);
-    const nameSearchIndex = nameSearch.indexOf(term);
-
-    if (accountIdSearchIndex > -1 || nameSearchIndex > -1) {
-      score += 10;
-
-      if (accountIdSearchIndex === 0) {
-        score += 10;
-      }
-      if (nameSearchIndex === 0) {
-        score += 10;
-      }
-      if (followingData[accountId] === "") {
-        score += 30;
-      }
-
-      results.push({
-        accountId,
-        score,
-      });
-    }
-  }
-
-  results.sort((a, b) => b.score - a.score);
-  results = results.slice(0, limit);
-
-  return results;
-}
 
 // Add or remove toolbar items
 // For adding unique items, configure the switch-case within the iframe
@@ -160,7 +116,53 @@ const code = `
   <script>
   let codeMirrorInstance;
   let isEditorInitialized = false;
+  let followingData = {};
+  let profilesData = {};
   
+  function getSuggestedAccounts(term) {
+    let results = [];
+
+    term = (term || "").replace(/\W/g, "").toLowerCase();
+    const limit = 5;
+  
+    const profiles = Object.entries(profilesData);
+
+    for (let i = 0; i < profiles.length; i++) {
+      let score = 0;
+      const accountId = profiles[i][0];
+      const accountIdSearch = profiles[i][0].replace(/\W/g, "").toLowerCase();
+      const nameSearch = (profiles[i][1]?.profile?.name || "")
+        .replace(/\W/g, "")
+        .toLowerCase();
+      const accountIdSearchIndex = accountIdSearch.indexOf(term);
+      const nameSearchIndex = nameSearch.indexOf(term);
+  
+      if (accountIdSearchIndex > -1 || nameSearchIndex > -1) {
+        score += 10;
+  
+        if (accountIdSearchIndex === 0) {
+          score += 10;
+        }
+        if (nameSearchIndex === 0) {
+          score += 10;
+        }
+        if (followingData[accountId] === "") {
+          score += 30;
+        }
+  
+        results.push({
+          accountId,
+          score,
+        });
+      }
+    }
+  
+    results.sort((a, b) => b.score - a.score);
+    results = results.slice(0, limit);
+  
+    return results;
+  }
+
   function MarkdownEditor(props) {
       const [value, setValue] = React.useState(props.initialText || "");
   
@@ -190,6 +192,7 @@ const code = `
                           function handleMention(editor) {
                               const cursorPos = editor.codemirror.getCursor();
                               editor.codemirror.replaceRange("@", cursorPos);
+
                           }
                           return {
                               name: "mention",
@@ -279,48 +282,67 @@ const code = `
           });
 
           if (${showAutoComplete}) {
+            let mentionToken;
+            let mentionCursorStart;
+            let dropdown;
+
             simplemde.codemirror.on("keyup", function (cm, event) {
               const cursor = cm.getCursor();
               const token = cm.getTokenAt(cursor);
-              if (token.string === "@") {
+
+              const createMentionDrowDownOptions = () => {
+                const mentionInput = simplemde.value().split("@").pop();
+  
+                dropdown.innerHTML = "<div>"+getSuggestedAccounts(mentionInput)
+                  .map(
+                    (item) =>
+                      "<li class='dropdown-item cursor-pointer w-100 text-wrap'>"+item?.accountId+"</li>"
+                  )
+                  .join("")+"</div>";
+  
+                  dropdown.querySelectorAll("li").forEach((li) => {
+                  li.addEventListener("click", () => {
+                    const selectedText = li.textContent.trim();
+                    simplemde.codemirror.replaceRange(selectedText, mentionCursorStart, cursor);
+                    mentionToken = null;
+                    dropdown.remove();
+                  });
+                });
+              }
+
+              if (!mentionToken && token.string === "@") {
+                mentionToken = token;
+                mentionCursorStart = cursor;
                 // Calculate cursor position relative to the iframe's viewport
                 const rect = cm.charCoords(cursor);
                 const x = rect.left;
                 const y = rect.bottom;
-                const mentionInput = simplemde.value().split("@").pop()
+
                 // Create dropdown with options
-                const dropdown = document.createElement("div");
-                dropdown.className =
-                "autocomplete-dropdown dropdown-menu rounded-2 dropdown-menu-end dropdown-menu-lg-start px-2 shadow show";
+                dropdown = document.createElement("div");
+                dropdown.className = "autocomplete-dropdown dropdown-menu rounded-2 dropdown-menu-end dropdown-menu-lg-start px-2 shadow show";
                 dropdown.style.position = "absolute";
                 dropdown.style.top = y + "px";
                 dropdown.style.left = x + "px";
                 dropdown.style.background = "#f9f9f9";
         
-               dropdown.innerHTML = "<div>${getSuggestedAccounts(mentionInput)
-                 .map(
-                   (item) =>
-                     `<li class=\'dropdown-item cursor-pointer w-100 text-wrap\'>${item?.accountId}</li>`
-                 )
-                 .join("")}</div>";
+                createMentionDrowDownOptions();
                 document.body.appendChild(dropdown);
-            
-                // Handle dropdown selection
-                dropdown.querySelectorAll("li").forEach((li) => {
-                  li.addEventListener("click", function () {
-                    const selectedText = this.textContent.trim();
-                    simplemde.codemirror.replaceSelection(selectedText);
-                    dropdown.remove();
-                  });
-                });
             
                 // Close dropdown on outside click
                 document.addEventListener("click", function (event) {
                   if (!dropdown.contains(event.target)) {
+                    mentionToken = null;
                     dropdown.remove();
                   }
                 });
+              } else if (mentionToken && token.string.match(/[^a-z0-9]/)) {
+                mentionToken = null;
+                dropdown.remove();
+              } else if (mentionToken) {
+                createMentionDrowDownOptions();
               }
+
             });
           }
       }, []);
@@ -341,6 +363,12 @@ const code = `
           codeMirrorInstance.getDoc().setValue(event.data.content);
         }
     }
+    if (event.data.followingData) {
+      followingData = event.data.followingData;
+    }
+    if (event.data.profilesData) {
+      profilesData = JSON.parse(event.data.profilesData);
+    }
   });
   </script>
   `;
@@ -351,7 +379,11 @@ return (
       height: `${state.iframeHeight}px`,
     }}
     srcDoc={code}
-    message={data ?? { content: "" }}
+    message={{
+      content: props.data?.content ?? "",
+      followingData,
+      profilesData: JSON.stringify(profilesData),
+    }}
     onMessage={(e) => {
       switch (e.handler) {
         case "update":
