@@ -152,6 +152,7 @@ test.describe("Wallet is connected", () => {
     await labelsInput.pressSequentially("webassemblymus", { delay: 100 });
     await labelsInput.press("Tab");
 
+    await pauseIfVideoRecording(page);
     await page.getByTestId("submit-create-post").click();
     const transactionText = JSON.stringify(
       JSON.parse(await page.locator("div.modal-body code").innerText()),
@@ -161,7 +162,7 @@ test.describe("Wallet is connected", () => {
     await expect(transactionText).toEqual(
       JSON.stringify(
         {
-          parent_id: 2489,
+          parent_id: 1707,
           labels: ["ai", "webassemblymusic"],
           body: {
             description: "The comment to the idea",

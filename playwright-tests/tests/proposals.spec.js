@@ -48,7 +48,7 @@ test.describe("Don't ask again enabled", () => {
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
-  test("should create a prosal", async ({ page }) => {
+  test("should create a proposal", async ({ page }) => {
     test.setTimeout(120000);
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
