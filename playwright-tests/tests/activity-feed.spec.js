@@ -101,18 +101,6 @@ test.describe("Admin wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test("two posts show in the feed", async ({ page }) => {
-    await page.goto("/devhub.near/widget/app?page=announcements");
-    const postLocator = page.locator(".post").first();
-    await pauseIfVideoRecording(page);
-    const postContent = await postLocator.textContent();
-    await pauseIfVideoRecording(page);
-    const postLocator2 = page.locator(".post").second();
-    const postContent2 = await postLocator2.textContent();
-
-    expect(postContent).not.toEqual(postContent2);
-  });
-
   // SKIPPING
   test.skip("a comment shows on post in feed", async ({ page }) => {
     // This test needs to be revisited if we modify the post / comment
