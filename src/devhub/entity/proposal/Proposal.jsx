@@ -1229,16 +1229,17 @@ return (
                         value={TIMELINE_STATUS.FUNDED}
                       >
                         <div className="d-flex flex-column gap-2">
-                          {paymentHashes?.length && paymentHashes[0] ? (
-                            paymentHashes.map((link) => (
+                          {paymentHashes?.length > 1 ? (
+                            paymentHashes.slice(0, -1).map((link, index) => (
                               <a
+                                key={index}
                                 href={link}
                                 className="text-decoration-underline"
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
                                 Payment Link
-                                <i class="bi bi-arrow-up-right"></i>
+                                <i className="bi bi-arrow-up-right"></i>
                               </a>
                             ))
                           ) : updatedProposalStatus.value.payouts.length > 0 ? (
@@ -1395,6 +1396,7 @@ return (
                                   timeline: updatedProposalStatus.value,
                                 });
                               }
+                              setShowTimelineSetting(false);
                             },
                           }}
                         />

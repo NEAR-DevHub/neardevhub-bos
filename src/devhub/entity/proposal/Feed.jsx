@@ -136,7 +136,8 @@ const FeedItem = ({ proposal, index }) => {
                 }}
               />
             </div>
-            <div className="d-flex gap-2 align-items-center text-sm w-100">
+            <div className="d-flex gap-2 align-items-center flex-wrap flex-sm-nowrap text-sm w-100">
+              <div>#{proposal.proposal_id} ･ </div>
               <div className="text-truncate">
                 By {profile.name ?? accountId} ･{" "}
               </div>
