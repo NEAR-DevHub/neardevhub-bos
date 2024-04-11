@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { selectAndAssert, setInputAndAssert } from "../testUtils";
+import {
+  pauseIfVideoRecording,
+  selectAndAssert,
+  setInputAndAssert,
+} from "../testUtils";
 
 test.describe("Wallet is not connected", () => {
   // sign in to wallet
@@ -191,6 +195,7 @@ test.describe("Wallet is connected", () => {
     await labelsInput.pressSequentially("webassemblymus", { delay: 100 });
     await labelsInput.press("Tab");
 
+    await pauseIfVideoRecording(page);
     await page.getByTestId("submit-create-post").click();
     const transactionText = JSON.stringify(
       JSON.parse(await page.locator("div.modal-body code").innerText()),

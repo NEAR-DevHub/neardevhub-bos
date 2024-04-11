@@ -120,6 +120,7 @@ test.describe("Is community admin", () => {
       .getByTestId("1-description--editable")
       .fill("Music written in stone on NEAR");
 
+    await pauseIfVideoRecording(page);
     await page.getByRole("button", { name: " Submit" }).click();
     await page.getByRole("button", { name: "Save" }).click();
     const transactionObj = JSON.parse(
@@ -148,6 +149,7 @@ test.describe("Is community admin", () => {
       .getByTestId("4-website_url--editable")
       .fill("webassemblymusic.near.page");
 
+    await pauseIfVideoRecording(page);
     const submitbutton = await page.getByRole("button", { name: " Submit" });
     await submitbutton.scrollIntoViewIfNeeded();
     await submitbutton.click();
@@ -203,12 +205,12 @@ test.describe("Is chain-abstraction community admin", () => {
 
 test.describe("Is contract standards community admin", () => {
   test.use({
-    storageState: "playwright-tests/storage-states/wallet-connected-admin.json",
+    storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
 
   test("should open github addon configuration", async ({ page }) => {
     await page.goto(
-      "/devhub.near/widget/app?page=community&handle=contract-standards&tab=github"
+      "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=github"
     );
     await pauseIfVideoRecording(page);
     const configureButton = await page.getByRole("button", { name: "" });
