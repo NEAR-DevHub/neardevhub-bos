@@ -158,11 +158,13 @@ test.describe("Wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
-  test("editing proposal should not be laggy", async ({ page }) => {
+  test("editing proposal should not be laggy, even if mentioning someone", async ({
+    page,
+  }) => {
     test.setTimeout(120000);
     await page.goto("/devhub.near/widget/app?page=create-proposal");
 
-    const delay_milliseconds_between_keypress_when_typing = 300;
+    const delay_milliseconds_between_keypress_when_typing = 30;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
     await titleArea.pressSequentially("Test proposal 123456", {
@@ -191,9 +193,16 @@ test.describe("Wallet is connected", () => {
       .frameLocator("iframe")
       .locator(".CodeMirror textarea");
     await descriptionArea.focus();
-    await descriptionArea.fill(`The test proposal description.`);
+    await descriptionArea.pressSequentially(
+      `The test proposal description. And mentioning @petersal`,
+      {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      }
+    );
 
     await pauseIfVideoRecording(page);
+
+    await page.frameLocator("iframe").getByText("petersalomonsen.near").click();
 
     await page.locator('input[type="text"]').nth(2).pressSequentially("12345", {
       delay: delay_milliseconds_between_keypress_when_typing,
@@ -223,7 +232,8 @@ test.describe("Wallet is connected", () => {
           body: {
             proposal_body_version: "V0",
             name: "Test proposal 123456",
-            description: "The test proposal description.",
+            description:
+              "The test proposal description. And mentioning @petersalomonsen.near",
             category: "DevDAO Platform",
             summary: "Test proposal summary 123456789",
             linked_proposals: [],

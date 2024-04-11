@@ -283,15 +283,36 @@ const code = `
 
           if (${showAutoComplete}) {
             let mentionToken;
+            let mentionCursorStart;
             let dropdown;
 
-            
             simplemde.codemirror.on("keyup", function (cm, event) {
               const cursor = cm.getCursor();
               const token = cm.getTokenAt(cursor);
 
+              const createMentionDrowDownOptions = () => {
+                const mentionInput = simplemde.value().split("@").pop();
+  
+                dropdown.innerHTML = "<div>"+getSuggestedAccounts(mentionInput)
+                  .map(
+                    (item) =>
+                      "<li class='dropdown-item cursor-pointer w-100 text-wrap'>"+item?.accountId+"</li>"
+                  )
+                  .join("")+"</div>";
+  
+                  dropdown.querySelectorAll("li").forEach((li) => {
+                  li.addEventListener("click", () => {
+                    const selectedText = li.textContent.trim();
+                    simplemde.codemirror.replaceRange(selectedText, mentionCursorStart, cursor);
+                    mentionToken = null;
+                    dropdown.remove();
+                  });
+                });
+              }
+
               if (!mentionToken && token.string === "@") {
                 mentionToken = token;
+                mentionCursorStart = cursor;
                 // Calculate cursor position relative to the iframe's viewport
                 const rect = cm.charCoords(cursor);
                 const x = rect.left;
@@ -299,30 +320,14 @@ const code = `
 
                 // Create dropdown with options
                 dropdown = document.createElement("div");
-                dropdown.className =
-                "autocomplete-dropdown dropdown-menu rounded-2 dropdown-menu-end dropdown-menu-lg-start px-2 shadow show";
+                dropdown.className = "autocomplete-dropdown dropdown-menu rounded-2 dropdown-menu-end dropdown-menu-lg-start px-2 shadow show";
                 dropdown.style.position = "absolute";
                 dropdown.style.top = y + "px";
                 dropdown.style.left = x + "px";
                 dropdown.style.background = "#f9f9f9";
         
-                dropdown.innerHTML = "<div>"+getSuggestedAccounts("")
-                 .map(
-                   (item) =>
-                     "<li class='dropdown-item cursor-pointer w-100 text-wrap'>"+item?.accountId+"</li>"
-                 )
-                 .join("")+"</div>";
+                createMentionDrowDownOptions();
                 document.body.appendChild(dropdown);
-            
-                // Handle dropdown selection
-                dropdown.querySelectorAll("li").forEach((li) => {
-                  li.addEventListener("click", function () {
-                    const selectedText = this.textContent.trim();
-                    simplemde.codemirror.replaceSelection(selectedText);
-                    mentionToken = null;
-                    dropdown.remove();
-                  });
-                });
             
                 // Close dropdown on outside click
                 document.addEventListener("click", function (event) {
@@ -335,23 +340,7 @@ const code = `
                 mentionToken = null;
                 dropdown.remove();
               } else if (mentionToken) {
-                const mentionInput = simplemde.value().split("@").pop();
-                dropdown.innerHTML = "<div>"+getSuggestedAccounts(mentionInput)
-                 .map(
-                   (item) =>
-                     "<li class='dropdown-item cursor-pointer w-100 text-wrap'>"+item?.accountId+"</li>"
-                 )
-                 .join("")+"</div>";
-
-                 dropdown.querySelectorAll("li").forEach((li) => {
-                  li.addEventListener("click", function () {
-                    const selectedText = this.textContent.trim();
-                    simplemde.codemirror.replaceSelection(selectedText);
-                    mentionToken = null;
-                    dropdown.remove();
-                  });
-                });
-            
+                createMentionDrowDownOptions();
               }
 
             });
