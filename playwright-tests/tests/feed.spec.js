@@ -162,7 +162,7 @@ test.describe("Wallet is connected", () => {
     await expect(transactionText).toEqual(
       JSON.stringify(
         {
-          parent_id: 1707,
+          parent_id: 2489,
           labels: ["ai", "webassemblymusic"],
           body: {
             description: "The comment to the idea",
