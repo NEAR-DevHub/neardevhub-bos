@@ -21,7 +21,7 @@ const TextInput = ({
     if (onChange) {
       const handler = setTimeout(() => {
         onChange({ target: { value: state.data } });
-      }, 500);
+      }, 100);
 
       return () => clearTimeout(handler);
     }

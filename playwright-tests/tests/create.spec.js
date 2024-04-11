@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { selectAndAssert, setInputAndAssert } from "../testUtils";
+import { pauseIfVideoRecording } from "../testUtils.js";
 
 test.describe("Wallet is not connected", () => {
   // sign in to wallet
@@ -58,6 +59,7 @@ test.describe("Wallet is connected", () => {
       "300"
     );
     await page.getByTestId("requested-amount-editor").fill("300");
+    await pauseIfVideoRecording(page);
     await page.click('button:has-text("Submit")');
     await expect(page.locator("div.modal-body code")).toHaveText(
       JSON.stringify(
@@ -191,6 +193,7 @@ test.describe("Wallet is connected", () => {
     await labelsInput.pressSequentially("webassemblymus", { delay: 100 });
     await labelsInput.press("Tab");
 
+    await pauseIfVideoRecording(page);
     await page.getByTestId("submit-create-post").click();
     const transactionText = JSON.stringify(
       JSON.parse(await page.locator("div.modal-body code").innerText()),

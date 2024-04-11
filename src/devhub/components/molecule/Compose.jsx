@@ -41,7 +41,7 @@ const Compose = ({
     if (onChange) {
       const timeout = setTimeout(() => {
         onChange(state.data);
-      }, 500);
+      }, 100);
       return () => clearTimeout(timeout);
     }
   }, [state.data]);

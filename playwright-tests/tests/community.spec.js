@@ -120,6 +120,7 @@ test.describe("Is community admin", () => {
       .getByTestId("1-description--editable")
       .fill("Music written in stone on NEAR");
 
+    await pauseIfVideoRecording(page);
     await page.getByRole("button", { name: " Submit" }).click();
     await page.getByRole("button", { name: "Save" }).click();
     const transactionObj = JSON.parse(
@@ -148,6 +149,7 @@ test.describe("Is community admin", () => {
       .getByTestId("4-website_url--editable")
       .fill("webassemblymusic.near.page");
 
+    await pauseIfVideoRecording(page);
     const submitbutton = await page.getByRole("button", { name: " Submit" });
     await submitbutton.scrollIntoViewIfNeeded();
     await submitbutton.click();
