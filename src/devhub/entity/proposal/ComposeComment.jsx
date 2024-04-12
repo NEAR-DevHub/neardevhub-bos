@@ -151,7 +151,7 @@ useEffect(() => {
   if (props.transactionHashes && comment) {
     setComment("");
   }
-}, [props.transactionHashes, comment]);
+}, [props.transactionHashes]);
 
 return (
   <div className="d-flex gap-2">

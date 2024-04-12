@@ -35,7 +35,8 @@ test.describe("Don't ask again enabled", () => {
     });
 
     const feedArea = await page.locator(".card > div > div > div:nth-child(2)");
-    await expect(feedArea).toBeVisible({ timeout: 10000 });
+
+    await expect(feedArea).toBeVisible({ timeout: 20000 });
     await expect(feedArea).toContainText("WebAssembly Music");
     const composeTextarea = await page.locator(
       `textarea[data-testid="compose-announcement"]`

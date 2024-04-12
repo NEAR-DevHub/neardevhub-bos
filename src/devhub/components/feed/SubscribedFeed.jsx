@@ -132,7 +132,7 @@ const renderRepost = (a) => {
         }}
       >
         {repostSvg}{" "}
-        <span style={{ marginLeft: "8px" }}>
+        <span style={{ marginLeft: "8px" }} data-testid="repost">
           Reposted by{" "}
           <Widget
             loading={a.accountId}
@@ -166,10 +166,9 @@ const renderRepost = (a) => {
 
 const renderItem = (item) =>
   item.action === "post" ? renderPost(item) : renderRepost(item);
-
 return (
   <Widget
-    src="mob.near/widget/MergedIndexFeed"
-    props={{ index, renderItem, filter: props.filter, threshold: 800 }}
+    src="${REPL_DEVHUB}/widget/devhub.components.feed.MergedIndexFeed"
+    props={{ index, renderItem, filter: props.filter, threshold: 250 }}
   />
 );

@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { selectAndAssert, setInputAndAssert } from "../testUtils";
-import { pauseIfVideoRecording } from "../testUtils.js";
+import {
+  pauseIfVideoRecording,
+  selectAndAssert,
+  setInputAndAssert,
+} from "../testUtils.js";
 
 test.describe("Wallet is not connected", () => {
   // sign in to wallet
