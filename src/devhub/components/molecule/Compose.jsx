@@ -38,12 +38,7 @@ const Compose = ({
   });
 
   useEffect(() => {
-    if (onChange) {
-      const timeout = setTimeout(() => {
-        onChange(state.data);
-      }, 100);
-      return () => clearTimeout(timeout);
-    }
+    onChange(state.data);
   }, [state.data]);
 
   useEffect(() => {

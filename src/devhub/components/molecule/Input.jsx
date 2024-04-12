@@ -18,16 +18,6 @@ const TextInput = ({
   });
 
   useEffect(() => {
-    if (onChange) {
-      const handler = setTimeout(() => {
-        onChange({ target: { value: state.data } });
-      }, 100);
-
-      return () => clearTimeout(handler);
-    }
-  }, [state.data]);
-
-  useEffect(() => {
     if (value !== state.data) {
       State.update({ data: value });
     }
@@ -137,6 +127,7 @@ const TextInput = ({
             maxLength={inputProps.max}
             value={state.data}
             onChange={(e) => State.update({ data: e.target.value })}
+            onBlur={(e) => onChange({ target: { value: e.target.value } })}
             onKeyDown={onKeyDown}
             {...{ placeholder, ...inputProps }}
           />
@@ -155,6 +146,7 @@ const TextInput = ({
           maxLength={inputProps.max}
           value={state.data}
           onChange={(e) => State.update({ data: e.target.value })}
+          onBlur={(e) => onChange({ target: { value: e.target.value } })}
           onKeyDown={onKeyDown}
           {...{ placeholder, ...inputProps }}
         />

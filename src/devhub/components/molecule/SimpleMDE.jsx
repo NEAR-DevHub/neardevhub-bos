@@ -208,7 +208,7 @@ const updateIframeHeight = () => {
 };
 
 // On Change
-simplemde.codemirror.on('change', () => {
+simplemde.codemirror.on('blur', () => {
   updateContent();
   updateIframeHeight();
 });
