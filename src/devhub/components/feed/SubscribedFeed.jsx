@@ -169,6 +169,11 @@ const renderItem = (item) =>
 return (
   <Widget
     src="${REPL_DEVHUB}/widget/devhub.components.feed.MergedIndexFeed"
-    props={{ index, renderItem, filter: props.filter, threshold: 250 }}
+    props={{
+      index,
+      renderItem,
+      filter: props.filter,
+      threshold: props.threshold,
+    }}
   />
 );

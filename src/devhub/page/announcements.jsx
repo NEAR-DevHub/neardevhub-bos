@@ -130,13 +130,17 @@ return (
             </div>
           </div>
 
-          <div className={"card p-4"}>
+          <div
+            className={"card p-4 position-relative overflow-auto"}
+            style={{ overflow: "auto", height: "60vh" }}
+          >
             <Widget
               key="feed"
               src="${REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
               props={{
                 sort: sort,
                 accounts: filteredAccountIds,
+                threshold: 250,
               }}
             />
           </div>

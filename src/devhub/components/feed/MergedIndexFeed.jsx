@@ -209,6 +209,10 @@ if (stateChanged) {
 }
 
 const makeMoreItems = () => {
+  // Don't fetch more if no items are ready yet.
+  if (filteredItems.length < initialRenderLimit) {
+    return;
+  }
   State.update({
     displayCount: state.displayCount + addDisplayCount,
   });
