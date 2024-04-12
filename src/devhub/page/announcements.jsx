@@ -72,9 +72,10 @@ const tabs = ["All", "Announcements", "Discussions"];
 const [selectedTab, setSelectedTab] = useState("All");
 const [sort, setSort] = useState("desc");
 
-const followGraph = context.accountId
-  ? Social.keys(`community.devhub.near/graph/follow/*`, "final")
-  : null;
+const followGraph = Social.keys(
+  `community.devhub.near/graph/follow/*`,
+  "final"
+);
 const accountsFollowing =
   props.accountsFollowing ??
   (followGraph
