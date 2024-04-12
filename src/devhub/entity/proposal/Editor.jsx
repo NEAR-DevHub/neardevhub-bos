@@ -363,11 +363,9 @@ useEffect(() => {
   );
   const handler = setTimeout(() => {
     Storage.privateSet(draftKey, JSON.stringify(memoizedDraftData));
-  }, 3000);
+  }, 10000);
 
-  return () => {
-    clearTimeout(handler);
-  };
+  return () => clearTimeout(handler);
 }, [
   memoizedDraftData,
   draftKey,
@@ -636,7 +634,7 @@ const LoadingButtonSpinner = (
   ></span>
 );
 
-const SubmitBtn = () => {
+const SubmitBtn = useMemo(() => {
   const btnOptions = [
     {
       iconColor: "grey",
@@ -730,7 +728,7 @@ const SubmitBtn = () => {
       </div>
     </DropdowntBtnContainer>
   );
-};
+}, [disabledSubmitBtn, isTxnCreated, isDraftBtnOpen]);
 
 const onSubmit = ({ isDraft, isCancel }) => {
   setCreateTxn(true);
@@ -843,6 +841,306 @@ const CollapsibleContainer = ({ title, children, noPaddingTop }) => {
   );
 };
 
+const CategoryDropdown = useMemo(() => {
+  return (
+    <Widget
+      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryDropdown"}
+      props={{
+        selectedValue: category,
+        onChange: setCategory,
+      }}
+    />
+  );
+}, [category, setCategory]);
+
+const TitleComponent = useMemo(() => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      props={{
+        className: "flex-grow-1",
+        value: title,
+        onBlur: (e) => {
+          setTitle(e.target.value);
+        },
+        skipPaddingGap: true,
+        inputProps: {
+          max: 80,
+          required: true,
+        },
+      }}
+    />
+  );
+}, [title, setTitle]);
+
+const SummaryComponent = useMemo(() => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      props={{
+        className: "flex-grow-1",
+        value: summary,
+        multiline: true,
+        onBlur: (e) => {
+          setSummary(e.target.value);
+        },
+        skipPaddingGap: true,
+        inputProps: {
+          max: 500,
+          required: true,
+        },
+      }}
+    />
+  );
+}, [summary, setSummary]);
+
+const DescriptionComponent = useMemo(() => {
+  return (
+    <Widget
+      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
+      props={{
+        data: description,
+        onChange: setDescription,
+        autocompleteEnabled: true,
+        autoFocus: false,
+      }}
+    />
+  );
+}, [description, setDescription]);
+
+const ConsentComponent = useMemo(() => {
+  return (
+    <div className="d-flex flex-column gap-2">
+      <CheckBox
+        value={consent.toc}
+        label={
+          <>
+            I’ve agree to{" "}
+            <a
+              href={
+                "https://docs.google.com/document/d/1nRGy7LhpLj56SjN9MseV1x-ubH8O_c6B9DOAZ9qTwMU/edit?usp=sharing"
+              }
+              className="text-decoration-underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              DevHub’s Terms and Conditions
+            </a>
+            and commit to honoring it
+          </>
+        }
+        isChecked={consent.toc}
+        onClick={(value) =>
+          setConsent((prevConsent) => ({
+            ...prevConsent,
+            toc: value,
+          }))
+        }
+      />
+      <CheckBox
+        value={consent.coc}
+        label={
+          <>
+            I’ve read{" "}
+            <a
+              href={
+                "https://docs.google.com/document/d/1c6XV8Sj_BRKw8jnTIsjdLPPN6Al5eEStt1ZLYSuqw9U/edit"
+              }
+              className="text-decoration-underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              DevHub’s Code of Conduct
+            </a>
+            and commit to honoring it
+          </>
+        }
+        isChecked={consent.coc}
+        onClick={(value) =>
+          setConsent((prevConsent) => ({
+            ...prevConsent,
+            coc: value,
+          }))
+        }
+      />
+    </div>
+  );
+}, [consent, setConsent]);
+
+const ProfileComponent = useMemo(() => {
+  return (
+    <Widget
+      src="mob.near/widget/Profile.ShortInlineBlock"
+      props={{
+        accountId: author,
+      }}
+    />
+  );
+}, [author]);
+
+const LinkedProposalsComponent = useMemo(() => {
+  return (
+    <div className="d-flex flex-column gap-1">
+      <div className="text-muted w-100 text-sm">
+        Link any relevant proposals (e.g. previous milestones).
+      </div>
+      {linkedProposals.map((proposal) => {
+        return (
+          <div className="d-flex gap-2 align-items-center">
+            <a
+              className="text-decoration-underline flex-1"
+              href={href({
+                widgetSrc: "${REPL_DEVHUB}/widget/app",
+                params: {
+                  page: "proposal",
+                  id: proposal.value,
+                },
+              })}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {proposal.label}
+            </a>
+            <div
+              className="cursor-pointer"
+              onClick={() => {
+                const updatedLinkedProposals = linkedProposals.filter(
+                  (item) => item.value !== proposal.value
+                );
+                setLinkedProposals(updatedLinkedProposals);
+              }}
+            >
+              <i class="bi bi-trash3-fill"></i>
+            </div>
+          </div>
+        );
+      })}
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
+        props={{
+          onChange: (v) => {
+            if (!linkedProposals.some((item) => item.value === v.value)) {
+              setLinkedProposals([...linkedProposals, v]);
+            }
+          },
+        }}
+      />
+    </div>
+  );
+}, [linkedProposals, setLinkedProposals]);
+
+const ReceiverAccountComponent = useMemo(() => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
+      props={{
+        value: receiverAccount,
+        placeholder: devdaoAccount,
+        onUpdate: setReceiverAccount,
+      }}
+    />
+  );
+}, [receiverAccount, setReceiverAccount]);
+
+const VerificationComponent = useMemo(() => {
+  return (
+    <div className="border border-1 p-3 rounded-2">
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus"
+        props={{
+          receiverAccount: receiverAccount,
+          showGetVerifiedBtn: true,
+          imageSize: 30,
+        }}
+      />
+    </div>
+  );
+}, [receiverAccount]);
+
+const AmountComponent = useMemo(() => {
+  return (
+    <>
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+        props={{
+          className: "flex-grow-1",
+          value: requestedSponsorshipAmount,
+          onChange: (e) => {
+            const inputValue = e.target.value;
+            if (!inputValue) {
+              return;
+            }
+            let isValidInteger = /^[1-9][0-9]*$/.test(inputValue);
+            if (!isValidInteger) {
+              setAmountError("Please enter the nearest positive whole number.");
+            } else {
+              setRequestedSponsorshipAmount(inputValue);
+              setAmountError("");
+            }
+          },
+          skipPaddingGap: true,
+          inputProps: {
+            type: "text",
+            prefix: "$",
+            inputmode: "numeric",
+            pattern: "[0-9]*",
+          },
+        }}
+      />
+      {amountError && (
+        <div style={{ color: "red" }} className="text-sm">
+          {amountError}
+        </div>
+      )}
+    </>
+  );
+}, [
+  requestedSponsorshipAmount,
+  amountError,
+  setAmountError,
+  setRequestedSponsorshipAmount,
+]);
+
+const CurrencyComponent = useMemo(() => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
+      props={{
+        options: tokensOptions,
+        selectedValue: requestedSponsorshipToken,
+        onUpdate: (v) => {
+          setRequestedSponsorshipToken(v);
+        },
+      }}
+    />
+  );
+}, [requestedSponsorshipToken, tokensOptions, setRequestedSponsorshipToken]);
+
+const SponsorComponent = useMemo(() => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
+      props={{
+        value: requestedSponsor,
+        placeholder: "DevDAO",
+        onUpdate: setRequestedSponsor,
+      }}
+    />
+  );
+}, [requestedSponsor, setRequestedSponsor]);
+
+const SupervisorComponent = useMemo(() => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
+      props={{
+        value: supervisor,
+        onUpdate: setSupervisor,
+      }}
+    />
+  );
+}, [supervisor, setSupervisor]);
+
 if (showProposalPage) {
   return (
     <Widget
@@ -914,56 +1212,19 @@ if (showProposalPage) {
                     </>
                   }
                 >
-                  <Widget
-                    src={
-                      "${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryDropdown"
-                    }
-                    props={{
-                      selectedValue: category,
-                      onChange: setCategory,
-                    }}
-                  />
+                  {CategoryDropdown}
                 </InputContainer>
                 <InputContainer
                   heading="Title"
                   description="Highlight the essence of your proposal in a few words. This will appear on your proposal’s detail page and the main proposal feed. Keep it short, please :)"
                 >
-                  <Widget
-                    src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                    props={{
-                      className: "flex-grow-1",
-                      value: title,
-                      onBlur: (e) => {
-                        setTitle(e.target.value);
-                      },
-                      skipPaddingGap: true,
-                      inputProps: {
-                        max: 80,
-                        required: true,
-                      },
-                    }}
-                  />
+                  {TitleComponent}
                 </InputContainer>
                 <InputContainer
                   heading="Summary"
                   description="Explain your proposal briefly. This is your chance to make a good first impression on the community. Include what needs or goals your work will address, your solution, and the benefit for the NEAR developer community."
                 >
-                  <Widget
-                    src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                    props={{
-                      className: "flex-grow-1",
-                      value: summary,
-                      multiline: true,
-                      onBlur: (e) => {
-                        setSummary(e.target.value);
-                      },
-                      skipPaddingGap: true,
-                      inputProps: {
-                        max: 500,
-                        required: true,
-                      },
-                    }}
-                  />
+                  {SummaryComponent}
                 </InputContainer>
                 <InputContainer
                   heading="Description"
@@ -987,72 +1248,10 @@ if (showProposalPage) {
                     </>
                   }
                 >
-                  <Widget
-                    src={
-                      "${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"
-                    }
-                    props={{
-                      data: description,
-                      onChange: setDescription,
-                      autocompleteEnabled: true,
-                    }}
-                  />
+                  {DescriptionComponent}
                 </InputContainer>
                 <InputContainer heading="Final Consent">
-                  <div className="d-flex flex-column gap-2">
-                    <CheckBox
-                      value={consent.toc}
-                      label={
-                        <>
-                          I’ve agree to{" "}
-                          <a
-                            href={
-                              "https://docs.google.com/document/d/1nRGy7LhpLj56SjN9MseV1x-ubH8O_c6B9DOAZ9qTwMU/edit?usp=sharing"
-                            }
-                            className="text-decoration-underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            DevHub’s Terms and Conditions
-                          </a>
-                          and commit to honoring it
-                        </>
-                      }
-                      isChecked={consent.toc}
-                      onClick={(value) =>
-                        setConsent((prevConsent) => ({
-                          ...prevConsent,
-                          toc: value,
-                        }))
-                      }
-                    />
-                    <CheckBox
-                      value={consent.coc}
-                      label={
-                        <>
-                          I’ve read{" "}
-                          <a
-                            href={
-                              "https://docs.google.com/document/d/1c6XV8Sj_BRKw8jnTIsjdLPPN6Al5eEStt1ZLYSuqw9U/edit"
-                            }
-                            className="text-decoration-underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            DevHub’s Code of Conduct
-                          </a>
-                          and commit to honoring it
-                        </>
-                      }
-                      isChecked={consent.coc}
-                      onClick={(value) =>
-                        setConsent((prevConsent) => ({
-                          ...prevConsent,
-                          coc: value,
-                        }))
-                      }
-                    />
-                  </div>
+                  {ConsentComponent}
                 </InputContainer>
                 <div className="d-flex justify-content-between gap-2 align-items-center">
                   <div>
@@ -1103,7 +1302,7 @@ if (showProposalPage) {
                         }}
                       />
                     </Link>
-                    <SubmitBtn />
+                    {SubmitBtn}
                   </div>
                 </div>
               </div>
@@ -1116,68 +1315,13 @@ if (showProposalPage) {
             <CollapsibleContainer noPaddingTop={true} title="Author Details">
               <div className="d-flex flex-column gap-3 gap-sm-4">
                 <InputContainer heading="Author">
-                  <Widget
-                    src="mob.near/widget/Profile.ShortInlineBlock"
-                    props={{
-                      accountId: author,
-                    }}
-                  />
+                  {ProfileComponent}
                 </InputContainer>
               </div>
             </CollapsibleContainer>
             <div className="my-2">
               <CollapsibleContainer title="Link Proposals (Optional)">
-                <div className="d-flex flex-column gap-1">
-                  <div className="text-muted w-100 text-sm">
-                    Link any relevant proposals (e.g. previous milestones).
-                  </div>
-                  {linkedProposals.map((proposal) => {
-                    return (
-                      <div className="d-flex gap-2 align-items-center">
-                        <a
-                          className="text-decoration-underline flex-1"
-                          href={href({
-                            widgetSrc: "${REPL_DEVHUB}/widget/app",
-                            params: {
-                              page: "proposal",
-                              id: proposal.value,
-                            },
-                          })}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {proposal.label}
-                        </a>
-                        <div
-                          className="cursor-pointer"
-                          onClick={() => {
-                            const updatedLinkedProposals =
-                              linkedProposals.filter(
-                                (item) => item.value !== proposal.value
-                              );
-                            setLinkedProposals(updatedLinkedProposals);
-                          }}
-                        >
-                          <i class="bi bi-trash3-fill"></i>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  <Widget
-                    src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
-                    props={{
-                      onChange: (v) => {
-                        if (
-                          !linkedProposals.some(
-                            (item) => item.value === v.value
-                          )
-                        ) {
-                          setLinkedProposals([...linkedProposals, v]);
-                        }
-                      },
-                    }}
-                  />
-                </div>
+                {LinkedProposalsComponent}
               </CollapsibleContainer>
             </div>
             <div className="my-2">
@@ -1187,14 +1331,7 @@ if (showProposalPage) {
                     heading="Recipient NEAR Wallet Address"
                     description="Enter the address that will receive the funds. We’ll need this to send a test transaction once your proposal is approved."
                   >
-                    <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
-                      props={{
-                        value: receiverAccount,
-                        placeholder: devdaoAccount,
-                        onUpdate: setReceiverAccount,
-                      }}
-                    />
+                    {ReceiverAccountComponent}
                   </InputContainer>
                   <InputContainer
                     heading={
@@ -1220,16 +1357,7 @@ if (showProposalPage) {
                     }
                     description=""
                   >
-                    <div className="border border-1 p-3 rounded-2">
-                      <Widget
-                        src="${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus"
-                        props={{
-                          receiverAccount: receiverAccount,
-                          showGetVerifiedBtn: true,
-                          imageSize: 30,
-                        }}
-                      />
-                    </div>
+                    {VerificationComponent}
                   </InputContainer>
                   <InputContainer
                     heading="Total Amount (USD)"
@@ -1248,77 +1376,22 @@ if (showProposalPage) {
                       </>
                     }
                   >
-                    <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-                      props={{
-                        className: "flex-grow-1",
-                        value: requestedSponsorshipAmount,
-                        onChange: (e) => {
-                          const inputValue = e.target.value;
-                          if (!inputValue) {
-                            return;
-                          }
-                          let isValidInteger = /^[1-9][0-9]*$/.test(inputValue);
-                          if (!isValidInteger) {
-                            setAmountError(
-                              "Please enter the nearest positive whole number."
-                            );
-                          } else {
-                            setRequestedSponsorshipAmount(inputValue);
-                            setAmountError("");
-                          }
-                        },
-                        skipPaddingGap: true,
-                        inputProps: {
-                          type: "text",
-                          prefix: "$",
-                          inputmode: "numeric",
-                          pattern: "[0-9]*",
-                        },
-                      }}
-                    />
-                    {amountError && (
-                      <div style={{ color: "red" }} className="text-sm">
-                        {amountError}
-                      </div>
-                    )}
+                    {AmountComponent}
                   </InputContainer>
                   <InputContainer
                     heading="Currency"
                     description="Select your preferred currency for receiving funds. Note: The exchange rate for NEAR tokens will be the closing rate at the day of the invoice."
                   >
-                    <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
-                      props={{
-                        options: tokensOptions,
-                        selectedValue: requestedSponsorshipToken,
-                        onUpdate: (v) => {
-                          setRequestedSponsorshipToken(v);
-                        },
-                      }}
-                    />
+                    {CurrencyComponent}
                   </InputContainer>
                   <InputContainer heading="Requested Sponsor" description="">
-                    <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
-                      props={{
-                        value: requestedSponsor,
-                        placeholder: "DevDAO",
-                        onUpdate: setRequestedSponsor,
-                      }}
-                    />
+                    {SponsorComponent}
                   </InputContainer>
                   <InputContainer
                     heading="Supervisor (Optional)"
                     description=""
                   >
-                    <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
-                      props={{
-                        value: supervisor,
-                        onUpdate: setSupervisor,
-                      }}
-                    />
+                    {SupervisorComponent}
                   </InputContainer>
                 </div>
               </CollapsibleContainer>
