@@ -585,6 +585,10 @@ const link = href({
   },
 });
 
+const createdDate =
+  proposal.snapshot_history?.[proposal.snapshot_history.length - 1]
+    ?.timestamp ?? snapshot.timestamp;
+
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
     <Widget
@@ -647,7 +651,7 @@ return (
       />
       <div className="w-100 d-flex flex-wrap flex-md-nowrap gap-1 align-items-center">
         <div className="fw-bold text-truncate">{authorId} </div>
-        <div>created on {readableDate(snapshot.timestamp / 1000000)}</div>
+        <div>created on {readableDate(createdDate / 1000000)}</div>
       </div>
     </div>
     <div className="card no-border rounded-0 full-width-div px-3 px-lg-0">
@@ -753,7 +757,7 @@ return (
                         src="${REPL_NEAR}/widget/TimeAgo"
                         props={{
                           blockHeight,
-                          blockTimestamp: snapshot.timestamp,
+                          blockTimestamp: createdDate,
                         }}
                       />
                       {context.accountId && (
