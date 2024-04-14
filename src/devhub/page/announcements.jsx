@@ -131,7 +131,7 @@ return (
           </div>
 
           <div
-            className={"card p-4 position-relative overflow-auto"}
+            className={"card p-4 "}
             style={{ overflow: "auto", height: "60vh" }}
           >
             <Widget

@@ -10,7 +10,7 @@ const filter = props.filter;
 const renderItem =
   props.renderItem ??
   ((item) => (
-    <div key={JSON.stringify(item)}>
+    <div key={JSON.stringify(item)} style={{ minHeight: "150px" }}>
       #{item.blockHeight}: {JSON.stringify(item)}
     </div>
   ));
@@ -209,10 +209,6 @@ if (stateChanged) {
 }
 
 const makeMoreItems = () => {
-  // Don't fetch more if no items are ready yet.
-  if (filteredItems.length < initialRenderLimit) {
-    return;
-  }
   State.update({
     displayCount: state.displayCount + addDisplayCount,
   });

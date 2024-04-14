@@ -2,6 +2,7 @@ const Theme = styled.div`
   position: fixed;
   inset: 73px 0px 0px;
   width: 100%;
+  overflow-y: scroll;
   display: flex;
   flex-direction: column;
   padding-top: calc(-1 * var(--body-top-padding));
@@ -47,10 +48,7 @@ const Footer = (props) => {
 function AppLayout({ page, children }) {
   return (
     <Theme>
-      <Container
-        className="container-xl"
-        style={{ overflowY: page === "announcements" ? "visible" : "scroll" }}
-      >
+      <Container className="container-xl">
         <AppHeader page={page} />
         <ContentContainer>{children}</ContentContainer>
         <Footer page={page} />
