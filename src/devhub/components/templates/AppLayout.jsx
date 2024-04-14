@@ -2,9 +2,9 @@ const Theme = styled.div`
   position: fixed;
   inset: 73px 0px 0px;
   width: 100%;
-  overflow-y: scroll;
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
   padding-top: calc(-1 * var(--body-top-padding));
   background: #f4f4f4;
   .container-xl {
