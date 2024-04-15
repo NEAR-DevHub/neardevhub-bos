@@ -1,5 +1,59 @@
 const { test, expect } = require("@playwright/test");
 import { pauseIfVideoRecording } from "../testUtils.js";
+import {
+  mockTransactionSubmitRPCResponses,
+  decodeResultJSON,
+  encodeResultJSON,
+} from "../util/transaction.js";
+async function mockTeamsTab(page) {
+  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+    const request = await route.request();
+    const requestPostData = request.postDataJSON();
+
+    if (
+      requestPostData.params &&
+      requestPostData.params.account_id === "devhub.near" &&
+      requestPostData.params.method_name === "get_community"
+    ) {
+      const response = await route.fetch();
+      const json = await response.json();
+
+      const resultObj = decodeResultJSON(json.result.result);
+
+      resultObj.addons = [
+        ...resultObj.addons,
+        {
+          id: "9yhcct",
+          addon_id: "announcements",
+          display_name: "Announcements",
+          enabled: true,
+          parameters: "{}",
+        },
+        {
+          addon_id: "discussions",
+          display_name: "Discussions",
+          enabled: true,
+          id: "gqyrw7",
+          parameters: "{}",
+        },
+        {
+          addon_id: "teams",
+          display_name: "Teams",
+          enabled: true,
+          id: "cqyrw8",
+          parameters: "{}",
+        },
+      ];
+
+      json.result.result = encodeResultJSON(resultObj);
+
+      await route.fulfill({ response, json });
+      return;
+    } else {
+      await route.continue();
+    }
+  });
+}
 
 test.describe("Wallet is not connected", () => {
   test.use({
@@ -19,6 +73,27 @@ test.describe("Wallet is not connected", () => {
     await pauseIfVideoRecording(page);
     // Check that no such button exists
     expect(await editButtons.count()).toBe(0);
+  });
+
+  test("should load teams addon", async ({ page }) => {
+    await mockTeamsTab(page);
+
+    await page.goto(
+      "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=teams"
+    );
+
+    const teamsAddonSelector = 'span:has-text("Teams")';
+
+    await page.waitForSelector(teamsAddonSelector, {
+      state: "visible",
+    });
+
+    // Admins card is visible
+    await page.getByText("Community Admins").click();
+    // First admin row
+    await page.getByText("Admin #1").click();
+    // First admin
+    await page.locator(".col-9").first().click();
   });
 });
 
