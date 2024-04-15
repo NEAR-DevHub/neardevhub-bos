@@ -204,6 +204,21 @@ test.describe("Wallet is connected", () => {
 
     await page.frameLocator("iframe").getByText("petersalomonsen.near").click();
 
+    await descriptionArea.pressSequentially(`. Also mentioning @m`, {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+
+    await pauseIfVideoRecording(page);
+    await descriptionArea.press("Backspace");
+    await pauseIfVideoRecording(page);
+    await descriptionArea.press("m");
+    await pauseIfVideoRecording(page);
+    await descriptionArea.pressSequentially(`egha19.`, {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+
+    await page.frameLocator("iframe").getByText("megha19.near").click();
+
     await page.locator('input[type="text"]').nth(2).pressSequentially("12345", {
       delay: delay_milliseconds_between_keypress_when_typing,
     });
@@ -233,7 +248,7 @@ test.describe("Wallet is connected", () => {
             proposal_body_version: "V0",
             name: "Test proposal 123456",
             description:
-              "The test proposal description. And mentioning @petersalomonsen.near",
+              "The test proposal description. And mentioning @petersalomonsen.near. Also mentioning @megha19.near",
             category: "DevDAO Platform",
             summary: "Test proposal summary 123456789",
             linked_proposals: [],

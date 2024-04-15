@@ -237,6 +237,7 @@ if (showAutocomplete) {
       createMentionDrowDownOptions();
 
       dropdown.classList.add("show");
+
       // Close dropdown on outside click
       document.addEventListener("click", function (event) {
         if (!dropdown.contains(event.target)) {
@@ -244,7 +245,7 @@ if (showAutocomplete) {
           dropdown.classList.remove("show");
         }
       });
-    } else if (mentionToken && token.string.match(/[^a-z0-9]/)) {
+    } else if (mentionToken && token.string.match(/[^@a-z0-9.]/)) {
       mentionToken = null;
       dropdown.classList.remove("show");
     } else if (mentionToken) {
