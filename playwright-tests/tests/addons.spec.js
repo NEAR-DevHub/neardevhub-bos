@@ -16,7 +16,7 @@ test.describe("Wallet is not connected", () => {
 
     // Try to find a button with the name ' Edit'
     const editButtons = await page.locator('button:has-text(" Edit")');
-    pauseIfVideoRecording(page);
+    await pauseIfVideoRecording(page);
     // Check that no such button exists
     expect(await editButtons.count()).toBe(0);
   });
@@ -154,6 +154,8 @@ test.describe("Wallet is connected", () => {
       // Add the blog addon in case there is 0
       await page.getByRole("combobox").selectOption("blog");
       await page.getByRole("button", { name: "" }).click();
+
+      const tbody = await page.getByTestId("addon-table");
 
       // Toggle the first addon
       const toggle = await tbody
