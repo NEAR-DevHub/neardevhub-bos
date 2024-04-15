@@ -8,6 +8,47 @@ import {
   encodeResultJSON,
 } from "../util/transaction.js";
 
+async function mockAnnouncementsTabOnCommunityPage(page) {
+  // Make sure the announcement tab is enabled
+  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+    const request = await route.request();
+    const requestPostData = request.postDataJSON();
+    if (
+      requestPostData.params &&
+      requestPostData.params.account_id === "devhub.near" &&
+      requestPostData.params.method_name === "get_community"
+    ) {
+      const response = await route.fetch();
+      const json = await response.json();
+
+      const resultObj = decodeResultJSON(json.result.result);
+      if (
+        !resultObj.addons
+          .map((addon) => addon.addon_id)
+          .includes("announcements")
+      ) {
+        resultObj.addons = [
+          ...resultObj.addons,
+          {
+            id: "9yhcct",
+            addon_id: "announcements",
+            display_name: "Announcements",
+            enabled: true,
+            parameters: "{}",
+          },
+        ];
+      }
+
+      json.result.result = encodeResultJSON(resultObj);
+
+      await route.fulfill({ response, json });
+      return;
+    } else {
+      await route.continue();
+    }
+  });
+}
+
 test.describe("Don't ask again enabled", () => {
   test.use({
     storageState:
@@ -19,37 +60,7 @@ test.describe("Don't ask again enabled", () => {
       page
     );
 
-    // Make sure the announcement tab is enabled
-    await page.route("https://rpc.mainnet.near.org/", async (route) => {
-      const request = await route.request();
-      const requestPostData = request.postDataJSON();
-      if (
-        requestPostData.params &&
-        requestPostData.params.account_id === "devhub.near" &&
-        requestPostData.params.method_name === "get_community"
-      ) {
-        const response = await route.fetch();
-        const json = await response.json();
-
-        const resultObj = decodeResultJSON(json.result.result);
-        resultObj.addons = [
-          {
-            id: "9yhcct",
-            addon_id: "announcements",
-            display_name: "Announcements",
-            enabled: true,
-            parameters: "{}",
-          },
-        ];
-
-        json.result.result = encodeResultJSON(resultObj);
-
-        await route.fulfill({ response, json });
-        return;
-      } else {
-        await route.continue();
-      }
-    });
+    await mockAnnouncementsTabOnCommunityPage(page);
   });
 
   test("Post announcement", async ({ page }) => {
@@ -194,9 +205,14 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
 });
+
 test.describe("Non authenticated user's wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await mockAnnouncementsTabOnCommunityPage(page);
   });
 
   test("compose does not show for unauthenticated user", async ({ page }) => {
@@ -214,6 +230,10 @@ test.describe("Non authenticated user's wallet is connected", () => {
 test.describe("Admin wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await mockAnnouncementsTabOnCommunityPage(page);
   });
 
   test("compose shows for admins and moderators users", async ({ page }) => {
