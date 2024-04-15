@@ -142,6 +142,7 @@ return (
             data: config,
             handle,
             permissions,
+            transactionHashes: props.transactionHashes,
           }}
         />
       )}

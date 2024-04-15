@@ -61,7 +61,11 @@ const tabs = [];
     tabs.push({
       title: addon.display_name,
       view: "${REPL_DEVHUB}/widget/devhub.page.addon",
-      params: { addon, handle: community.handle },
+      params: {
+        addon,
+        handle: community.handle,
+        transactionHashes: props.transactionHashes,
+      },
     });
 });
 
