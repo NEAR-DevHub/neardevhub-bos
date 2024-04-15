@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
 import { setDontAskAgainCacheValues } from "../util/cache.js";
 import { pauseIfVideoRecording } from "../testUtils";
 import {
@@ -7,60 +6,22 @@ import {
   decodeResultJSON,
   encodeResultJSON,
 } from "../util/transaction.js";
+import { mockDefaultTabs } from "../util/addons.js";
 
-async function mockAnnouncementsTabOnCommunityPage(page) {
-  // Make sure the announcement tab is enabled
+test.beforeEach(async ({ page }) => {
   await page.route("https://rpc.mainnet.near.org/", async (route) => {
-    const request = await route.request();
-    const requestPostData = request.postDataJSON();
-    if (
-      requestPostData.params &&
-      requestPostData.params.account_id === "devhub.near" &&
-      requestPostData.params.method_name === "get_community"
-    ) {
-      const response = await route.fetch();
-      const json = await response.json();
-
-      const resultObj = decodeResultJSON(json.result.result);
-      if (
-        !resultObj.addons
-          .map((addon) => addon.addon_id)
-          .includes("announcements")
-      ) {
-        resultObj.addons = [
-          ...resultObj.addons,
-          {
-            id: "9yhcct",
-            addon_id: "announcements",
-            display_name: "Announcements",
-            enabled: true,
-            parameters: "{}",
-          },
-        ];
-      }
-
-      json.result.result = encodeResultJSON(resultObj);
-
-      await route.fulfill({ response, json });
-      return;
-    } else {
-      await route.continue();
-    }
+    await mockDefaultTabs(route);
   });
-}
+});
+
+test.afterEach(
+  async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
+);
 
 test.describe("Don't ask again enabled", () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
-  });
-
-  test.beforeEach(async ({ page }) => {
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
-
-    await mockAnnouncementsTabOnCommunityPage(page);
   });
 
   test("Post announcement", async ({ page }) => {
@@ -100,6 +61,7 @@ test.describe("Don't ask again enabled", () => {
       async ({ route, request, transaction_completed, last_receiver_id }) => {
         const postData = request.postDataJSON();
         const args_base64 = postData.params?.args_base64;
+
         if (transaction_completed && args_base64) {
           is_transaction_completed = true;
           const args = atob(args_base64);
@@ -115,6 +77,36 @@ test.describe("Don't ask again enabled", () => {
             resultObj[communityHandle].post.main = JSON.stringify({
               text: announcementText,
             });
+            json.result.result = encodeResultJSON(resultObj);
+
+            await route.fulfill({ response, json });
+            return;
+          } else if (
+            postData.params &&
+            postData.params.account_id === "devhub.near" &&
+            postData.params.method_name === "get_community"
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+
+            const resultObj = decodeResultJSON(json.result.result);
+            if (
+              !resultObj.addons
+                .map((addon) => addon.addon_id)
+                .includes("announcements")
+            ) {
+              resultObj.addons = [
+                ...resultObj.addons,
+                {
+                  id: "9yhcct",
+                  addon_id: "announcements",
+                  display_name: "Announcements",
+                  enabled: true,
+                  parameters: "{}",
+                },
+              ];
+            }
+
             json.result.result = encodeResultJSON(resultObj);
 
             await route.fulfill({ response, json });
@@ -211,10 +203,6 @@ test.describe("Non authenticated user's wallet is connected", () => {
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
 
-  test.beforeEach(async ({ page }) => {
-    await mockAnnouncementsTabOnCommunityPage(page);
-  });
-
   test("compose does not show for unauthenticated user", async ({ page }) => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
@@ -230,10 +218,6 @@ test.describe("Non authenticated user's wallet is connected", () => {
 test.describe("Admin wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
-  });
-
-  test.beforeEach(async ({ page }) => {
-    await mockAnnouncementsTabOnCommunityPage(page);
   });
 
   test("compose shows for admins and moderators users", async ({ page }) => {
