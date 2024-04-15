@@ -163,7 +163,7 @@ const Comment = ({ commentItem }) => {
             <div className="text-muted">
               <Link href={`/near/widget/ProfilePage?accountId=${accountId}`}>
                 <span className="fw-bold text-black">{accountId}</span>
-              </Link>{" "}
+              </Link>
               commented ･{" "}
               <Widget
                 src="${REPL_NEAR}/widget/TimeAgo"

@@ -243,6 +243,14 @@ const Avatar = styled.div`
   }
 `;
 
+const LinkProfile = ({ account, children }) => {
+  return (
+    <Link href={`/near/widget/ProfilePage?accountId=${account}`}>
+      {children}
+    </Link>
+  );
+};
+
 const stepsArray = [1, 2, 3, 4, 5];
 
 const { id, timestamp } = props;
@@ -406,11 +414,9 @@ const LinkedProposals = () => {
                 }}
               />
               <div className="d-flex flex-column" style={{ maxWidth: 250 }}>
-                <Link
-                  href={`/near/widget/ProfilePage?accountId=${item.snapshot.name}`}
-                >
+                <LinkProfile account={item.snapshot.name}>
                   <b className="text-truncate">{item.snapshot.name}</b>
-                </Link>
+                </LinkProfile>
                 <div className="text-sm text-muted">
                   created on {readableDate(item.snapshot.timestamp / 1000000)}
                 </div>
@@ -655,9 +661,7 @@ return (
       />
       <div className="w-100 d-flex flex-wrap flex-md-nowrap gap-1 align-items-center">
         <div className="fw-bold text-truncate">
-          <Link href={`/near/widget/ProfilePage?accountId=${authorId}`}>
-            {authorId}
-          </Link>
+          <LinkProfile account={authorId}>{authorId}</LinkProfile>
         </div>
         <div>created on {readableDate(createdDate / 1000000)}</div>
       </div>
@@ -754,11 +758,7 @@ return (
                       className="fw-bold text-truncate"
                       style={{ maxWidth: "60%" }}
                     >
-                      <Link
-                        href={`/near/widget/ProfilePage?accountId=${authorId}`}
-                      >
-                        {authorId}
-                      </Link>
+                      <LinkProfile account={authorId}>{authorId}</LinkProfile>
                     </div>
                     <div
                       className="text-muted"
