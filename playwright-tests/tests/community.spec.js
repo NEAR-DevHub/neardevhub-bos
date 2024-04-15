@@ -1,6 +1,59 @@
 import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../testUtils.js";
 
+import { decodeResultJSON, encodeResultJSON } from "../util/transaction.js";
+
+async function mockActivityPage(page) {
+  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+    const request = await route.request();
+    const requestPostData = request.postDataJSON();
+
+    if (
+      requestPostData.params &&
+      requestPostData.params.account_id === "devhub.near" &&
+      requestPostData.params.method_name === "get_community" &&
+      atob(requestPostData.params.args_base64).includes("handle")
+    ) {
+      const response = await route.fetch();
+      const json = await response.json();
+
+      const resultObj = decodeResultJSON(json.result.result);
+
+      resultObj.addons = [
+        ...resultObj.addons,
+        {
+          id: "9yhcct",
+          addon_id: "announcements",
+          display_name: "Announcements",
+          enabled: true,
+          parameters: "{}",
+        },
+        {
+          addon_id: "discussions",
+          display_name: "Discussions",
+          enabled: true,
+          id: "gqyrw7",
+          parameters: "{}",
+        },
+        {
+          addon_id: "activity",
+          display_name: "Activity",
+          enabled: true,
+          id: "bqyrw6",
+          parameters: "{}",
+        },
+      ];
+
+      json.result.result = encodeResultJSON(resultObj);
+
+      await route.fulfill({ response, json });
+      return;
+    } else {
+      await route.continue();
+    }
+  });
+}
+
 test("should load a community page if handle exists", async ({ page }) => {
   await page.goto(
     "/devhub.near/widget/app?page=community&handle=webassemblymusic"
@@ -44,6 +97,7 @@ test.describe("Wallet is connected", () => {
   test("should allow connected user to post from community page", async ({
     page,
   }) => {
+    await mockActivityPage(page);
     test.setTimeout(60000);
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=activity"
