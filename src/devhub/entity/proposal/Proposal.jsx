@@ -406,7 +406,11 @@ const LinkedProposals = () => {
                 }}
               />
               <div className="d-flex flex-column" style={{ maxWidth: 250 }}>
-                <b className="text-truncate">{item.snapshot.name}</b>
+                <Link
+                  href={`/near/widget/ProfilePage?accountId=${item.snapshot.name}`}
+                >
+                  <b className="text-truncate">{item.snapshot.name}</b>
+                </Link>
                 <div className="text-sm text-muted">
                   created on {readableDate(item.snapshot.timestamp / 1000000)}
                 </div>
@@ -650,7 +654,11 @@ return (
         }}
       />
       <div className="w-100 d-flex flex-wrap flex-md-nowrap gap-1 align-items-center">
-        <div className="fw-bold text-truncate">{authorId} </div>
+        <div className="fw-bold text-truncate">
+          <Link href={`/near/widget/ProfilePage?accountId=${authorId}`}>
+            {authorId}
+          </Link>
+        </div>
         <div>created on {readableDate(createdDate / 1000000)}</div>
       </div>
     </div>
@@ -746,7 +754,11 @@ return (
                       className="fw-bold text-truncate"
                       style={{ maxWidth: "60%" }}
                     >
-                      {authorId}
+                      <Link
+                        href={`/near/widget/ProfilePage?accountId=${authorId}`}
+                      >
+                        {authorId}
+                      </Link>
                     </div>
                     <div
                       className="text-muted"
@@ -1113,7 +1125,11 @@ return (
                             label={<div className="fw-bold">Approved</div>}
                             isChecked={
                               updatedProposalStatus.value.status ===
-                              TIMELINE_STATUS.APPROVED
+                                TIMELINE_STATUS.APPROVED ||
+                              updatedProposalStatus.value.status ===
+                                TIMELINE_STATUS.PAYMENT_PROCESSING ||
+                              updatedProposalStatus.value.status ===
+                                TIMELINE_STATUS.FUNDED
                             }
                           />
                           <RadioButton
@@ -1124,7 +1140,8 @@ return (
                                   Approved - Conditional{" "}
                                 </div>
                                 <span>
-                                  Require follow up from recipient after payment
+                                  Requires follow up from recipient. Moderators
+                                  will provide further details.
                                 </span>
                               </>
                             }

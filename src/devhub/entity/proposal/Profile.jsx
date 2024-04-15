@@ -1,5 +1,6 @@
 const accountId = props.accountId;
 const size = props.size ?? "md";
+const showAccountId = props.showAccountId;
 const Avatar = styled.div`
   &.sm {
     min-width: 30px;
@@ -28,17 +29,27 @@ const Avatar = styled.div`
   }
 `;
 const profile = Social.get(`${accountId}/profile/**`, "final");
-
+const profileUrl = `/near/widget/ProfilePage?accountId=${accountId}`;
 return (
-  <Avatar className={size}>
-    <Widget
-      src="${REPL_MOB}/widget/Image"
-      props={{
-        image: profile.image,
-        alt: profile.name,
-        fallbackUrl:
-          "https://ipfs.near.social/ipfs/bafkreibiyqabm3kl24gcb2oegb7pmwdi6wwrpui62iwb44l7uomnn3lhbi",
-      }}
-    />
-  </Avatar>
+  <Link href={profileUrl}>
+    <div className="d-flex gap-2 align-items-center">
+      <Avatar className={size}>
+        <Widget
+          src="${REPL_MOB}/widget/Image"
+          props={{
+            image: profile.image,
+            alt: profile.name,
+            fallbackUrl:
+              "https://ipfs.near.social/ipfs/bafkreibiyqabm3kl24gcb2oegb7pmwdi6wwrpui62iwb44l7uomnn3lhbi",
+          }}
+        />
+      </Avatar>
+      {showAccountId && (
+        <div>
+          {(accountId ?? "").substring(0, 20)}
+          {(accountId ?? "").length > 20 ? "..." : ""}
+        </div>
+      )}
+    </div>
+  </Link>
 );
