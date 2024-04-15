@@ -121,6 +121,16 @@ return (
     onClick={likeClick}
   >
     <i className={`${hasLikeOptimistic ? "bi-heart-fill" : "bi-heart"}`} />
-    {totalLikes}
+    {Object.values(likesByUsers ?? {}).length > 0 ? (
+      <span className={`count ${hasLike ? "liked" : ""}`}>
+        <Widget
+          loading={likeCount || ""}
+          src="mob.near/widget/N.Overlay.Faces"
+          props={{ accounts: likesByUsers, limit: 10 }}
+        />
+      </span>
+    ) : (
+      "0"
+    )}
   </LikeButton>
 );
