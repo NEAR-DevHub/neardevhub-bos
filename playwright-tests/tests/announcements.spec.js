@@ -18,6 +18,38 @@ test.describe("Don't ask again enabled", () => {
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
+
+    // Make sure the announcement tab is enabled
+    await page.route("https://rpc.mainnet.near.org/", async (route) => {
+      const request = await route.request();
+      const requestPostData = request.postDataJSON();
+      if (
+        requestPostData.params &&
+        requestPostData.params.account_id === "devhub.near" &&
+        requestPostData.params.method_name === "get_community"
+      ) {
+        const response = await route.fetch();
+        const json = await response.json();
+
+        const resultObj = decodeResultJSON(json.result.result);
+        resultObj.addons = [
+          {
+            id: "9yhcct",
+            addon_id: "announcements",
+            display_name: "Announcements",
+            enabled: true,
+            parameters: "{}",
+          },
+        ];
+
+        json.result.result = encodeResultJSON(resultObj);
+
+        await route.fulfill({ response, json });
+        return;
+      } else {
+        await route.continue();
+      }
+    });
   });
 
   test("Post announcement", async ({ page }) => {
