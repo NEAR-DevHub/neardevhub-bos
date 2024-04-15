@@ -11,7 +11,7 @@ const embeddCSS = props.embeddCSS;
 
 State.init({
   iframeHeight: height,
-  message: { handler: "init", content: props.data },
+  message: props.data,
 });
 
 const profilesData = Social.get("*/profile/name", "final");

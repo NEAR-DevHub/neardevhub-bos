@@ -36,6 +36,12 @@ const Compose = ({
     onChange(state.data);
   }, [state.data]);
 
+  useEffect(() => {
+    if (data !== state.data) {
+      State.update({ data: data, handler: "autocompleteSelected" });
+    }
+  }, [data]);
+
   return (
     <Wrapper>
       <div className="card">
