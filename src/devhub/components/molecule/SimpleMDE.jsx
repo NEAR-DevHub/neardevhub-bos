@@ -3,12 +3,8 @@
  * https://github.com/sparksuite/simplemde-markdown-editor
  */
 
-function defaultOnChange(content) {
-  console.log(content);
-}
-
 const data = props.data;
-const onChange = props.onChange ?? defaultOnChange;
+const onChange = props.onChange ?? (() => {});
 const height = props.height ?? "390";
 const className = props.className ?? "w-100";
 const embeddCSS = props.embeddCSS;
@@ -27,44 +23,8 @@ const followingData = Social.get(
 // SIMPLEMDE CONFIG //
 const fontFamily = props.fontFamily ?? "sans-serif";
 const alignToolItems = props.alignToolItems ?? "right";
-const autoFocus = props.autoFocus ?? true;
-const renderingConfig = JSON.stringify(
-  props.renderingConfig ?? {
-    singleLineBreaks: false,
-    codeSyntaxHighlighting: true,
-  }
-);
 const placeholder = props.placeholder ?? "";
-const statusConfig = JSON.stringify(
-  props.statusConfig ?? ["lines", "words", "cursor"]
-);
-const spellChecker = props.spellChecker ?? true;
-const tabSize = props.tabSize ?? 4;
 const showAutoComplete = props.showAutoComplete ?? false;
-
-// Add or remove toolbar items
-// For adding unique items, configure the switch-case within the iframe
-const toolbarConfig = JSON.stringify(
-  props.toolbar ?? [
-    "heading",
-    "bold",
-    "italic",
-    "|", // adding | creates a divider in the toolbar
-    "quote",
-    "code",
-    "link",
-    "image",
-    "mention",
-    "reference",
-    "unordered-list",
-    "ordered-list",
-    "checklist",
-    "table",
-    "horizontal-rule",
-    "guide",
-    "preview",
-  ]
-);
 
 const code = `
 <!doctype html>
@@ -77,7 +37,7 @@ const code = `
       margin: auto;
       font-family: ${fontFamily};
       overflow: visible;
-      font-size:14px;
+      font-size:14px !important;
   }
 
   @media screen and (max-width: 768px) {
@@ -131,7 +91,7 @@ let codeMirrorInstance;
 let isEditorInitialized = false;
 let followingData = {};
 let profilesData = {};
-let showAutocomplete = true;
+let showAutocomplete = ${showAutoComplete}
 
 function getSuggestedAccounts(term) {
   let results = [];
@@ -180,13 +140,25 @@ function getSuggestedAccounts(term) {
 // Initializes SimpleMDE element and attaches to text-area
 const simplemde = new SimpleMDE({
   forceSync: true,
-//  toolbar: generateToolbarItems(),
+  toolbar: [
+    "heading",
+    "bold",
+    "italic",
+    "|", // adding | creates a divider in the toolbar
+    "quote",
+    "code",
+    "link",
+  ],
+  placeholder: \`${placeholder}\`,
   initialValue: "",
-  // previewRender: renderPreview,
   insertTexts: {
-    image: ["![](https://", ")"],
-    link: ["[", "](https://)"],
+    link: ["[", "]()"],
   },
+  spellChecker: false,
+  renderingConfig: {
+		singleLineBreaks: false,
+		codeSyntaxHighlighting: true,
+	},
 });
 
 codeMirrorInstance = simplemde.codemirror;
@@ -262,7 +234,6 @@ if (showAutocomplete) {
       dropdown.style.top = y + "px";
       dropdown.style.left = x + "px";
 
-      console.log(dropdown);
       createMentionDrowDownOptions();
 
       dropdown.classList.add("show");
@@ -326,10 +297,7 @@ return (
           break;
         case "resize":
           {
-            const offset = 0;
-            if (statusConfig.length) {
-              offset = 10;
-            }
+            const offset = 10;
             State.update({ iframeHeight: e.height + offset });
           }
           break;

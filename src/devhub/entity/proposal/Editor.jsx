@@ -995,7 +995,6 @@ if (showProposalPage) {
                       data: description,
                       onChange: setDescription,
                       autocompleteEnabled: true,
-                      autoFocus: false,
                     }}
                   />
                 </InputContainer>

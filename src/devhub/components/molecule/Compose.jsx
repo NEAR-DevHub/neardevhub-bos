@@ -22,8 +22,6 @@ const Wrapper = styled.div`
 const Compose = ({
   data,
   onChange,
-  toolbar,
-  autoFocus,
   autocompleteEnabled,
   placeholder,
   height,
@@ -31,53 +29,12 @@ const Compose = ({
 }) => {
   State.init({
     data: data,
-    showAccountAutocomplete: false,
-    mentionInput: "", // text next to @ tag
-    mentionsArray: [], // all the mentions in the description
     selectedTab: "editor",
   });
 
   useEffect(() => {
     onChange(state.data);
   }, [state.data]);
-
-  useEffect(() => {
-    if (data !== state.data) {
-      State.update({ data: data, handler: "autocompleteSelected" });
-    }
-  }, [data]);
-
-  function textareaInputHandler(value) {
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      data: value,
-      mentionsArray: allMentiones,
-      mentionInput: newMentiones?.[0] ?? "",
-    }));
-  }
-  function autoCompleteAccountId(id) {
-    // to make sure we update the @ at correct index
-    let currentIndex = 0;
-    const updatedDescription = state.data.replace(
-      /(?:^|\s)(@[^\s]*)/g,
-      (match) => {
-        if (currentIndex === state.mentionsArray.indexOf(state.mentionInput)) {
-          currentIndex++;
-          return ` @${id}`;
-        } else {
-          currentIndex++;
-          return match;
-        }
-      }
-    );
-
-    State.update((lastKnownState) => ({
-      ...lastKnownState,
-      handler: "autocompleteSelected",
-      data: updatedDescription,
-      showAccountAutocomplete: false,
-    }));
-  }
 
   return (
     <Wrapper>
@@ -117,42 +74,13 @@ const Compose = ({
                 data: { handler: state.handler, content: state.data },
                 onChange: (content) => {
                   State.update({ data: content, handler: "update" });
-                  textareaInputHandler(content);
                 },
-                toolbar: toolbar || [
-                  "heading",
-                  "bold",
-                  "italic",
-                  "quote",
-                  "code",
-                  "link",
-                  "unordered-list",
-                  "ordered-list",
-                  "checklist",
-                  "mention",
-                ],
-                statusConfig: [],
-                spellChecker: false,
-                autoFocus: autoFocus,
                 placeholder: placeholder,
                 height,
                 embeddCSS: embeddCSS || EmbeddCSS,
                 showAutoComplete: autocompleteEnabled,
               }}
             />
-            {autocompleteEnabled && state.showAccountAutocomplete && (
-              <AutoComplete>
-                <Widget
-                  src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
-                  props={{
-                    term: state.mentionInput,
-                    onSelect: autoCompleteAccountId,
-                    onClose: () =>
-                      State.update({ showAccountAutocomplete: false }),
-                  }}
-                />
-              </AutoComplete>
-            )}
           </>
         ) : (
           <div className="card-body">
