@@ -35,13 +35,24 @@ test.describe("Non authenticated user's wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test("loads more than the initial 10 posts", async ({ page }) => {
+  test("initially loads 10 posts", async ({ page }) => {
     await page.goto("/devhub.near/widget/app?page=announcements");
-    // Scroll to the bottom of the page
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
     // Wait for the page to load more posts
     await page.waitForTimeout(3000);
+
+    // Check that there are more than 10 posts
+    const posts = await page.locator(".post");
+    expect(await posts.count()).toEqual(10);
+  });
+
+  test("loads more than the initial 10 posts", async ({ page }) => {
+    await page.goto("/devhub.near/widget/app?page=announcements");
+
+    await page.locator(".post").nth(9).scrollIntoViewIfNeeded();
+
+    // Wait for the page to load more posts
+    await page.waitForTimeout(6000);
 
     // Check that there are more than 10 posts
     const posts = await page.locator(".post");

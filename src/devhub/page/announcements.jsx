@@ -72,9 +72,10 @@ const tabs = ["All", "Announcements", "Discussions"];
 const [selectedTab, setSelectedTab] = useState("All");
 const [sort, setSort] = useState("desc");
 
-const followGraph = context.accountId
-  ? Social.keys(`community.devhub.near/graph/follow/*`, "final")
-  : null;
+const followGraph = Social.keys(
+  `community.devhub.near/graph/follow/*`,
+  "final"
+);
 const accountsFollowing =
   props.accountsFollowing ??
   (followGraph
@@ -129,13 +130,17 @@ return (
             </div>
           </div>
 
-          <div className={"card p-4"}>
+          <div
+            className={"card p-4"}
+            style={{ overflow: "auto", height: "60vh" }}
+          >
             <Widget
               key="feed"
               src="${REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
               props={{
                 sort: sort,
                 accounts: filteredAccountIds,
+                threshold: 250,
               }}
             />
           </div>
