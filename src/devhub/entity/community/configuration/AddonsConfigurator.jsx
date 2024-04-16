@@ -250,7 +250,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
               <HeaderCell style={{ width: "40px" }}>Actions</HeaderCell>
             </Row>
           </Header>
-          <tbody>
+          <tbody data-testid="addon-table">
             {list.map((item, index) => (
               <AddonItem
                 key={item.id}
