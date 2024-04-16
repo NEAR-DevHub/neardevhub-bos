@@ -2,6 +2,16 @@ const { test, expect } = require("@playwright/test");
 import { pauseIfVideoRecording } from "../testUtils.js";
 import { mockDefaultTabs } from "../util/addons.js";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+    await mockDefaultTabs(route);
+  });
+});
+
+test.afterEach(
+  async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
+);
+
 test.describe("Wallet is not connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
