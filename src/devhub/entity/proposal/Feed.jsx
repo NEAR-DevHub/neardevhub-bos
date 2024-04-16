@@ -248,6 +248,18 @@ const FeedPage = () => {
     });
   }
 
+  function separateNumberAndText(str) {
+    const numberRegex = /\d+/;
+
+    if (numberRegex.test(str)) {
+      const number = str.match(numberRegex)[0];
+      const text = str.replace(numberRegex, "").trim();
+      return { number: parseInt(number), text };
+    } else {
+      return { number: null, text: str.trim() };
+    }
+  }
+
   const buildWhereClause = () => {
     let where = {};
     if (state.author) {
@@ -265,9 +277,15 @@ const FeedPage = () => {
         ...where,
       };
     }
-
     if (state.input) {
-      where = { description: { _ilike: `%${state.input}%` }, ...where };
+      const { number, text } = separateNumberAndText(state.input);
+      if (number) {
+        where = { proposal_id: { _eq: number }, ...where };
+      }
+
+      if (text) {
+        where = { description: { _ilike: `%${text}%` }, ...where };
+      }
     }
 
     return where;

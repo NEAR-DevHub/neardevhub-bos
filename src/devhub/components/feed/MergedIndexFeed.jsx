@@ -10,7 +10,7 @@ const filter = props.filter;
 const renderItem =
   props.renderItem ??
   ((item) => (
-    <div key={JSON.stringify(item)}>
+    <div key={JSON.stringify(item)} style={{ minHeight: "150px" }}>
       #{item.blockHeight}: {JSON.stringify(item)}
     </div>
   ));
