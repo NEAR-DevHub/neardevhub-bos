@@ -52,7 +52,7 @@ const renderPost = (a) => {
   renderedPosts[item] = true;
 
   return (
-    <div key={JSON.stringify(a)}>
+    <div key={JSON.stringify(a)} style={{ minHeight: "150px" }}>
       <Widget
         loading={<div className="w-100" style={{ height: "200px" }} />}
         src="mob.near/widget/MainPage.N.Post"
@@ -118,7 +118,7 @@ const renderRepost = (a) => {
   renderedPosts[item] = true;
 
   return (
-    <div key={JSON.stringify(a)}>
+    <div key={JSON.stringify(a)} style={{ minHeight: "150px" }}>
       <div
         className="text-muted"
         style={{
@@ -132,7 +132,7 @@ const renderRepost = (a) => {
         }}
       >
         {repostSvg}{" "}
-        <span style={{ marginLeft: "8px" }}>
+        <span style={{ marginLeft: "8px" }} data-testid="repost">
           Reposted by{" "}
           <Widget
             loading={a.accountId}
@@ -166,10 +166,14 @@ const renderRepost = (a) => {
 
 const renderItem = (item) =>
   item.action === "post" ? renderPost(item) : renderRepost(item);
-
 return (
   <Widget
-    src="mob.near/widget/MergedIndexFeed"
-    props={{ index, renderItem, filter: props.filter, threshold: 800 }}
+    src="${REPL_DEVHUB}/widget/devhub.components.feed.MergedIndexFeed"
+    props={{
+      index,
+      renderItem,
+      filter: props.filter,
+      threshold: props.threshold,
+    }}
   />
 );

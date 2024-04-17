@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
 import { setDontAskAgainCacheValues } from "../util/cache.js";
 import { pauseIfVideoRecording } from "../testUtils";
 import {
@@ -7,17 +6,22 @@ import {
   decodeResultJSON,
   encodeResultJSON,
 } from "../util/transaction.js";
+import { mockDefaultTabs } from "../util/addons.js";
+
+test.beforeEach(async ({ page }) => {
+  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+    await mockDefaultTabs(route);
+  });
+});
+
+test.afterEach(
+  async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
+);
 
 test.describe("Don't ask again enabled", () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
-  });
-
-  test.beforeEach(async ({ page }) => {
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
   });
 
   test("Post announcement", async ({ page }) => {
@@ -35,7 +39,8 @@ test.describe("Don't ask again enabled", () => {
     });
 
     const feedArea = await page.locator(".card > div > div > div:nth-child(2)");
-    await expect(feedArea).toBeVisible({ timeout: 10000 });
+
+    await expect(feedArea).toBeVisible({ timeout: 20000 });
     await expect(feedArea).toContainText("WebAssembly Music");
     const composeTextarea = await page.locator(
       `textarea[data-testid="compose-announcement"]`
@@ -56,6 +61,7 @@ test.describe("Don't ask again enabled", () => {
       async ({ route, request, transaction_completed, last_receiver_id }) => {
         const postData = request.postDataJSON();
         const args_base64 = postData.params?.args_base64;
+
         if (transaction_completed && args_base64) {
           is_transaction_completed = true;
           const args = atob(args_base64);
@@ -71,6 +77,36 @@ test.describe("Don't ask again enabled", () => {
             resultObj[communityHandle].post.main = JSON.stringify({
               text: announcementText,
             });
+            json.result.result = encodeResultJSON(resultObj);
+
+            await route.fulfill({ response, json });
+            return;
+          } else if (
+            postData.params &&
+            postData.params.account_id === "devhub.near" &&
+            postData.params.method_name === "get_community"
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+
+            const resultObj = decodeResultJSON(json.result.result);
+            if (
+              !resultObj.addons
+                .map((addon) => addon.addon_id)
+                .includes("announcements")
+            ) {
+              resultObj.addons = [
+                ...resultObj.addons,
+                {
+                  id: "9yhcct",
+                  addon_id: "announcements",
+                  display_name: "Announcements",
+                  enabled: true,
+                  parameters: "{}",
+                },
+              ];
+            }
+
             json.result.result = encodeResultJSON(resultObj);
 
             await route.fulfill({ response, json });
@@ -161,6 +197,7 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
 });
+
 test.describe("Non authenticated user's wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",

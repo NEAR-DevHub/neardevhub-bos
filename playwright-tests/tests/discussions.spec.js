@@ -11,7 +11,14 @@ import {
   decodeResultJSON,
   encodeResultJSON,
 } from "../util/transaction.js";
+import { mockDefaultTabs } from "../util/addons.js";
 import { mockSocialIndexResponses } from "../util/socialapi.js";
+
+test.beforeEach(async ({ page }) => {
+  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+    await mockDefaultTabs(route);
+  });
+});
 
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
@@ -65,16 +72,6 @@ test.describe("Wallet is connected", () => {
     await discussionPostEditor.fill(socialdbpostcontent.text);
 
     await page.getByTestId("post-btn").click();
-    await page.route("https://rpc.mainnet.near.org/", async (route) => {
-      const request = await route.request();
-
-      const requestPostData = request.postDataJSON();
-      if (requestPostData.method === "tx") {
-        await route.continue({ url: "https://1rpc.io/near" });
-      } else {
-        await route.continue();
-      }
-    });
 
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions&transactionHashes=mi2a1KwagRFZhpqBNKhKaCTkHVj98J8tZnxSr1NpxSQ"
@@ -144,16 +141,6 @@ test.describe("Wallet is connected", () => {
 
     await page.getByTestId("post-btn").click();
 
-    await page.route("https://rpc.mainnet.near.org/", async (route) => {
-      const request = await route.request();
-
-      const requestPostData = request.postDataJSON();
-      if (requestPostData.method === "tx") {
-        await route.continue({ url: "https://archival-rpc.mainnet.near.org/" });
-      } else {
-        await route.continue();
-      }
-    });
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions&transactionHashes=mi2a1KwagRFZhpqBNKhKaCTkHVj98J8tZnxSr1NpxSQ"
     );
@@ -174,10 +161,6 @@ test.describe("Don't ask again enabled", () => {
     "discussions.webassemblymusic.community.devhub.near";
 
   test("should create a discussion", async ({ page }) => {
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
-
     let discussion_created = false;
     await mockSocialIndexResponses(page, ({ requestPostData, json }) => {
       if (
@@ -276,6 +259,42 @@ test.describe("Don't ask again enabled", () => {
 
               discussion_created = true;
             }
+            await route.fulfill({ response, json });
+            return;
+          } else if (postData.method === "tx") {
+            await route.continue({
+              url: "https://archival-rpc.mainnet.near.org/",
+            });
+          } else if (
+            postData.params &&
+            postData.params.account_id === "devhub.near" &&
+            postData.params.method_name === "get_community"
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+
+            const resultObj = decodeResultJSON(json.result.result);
+
+            resultObj.addons = [
+              ...resultObj.addons,
+              {
+                id: "9yhcct",
+                addon_id: "announcements",
+                display_name: "Announcements",
+                enabled: true,
+                parameters: "{}",
+              },
+              {
+                addon_id: "discussions",
+                display_name: "Discussions",
+                enabled: true,
+                id: "gqyrw7",
+                parameters: "{}",
+              },
+            ];
+
+            json.result.result = encodeResultJSON(resultObj);
+
             await route.fulfill({ response, json });
             return;
           }

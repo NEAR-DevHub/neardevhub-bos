@@ -252,7 +252,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
               )}
             </Row>
           </Header>
-          <tbody>
+          <tbody data-testid="addon-table">
             {list.map((item, index) => (
               <AddonItem
                 key={item.id}

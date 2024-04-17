@@ -232,10 +232,7 @@ return (
               </select>
             </div>
           </div>
-
           <div className={"card p-4"}>
-            {/* TODO: the current feed is from https://near.org/near/widget/ComponentDetailsPage?src=mob.near/widget/ProfileTabs 
-                We will replace this with our custom feed as soon as it can support reposts */}
             <Widget
               key="feed"
               src="${REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
