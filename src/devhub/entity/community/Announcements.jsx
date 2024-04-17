@@ -169,7 +169,6 @@ return (
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
               props={{
-                showFlagAccountFeature: true,
                 filteredAccountIds: [communityAccountId],
                 sort: sort,
                 setPostExists: setPostExists,
