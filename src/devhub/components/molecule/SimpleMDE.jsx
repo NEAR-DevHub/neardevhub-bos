@@ -203,13 +203,13 @@ if (showAutocomplete) {
     const token = cm.getTokenAt(cursor);
 
     const createMentionDrowDownOptions = () => {
-      const mentionInput = simplemde.value().split("@").pop();
+      const mentionInput = cm.getRange(mentionCursorStart, cursor);
       dropdown.innerHTML = getSuggestedAccounts(mentionInput)
-        .map(
-          (item) =>
-            '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + item?.accountId + '</button></li>'
-        )
-        .join("");
+      .map(
+        (item) =>
+          '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + item?.accountId + '</button></li>'
+      )
+      .join("");
 
       dropdown.querySelectorAll("li").forEach((li) => {
         li.addEventListener("click", () => {
@@ -221,38 +221,38 @@ if (showAutocomplete) {
         });
       });
     }
+    // show dropwdown only when @ is at first place or when there is a space before @
+      if (!mentionToken && (token.string === "@" && cursor.ch === 1 || token.string === "@" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ')) {
+        mentionToken = token;
+        mentionCursorStart = cursor;
+        // Calculate cursor position relative to the iframe's viewport
+        const rect = cm.charCoords(cursor);
+        const x = rect.left;
+        const y = rect.bottom;
 
-    if (!mentionToken && token.string === "@") {
-      mentionToken = token;
-      mentionCursorStart = cursor;
-      // Calculate cursor position relative to the iframe's viewport
-      const rect = cm.charCoords(cursor);
-      const x = rect.left;
-      const y = rect.bottom;
+        // Create dropdown with options
+        dropdown.style.top = y + "px";
+        dropdown.style.left = x + "px";
 
-      // Create dropdown with options
-      dropdown.style.top = y + "px";
-      dropdown.style.left = x + "px";
+        createMentionDrowDownOptions();
 
-      createMentionDrowDownOptions();
+        dropdown.classList.add("show");
 
-      dropdown.classList.add("show");
-
-      // Close dropdown on outside click
-      document.addEventListener("click", function (event) {
-        if (!dropdown.contains(event.target)) {
-          mentionToken = null;
-          dropdown.classList.remove("show");
-        }
-      });
+        // Close dropdown on outside click
+        document.addEventListener("click", function(event) {
+            if (!dropdown.contains(event.target)) {
+                mentionToken = null;
+                dropdown.classList.remove("show");
+            }
+        });
     } else if (mentionToken && token.string.match(/[^@a-z0-9.]/)) {
-      mentionToken = null;
-      dropdown.classList.remove("show");
+        mentionToken = null;
+        dropdown.classList.remove("show");
     } else if (mentionToken) {
-      createMentionDrowDownOptions();
+        createMentionDrowDownOptions();
     }
+});
 
-  });
 }
 
 
