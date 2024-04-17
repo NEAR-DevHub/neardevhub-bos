@@ -256,7 +256,6 @@ const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
 const [selectedStatus, setSelectedStatus] = useState("draft");
 const [isReviewModalOpen, setReviewModal] = useState(false);
-const [amountError, setAmountError] = useState(null);
 const [isCancelModalOpen, setCancelModal] = useState(false);
 
 const [showProposalPage, setShowProposalPage] = useState(false); // when user creates/edit a proposal and confirm the txn, this is true
@@ -350,7 +349,6 @@ useEffect(() => {
   }
   setDisabledSubmitBtn(
     isTxnCreated ||
-      amountError ||
       !title ||
       !description ||
       !summary ||
@@ -371,7 +369,6 @@ useEffect(() => {
   draftKey,
   draftProposalData,
   consent,
-  amountError,
   isTxnCreated,
   showProposalPage,
 ]);
@@ -510,21 +507,6 @@ useEffect(() => {
   }
 }, [props.transactionHashes]);
 
-const CheckBox = ({ value, isChecked, label, onClick }) => {
-  return (
-    <div className="d-flex gap-2 align-items-center">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        value={value}
-        checked={isChecked}
-        onChange={(e) => onClick(e.target.checked)}
-      />
-      <label class="form-check-label text-sm">{label}</label>
-    </div>
-  );
-};
-
 const DropdowntBtnContainer = styled.div`
   font-size: 13px;
   min-width: 150px;
@@ -634,7 +616,7 @@ const LoadingButtonSpinner = (
   ></span>
 );
 
-const SubmitBtn = useMemo(() => {
+const SubmitBtn = () => {
   const btnOptions = [
     {
       iconColor: "grey",
@@ -728,7 +710,7 @@ const SubmitBtn = useMemo(() => {
       </div>
     </DropdowntBtnContainer>
   );
-}, [disabledSubmitBtn, isTxnCreated, isDraftBtnOpen]);
+};
 
 const onSubmit = ({ isDraft, isCancel }) => {
   setCreateTxn(true);
@@ -851,7 +833,7 @@ const CategoryDropdown = useMemo(() => {
       }}
     />
   );
-}, [category, setCategory]);
+}, [draftProposalData]);
 
 const TitleComponent = useMemo(() => {
   return (
@@ -871,7 +853,7 @@ const TitleComponent = useMemo(() => {
       }}
     />
   );
-}, [title, setTitle]);
+}, [draftProposalData]);
 
 const SummaryComponent = useMemo(() => {
   return (
@@ -892,7 +874,7 @@ const SummaryComponent = useMemo(() => {
       }}
     />
   );
-}, [summary, setSummary]);
+}, [draftProposalData]);
 
 const DescriptionComponent = useMemo(() => {
   return (
@@ -906,66 +888,70 @@ const DescriptionComponent = useMemo(() => {
       }}
     />
   );
-}, [description, setDescription]);
+}, [draftProposalData]);
 
 const ConsentComponent = useMemo(() => {
   return (
     <div className="d-flex flex-column gap-2">
-      <CheckBox
-        value={consent.toc}
-        label={
-          <>
-            I’ve agree to{" "}
-            <a
-              href={
-                "https://docs.google.com/document/d/1nRGy7LhpLj56SjN9MseV1x-ubH8O_c6B9DOAZ9qTwMU/edit?usp=sharing"
-              }
-              className="text-decoration-underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              DevHub’s Terms and Conditions
-            </a>
-            and commit to honoring it
-          </>
-        }
-        isChecked={consent.toc}
-        onClick={(value) =>
-          setConsent((prevConsent) => ({
-            ...prevConsent,
-            toc: value,
-          }))
-        }
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Checkbox"}
+        props={{
+          value: "toc",
+          label: (
+            <>
+              I’ve agree to{" "}
+              <a
+                href={
+                  "https://docs.google.com/document/d/1nRGy7LhpLj56SjN9MseV1x-ubH8O_c6B9DOAZ9qTwMU/edit?usp=sharing"
+                }
+                className="text-decoration-underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                DevHub’s Terms and Conditions
+              </a>
+              and commit to honoring it
+            </>
+          ),
+          isChecked: consent.toc,
+          onClick: (value) =>
+            setConsent((prevConsent) => ({
+              ...prevConsent,
+              toc: value,
+            })),
+        }}
       />
-      <CheckBox
-        value={consent.coc}
-        label={
-          <>
-            I’ve read{" "}
-            <a
-              href={
-                "https://docs.google.com/document/d/1c6XV8Sj_BRKw8jnTIsjdLPPN6Al5eEStt1ZLYSuqw9U/edit"
-              }
-              className="text-decoration-underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              DevHub’s Code of Conduct
-            </a>
-            and commit to honoring it
-          </>
-        }
-        isChecked={consent.coc}
-        onClick={(value) =>
-          setConsent((prevConsent) => ({
-            ...prevConsent,
-            coc: value,
-          }))
-        }
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Checkbox"}
+        props={{
+          value: "coc",
+          label: (
+            <>
+              I’ve read{" "}
+              <a
+                href={
+                  "https://docs.google.com/document/d/1c6XV8Sj_BRKw8jnTIsjdLPPN6Al5eEStt1ZLYSuqw9U/edit"
+                }
+                className="text-decoration-underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                DevHub’s Code of Conduct
+              </a>
+              and commit to honoring it
+            </>
+          ),
+          isChecked: consent.coc,
+          onClick: (value) =>
+            setConsent((prevConsent) => ({
+              ...prevConsent,
+              coc: value,
+            })),
+        }}
       />
     </div>
   );
-}, [consent, setConsent]);
+}, [draftProposalData]);
 
 const ProfileComponent = useMemo(() => {
   return (
@@ -976,7 +962,7 @@ const ProfileComponent = useMemo(() => {
       }}
     />
   );
-}, [author]);
+}, []);
 
 const LinkedProposalsComponent = useMemo(() => {
   return (
@@ -984,50 +970,16 @@ const LinkedProposalsComponent = useMemo(() => {
       <div className="text-muted w-100 text-sm">
         Link any relevant proposals (e.g. previous milestones).
       </div>
-      {linkedProposals.map((proposal) => {
-        return (
-          <div className="d-flex gap-2 align-items-center">
-            <a
-              className="text-decoration-underline flex-1"
-              href={href({
-                widgetSrc: "${REPL_DEVHUB}/widget/app",
-                params: {
-                  page: "proposal",
-                  id: proposal.value,
-                },
-              })}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {proposal.label}
-            </a>
-            <div
-              className="cursor-pointer"
-              onClick={() => {
-                const updatedLinkedProposals = linkedProposals.filter(
-                  (item) => item.value !== proposal.value
-                );
-                setLinkedProposals(updatedLinkedProposals);
-              }}
-            >
-              <i class="bi bi-trash3-fill"></i>
-            </div>
-          </div>
-        );
-      })}
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
         props={{
-          onChange: (v) => {
-            if (!linkedProposals.some((item) => item.value === v.value)) {
-              setLinkedProposals([...linkedProposals, v]);
-            }
-          },
+          onChange: setLinkedProposals,
+          linkedProposals: linkedProposals,
         }}
       />
     </div>
   );
-}, [linkedProposals, setLinkedProposals]);
+}, [draftProposalData]);
 
 const ReceiverAccountComponent = useMemo(() => {
   return (
@@ -1040,66 +992,29 @@ const ReceiverAccountComponent = useMemo(() => {
       }}
     />
   );
-}, [receiverAccount, setReceiverAccount]);
-
-const VerificationComponent = useMemo(() => {
-  return (
-    <div className="border border-1 p-3 rounded-2">
-      <Widget
-        src="${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus"
-        props={{
-          receiverAccount: receiverAccount,
-          showGetVerifiedBtn: true,
-          imageSize: 30,
-        }}
-      />
-    </div>
-  );
-}, [receiverAccount]);
+}, [draftProposalData]);
 
 const AmountComponent = useMemo(() => {
   return (
-    <>
-      <Widget
-        src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-        props={{
-          className: "flex-grow-1",
-          value: requestedSponsorshipAmount,
-          onChange: (e) => {
-            const inputValue = e.target.value;
-            if (!inputValue) {
-              return;
-            }
-            let isValidInteger = /^[1-9][0-9]*$/.test(inputValue);
-            if (!isValidInteger) {
-              setAmountError("Please enter the nearest positive whole number.");
-            } else {
-              setRequestedSponsorshipAmount(inputValue);
-              setAmountError("");
-            }
-          },
-          skipPaddingGap: true,
-          inputProps: {
-            type: "text",
-            prefix: "$",
-            inputmode: "numeric",
-            pattern: "[0-9]*",
-          },
-        }}
-      />
-      {amountError && (
-        <div style={{ color: "red" }} className="text-sm">
-          {amountError}
-        </div>
-      )}
-    </>
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      props={{
+        className: "flex-grow-1",
+        value: requestedSponsorshipAmount,
+        onChange: (e) => {
+          setRequestedSponsorshipAmount(e.target.value);
+        },
+        skipPaddingGap: true,
+        inputProps: {
+          type: "text",
+          prefix: "$",
+          inputmode: "numeric",
+          pattern: "[0-9]*",
+        },
+      }}
+    />
   );
-}, [
-  requestedSponsorshipAmount,
-  amountError,
-  setAmountError,
-  setRequestedSponsorshipAmount,
-]);
+}, [draftProposalData]);
 
 const CurrencyComponent = useMemo(() => {
   return (
@@ -1114,7 +1029,7 @@ const CurrencyComponent = useMemo(() => {
       }}
     />
   );
-}, [requestedSponsorshipToken, tokensOptions, setRequestedSponsorshipToken]);
+}, [draftProposalData]);
 
 const SponsorComponent = useMemo(() => {
   return (
@@ -1127,7 +1042,7 @@ const SponsorComponent = useMemo(() => {
       }}
     />
   );
-}, [requestedSponsor, setRequestedSponsor]);
+}, [draftProposalData]);
 
 const SupervisorComponent = useMemo(() => {
   return (
@@ -1139,7 +1054,7 @@ const SupervisorComponent = useMemo(() => {
       }}
     />
   );
-}, [supervisor, setSupervisor]);
+}, [draftProposalData]);
 
 if (showProposalPage) {
   return (
@@ -1302,7 +1217,7 @@ if (showProposalPage) {
                         }}
                       />
                     </Link>
-                    {SubmitBtn}
+                    <SubmitBtn />
                   </div>
                 </div>
               </div>
@@ -1357,7 +1272,16 @@ if (showProposalPage) {
                     }
                     description=""
                   >
-                    {VerificationComponent}
+                    <div className="border border-1 p-3 rounded-2">
+                      <Widget
+                        src="${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus"
+                        props={{
+                          receiverAccount: receiverAccount,
+                          showGetVerifiedBtn: true,
+                          imageSize: 30,
+                        }}
+                      />
+                    </div>
                   </InputContainer>
                   <InputContainer
                     heading="Total Amount (USD)"
