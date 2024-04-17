@@ -250,7 +250,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
               <HeaderCell style={{ width: "40px" }}>Actions</HeaderCell>
             </Row>
           </Header>
-          <tbody>
+          <tbody data-testid="addon-table">
             {list.map((item, index) => (
               <AddonItem
                 key={item.id}
@@ -266,7 +266,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
           </tbody>
         </Table>
       )}
-      {isActive && availableAddons && list.length < 7 && (
+      {isActive && availableAddons && (
         <div className="d-flex justify-content-center pt-2">
           <div className="d-flex gap-2 flex-grow-1 px-4">
             <Widget

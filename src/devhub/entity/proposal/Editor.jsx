@@ -933,7 +933,7 @@ if (showProposalPage) {
                     props={{
                       className: "flex-grow-1",
                       value: title,
-                      onChange: (e) => {
+                      onBlur: (e) => {
                         setTitle(e.target.value);
                       },
                       skipPaddingGap: true,
@@ -954,7 +954,7 @@ if (showProposalPage) {
                       className: "flex-grow-1",
                       value: summary,
                       multiline: true,
-                      onChange: (e) => {
+                      onBlur: (e) => {
                         setSummary(e.target.value);
                       },
                       skipPaddingGap: true,
@@ -995,7 +995,6 @@ if (showProposalPage) {
                       data: description,
                       onChange: setDescription,
                       autocompleteEnabled: true,
-                      autoFocus: false,
                     }}
                   />
                 </InputContainer>

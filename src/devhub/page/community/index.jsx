@@ -54,44 +54,18 @@ tab = normalize(tab);
 
 const [isLinkCopied, setLinkCopied] = useState(false);
 
-const tabs = [
-  {
-    title: "Announcements",
-    view: "${REPL_DEVHUB}/widget/devhub.entity.community.Announcements",
-    params: {
-      handle: community.handle,
-    },
-  },
-  {
-    title: "Discussions",
-    view: "${REPL_DEVHUB}/widget/devhub.entity.community.Discussions",
-    params: {
-      handle: community.handle,
-      transactionHashes: props.transactionHashes,
-    },
-  },
-  {
-    title: "Activity",
-    view: "${REPL_DEVHUB}/widget/devhub.entity.community.Activity",
-    params: {
-      handle: community.handle,
-    },
-  },
-  {
-    title: "Teams",
-    view: "${REPL_DEVHUB}/widget/devhub.entity.community.Teams",
-    params: {
-      handle: community.handle,
-    },
-  },
-];
+const tabs = [];
 
 (community.addons || []).map((addon) => {
   addon.enabled &&
     tabs.push({
       title: addon.display_name,
       view: "${REPL_DEVHUB}/widget/devhub.page.addon",
-      params: { addon },
+      params: {
+        addon,
+        handle: community.handle,
+        transactionHashes: props.transactionHashes,
+      },
     });
 });
 
@@ -135,7 +109,7 @@ function trimHttps(url) {
   return url;
 }
 
-// some communties have url as handle (eg: devhub platform) while others has correct handle
+// some communities have url as handle (eg: devhub platform) while others has correct handle
 function checkTelegramHandle(tg) {
   const pattern = /https:\/\/t.me\/(.*)/;
   const includesHttp = tg.match(pattern);

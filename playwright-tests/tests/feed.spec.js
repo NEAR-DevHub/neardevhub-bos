@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
-import { pauseIfVideoRecording } from "../testUtils";
+import { pauseIfVideoRecording } from "../testUtils.js";
+
 test("should show post history for posts in the feed", async ({ page }) => {
   await page.goto("/devhub.near/widget/app?page=feed");
 

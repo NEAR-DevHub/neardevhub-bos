@@ -103,7 +103,7 @@ if ("${REPL_DEVHUB}" !== "devhub.near") {
 
 return (
   <Container>
-    {permissions.can_configure && (
+    {permissions.can_configure && addonMatch.configurator_widget !== "" && (
       <SettingsButton
         onClick={() => setView(view === "configure" ? "view" : "configure")}
       >
@@ -142,6 +142,7 @@ return (
             data: config,
             handle,
             permissions,
+            transactionHashes: props.transactionHashes,
           }}
         />
       )}
