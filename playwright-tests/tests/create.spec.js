@@ -3,7 +3,7 @@ import {
   pauseIfVideoRecording,
   selectAndAssert,
   setInputAndAssert,
-} from "../testUtils";
+} from "../testUtils.js";
 
 test.describe("Wallet is not connected", () => {
   // sign in to wallet
@@ -62,6 +62,7 @@ test.describe("Wallet is connected", () => {
       "300"
     );
     await page.getByTestId("requested-amount-editor").fill("300");
+    await pauseIfVideoRecording(page);
     await page.click('button:has-text("Submit")');
     await expect(page.locator("div.modal-body code")).toHaveText(
       JSON.stringify(
