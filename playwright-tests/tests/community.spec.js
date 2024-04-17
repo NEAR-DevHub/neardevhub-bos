@@ -210,7 +210,7 @@ test.describe("Is DevHUB platform community admin", () => {
 
   test("should configure github addon", async ({ page }) => {
     await page.goto(
-      "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=github"
+      "/devhub.near/widget/app?page=community&handle=devhub-platform&tab=github"
     );
     await pauseIfVideoRecording(page);
     const configureButton = await page.getByRole("button", { name: "" });
@@ -254,7 +254,7 @@ test.describe("Is DevHUB platform community admin", () => {
     ).toBeVisible();
     await expect(await page.locator(".card-header").first()).toBeVisible();
     await expect(await page.locator(".card-header").count()).toBeGreaterThan(1);
-    await await page.locator(".card-header").nth(2).scrollIntoViewIfNeeded();
+    await page.locator(".card-header").nth(2).scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
   });
 });
