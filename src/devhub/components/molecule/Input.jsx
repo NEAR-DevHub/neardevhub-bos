@@ -149,26 +149,26 @@ const TextInput = ({
               </span>
             )}
             <input
-            aria-describedby={key}
-            data-testid={key}
-            aria-label={label}
-            className={[
-              "form-control border",
-              inputClassName,
-              inputProps.prefix ? "border-start-0" : "",
-            ].join(" ")}
-            type={typeAttribute}
-            maxLength={inputProps.max}
-            value={state.data}
-            onChange={(e) => State.update({ data: e.target.value })}
-            onBlur={(e) => {
-              if (props.onBlur) {
-                onBlur({ target: { value: e.target.value } });
-              }
-            }}
-            onKeyDown={onKeyDown}
-            {...{ placeholder, ...inputProps }}
-          />
+              aria-describedby={key}
+              data-testid={key}
+              aria-label={label}
+              className={[
+                "form-control border",
+                inputClassName,
+                inputProps.prefix ? "border-start-0" : "",
+              ].join(" ")}
+              type={typeAttribute}
+              maxLength={inputProps.max}
+              value={state.data}
+              onChange={(e) => State.update({ data: e.target.value })}
+              onBlur={(e) => {
+                if (props.onBlur) {
+                  onBlur({ target: { value: e.target.value } });
+                }
+              }}
+              onKeyDown={onKeyDown}
+              {...{ placeholder, ...inputProps }}
+            />
           </div>
           {state.error && (
             <div style={{ color: "red" }} className="text-sm">

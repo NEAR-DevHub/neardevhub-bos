@@ -8,9 +8,7 @@ const CheckBox = ({ value, isChecked, label, onClick }) => {
   }, [isChecked]);
 
   useEffect(() => {
-    if (isChecked !== checked) {
-      onClick(checked);
-    }
+    onClick(checked);
   }, [checked]);
 
   return (
