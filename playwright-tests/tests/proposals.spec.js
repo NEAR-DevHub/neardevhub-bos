@@ -189,7 +189,7 @@ test.describe("Wallet is connected", () => {
       .locator(".CodeMirror textarea");
     await descriptionArea.focus();
     await descriptionArea.pressSequentially(
-      `The test proposal description. And mentioning @petersal`
+      "The test proposal description. And mentioning @petersalomonsen.near. Also mentioning @megha19.near"
     );
 
     await pauseIfVideoRecording(page);
