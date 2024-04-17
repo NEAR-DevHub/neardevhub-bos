@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../testUtils.js";
+import { mockDefaultTabs } from "../util/addons.js";
 
 test("should load a community page if handle exists", async ({ page }) => {
   await page.goto(
@@ -44,6 +45,9 @@ test.describe("Wallet is connected", () => {
   test("should allow connected user to post from community page", async ({
     page,
   }) => {
+    await page.route("https://rpc.mainnet.near.org/", async (route) => {
+      await mockDefaultTabs(route);
+    });
     test.setTimeout(60000);
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=activity"

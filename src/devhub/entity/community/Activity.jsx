@@ -3,10 +3,16 @@ const { handle } = props;
 const { getCommunity } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
-
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-if (!getCommunity || !href) {
+getCommunity = getCommunity || (() => <></>);
+href || (href = () => {});
+
+if (!handle) {
+  return <p>Handle not defined</p>;
+}
+
+if (!href) {
   return <p>Loading modules...</p>;
 }
 
