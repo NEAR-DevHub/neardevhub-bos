@@ -67,9 +67,21 @@ if (!getAllAddons || !setCommunityAddon) {
   return <p>Loading modules...</p>;
 }
 
+// TODO this needs to be added to the contract when it is ready!
+// AddOn
+const blogv2 = {
+  configurator_widget:
+    "devhub.near/widget/devhub.entity.addon.blogv2.Configurator",
+  description: "Create a blog for your community",
+  icon: "bi bi-substack",
+  id: "blog",
+  title: "Blog",
+  view_widget: "devhub.near/widget/devhub.entity.addon.blogv2.Viewer",
+};
+
 const availableAddons = getAllAddons();
 
-const addonMatch = (availableAddons ?? []).find(
+const addonMatch = ([blogv2, ...availableAddons] ?? []).find(
   (it) => it.id === addon.addon_id
 );
 
@@ -88,7 +100,8 @@ const ButtonRow = styled.div`
   justify-content: space-between;
 `;
 
-const [view, setView] = useState(props.view || "viewer");
+// Change 'configure' to 'viewer'
+const [view, setView] = useState("configure"); //props.view || "viewer");
 
 if ("${REPL_DEVHUB}" !== "devhub.near") {
   addonMatch.configurator_widget = addonMatch.configurator_widget.replace(

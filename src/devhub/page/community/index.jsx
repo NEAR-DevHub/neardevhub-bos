@@ -54,7 +54,27 @@ tab = normalize(tab);
 
 const [isLinkCopied, setLinkCopied] = useState(false);
 
-const tabs = [];
+// TODO
+// CommunityAddOn
+const blog = {
+  addon_id: "blog",
+  display_name: "BlogV2",
+  enabled: true,
+  id: "blog",
+  parameters: "{}",
+};
+
+const tabs = [
+  {
+    title: "BlogV2",
+    view: "${REPL_DEVHUB}/widget/devhub.page.addon",
+    params: {
+      addon: blog,
+      handle: community.handle,
+      transactionHashes: props.transactionHashes,
+    },
+  },
+];
 
 (community.addons || []).map((addon) => {
   addon.enabled &&
