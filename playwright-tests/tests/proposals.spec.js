@@ -164,9 +164,12 @@ test.describe("Wallet is connected", () => {
     test.setTimeout(120000);
     await page.goto("/devhub.near/widget/app?page=create-proposal");
 
+    const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
-    await titleArea.pressSequentially("Test proposal 123456");
+    await titleArea.pressSequentially("Test proposal 123456", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
 
     await pauseIfVideoRecording(page);
 
@@ -180,7 +183,9 @@ test.describe("Wallet is connected", () => {
 
     const summary = await page.locator('textarea[type="text"]');
     await expect(summary).toBeEditable();
-    await summary.pressSequentially("Test proposal summary 123456789");
+    await summary.pressSequentially("Test proposal summary 123456789", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
 
     await pauseIfVideoRecording(page);
 
@@ -189,23 +194,34 @@ test.describe("Wallet is connected", () => {
       .locator(".CodeMirror textarea");
     await descriptionArea.focus();
     await descriptionArea.pressSequentially(
-      "The test proposal description. And mentioning @petersal"
+      `The test proposal description. And mentioning @petersal`,
+      {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      }
     );
 
-    await page.frameLocator("iframe").getByText("petersalomonsen.near").click();
     await pauseIfVideoRecording(page);
-    await descriptionArea.pressSequentially(`. Also mentioning @m`);
+
+    await page.frameLocator("iframe").getByText("petersalomonsen.near").click();
+
+    await descriptionArea.pressSequentially(`. Also mentioning @m`, {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
 
     await pauseIfVideoRecording(page);
     await descriptionArea.press("Backspace");
     await pauseIfVideoRecording(page);
     await descriptionArea.press("m");
     await pauseIfVideoRecording(page);
-    await descriptionArea.pressSequentially(`egha19`);
+    await descriptionArea.pressSequentially(`egha19.`, {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
 
     await page.frameLocator("iframe").getByText("megha19.near").click();
 
-    await page.locator('input[type="text"]').nth(2).pressSequentially("12345");
+    await page.locator('input[type="text"]').nth(2).pressSequentially("12345", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
     await pauseIfVideoRecording(page);
     await page.getByRole("checkbox").first().click();
     await pauseIfVideoRecording(page);
