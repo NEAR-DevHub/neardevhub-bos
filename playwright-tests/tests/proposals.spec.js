@@ -189,10 +189,21 @@ test.describe("Wallet is connected", () => {
       .locator(".CodeMirror textarea");
     await descriptionArea.focus();
     await descriptionArea.pressSequentially(
-      "The test proposal description. And mentioning @petersalomonsen.near. Also mentioning @megha19.near"
+      "The test proposal description. And mentioning @petersal"
     );
 
+    await page.frameLocator("iframe").getByText("petersalomonsen.near").click();
     await pauseIfVideoRecording(page);
+    await descriptionArea.pressSequentially(`. Also mentioning @m`);
+
+    await pauseIfVideoRecording(page);
+    await descriptionArea.press("Backspace");
+    await pauseIfVideoRecording(page);
+    await descriptionArea.press("m");
+    await pauseIfVideoRecording(page);
+    await descriptionArea.pressSequentially(`egha19`);
+
+    await page.frameLocator("iframe").getByText("megha19.near").click();
 
     await page.locator('input[type="text"]').nth(2).pressSequentially("12345");
     await pauseIfVideoRecording(page);
