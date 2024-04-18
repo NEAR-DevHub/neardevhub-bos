@@ -81,9 +81,12 @@ const blogv2 = {
 
 const availableAddons = getAllAddons();
 
-const addonMatch = ([blogv2, ...availableAddons] ?? []).find(
-  (it) => it.id === addon.addon_id
-);
+let addonMatch = null; // If availableAddons is not an array, set addonMatch to null
+if (Array.isArray(availableAddons)) {
+  addonMatch = ([blogv2, ...availableAddons] ?? []).find(
+    (it) => it.id === addon.addon_id
+  );
+}
 
 if (!addonMatch) {
   return (
