@@ -56,9 +56,17 @@ const [isLinkCopied, setLinkCopied] = useState(false);
 
 // TODO
 // CommunityAddOn
+const blogv2 = {
+  addon_id: "blogv2",
+  display_name: "BlogV2",
+  enabled: true,
+  id: "blogv2",
+  parameters: "{}",
+};
+
 const blog = {
   addon_id: "blog",
-  display_name: "BlogV2",
+  display_name: "BlogV1",
   enabled: true,
   id: "blog",
   parameters: "{}",
@@ -67,6 +75,15 @@ const blog = {
 const tabs = [
   {
     title: "BlogV2",
+    view: "${REPL_DEVHUB}/widget/devhub.page.addon",
+    params: {
+      addon: blogv2,
+      handle: community.handle,
+      transactionHashes: props.transactionHashes,
+    },
+  },
+  {
+    title: "BlogV1",
     view: "${REPL_DEVHUB}/widget/devhub.page.addon",
     params: {
       addon: blog,
@@ -88,6 +105,8 @@ const tabs = [
       },
     });
 });
+
+console.log("tabs", tabs);
 
 const onShareClick = () =>
   clipboard

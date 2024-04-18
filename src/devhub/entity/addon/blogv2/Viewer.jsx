@@ -1,5 +1,5 @@
 const { Card } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Card") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card") ||
   (() => <></>);
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
@@ -66,7 +66,7 @@ return (
   <div class="w-100">
     {!hideTitle && <Heading>Latest Blog Posts</Heading>}
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Feed"}
+      src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Feed"}
       // TODO: This needs to filter by more labels
       props={{
         includeLabels: ["blog", handle, ...(includeLabels || [])], // make sure this has the community handle

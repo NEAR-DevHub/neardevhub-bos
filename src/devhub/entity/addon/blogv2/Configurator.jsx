@@ -34,7 +34,7 @@ return (
   <Tile className="p-3 bg-white">
     <Container>
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.editor.index"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.index"}
         props={{
           data,
           handle,

@@ -1,8 +1,8 @@
 const { Card } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Card") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card") ||
   (() => <></>);
 const { Page } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Page") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
 
 const categories = [
@@ -194,7 +194,7 @@ return (
         aria-labelledby="edit-tab"
       >
         <Widget
-          src="${REPL_DEVHUB}/widget/devhub.entity.addon.blog.editor.form"
+          src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.form"
           props={{
             title,
             setTitle,

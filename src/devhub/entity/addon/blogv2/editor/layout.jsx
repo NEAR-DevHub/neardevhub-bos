@@ -1,6 +1,6 @@
 const { Sidebar, Content, getData, editData } = props;
 
-// console.log({ layoutEditData: editData });
+// Selected Item is the property "parameters" of the community addon (blog)
 const [selectedItem, setSelectedItem] = useState(editData);
 
 // SHOW EDITOR
@@ -22,7 +22,7 @@ return (
     <div
       className="left-panel"
       style={{
-        margin: "20px 20px 80px 20px",
+        // margin: "20px 20px 80px 20px",
         width: "100%",
       }}
     >

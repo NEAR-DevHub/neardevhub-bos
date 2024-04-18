@@ -74,8 +74,8 @@ const blogv2 = {
     "devhub.near/widget/devhub.entity.addon.blogv2.Configurator",
   description: "Create a blog for your community",
   icon: "bi bi-substack",
-  id: "blog",
-  title: "Blog",
+  id: "blogv2",
+  title: "BlogV2",
   view_widget: "devhub.near/widget/devhub.entity.addon.blogv2.Viewer",
 };
 
@@ -100,8 +100,9 @@ const ButtonRow = styled.div`
   justify-content: space-between;
 `;
 
-// Change 'configure' to 'viewer'
+// Change 'configure' to 'viewer' "configure"); //
 const [view, setView] = useState("configure"); //props.view || "viewer");
+console.log(props.view);
 
 if ("${REPL_DEVHUB}" !== "devhub.near") {
   addonMatch.configurator_widget = addonMatch.configurator_widget.replace(
