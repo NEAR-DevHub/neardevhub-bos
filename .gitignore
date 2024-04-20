@@ -11,4 +11,4 @@ replacements.*.json.tmp
 /build
 test-results
 
-replacements.analytics.json
+replacements.analytics.sh

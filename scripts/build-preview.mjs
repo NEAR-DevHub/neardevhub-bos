@@ -73,11 +73,7 @@ if (fs.existsSync(REPLACEMENTS_JSON)) {
   replacements[CREATOR_REPL] = ACCOUNT_ID;
   replacements[CONTRACT_REPL] = CONTRACT_ID;
 
-  const replacementsAnalyticsFilename = 'replacements.analytics.json';
-  if (fs.existsSync(replacementsAnalyticsFilename)) {
-    const analytics_replacements = JSON.parse(fs.readFileSync(replacementsAnalyticsFilename).toString());
-    Object.assign(replacements, analytics_replacements);
-  }
+  replacements.REPL_POSTHOG_API_KEY = process.env.POSTHOG_API_KEY;
 
   fs.writeFileSync(
     `${REPLACEMENTS_JSON}.tmp`,
