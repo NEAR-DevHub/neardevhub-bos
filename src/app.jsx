@@ -40,6 +40,33 @@ if (!page) {
   page = "home";
 }
 
+// Track visits
+
+if ("${REPL_POSTHOG_API_KEY}".length === 47) {
+  useEffect(() => {
+    const hashedUserId = Array.from(nacl.hash(Buffer.from(context.accountId)))
+      .map((b) => ("00" + b.toString(16)).slice(-2))
+      .join("");
+    fetch("https://eu.posthog.com/capture/", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+
+      body: JSON.stringify({
+        api_key: "${REPL_POSTHOG_API_KEY}",
+        event: "devhub_pageview",
+        properties: {
+          distinct_id: hashedUserId,
+          page,
+          ...props,
+        },
+        timestamp: new Date().toISOString(),
+      }),
+    });
+  }, [props]);
+}
+
 // This is our navigation, rendering the page based on the page parameter
 function Page() {
   const routes = page.split(".");
