@@ -11,20 +11,37 @@ const TextInput = ({
   value,
   skipPaddingGap,
   style,
+  error,
   ...otherProps
 }) => {
   State.init({
     data: value,
+    error: error,
   });
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      onChange({ target: { value: state.data } });
-    }, 100);
+    const inputError = "";
+    if (value !== state.data) {
+      // check for input number error (since type: number doesn't work on firefox/safari)
+      if (inputProps.inputmode === "numeric") {
+        const inputValue = state.data;
+        if (!inputValue) {
+          return;
+        }
+        let isValidInteger = /^[1-9][0-9]*$/.test(inputValue);
+        if (!isValidInteger) {
+          inputError = "Please enter the nearest positive whole number.";
+        }
+        State.update({ error: inputError });
+      }
+      const handler = setTimeout(() => {
+        onChange({ target: { value: state.data }, error: inputError });
+      }, 30);
 
-    return () => {
-      clearTimeout(handler);
-    };
+      return () => {
+        clearTimeout(handler);
+      };
+    }
   }, [state.data]);
 
   useEffect(() => {
@@ -32,6 +49,12 @@ const TextInput = ({
       State.update({ data: value });
     }
   }, [value]);
+
+  useEffect(() => {
+    if (error !== state.error) {
+      State.update({ error: error });
+    }
+  }, [error]);
 
   const typeAttribute =
     type === "text" ||
@@ -118,33 +141,40 @@ const TextInput = ({
       ) : null}
 
       {!multiline ? (
-        <div className="input-group">
-          {inputProps.prefix && (
-            <span className="input-group-text bg-white border-end-0">
-              {inputProps.prefix}
-            </span>
+        <div className="w-100">
+          <div className="input-group">
+            {inputProps.prefix && (
+              <span className="input-group-text bg-white border-end-0">
+                {inputProps.prefix}
+              </span>
+            )}
+            <input
+              aria-describedby={key}
+              data-testid={key}
+              aria-label={label}
+              className={[
+                "form-control border",
+                inputClassName,
+                inputProps.prefix ? "border-start-0" : "",
+              ].join(" ")}
+              type={typeAttribute}
+              maxLength={inputProps.max}
+              value={state.data}
+              onChange={(e) => State.update({ data: e.target.value })}
+              onBlur={(e) => {
+                if (props.onBlur) {
+                  onBlur({ target: { value: e.target.value } });
+                }
+              }}
+              onKeyDown={onKeyDown}
+              {...{ placeholder, ...inputProps }}
+            />
+          </div>
+          {state.error && (
+            <div style={{ color: "red" }} className="text-sm">
+              {state.error}
+            </div>
           )}
-          <input
-            aria-describedby={key}
-            data-testid={key}
-            aria-label={label}
-            className={[
-              "form-control border",
-              inputClassName,
-              inputProps.prefix ? "border-start-0" : "",
-            ].join(" ")}
-            type={typeAttribute}
-            maxLength={inputProps.max}
-            value={state.data}
-            onChange={(e) => State.update({ data: e.target.value })}
-            onBlur={(e) => {
-              if (props.onBlur) {
-                onBlur({ target: { value: e.target.value } });
-              }
-            }}
-            onKeyDown={onKeyDown}
-            {...{ placeholder, ...inputProps }}
-          />
         </div>
       ) : (
         <textarea

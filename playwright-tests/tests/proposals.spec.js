@@ -164,7 +164,7 @@ test.describe("Wallet is connected", () => {
     test.setTimeout(120000);
     await page.goto("/devhub.near/widget/app?page=create-proposal");
 
-    const delay_milliseconds_between_keypress_when_typing = 30;
+    const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
     await titleArea.pressSequentially("Test proposal 123456", {
