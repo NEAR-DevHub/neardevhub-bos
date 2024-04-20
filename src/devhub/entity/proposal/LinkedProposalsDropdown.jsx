@@ -1,4 +1,9 @@
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+href || (href = () => {});
+
+const linkedProposals = props.linkedProposals;
 const onChange = props.onChange;
+const [selectedProposals, setSelectedProposals] = useState(linkedProposals);
 const [proposalsOptions, setProposalsOptions] = useState([]);
 const [searchProposalId, setSearchProposalId] = useState("");
 const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
@@ -15,6 +20,18 @@ ${queryName}(
   proposal_id
 }
 }`;
+
+useEffect(() => {
+  if (JSON.stringify(linkedProposals) !== JSON.stringify(selectedProposals)) {
+    setSelectedProposals(linkedProposals);
+  }
+}, [linkedProposals]);
+
+useEffect(() => {
+  if (JSON.stringify(linkedProposals) !== JSON.stringify(selectedProposals)) {
+    onChange(selectedProposals);
+  }
+}, [selectedProposals]);
 
 function separateNumberAndText(str) {
   const numberRegex = /\d+/;
@@ -87,19 +104,57 @@ useEffect(() => {
 }, [searchProposalId]);
 
 return (
-  <Widget
-    src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch"
-    props={{
-      selectedValue: "",
-      onChange: onChange,
-      options: proposalsOptions,
-      showSearch: true,
-      searchInputPlaceholder: "Search by Id",
-      defaultLabel: "Search proposals",
-      searchByValue: true,
-      onSearch: (value) => {
-        setSearchProposalId(value);
-      },
-    }}
-  />
+  <>
+    {selectedProposals.map((proposal) => {
+      return (
+        <div className="d-flex gap-2 align-items-center">
+          <a
+            className="text-decoration-underline flex-1"
+            href={href({
+              widgetSrc: "${REPL_DEVHUB}/widget/app",
+              params: {
+                page: "proposal",
+                id: proposal.value,
+              },
+            })}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {proposal.label}
+          </a>
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              const updatedLinkedProposals = selectedProposals.filter(
+                (item) => item.value !== proposal.value
+              );
+              setSelectedProposals(updatedLinkedProposals);
+            }}
+          >
+            <i class="bi bi-trash3-fill"></i>
+          </div>
+        </div>
+      );
+    })}
+
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch"
+      props={{
+        selectedValue: "",
+        onChange: (v) => {
+          if (!selectedProposals.some((item) => item.value === v.value)) {
+            setSelectedProposals([...selectedProposals, v]);
+          }
+        },
+        options: proposalsOptions,
+        showSearch: true,
+        searchInputPlaceholder: "Search by Id",
+        defaultLabel: "Search proposals",
+        searchByValue: true,
+        onSearch: (value) => {
+          setSearchProposalId(value);
+        },
+      }}
+    />
+  </>
 );

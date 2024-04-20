@@ -47,8 +47,6 @@ return (
               onClick={() => {
                 if (selected.label !== item.label) {
                   setSelected(item);
-                } else {
-                  setSelected(null);
                 }
               }}
             >
