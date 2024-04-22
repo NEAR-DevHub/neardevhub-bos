@@ -169,7 +169,6 @@ return (
           data: comment,
           onChange: setComment,
           autocompleteEnabled: true,
-          autoFocus: false,
           placeholder: "Add your comment here...",
           height: "160",
           embeddCSS: ComposeEmbeddCSS,
