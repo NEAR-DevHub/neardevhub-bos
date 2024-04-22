@@ -39,9 +39,20 @@ const GithubKanbanBoardTicketTypesSchema = {
   pullRequest: { label: "Pull Request" },
 };
 
+const GithubKanbanBoardLabelsSchema = {
+  allLabelsMust: { label: "All labels must be present in ticket" },
+};
+
 const GithubKanbanBoardDefaults = {
-  columns: {},
-  dataTypesIncluded: { issue: true, pullRequest: false },
+  columns: {
+    ...withUUIDIndex({
+      description: "",
+      labelSearchTerms: [],
+      title: "",
+      allLabelsMust: false,
+    }),
+  },
+  dataTypesIncluded: { issue: true, pullRequest: true },
   description: "",
   repoURL: "",
   ticketState: "all",
@@ -209,6 +220,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
             description: "",
             labelSearchTerms: [],
             title: "",
+            allLabelsMust: false,
           }),
         }
       : lastKnownValue;
@@ -277,7 +289,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
       </div>
       <div className="d-flex flex-column flex-1 align-items-start justify-content-evenly gap-1 p-2">
         <label>Select which tasks you want to display:</label>
-        <div className="input-group">
+        <div className="input-group" style={{ width: "fit-content" }}>
           <Widget
             src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
             props={{
@@ -299,7 +311,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
       </div>
       <div className="d-flex flex-column flex-1 align-items-start justify-content-evenly gap-1 p-2">
         <label>Select which state of tickets you want to display:</label>
-        <div className="input-group">
+        <div className="input-group mt-2">
           <Widget
             src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Switch`}
             props={{
@@ -322,7 +334,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
         <label>
           Select which items you want to display on each card in a column:
         </label>
-        <div className="input-group">
+        <div className="input-group" style={{ width: "fit-content" }}>
           <Widget
             src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
             props={{
@@ -346,18 +358,22 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
       <div className="d-flex align-items-center justify-content-between mb-2">
         <span className="d-inline-flex gap-2 m-0">
           <i className="bi bi-list-task" />
-          <span>{`Columns ( max. ${settings.maxColumnsNumber} )`}</span>
+          <span>{`Each board configuration ( maximum allowed - ${settings.maxColumnsNumber} ) : `}</span>
         </span>
       </div>
 
-      <div className="d-flex flex-column align-items-center gap-3 w-100">
+      <div className="d-flex flex-column align-items-center gap-3 w-100 boardconfiguration">
         {Object.values(columnsState ?? {}).map(
-          ({ id, description, labelSearchTerms, title }, index) => (
+          (
+            { id, description, labelSearchTerms, title, allLabelsMust },
+            index
+          ) => (
             <AttractableDiv
               className="d-flex gap-3 rounded-4 border p-3 w-100"
               key={`column-${id}-configurator`}
             >
               <div className="d-flex flex-column gap-1 w-100">
+                <div>Board #{index}</div>
                 <Widget
                   src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
                   props={{
@@ -373,10 +389,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
                   }}
                 />
                 <div className="d-flex flex-column flex-1 align-items-start justify-content-evenly gap-1 p-2">
-                  <label>
-                    Search terms for all the labels MUST be presented in
-                    included tickets
-                  </label>
+                  <label>Search tickets using labels:</label>
                   <div className="input-group">
                     <Typeahead
                       id="hashtags"
@@ -395,6 +408,28 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
                       options={repoLabels}
                     />
                   </div>
+                </div>
+                <div style={{ width: "fit-content" }}>
+                  <Widget
+                    src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+                    props={{
+                      heading: "",
+                      classNames: { root: "col-12 col-md-4 h-auto" },
+                      externalState: { allLabelsMust: allLabelsMust },
+                      isActive: true,
+                      isEmbedded: true,
+                      isUnlocked: permissions.can_configure,
+                      onChange: (data) => {
+                        const formUpdateFunc = formUpdate({
+                          path: ["columns", id, "allLabelsMust"],
+                          isColumnsUpdate: true,
+                        });
+                        return formUpdateFunc(data["allLabelsMust"]);
+                      },
+                      schema: GithubKanbanBoardLabelsSchema,
+                      hideSubmitBtn: true,
+                    }}
+                  />
                 </div>
                 <Widget
                   src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
@@ -432,36 +467,6 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
             </AttractableDiv>
           )
         )}
-
-        <div className="d-flex gap-3 justify-content-end w-100">
-          <Widget
-            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-            props={{
-              classNames: {
-                root: "d-flex btn btn-outline-danger shadow-none border-0",
-              },
-              isHidden: typeof onCancel !== "function",
-              label: "Cancel",
-              onClick: onCancel,
-            }}
-          />
-          <Widget
-            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-            props={{
-              classNames: { root: "btn btn-success" },
-              disabled: form.isSynced,
-              icon: {
-                type: "svg_icon",
-                variant: "floppy_drive",
-                width: 14,
-                height: 14,
-              },
-              isHidden: typeof onSave !== "function",
-              label: "Save",
-              onClick: onSave,
-            }}
-          />
-        </div>
       </div>
     </>
   );
@@ -536,25 +541,57 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
           {Object.keys(parentState).length > 0 && (
             <div>
               {formElement}
-              <Widget
-                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-                props={{
-                  classNames: {
-                    root: "btn-sm btn-outline-secondary",
-                  },
-                  label: "New column",
-                  disabled:
-                    parentState.columns &&
-                    Object.keys(parentState.columns).length >=
-                      settings.maxColumnsNumber,
-                  icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
-                  onClick: formUpdate({
-                    path: ["columns"],
-                    via: columnsCreateNew,
-                    isColumnsUpdate: true,
-                  }),
-                }}
-              />
+              <div className="d-flex justify-content-between gap-2 mt-4">
+                <div style={{ minWidth: "200px" }}>
+                  <Widget
+                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                    props={{
+                      classNames: {
+                        root: "btn-sm btn-outline-secondary",
+                      },
+                      label: "Add another column",
+                      disabled:
+                        parentState.columns &&
+                        Object.keys(parentState.columns).length >=
+                          settings.maxColumnsNumber,
+                      icon: { type: "bootstrap_icon", variant: "bi-plus-lg" },
+                      onClick: formUpdate({
+                        path: ["columns"],
+                        via: columnsCreateNew,
+                        isColumnsUpdate: true,
+                      }),
+                    }}
+                  />
+                </div>
+                <div className="d-flex gap-3 justify-content-end w-100">
+                  <Widget
+                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                    props={{
+                      classNames: {
+                        root: "d-flex btn btn-outline-danger shadow-none border-0",
+                      },
+                      isHidden: typeof onCancel !== "function",
+                      label: "Cancel",
+                      onClick: onCancel,
+                    }}
+                  />
+                  <Widget
+                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                    props={{
+                      classNames: { root: "btn btn-success" },
+                      icon: {
+                        type: "svg_icon",
+                        variant: "floppy_drive",
+                        width: 14,
+                        height: 14,
+                      },
+                      isHidden: typeof onSave !== "function",
+                      label: "Save",
+                      onClick: onSave,
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           )}
         </div>
