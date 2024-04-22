@@ -24,7 +24,22 @@ const followingData = Social.get(
 const fontFamily = props.fontFamily ?? "sans-serif";
 const alignToolItems = props.alignToolItems ?? "right";
 const placeholder = props.placeholder ?? "";
-const showAutoComplete = props.showAutoComplete ?? false;
+const showAccountAutoComplete = props.showAutoComplete ?? false;
+const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
+
+const queryName =
+  "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot";
+const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
+${queryName}(
+  offset: $offset
+  limit: $limit
+  order_by: {proposal_id: desc}
+  where: $where
+) {
+  name
+  proposal_id
+}
+}`;
 
 const code = `
 <!doctype html>
@@ -79,6 +94,12 @@ const code = `
 
   <ul class="dropdown-menu" id="mentiondropdown" style="position: absolute;">
 </div>
+<div class="dropdown">
+  <button style="display: none" type="button" data-bs-toggle="dropdown">
+    Dropdown button
+  </button>
+  <ul class="dropdown-menu" id="referencedropdown" style="position: absolute;">
+</div>
 </ul>
 
 <textarea></textarea>
@@ -91,7 +112,9 @@ let codeMirrorInstance;
 let isEditorInitialized = false;
 let followingData = {};
 let profilesData = {};
-let showAutocomplete = ${showAutoComplete}
+let query = '';
+let showAccountAutoComplete = ${showAccountAutoComplete};
+let showProposalIdAutoComplete = ${showProposalIdAutoComplete};
 
 function getSuggestedAccounts(term) {
   let results = [];
@@ -134,6 +157,53 @@ function getSuggestedAccounts(term) {
   results.sort((a, b) => b.score - a.score);
   results = results.slice(0, limit);
 
+  return results;
+}
+
+async function asyncFetch(endpoint, { method, headers, body }) {
+  try {
+    const response = await fetch(endpoint, {
+      method: method,
+      headers: headers,
+      body: body
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTP error!");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+}
+
+
+async function getSuggestedProposals(id) {
+  let results = [];
+  const variables = {
+    limit: 5,
+    offset: 0,
+    where:{}
+  };
+  if (id) {
+    variables["where"] = { proposal_id: { _eq: id }};
+  }
+  await asyncFetch('https://near-queryapi.api.pagoda.co/v1/graphql', {
+    method: "POST",
+    headers: { "x-hasura-role": "thomasguntenaar_near" },
+    body: JSON.stringify({
+      query: query,
+      variables: variables,
+      operationName: "GetLatestSnapshot",
+    }),
+  }).then(res => {
+     const proposals = res?.data?.["thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot"];
+     results = (proposals);
+  }).catch(error => {
+    console.error(error);
+  });
   return results;
 }
 
@@ -185,7 +255,7 @@ simplemde.codemirror.on('blur', () => {
   updateIframeHeight();
 });
 
-if (showAutocomplete) {
+if (showAccountAutoComplete) {
   let mentionToken;
   let mentionCursorStart;
   const dropdown = document.getElementById("mentiondropdown");
@@ -252,9 +322,99 @@ if (showAutocomplete) {
         createMentionDrowDownOptions();
     }
 });
-
 }
 
+if (showProposalIdAutoComplete) {
+  let proposalId;
+  let referenceCursorStart;
+  const dropdown = document.getElementById("referencedropdown");
+  const loader = document.createElement('div');
+  loader.className = 'loader';
+  loader.textContent = 'Loading...';
+
+  simplemde.codemirror.on("keydown", () => {
+    if (proposalId && event.key === 'ArrowDown') {
+      dropdown.querySelector('button').focus();
+      event.preventDefault();
+      return false;
+    }
+  });
+
+  simplemde.codemirror.on("keyup", (cm, event) => {
+    const cursor = cm.getCursor();
+    const token = cm.getTokenAt(cursor);
+
+    const createRefernceDropDownOptions = async () => {
+      try {
+        const proposalIdInput = cm.getRange(referenceCursorStart, cursor);
+        dropdown.innerHTML = ''; // Clear previous content
+        dropdown.appendChild(loader); // Show loader
+
+        const suggestedProposals = await getSuggestedProposals(proposalIdInput);
+        dropdown.innerHTML = suggestedProposals
+        .map(
+          (item) =>
+            '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + "#" + item?.proposal_id + " " + item.name + '</button></li>'
+        )
+        .join("");
+
+        dropdown.querySelectorAll("li").forEach((li) => {
+          li.addEventListener("click", () => {
+            const selectedText = li.textContent.trim();
+            const startIndex = selectedText.indexOf('#') + 1; 
+            const endIndex = selectedText.indexOf(' ', startIndex);
+            const id = endIndex !== -1 ? selectedText.substring(startIndex, endIndex) : selectedText.substring(startIndex);
+            const link = "https://near.social/devhub.near/widget/app?page=proposal&id=" + id;
+            const adjustedStart = {
+              line: referenceCursorStart.line,
+              ch: referenceCursorStart.ch - 1
+            };
+            simplemde.codemirror.replaceRange("[" + selectedText + "]" + "(" + link + ")", adjustedStart, cursor);
+            proposalId = null;
+            dropdown.classList.remove("show");
+            cm.focus();
+          });
+        });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        // Handle error: Remove loader
+        dropdown.innerHTML = ''; // Clear previous content
+      } finally {
+        // Remove loader
+        dropdown.removeChild(loader);
+      }
+    }
+
+    // show dropwdown only when there is space before #
+      if (!proposalId && token.string === "#" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ') {
+        proposalId = token;
+        referenceCursorStart = cursor;
+        // Calculate cursor position relative to the iframe's viewport
+        const rect = cm.charCoords(cursor);
+        const x = rect.left;
+        const y = rect.bottom;
+
+        // Create dropdown with options
+        dropdown.style.top = y + "px";
+        dropdown.style.left = x + "px";
+
+        createRefernceDropDownOptions();
+
+        dropdown.classList.add("show");
+
+        // Close dropdown on outside click
+        document.addEventListener("click", function(event) {
+            if (!dropdown.contains(event.target)) {
+              proposalId = null;
+                dropdown.classList.remove("show");
+            }
+        });
+    } else if (proposalId) {
+      createRefernceDropDownOptions();
+    }
+});
+
+}
 
 window.addEventListener("message", (event) => {
   if (!isEditorInitialized && event.data !== "") {
@@ -270,6 +430,9 @@ window.addEventListener("message", (event) => {
   }
   if (event.data.profilesData) {
     profilesData = JSON.parse(event.data.profilesData);
+  }
+  if (event.data.query) {
+    query = event.data.query;
   }
 });
 </script>
@@ -288,6 +451,7 @@ return (
       content: props.data?.content ?? "",
       followingData,
       profilesData: JSON.stringify(profilesData),
+      query: query,
     }}
     onMessage={(e) => {
       switch (e.handler) {

@@ -26,6 +26,7 @@ const Compose = ({
   placeholder,
   height,
   embeddCSS,
+  showProposalIdAutoComplete,
 }) => {
   State.init({
     data: data,
@@ -85,6 +86,7 @@ const Compose = ({
                 height,
                 embeddCSS: embeddCSS || EmbeddCSS,
                 showAutoComplete: autocompleteEnabled,
+                showProposalIdAutoComplete: showProposalIdAutoComplete,
               }}
             />
           </>
@@ -95,7 +97,7 @@ const Compose = ({
                 "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
               }
               props={{
-                text: data,
+                text: state.data,
               }}
             />
           </div>

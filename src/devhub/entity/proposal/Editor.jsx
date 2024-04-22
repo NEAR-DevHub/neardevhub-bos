@@ -885,6 +885,7 @@ const DescriptionComponent = useMemo(() => {
         onChange: setDescription,
         autocompleteEnabled: true,
         autoFocus: false,
+        showProposalIdAutoComplete: true,
       }}
     />
   );
