@@ -272,7 +272,7 @@ if (showAccountAutoComplete) {
     const cursor = cm.getCursor();
     const token = cm.getTokenAt(cursor);
 
-    const createMentionDrowDownOptions = () => {
+    const createMentionDropDownOptions = () => {
       const mentionInput = cm.getRange(mentionCursorStart, cursor);
       dropdown.innerHTML = getSuggestedAccounts(mentionInput)
       .map(
@@ -304,7 +304,7 @@ if (showAccountAutoComplete) {
         dropdown.style.top = y + "px";
         dropdown.style.left = x + "px";
 
-        createMentionDrowDownOptions();
+        createMentionDropDownOptions();
 
         dropdown.classList.add("show");
 
@@ -319,7 +319,7 @@ if (showAccountAutoComplete) {
         mentionToken = null;
         dropdown.classList.remove("show");
     } else if (mentionToken) {
-        createMentionDrowDownOptions();
+        createMentionDropDownOptions();
     }
 });
 }
@@ -344,7 +344,7 @@ if (showProposalIdAutoComplete) {
     const cursor = cm.getCursor();
     const token = cm.getTokenAt(cursor);
 
-    const createRefernceDropDownOptions = async () => {
+    const createReferenceDropDownOptions = async () => {
       try {
         const proposalIdInput = cm.getRange(referenceCursorStart, cursor);
         dropdown.innerHTML = ''; // Clear previous content
@@ -398,7 +398,7 @@ if (showProposalIdAutoComplete) {
         dropdown.style.top = y + "px";
         dropdown.style.left = x + "px";
 
-        createRefernceDropDownOptions();
+        createReferenceDropDownOptions();
 
         dropdown.classList.add("show");
 
@@ -409,9 +409,12 @@ if (showProposalIdAutoComplete) {
                 dropdown.classList.remove("show");
             }
         });
+    } else if (proposalId && token.string.match(/[^#a-z0-9.]/)) {
+      proposalId = null;
+      dropdown.classList.remove("show");
     } else if (proposalId) {
-      createRefernceDropDownOptions();
-    }
+      createReferenceDropDownOptions();
+  }
 });
 
 }
