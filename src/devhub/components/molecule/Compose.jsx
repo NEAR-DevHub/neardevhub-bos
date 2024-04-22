@@ -95,7 +95,7 @@ const Compose = ({
                 "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
               }
               props={{
-                text: data,
+                text: state.data,
               }}
             />
           </div>
