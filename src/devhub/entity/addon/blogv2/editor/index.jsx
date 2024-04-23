@@ -42,7 +42,7 @@ return (
         props={{
           handle: props.handle,
           Layout: (providerProps) => {
-            const { data, onChange, onSubmit, onCancel, getData } =
+            const { data, onChange, onSubmit, onCancel, getData, onDelete } =
               providerProps;
             return (
               <Widget
@@ -52,7 +52,16 @@ return (
                   editData: editData,
                   Sidebar: (p) => (
                     <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.sidebar"
+                      src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.BlogOverview"
+                      props={{
+                        ...p,
+                        ...providerProps,
+                      }}
+                    />
+                  ),
+                  BlogPostSettings: (p) => (
+                    <Widget
+                      src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.BlogPostSettings"
                       props={{
                         ...p,
                         ...providerProps,
@@ -66,6 +75,7 @@ return (
                         onChange,
                         onCancel,
                         onSubmit,
+                        onDelete,
                         ...p,
                       }}
                     />
