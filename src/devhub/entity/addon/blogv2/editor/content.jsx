@@ -5,6 +5,7 @@ const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
 
+// FIXME: change with settings
 const categories = [
   {
     label: "Guide",
@@ -67,7 +68,210 @@ const Banner = styled.div`
   }
 `;
 
-const { data, handle, onSubmit } = props;
+const DropdowntBtnContainer = styled.div`
+  font-size: 13px;
+  min-width: 150px;
+
+  .custom-select {
+    position: relative;
+  }
+
+  .select-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius-top: 5px;
+    cursor: pointer;
+    background-color: #fff;
+    border-radius: 5px;
+  }
+
+  .no-border {
+    border: none !important;
+  }
+
+  .options-card {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 200%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 0.5rem;
+    z-index: 99;
+    font-size: 13px;
+    border-radius:0.375rem !important;
+  }
+
+  .left {
+    right: 0 !important;
+    left: auto !important;
+  }
+
+  @media screen and (max-width: 768px) {
+    .options-card {
+      right: 0 !important;
+      left: auto !important;
+    }
+  }
+
+  .option {
+    margin-block: 5px;
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.3s ease;
+    border-radius: 0.375rem !important;
+  }
+
+  .option:hover {
+    background-color: #f0f0f0; /* Custom hover effect color */
+  }
+
+  .option:last-child {
+    border-bottom: none;
+  }
+
+  .selected {
+    background-color: #f0f0f0;
+  }
+
+  .disabled {
+    background-color: #f4f4f4 !important;
+    cursor: not-allowed !important;
+    font-weight: 500;
+    color: #b3b3b3;
+  }
+
+  .disabled .circle {
+    opacity: 0.5;
+  }
+
+  .circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .grey {
+    background-color: #818181;
+  }
+
+  .green {
+    background-color: #04a46e;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+}
+`;
+
+const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
+const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
+const [selectedStatus, setSelectedStatus] = useState("draft");
+
+const SubmitBtn = () => {
+  const btnOptions = [
+    {
+      iconColor: "grey",
+      label: "Save Draft",
+      description:
+        "The author can still edit the blog before sharing it with the community.",
+      value: "draft",
+    },
+    {
+      iconColor: "green",
+      label: "Publish",
+      description:
+        "The blog will be shared with the community and can be viewed by everyone.",
+      value: "publish",
+    },
+  ];
+
+  const handleOptionClick = (option) => {
+    setDraftBtnOpen(false);
+    setSelectedStatus(option.value);
+  };
+
+  const toggleDropdown = () => {
+    setDraftBtnOpen(!isDraftBtnOpen);
+  };
+
+  const handleSubmit = () => {
+    const isDraft = selectedStatus === "draft";
+    if (isDraft) {
+      // onSubmit({ isDraft });
+      // cleanDraft();
+      handlePublish("DRAFT");
+    } else {
+      // setReviewModal(true);
+      handlePublish("PUBLISH");
+    }
+  };
+
+  const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
+
+  return (
+    <DropdowntBtnContainer>
+      <div
+        className="custom-select"
+        tabIndex="0"
+        onBlur={() => setDraftBtnOpen(false)}
+      >
+        <div
+          className={
+            "select-header d-flex gap-1 align-items-center submit-draft-button " +
+            (!hasDataChanged() && "disabled")
+          }
+        >
+          <div
+            onClick={() => hasDataChanged() && handleSubmit()}
+            className="p-2 d-flex gap-2 align-items-center "
+          >
+            {isTxnCreated ? (
+              LoadingButtonSpinner
+            ) : (
+              <div className={"circle " + selectedOption.iconColor}></div>
+            )}
+            <div className={`selected-option`}>{selectedOption.label}</div>
+          </div>
+          <div
+            className="h-100 p-2"
+            style={{ borderLeft: "1px solid #ccc" }}
+            onClick={!hasDataChanged() && toggleDropdown}
+          >
+            <i class={`bi bi-chevron-${isOpen ? "up" : "down"}`}></i>
+          </div>
+        </div>
+
+        {isDraftBtnOpen && (
+          <div className="options-card">
+            {btnOptions.map((option) => (
+              <div
+                key={option.value}
+                className={`option ${
+                  selectedOption.value === option.value ? "selected" : ""
+                }`}
+                onClick={() => handleOptionClick(option)}
+              >
+                <div className={`d-flex gap-2 align-items-center`}>
+                  <div className={"circle " + option.iconColor}></div>
+                  <div className="fw-bold">{option.label}</div>
+                </div>
+                <div className="text-muted text-xs">{option.description}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </DropdowntBtnContainer>
+  );
+};
+
+const { data, handle, onSubmit, onCancel, onDelete } = props;
 
 const initialData = data;
 
@@ -156,6 +360,33 @@ function Preview() {
 
 return (
   <Container>
+    {/* TODO: make a draft submit option */}
+    {/* handle cancel or back */}
+    <div className="d-flex justify-content-between px-2 mb-2">
+      <button className="btn btn-secondary" onClick={onCancel}>
+        Back
+      </button>
+      <div className="d-flex gap-1">
+        <button className="btn btn-secondary" onClick={onCancel}>
+          Cancel
+        </button>
+        {/* <Widget
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+          props={{
+            classNames: { root: "btn-success" },
+            disabled: !hasDataChanged(),
+            icon: {
+              type: "bootstrap_icon",
+              variant: "bi-check-circle-fill",
+            },
+            label: "Publish",
+            onClick: handlePublish,
+          }}
+        /> */}
+        <SubmitBtn />
+      </div>
+    </div>
+
     <ul className="nav nav-tabs" id="editPreviewTabs" role="tablist">
       <li className="nav-item" role="presentation">
         <button
@@ -213,23 +444,27 @@ return (
             setContent,
           }}
         />
-        <div
-          className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
-        >
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-            props={{
-              classNames: { root: "btn-success" },
-              disabled: !hasDataChanged(),
-              icon: {
-                type: "bootstrap_icon",
-                variant: "bi-check-circle-fill",
-              },
-              label: "Publish",
-              onClick: handlePublish,
-            }}
-          />
-        </div>
+        {data.id ? (
+          <div
+            className={
+              "d-flex align-items-center justify-content-start gap-3 mt-4"
+            }
+          >
+            <Widget
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+              props={{
+                classNames: { root: "btn-danger" },
+                disabled: !hasDataChanged(),
+                icon: {
+                  type: "bootstrap_icon",
+                  variant: "bi-trash",
+                },
+                label: "Delete",
+                onClick: () => onDelete(data.id),
+              }}
+            />
+          </div>
+        ) : null}
       </div>
       <div
         className="tab-pane"
