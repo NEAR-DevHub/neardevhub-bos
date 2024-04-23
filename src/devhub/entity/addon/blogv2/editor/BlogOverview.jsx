@@ -1,38 +1,6 @@
-// TODO rename to blog overview
-// pagination not necessary since it won't be too many blogs per community
+// Pagination not necessary since it won't be too many blogs per community
 // a few hundred widgets per account are also not a problem
-
 const { data, editPostId, handleItemClick, selectedItem } = props;
-
-const Container = styled.div`
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  gap: 4px;
-`;
-
-// justify-content: space-between;
-const Button = styled.th`
-  display: flex;
-  padding: 14px 16px;
-  text-align: center;
-  cursor: pointer;
-  gap: 16px;
-  width: 100%;
-
-  border-radius: 4px;
-  border: 1px solid #00ec97;
-
-  background-color: ${({ selected }) => (selected ? "#00ec97" : "white")};
-  color: ${({ selected }) => (selected ? "white" : "black")};
-`;
-
-const TableRow = styled.tr`
-  background-color: ${({ selected }) => (selected ? "#00ec97" : "white")};
-  color: ${({ selected }) => (selected ? "white" : "black")};
-`;
 
 console.log("DATA in overview");
 console.log({
@@ -74,45 +42,12 @@ const blogData = [
     subTitle: "",
   },
   ...reshapedData,
-  // {
-  //   id: 1,
-  //   title: "Blog Post 1",
-  //   status: "Published",
-  //   createdAt: "April 12, 2024 12:00 AM",
-  //   updatedAt: "April 12, 2024 12:00 AM",
-  //   publishedAt: "April 12, 2024 12:00 AM",
-  // },
-  // {
-  //   id: 2,
-  //   title: "Blog Post 2",
-  //   status: "Published",
-  //   createdAt: "April 12, 2024 12:00 AM",
-  //   updatedAt: "April 12, 2024 12:00 AM",
-  //   publishedAt: "April 12, 2024 12:00 AM",
-  // },
-  // {
-  //   id: 3,
-  //   title: "Blog Post 3",
-  //   status: "Published",
-  //   createdAt: "April 12, 2024 12:00 AM",
-  //   updatedAt: "April 12, 2024 12:00 AM",
-  //   publishedAt: "April 12, 2024 12:00 AM",
-  // },
-  // {
-  //   post_id: 4,
-  //   title: "Blog Post 4",
-  //   status: "DRAFT",
-  //   createdAt: "April 12, 2024 12:00 AM",
-  //   updatedAt: "April 12, 2024 12:00 AM",
-  //   publishedAt: "April 12, 2024 12:00 AM",
-  // },
 ];
 
 return (
   <table id="manage-blog-table" className="table table-hover">
-    {/* TODO:  use data instead of blogData */}
-    {/* <p>{JSON.stringify(data)}</p> */}
     <thead>
+      {/* TODO make this clickable to sort based on one of the columns (double click to reverse) */}
       {props.hideColumns ? null : (
         <tr>
           <th scope="col">Blog title</th>
@@ -125,13 +60,12 @@ return (
     </thead>
     <tbody>
       {(blogData || []).map((it) => {
-        // Hide the 'New Blog Post' button if hideColumns is true
         if (it.id === "new" && selectedItem !== null) {
           return;
         }
 
         return (
-          <TableRow
+          <tr
             id={`edit-blog-selector-${it.id}`}
             key={it.id}
             onClick={() => handleItemClick(it)}
@@ -155,7 +89,7 @@ return (
                 <td>{it.publishedAt}</td>
               </>
             ) : null}
-          </TableRow>
+          </tr>
         );
       })}
     </tbody>
