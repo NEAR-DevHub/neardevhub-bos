@@ -13,22 +13,11 @@ const Container = styled.div`
   flex-direction: column;
   width: 100%;
   padding: 20px;
-`;
 
-const Item = styled.div`
-  padding: 10px;
-  margin: 5px;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  gap: 10px;
+  @media screen and (max-width: 768px) {
+    padding: 20px 5px;
+  }
 `;
-
-const EditableField = styled.input`
-  flex: 1;
-`;
-
-const initialData = data;
 
 return (
   <Tile className="p-3 bg-white">
