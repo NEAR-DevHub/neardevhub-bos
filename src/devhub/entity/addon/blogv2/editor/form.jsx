@@ -125,7 +125,7 @@ const AuthorInput = ({ author, setAuthor }) => {
 const DateInput = ({ date, setDate }) => {
   return (
     <div>
-      <h5>Date</h5>
+      <h5>Visible Publish Date</h5>
       <input
         name="date"
         type="date"
