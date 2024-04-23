@@ -1,11 +1,4 @@
-const {
-  Sidebar,
-  Content,
-  // FIXME: remove getData
-  getData,
-  editData,
-  onSubmit,
-} = props;
+const { Sidebar, Content, editData, onSubmit } = props;
 
 // Selected Item is the property "parameters" of the community addon (blog)
 const [selectedItem, setSelectedItem] = useState(editData);
@@ -13,9 +6,7 @@ const [showEditor, setShowEditor] = useState(false);
 const [showBlogPostSettings, setBlogPostSettings] = useState(false);
 // SHOW EDITOR
 const handleItemClick = (item) => {
-  console.log("handleItemClick item:", item);
   if (item) {
-    // const item = getData(item);
     setSelectedItem(item);
     setShowEditor(true);
   } else {
@@ -34,7 +25,7 @@ const openBlogPostSettings = () => {
 };
 
 const saveBlogPostSettings = () => {
-  // TODO 599
+  // TODO 599 move to provider
   console.log("Implement saving blog settings issue 599");
 };
 
@@ -57,41 +48,8 @@ const handlePublish = (status) => {
     );
 };
 
-const handlePostTestData = () => {
-  Social.set({
-    blog: {
-      "hello-world": {
-        "": "# Hello world!",
-        metadata: {
-          id: "hello-world",
-          title: "Hello World",
-          created_at: new Date().toISOString().slice(0, 10),
-          updated_at: new Date().toISOString().slice(0, 10),
-          published_at: new Date("03-05-2024").toISOString().slice(0, 10),
-          status: "DRAFT", // "PUBLISHED", "DRAFT"
-          tags: ["first-blog"],
-          subTitle: "my subtitle",
-          description: "description",
-          author: "thomasguntenaar.near",
-        },
-      },
-      "good-bye-world": {
-        "": "# Good by world!",
-        metadata: {
-          id: "bye-world",
-          title: "Bye World",
-          created_at: new Date().toISOString().slice(0, 10),
-          updated_at: new Date().toISOString().slice(0, 10),
-          published_at: new Date("03-05-2024").toISOString().slice(0, 10),
-          status: "PUBLISHED", // "PUBLISHED", "DRAFT"
-          tags: ["second-blog"],
-          subTitle: "my subtitle",
-          description: "description",
-          author: "thomasguntenaar.near",
-        },
-      },
-    },
-  });
+const openAnalytics = () => {
+  window.open("https://eu.posthog.com/project/20896", "_blank");
 };
 
 return (
@@ -117,14 +75,13 @@ return (
       <>
         {showEditor ? null : (
           <div className="d-flex gap-1 align-items-end">
-            <button className="btn btn-secondary" onClick={handlePostTestData}>
-              Post to Social
-            </button>
-
             {/* TODO PETER */}
             <input type="text" placeholder="Search blog posts" />
-            {/* TODO PETER */}
             <button className="btn btn-secondary">Filter</button>
+            {/* END PETER */}
+            <button className="btn btn-primary" onClick={openAnalytics}>
+              Analytics
+            </button>
             <button className="btn btn-primary" onClick={openBlogPostSettings}>
               Settings
             </button>
