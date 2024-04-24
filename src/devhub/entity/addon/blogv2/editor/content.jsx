@@ -5,7 +5,7 @@ const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
 
-// FIXME: change with settings
+// TODO: change with settings
 const categories = [
   {
     label: "Guide",
@@ -94,7 +94,7 @@ const DropdowntBtnContainer = styled.div`
   .options-card {
     position: absolute;
     top: 100%;
-    left: 0;
+    right: 0;
     width: 200%;
     border: 1px solid #ccc;
     background-color: #fff;
@@ -173,6 +173,14 @@ const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
 const [selectedStatus, setSelectedStatus] = useState("draft");
 
+const LoadingButtonSpinner = (
+  <span
+    class="submit-proposal-draft-loading-indicator spinner-border spinner-border-sm"
+    role="status"
+    aria-hidden="true"
+  ></span>
+);
+
 const SubmitBtn = () => {
   const btnOptions = [
     {
@@ -231,19 +239,19 @@ const SubmitBtn = () => {
             onClick={() => hasDataChanged() && handleSubmit()}
             className="p-2 d-flex gap-2 align-items-center "
           >
-            {isTxnCreated ? (
+            {/* {isTxnCreated ? (
               LoadingButtonSpinner
-            ) : (
-              <div className={"circle " + selectedOption.iconColor}></div>
-            )}
+            ) : ( */}
+            <div className={"circle " + selectedOption.iconColor}></div>
+            {/* )} */}
             <div className={`selected-option`}>{selectedOption.label}</div>
           </div>
           <div
             className="h-100 p-2"
             style={{ borderLeft: "1px solid #ccc" }}
-            onClick={!hasDataChanged() && toggleDropdown}
+            onClick={toggleDropdown}
           >
-            <i class={`bi bi-chevron-${isOpen ? "up" : "down"}`}></i>
+            <i class={`bi bi-chevron-${isDraftBtnOpen ? "up" : "down"}`}></i>
           </div>
         </div>
 
@@ -281,8 +289,9 @@ const [subtitle, setSubtitle] = useState(initialData.subtitle || "");
 const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || "");
 const [previewMode, setPreviewMode] = useState("card"); // "card" or "page"
-const [date, setDate] = useState(initialData.date || new Date());
-const [category, setCategory] = useState("guide");
+const [date, setDate] = useState(initialData.publishedAt || new Date());
+// TODO configurable by settings in addon parameters
+const [category, setCategory] = useState(initialData.category || "guide");
 
 const Container = styled.div`
   width: 100%;
@@ -291,19 +300,21 @@ const Container = styled.div`
   text-align: left;
 `;
 
+console.log("content  publishedAt", initialData.publishedAt);
+
 const hasDataChanged = () => {
   return (
     content !== initialData.content ||
     title !== initialData.title ||
-    author !== initialData.author ||
     subtitle !== initialData.subtitle ||
     description !== initialData.description ||
-    date !== initialData.date ||
+    author !== initialData.author ||
+    date !== initialData.publishedAt ||
     category !== initialData.category
   );
 };
 
-const handlePublish = () => {
+const handlePublish = (status) => {
   onSubmit &&
     onSubmit(
       {
@@ -313,9 +324,10 @@ const handlePublish = () => {
         description,
         date,
         content,
+        status,
         author,
         category,
-        community: handle,
+        community: handle, // TODO see if we can remove this
       },
       data.id !== undefined
     );
@@ -360,31 +372,11 @@ function Preview() {
 
 return (
   <Container>
-    {/* TODO: make a draft submit option */}
-    {/* handle cancel or back */}
-    <div className="d-flex justify-content-between px-2 mb-2">
+    <div className="d-flex gap-1 justify-content-end w-100 mb-2">
       <button className="btn btn-secondary" onClick={onCancel}>
-        Back
+        Cancel
       </button>
-      <div className="d-flex gap-1">
-        <button className="btn btn-secondary" onClick={onCancel}>
-          Cancel
-        </button>
-        {/* <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-          props={{
-            classNames: { root: "btn-success" },
-            disabled: !hasDataChanged(),
-            icon: {
-              type: "bootstrap_icon",
-              variant: "bi-check-circle-fill",
-            },
-            label: "Publish",
-            onClick: handlePublish,
-          }}
-        /> */}
-        <SubmitBtn />
-      </div>
+      <SubmitBtn />
     </div>
 
     <ul className="nav nav-tabs" id="editPreviewTabs" role="tablist">

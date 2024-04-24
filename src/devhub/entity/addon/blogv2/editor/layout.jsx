@@ -6,6 +6,7 @@ const [showEditor, setShowEditor] = useState(false);
 const [showBlogPostSettings, setBlogPostSettings] = useState(false);
 // SHOW EDITOR
 const handleItemClick = (item) => {
+  console.log("handleItemClick", item);
   if (item) {
     setSelectedItem(item);
     setShowEditor(true);
@@ -42,7 +43,7 @@ const handlePublish = (status) => {
         content,
         author,
         category,
-        community: handle,
+        community: handle, // TODO remove this?
       },
       data.id !== undefined
     );
@@ -74,11 +75,10 @@ return (
     ) : (
       <>
         {showEditor ? null : (
-          <div className="d-flex gap-1 align-items-end">
-            {/* TODO PETER */}
-            <input type="text" placeholder="Search blog posts" />
+          <div className="d-flex gap-1 align-items-end justify-content-end w-100">
+            {/* TODO PETER <input type="text" placeholder="Search blog posts" />
             <button className="btn btn-secondary">Filter</button>
-            {/* END PETER */}
+            END PETER */}
             <button className="btn btn-primary" onClick={openAnalytics}>
               Analytics
             </button>
@@ -106,7 +106,6 @@ return (
           <div
             className="left-panel"
             style={{
-              // margin: "20px 20px 80px 20px",
               width: showEditor ? "20%" : "100%",
             }}
           >
@@ -116,7 +115,6 @@ return (
               hideColumns={showEditor}
             />
           </div>
-          {/* TODO: */}
           {showEditor && (
             <div
               className="right-panel mt-3"

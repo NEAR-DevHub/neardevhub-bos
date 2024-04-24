@@ -21,24 +21,23 @@ const handleGetData = (v) => {
 const blogData =
   Social.get(
     [
-      // "thomasguntenaar.near/blog/*/metadata/created_at",
+      // "thomasguntenaar.near/blog/*/metadata/createdAt",
       // "thomasguntenaar.near/blog/*/metadata/tags",
       "thomasguntenaar.near/blog/**",
     ],
     "final"
   ) || {};
 
-// Test when their is data in the communitySocialDB
+// TODO Test when their is data in the communitySocialDB
 useEffect(() => {
   if (handle) {
     const result = Social.get(
       [
-        `${handle}.community.devhub.near/blog/*/metadata/created_at`,
+        `${handle}.community.devhub.near/blog/*/metadata/createdAt`,
         `${handle}.community.devhub.near/blog/*/metadata/tags/*`,
       ],
       "final"
     );
-    console.log(result);
   }
 }, [handle]);
 
@@ -53,20 +52,27 @@ function transformString(str) {
   return transformedStr;
 }
 
-// FIXME: title is not unique
+// TODO: title is not unique
 const handleOnSubmit = (v, isEdit) => {
   console.log("isEdit", isEdit);
+  // TODO: only difference is the created at or not
+  // v.createdAt || new Date().toISOString()
   if (isEdit) {
     Social.set({
       blog: {
         [v.id]: {
-          "": v.body,
+          "": v.content,
           metadata: {
             title: v.title,
-            updated_at: new Date().toISOString().slice(0, 10),
-            published_at: v.date,
+            // ! REMOVE from update
+            createdAt: new Date().toISOString().slice(0, 10),
+            updatedAt: new Date().toISOString().slice(0, 10),
+            publishedAt: v.date,
             status: v.status,
             tags: v.tags,
+            subtitle: v.subtitle,
+            description: v.description,
+            author: v.author,
           },
         },
       },
@@ -74,38 +80,22 @@ const handleOnSubmit = (v, isEdit) => {
     console.log("handle edit blog", v);
   } else {
     console.log("handle add blog", v);
-
-    // setCommunitySocialDB({
-    //   handle,
-    //   data: {
-    //     blog: {
-    //       [transformString(v.title)]: {
-    //         "": v.body,
-    //         metadata: {
-    //           title: v.title,
-    //           created_at: new Date().toISOString(),
-    //           updated_at: new Date().toISOString(),
-    //           published_at: v.published_at,
-    //           status: "DRAFT", // "PUBLISHED", "DRAFT"
-    //           tags: v.tags,
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-    // TODO setCommunitySocialDB
+    // !setCommunitySocialDB({
+    // !  handle,
+    // !  data: {},
+    // ! });
     Social.set({
       blog: {
-        [transformString(v.title) + generateRandom6CharUUID()]: {
+        [`${transformString(v.title)}-${generateRandom6CharUUID()}`]: {
           "": v.content,
           metadata: {
             title: v.title,
-            created_at: new Date().toISOString().slice(0, 10),
-            updated_at: new Date().toISOString().slice(0, 10),
-            published_at: v.date,
-            status: "DRAFT", // "PUBLISHED", "DRAFT"
+            createdAt: new Date().toISOString().slice(0, 10),
+            updatedAt: new Date().toISOString().slice(0, 10),
+            publishedAt: v.date,
+            status: v.status,
             tags: v.tags,
-            subTitle: v.subtitle,
+            subtitle: v.subtitle,
             description: v.description,
             author: v.author,
           },
@@ -140,12 +130,12 @@ const handleOnDelete = (id) => {
         "": null,
         metadata: {
           title: null,
-          created_at: null,
-          updated_at: null,
-          published_at: null,
+          createdAt: null,
+          updatedAt: null,
+          publishedAt: null,
           status: null,
           tags: null,
-          subTitle: null,
+          subtitle: null,
           description: null,
           author: null,
           id: null,
