@@ -1,7 +1,7 @@
 const { id } = props;
 
 const { Page } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Page") ||
   (() => <></>);
 
 const [showEditScreenData, setShowEditScreen] = useState(null);
