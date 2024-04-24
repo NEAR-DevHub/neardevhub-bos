@@ -42,38 +42,53 @@ const CardContainer = styled.div`
   }
 `;
 
-function BlogCard(postId) {
+const blogData =
+  Social.get(
+    [
+      // "thomasguntenaar.near/blog/*/metadata/createdAt",
+      // "thomasguntenaar.near/blog/*/metadata/tags",
+      "thomasguntenaar.near/blog/**",
+    ],
+    "final"
+  ) || {};
+
+const reshapedData = Object.keys(blogData).map((key) => {
+  return {
+    ...blogData[key].metadata,
+    id: key,
+    body: blogData[key][""],
+  };
+});
+
+function BlogCard(flattenedBlog) {
   return (
     <Link
       style={{ textDecoration: "none" }}
       to={href({
         widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "blog", id: postId },
+        params: { page: "blogv2", id: flattenedBlog.id },
       })}
     >
       <CardContainer>
-        <Widget // We need this so the individual posts can make the necessary call for more data
-          src="${REPL_DEVHUB}/widget/devhub.entity.post.Postv2"
-          props={{ postKey: postId, template: (p) => <Card {...(p || {})} /> }} // I wonder if this could take list of types, their templates, normalizer functions, etc... and have this all as a module
-        />
-        {/* // so then you could swap between devhub contract or social contract sources, it doesn't matter. */}
+        <Card data={flattenedBlog} />
       </CardContainer>
     </Link>
   );
 }
+console.log("VIEWER blogdata", blogData);
 
+// TODO hide DRAFTS
+// TODO order by published date
 return (
   <div class="w-100">
     {!hideTitle && <Heading>Latest Blog Posts</Heading>}
-    <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Feed"}
-      // TODO: This needs to filter by more labels
-      props={{
-        includeLabels: ["blog", handle, ...(includeLabels || [])], // make sure this has the community handle
-        excludeLabels: excludeLabels || [],
-        renderItem: BlogCard,
-        Layout: ({ children }) => <Grid>{children}</Grid>,
-      }}
-    />
+    <Grid>
+      {(reshapedData || []).map((flattenedBlog) => {
+        // TODO use exclude labels
+        // TODO use include labels
+        console.log("blog", flattenedBlog);
+        return BlogCard(flattenedBlog);
+      })}
+    </Grid>
   </div>
 );

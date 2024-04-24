@@ -1,3 +1,4 @@
+// TODO Social.get
 const { getAccountCommunityPermissions } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 ) || {
@@ -8,12 +9,18 @@ const imagelink =
 
 function Page({ data, onEdit, labels, accountId }) {
   const { category, title, description, subtitle, date, content } = data;
+
+  // TODO blog page has to have community handle in the query parameters
+  // TODO use of labels is removed
+  // use list of tags in the metadata
+
   const handle = labels?.[1]; // community-handle
   const permissions = getAccountCommunityPermissions({
     account_id: accountId,
     community_handle: handle,
   });
   const isAllowedToEdit = permissions?.can_configure ?? false;
+  // TODO: category is not configurable
   const Container = styled.div`
     display: flex;
     flex-direction: column;
