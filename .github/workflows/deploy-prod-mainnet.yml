@@ -11,7 +11,7 @@ jobs:
       NEAR_SOCIAL_ACCOUNT_ID: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
       NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY: ${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}
       NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY: ${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}
-
+      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -19,7 +19,7 @@ jobs:
       - name: Set replacements
         id: set_replacements
         run: |
-          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value)]' replacements.mainnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
+          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value), {"find": "${REPL_POSTHOG_API_KEY}", "replace": "'$POSTHOG_API_KEY'"}]' replacements.mainnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
 
       - name: Replace placeholders
         uses: flcdrg/replace-multiple-action@v1
