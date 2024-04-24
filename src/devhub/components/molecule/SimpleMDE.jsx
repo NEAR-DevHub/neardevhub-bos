@@ -70,9 +70,11 @@ const code = `
     white-space: normal;
   }
 
-  .dropdown-item:hover{
+  .dropdown-item:hover,
+  .dropdown-item:focus {
     background-color:rgb(0, 236, 151) !important;
     color:white !important;
+    outline: none !important;
   }
 
   .editor-toolbar {
@@ -179,18 +181,32 @@ async function asyncFetch(endpoint, { method, headers, body }) {
   }
 }
 
+function extractNumbers(str) {
+  let numbers = "";
+  for (let i = 0; i < str.length; i++) {
+    if (!isNaN(str[i])) {
+      numbers += str[i];
+    }
+  }
+  return numbers;
+};
 
 async function getSuggestedProposals(id) {
   let results = [];
   const variables = {
     limit: 5,
     offset: 0,
-    where:{}
+    where: {},
   };
   if (id) {
-    variables["where"] = { proposal_id: { _eq: id }};
+    const proposalId = extractNumbers(id);
+    if (proposalId) {
+      variables["where"] = { proposal_id: { _eq: id } };
+    } else {
+      variables["where"] = { name: { _ilike: "%" + id + "%" } };
+    }
   }
-  await asyncFetch('https://near-queryapi.api.pagoda.co/v1/graphql', {
+  await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
     method: "POST",
     headers: { "x-hasura-role": "thomasguntenaar_near" },
     body: JSON.stringify({
@@ -198,14 +214,19 @@ async function getSuggestedProposals(id) {
       variables: variables,
       operationName: "GetLatestSnapshot",
     }),
-  }).then(res => {
-     const proposals = res?.data?.["thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot"];
-     results = (proposals);
-  }).catch(error => {
-    console.error(error);
-  });
+  })
+    .then((res) => {
+      const proposals =
+        res?.data?.[
+          "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot"
+        ];
+      results = proposals;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   return results;
-}
+};
 
 // Initializes SimpleMDE element and attaches to text-area
 const simplemde = new SimpleMDE({
@@ -385,8 +406,8 @@ if (showProposalIdAutoComplete) {
       }
     }
 
-    // show dropwdown only when there is space before #
-      if (!proposalId && token.string === "#" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ') {
+    // show dropwdown only when there is space before # or it's first char
+      if (!proposalId && (token.string === "#" && cursor.ch === 1 || token.string === "#" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ')) {
         proposalId = token;
         referenceCursorStart = cursor;
         // Calculate cursor position relative to the iframe's viewport
@@ -409,7 +430,7 @@ if (showProposalIdAutoComplete) {
                 dropdown.classList.remove("show");
             }
         });
-    } else if (proposalId && token.string.match(/[^#a-z0-9.]/)) {
+    } else if (proposalId && (token.string.match(/[^#a-z0-9.]/) || !token.string)) {
       proposalId = null;
       dropdown.classList.remove("show");
     } else if (proposalId) {
