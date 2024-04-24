@@ -5,6 +5,7 @@
 
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
+const onChangeKeyup = props.onChangeKeyup ?? (() => {}); // in case where we want immediate action
 const height = props.height ?? "390";
 const className = props.className ?? "w-100";
 const embeddCSS = props.embeddCSS;
@@ -26,6 +27,7 @@ const alignToolItems = props.alignToolItems ?? "right";
 const placeholder = props.placeholder ?? "";
 const showAccountAutoComplete = props.showAutoComplete ?? false;
 const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
+const autoFocus = props.autoFocus ?? false;
 
 const queryName =
   "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot";
@@ -40,6 +42,7 @@ ${queryName}(
   proposal_id
 }
 }`;
+
 
 const code = `
 <!doctype html>
@@ -250,6 +253,7 @@ const simplemde = new SimpleMDE({
 		singleLineBreaks: false,
 		codeSyntaxHighlighting: true,
 	},
+  autofocus:${autoFocus}
 });
 
 codeMirrorInstance = simplemde.codemirror;
@@ -273,8 +277,14 @@ const updateIframeHeight = () => {
 // On Change
 simplemde.codemirror.on('blur', () => {
   updateContent();
-  updateIframeHeight();
 });
+
+simplemde.codemirror.on('keyup', () => {
+  updateIframeHeight();
+  const content = simplemde.value();
+  window.parent.postMessage({ handler: "updateOnKeyup", content }, "*");
+});
+
 
 if (showAccountAutoComplete) {
   let mentionToken;
@@ -469,6 +479,7 @@ return (
     className={className}
     style={{
       height: `${state.iframeHeight}px`,
+      maxHeight: "410px",
     }}
     srcDoc={code}
     message={{
@@ -488,6 +499,11 @@ return (
           {
             const offset = 10;
             State.update({ iframeHeight: e.height + offset });
+          }
+          break;
+        case "updateOnKeyup":
+          {
+            onChangeKeyup(e.content);
           }
           break;
       }

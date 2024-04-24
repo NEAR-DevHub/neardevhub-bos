@@ -14,6 +14,7 @@ const ComposeEmbeddCSS = `
 
   .CodeMirror-scroll{
     min-height: 50px !important;
+    max-height: 300px !important;
   }
 `;
 const notifyAccountId = props.notifyAccountId;
@@ -21,6 +22,7 @@ const accountId = context.accountId;
 const item = props.item;
 const [allowGetDraft, setAllowGetDraft] = useState(true);
 const [comment, setComment] = useState(null);
+const [isTxnCreated, setTxnCreated] = useState(false);
 
 useEffect(() => {
   if (draftComment && allowGetDraft) {
@@ -98,6 +100,7 @@ function extractTagNotifications(text, item) {
 }
 
 function composeData() {
+  setTxnCreated(true);
   const data = {
     post: {
       comment: JSON.stringify({
@@ -142,8 +145,11 @@ function composeData() {
     force: true,
     onCommit: () => {
       setComment("");
+      setTxnCreated(false);
     },
-    onCancel: () => {},
+    onCancel: () => {
+      setTxnCreated(false);
+    },
   });
 }
 
@@ -152,6 +158,14 @@ useEffect(() => {
     setComment("");
   }
 }, [props.transactionHashes]);
+
+const LoadingButtonSpinner = (
+  <span
+    class="spinner-border spinner-border-sm"
+    role="status"
+    aria-hidden="true"
+  ></span>
+);
 
 return (
   <div className="d-flex gap-2">
@@ -167,10 +181,10 @@ return (
         src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
         props={{
           data: comment,
-          onChange: setComment,
+          onChangeKeyup: setComment,
           autocompleteEnabled: true,
           placeholder: "Add your comment here...",
-          height: "160",
+          height: "180",
           embeddCSS: ComposeEmbeddCSS,
           showProposalIdAutoComplete: true,
         }}
@@ -179,8 +193,8 @@ return (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
-            label: "Comment",
-            disabled: !comment,
+            label: isTxnCreated ? LoadingButtonSpinner : "Comment",
+            disabled: !comment || isTxnCreated,
             classNames: { root: "green-btn btn-sm" },
             onClick: () => {
               composeData();
