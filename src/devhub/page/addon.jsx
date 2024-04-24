@@ -149,6 +149,8 @@ return (
             },
             handle, // this is temporary prop drilling until kanban and github are migrated
             permissions,
+            // NOTE not the addon_id (same for every blog)
+            communityAddonId: addonMatch.id,
           }}
         />
       ) : (
@@ -160,6 +162,7 @@ return (
             handle,
             permissions,
             transactionHashes: props.transactionHashes,
+            communityAddonId: addonMatch.id,
           }}
         />
       )}

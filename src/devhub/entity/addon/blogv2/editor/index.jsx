@@ -41,6 +41,7 @@ return (
         src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.provider"
         props={{
           handle: props.handle,
+          communityAddonId: props.communityAddonId,
           Layout: (providerProps) => {
             const { data, onChange, onSubmit, onCancel, getData, onDelete } =
               providerProps;

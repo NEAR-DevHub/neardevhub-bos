@@ -224,15 +224,7 @@ const SubmitBtn = () => {
   };
 
   const handleSubmit = () => {
-    const isDraft = selectedStatus === "draft";
-    if (isDraft) {
-      // onSubmit({ isDraft });
-      // cleanDraft();
-      handlePublish("DRAFT");
-    } else {
-      // setReviewModal(true);
-      handlePublish("PUBLISH");
-    }
+    handlePublish(selectedStatus);
   };
 
   const selectedOption = btnOptions.find((i) => i.value === selectedStatus);

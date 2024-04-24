@@ -1,4 +1,4 @@
-const { data, handle } = props;
+const { data, handle, communityAddonId } = props;
 
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
@@ -27,6 +27,7 @@ return (
         props={{
           data,
           handle,
+          communityAddonId,
         }}
       />
     </Container>

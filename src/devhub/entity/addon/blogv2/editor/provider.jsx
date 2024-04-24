@@ -2,7 +2,7 @@ const { getPost, setCommunitySocialDB } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
-const { Layout, handle } = props;
+const { Layout, handle, communityAddonId } = props;
 
 setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 getPost = getPost || (() => <></>);
@@ -67,6 +67,8 @@ const handleOnSubmit = (v, isEdit) => {
             // ! REMOVE from update
             createdAt: new Date().toISOString().slice(0, 10),
             updatedAt: new Date().toISOString().slice(0, 10),
+            communityAddonId: communityAddonId,
+            // ! REMOVE from update
             publishedAt: v.date,
             status: v.status,
             tags: v.tags,
@@ -98,6 +100,7 @@ const handleOnSubmit = (v, isEdit) => {
             subtitle: v.subtitle,
             description: v.description,
             author: v.author,
+            communityAddonId: communityAddonId,
           },
         },
       },

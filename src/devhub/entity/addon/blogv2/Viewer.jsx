@@ -4,7 +4,14 @@ const { Card } =
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
-const { includeLabels, excludeLabels, layout, handle, hideTitle } = props;
+const {
+  includeLabels,
+  excludeLabels,
+  layout,
+  handle,
+  hideTitle,
+  communityAddonId,
+} = props;
 
 const Grid = styled.div`
   display: grid;
@@ -52,13 +59,22 @@ const blogData =
     "final"
   ) || {};
 
-const reshapedData = Object.keys(blogData).map((key) => {
-  return {
-    ...blogData[key].metadata,
-    id: key,
-    body: blogData[key][""],
-  };
-});
+const reshapedData = Object.keys(blogData)
+  .map((key) => {
+    return {
+      ...blogData[key].metadata,
+      id: key,
+      body: blogData[key][""],
+    };
+  })
+  // Show only published blogs
+  .filter((blog) => blog.status === "PUBLISH")
+  // Every instance of the blog tab has its own blogs
+  .filter((blog) => blog.communityAddonId === communityAddonId)
+  // Sort by published date
+  .sort((blog1, blog2) => {
+    return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
+  });
 
 function BlogCard(flattenedBlog) {
   console.log("BlogCard handle", handle);
@@ -78,16 +94,11 @@ function BlogCard(flattenedBlog) {
 }
 console.log("VIEWER blogdata", blogData);
 
-// TODO hide DRAFTS
-// TODO order by published date
 return (
   <div class="w-100">
     {!hideTitle && <Heading>Latest Blog Posts</Heading>}
     <Grid>
       {(reshapedData || []).map((flattenedBlog) => {
-        // TODO use exclude labels
-        // TODO use include labels
-        console.log("blog", flattenedBlog);
         return BlogCard(flattenedBlog);
       })}
     </Grid>
