@@ -1,4 +1,4 @@
-const { data, handle, onSubmit } = props;
+const { data, handle } = props;
 
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||

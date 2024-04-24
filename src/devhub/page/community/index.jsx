@@ -64,6 +64,7 @@ const blogv2 = {
   parameters: "{}",
 };
 
+// TODO remove
 const blog = {
   addon_id: "blog",
   display_name: "BlogV1",
@@ -72,6 +73,7 @@ const blog = {
   parameters: "{}",
 };
 
+// TODO remove
 const tabs = [
   {
     title: "BlogV2",
@@ -105,8 +107,6 @@ const tabs = [
       },
     });
 });
-
-console.log("tabs", tabs);
 
 const onShareClick = () =>
   clipboard

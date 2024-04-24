@@ -26,7 +26,7 @@ const {
 const TitleInput = ({ title, setTitle }) => {
   return (
     <div>
-      <h5>Title</h5>
+      <h5>Title * </h5>
       <div className="flex-grow-1">
         <Widget
           src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
@@ -45,7 +45,7 @@ const TitleInput = ({ title, setTitle }) => {
 const SubtitleInput = ({ subtitle, setSubtitle }) => {
   return (
     <div>
-      <h5>Subtitle</h5>
+      <h5>Subtitle * </h5>
       <div className="flex-grow-1">
         <Widget
           src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
@@ -85,7 +85,7 @@ const CategorySelect = ({ options, category, setCategory }) => {
 const DescriptionInput = ({ description, setDescription }) => {
   return (
     <div>
-      <h5>Description</h5>
+      <h5>Description * </h5>
       <div className="flex-grow-1">
         <Widget
           src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
@@ -105,7 +105,7 @@ const DescriptionInput = ({ description, setDescription }) => {
 const AuthorInput = ({ author, setAuthor }) => {
   return (
     <div>
-      <h5>Author</h5>
+      <h5>Author * </h5>
       <div className="flex-grow-1">
         <Widget
           src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
@@ -125,7 +125,7 @@ const AuthorInput = ({ author, setAuthor }) => {
 const DateInput = ({ date, setDate }) => {
   return (
     <div>
-      <h5>Visible Publish Date</h5>
+      <h5>Visible Publish Date *</h5>
       <input
         name="date"
         type="date"
@@ -139,7 +139,7 @@ const DateInput = ({ date, setDate }) => {
 const ContentEditor = ({ content, setContent }) => {
   return (
     <div>
-      <h5>Content</h5>
+      <h5>Content *</h5>
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
         props={{ data: { content }, onChange: setContent, autoFocus: false }}

@@ -2,28 +2,24 @@
 // a few hundred widgets per account are also not a problem
 const { data, editPostId, handleItemClick, selectedItem } = props;
 
-console.log("DATA in overview");
-console.log({
-  data,
-});
-
 const options = { year: "numeric", month: "short", day: "numeric" };
 const formattedDate = (date) => new Date(date).toLocaleString("en-US", options);
 
-// FIXME: this to the provider or don't do it?
+// TODO move this to the provider
 const reshapedData =
   Object.keys(data || {}).map((key) => {
     return {
       id: key,
       title: data[key].metadata.title,
       status: data[key].metadata.status,
-      createdAt: formattedDate(data[key].metadata.created_at),
-      updatedAt: formattedDate(data[key].metadata.updated_at),
-      publishedAt: formattedDate(data[key].metadata.published_at),
-      body: data[key][""],
+      createdAt: formattedDate(data[key].metadata.createdAt),
+      updatedAt: formattedDate(data[key].metadata.updatedAt),
+      publishedAt: formattedDate(data[key].metadata.publishedAt),
+      content: data[key][""],
       author: data[key].metadata.author,
-      description: data[key].description,
-      subTitle: data[key].subTitle,
+      description: data[key].metadata.description,
+      subtitle: data[key].metadata.subtitle,
+      category: data[key].metadata.category,
     };
   }) || [];
 
@@ -39,7 +35,8 @@ const blogData = [
     publishedAt: "mm-dd-yyyy",
     author: "",
     description: "",
-    subTitle: "",
+    subtitle: "",
+    content: "",
   },
   ...reshapedData,
 ];
