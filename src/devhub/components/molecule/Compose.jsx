@@ -28,6 +28,7 @@ const Compose = ({
   embeddCSS,
   showProposalIdAutoComplete,
   onChangeKeyup,
+  handler,
 }) => {
   State.init({
     data: data,
@@ -42,10 +43,11 @@ const Compose = ({
   }, [state.data]);
 
   useEffect(() => {
-    if (data !== state.data) {
-      State.update({ data: data, handler: "autocompleteSelected" });
+    // for clearing editor after txn approval/ showing draft state
+    if (data !== state.data || handler !== state.handler) {
+      State.update({ data: data, handler: handler });
     }
-  }, [data]);
+  }, [data, handler]);
 
   return (
     <Wrapper>

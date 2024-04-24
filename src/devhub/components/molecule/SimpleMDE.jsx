@@ -455,7 +455,7 @@ window.addEventListener("message", (event) => {
     simplemde.value(event.data.content);
     isEditorInitialized = true;
   } else {
-    if (event.data.handler === 'autocompleteSelected') {
+    if (event.data.handler === 'refreshEditor') {
       codeMirrorInstance.getDoc().setValue(event.data.content);
     }
   }
@@ -487,6 +487,7 @@ return (
       followingData,
       profilesData: JSON.stringify(profilesData),
       query: query,
+      handler: props.data.handler,
     }}
     onMessage={(e) => {
       switch (e.handler) {
