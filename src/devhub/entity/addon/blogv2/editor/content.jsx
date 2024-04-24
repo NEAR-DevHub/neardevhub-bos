@@ -366,7 +366,7 @@ function Preview() {
 return (
   <Container>
     <div className="d-flex gap-1 justify-content-end w-100 mb-2">
-      <button className="btn btn-secondary" onClick={onCancel}>
+      <button className="btn btn-light" onClick={onCancel}>
         Cancel
       </button>
       <SubmitBtn />

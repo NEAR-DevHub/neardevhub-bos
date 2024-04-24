@@ -58,7 +58,7 @@ return (
     {showBlogPostSettings ? (
       <div className="d-flex gap-1 align-items-end">
         <button
-          className="btn btn-primary"
+          className="btn btn-light"
           onClick={() => setBlogPostSettings(false)}
         >
           Cancel
