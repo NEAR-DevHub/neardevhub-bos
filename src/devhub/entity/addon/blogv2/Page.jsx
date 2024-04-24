@@ -7,19 +7,27 @@ const { getAccountCommunityPermissions } = VM.require(
 const imagelink =
   "https://ipfs.near.social/ipfs/bafkreiajzvmy7574k7mp3if6u53mdukfr3hoc2kjkhjadt6x56vqhd5swy";
 
-function Page({ data, onEdit, labels, accountId }) {
-  const { category, title, description, subtitle, date, content } = data;
+function Page({ data, onEdit, labels, accountId, handle }) {
+  const {
+    category,
+    title,
+    description,
+    subtitle,
+    publishedAt: date,
+    content,
+  } = data;
 
   // TODO blog page has to have community handle in the query parameters
   // TODO use of labels is removed
   // use list of tags in the metadata
-
-  const handle = labels?.[1]; // community-handle
   const permissions = getAccountCommunityPermissions({
     account_id: accountId,
-    community_handle: handle,
+    community_handle: "webassemblymusic",
   });
   const isAllowedToEdit = permissions?.can_configure ?? false;
+
+  console.log("isAllowedToEdit", { isAllowedToEdit, handle });
+
   // TODO: category is not configurable
   const Container = styled.div`
     display: flex;

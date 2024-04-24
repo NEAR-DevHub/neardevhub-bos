@@ -61,12 +61,13 @@ const reshapedData = Object.keys(blogData).map((key) => {
 });
 
 function BlogCard(flattenedBlog) {
+  console.log("BlogCard handle", handle);
   return (
     <Link
       style={{ textDecoration: "none" }}
       to={href({
         widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "blogv2", id: flattenedBlog.id },
+        params: { page: "blogv2", id: flattenedBlog.id, community: handle },
       })}
     >
       <CardContainer>

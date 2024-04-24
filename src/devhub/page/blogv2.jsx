@@ -1,17 +1,23 @@
-const { id } = props;
+const { id, community } = props;
 
 const { Page } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Page") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
 
 const [showEditScreenData, setShowEditScreen] = useState(null);
 
+// TODO Dont grab the post
+// TODO use a socialdb widget
+
+console.log("page blogv2", { id, community, showEditScreenData });
+
 if (id && !showEditScreenData) {
   return (
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.entity.post.Postv2"
+      src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Blog"
       props={{
-        postKey: id,
+        blogId: id,
+        handle: community,
         template: (p) => (
           <Page
             {...(p || {})}
@@ -83,10 +89,10 @@ if (showEditScreenData) {
         <i class="bi bi-x-circle"></i>
       </div>
       <Widget
-        src={`${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator`}
+        src={`${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Configurator`}
         props={{
           ...showEditScreenData,
-          handle: showEditScreenData?.labels?.[1], // community-handle
+          handle: community,
         }}
       />
     </EditorContainer>
@@ -99,10 +105,11 @@ return (
       <Header>Blog</Header>
     </HeaderContainer>
     <BlogContainer>
+      {/* TODO: developer-dao?? */}
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Viewer"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Viewer"}
         props={{
-          handle: "developer-dao",
+          handle: community,
           hideTitle: true,
         }}
       />

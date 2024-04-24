@@ -169,9 +169,24 @@ const DropdowntBtnContainer = styled.div`
 }
 `;
 
+const { data, handle, onSubmit, onCancel, onDelete } = props;
+
+const initialData = data;
+
+const [content, setContent] = useState(initialData.content || "");
+const [title, setTitle] = useState(initialData.title || "");
+const [subtitle, setSubtitle] = useState(initialData.subtitle || "");
+const [description, setDescription] = useState(initialData.description || "");
+const [author, setAuthor] = useState(initialData.author || "");
+const [previewMode, setPreviewMode] = useState("card"); // "card" or "page"
+const [date, setDate] = useState(initialData.publishedAt || new Date());
+// TODO configurable by settings in addon parameters
+const [category, setCategory] = useState(initialData.category || "guide");
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
-const [selectedStatus, setSelectedStatus] = useState("draft");
+const [selectedStatus, setSelectedStatus] = useState(
+  initialData.status || "DRAFT"
+);
 
 const LoadingButtonSpinner = (
   <span
@@ -188,14 +203,14 @@ const SubmitBtn = () => {
       label: "Save Draft",
       description:
         "The author can still edit the blog before sharing it with the community.",
-      value: "draft",
+      value: "DRAFT",
     },
     {
       iconColor: "green",
       label: "Publish",
       description:
         "The blog will be shared with the community and can be viewed by everyone.",
-      value: "publish",
+      value: "PUBLISH",
     },
   ];
 
@@ -278,20 +293,6 @@ const SubmitBtn = () => {
     </DropdowntBtnContainer>
   );
 };
-
-const { data, handle, onSubmit, onCancel, onDelete } = props;
-
-const initialData = data;
-
-const [content, setContent] = useState(initialData.content || "");
-const [title, setTitle] = useState(initialData.title || "");
-const [subtitle, setSubtitle] = useState(initialData.subtitle || "");
-const [description, setDescription] = useState(initialData.description || "");
-const [author, setAuthor] = useState(initialData.author || "");
-const [previewMode, setPreviewMode] = useState("card"); // "card" or "page"
-const [date, setDate] = useState(initialData.publishedAt || new Date());
-// TODO configurable by settings in addon parameters
-const [category, setCategory] = useState(initialData.category || "guide");
 
 const Container = styled.div`
   width: 100%;
