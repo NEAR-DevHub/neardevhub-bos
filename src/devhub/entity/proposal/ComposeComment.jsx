@@ -24,6 +24,7 @@ const [allowGetDraft, setAllowGetDraft] = useState(true);
 const [comment, setComment] = useState(null);
 const [isTxnCreated, setTxnCreated] = useState(false);
 const [handler, setHandler] = useState("update"); // to update editor state on draft and txn approval
+const [showCommentToast, setCommentToast] = useState(false);
 
 if (allowGetDraft) {
   draftComment = Storage.privateGet(draftKey);
@@ -166,6 +167,7 @@ function composeData() {
   Social.set(data, {
     force: true,
     onCommit: () => {
+      setCommentToast(true);
       setComment("");
       setHandler("refreshEditor");
       setTxnCreated(false);
@@ -210,6 +212,17 @@ const Compose = useMemo(() => {
 
 return (
   <div className="d-flex gap-2">
+    <Widget
+      src="near/widget/DIG.Toast"
+      props={{
+        title: "Comment Submitted Successfully",
+        type: "success",
+        open: showCommentToast,
+        onOpenChange: (v) => setCommentToast(v),
+        trigger: <></>,
+        providerProps: { duration: 3000 },
+      }}
+    />
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
       props={{
