@@ -79,6 +79,8 @@ if [ -f "$REPLACEMENTS_JSON" ]; then
     if [ "$REPLACE_CONTRACT" = true ]; then
         jq --arg CONTRACT_ID "$CONTRACT_ID" ".[\"$CONTRACT_REPL\"] = \"$CONTRACT_ID\"" "$REPLACEMENTS_JSON.tmp" > temp.json && mv temp.json "$REPLACEMENTS_JSON.tmp"
     fi
+
+    jq --arg REPL_POSTHOG_API_KEY "REPL_POSTHOG_API_KEY" ".[\"REPL_POSTHOG_API_KEY\"] = \"$POSTHOG_API_KEY\"" "$REPLACEMENTS_JSON.tmp" > temp.json && mv temp.json "$REPLACEMENTS_JSON.tmp"
 else
     echo "Error: $REPLACEMENTS_JSON file not found."
     exit 1
