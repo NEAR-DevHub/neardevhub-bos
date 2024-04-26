@@ -8,7 +8,16 @@ export async function mockDefaultTabs(route) {
     await fetch("http://localhost:3030").then((r) => r.json())
   ).components;
 
+  // TODO if social.near get with certain method_parameters than mock blog reponse
   if (
+    requestPostData.params &&
+    requestPostData.params.account_id === "social.near" &&
+    requestPostData.params.method_name === "get" &&
+    // find the params of the method
+    requestPostData.params["SOMETHING"].includes("/blog/**")
+  ) {
+    // Intercept and adjust response to show the blogs we want
+  } else if (
     requestPostData.params &&
     requestPostData.params.account_id === "social.near" &&
     requestPostData.params.method_name === "get"
@@ -76,6 +85,20 @@ export async function mockDefaultTabs(route) {
         enabled: true,
         id: "cqyrw8",
         parameters: "{}",
+      },
+      {
+        addon_id: "blogv2",
+        display_name: "Blog Instance 1",
+        enabled: true,
+        id: "blogv2-instance1",
+        paramters: "{}",
+      },
+      {
+        addon_id: "blogv2",
+        display_name: "Blog Instance 2",
+        enabled: true,
+        id: "blogv2-instance2",
+        paramters: "{}",
       },
     ];
 
