@@ -51,6 +51,7 @@ return (
                 props={{
                   getData,
                   editData: editData,
+                  // TODO rename to blogoverview
                   Sidebar: (p) => (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.BlogOverview"
@@ -69,6 +70,7 @@ return (
                       }}
                     />
                   ),
+                  // TODO rename blog input fields or blog form idk
                   Content: (p) => (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.content"

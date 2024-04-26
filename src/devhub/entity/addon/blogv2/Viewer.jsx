@@ -4,14 +4,7 @@ const { Card } =
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
-const {
-  includeLabels,
-  excludeLabels,
-  layout,
-  handle,
-  hideTitle,
-  communityAddonId,
-} = props;
+const { handle, hideTitle, communityAddonId } = props;
 
 const Grid = styled.div`
   display: grid;
@@ -52,8 +45,7 @@ const CardContainer = styled.div`
 const blogData =
   Social.get(
     [
-      // "thomasguntenaar.near/blog/*/metadata/createdAt",
-      // "thomasguntenaar.near/blog/*/metadata/tags",
+      // `${handle}.community.devhub.near/blog/**`,
       "thomasguntenaar.near/blog/**",
     ],
     "final"
@@ -64,7 +56,7 @@ const reshapedData = Object.keys(blogData)
     return {
       ...blogData[key].metadata,
       id: key,
-      body: blogData[key][""],
+      content: blogData[key][""],
     };
   })
   // Show only published blogs

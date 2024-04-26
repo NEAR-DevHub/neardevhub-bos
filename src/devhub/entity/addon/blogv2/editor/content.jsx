@@ -68,7 +68,7 @@ const Banner = styled.div`
   }
 `;
 
-const DropdowntBtnContainer = styled.div`
+const DropdownBtnContainer = styled.div`
   font-size: 13px;
   min-width: 150px;
 
@@ -173,13 +173,20 @@ const { data, handle, onSubmit, onCancel, onDelete } = props;
 
 const initialData = data;
 
+// Parse the date string to create a Date object
+const publishedAtDate = new Date(initialData.publishedAt);
+const year = publishedAtDate.getFullYear();
+const month = (publishedAtDate.getMonth() + 1).toString().padStart(2, "0");
+const day = publishedAtDate.getDate().toString().padStart(2, "0");
+const initialFormattedDate = year + "-" + month + "-" + day;
+
 const [content, setContent] = useState(initialData.content || "");
 const [title, setTitle] = useState(initialData.title || "");
 const [subtitle, setSubtitle] = useState(initialData.subtitle || "");
 const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || "");
 const [previewMode, setPreviewMode] = useState("card"); // "card" or "page"
-const [date, setDate] = useState(initialData.publishedAt || new Date());
+const [date, setDate] = useState(initialFormattedDate || new Date());
 // TODO configurable by settings in addon parameters
 const [category, setCategory] = useState(initialData.category || "guide");
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
@@ -230,7 +237,7 @@ const SubmitBtn = () => {
   const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
 
   return (
-    <DropdowntBtnContainer>
+    <DropdownBtnContainer>
       <div
         className="custom-select"
         tabIndex="0"
@@ -282,18 +289,17 @@ const SubmitBtn = () => {
           </div>
         )}
       </div>
-    </DropdowntBtnContainer>
+    </DropdownBtnContainer>
   );
 };
 
 const Container = styled.div`
   width: 100%;
   margin: 0 auto;
-  padding: 20px;
   text-align: left;
 `;
 
-console.log("content  publishedAt", initialData.publishedAt);
+console.log("content publishedAt", initialData.publishedAt);
 
 const hasDataChanged = () => {
   return (
@@ -365,7 +371,7 @@ function Preview() {
 
 return (
   <Container>
-    <div className="d-flex gap-1 justify-content-end w-100 mb-2">
+    <div className="d-flex gap-1 justify-content-end w-100 mb-4">
       <button className="btn btn-light" onClick={onCancel}>
         Cancel
       </button>

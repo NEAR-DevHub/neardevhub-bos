@@ -36,6 +36,7 @@ const TitleInput = ({ title, setTitle }) => {
             value: title,
             placeholder: "Title",
             inputProps: { name: "title" },
+            skipPaddingGap: true,
           }}
         />
       </div>
@@ -55,6 +56,7 @@ const SubtitleInput = ({ subtitle, setSubtitle }) => {
             value: subtitle,
             placeholder: "Subtitle",
             inputProps: { name: "subtitle" },
+            skipPaddingGap: true,
           }}
         />
       </div>
@@ -95,6 +97,7 @@ const DescriptionInput = ({ description, setDescription }) => {
             value: description,
             placeholder: "Description",
             inputProps: { name: "description" },
+            skipPaddingGap: true,
           }}
         />
       </div>
@@ -115,6 +118,7 @@ const AuthorInput = ({ author, setAuthor }) => {
             value: author,
             placeholder: "Author",
             inputProps: { name: "author" },
+            skipPaddingGap: true,
           }}
         />
       </div>

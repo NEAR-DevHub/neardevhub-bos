@@ -1,12 +1,11 @@
-const { Sidebar, Content, editData, onSubmit } = props;
+const { Sidebar, Content, editData, onSubmit, BlogPostSettings } = props;
 
 // Selected Item is the property "parameters" of the community addon (blog)
 const [selectedItem, setSelectedItem] = useState(editData);
 const [showEditor, setShowEditor] = useState(false);
 const [showBlogPostSettings, setBlogPostSettings] = useState(false);
-// SHOW EDITOR
+
 const handleItemClick = (item) => {
-  console.log("handleItemClick", item);
   if (item) {
     setSelectedItem(item);
     setShowEditor(true);
@@ -16,10 +15,11 @@ const handleItemClick = (item) => {
 };
 
 const goBack = () => {
-  setShowEditor(false);
   setSelectedItem(null);
+  setShowEditor(false);
 };
 
+// TODO Move to layout
 const openBlogPostSettings = () => {
   // TODO 599
   setBlogPostSettings(true);
@@ -56,33 +56,36 @@ const openAnalytics = () => {
 return (
   <div style={{ width: "100%", height: "100%" }}>
     {showBlogPostSettings ? (
-      <div className="d-flex gap-1 align-items-end">
-        <button
-          className="btn btn-light"
-          onClick={() => setBlogPostSettings(false)}
-        >
-          Cancel
-        </button>
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"}
-          props={{
-            title: "Save Settings",
-            onClick: saveBlogPostSettings,
-          }}
-        />
-        <p>Category Option selection</p>
+      <div>
+        {/* TODO move this to BlogPostSettings */}
+        <div className="d-flex gap-1 align-items-end justify-content-end">
+          <button
+            className="btn btn-light"
+            onClick={() => setBlogPostSettings(false)}
+          >
+            Cancel
+          </button>
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"}
+            props={{
+              title: "Save Settings",
+              onClick: saveBlogPostSettings,
+            }}
+          />
+        </div>
+        <BlogPostSettings />
       </div>
     ) : (
       <>
         {showEditor ? null : (
-          <div className="d-flex gap-1 align-items-end justify-content-end w-100">
+          <div className="d-flex gap-1 align-items-end justify-content-end w-100 mb-4">
             {/* TODO PETER <input type="text" placeholder="Search blog posts" />
             <button className="btn btn-secondary">Filter</button>
             END PETER */}
-            <button className="btn btn-primary" onClick={openAnalytics}>
+            <button className="btn btn-light" onClick={openAnalytics}>
               Analytics
             </button>
-            <button className="btn btn-primary" onClick={openBlogPostSettings}>
+            <button className="btn btn-light" onClick={openBlogPostSettings}>
               Settings
             </button>
             <Widget
@@ -92,7 +95,7 @@ return (
               props={{
                 title: "New Blog Post",
                 onClick: () => {
-                  handleItemClick(null);
+                  handleItemClick("new");
                   setShowEditor(true);
                 },
               }}
@@ -117,7 +120,7 @@ return (
           </div>
           {showEditor && (
             <div
-              className="right-panel mt-3"
+              className="right-panel"
               style={{ flex: 1, width: 0, overflow: "scroll" }}
               key={selectedItem.id}
             >

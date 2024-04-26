@@ -10,20 +10,26 @@ const reshapedData =
   Object.keys(data || {}).map((key) => {
     return {
       id: key,
-      title: data[key].metadata.title,
-      status: data[key].metadata.status,
+      content: data[key][""],
       createdAt: formattedDate(data[key].metadata.createdAt),
       updatedAt: formattedDate(data[key].metadata.updatedAt),
       publishedAt: formattedDate(data[key].metadata.publishedAt),
-      content: data[key][""],
-      author: data[key].metadata.author,
-      description: data[key].metadata.description,
-      subtitle: data[key].metadata.subtitle,
-      category: data[key].metadata.category,
+      ...data[key].metadata,
+      // title: data[key].metadata.title,
+      // status: data[key].metadata.status,
+      // author: data[key].metadata.author,
+      // description: data[key].metadata.description,
+      // subtitle: data[key].metadata.subtitle,
+      // category: data[key].metadata.category,
     };
-  }) || [];
+  }) ||
+  // .sort((blog1, blog2) => {
+  //   // sort by published date
+  //   return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
+  // })
+  [];
 
-console.log({ reshapedData });
+console.log("reshapedData", reshapedData);
 
 const blogData = [
   {
@@ -33,31 +39,36 @@ const blogData = [
     createdAt: new Date().toISOString().slice(0, 10),
     updatedAt: new Date().toISOString().slice(0, 10),
     publishedAt: "mm-dd-yyyy",
+    content: "",
     author: "",
     description: "",
     subtitle: "",
-    content: "",
   },
   ...reshapedData,
 ];
 
 return (
-  <table id="manage-blog-table" className="table table-hover">
+  <table
+    id="manage-blog-table"
+    className={`table table-hover table-sm ${props.hideColumns && "mt-5"}`}
+  >
     <thead>
-      {/* TODO make this clickable to sort based on one of the columns (double click to reverse) */}
-      {props.hideColumns ? null : (
-        <tr>
-          <th scope="col">Blog title</th>
-          <td scope="col">Status</td>
-          <td scope="col">Created At</td>
-          <td scope="col">Updated At</td>
-          <td scope="col">Visible Publish Date</td>
-        </tr>
-      )}
+      <tr>
+        <th scope="col">Name</th>
+        {props.hideColumns ? null : (
+          <>
+            <th scope="col">Status</th>
+            <th scope="col">Created At</th>
+            <th scope="col">Updated At</th>
+            <th scope="col">Visible Publish Date</th>
+          </>
+        )}
+      </tr>
     </thead>
     <tbody>
       {(blogData || []).map((it) => {
-        if (it.id === "new" && selectedItem !== null) {
+        // Hide the new blog post item unless selectedItem is new
+        if (it.id === "new" && selectedItem !== "new") {
           return;
         }
 
@@ -67,17 +78,17 @@ return (
             key={it.id}
             onClick={() => handleItemClick(it)}
           >
-            <th
+            <td
               scope="row"
               className={
-                (it.id === selectedItem.id && selectedItem !== null) ||
-                (it.id === "new" && selectedItem === null)
-                  ? "table-primary"
+                it.id === selectedItem.id ||
+                (it.id === "new" && selectedItem === "new")
+                  ? "table-success"
                   : ""
               }
             >
               {it.title}
-            </th>
+            </td>
             {!props.hideColumns ? (
               <>
                 <td>{it.status}</td>

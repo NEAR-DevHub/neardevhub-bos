@@ -16,30 +16,15 @@ const handleGetData = (v) => {
   return blogData[id] || {};
 };
 
-// const blogKeys = Social.keys([["thomasguntenaar.near/blog/*"]], "final");
-
+// TODO Test when their is data in the communitySocialDB
 const blogData =
   Social.get(
     [
-      // "thomasguntenaar.near/blog/*/metadata/createdAt",
-      // "thomasguntenaar.near/blog/*/metadata/tags",
+      // `${handle}.community.devhub.near/blog/**`,
       "thomasguntenaar.near/blog/**",
     ],
     "final"
   ) || {};
-
-// TODO Test when their is data in the communitySocialDB
-useEffect(() => {
-  if (handle) {
-    const result = Social.get(
-      [
-        `${handle}.community.devhub.near/blog/*/metadata/createdAt`,
-        `${handle}.community.devhub.near/blog/*/metadata/tags/*`,
-      ],
-      "final"
-    );
-  }
-}, [handle]);
 
 function transformString(str) {
   // Convert the string to lowercase
@@ -52,26 +37,20 @@ function transformString(str) {
   return transformedStr;
 }
 
-// TODO: title is not unique
 const handleOnSubmit = (v, isEdit) => {
   console.log("isEdit", isEdit);
-  // TODO: only difference is the created at or not
-  // v.createdAt || new Date().toISOString()
+  // TODO only difference is the created at or not
+  // ! use v.createdAt || new Date().toISOString()
   if (isEdit) {
+    // TODO setCommunitySocialDB
     Social.set({
       blog: {
         [v.id]: {
           "": v.content,
           metadata: {
             title: v.title,
-            // ! REMOVE from update
-            createdAt: new Date().toISOString().slice(0, 10),
-            updatedAt: new Date().toISOString().slice(0, 10),
-            communityAddonId: communityAddonId,
-            // ! REMOVE from update
-            publishedAt: v.date,
+            publishedAt: new Date(v.date).toISOString().slice(0, 10),
             status: v.status,
-            tags: v.tags,
             subtitle: v.subtitle,
             description: v.description,
             author: v.author,
@@ -96,7 +75,6 @@ const handleOnSubmit = (v, isEdit) => {
             updatedAt: new Date().toISOString().slice(0, 10),
             publishedAt: v.date,
             status: v.status,
-            tags: v.tags,
             subtitle: v.subtitle,
             description: v.description,
             author: v.author,
@@ -137,7 +115,6 @@ const handleOnDelete = (id) => {
           updatedAt: null,
           publishedAt: null,
           status: null,
-          tags: null,
           subtitle: null,
           description: null,
           author: null,
@@ -146,6 +123,11 @@ const handleOnDelete = (id) => {
       },
     },
   });
+};
+
+const handleSettingsPage = () => {
+  // TODO 599
+  // Pass this via editor.index to the layout
 };
 
 return (
