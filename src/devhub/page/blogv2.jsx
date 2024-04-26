@@ -6,11 +6,6 @@ const { Page } =
 
 const [showEditScreenData, setShowEditScreen] = useState(null);
 
-// TODO Dont grab the post
-// TODO use a socialdb widget
-
-console.log("page blogv2", { id, community, showEditScreenData });
-
 if (id && !showEditScreenData) {
   return (
     <Widget
@@ -105,7 +100,6 @@ return (
       <Header>Blog</Header>
     </HeaderContainer>
     <BlogContainer>
-      {/* TODO: developer-dao?? */}
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Viewer"}
         props={{
