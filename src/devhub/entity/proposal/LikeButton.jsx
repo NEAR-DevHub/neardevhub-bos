@@ -93,14 +93,24 @@ const likeClick = (e) => {
     props.notifyAccountId &&
     props.notifyAccountId !== context.accountId
   ) {
-    data.index.notify = JSON.stringify({
-      key: props.notifyAccountId,
-      value: {
-        type: "devhub/like",
-        item,
-        proposal: proposalId,
-      },
-    });
+    if (proposalId) {
+      data.index.notify = JSON.stringify({
+        key: props.notifyAccountId,
+        value: {
+          type: "devhub/like",
+          item,
+          proposal: proposalId,
+        },
+      });
+    } else {
+      data.index.notify = JSON.stringify({
+        key: props.notifyAccountId,
+        value: {
+          type: "like",
+          item,
+        },
+      });
+    }
   }
   Social.set(data, {
     onCommit: () => State.update({ loading: false, hasLike: !hasLike }),

@@ -684,7 +684,7 @@ const SubmitBtn = () => {
             style={{ borderLeft: "1px solid #ccc" }}
             onClick={!disabledSubmitBtn && toggleDropdown}
           >
-            <i class={`bi bi-chevron-${isOpen ? "up" : "down"}`}></i>
+            <i class={`bi bi-chevron-${isDraftBtnOpen ? "up" : "down"}`}></i>
           </div>
         </div>
 
@@ -885,6 +885,7 @@ const DescriptionComponent = useMemo(() => {
         onChange: setDescription,
         autocompleteEnabled: true,
         autoFocus: false,
+        showProposalIdAutoComplete: true,
       }}
     />
   );
