@@ -535,10 +535,15 @@ const proposalStatus = useCallback(
     ),
   [snapshot]
 );
-const [updatedProposalStatus, setUpdatedProposalStatus] = useState({
-  ...proposalStatus(),
-  value: { ...proposalStatus().value, ...snapshot.timeline },
-});
+const [updatedProposalStatus, setUpdatedProposalStatus] = useState({});
+
+useEffect(() => {
+  setUpdatedProposalStatus({
+    ...proposalStatus(),
+    value: { ...proposalStatus().value, ...snapshot.timeline },
+  });
+}, [proposal]);
+
 const [paymentHashes, setPaymentHashes] = useState([""]);
 const [supervisor, setSupervisor] = useState(snapshot.supervisor);
 
