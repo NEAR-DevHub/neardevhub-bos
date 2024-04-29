@@ -371,4 +371,59 @@ test.describe("Wallet is connected", () => {
 
     await pauseIfVideoRecording(page);
   });
+
+  test("should add comment on a proposal", async ({ page }) => {
+    test.setTimeout(120000);
+    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+
+    const commentArea = await page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentArea.focus();
+    await commentArea.fill("Comment testing");
+    await commentArea.blur();
+    await pauseIfVideoRecording(page);
+
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed }) => {
+        const postData = request.postDataJSON();
+        if (transaction_completed && postData.params?.method_name === "set") {
+          const response = await route.fetch();
+          const json = await response.json();
+
+          console.log("transaction completed");
+          const resultObj = decodeResultJSON(json.result.result);
+          resultObj.push(1);
+          console.log(JSON.stringify(resultObj));
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+        } else {
+          await route.continue();
+        }
+      }
+    );
+
+    const commentButton = await page.getByRole("button", { name: "Comment" });
+    commentButton.click();
+    const loadingIndicator = await page.locator(".comment-btn-spinner");
+    await expect(loadingIndicator).toBeAttached();
+
+    const transaction_successful_toast = await page.getByText(
+      "Comment Submitted Successfully"
+    );
+    await expect(transaction_successful_toast).toBeVisible();
+
+    await transaction_successful_toast.waitFor({
+      state: "detached",
+      timeout: 3000,
+    });
+    await expect(transaction_successful_toast).not.toBeVisible();
+
+    await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
+    await expect(loadingIndicator).not.toBeVisible();
+    await page.waitForTimeout(1000);
+    await pauseIfVideoRecording(page);
+  });
 });

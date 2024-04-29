@@ -43,7 +43,6 @@ ${queryName}(
 }
 }`;
 
-
 const code = `
 <!doctype html>
 <html>

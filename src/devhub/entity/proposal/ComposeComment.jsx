@@ -186,7 +186,7 @@ useEffect(() => {
 
 const LoadingButtonSpinner = (
   <span
-    class="spinner-border spinner-border-sm"
+    class="comment-btn-spinner spinner-border spinner-border-sm"
     role="status"
     aria-hidden="true"
   ></span>
