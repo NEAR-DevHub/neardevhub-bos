@@ -158,11 +158,13 @@ test.describe("Wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
-  test("editing proposal should not be laggy", async ({ page }) => {
+  test("editing proposal should not be laggy, even if mentioning someone", async ({
+    page,
+  }) => {
     test.setTimeout(120000);
     await page.goto("/devhub.near/widget/app?page=create-proposal");
 
-    const delay_milliseconds_between_keypress_when_typing = 300;
+    const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
     await titleArea.pressSequentially("Test proposal 123456", {
@@ -191,9 +193,31 @@ test.describe("Wallet is connected", () => {
       .frameLocator("iframe")
       .locator(".CodeMirror textarea");
     await descriptionArea.focus();
-    await descriptionArea.fill(`The test proposal description.`);
+    await descriptionArea.pressSequentially(
+      `The test proposal description. And mentioning @petersal`,
+      {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      }
+    );
 
     await pauseIfVideoRecording(page);
+
+    await page.frameLocator("iframe").getByText("petersalomonsen.near").click();
+
+    await descriptionArea.pressSequentially(`. Also mentioning @m`, {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+
+    await pauseIfVideoRecording(page);
+    await descriptionArea.press("Backspace");
+    await pauseIfVideoRecording(page);
+    await descriptionArea.press("m");
+    await pauseIfVideoRecording(page);
+    await descriptionArea.pressSequentially(`egha19.`, {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+
+    await page.frameLocator("iframe").getByText("megha19.near").click();
 
     await page.locator('input[type="text"]').nth(2).pressSequentially("12345", {
       delay: delay_milliseconds_between_keypress_when_typing,
@@ -223,7 +247,110 @@ test.describe("Wallet is connected", () => {
           body: {
             proposal_body_version: "V0",
             name: "Test proposal 123456",
-            description: "The test proposal description.",
+            description:
+              "The test proposal description. And mentioning @petersalomonsen.near. Also mentioning @megha19.near",
+            category: "DevDAO Platform",
+            summary: "Test proposal summary 123456789",
+            linked_proposals: [],
+            requested_sponsorship_usd_amount: "12345",
+            requested_sponsorship_paid_in_currency: "USDC",
+            receiver_account: "efiz.near",
+            supervisor: null,
+            requested_sponsor: "neardevdao.near",
+            timeline: {
+              status: "DRAFT",
+            },
+          },
+        },
+        null,
+        1
+      )
+    );
+
+    await pauseIfVideoRecording(page);
+  });
+
+  test("should create a proposal, autolink reference to existing proposal", async ({
+    page,
+  }) => {
+    test.setTimeout(120000);
+    await page.goto("/devhub.near/widget/app?page=create-proposal");
+
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const titleArea = await page.getByRole("textbox").first();
+    await expect(titleArea).toBeEditable();
+    await titleArea.pressSequentially("Test proposal 123456", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+
+    await pauseIfVideoRecording(page);
+
+    const categoryDropdown = await page.locator(".dropdown-toggle").first();
+    await categoryDropdown.click();
+    await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
+
+    const disabledSubmitButton = await page.locator(
+      ".submit-draft-button.disabled"
+    );
+
+    const summary = await page.locator('textarea[type="text"]');
+    await expect(summary).toBeEditable();
+    await summary.pressSequentially("Test proposal summary 123456789", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+
+    await pauseIfVideoRecording(page);
+
+    const descriptionArea = await page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await descriptionArea.focus();
+    await descriptionArea.pressSequentially(
+      `The test proposal description. And referencing #2`,
+      {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      }
+    );
+
+    await pauseIfVideoRecording(page);
+
+    await page
+      .frameLocator("iframe")
+      .getByText(
+        "#2 DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024"
+      )
+      .click();
+
+    await page.locator('input[type="text"]').nth(2).pressSequentially("12345", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await pauseIfVideoRecording(page);
+    await page.getByRole("checkbox").first().click();
+    await pauseIfVideoRecording(page);
+    await expect(disabledSubmitButton).toBeAttached();
+    await page.getByRole("checkbox").nth(1).click();
+    await pauseIfVideoRecording(page);
+    await expect(disabledSubmitButton).not.toBeAttached();
+
+    const submitButton = await page.getByText("Submit Draft");
+    await submitButton.scrollIntoViewIfNeeded();
+    await submitButton.hover();
+    await pauseIfVideoRecording(page);
+    await submitButton.click();
+    const transactionText = JSON.stringify(
+      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      null,
+      1
+    );
+    await expect(transactionText).toEqual(
+      JSON.stringify(
+        {
+          labels: [],
+          body: {
+            proposal_body_version: "V0",
+            name: "Test proposal 123456",
+            description:
+              "The test proposal description. And referencing [#2 DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024](https://near.social/devhub.near/widget/app?page=proposal&id=2)",
             category: "DevDAO Platform",
             summary: "Test proposal summary 123456789",
             linked_proposals: [],

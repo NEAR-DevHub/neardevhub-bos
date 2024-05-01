@@ -169,10 +169,10 @@ return (
           data: comment,
           onChange: setComment,
           autocompleteEnabled: true,
-          autoFocus: false,
           placeholder: "Add your comment here...",
           height: "160",
           embeddCSS: ComposeEmbeddCSS,
+          showProposalIdAutoComplete: true,
         }}
       />
       <div className="d-flex gap-2 align-content-center justify-content-end">

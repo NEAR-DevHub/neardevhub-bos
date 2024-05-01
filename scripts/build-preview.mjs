@@ -72,6 +72,9 @@ if (fs.existsSync(REPLACEMENTS_JSON)) {
   let replacements = JSON.parse(fs.readFileSync(REPLACEMENTS_JSON, "utf8"));
   replacements[CREATOR_REPL] = ACCOUNT_ID;
   replacements[CONTRACT_REPL] = CONTRACT_ID;
+
+  replacements.REPL_POSTHOG_API_KEY = process.env.POSTHOG_API_KEY;
+
   fs.writeFileSync(
     `${REPLACEMENTS_JSON}.tmp`,
     JSON.stringify(replacements, null, 2)
@@ -80,6 +83,7 @@ if (fs.existsSync(REPLACEMENTS_JSON)) {
   console.error(`Error: ${REPLACEMENTS_JSON} file not found.`);
   process.exit(1);
 }
+
 
 // Read the content of the .tmp file
 let replacements = JSON.parse(

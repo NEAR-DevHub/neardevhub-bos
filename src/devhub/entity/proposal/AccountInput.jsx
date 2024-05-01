@@ -2,6 +2,7 @@ const value = props.value;
 const placeholder = props.placeholder;
 const onUpdate = props.onUpdate;
 
+const [account, setAccount] = useState(value);
 const [showAccountAutocomplete, setAutoComplete] = useState(false);
 const [isValidAccount, setValidAccount] = useState(true);
 const AutoComplete = styled.div`
@@ -10,8 +11,20 @@ const AutoComplete = styled.div`
 `;
 
 useEffect(() => {
+  if (value !== account) {
+    setAccount(value);
+  }
+}, [value]);
+
+useEffect(() => {
+  if (value !== account) {
+    onUpdate(account);
+  }
+}, [account]);
+
+useEffect(() => {
   const handler = setTimeout(() => {
-    const valid = value.length === 64 || (value ?? "").includes(".near");
+    const valid = account.length === 64 || (account ?? "").includes(".near");
     setValidAccount(valid);
     setAutoComplete(!valid);
   }, 100);
@@ -19,7 +32,7 @@ useEffect(() => {
   return () => {
     clearTimeout(handler);
   };
-}, [value]);
+}, [account]);
 
 return (
   <div>
@@ -27,9 +40,9 @@ return (
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
       props={{
         className: "flex-grow-1",
-        value: value,
+        value: account,
         onChange: (e) => {
-          onUpdate(e.target.value);
+          setAccount(e.target.value);
         },
         skipPaddingGap: true,
         placeholder: placeholder,
@@ -39,7 +52,7 @@ return (
         },
       }}
     />
-    {value && !isValidAccount && (
+    {account && !isValidAccount && (
       <div style={{ color: "red" }} className="text-sm mt-1">
         Please enter valid account ID
       </div>
@@ -49,9 +62,9 @@ return (
         <Widget
           src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
           props={{
-            term: value,
+            term: account,
             onSelect: (id) => {
-              onUpdate(id);
+              setAccount(id);
               setAutoComplete(false);
             },
             onClose: () => setAutoComplete(false),

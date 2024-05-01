@@ -193,6 +193,10 @@ const Container = styled.div`
   red-icon i {
     color: red;
   }
+
+  input[type="radio"] {
+    min-width: 13px;
+  }
 `;
 
 const ProposalContainer = styled.div`
@@ -307,11 +311,15 @@ const KycVerificationStatus = () => {
   );
 };
 
-const SidePanelItem = ({ title, children, hideBorder }) => {
+const SidePanelItem = ({ title, children, hideBorder, ishidden }) => {
   return (
     <div
       style={{ gap: "8px" }}
-      className={"d-flex flex-column pb-3 " + (!hideBorder && " border-bottom")}
+      className={
+        ishidden
+          ? "d-none"
+          : "d-flex flex-column pb-3 " + (!hideBorder && " border-bottom")
+      }
     >
       <div className="h6 mb-0">{title} </div>
       <div className="text-muted">{children}</div>
@@ -527,10 +535,15 @@ const proposalStatus = useCallback(
     ),
   [snapshot]
 );
-const [updatedProposalStatus, setUpdatedProposalStatus] = useState({
-  ...proposalStatus(),
-  value: { ...proposalStatus().value, ...snapshot.timeline },
-});
+const [updatedProposalStatus, setUpdatedProposalStatus] = useState({});
+
+useEffect(() => {
+  setUpdatedProposalStatus({
+    ...proposalStatus(),
+    value: { ...proposalStatus().value, ...snapshot.timeline },
+  });
+}, [proposal]);
+
 const [paymentHashes, setPaymentHashes] = useState([""]);
 const [supervisor, setSupervisor] = useState(snapshot.supervisor);
 
@@ -892,6 +905,7 @@ return (
                 title={
                   "Linked Proposals " + `(${snapshot.linked_proposals.length})`
                 }
+                ishidden={!snapshot.linked_proposals.length}
               >
                 <LinkedProposals />
               </SidePanelItem>
