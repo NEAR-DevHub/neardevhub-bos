@@ -8,7 +8,7 @@ if (!Card) {
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
-const { handle, hideTitle, communityAddonId } = props;
+const { data, handle, hideTitle, communityAddonId } = props;
 
 const Grid = styled.div`
   display: grid;
@@ -70,8 +70,6 @@ const processedData = Object.keys(blogData)
     return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
   });
 
-console.log("processedData", processedData);
-
 function BlogCardWithLink(flattenedBlog) {
   return (
     <Link
@@ -96,7 +94,9 @@ function BlogCard(flattenedBlog) {
 
 return (
   <div class="w-100">
-    {!hideTitle && <Heading>Latest Blog Posts</Heading>}
+    {/* <p>{JSON.stringify(props)}</p> */}
+    {/* TODO 599 {data.title || "Latest Blog Posts"} */}
+    {!hideTitle && <Heading> Latest Blog Posts</Heading>}
     <Grid>
       {processedData && processedData.length > 0
         ? processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))

@@ -63,12 +63,20 @@ const EditorContainer = styled.div`
   position: relative;
   width: 100%;
   padding: 20px;
+  padding-top: 40px;
   .cancel-icon {
     position: absolute;
-    top: 30px;
-    right: 30px;
+    top: 0px;
+    left: 30px;
     font-size: 25px;
     cursor: pointer;
+    display: flex;
+  }
+
+  .back-button {
+    font-size: 16px;
+    line-height: 25px;
+    margin-left: 10px;
   }
 `;
 
@@ -81,7 +89,8 @@ if (showEditScreenData) {
   return (
     <EditorContainer>
       <div className="cancel-icon" onClick={() => setShowEditScreen(null)}>
-        <i class="bi bi-x-circle"></i>
+        <i class="bi bi-arrow-return-left"></i>{" "}
+        <p className="back-button">Back</p>
       </div>
       <Widget
         src={`${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Configurator`}

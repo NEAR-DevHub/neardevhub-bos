@@ -3,7 +3,14 @@ import { pauseIfVideoRecording } from "../testUtils.js";
 import { mockDefaultTabs } from "../util/addons.js";
 
 const baseUrl =
-  "https://near.org/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=blogv2";
+  "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=blog-instance-1";
+
+const otherInstance =
+  "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=blog-instance-2";
+
+// This blog is mocked in addons.js
+const blogPage =
+  "/devhub.near/widget/app?page=blogv2&id=published-w5cj1y&community=webassemblymusic";
 
 test.beforeEach(async ({ page }) => {
   await page.route("https://rpc.mainnet.near.org/", async (route) => {
@@ -20,24 +27,89 @@ test.describe("Wallet is not connected", () => {
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
   });
 
-  test("Should not see the configure button only blog cards", async ({
+  test("should not see the configure button only blog cards", async ({
     page,
   }) => {
     await page.goto(baseUrl);
     await pauseIfVideoRecording(page);
+    await page.waitForTimeout(6000);
+
+    // const editAddonButton = await page
+    //   .getByRole("button", { name: " Edit" })
+    //   .nth(3);
+
+    // await editAddonButton.scrollIntoViewIfNeeded();
+
     // Can't find a button with a span inside with the class="bi bi-gear"
+    const configureButton = await page.$(".bi.bi-gear");
+    expect(configureButton).toBeNull();
   });
 
-  test("Should be able to view a blog page", async ({ page }) => {
-    // TODO don't use baseUrl
-    await page.goto(baseUrl);
+  test("should be able to view a blog page", async ({ page }) => {
+    await page.goto(blogPage);
     // All cards have a valid date!
+    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(6000);
+    await pauseIfVideoRecording(page);
+
+    const subtitle = ".subtitle";
+
+    await page.waitForSelector(subtitle, {
+      state: "visible",
+    });
+    // await subtitle.scrollIntoViewIfNeeded();
   });
 
-  test("Should only view the blogs of 1 blog instance tab", async ({
+  test("should only view the blogs of the blog instance who's tab is currently active", async ({
     page,
   }) => {
     await page.goto(baseUrl);
+
+    await page.waitForSelector(".nav-item", {
+      state: "visible",
+    });
+
+    const span1 = await page.waitForSelector('span:has-text("Published")', {
+      state: "visible",
+    });
+
+    const published = page.getByTestId("published-w5cj1y");
+    await published.scrollIntoViewIfNeeded();
+
+    const span2 = await page.waitForSelector(
+      'span:has-text("First blog of instance 2")',
+      {
+        state: "visible",
+      }
+    );
+
+    const publishedBlogDifferentInstance = page.getByTestId(
+      "first-blog-of-instance-2-nhasab"
+    );
+    await publishedBlogDifferentInstance.scrollIntoViewIfNeeded();
+
+    expect(span1.isVisible()).toBeTruthy();
+    expect(span2.isVisible()).toBeTruthy();
+
+    await span2.click();
+
+    const blogTitleOfPublishedBlog = await page.waitForSelector(
+      'h5:has-text("Published")',
+      {
+        state: "visible",
+      }
+    );
+
+    expect(blogTitleOfPublishedBlog.isVisible()).toBeTruthy();
+
+    await span2.click();
+
+    const blogTitleOfAnotherBlogInstance = await page.$(
+      'h5:has-text("First blog of instance 2")'
+    );
+
+    expect(blogTitleOfAnotherBlogInstance.isVisible()).toBeTruthy();
+
     // TODO use 2 blog tabs
   });
 
@@ -45,7 +117,7 @@ test.describe("Wallet is not connected", () => {
     page,
   }) => {
     await page.goto(
-      "/devhub.near/widget/devhub.entity.addon.blog.Viewer?handle=devhub-test"
+      "/devhub.near/widget/devhub.entity.addon.blog.Viewer?handle=webassemblymusic"
     );
 
     const blogCardSelector = '[id^="blog-card-"]';
@@ -56,9 +128,8 @@ test.describe("Wallet is not connected", () => {
     expect(blogCards.length).toBeGreaterThan(0);
   });
 
-  test("Should show preview card and page", async ({ page }) => {
+  test("should show preview card and page", async ({ page }) => {
     await page.goto(baseUrl);
-    // TODO previews have broken date!
   });
 });
 
@@ -70,7 +141,20 @@ test.describe("Don't ask again enabled", () => {
 
   test("Create blog", async ({ page }) => {
     await page.goto(baseUrl);
-    // TODO
+
+    await pauseIfVideoRecording(page);
+
+    // const config = await page.waitForSelector(".bi.bi-gear");
+
+    const tab = await page.getByRole("link", { name: "Blog Instance 1" });
+
+    await tab.waitFor({ state: "visible" });
+
+    await tab.click();
+
+    // await page.getByRole("button", { name: "" }).click();
+
+    await page.waitForTimeout(4000);
   });
 });
 
@@ -79,8 +163,21 @@ test.describe("Admin wallet is connected", () => {
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
 
-  test("Should be able to configure the blogv2 addon", async ({ page }) => {
+  test("should be able to configure the blogv2 addon", async ({ page }) => {
     await page.goto(baseUrl);
+
+    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(6000);
+
+    await page.waitForSelector("#blog-card-published-w5cj1", {
+      state: "visible",
+    });
+
+    const card = page.getByTestId("published-w5cj1");
+
+    expect(await card.isVisible()).toBeTruthy();
+
+    await page.goto(otherInstance);
   });
 
   test("should prepopulate the form when a blog is selected from the left", async ({
@@ -88,7 +185,7 @@ test.describe("Admin wallet is connected", () => {
   }) => {
     test.setTimeout(60000);
     await page.goto(
-      "/devgovgigs.near/widget/devhub.entity.addon.blog.Configurator?handle=devhub-test"
+      "/devgovgigs.near/widget/devhub.entity.addon.blog.Configurator?handle=webassemblymusic"
     );
 
     await page.waitForSelector(`[id^="edit-blog-selector-"]`);
@@ -131,6 +228,8 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(
       "/devhub.near/widget/devhub.entity.addon.blog.Configurator"
     );
+    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(6000);
 
     const newBlogSelector = `[id^="create-new-blog"]`;
     await page.waitForSelector(newBlogSelector, {
@@ -169,8 +268,10 @@ test.describe("Admin wallet is connected", () => {
     page,
   }) => {
     await page.goto(
-      "/devgovgigs.near/widget/devhub.entity.addon.blog.Configurator?handle=devhub-test"
+      "/devgovgigs.near/widget/devhub.entity.addon.blog.Configurator?handle=webassemblymusic"
     );
+    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(6000);
 
     await page.waitForSelector(`[id^="edit-blog-selector-"]`);
 
@@ -179,46 +280,62 @@ test.describe("Admin wallet is connected", () => {
     expect(sidebarBlogSelectors.length).toBeGreaterThanOrEqual(1);
   });
 
-  test.describe("Should be able to edit a blog", () => {
-    test("Should be able toggle the admin UI", async ({ page }) => {
+  test.describe("should be able to edit a blog", () => {
+    test("should be able toggle the admin UI", async ({ page }) => {
       await page.goto(baseUrl);
+      await pauseIfVideoRecording(page);
+      await page.waitForTimeout(6000);
     });
-    test("Should be able to save blog as DRAFT", async ({ page }) => {
+    test("should be able to save blog as DRAFT", async ({ page }) => {
       await page.goto(baseUrl);
-    });
-
-    test("Should be able to cancel editing a blog", async ({ page }) => {
-      await page.goto(baseUrl);
-    });
-    test("Should be able to cancel a new blog", async ({ page }) => {
-      await page.goto(baseUrl);
+      await pauseIfVideoRecording(page);
+      await page.waitForTimeout(6000);
     });
 
-    test("Should be able to publish a blog", async ({ page }) => {
+    test("should be able to cancel editing a blog", async ({ page }) => {
       await page.goto(baseUrl);
+      await pauseIfVideoRecording(page);
+      await page.waitForTimeout(6000);
+    });
+    test("should be able to cancel a new blog", async ({ page }) => {
+      await page.goto(baseUrl);
+      await pauseIfVideoRecording(page);
+      await page.waitForTimeout(6000);
+    });
+
+    test("should be able to publish a blog", async ({ page }) => {
+      await page.goto(baseUrl);
+      await pauseIfVideoRecording(page);
+      await page.waitForTimeout(6000);
     });
   });
 
-  test("Should be able to delete a blog", async ({ page }) => {
+  test("should be able to delete a blog", async ({ page }) => {
     await page.goto(baseUrl);
+    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(6000);
   });
 
-  test("Should show 3 timestamps in the blogoverview", async ({ page }) => {
+  test("should show 3 timestamps in the blogoverview", async ({ page }) => {
     await page.goto(baseUrl);
+    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(6000);
     // TODO There is no row that says "invalid date"
   });
 
-  test("Should have a big button when there is no blog data", async ({
+  test("should have a big button when there is no blog data", async ({
     page,
   }) => {
     await page.goto(baseUrl);
+    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(6000);
   });
 
-  test.skip("Should show the settings", async ({ page }) => {
+  test.skip("should show the settings", async ({ page }) => {
     await page.goto(baseUrl);
   });
 
-  test.skip("Should show the analytics", async ({ page }) => {
+  test.skip("should show the analytics", async ({ page }) => {
     await page.goto(baseUrl);
   });
 });

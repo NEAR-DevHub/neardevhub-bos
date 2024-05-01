@@ -61,22 +61,29 @@ const blogv2 = {
   display_name: "BlogV2",
   enabled: true,
   id: "blogv2",
+  parameters: "{title:'My blog page title'}",
+};
+const blogv2instance2 = {
+  addon_id: "blogv2",
+  display_name: "BlogV2",
+  enabled: true,
+  id: "blogv2instance2",
   parameters: "{}",
 };
 
 // TODO remove
-const blog = {
-  addon_id: "blog",
-  display_name: "BlogV1",
-  enabled: true,
-  id: "blog",
-  parameters: "{}",
-};
+// const blog = {
+//   addon_id: "blog",
+//   display_name: "BlogV1",
+//   enabled: true,
+//   id: "blog",
+//   parameters: "{}",
+// };
 
 // TODO remove
 const tabs = [
   {
-    title: "BlogV2",
+    title: "Blog Instance 1",
     view: "${REPL_DEVHUB}/widget/devhub.page.addon",
     params: {
       addon: blogv2,
@@ -85,14 +92,23 @@ const tabs = [
     },
   },
   {
-    title: "BlogV1",
+    title: "Blog Instance 2",
     view: "${REPL_DEVHUB}/widget/devhub.page.addon",
     params: {
-      addon: blog,
+      addon: blogv2instance2,
       handle: community.handle,
       transactionHashes: props.transactionHashes,
     },
   },
+  // {
+  //   title: "BlogV1",
+  //   view: "${REPL_DEVHUB}/widget/devhub.page.addon",
+  //   params: {
+  //     addon: blog,
+  //     handle: community.handle,
+  //     transactionHashes: props.transactionHashes,
+  //   },
+  // },
 ];
 
 (community.addons || []).map((addon) => {
