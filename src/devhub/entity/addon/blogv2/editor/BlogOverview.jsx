@@ -21,65 +21,93 @@ const blogData = [
   ...data,
 ];
 
-return (
-  <table
-    id="manage-blog-table"
-    className={`table table-hover table-sm ${props.hideColumns && "mt-5"}`}
-  >
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-        {props.hideColumns ? null : (
-          <>
-            <th scope="col">Status</th>
-            <th scope="col" data-testid="createdAt">
-              Created At
-            </th>
-            <th scope="col" data-testid="updatedAt">
-              Updated At
-            </th>
-            <th scope="col" data-testid="publishedAt">
-              Visible Publish Date
-            </th>
-          </>
-        )}
-      </tr>
-    </thead>
-    <tbody>
-      {(blogData || []).map((it) => {
-        // Hide the new blog post item unless selectedItem is new
-        if (it.id === "new" && selectedItem !== "new") {
-          return;
-        }
+const css = fetch("https://floatui.com/tailwind.css").body;
+if (!css) return "";
+const Tailwind = styled.div`
+  ${css}
+`;
 
-        return (
-          <tr
-            id={`edit-blog-selector-${it.id}`}
-            key={it.id}
-            onClick={() => handleItemClick(it)}
-          >
-            <td
-              scope="row"
-              className={
-                it.id === selectedItem.id ||
-                (it.id === "new" && selectedItem === "new")
-                  ? "table-success"
-                  : ""
-              }
+return (
+  <Tailwind>
+    <table
+      id="manage-blog-table"
+      // className={`table table-hover table-sm ${props.hideColumns && "mt-5"}`}
+      className={`w-full table-auto text-sm text-left ${
+        props.hideColumns && "mt-5" // TODO remove
+      }`}
+    >
+      <thead className="bg-gray-50 text-gray-600 font-medium border-b">
+        <tr>
+          <th className="py-3 px-6">Name</th>
+          {props.hideColumns ? null : (
+            <>
+              <th className="py-3 px-6">Status</th>
+              <th className="py-3 px-6" data-testid="createdAt">
+                Created At
+              </th>
+              <th className="py-3 px-6" data-testid="updatedAt">
+                Updated At
+              </th>
+              <th className="py-3 px-6" data-testid="publishedAt">
+                Visible Publish Date
+              </th>
+            </>
+          )}
+        </tr>
+      </thead>
+      <tbody className="text-gray-600 divide-y">
+        {(blogData || []).map((it) => {
+          // Hide the new blog post item unless selectedItem is new
+          if (it.id === "new" && selectedItem !== "new") {
+            return;
+          }
+
+          return (
+            <tr
+              id={`edit-blog-selector-${it.id}`}
+              key={it.id}
+              onClick={() => handleItemClick(it)}
             >
-              {it.title}
-            </td>
-            {!props.hideColumns ? (
-              <>
-                <td>{it.status}</td>
-                <td>{formattedDate(it.createdAt)}</td>
-                <td>{formattedDate(it.updatedAt)}</td>
-                <td>{formattedDate(it.publishedAt)}</td>
-              </>
-            ) : null}
-          </tr>
-        );
-      })}
-    </tbody>
-  </table>
+              <td scope="row" className={`px-6 py-4 whitespace-nowrap`}>
+                {it.id === selectedItem.id ||
+                (it.id === "new" && selectedItem === "new") ? (
+                  <span
+                    className={`px-3 py-2 rounded-full font-semibold text-xs ${"text-green-600 bg-green-50"}`}
+                  >
+                    {it.title}
+                  </span>
+                ) : (
+                  it.title
+                )}
+              </td>
+              {!props.hideColumns ? (
+                <>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-3 py-2 rounded-full font-semibold text-xs ${
+                        it.status == "PUBLISH"
+                          ? "text-green-600 bg-green-50"
+                          : "text-blue-600 bg-blue-50"
+                      }`}
+                    >
+                      {it.status == "PUBLISH" ? "Published" : "Draft"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {formattedDate(it.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {formattedDate(it.updatedAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {formattedDate(it.publishedAt)}
+                  </td>
+                </>
+              ) : null}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </Tailwind>
 );
