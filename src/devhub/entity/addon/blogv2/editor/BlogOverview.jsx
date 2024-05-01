@@ -32,9 +32,15 @@ return (
         {props.hideColumns ? null : (
           <>
             <th scope="col">Status</th>
-            <th scope="col">Created At</th>
-            <th scope="col">Updated At</th>
-            <th scope="col">Visible Publish Date</th>
+            <th scope="col" data-testid="createdAt">
+              Created At
+            </th>
+            <th scope="col" data-testid="updatedAt">
+              Updated At
+            </th>
+            <th scope="col" data-testid="publishedAt">
+              Visible Publish Date
+            </th>
           </>
         )}
       </tr>

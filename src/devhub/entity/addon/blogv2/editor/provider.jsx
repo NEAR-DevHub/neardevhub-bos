@@ -114,7 +114,6 @@ const handleOnCancel = (v) => {
 };
 
 const handleOnDelete = (id) => {
-  console.log("onDelete", v);
   setCommunitySocialDB({
     handle,
     data: {

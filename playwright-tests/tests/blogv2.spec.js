@@ -3,10 +3,10 @@ import { pauseIfVideoRecording } from "../testUtils.js";
 import { mockDefaultTabs } from "../util/addons.js";
 
 const baseUrl =
-  "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=blog-instance-1";
+  "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=first-blog";
 
 const otherInstance =
-  "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=blog-instance-2";
+  "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=second-blog";
 
 // This blog is mocked in addons.js
 const blogPage =
@@ -34,22 +34,15 @@ test.describe("Wallet is not connected", () => {
     await pauseIfVideoRecording(page);
     await page.waitForTimeout(6000);
 
-    // const editAddonButton = await page
-    //   .getByRole("button", { name: " Edit" })
-    //   .nth(3);
-
-    // await editAddonButton.scrollIntoViewIfNeeded();
-
-    // Can't find a button with a span inside with the class="bi bi-gear"
     const configureButton = await page.$(".bi.bi-gear");
     expect(configureButton).toBeNull();
   });
 
   test("should be able to view a blog page", async ({ page }) => {
-    await page.goto(blogPage);
-    // All cards have a valid date!
+    await page.goto(baseUrl);
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(6000);
+
+    await page.goto(blogPage);
     await pauseIfVideoRecording(page);
 
     const subtitle = ".subtitle";
@@ -69,20 +62,25 @@ test.describe("Wallet is not connected", () => {
       state: "visible",
     });
 
-    const span1 = await page.waitForSelector('span:has-text("Published")', {
+    const span1 = await page.waitForSelector('h5:has-text("Published")', {
       state: "visible",
     });
 
+    // Find the first published blog
     const published = page.getByTestId("published-w5cj1y");
     await published.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
 
+    // Go to the other blog instance by clicking on the tab
+    await page.getByRole("link", { name: "Second Blog" }).first().click();
     const span2 = await page.waitForSelector(
-      'span:has-text("First blog of instance 2")',
+      'h5:has-text("First blog of instance")',
       {
         state: "visible",
       }
     );
 
+    // Make sure the other blog instance show the other blog
     const publishedBlogDifferentInstance = page.getByTestId(
       "first-blog-of-instance-2-nhasab"
     );
@@ -90,46 +88,6 @@ test.describe("Wallet is not connected", () => {
 
     expect(span1.isVisible()).toBeTruthy();
     expect(span2.isVisible()).toBeTruthy();
-
-    await span2.click();
-
-    const blogTitleOfPublishedBlog = await page.waitForSelector(
-      'h5:has-text("Published")',
-      {
-        state: "visible",
-      }
-    );
-
-    expect(blogTitleOfPublishedBlog.isVisible()).toBeTruthy();
-
-    await span2.click();
-
-    const blogTitleOfAnotherBlogInstance = await page.$(
-      'h5:has-text("First blog of instance 2")'
-    );
-
-    expect(blogTitleOfAnotherBlogInstance.isVisible()).toBeTruthy();
-
-    // TODO use 2 blog tabs
-  });
-
-  test("should load a blog page and its blogs for a given community handle", async ({
-    page,
-  }) => {
-    await page.goto(
-      "/devhub.near/widget/devhub.entity.addon.blog.Viewer?handle=webassemblymusic"
-    );
-
-    const blogCardSelector = '[id^="blog-card-"]';
-    await page.waitForSelector(blogCardSelector);
-
-    const blogCards = await page.$$(blogCardSelector);
-
-    expect(blogCards.length).toBeGreaterThan(0);
-  });
-
-  test("should show preview card and page", async ({ page }) => {
-    await page.goto(baseUrl);
   });
 });
 
@@ -146,7 +104,7 @@ test.describe("Don't ask again enabled", () => {
 
     // const config = await page.waitForSelector(".bi.bi-gear");
 
-    const tab = await page.getByRole("link", { name: "Blog Instance 1" });
+    const tab = await page.getByRole("link", { name: "First Blog" });
 
     await tab.waitFor({ state: "visible" });
 
@@ -167,75 +125,38 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(baseUrl);
 
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(6000);
 
-    await page.waitForSelector("#blog-card-published-w5cj1", {
+    await page.waitForSelector("#blog-card-published-w5cj1y", {
       state: "visible",
     });
 
-    const card = page.getByTestId("published-w5cj1");
+    const card = page.getByTestId("published-w5cj1y");
 
     expect(await card.isVisible()).toBeTruthy();
 
-    await page.goto(otherInstance);
-  });
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
 
-  test("should prepopulate the form when a blog is selected from the left", async ({
-    page,
-  }) => {
-    test.setTimeout(60000);
-    await page.goto(
-      "/devgovgigs.near/widget/devhub.entity.addon.blog.Configurator?handle=webassemblymusic"
-    );
-
-    await page.waitForSelector(`[id^="edit-blog-selector-"]`);
-
-    const blogSelector = `[id^="edit-blog-selector-1993"]`;
-    await page.waitForSelector(blogSelector, {
-      state: "visible",
-    });
-
-    await page.click(blogSelector);
-
-    const formSelector = `[id^="blog-editor-form"]`;
-    await page.waitForSelector(formSelector, {
-      state: "visible",
-    });
-
-    const inputFieldSelectors = [
-      'input[name="title"]',
-      'input[name="subtitle"]',
-      'input[name="description"]',
-      'input[name="author"]',
-      'input[name="date"]',
-    ];
-
-    for (const inputSelector of inputFieldSelectors) {
-      await page.waitForSelector(inputSelector, {
-        state: "visible",
-      });
-      const inputElement = await page.$(inputSelector);
-
-      const inputValue = await inputElement.evaluate(
-        (element) => element.value
-      );
-
-      expect(inputValue).not.toBeNull();
-    }
+    await page.getByRole("button", { name: " New Blog Post" }).click();
+    await page.getByRole("button", { name: "Cancel" }).click();
+    await page.getByRole("cell", { name: "Published" }).click();
+    await page.getByPlaceholder("Title", { exact: true }).click();
   });
 
   test("should have an empty form if select new blog", async ({ page }) => {
-    await page.goto(
-      "/devhub.near/widget/devhub.entity.addon.blog.Configurator"
-    );
-    await pauseIfVideoRecording(page);
-    await page.waitForTimeout(6000);
-
-    const newBlogSelector = `[id^="create-new-blog"]`;
-    await page.waitForSelector(newBlogSelector, {
+    await page.goto(baseUrl);
+    await page.waitForSelector("#blog-card-published-w5cj1y", {
       state: "visible",
     });
-    await page.click(newBlogSelector);
+
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
+
+    // Create a new blog
+    await page.getByRole("button", { name: " New Blog Post" }).click();
+
+    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(2000);
 
     const formSelector = `[id^="blog-editor-form"]`;
     await page.waitForSelector(formSelector, {
@@ -267,11 +188,12 @@ test.describe("Admin wallet is connected", () => {
   test("should load blogs in the sidebar for a given handle", async ({
     page,
   }) => {
-    await page.goto(
-      "/devgovgigs.near/widget/devhub.entity.addon.blog.Configurator?handle=webassemblymusic"
-    );
+    await page.goto(baseUrl);
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(6000);
+    await page.waitForTimeout(2000);
+
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
 
     await page.waitForSelector(`[id^="edit-blog-selector-"]`);
 
@@ -281,61 +203,228 @@ test.describe("Admin wallet is connected", () => {
   });
 
   test.describe("should be able to edit a blog", () => {
-    test("should be able toggle the admin UI", async ({ page }) => {
+    test.beforeEach(async ({ page }) => {
       await page.goto(baseUrl);
       await pauseIfVideoRecording(page);
-      await page.waitForTimeout(6000);
+      await page.waitForTimeout(2000);
+
+      const configureButton = page.getByTestId("configure-addon-button");
+      await configureButton.click();
+      await page.waitForSelector(`[id^="edit-blog-selector-"]`, {
+        state: "visible",
+      });
+    });
+
+    test("should be able toggle the admin UI off to see the BlogOverview", async ({
+      page,
+    }) => {
+      const configureButton = page.getByTestId("configure-addon-button-x");
+      await configureButton.click();
+      await page.waitForSelector(`[id^="blog-card-"]`, {
+        state: "visible",
+      });
     });
     test("should be able to save blog as DRAFT", async ({ page }) => {
-      await page.goto(baseUrl);
-      await pauseIfVideoRecording(page);
-      await page.waitForTimeout(6000);
+      await page.getByRole("button", { name: " New Blog Post" }).click();
+
+      await page.getByPlaceholder("Title", { exact: true }).click();
+      await page.getByPlaceholder("Title", { exact: true }).fill("Title");
+      await page.getByPlaceholder("Title", { exact: true }).press("Tab");
+      await page.getByPlaceholder("Subtitle").fill("Subtitle");
+      await page.getByPlaceholder("Subtitle").press("Tab");
+      await page.getByRole("combobox").press("Tab");
+      await page.getByPlaceholder("Description").fill("Description");
+      await page.getByPlaceholder("Description").press("Tab");
+      await page.getByPlaceholder("Author").fill("Author");
+      await page.getByPlaceholder("Author").press("Tab");
+      await page.locator('input[name="date"]').fill("1998-05-03");
+      await page.locator('input[name="date"]').press("Tab");
+      await page.frameLocator("iframe").getByRole("textbox").fill("# Content");
+      await page.getByText("Save Draft").click();
+
+      const transactionObj = JSON.parse(
+        await page.locator("div.modal-body code").innerText()
+      );
+      const blogId = Object.keys(transactionObj.data.blog)[0];
+      expect(transactionObj.data.blog[blogId].metadata.title).toBe("Title");
+      expect(transactionObj.data.blog[blogId].metadata.publishedAt).toBe(
+        "1998-05-03"
+      );
+      expect(transactionObj.data.blog[blogId].metadata.createdAt).toBe(
+        new Date().toISOString().slice(0, 10)
+      );
+      expect(transactionObj.data.blog[blogId].metadata.updatedAt).toBe(
+        new Date().toISOString().slice(0, 10)
+      );
+      expect(transactionObj.data.blog[blogId].metadata.subtitle).toBe(
+        "Subtitle"
+      );
+      expect(transactionObj.data.blog[blogId].metadata.description).toBe(
+        "Description"
+      );
+      expect(transactionObj.data.blog[blogId].metadata.author).toBe("Author");
+      expect(transactionObj.data.blog[blogId].metadata.communityAddonId).toBe(
+        "blogv2"
+      );
+      expect(transactionObj.data.blog[blogId].metadata.status).toBe("DRAFT");
     });
 
     test("should be able to cancel editing a blog", async ({ page }) => {
-      await page.goto(baseUrl);
-      await pauseIfVideoRecording(page);
-      await page.waitForTimeout(6000);
+      // Click on the first row this blog title is called "Published"
+      await page.getByRole("cell", { name: "Published" }).click();
+
+      await page.getByRole("button", { name: "Cancel" }).click();
+      await page.waitForSelector(`[id^="edit-blog-selector-"]`, {
+        state: "visible",
+      });
+      const configureButton = page.getByTestId("configure-addon-button-x");
+      await configureButton.click();
+      await page.waitForSelector(`[id^="blog-card-"]`, {
+        state: "visible",
+      });
     });
     test("should be able to cancel a new blog", async ({ page }) => {
-      await page.goto(baseUrl);
-      await pauseIfVideoRecording(page);
-      await page.waitForTimeout(6000);
+      await page.getByRole("button", { name: " New Blog Post" }).click();
+      await page.getByRole("button", { name: "Cancel" }).click();
+      await page.waitForSelector(`[id^="edit-blog-selector-"]`, {
+        state: "visible",
+      });
+      const configureButton = page.getByTestId("configure-addon-button-x");
+      await configureButton.click();
+      await page.waitForSelector(`[id^="blog-card-"]`, {
+        state: "visible",
+      });
     });
 
     test("should be able to publish a blog", async ({ page }) => {
-      await page.goto(baseUrl);
+      await page.getByRole("button", { name: " New Blog Post" }).click();
+
+      await page.getByPlaceholder("Title", { exact: true }).click();
+      await page.getByPlaceholder("Title", { exact: true }).fill("Title");
+      await page.getByPlaceholder("Title", { exact: true }).press("Tab");
+      await page.getByPlaceholder("Subtitle").fill("Subtitle");
+      await page.getByPlaceholder("Subtitle").press("Tab");
+      await page.getByRole("combobox").press("Tab");
+      await page.getByPlaceholder("Description").fill("Description");
+      await page.getByPlaceholder("Description").press("Tab");
+      await page.getByPlaceholder("Author").fill("Author");
+      await page.getByPlaceholder("Author").press("Tab");
+      await page.locator('input[name="date"]').fill("1998-05-03");
+      await page.locator('input[name="date"]').press("Tab");
+      await page.frameLocator("iframe").getByRole("textbox").fill("# Content");
+
+      const publishToggle = page.getByTestId("toggle-dropdown");
+      await publishToggle.scrollIntoViewIfNeeded();
       await pauseIfVideoRecording(page);
-      await page.waitForTimeout(6000);
+      await publishToggle.click();
+
+      const publishOption = page.getByTestId("submit-button-option-PUBLISH");
+
+      await publishOption.click();
+
+      const publishButton = page.getByTestId("submit-blog-button");
+
+      await publishButton.click();
+
+      const transactionObj = JSON.parse(
+        await page.locator("div.modal-body code").innerText()
+      );
+      const blogId = Object.keys(transactionObj.data.blog)[0];
+
+      expect(transactionObj.data.blog[blogId].metadata.status).toBe("PUBLISH");
     });
   });
 
   test("should be able to delete a blog", async ({ page }) => {
     await page.goto(baseUrl);
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(6000);
+
+    await page.waitForSelector("#blog-card-published-w5cj1y", {
+      state: "visible",
+    });
+
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
+
+    await page.getByRole("cell", { name: "Published" }).click();
+
+    const deleteButton = page.getByRole("button", { name: " Delete" });
+    deleteButton.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+    await deleteButton.click();
+
+    const transactionObj = JSON.parse(
+      await page.locator("div.modal-body code").innerText()
+    );
+    const blogId = Object.keys(transactionObj.data.blog)[0];
+
+    await expect(page.locator("div.modal-body code")).toHaveText(
+      JSON.stringify(
+        {
+          handle: "webassemblymusic",
+          data: {
+            blog: {
+              [blogId]: {
+                "": null,
+                metadata: {
+                  title: null,
+                  createdAt: null,
+                  updatedAt: null,
+                  publishedAt: null,
+                  status: null,
+                  subtitle: null,
+                  description: null,
+                  author: null,
+                  id: null,
+                },
+              },
+            },
+          },
+        },
+        null,
+        2
+      )
+    );
   });
 
-  test("should show 3 timestamps in the blogoverview", async ({ page }) => {
+  test("should show 3 timestamps in the BlogOverview", async ({ page }) => {
     await page.goto(baseUrl);
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(6000);
-    // TODO There is no row that says "invalid date"
-  });
+    await page.waitForSelector("#blog-card-published-w5cj1y", {
+      state: "visible",
+    });
 
-  test("should have a big button when there is no blog data", async ({
-    page,
-  }) => {
-    await page.goto(baseUrl);
-    await pauseIfVideoRecording(page);
-    await page.waitForTimeout(6000);
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
+
+    await page.waitForSelector("#edit-blog-selector-published-w5cj1y", {
+      state: "visible",
+    });
+
+    const createdAtColumn = page.getByTestId("createdAt");
+    const updatedAtColumn = page.getByTestId("updatedAt");
+    const publishedAtColumn = page.getByTestId("publishedAt");
+
+    expect(createdAtColumn.isVisible()).toBeTruthy();
+    expect(updatedAtColumn.isVisible()).toBeTruthy();
+    expect(publishedAtColumn.isVisible()).toBeTruthy();
   });
 
   test.skip("should show the settings", async ({ page }) => {
     await page.goto(baseUrl);
+    const page1Promise = page.waitForEvent("popup");
+    await page.getByRole("link", { name: "Settings" }).click();
   });
 
   test.skip("should show the analytics", async ({ page }) => {
     await page.goto(baseUrl);
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
+    await page.waitForSelector("#edit-blog-selector-published-w5cj1y", {
+      state: "visible",
+    });
+    const page1Promise = page.waitForEvent("popup");
+    await page.getByRole("link", { name: "Analytics" }).click();
+    // Test if it opens a new tab to posthog url
   });
 });

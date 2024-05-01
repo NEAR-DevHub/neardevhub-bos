@@ -252,6 +252,7 @@ const SubmitBtn = () => {
           <div
             onClick={() => hasDataChanged() && handleSubmit()}
             className="p-2 d-flex gap-2 align-items-center "
+            data-testid="submit-blog-button"
           >
             {/* {isTxnCreated ? (
               LoadingButtonSpinner
@@ -265,7 +266,10 @@ const SubmitBtn = () => {
             style={{ borderLeft: "1px solid #ccc" }}
             onClick={toggleDropdown}
           >
-            <i class={`bi bi-chevron-${isDraftBtnOpen ? "up" : "down"}`}></i>
+            <i
+              data-testid="toggle-dropdown"
+              class={`bi bi-chevron-${isDraftBtnOpen ? "up" : "down"}`}
+            ></i>
           </div>
         </div>
 
@@ -278,6 +282,7 @@ const SubmitBtn = () => {
                   selectedOption.value === option.value ? "selected" : ""
                 }`}
                 onClick={() => handleOptionClick(option)}
+                data-testid={"submit-button-option-" + option.value}
               >
                 <div className={`d-flex gap-2 align-items-center`}>
                   <div className={"circle " + option.iconColor}></div>

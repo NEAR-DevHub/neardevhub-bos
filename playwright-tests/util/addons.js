@@ -87,14 +87,14 @@ export async function mockDefaultTabs(route) {
       },
       {
         addon_id: "blogv2",
-        display_name: "Blog Instance 1",
+        display_name: "First Blog",
         enabled: true,
         id: "blogv2",
         parameters: "{}",
       },
       {
         addon_id: "blogv2",
-        display_name: "Blog Instance 2",
+        display_name: "Second Blog",
         enabled: true,
         id: "blogv2instance2",
         parameters: "{}",
@@ -106,10 +106,10 @@ export async function mockDefaultTabs(route) {
     await route.fulfill({ response, json });
     return;
   } else if (
-    // FIXME: this does not work
     requestPostData.params &&
     requestPostData.params.account_id === "social.near" &&
     requestPostData.params.method_name === "get" &&
+    // FIXME: this does not work
     JSON.stringify(atob(requestPostData.params.args_base64)).includes(
       "community.devhub.near/blog/"
     )
@@ -159,7 +159,7 @@ export async function mockDefaultTabs(route) {
       "first-blog-of-instance-2-nhasab": {
         "": "# First ever blog seperate from instance 1",
         metadata: {
-          title: "First blog of instance 2",
+          title: "First blog of instance",
           createdAt: "2024-04-30",
           updatedAt: "2024-04-30",
           publishedAt: "2024-04-30",

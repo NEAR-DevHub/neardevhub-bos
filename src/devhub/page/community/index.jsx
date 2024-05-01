@@ -83,7 +83,7 @@ const blogv2instance2 = {
 // TODO remove
 const tabs = [
   {
-    title: "Blog Instance 1",
+    title: "First Blog",
     view: "${REPL_DEVHUB}/widget/devhub.page.addon",
     params: {
       addon: blogv2,
@@ -92,7 +92,7 @@ const tabs = [
     },
   },
   {
-    title: "Blog Instance 2",
+    title: "Second Blog",
     view: "${REPL_DEVHUB}/widget/devhub.page.addon",
     params: {
       addon: blogv2instance2,

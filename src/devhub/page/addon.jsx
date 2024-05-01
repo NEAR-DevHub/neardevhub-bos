@@ -127,9 +127,15 @@ return (
         onClick={() => setView(view === "configure" ? "view" : "configure")}
       >
         {view === "configure" ? (
-          <span className="bi bi-x"></span>
+          <span
+            className="bi bi-x"
+            data-testid="configure-addon-button-x"
+          ></span>
         ) : (
-          <span className="bi bi-gear"></span>
+          <span
+            className="bi bi-gear"
+            data-testid="configure-addon-button"
+          ></span>
         )}
       </SettingsButton>
     )}
