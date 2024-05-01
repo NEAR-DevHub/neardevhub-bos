@@ -5,32 +5,6 @@ const { data, editPostId, handleItemClick, selectedItem } = props;
 const options = { year: "numeric", month: "short", day: "numeric" };
 const formattedDate = (date) => new Date(date).toLocaleString("en-US", options);
 
-// TODO move this to the provider
-const reshapedData =
-  Object.keys(data || {}).map((key) => {
-    return {
-      id: key,
-      content: data[key][""],
-      createdAt: formattedDate(data[key].metadata.createdAt),
-      updatedAt: formattedDate(data[key].metadata.updatedAt),
-      publishedAt: formattedDate(data[key].metadata.publishedAt),
-      ...data[key].metadata,
-      // title: data[key].metadata.title,
-      // status: data[key].metadata.status,
-      // author: data[key].metadata.author,
-      // description: data[key].metadata.description,
-      // subtitle: data[key].metadata.subtitle,
-      // category: data[key].metadata.category,
-    };
-  }) ||
-  // .sort((blog1, blog2) => {
-  //   // sort by published date
-  //   return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
-  // })
-  [];
-
-console.log("reshapedData", reshapedData);
-
 const blogData = [
   {
     id: "new",
@@ -44,7 +18,7 @@ const blogData = [
     description: "",
     subtitle: "",
   },
-  ...reshapedData,
+  ...data,
 ];
 
 return (
@@ -92,9 +66,9 @@ return (
             {!props.hideColumns ? (
               <>
                 <td>{it.status}</td>
-                <td>{it.createdAt}</td>
-                <td>{it.updatedAt}</td>
-                <td>{it.publishedAt}</td>
+                <td>{formattedDate(it.createdAt)}</td>
+                <td>{formattedDate(it.updatedAt)}</td>
+                <td>{formattedDate(it.publishedAt)}</td>
               </>
             ) : null}
           </tr>

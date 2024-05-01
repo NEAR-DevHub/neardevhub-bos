@@ -16,15 +16,26 @@ const handleGetData = (v) => {
   return blogData[id] || {};
 };
 
-// TODO Test when their is data in the communitySocialDB
 const blogData =
-  Social.get(
-    [
-      // `${handle}.community.devhub.near/blog/**`,
-      "thomasguntenaar.near/blog/**",
-    ],
-    "final"
-  ) || {};
+  Social.get([`${handle}.community.devhub.near/blog/**`], "final") || {};
+
+console.log("Blogdata", blogData);
+
+// Show only published blogs
+const processedData = Object.keys(blogData)
+  .map((key) => {
+    return {
+      ...blogData[key].metadata,
+      id: key,
+      content: blogData[key][""],
+    };
+  })
+  // Every instance of the blog tab has its own blogs
+  .filter((blog) => blog.communityAddonId === communityAddonId)
+  // Sort by published date
+  .sort((blog1, blog2) => {
+    return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
+  });
 
 function transformString(str) {
   // Convert the string to lowercase
@@ -39,21 +50,21 @@ function transformString(str) {
 
 const handleOnSubmit = (v, isEdit) => {
   console.log("isEdit", isEdit);
-  // TODO only difference is the created at or not
-  // ! use v.createdAt || new Date().toISOString()
   if (isEdit) {
-    // TODO setCommunitySocialDB
-    Social.set({
-      blog: {
-        [v.id]: {
-          "": v.content,
-          metadata: {
-            title: v.title,
-            publishedAt: new Date(v.date).toISOString().slice(0, 10),
-            status: v.status,
-            subtitle: v.subtitle,
-            description: v.description,
-            author: v.author,
+    setCommunitySocialDB({
+      handle,
+      data: {
+        blog: {
+          [v.id]: {
+            "": v.content,
+            metadata: {
+              title: v.title,
+              publishedAt: new Date(v.date).toISOString().slice(0, 10),
+              status: v.status,
+              subtitle: v.subtitle,
+              description: v.description,
+              author: v.author,
+            },
           },
         },
       },
@@ -61,24 +72,24 @@ const handleOnSubmit = (v, isEdit) => {
     console.log("handle edit blog", v);
   } else {
     console.log("handle add blog", v);
-    // !setCommunitySocialDB({
-    // !  handle,
-    // !  data: {},
-    // ! });
-    Social.set({
-      blog: {
-        [`${transformString(v.title)}-${generateRandom6CharUUID()}`]: {
-          "": v.content,
-          metadata: {
-            title: v.title,
-            createdAt: new Date().toISOString().slice(0, 10),
-            updatedAt: new Date().toISOString().slice(0, 10),
-            publishedAt: v.date,
-            status: v.status,
-            subtitle: v.subtitle,
-            description: v.description,
-            author: v.author,
-            communityAddonId: communityAddonId,
+
+    setCommunitySocialDB({
+      handle,
+      data: {
+        blog: {
+          [`${transformString(v.title)}-${generateRandom6CharUUID()}`]: {
+            "": v.content,
+            metadata: {
+              title: v.title,
+              createdAt: new Date().toISOString().slice(0, 10),
+              updatedAt: new Date().toISOString().slice(0, 10),
+              publishedAt: v.date,
+              status: v.status,
+              subtitle: v.subtitle,
+              description: v.description,
+              author: v.author,
+              communityAddonId: communityAddonId,
+            },
           },
         },
       },
@@ -104,21 +115,23 @@ const handleOnCancel = (v) => {
 
 const handleOnDelete = (id) => {
   console.log("onDelete", v);
-  // TODO setCommunitySocialDB
-  Social.set({
-    blog: {
-      [id]: {
-        "": null,
-        metadata: {
-          title: null,
-          createdAt: null,
-          updatedAt: null,
-          publishedAt: null,
-          status: null,
-          subtitle: null,
-          description: null,
-          author: null,
-          id: null,
+  setCommunitySocialDB({
+    handle,
+    data: {
+      blog: {
+        [id]: {
+          "": null,
+          metadata: {
+            title: null,
+            createdAt: null,
+            updatedAt: null,
+            publishedAt: null,
+            status: null,
+            subtitle: null,
+            description: null,
+            author: null,
+            id: null,
+          },
         },
       },
     },
@@ -130,13 +143,19 @@ const handleSettingsPage = () => {
   // Pass this via editor.index to the layout
 };
 
+const saveBlogPostSettings = (v) => {
+  // TODO 599 move to provider
+  console.log("Implement saving blog settings issue 599");
+};
+
 return (
   <Layout
-    data={blogData || []}
+    data={processedData || []}
     getData={handleGetData}
     onChange={handleOnChange}
     onSubmit={handleOnSubmit}
     onCancel={handleOnCancel}
     onDelete={handleOnDelete}
+    onSubmitSettings={saveBlogPostSettings}
   />
 );

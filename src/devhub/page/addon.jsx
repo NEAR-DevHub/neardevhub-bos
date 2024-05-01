@@ -19,7 +19,7 @@ const Content = styled.div`
 
 const SettingsButton = styled.button`
   position: absolute;
-  top: 10px;
+  top: -100px;
   right: 10px;
 
   background-color: #fff;
@@ -81,11 +81,13 @@ const blogv2 = {
 
 const availableAddons = getAllAddons();
 
+console.log({ availableAddons: JSON.stringify(availableAddons[9], null, 1) });
+
 let addonMatch = null; // If availableAddons is not an array, set addonMatch to null
 if (Array.isArray(availableAddons)) {
-  addonMatch = ([blogv2, ...availableAddons] ?? []).find(
-    (it) => it.id === addon.addon_id
-  );
+  //availableAddons => [blogv2, ...availableAddons]
+  // [blogv2, ...availableAddons]
+  addonMatch = (availableAddons ?? []).find((it) => it.id === addon.addon_id);
 }
 
 if (!addonMatch) {
@@ -103,9 +105,7 @@ const ButtonRow = styled.div`
   justify-content: space-between;
 `;
 
-// Change 'configure' to 'viewer' "configure"); //
-const [view, setView] = useState("configure"); //props.view || "viewer");
-console.log(props.view);
+const [view, setView] = useState("viewer");
 
 if ("${REPL_DEVHUB}" !== "devhub.near") {
   addonMatch.configurator_widget = addonMatch.configurator_widget.replace(
@@ -150,7 +150,7 @@ return (
             handle, // this is temporary prop drilling until kanban and github are migrated
             permissions,
             // NOTE not the addon_id (same for every blog)
-            communityAddonId: addonMatch.id,
+            communityAddonId: addon.id,
           }}
         />
       ) : (
@@ -162,7 +162,7 @@ return (
             handle,
             permissions,
             transactionHashes: props.transactionHashes,
-            communityAddonId: addonMatch.id,
+            communityAddonId: addon.id,
           }}
         />
       )}

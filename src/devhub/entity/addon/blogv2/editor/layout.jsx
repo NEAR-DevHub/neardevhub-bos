@@ -5,6 +5,10 @@ const [selectedItem, setSelectedItem] = useState(editData);
 const [showEditor, setShowEditor] = useState(false);
 const [showBlogPostSettings, setBlogPostSettings] = useState(false);
 
+const openBlogPostSettings = () => {
+  setBlogPostSettings(true);
+};
+
 const handleItemClick = (item) => {
   if (item) {
     setSelectedItem(item);
@@ -17,17 +21,6 @@ const handleItemClick = (item) => {
 const goBack = () => {
   setSelectedItem(null);
   setShowEditor(false);
-};
-
-// TODO Move to layout
-const openBlogPostSettings = () => {
-  // TODO 599
-  setBlogPostSettings(true);
-};
-
-const saveBlogPostSettings = () => {
-  // TODO 599 move to provider
-  console.log("Implement saving blog settings issue 599");
 };
 
 const handlePublish = (status) => {
@@ -49,32 +42,12 @@ const handlePublish = (status) => {
     );
 };
 
-const openAnalytics = () => {
-  window.open("https://eu.posthog.com/project/20896", "_blank");
-};
+const postHogHref = "https://eu.posthog.com/project/20896";
 
 return (
   <div style={{ width: "100%", height: "100%" }}>
     {showBlogPostSettings ? (
-      <div>
-        {/* TODO move this to BlogPostSettings */}
-        <div className="d-flex gap-1 align-items-end justify-content-end">
-          <button
-            className="btn btn-light"
-            onClick={() => setBlogPostSettings(false)}
-          >
-            Cancel
-          </button>
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"}
-            props={{
-              title: "Save Settings",
-              onClick: saveBlogPostSettings,
-            }}
-          />
-        </div>
-        <BlogPostSettings />
-      </div>
+      <BlogPostSettings onHideSettings={() => setBlogPostSettings(false)} />
     ) : (
       <>
         {showEditor ? null : (
@@ -82,9 +55,9 @@ return (
             {/* TODO PETER <input type="text" placeholder="Search blog posts" />
             <button className="btn btn-secondary">Filter</button>
             END PETER */}
-            <button className="btn btn-light" onClick={openAnalytics}>
+            <Link className="btn btn-light" href={postHogHref} target="_blank">
               Analytics
-            </button>
+            </Link>
             <button className="btn btn-light" onClick={openBlogPostSettings}>
               Settings
             </button>
