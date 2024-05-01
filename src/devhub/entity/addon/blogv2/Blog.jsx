@@ -1,8 +1,8 @@
 const { blogId, template, handle } = props;
 
-const blog = Social.get(`${handle}/blog/${blogId}/**`, "final") || {};
-
-console.log("blogv2.Blog", { blog, handle, blogId });
+const blog =
+  Social.get(`${handle}.community.devhub.near/blog/${blogId}/**`, "final") ||
+  {};
 
 if (!blog) {
   return <div>Loading ...</div>;
