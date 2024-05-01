@@ -1,7 +1,5 @@
 function Card({ data }) {
-  // TODO publishedAt
   const { category, title, subtitle, publishedAt: date, id } = data;
-  console.log("CARD DATA", data);
 
   const Container = styled.div`
     min-height: 12.5rem;
@@ -66,8 +64,10 @@ function Card({ data }) {
   const options = { year: "numeric", month: "short", day: "numeric" };
   const formattedDate = new Date(date).toLocaleString("en-US", options);
 
+  // return <p>Card widget</p>;
+
   return (
-    <Container id={`blog-card-${id}`}>
+    <Container id={`blog-card-${id}`} data-testid={id}>
       {category && <span className="category">{category}</span>}
       <h5>{title}</h5>
       <p>{subtitle}</p>
