@@ -17,8 +17,6 @@ function Page({ data, onEdit, labels, accountId, handle }) {
     content,
   } = data;
 
-  // TODO blog page has to have community handle in the query parameters
-  // TODO use of labels is removed
   const permissions = getAccountCommunityPermissions({
     account_id: accountId,
     community_handle: "webassemblymusic",
