@@ -67,8 +67,7 @@ if (!getAllAddons || !setCommunityAddon) {
   return <p>Loading modules...</p>;
 }
 
-// TODO this needs to be added to the contract when it is ready!
-// AddOn
+// TODO blogv2 needs to be added to the contract when before merging / removed here
 const blogv2 = {
   configurator_widget:
     "devhub.near/widget/devhub.entity.addon.blogv2.Configurator",
@@ -80,8 +79,6 @@ const blogv2 = {
 };
 
 const availableAddons = getAllAddons();
-
-console.log({ availableAddons: availableAddons });
 
 let addonMatch = null; // If availableAddons is not an array, set addonMatch to null
 if (Array.isArray(availableAddons)) {

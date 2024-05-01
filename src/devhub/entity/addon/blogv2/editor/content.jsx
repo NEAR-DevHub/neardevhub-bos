@@ -5,7 +5,7 @@ const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
 
-// TODO: change with settings
+// TODO 599 change with settings
 const categories = [
   {
     label: "Guide",
@@ -187,7 +187,7 @@ const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || "");
 const [previewMode, setPreviewMode] = useState("card"); // "card" or "page"
 const [date, setDate] = useState(initialFormattedDate || new Date());
-// TODO configurable by settings in addon parameters
+// TODO 599 configurable by settings in addon parameters
 const [category, setCategory] = useState(initialData.category || "guide");
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
@@ -304,8 +304,6 @@ const Container = styled.div`
   text-align: left;
 `;
 
-console.log("content publishedAt", initialData.publishedAt);
-
 const hasDataChanged = () => {
   return (
     content !== initialData.content ||
@@ -331,7 +329,7 @@ const handlePublish = (status) => {
         status,
         author,
         category,
-        community: handle, // TODO see if we can remove this
+        community: handle,
       },
       data.id !== undefined
     );
@@ -346,7 +344,7 @@ function Preview() {
             title,
             subtitle,
             description,
-            date,
+            publishedAt: date,
             content,
             author,
             category,
@@ -362,7 +360,7 @@ function Preview() {
             title,
             subtitle,
             description,
-            date,
+            publishedAt: date,
             content,
             author,
             category,

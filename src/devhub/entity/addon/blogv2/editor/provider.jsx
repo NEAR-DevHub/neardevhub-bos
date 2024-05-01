@@ -7,10 +7,6 @@ const { Layout, handle, communityAddonId } = props;
 setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 getPost = getPost || (() => <></>);
 
-const handleOnChange = (v) => {
-  console.log("onChange", v);
-};
-
 const handleGetData = (v) => {
   const id = transformString(v.title);
   return blogData[id] || {};
@@ -18,8 +14,6 @@ const handleGetData = (v) => {
 
 const blogData =
   Social.get([`${handle}.community.devhub.near/blog/**`], "final") || {};
-
-console.log("Blogdata", blogData);
 
 // Show only published blogs
 const processedData = Object.keys(blogData)
@@ -49,52 +43,38 @@ function transformString(str) {
 }
 
 const handleOnSubmit = (v, isEdit) => {
-  console.log("isEdit", isEdit);
-  if (isEdit) {
-    setCommunitySocialDB({
-      handle,
-      data: {
-        blog: {
-          [v.id]: {
-            "": v.content,
-            metadata: {
-              title: v.title,
-              publishedAt: new Date(v.date).toISOString().slice(0, 10),
-              status: v.status,
-              subtitle: v.subtitle,
-              description: v.description,
-              author: v.author,
-            },
-          },
-        },
-      },
-    });
-    console.log("handle edit blog", v);
-  } else {
-    console.log("handle add blog", v);
+  let id = isEdit
+    ? v.id
+    : `${transformString(v.title)}-${generateRandom6CharUUID()}`;
+  // v.date
+  let publishedAt = new Date(v.date).toISOString().slice(0, 10);
 
-    setCommunitySocialDB({
-      handle,
-      data: {
-        blog: {
-          [`${transformString(v.title)}-${generateRandom6CharUUID()}`]: {
-            "": v.content,
-            metadata: {
-              title: v.title,
-              createdAt: new Date().toISOString().slice(0, 10),
-              updatedAt: new Date().toISOString().slice(0, 10),
-              publishedAt: v.date,
-              status: v.status,
-              subtitle: v.subtitle,
-              description: v.description,
-              author: v.author,
-              communityAddonId: communityAddonId,
-            },
-          },
+  let metadata = {
+    title: v.title,
+    publishedAt,
+    status: v.status,
+    subtitle: v.subtitle,
+    description: v.description,
+    author: v.author,
+  };
+
+  if (!isEdit) {
+    // Set this once when created
+    metadata.createdAt = new Date().toISOString().slice(0, 10);
+    metadata.communityAddonId = communityAddonId;
+  }
+
+  setCommunitySocialDB({
+    handle,
+    data: {
+      blog: {
+        [id]: {
+          "": v.content,
+          metadata,
         },
       },
-    });
-  }
+    },
+  });
 };
 
 function generateRandom6CharUUID() {
@@ -108,10 +88,6 @@ function generateRandom6CharUUID() {
 
   return result;
 }
-
-const handleOnCancel = (v) => {
-  console.log("onCancel", v);
-};
 
 const handleOnDelete = (id) => {
   setCommunitySocialDB({
@@ -151,9 +127,7 @@ return (
   <Layout
     data={processedData || []}
     getData={handleGetData}
-    onChange={handleOnChange}
     onSubmit={handleOnSubmit}
-    onCancel={handleOnCancel}
     onDelete={handleOnDelete}
     onSubmitSettings={saveBlogPostSettings}
   />

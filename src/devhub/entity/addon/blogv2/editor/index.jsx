@@ -1,6 +1,6 @@
 let theme = props.theme;
 let variables = props.variables;
-const editData = props.data;
+const parametersData = props.data;
 
 if (!variables) {
   variables = ``;
@@ -28,14 +28,8 @@ const Container = styled.div`
   width: 100%;
 `;
 
-// What would be the first steps?
-// Create this container and an empty provider
-// Provider has some items, onChange, onSubmit console logs
-// Create a layout that takes in Editor
-
 return (
   <Root>
-    {/* Get any layout */}
     <Container>
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.provider"
@@ -43,16 +37,14 @@ return (
           handle: props.handle,
           communityAddonId: props.communityAddonId,
           Layout: (providerProps) => {
-            const { data, onChange, onSubmit, onCancel, getData, onDelete } =
-              providerProps;
+            const { onSubmit, onCancel, getData, onDelete } = providerProps;
             return (
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.layout"
                 props={{
                   getData,
-                  editData: editData,
-                  // TODO rename to blogoverview
-                  Sidebar: (p) => (
+                  parametersData,
+                  BlogOverview: (p) => (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.BlogOverview"
                       props={{
@@ -67,15 +59,14 @@ return (
                       props={{
                         ...p,
                         ...providerProps,
+                        parametersData,
                       }}
                     />
                   ),
-                  // TODO rename blog input fields or blog form idk
                   Content: (p) => (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.content"
                       props={{
-                        onChange,
                         onCancel,
                         onSubmit,
                         onDelete,

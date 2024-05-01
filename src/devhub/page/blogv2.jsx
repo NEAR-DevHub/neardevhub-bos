@@ -92,11 +92,24 @@ if (showEditScreenData) {
         <i class="bi bi-arrow-return-left"></i>{" "}
         <p className="back-button">Back</p>
       </div>
+      {/* Wrap the configurator in blog to pass the communityAddonId */}
       <Widget
-        src={`${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Configurator`}
+        src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Blog"
         props={{
-          ...showEditScreenData,
+          blogId: id,
           handle: community,
+          template: (p) => {
+            return (
+              <Widget
+                src={`${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Configurator`}
+                props={{
+                  ...showEditScreenData,
+                  handle: community,
+                  communityAddonId: p.data.communityAddonId,
+                }}
+              />
+            );
+          },
         }}
       />
     </EditorContainer>

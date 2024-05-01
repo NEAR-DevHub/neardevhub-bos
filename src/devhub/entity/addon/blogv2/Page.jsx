@@ -1,4 +1,3 @@
-// TODO Social.get
 const { getAccountCommunityPermissions } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 ) || {
@@ -7,7 +6,7 @@ const { getAccountCommunityPermissions } = VM.require(
 const imagelink =
   "https://ipfs.near.social/ipfs/bafkreiajzvmy7574k7mp3if6u53mdukfr3hoc2kjkhjadt6x56vqhd5swy";
 
-function Page({ data, onEdit, labels, accountId, handle }) {
+function Page({ data, onEdit, accountId, handle }) {
   const {
     category,
     title,
@@ -23,9 +22,7 @@ function Page({ data, onEdit, labels, accountId, handle }) {
   });
   const isAllowedToEdit = permissions?.can_configure ?? false;
 
-  console.log("isAllowedToEdit", { isAllowedToEdit, handle });
-
-  // TODO: category is not configurable
+  // TODO 599 category is not configurable
   const Container = styled.div`
     display: flex;
     flex-direction: column;

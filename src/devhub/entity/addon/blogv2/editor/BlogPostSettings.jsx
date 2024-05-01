@@ -1,5 +1,5 @@
 // TODO issue 599
-const { editData, onSubmitSettings, onHideSettings } = props;
+const { parametersData, onSubmitSettings, onHideSettings } = props;
 
 // Show something lik
 
@@ -15,6 +15,6 @@ return (
         onClick: () => onSubmitSettings(),
       }}
     />
-    {/* TODO content + form */}
+    {/* TODO 599 content + form */}
   </div>
 );

@@ -1,7 +1,7 @@
-const { Sidebar, Content, editData, onSubmit, BlogPostSettings } = props;
+const { BlogOverview, Content, parametersData, onSubmit, BlogPostSettings } =
+  props;
 
-// Selected Item is the property "parameters" of the community addon (blog)
-const [selectedItem, setSelectedItem] = useState(editData);
+const [selectedItem, setSelectedItem] = useState(null);
 const [showEditor, setShowEditor] = useState(false);
 const [showBlogPostSettings, setBlogPostSettings] = useState(false);
 
@@ -36,7 +36,7 @@ const handlePublish = (status) => {
         content,
         author,
         category,
-        community: handle, // TODO remove this?
+        community: handle,
       },
       data.id !== undefined
     );
@@ -52,9 +52,6 @@ return (
       <>
         {showEditor ? null : (
           <div className="d-flex gap-1 align-items-end justify-content-end w-100 mb-4">
-            {/* TODO PETER <input type="text" placeholder="Search blog posts" />
-            <button className="btn btn-secondary">Filter</button>
-            END PETER */}
             <Link className="btn btn-light" href={postHogHref} target="_blank">
               Analytics
             </Link>
@@ -85,7 +82,7 @@ return (
               width: showEditor ? "20%" : "100%",
             }}
           >
-            <Sidebar
+            <BlogOverview
               selectedItem={selectedItem}
               handleItemClick={handleItemClick}
               hideColumns={showEditor}
