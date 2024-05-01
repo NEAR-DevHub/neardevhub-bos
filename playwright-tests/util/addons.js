@@ -19,33 +19,6 @@ export async function mockDefaultTabs(route) {
   if (
     requestPostData.params &&
     requestPostData.params.account_id === "devhub.near" &&
-    requestPostData.params.method_name === "get_all_addons"
-  ) {
-    // Temporary add the blogv2 until it is also added to the contract
-    const response = await route.fetch();
-    const json = await response.json();
-
-    let resultObj = decodeResultJSON(json.result.result);
-
-    resultObj = [
-      ...resultObj,
-      {
-        configurator_widget:
-          "devhub.near/widget/devhub.entity.addon.blogv2.Configurator",
-        description: "Create a blog for your community",
-        icon: "bi bi-substack",
-        id: "blogv2",
-        title: "BlogV2",
-        view_widget: "devhub.near/widget/devhub.entity.addon.blogv2.Viewer",
-      },
-    ];
-
-    json.result.result = encodeResultJSON(resultObj);
-
-    await route.fulfill({ response, json });
-  } else if (
-    requestPostData.params &&
-    requestPostData.params.account_id === "devhub.near" &&
     requestPostData.params.method_name === "get_community" &&
     atob(requestPostData.params.args_base64).includes("handle")
   ) {
