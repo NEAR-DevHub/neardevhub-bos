@@ -417,7 +417,7 @@ const FeedPage = () => {
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
       <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
         <Heading>
-          DevDAO Proposals
+          Events Committee Proposals
           <span className="text-muted text-normal">
             ({state.aggregatedCount ?? state.data.length}){" "}
           </span>

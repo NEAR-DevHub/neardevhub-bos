@@ -411,7 +411,7 @@ const LinkedProposals = () => {
   return (
     <div className="d-flex flex-column gap-3">
       {linkedProposalsData.map((item) => {
-        const link = `https://near.org/devhub.near/widget/app?page=proposal&id=${item.id}`;
+        const link = `https://near.org/${REPL_DEVHUB}/widget/app?page=proposal&id=${item.id}`;
         return (
           <a href={link} target="_blank" rel="noopener noreferrer">
             <div className="d-flex gap-2">

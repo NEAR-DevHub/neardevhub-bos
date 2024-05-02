@@ -11,7 +11,7 @@ const { id, timestamp } = props;
 const isEditPage = typeof id === "string";
 const author = context.accountId;
 const FundingDocs =
-  "https://near.social/devhub.near/widget/app?page=community&handle=developer-dao&tab=funding";
+  "https://near.social/${REPL_DEVHUB}/widget/app?page=community&handle=developer-dao&tab=funding";
 
 if (!author) {
   return (
