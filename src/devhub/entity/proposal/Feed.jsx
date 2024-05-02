@@ -207,7 +207,7 @@ const FeedPage = () => {
   });
 
   const queryName =
-    "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot";
+    "thomasguntenaar_near_events_committee_proposals_proposals_with_latest_snapshot";
   const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
       offset: $offset
@@ -320,10 +320,10 @@ const FeedPage = () => {
         if (result.body.data) {
           const data =
             result.body.data
-              .thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot;
+              .thomasguntenaar_near_events_committee_proposals_proposals_with_latest_snapshot;
           const totalResult =
             result.body.data
-              .thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot_aggregate;
+              .thomasguntenaar_near_events_committee_proposals_proposals_with_latest_snapshot_aggregate;
           State.update({ aggregatedCount: totalResult.aggregate.count });
           // Parse timeline
           fetchBlockHeights(data, offset);
