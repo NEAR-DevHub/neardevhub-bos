@@ -51,7 +51,7 @@ function AppLayout({ page, children }) {
       <Container>
         <AppHeader page={page} />
         <ContentContainer className="container-xl">{children}</ContentContainer>
-        <Footer page={page} />
+        {/* <Footer page={page} /> */}
       </Container>
     </Theme>
   );

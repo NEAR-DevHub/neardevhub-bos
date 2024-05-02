@@ -119,7 +119,7 @@ return (
   <Container>
     <div className="d-flex flex-column gap-4 p-4">
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
+        {/* <li class="nav-item" role="presentation">
           <Tab
             className="nav-link active"
             id="home-tab"
@@ -132,7 +132,7 @@ return (
           >
             Home page settings
           </Tab>
-        </li>
+        </li> */}
         <li class="nav-item" role="presentation">
           <Tab
             className="nav-link"
@@ -163,16 +163,16 @@ return (
         </li>
       </ul>
       <div class="tab-content" id="myTabContent">
-        <div
+        {/* <div
           class="tab-pane fade show active"
           id="home"
           role="tabpanel"
           aria-labelledby="home-tab"
         >
           <Widget src="${REPL_DEVHUB}/widget/devhub.page.admin.homepageTab" />
-        </div>
+        </div> */}
         <div
-          class="tab-pane fade"
+          class="tab-pane fade show active"
           id="profile"
           role="tabpanel"
           aria-labelledby="profile-tab"
