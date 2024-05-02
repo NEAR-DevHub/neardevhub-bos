@@ -50,7 +50,7 @@ const Container = styled.div`
   }
 
   .green-btn {
-    background-color: #04a46e !important;
+    background-color: #03ba16 !important;
     border: none;
     color: white;
 
@@ -417,7 +417,7 @@ const FeedPage = () => {
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
       <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
         <Heading>
-          Events Committee Proposals
+          Proposals
           <span className="text-muted text-normal">
             ({state.aggregatedCount ?? state.data.length}){" "}
           </span>
@@ -495,7 +495,7 @@ const FeedPage = () => {
                     <div>
                       <i class="bi bi-plus-circle-fill"></i>
                     </div>
-                    New Proposal
+                    Submit Proposal
                   </div>
                 ),
                 classNames: { root: "green-btn" },
@@ -517,46 +517,21 @@ const FeedPage = () => {
                   </div>
                   <div>
                     <span className="fw-bold">
-                      Welcome to
-                      <a
+                      Welcome to the
+                      {/* <a
                         href="https://near.social/devhub.near/widget/app?page=community&handle=developer-dao&tab=overview"
                         target="_blank"
                         rel="noopener noreferrer"
-                      >
-                        DevDAO’s New Proposal Feed!
-                      </a>
+                      > */}
+                      Events Committee Proposal Feed!
+                      {/* </a> */}
                     </span>
-                    This dedicated space replaces the
-                    <a
-                      href="https://near.org/devhub.near/widget/app?page=feed"
-                      className="text-decoration-underline no-space"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      old activity feed
-                    </a>
-                    , making it easier to submit and track funding requests from
-                    DevDAO, the primary organization behind DevHub. To submit a
-                    formal proposal, click New Proposal. See our{" "}
-                    <a
-                      href="https://near.org/devhub.near/widget/app?page=community&handle=developer-dao&tab=funding"
-                      className="text-decoration-underline no-space"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      guidelines
-                    </a>
-                    for details. For discussions and brainstorming, please
-                    utilize the relevant{" "}
-                    <a
-                      href="https://near.org/devhub.near/widget/app?page=communities"
-                      className="text-decoration-underline no-space"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      communities
-                    </a>
-                    .
+                    This dedicated space makes it easy to submit and track
+                    funding proposals from the Events Committee, the cross-team
+                    organization responsible for hosting and sponsoring
+                    developer-focused events. You are welcome to respond to any
+                    RFPs that are accepting submissions or submit an independent
+                    proposal.
                   </div>
                 </p>
               </div>

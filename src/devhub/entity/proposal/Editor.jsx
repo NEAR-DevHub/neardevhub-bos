@@ -110,7 +110,7 @@ const Container = styled.div`
     border: 1px solid #e2e6ec;
   }
   .green-btn {
-    background-color: #04a46e !important;
+    background-color: #03ba16 !important;
     border: none;
     color: white;
     &:active {
@@ -909,7 +909,7 @@ const ConsentComponent = useMemo(() => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                DevHub’s Terms and Conditions
+                Event Committee’s Terms and Conditions
               </a>
               and commit to honoring it
             </>
@@ -937,7 +937,7 @@ const ConsentComponent = useMemo(() => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                DevHub’s Code of Conduct
+                Event Committee’s Code of Conduct
               </a>
               and commit to honoring it
             </>
