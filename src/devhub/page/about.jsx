@@ -109,7 +109,7 @@ return (
           feedback, fostering a culture of collaboration and innovation.
         </p>
         <p>
-          Member organizations:
+          <h4>Member organizations:</h4>
           <ul>
             <li> NEAR Foundation</li>
             <li>DevHub</li>
