@@ -233,7 +233,7 @@ const tokensOptions = [
   },
 ];
 
-const devdaoAccount = "neardevdao.near";
+const eventsCommitteeAccount = "events-committee.near";
 
 const [labels, setLabels] = useState([]);
 const [title, setTitle] = useState(null);
@@ -242,7 +242,7 @@ const [summary, setSummary] = useState(null);
 const [consent, setConsent] = useState({ toc: false, coc: false });
 const [linkedProposals, setLinkedProposals] = useState([]);
 const [receiverAccount, setReceiverAccount] = useState(context.accountId);
-const [requestedSponsor, setRequestedSponsor] = useState(devdaoAccount);
+const [requestedSponsor, setRequestedSponsor] = useState(eventsCommitteeAccount);
 const [requestedSponsorshipAmount, setRequestedSponsorshipAmount] =
   useState(null);
 const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
@@ -448,6 +448,7 @@ useEffect(() => {
       }
     }
   }
+  setLoading(false)
 });
 
 useEffect(() => {
@@ -992,7 +993,7 @@ const ReceiverAccountComponent = useMemo(() => {
       src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
       props={{
         value: receiverAccount,
-        placeholder: devdaoAccount,
+        placeholder: eventsCommitteeAccount,
         onUpdate: setReceiverAccount,
       }}
     />
