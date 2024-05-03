@@ -29,6 +29,12 @@ const TIMELINE_STATUS = {
   FUNDED: "FUNDED",
 };
 
+const DecisionStage = [
+  TIMELINE_STATUS.APPROVED,
+  TIMELINE_STATUS.REJECTED,
+  TIMELINE_STATUS.APPROVED_CONDITIONALLY,
+];
+
 const Container = styled.div`
   .full-width-div {
     width: 100vw;
@@ -1402,12 +1408,13 @@ return (
                           }
                           props={{
                             label: "Save",
-                            disabled: !supervisor,
+                            disabled:
+                              !supervisor &&
+                              DecisionStage.includes(
+                                updatedProposalStatus.value.status
+                              ),
                             classNames: { root: "green-btn btn-sm" },
                             onClick: () => {
-                              if (!supervisor) {
-                                return;
-                              }
                               if (snapshot.supervisor !== supervisor) {
                                 editProposal({
                                   timeline: updatedProposalStatus.value,
