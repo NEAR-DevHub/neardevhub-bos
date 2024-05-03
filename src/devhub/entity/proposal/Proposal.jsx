@@ -2,10 +2,10 @@ const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
   href: () => {},
 };
 const { readableDate } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common"
+  "${REPL_DEVHUB}/widget/core.lib.common",
 ) || { readableDate: () => {} };
 const { getDepositAmountForWriteAccess } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common"
+  "${REPL_DEVHUB}/widget/core.lib.common",
 );
 getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 
@@ -476,7 +476,7 @@ const isAllowedToEditProposal = Near.view(
   {
     proposal_id: proposal.id,
     editor: accountId,
-  }
+  },
 );
 
 const isModerator = Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", {
@@ -499,7 +499,7 @@ const editProposal = ({ timeline }) => {
     requested_sponsor: snapshot.requested_sponsor,
     timeline: timeline,
   };
-  const args = { labels: [], body: body, id: proposal.id };
+  const args = { labels: snapshot.labels, body: body, id: proposal.id };
 
   Near.call([
     {
@@ -531,9 +531,9 @@ const [showTimelineSetting, setShowTimelineSetting] = useState(false);
 const proposalStatus = useCallback(
   () =>
     proposalStatusOptions.find(
-      (i) => i.value.status === snapshot.timeline.status
+      (i) => i.value.status === snapshot.timeline.status,
     ),
-  [snapshot]
+  [snapshot],
 );
 const [updatedProposalStatus, setUpdatedProposalStatus] = useState({});
 
@@ -552,14 +552,14 @@ const selectedStatusIndex = useMemo(
     proposalStatusOptions.findIndex((i) => {
       return updatedProposalStatus.value.status === i.value.status;
     }),
-  [updatedProposalStatus]
+  [updatedProposalStatus],
 );
 
 const TimelineItems = ({ title, children, value, values }) => {
   const indexOfCurrentItem = proposalStatusOptions.findIndex((i) =>
     Array.isArray(values)
       ? values.includes(i.value.status)
-      : value === i.value.status
+      : value === i.value.status,
   );
   let color = "transparent";
   let statusIndex = selectedStatusIndex;
@@ -805,11 +805,13 @@ return (
                     <div>
                       <Widget
                         src={
-                          "${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryDropdown"
+                          "${REPL_DEVHUB}/widget/devhub.entity.proposal.MultiSelectLabelsDropdown"
                         }
                         props={{
-                          selectedValue: snapshot.category,
+                          selected: snapshot.labels,
+                          onChange: () => {},
                           disabled: true,
+                          hideDropdown: true,
                         }}
                       />
                     </div>
@@ -915,7 +917,7 @@ return (
                     <div className="d-flex flex-column gap-1">
                       <div>
                         {parseInt(
-                          snapshot.requested_sponsorship_usd_amount
+                          snapshot.requested_sponsorship_usd_amount,
                         ).toLocaleString()}{" "}
                         USD
                       </div>
@@ -1292,7 +1294,7 @@ return (
                                       <i class="bi bi-arrow-up-right"></i>
                                     </a>
                                   );
-                                }
+                                },
                               )}
                             </div>
                           ) : (
@@ -1422,7 +1424,7 @@ return (
                                     payouts: !paymentHashes[0]
                                       ? []
                                       : paymentHashes.filter(
-                                          (item) => item !== ""
+                                          (item) => item !== "",
                                         ),
                                   },
                                 });

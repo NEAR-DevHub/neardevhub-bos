@@ -1,6 +1,6 @@
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const { getDepositAmountForWriteAccess } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common"
+  "${REPL_DEVHUB}/widget/core.lib.common",
 );
 const draftKey = "PROPOSAL_EDIT";
 getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
@@ -235,7 +235,7 @@ const tokensOptions = [
 
 const devdaoAccount = "neardevdao.near";
 
-const [category, setCategory] = useState(null);
+const [labels, setLabels] = useState([]);
 const [title, setTitle] = useState(null);
 const [description, setDescription] = useState(null);
 const [summary, setSummary] = useState(null);
@@ -246,7 +246,7 @@ const [requestedSponsor, setRequestedSponsor] = useState(devdaoAccount);
 const [requestedSponsorshipAmount, setRequestedSponsorshipAmount] =
   useState(null);
 const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
-  tokensOptions[2]
+  tokensOptions[2],
 );
 const [supervisor, setSupervisor] = useState(null);
 const [allowDraft, setAllowDraft] = useState(true);
@@ -274,7 +274,7 @@ const memoizedDraftData = useMemo(
     snapshot: {
       name: title,
       description: description,
-      category: category,
+      labels: labels,
       summary: summary,
       requested_sponsorship_usd_amount: requestedSponsorshipAmount,
       requested_sponsorship_paid_in_currency: requestedSponsorshipToken.value,
@@ -287,13 +287,13 @@ const memoizedDraftData = useMemo(
     title,
     summary,
     description,
-    category,
+    labels,
     requestedSponsorshipAmount,
     requestedSponsorshipToken,
     receiverAccount,
     supervisor,
     requestedSponsor,
-  ]
+  ],
 );
 
 useEffect(() => {
@@ -316,7 +316,8 @@ useEffect(() => {
           ...JSON.parse(draftProposalData).snapshot,
         };
       }
-      setCategory(snapshot.category);
+      console.log(data);
+      setLabels(snapshot.labels ?? []);
       setTitle(snapshot.name);
       setSummary(snapshot.summary);
       setDescription(snapshot.description);
@@ -326,7 +327,8 @@ useEffect(() => {
       setSupervisor(snapshot.supervisor);
 
       const token = tokensOptions.find(
-        (item) => item.value === snapshot.requested_sponsorship_paid_in_currency
+        (item) =>
+          item.value === snapshot.requested_sponsorship_paid_in_currency,
       );
       setRequestedSponsorshipToken(token ?? tokensOptions[2]);
       if (isEditPage) {
@@ -352,12 +354,12 @@ useEffect(() => {
       !title ||
       !description ||
       !summary ||
-      !category ||
+      !(labels ?? []).length ||
       !requestedSponsorshipAmount ||
       !receiverAccount ||
       !requestedSponsor ||
       !consent.toc ||
-      !consent.coc
+      !consent.coc,
   );
   const handler = setTimeout(() => {
     Storage.privateSet(draftKey, JSON.stringify(memoizedDraftData));
@@ -393,7 +395,7 @@ useEffect(() => {
             ]);
           }),
         item + "linked_proposals",
-        { subscribe: false }
+        { subscribe: false },
       );
     });
   }
@@ -430,7 +432,7 @@ useEffect(() => {
     } else {
       const proposalIds = Near.view(
         "${REPL_DEVHUB_CONTRACT}",
-        "get_all_proposal_ids"
+        "get_all_proposal_ids",
       );
       if (Array.isArray(proposalIds) && !proposalIdsArray) {
         setProposalIdsArray(proposalIds);
@@ -483,14 +485,14 @@ useEffect(() => {
               () =>
                 Near.asyncView(
                   "${REPL_DEVHUB_CONTRACT}",
-                  "get_all_proposal_ids"
+                  "get_all_proposal_ids",
                 ).then((proposalIdsArray) => {
                   setProposalId(
-                    proposalIdsArray?.[proposalIdsArray?.length - 1]
+                    proposalIdsArray?.[proposalIdsArray?.length - 1],
                   );
                 }),
               props.transactionHashes + "proposalIds",
-              { subscribe: false }
+              { subscribe: false },
             );
           } else {
             setProposalId(id);
@@ -498,7 +500,7 @@ useEffect(() => {
           setLoading(false);
         }),
       props.transactionHashes + context.accountId,
-      { subscribe: false }
+      { subscribe: false },
     );
   } else {
     if (showProposalPage) {
@@ -720,7 +722,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
     proposal_body_version: "V0",
     name: title,
     description: description,
-    category: category,
+    category: "Bounty",
     summary: summary,
     linked_proposals: linkedProposalsIds,
     requested_sponsorship_usd_amount: requestedSponsorshipAmount,
@@ -735,14 +737,14 @@ const onSubmit = ({ isDraft, isCancel }) => {
           reviewer_completed_attestation: false,
         }
       : isDraft
-      ? { status: "DRAFT" }
-      : {
-          status: "REVIEW",
-          sponsor_requested_review: false,
-          reviewer_completed_attestation: false,
-        },
+        ? { status: "DRAFT" }
+        : {
+            status: "REVIEW",
+            sponsor_requested_review: false,
+            reviewer_completed_attestation: false,
+          },
   };
-  const args = { labels: [], body: body };
+  const args = { labels: (labels ?? [ð]).map((i) => i.value), body: body };
   if (isEditPage) {
     args["id"] = editProposalData.id;
   }
@@ -826,10 +828,12 @@ const CollapsibleContainer = ({ title, children, noPaddingTop }) => {
 const CategoryDropdown = useMemo(() => {
   return (
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryDropdown"}
+      src={
+        "${REPL_DEVHUB}/widget/devhub.entity.proposal.MultiSelectLabelsDropdown"
+      }
       props={{
-        selectedValue: category,
-        onChange: setCategory,
+        selected: labels,
+        onChange: setLabels,
       }}
     />
   );
