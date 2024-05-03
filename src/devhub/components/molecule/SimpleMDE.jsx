@@ -82,6 +82,14 @@ const code = `
   .editor-toolbar {
       text-align: ${alignToolItems};
   }
+  
+  .CodeMirror {
+    min-height:200px !important; // for autocomplete to be visble 
+  }
+
+  .CodeMirror-scroll {
+    min-height:200px !important; // for autocomplete to be visble 
+  }
 
   ${embeddCSS}
 
@@ -479,6 +487,7 @@ return (
     style={{
       height: `${state.iframeHeight}px`,
       maxHeight: "410px",
+      minHeight: "250px",
     }}
     srcDoc={code}
     message={{

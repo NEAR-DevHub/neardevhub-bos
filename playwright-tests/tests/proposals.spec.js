@@ -1,7 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
 import { pauseIfVideoRecording } from "../testUtils.js";
-import { setDontAskAgainCacheValues } from "../util/cache.js";
+import {
+  setCommitWritePermissionDontAskAgainCacheValues,
+  setDontAskAgainCacheValues,
+} from "../util/cache.js";
 import {
   mockTransactionSubmitRPCResponses,
   decodeResultJSON,
@@ -148,6 +151,92 @@ test.describe("Don't ask again enabled", () => {
     await expect(transaction_toast).not.toBeVisible();
     await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
     await expect(loadingIndicator).not.toBeVisible();
+
+    await page.waitForTimeout(1000);
+    await pauseIfVideoRecording(page);
+  });
+  test("should add comment on a proposal", async ({ page }) => {
+    test.setTimeout(120000);
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    const widgetSrc =
+      "devhub.near/widget/devhub.entity.proposal.ComposeComment";
+    const account = "petersalomonsen.near";
+    await setDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      methodName: "set",
+      contractId: "social.near",
+    });
+    await setCommitWritePermissionDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      accountId: account,
+    });
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const commentArea = await page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentArea.focus();
+    const text = "Comment testing";
+    await commentArea.pressSequentially(text, {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await commentArea.blur();
+    await pauseIfVideoRecording(page);
+    let is_transaction_completed = false;
+
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        // const postData = request.postDataJSON();
+        // const args_base64 = postData.params?.args_base64;
+        // console.log("calledd",postData,args_base64)
+        // if (transaction_completed && args_base64) {
+        //   is_transaction_completed = true;
+        //   const args = atob(args_base64);
+        //   if (
+        //     postData.params.account_id === "social.near" &&
+        //     postData.params.method_name === "get" &&
+        //     args === `{"keys":["${account}/post/**"]}`
+        //   ) {
+        //     const response = await route.fetch();
+        //     const json = await response.json();
+        //     const resultObj = decodeResultJSON(json.result.result);
+        //     resultObj[account].post.main = JSON.stringify({
+        //       text: text,
+        //     });
+        //     json.result.result = encodeResultJSON(resultObj);
+        //     await route.fulfill({ response, json });
+        //     return;
+        //   } else {
+        //     await route.continue();
+        //   }
+        // }
+      }
+    );
+
+    test.setTimeout(120000);
+    const commentButton = await page.getByRole("button", { name: "Comment" });
+    await commentButton.scrollIntoViewIfNeeded();
+    await commentButton.click();
+    const loadingIndicator = await page.locator(".comment-btn-spinner");
+    await expect(loadingIndicator).toBeAttached();
+    await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
+    await expect(loadingIndicator).not.toBeVisible();
+    const transaction_successful_toast = await page.getByText(
+      "Comment Submitted Successfully"
+    );
+    await expect(transaction_successful_toast).toBeVisible();
+
+    await transaction_successful_toast.waitFor({
+      state: "detached",
+      timeout: 3000,
+    });
+    await expect(transaction_successful_toast).not.toBeVisible();
+    await expect(commentArea).toBeEmpty();
 
     await page.waitForTimeout(1000);
     await pauseIfVideoRecording(page);
@@ -369,61 +458,6 @@ test.describe("Wallet is connected", () => {
       )
     );
 
-    await pauseIfVideoRecording(page);
-  });
-
-  test("should add comment on a proposal", async ({ page }) => {
-    test.setTimeout(120000);
-    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
-
-    const commentArea = await page
-      .frameLocator("iframe")
-      .locator(".CodeMirror textarea");
-    await commentArea.focus();
-    await commentArea.fill("Comment testing");
-    await commentArea.blur();
-    await pauseIfVideoRecording(page);
-
-    await mockTransactionSubmitRPCResponses(
-      page,
-      async ({ route, request, transaction_completed }) => {
-        const postData = request.postDataJSON();
-        if (transaction_completed && postData.params?.method_name === "set") {
-          const response = await route.fetch();
-          const json = await response.json();
-
-          console.log("transaction completed");
-          const resultObj = decodeResultJSON(json.result.result);
-          resultObj.push(1);
-          console.log(JSON.stringify(resultObj));
-          json.result.result = encodeResultJSON(resultObj);
-
-          await route.fulfill({ response, json });
-        } else {
-          await route.continue();
-        }
-      }
-    );
-
-    const commentButton = await page.getByRole("button", { name: "Comment" });
-    commentButton.click();
-    const loadingIndicator = await page.locator(".comment-btn-spinner");
-    await expect(loadingIndicator).toBeAttached();
-
-    const transaction_successful_toast = await page.getByText(
-      "Comment Submitted Successfully"
-    );
-    await expect(transaction_successful_toast).toBeVisible();
-
-    await transaction_successful_toast.waitFor({
-      state: "detached",
-      timeout: 3000,
-    });
-    await expect(transaction_successful_toast).not.toBeVisible();
-
-    await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
-    await expect(loadingIndicator).not.toBeVisible();
-    await page.waitForTimeout(1000);
     await pauseIfVideoRecording(page);
   });
 });

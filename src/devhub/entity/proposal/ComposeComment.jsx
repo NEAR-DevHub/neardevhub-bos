@@ -201,7 +201,7 @@ const Compose = useMemo(() => {
         onChangeKeyup: setComment,
         autocompleteEnabled: true,
         placeholder: "Add your comment here...",
-        height: "180",
+        height: "250",
         embeddCSS: ComposeEmbeddCSS,
         handler: handler,
         showProposalIdAutoComplete: true,
@@ -237,6 +237,7 @@ return (
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             label: isTxnCreated ? LoadingButtonSpinner : "Comment",
+            ["data-testid"]: "compose-comment",
             disabled: !comment || isTxnCreated,
             classNames: { root: "green-btn btn-sm" },
             onClick: () => {
