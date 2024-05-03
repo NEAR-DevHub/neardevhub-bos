@@ -316,7 +316,7 @@ useEffect(() => {
           ...JSON.parse(draftProposalData).snapshot,
         };
       }
-      console.log(data);
+
       setLabels(snapshot.labels ?? []);
       setTitle(snapshot.name);
       setSummary(snapshot.summary);
