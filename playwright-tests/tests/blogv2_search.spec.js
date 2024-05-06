@@ -11,7 +11,6 @@ test.describe("Wallet is not connected", () => {
   });
 
   test("should filter blog posts from search criteria", async ({ page }) => {
-    test.setTimeout(120000);
     const topics = [
       "cows",
       "cars",

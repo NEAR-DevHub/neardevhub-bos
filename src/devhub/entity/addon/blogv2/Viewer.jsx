@@ -75,9 +75,15 @@ const processedData = Object.keys(blogData)
   });
 
 function BlogCardWithLink(flattenedBlog) {
+  const display =
+    !blogPostQueryStringLowerCase ||
+    flattenedBlog.content?.toLowerCase().includes(blogPostQueryStringLowerCase)
+      ? "block"
+      : "none";
+
   return (
     <Link
-      style={{ textDecoration: "none" }}
+      style={{ textDecoration: "none", display }}
       to={href({
         widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: { page: "blogv2", id: flattenedBlog.id, community: handle },
@@ -122,15 +128,7 @@ return (
     {searchInput}
     <Grid>
       {processedData && processedData.length > 0
-        ? processedData
-            .filter(
-              (blog) =>
-                !blogPostQueryStringLowerCase ||
-                blog.content
-                  ?.toLowerCase()
-                  .includes(blogPostQueryStringLowerCase)
-            )
-            .map((flattenedBlog) => BlogCardWithLink(flattenedBlog))
+        ? processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))
         : BlogCard({
             category: "Category",
             title: "Placeholder",
