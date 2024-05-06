@@ -21,7 +21,7 @@ test.describe("Wallet is not connected", () => {
       "blockchain technology",
       "Artificial intelligence",
       "search for extra terrestrial life",
-      "the meaning of life in general",
+      "the meaning of life",
     ];
 
     await page.route("https://api.near.social/get", async (route) => {
@@ -31,8 +31,6 @@ test.describe("Wallet is not connected", () => {
       if (
         requestBody.keys[0] === "webassemblymusic.community.devhub.near/blog/**"
       ) {
-        console.log("social get", requestBody.keys);
-
         const blogPosts = {};
         for (let n = 0; n < 100; n++) {
           const topic = topics[n % topics.length];
@@ -82,7 +80,7 @@ This is an article about ${topic}.
     await searchField.scrollIntoViewIfNeeded();
     for (let topic of topics) {
       await searchField.fill("");
-      await searchField.pressSequentially(topic, { delay: 50 });
+      await searchField.pressSequentially(topic, { delay: 30 });
       await pauseIfVideoRecording(page);
     }
     /*        const span1 = await page.waitForSelector('h5:has-text("Published")', {
