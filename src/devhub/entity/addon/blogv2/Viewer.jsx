@@ -50,8 +50,12 @@ if (!handle) {
   return <div>Missing handle</div>;
 }
 
+const [blogPostQueryString, setBlogPostQueryString] = useState("");
+
 const blogData =
   Social.get([`${handle}.community.devhub.near/blog/**`], "final") || {};
+
+const blogPostQueryStringLowerCase = blogPostQueryString.toLowerCase();
 
 const processedData = Object.keys(blogData)
   .map((key) => {
@@ -65,6 +69,12 @@ const processedData = Object.keys(blogData)
   .filter((blog) => blog.status === "PUBLISH")
   // Every instance of the blog tab has its own blogs
   .filter((blog) => blog.communityAddonId === communityAddonId)
+  // Search
+  .filter(
+    (blog) =>
+      !blogPostQueryStringLowerCase ||
+      blog.content?.toLowerCase().includes(blogPostQueryStringLowerCase)
+  )
   // Sort by published date
   .sort((blog1, blog2) => {
     return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
@@ -97,6 +107,18 @@ return (
     {/* <p>{JSON.stringify(props)}</p> */}
     {/* TODO 599 {data.title || "Latest Blog Posts"} */}
     {!hideTitle && <Heading> Latest Blog Posts</Heading>}
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      props={{
+        className: "flex-grow-1",
+        value: blogPostQueryString,
+        placeholder: "search blog posts",
+        onChange: (e) => {
+          setBlogPostQueryString(e.target.value);
+        },
+        inputProps: {},
+      }}
+    />
     <Grid>
       {processedData && processedData.length > 0
         ? processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))

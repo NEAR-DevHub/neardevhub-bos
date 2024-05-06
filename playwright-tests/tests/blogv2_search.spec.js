@@ -11,6 +11,19 @@ test.describe("Wallet is not connected", () => {
   });
 
   test("should filter blog posts from search criteria", async ({ page }) => {
+    test.setTimeout(120000);
+    const topics = [
+      "cows",
+      "cars",
+      "sheep",
+      "birds",
+      "computers",
+      "blockchain technology",
+      "Artificial intelligence",
+      "search for extra terrestrial life",
+      "the meaning of life in general",
+    ];
+
     await page.route("https://api.near.social/get", async (route) => {
       const request = route.request();
       const requestBody = request.postDataJSON();
@@ -22,17 +35,22 @@ test.describe("Wallet is not connected", () => {
 
         const blogPosts = {};
         for (let n = 0; n < 100; n++) {
+          const topic = topics[n % topics.length];
           const blogDate = new Date(2024, 0, 1);
           blogDate.setDate(n);
           blogPosts["new-blog-post-cg" + n] = {
-            "": "# Content",
+            "": `# Blog post ${n + 1}
+This is an article about ${topic}.
+`,
             metadata: {
               title: "New Blog Post" + n,
               createdAt: blogDate.toJSON(),
               updatedAt: blogDate.toJSON(),
               publishedAt: blogDate.toJSON(),
               status: "PUBLISH",
-              subtitle: "Subtitle",
+              subtitle: `${topic
+                .substring(0, 1)
+                .toUpperCase()}${topic.substring(1)}`,
               description: "Description" + n,
               author: "Author",
               communityAddonId: "blogv2",
@@ -59,8 +77,14 @@ test.describe("Wallet is not connected", () => {
       state: "visible",
     });
 
-    await page.waitForTimeout(2000);
-
+    await pauseIfVideoRecording(page);
+    const searchField = await page.getByPlaceholder("search blog posts");
+    await searchField.scrollIntoViewIfNeeded();
+    for (let topic of topics) {
+      await searchField.fill("");
+      await searchField.pressSequentially(topic, { delay: 50 });
+      await pauseIfVideoRecording(page);
+    }
     /*        const span1 = await page.waitForSelector('h5:has-text("Published")', {
             state: "visible",
         });
