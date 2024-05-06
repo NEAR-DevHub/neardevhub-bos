@@ -102,8 +102,9 @@ function BlogCard(flattenedBlog) {
   );
 }
 
-const searchInput = useMemo(
-  () => (
+const searchInput = useMemo(() => {
+  let timeout;
+  return (
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
       props={{
@@ -111,14 +112,17 @@ const searchInput = useMemo(
         value: blogPostQueryString,
         placeholder: "search blog posts",
         onChange: (e) => {
-          setBlogPostQueryString(e.target.value);
+          clearTimeout(timeout);
+          timeout = setTimeout(
+            () => setBlogPostQueryString(e.target.value),
+            100
+          );
         },
         inputProps: {},
       }}
     />
-  ),
-  []
-);
+  );
+}, []);
 
 return (
   <div class="w-100">
