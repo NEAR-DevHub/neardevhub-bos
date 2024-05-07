@@ -130,9 +130,14 @@ const FeedItem = ({ proposal, index }) => {
             <div className="d-flex gap-2 align-items-center flex-wrap w-100">
               <div className="h6 mb-0 text-black">{proposal.name}</div>
               <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryTag"}
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.entity.proposal.MultiSelectLabelsDropdown"
+                }
                 props={{
-                  category: proposal.category,
+                  selected: proposal.labels,
+                  onChange: () => {},
+                  disabled: true,
+                  hideDropdown: true,
                 }}
               />
             </div>
@@ -225,6 +230,7 @@ const FeedPage = () => {
       ts
       timeline
       views
+      labels
     }
     ${queryName}_aggregate(
       order_by: {proposal_id: desc}
