@@ -1,6 +1,6 @@
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const { getDepositAmountForWriteAccess } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common",
+  "${REPL_DEVHUB}/widget/core.lib.common"
 );
 const draftKey = "PROPOSAL_EDIT";
 getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
@@ -242,11 +242,13 @@ const [summary, setSummary] = useState(null);
 const [consent, setConsent] = useState({ toc: false, coc: false });
 const [linkedProposals, setLinkedProposals] = useState([]);
 const [receiverAccount, setReceiverAccount] = useState(context.accountId);
-const [requestedSponsor, setRequestedSponsor] = useState(eventsCommitteeAccount);
+const [requestedSponsor, setRequestedSponsor] = useState(
+  eventsCommitteeAccount
+);
 const [requestedSponsorshipAmount, setRequestedSponsorshipAmount] =
   useState(null);
 const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
-  tokensOptions[2],
+  tokensOptions[2]
 );
 const [supervisor, setSupervisor] = useState(null);
 const [allowDraft, setAllowDraft] = useState(true);
@@ -293,7 +295,7 @@ const memoizedDraftData = useMemo(
     receiverAccount,
     supervisor,
     requestedSponsor,
-  ],
+  ]
 );
 
 useEffect(() => {
@@ -327,8 +329,7 @@ useEffect(() => {
       setSupervisor(snapshot.supervisor);
 
       const token = tokensOptions.find(
-        (item) =>
-          item.value === snapshot.requested_sponsorship_paid_in_currency,
+        (item) => item.value === snapshot.requested_sponsorship_paid_in_currency
       );
       setRequestedSponsorshipToken(token ?? tokensOptions[2]);
       if (isEditPage) {
@@ -359,7 +360,7 @@ useEffect(() => {
       !receiverAccount ||
       !requestedSponsor ||
       !consent.toc ||
-      !consent.coc,
+      !consent.coc
   );
   const handler = setTimeout(() => {
     Storage.privateSet(draftKey, JSON.stringify(memoizedDraftData));
@@ -395,7 +396,7 @@ useEffect(() => {
             ]);
           }),
         item + "linked_proposals",
-        { subscribe: false },
+        { subscribe: false }
       );
     });
   }
@@ -432,7 +433,7 @@ useEffect(() => {
     } else {
       const proposalIds = Near.view(
         "${REPL_DEVHUB_CONTRACT}",
-        "get_all_proposal_ids",
+        "get_all_proposal_ids"
       );
       if (Array.isArray(proposalIds) && !proposalIdsArray) {
         setProposalIdsArray(proposalIds);
@@ -448,7 +449,7 @@ useEffect(() => {
       }
     }
   }
-  setLoading(false)
+  setLoading(false);
 });
 
 useEffect(() => {
@@ -486,14 +487,14 @@ useEffect(() => {
               () =>
                 Near.asyncView(
                   "${REPL_DEVHUB_CONTRACT}",
-                  "get_all_proposal_ids",
+                  "get_all_proposal_ids"
                 ).then((proposalIdsArray) => {
                   setProposalId(
-                    proposalIdsArray?.[proposalIdsArray?.length - 1],
+                    proposalIdsArray?.[proposalIdsArray?.length - 1]
                   );
                 }),
               props.transactionHashes + "proposalIds",
-              { subscribe: false },
+              { subscribe: false }
             );
           } else {
             setProposalId(id);
@@ -501,7 +502,7 @@ useEffect(() => {
           setLoading(false);
         }),
       props.transactionHashes + context.accountId,
-      { subscribe: false },
+      { subscribe: false }
     );
   } else {
     if (showProposalPage) {
@@ -738,12 +739,12 @@ const onSubmit = ({ isDraft, isCancel }) => {
           reviewer_completed_attestation: false,
         }
       : isDraft
-        ? { status: "DRAFT" }
-        : {
-            status: "REVIEW",
-            sponsor_requested_review: false,
-            reviewer_completed_attestation: false,
-          },
+      ? { status: "DRAFT" }
+      : {
+          status: "REVIEW",
+          sponsor_requested_review: false,
+          reviewer_completed_attestation: false,
+        },
   };
   const args = { labels: (labels ?? [ð]).map((i) => i.value), body: body };
   if (isEditPage) {
@@ -1313,9 +1314,6 @@ if (showProposalPage) {
                     description="Select your preferred currency for receiving funds. Note: The exchange rate for NEAR tokens will be the closing rate at the day of the invoice."
                   >
                     {CurrencyComponent}
-                  </InputContainer>
-                  <InputContainer heading="Requested Sponsor" description="">
-                    {SponsorComponent}
                   </InputContainer>
                   <InputContainer
                     heading="Supervisor (Optional)"

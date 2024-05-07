@@ -2,10 +2,10 @@ const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
   href: () => {},
 };
 const { readableDate } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common",
+  "${REPL_DEVHUB}/widget/core.lib.common"
 ) || { readableDate: () => {} };
 const { getDepositAmountForWriteAccess } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common",
+  "${REPL_DEVHUB}/widget/core.lib.common"
 );
 getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 
@@ -476,7 +476,7 @@ const isAllowedToEditProposal = Near.view(
   {
     proposal_id: proposal.id,
     editor: accountId,
-  },
+  }
 );
 
 const isModerator = Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", {
@@ -531,9 +531,9 @@ const [showTimelineSetting, setShowTimelineSetting] = useState(false);
 const proposalStatus = useCallback(
   () =>
     proposalStatusOptions.find(
-      (i) => i.value.status === snapshot.timeline.status,
+      (i) => i.value.status === snapshot.timeline.status
     ),
-  [snapshot],
+  [snapshot]
 );
 const [updatedProposalStatus, setUpdatedProposalStatus] = useState({});
 
@@ -552,14 +552,14 @@ const selectedStatusIndex = useMemo(
     proposalStatusOptions.findIndex((i) => {
       return updatedProposalStatus.value.status === i.value.status;
     }),
-  [updatedProposalStatus],
+  [updatedProposalStatus]
 );
 
 const TimelineItems = ({ title, children, value, values }) => {
   const indexOfCurrentItem = proposalStatusOptions.findIndex((i) =>
     Array.isArray(values)
       ? values.includes(i.value.status)
-      : value === i.value.status,
+      : value === i.value.status
   );
   let color = "transparent";
   let statusIndex = selectedStatusIndex;
@@ -917,7 +917,7 @@ return (
                     <div className="d-flex flex-column gap-1">
                       <div>
                         {parseInt(
-                          snapshot.requested_sponsorship_usd_amount,
+                          snapshot.requested_sponsorship_usd_amount
                         ).toLocaleString()}{" "}
                         USD
                       </div>
@@ -948,17 +948,6 @@ return (
                       accountId === authorId,
                   }}
                 />
-              </SidePanelItem>
-              <SidePanelItem title="Requested Sponsor">
-                {snapshot.requested_sponsor && (
-                  <Widget
-                    src="${REPL_NEAR}/widget/AccountProfile"
-                    props={{
-                      accountId: snapshot.requested_sponsor,
-                      noOverlay: true,
-                    }}
-                  />
-                )}
               </SidePanelItem>
               <SidePanelItem title="Supervisor">
                 {snapshot.supervisor ? (
@@ -1294,7 +1283,7 @@ return (
                                       <i class="bi bi-arrow-up-right"></i>
                                     </a>
                                   );
-                                },
+                                }
                               )}
                             </div>
                           ) : (
@@ -1424,7 +1413,7 @@ return (
                                     payouts: !paymentHashes[0]
                                       ? []
                                       : paymentHashes.filter(
-                                          (item) => item !== "",
+                                          (item) => item !== ""
                                         ),
                                   },
                                 });
