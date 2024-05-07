@@ -26,11 +26,10 @@ const toggleDropdown = () => {
 };
 
 useEffect(() => {
-  console.log("sss", selected, selectedOptions);
   if (JSON.stringify(selectedOptions) !== JSON.stringify(selected)) {
     if ((selected ?? []).some((i) => !i.value)) {
       setSelectedOptions(
-        selected.map((i) => availableOptions.find((t) => t.value === i))
+        selected.map((i) => availableOptions.find((t) => t.value === i)),
       );
     } else {
       setSelectedOptions(selected);
@@ -126,7 +125,7 @@ return (
                 className="cursor-pointer"
                 onClick={() => {
                   const updatedOptions = selectedOptions.filter(
-                    (item) => item.value !== option.value
+                    (item) => item.value !== option.value,
                   );
                   setSelectedOptions(updatedOptions);
                 }}
@@ -163,7 +162,7 @@ return (
                     key={option.value}
                     className={`dropdown-item cursor-pointer w-100 my-1 ${
                       (selectedOptions ?? []).find(
-                        (item) => item.value === option.value
+                        (item) => item.value === option.value,
                       )
                         ? "selected"
                         : ""
