@@ -55,10 +55,6 @@ const [blogPostQueryString, setBlogPostQueryString] = useState("");
 const blogData =
   Social.get([`${handle}.community.devhub.near/blog/**`], "final") || {};
 
-const blogPostQueryStringLowerCase = blogPostQueryString
-  ? blogPostQueryString.toLowerCase()
-  : "";
-
 const processedData = Object.keys(blogData)
   .map((key) => {
     return {
@@ -77,15 +73,9 @@ const processedData = Object.keys(blogData)
   });
 
 function BlogCardWithLink(flattenedBlog) {
-  const display =
-    !blogPostQueryStringLowerCase ||
-    flattenedBlog.content?.toLowerCase().includes(blogPostQueryStringLowerCase)
-      ? "block"
-      : "none";
-
   return (
     <Link
-      style={{ textDecoration: "none", display }}
+      style={{ textDecoration: "none" }}
       to={href({
         widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: { page: "blogv2", id: flattenedBlog.id, community: handle },
@@ -127,6 +117,10 @@ const searchInput = useMemo(() => {
   );
 }, []);
 
+const blogPostQueryStringLowerCase = blogPostQueryString
+  ? blogPostQueryString.toLowerCase()
+  : "";
+
 return (
   <div class="w-100">
     {/* <p>{JSON.stringify(props)}</p> */}
@@ -135,7 +129,15 @@ return (
     {searchInput}
     <Grid>
       {processedData && processedData.length > 0
-        ? processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))
+        ? processedData
+            .filter(
+              (flattenedBlog) =>
+                !blogPostQueryStringLowerCase ||
+                flattenedBlog.content
+                  ?.toLowerCase()
+                  .includes(blogPostQueryStringLowerCase)
+            )
+            .map((flattenedBlog) => BlogCardWithLink(flattenedBlog))
         : BlogCard({
             category: "Category",
             title: "Placeholder",
