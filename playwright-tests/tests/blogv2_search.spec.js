@@ -79,7 +79,7 @@ This is an article about ${topic}.
     await searchField.scrollIntoViewIfNeeded();
     for (let topic of topics) {
       await searchField.fill("");
-      await searchField.pressSequentially(topic, { delay: 30 });
+      await searchField.pressSequentially(topic, { delay: 50 });
       await pauseIfVideoRecording(page);
     }
     /*        const span1 = await page.waitForSelector('h5:has-text("Published")', {

@@ -1,6 +1,6 @@
-const { Card } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card") ||
-  (() => <></>);
+const { Card } = VM.require(
+  "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card"
+);
 
 if (!Card) {
   return <p>Loading modules...</p>;
@@ -55,7 +55,9 @@ const [blogPostQueryString, setBlogPostQueryString] = useState("");
 const blogData =
   Social.get([`${handle}.community.devhub.near/blog/**`], "final") || {};
 
-const blogPostQueryStringLowerCase = blogPostQueryString.toLowerCase();
+const blogPostQueryStringLowerCase = blogPostQueryString
+  ? blogPostQueryString.toLowerCase()
+  : "";
 
 const processedData = Object.keys(blogData)
   .map((key) => {
@@ -112,11 +114,12 @@ const searchInput = useMemo(() => {
         value: blogPostQueryString,
         placeholder: "search blog posts",
         onChange: (e) => {
-          clearTimeout(timeout);
-          timeout = setTimeout(
-            () => setBlogPostQueryString(e.target.value),
-            100
-          );
+          if (!timeout) {
+            timeout = setTimeout(() => {
+              setBlogPostQueryString(e.target.value);
+              timeout = null;
+            }, 200);
+          }
         },
         inputProps: {},
       }}
