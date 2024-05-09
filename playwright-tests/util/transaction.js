@@ -19,7 +19,7 @@ const access_keys = [
         FunctionCall: {
           allowance: "241917078840755500000000",
           method_names: [],
-          receiver_id: "devhub.near",
+          receiver_id: "events-committee.near",
         },
       },
     },
