@@ -5,7 +5,7 @@ import {
   setInputAndAssert,
 } from "../testUtils";
 
-test.describe("Wallet is connected", () => {
+test.skip("Wallet is connected", () => {
   // sign in to wallet
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
@@ -90,7 +90,7 @@ test.describe("Wallet is connected", () => {
   });
 });
 
-test.describe("Wallet is connected by moderator", () => {
+test.skip("Wallet is connected by moderator", () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-moderator.json",

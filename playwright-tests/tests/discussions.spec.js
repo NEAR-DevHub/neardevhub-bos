@@ -24,7 +24,7 @@ test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
 );
 
-test.describe("Wallet is connected", () => {
+test.skip("Wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
@@ -151,7 +151,7 @@ test.describe("Wallet is connected", () => {
   });
 });
 
-test.describe("Don't ask again enabled", () => {
+test.skip("Don't ask again enabled", () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",

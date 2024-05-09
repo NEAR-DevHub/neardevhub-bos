@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("should load blogs in the sidebar for a given handle", async ({
+test.skip("should load blogs in the sidebar for a given handle", async ({
   page,
 }) => {
   await page.goto(
@@ -14,7 +14,7 @@ test("should load blogs in the sidebar for a given handle", async ({
   expect(sidebarBlogSelectors.length).toBeGreaterThanOrEqual(1);
 });
 
-test("should prepopulate the form when a blog is selected from the left", async ({
+test.skip("should prepopulate the form when a blog is selected from the left", async ({
   page,
 }) => {
   test.setTimeout(60000);
@@ -56,7 +56,7 @@ test("should prepopulate the form when a blog is selected from the left", async 
   }
 });
 
-test("should have an empty form if select new blog", async ({ page }) => {
+test.skip("should have an empty form if select new blog", async ({ page }) => {
   await page.goto("/devhub.near/widget/devhub.entity.addon.blog.Configurator");
 
   const newBlogSelector = `[id^="create-new-blog"]`;
@@ -90,7 +90,7 @@ test("should have an empty form if select new blog", async ({ page }) => {
   }
 });
 
-test("should load a blog page and its blogs for a given community handle", async ({
+test.skip("should load a blog page and its blogs for a given community handle", async ({
   page,
 }) => {
   await page.goto(

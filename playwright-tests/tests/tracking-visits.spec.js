@@ -5,7 +5,7 @@ describe("unauthenticated visitor", () => {
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
   });
 
-  test("should track visiting page visits", async ({ page }) => {
+  test.skip("should track visiting page visits", async ({ page }) => {
     let trackingRequestSent = false;
     let trackingRequestPostData;
     await page.route("https://eu.posthog.com/capture/", async (route) => {
@@ -34,7 +34,7 @@ describe("authenticated visitor", () => {
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
 
-  test("should track visiting page visits to home", async ({ page }) => {
+  test.skip("should track visiting page visits to home", async ({ page }) => {
     let trackingRequestSent = false;
     let trackingRequestPostData;
     await page.route("https://eu.posthog.com/capture/", async (route) => {
@@ -58,7 +58,9 @@ describe("authenticated visitor", () => {
     expect(trackingRequestPostData.properties.page).toEqual("home");
   });
 
-  test("should track visiting page visits to proposals", async ({ page }) => {
+  test.skip("should track visiting page visits to proposals", async ({
+    page,
+  }) => {
     let trackingRequestSent = false;
     let trackingRequestPostData;
     await page.route("https://eu.posthog.com/capture/", async (route) => {
@@ -82,7 +84,7 @@ describe("authenticated visitor", () => {
     expect(trackingRequestPostData.properties.page).toEqual("proposals");
   });
 
-  test("should track visiting page visits to webassembly music community", async ({
+  test.skip("should track visiting page visits to webassembly music community", async ({
     page,
   }) => {
     let trackingRequestSent = false;

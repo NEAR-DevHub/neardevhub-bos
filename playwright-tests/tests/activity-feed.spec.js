@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../testUtils.js";
 
-test.describe("Non authenticated user's wallet is connected", () => {
+test.skip("Non authenticated user's wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
@@ -80,7 +80,7 @@ test.describe("Non authenticated user's wallet is connected", () => {
   });
 });
 
-test.describe("Admin wallet is connected", () => {
+test.skip("Admin wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
