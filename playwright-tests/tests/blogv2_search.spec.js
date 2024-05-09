@@ -77,36 +77,20 @@ This is an article about ${topic}.
     await pauseIfVideoRecording(page);
     const searchField = await page.getByPlaceholder("search blog posts");
     await searchField.scrollIntoViewIfNeeded();
-    for (let topic of topics) {
+    for (const topic of topics) {
       await searchField.fill("");
       await searchField.pressSequentially(topic, { delay: 50 });
-      await pauseIfVideoRecording(page);
+
+      await searchField.blur();
+      await page.waitForTimeout(200);
+      const blogCards = await page.locator("a div").all();
+      await expect(blogCards.length).toBeGreaterThan(3);
+      await Promise.all(
+        blogCards.map(
+          async (blogCard) =>
+            await expect(blogCard).toContainText(topic, { ignoreCase: true })
+        )
+      );
     }
-    /*        const span1 = await page.waitForSelector('h5:has-text("Published")', {
-            state: "visible",
-        });
-
-        // Find the first published blog
-        const published = page.getByTestId("published-w5cj1y");
-        await published.scrollIntoViewIfNeeded();
-        await pauseIfVideoRecording(page);
-
-        // Go to the other blog instance by clicking on the tab
-        await page.getByRole("link", { name: "Second Blog" }).first().click();
-        const span2 = await page.waitForSelector(
-            'h5:has-text("First blog of instance")',
-            {
-                state: "visible",
-            }
-        );
-
-        // Make sure the other blog instance show the other blog
-        const publishedBlogDifferentInstance = page.getByTestId(
-            "first-blog-of-instance-2-nhasab"
-        );
-        await publishedBlogDifferentInstance.scrollIntoViewIfNeeded();
-
-        expect(span1.isVisible()).toBeTruthy();
-        expect(span2.isVisible()).toBeTruthy();*/
   });
 });
