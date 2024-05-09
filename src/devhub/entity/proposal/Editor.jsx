@@ -746,7 +746,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
           reviewer_completed_attestation: false,
         },
   };
-  const args = { labels: (labels ?? [ð]).map((i) => i.value), body: body };
+  const args = { labels: (labels ?? []).map((i) => i.value), body: body };
   if (isEditPage) {
     args["id"] = editProposalData.id;
   }

@@ -272,8 +272,9 @@ const FeedPage = () => {
       where = { author_id: { _eq: state.author }, ...where };
     }
 
+    // TODO - category -> labels
     if (state.category) {
-      where = { category: { _eq: state.category }, ...where };
+      where = { labels: { _contains: state.category }, ...where };
     }
 
     if (state.stage) {
