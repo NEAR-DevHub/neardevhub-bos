@@ -207,7 +207,7 @@ const FeedPage = () => {
     input: "",
     loading: false,
     loadingMore: false,
-    aggregatedCount: 0,
+    aggregatedCount: null,
     currentlyDisplaying: 0,
   });
 
@@ -512,7 +512,7 @@ const FeedPage = () => {
         </div>
       </div>
       <div style={{ minHeight: "50vh" }}>
-        {!Array.isArray(state.data) ? (
+        {state.aggregatedCount === null ? (
           loader
         ) : (
           <div className="card no-border rounded-0 mt-4 py-3 full-width-div">
@@ -543,7 +543,7 @@ const FeedPage = () => {
                 </p>
               </div>
               <div className="mt-4 border rounded-2">
-                {state.data.length > 0 ? (
+                {state.data.length > 0 || state.aggregatedCount === 0 ? (
                   <InfiniteScroll
                     pageStart={0}
                     loadMore={makeMoreItems}
