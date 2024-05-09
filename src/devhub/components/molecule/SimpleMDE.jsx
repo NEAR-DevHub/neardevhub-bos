@@ -28,7 +28,7 @@ const showAccountAutoComplete = props.showAutoComplete ?? false;
 const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
 
 const queryName =
-  "thomasguntenaar_near_events_committee_proposals_proposals_with_latest_snapshot";
+  "thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot";
 const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
 ${queryName}(
   offset: $offset
@@ -218,7 +218,7 @@ async function getSuggestedProposals(id) {
     .then((res) => {
       const proposals =
         res?.data?.[
-          "thomasguntenaar_near_events_committee_proposals_proposals_with_latest_snapshot"
+          "thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot"
         ];
       results = proposals;
     })
