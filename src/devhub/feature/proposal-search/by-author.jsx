@@ -17,8 +17,14 @@ if (!authorsOptions.length) {
   }
 }
 
+const Container = styled.div`
+  .dropdown-menu {
+    max-height: 400px;
+    overflow-x: auto;
+  }
+`;
 return (
-  <div>
+  <Container>
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
       props={{
@@ -31,5 +37,5 @@ return (
         selectedValue: props.author,
       }}
     />
-  </div>
+  </Container>
 );
