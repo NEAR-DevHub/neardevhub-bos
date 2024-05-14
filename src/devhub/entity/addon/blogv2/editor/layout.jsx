@@ -47,13 +47,13 @@ return (
               >
                 Analytics
               </Link>
-              <button
+              {/* <button
                 onClick={() => setShowScreen("settings")}
                 type="button"
                 className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-white shadow-sm hover:bg-indigo-100"
               >
                 Settings
-              </button>
+              </button> */}
               <Widget
                 src={
                   "${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"
