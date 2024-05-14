@@ -12,7 +12,7 @@ const blogData = [
     status: "DRAFT",
     createdAt: new Date().toISOString().slice(0, 10),
     updatedAt: new Date().toISOString().slice(0, 10),
-    publishedAt: "mm-dd-yyyy",
+    publishedAt: "yyyy-MM-dd",
     content: "",
     author: "",
     description: "",

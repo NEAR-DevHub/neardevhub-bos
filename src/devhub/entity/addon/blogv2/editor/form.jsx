@@ -43,9 +43,6 @@ const TitleComponent = useMemo(() => {
         className: "flex-grow-1",
         value: title,
         placeholder: "Title",
-        onBlur: (e) => {
-          setTitle(e.target.value);
-        },
         onChange: (e) => setTitle(e.target.value),
         skipPaddingGap: true,
         inputProps: {
@@ -68,9 +65,6 @@ const SubtitleComponent = useMemo(() => {
         className: "flex-grow-1",
         value: subtitle,
         placeholder: "Subtitle",
-        onBlur: (e) => {
-          setSubtitle(e.target.value);
-        },
         onChange: (e) => setSubtitle(e.target.value),
         skipPaddingGap: true,
         inputProps: {

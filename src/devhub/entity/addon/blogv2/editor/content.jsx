@@ -190,7 +190,7 @@ const [initialBlogAmount, setInitialBlogAmount] = useState(
 );
 
 // Parse the date string to create a Date object
-const publishedAtDate = new Date(initialData.publishedAt);
+const publishedAtDate = new Date(initialData.publishedAt || new Date());
 const year = publishedAtDate.getFullYear();
 const month = (publishedAtDate.getMonth() + 1).toString().padStart(2, "0");
 const day = publishedAtDate.getDate().toString().padStart(2, "0");
