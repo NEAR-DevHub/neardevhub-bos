@@ -769,13 +769,20 @@ test.describe("Admin wallet is connected", () => {
       await page.frameLocator("iframe").getByRole("textbox").fill("# Content");
 
       const submitButton = page.getByTestId("submit-blog-button");
-      await submitButton.scrollIntoViewIfNeeded();
-      await submitButton.click();
+      const parentButton = page.getByTestId("parent-submit-blog-button");
 
-      // TODO SAVE DRAFT IS DISABLED CHECK CONDITION
+      // TODO review mega PR
+
+      await submitButton.scrollIntoViewIfNeeded();
+      await pauseIfVideoRecording(page);
+      await page.waitForTimeout(1000);
+      await submitButton.click();
+      await parentButton.click();
+
       const transactionObj = JSON.parse(
         await page.locator("div.modal-body code").innerText()
       );
+
       const blogId = Object.keys(transactionObj.data.blog)[0];
       expect(transactionObj.data.blog[blogId].metadata.title).toBe("Title");
       expect(transactionObj.data.blog[blogId].metadata.publishedAt).toBe(
@@ -874,13 +881,16 @@ test.describe("Admin wallet is connected", () => {
 
     test("should be able to publish a blog", async ({ page }) => {
       await page.getByTestId("new-blog-post-button").click();
-
+      // Fill the title
       await page.getByPlaceholder("Title", { exact: true }).click();
       await page.getByPlaceholder("Title", { exact: true }).fill("Title");
       await page.getByPlaceholder("Title", { exact: true }).press("Tab");
+      //  Fill the subtitle
       await page.getByPlaceholder("Subtitle").click();
       await page.getByPlaceholder("Subtitle").fill("Subtitle");
-      await page.getByRole("combobox").selectOption("news");
+      // Select News category
+      await page.getByText("Guide").click();
+      await page.getByText("News", { exact: true }).click();
       await page.getByPlaceholder("Description").click();
       await page.getByPlaceholder("Description").fill("Description");
       await page.getByPlaceholder("Description").press("Tab");
@@ -925,8 +935,11 @@ test.describe("Admin wallet is connected", () => {
 
     await page.getByRole("cell", { name: "PublishedBlog" }).click();
 
-    const deleteButton = page.getByRole("button", { name: " Delete" });
-    deleteButton.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+    await page.waitForTimeout(2000);
+
+    const deleteButton = page.getByTestId("delete-blog-button");
+    await deleteButton.scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
     await deleteButton.click();
 
@@ -953,6 +966,7 @@ test.describe("Admin wallet is connected", () => {
                   description: null,
                   author: null,
                   id: null,
+                  category: null,
                 },
               },
             },

@@ -12,8 +12,34 @@ export async function mockDefaultTabs(route) {
     await fetch("http://localhost:3030").then((r) => r.json())
   ).components;
 
-  if (requestPostData.params && requestPostData.params.args_base64) {
-    console.log(atob(requestPostData.params.args_base64));
+  /**
+  1. Peter don't ask me again
+  2. 599
+  */
+  const communityAccount = "webassemblymusic.community.devhub.near";
+
+  // TODO Temporary
+  if (
+    requestPostData.params &&
+    requestPostData.params.account_id === "social.near" &&
+    requestPostData.params.method_name === "get"
+  ) {
+    if (requestPostData.params.args_base64) {
+      console.log(atob(requestPostData.params.args_base64));
+      const response = await route.fetch();
+      const json = await response.json();
+      let resultObj = decodeResultJSON(json.result.result);
+      if (
+        JSON.parse(atob(requestPostData.params.args_base64)).keys[0] ===
+        `${communityAccount}/blog/**`
+      ) {
+        console.log("Transaction completed resultObj2", resultObj);
+      } else {
+        console.log("Transaction completed resultObj2 without blog key");
+      }
+    } else {
+      console.log("No args_base64");
+    }
   }
 
   if (
@@ -82,10 +108,10 @@ export async function mockDefaultTabs(route) {
     requestPostData.params &&
     requestPostData.params.account_id === "social.near" &&
     requestPostData.params.method_name === "get" &&
-    // FIXME: this does not work
-    JSON.stringify(atob(requestPostData.params.args_base64)).includes(
-      "community.devhub.near/blog/"
-    )
+    requestPostData.params?.args_base64 &&
+    // FIXME:
+    JSON.parse(atob(requestPostData.params.args_base64)).keys[0] ===
+      `${communityAccount}/blog/**`
   ) {
     console.log("Intercept blogs");
     console.log("-------------------------------------");
@@ -99,8 +125,8 @@ export async function mockDefaultTabs(route) {
     const json = await response.json();
     let resultObj = decodeResultJSON(json.result.result);
 
-    resultObj = {
-      ...resultObj,
+    // Mock blog responses
+    resultObj[communityAccount]["blog"] = {
       "hello-world-0r4rmr": {
         "": "# Content\n\n## subcontent\n\n### h3",
         metadata: {
@@ -113,12 +139,13 @@ export async function mockDefaultTabs(route) {
           description: "Description",
           author: "Author",
           communityAddonId: "blogv2",
+          category: "guide",
         },
       },
       "published-w5cj1y": {
         "": "# Content\n\n",
         metadata: {
-          title: "Published",
+          title: "PublishedBlog",
           createdAt: "2024-04-29",
           updatedAt: "2024-04-29",
           publishedAt: "2024-04-30",
@@ -127,6 +154,7 @@ export async function mockDefaultTabs(route) {
           description: "Description",
           author: "author",
           communityAddonId: "blogv2",
+          category: "news",
         },
       },
       "first-blog-of-instance-2-nhasab": {
@@ -134,13 +162,44 @@ export async function mockDefaultTabs(route) {
         metadata: {
           title: "First blog of instance",
           createdAt: "2024-04-30",
-          updatedAt: "2024-04-30",
+          updatedAt: "2024-05-13",
           publishedAt: "2024-04-30",
           status: "PUBLISH",
           subtitle: "Subtitle",
           description: "Description",
           author: "thomasguntenaar.near",
           communityAddonId: "blogv2instance2",
+          category: "reference",
+        },
+      },
+      "new-blog-post-cgomff": {
+        "": "# Content",
+        metadata: {
+          title: "New Blog Post",
+          createdAt: "2024-05-01",
+          updatedAt: "2024-05-13",
+          publishedAt: "1998-05-03",
+          status: "PUBLISH",
+          subtitle: "Subtitle",
+          description: "Description",
+          author: "Author",
+          communityAddonId: "blogv2instance2",
+          category: "news",
+        },
+      },
+      "test-subscribe-mujrt8": {
+        "": "# Content",
+        metadata: {
+          title: "Test Subscribe",
+          publishedAt: "2023-04-03",
+          status: "PUBLISH",
+          subtitle: "subtitle",
+          description: "description",
+          author: "author",
+          createdAt: "2024-05-01",
+          communityAddonId: "blogv2",
+          category: "guide",
+          updatedAt: "2024-05-13",
         },
       },
     };
