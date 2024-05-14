@@ -46,7 +46,6 @@ const handleOnSubmit = (v, isEdit) => {
   let id = isEdit
     ? v.id
     : `${transformString(v.title)}-${generateRandom6CharUUID()}`;
-  // v.date
   let publishedAt = new Date(v.date).toISOString().slice(0, 10);
 
   let metadata = {
@@ -56,6 +55,8 @@ const handleOnSubmit = (v, isEdit) => {
     subtitle: v.subtitle,
     description: v.description,
     author: v.author,
+    category: v.category,
+    updatedAt: new Date().toISOString().slice(0, 10),
   };
 
   if (!isEdit) {
@@ -106,6 +107,7 @@ const handleOnDelete = (id) => {
             description: null,
             author: null,
             id: null,
+            category: null,
           },
         },
       },

@@ -4,6 +4,10 @@ const styles = `
   line-height: 1.5;
   text-decoration: none !important;
 
+  .disabled {
+    pointer-events: none;
+  }
+
   &:not(.shadow-none) {
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
     transition: box-shadow 0.6s;
@@ -101,6 +105,20 @@ const styles = `
   }
 `;
 
+const LoadingButtonSpinner = (
+  // <div
+  //   class=" block delete-blog-spinner  spinner-border text-light"
+  //   role="status"
+  // >
+  //   <span class="visually-hidden">Loading...</span>
+  // </div>
+  <span
+    class="spinner-border spinner-border-sm"
+    role="status"
+    aria-hidden="true"
+  ></span>
+);
+
 const rootElementByType = (type) =>
   type === "link"
     ? styled.a`
@@ -117,6 +135,8 @@ const Button = ({
   type,
   isHidden,
   notRounded,
+  loading,
+  disabled,
   ...restProps
 }) => {
   const ButtonRoot = rootElementByType(type);
@@ -128,11 +148,14 @@ const Button = ({
         classNames?.root ?? "btn-primary",
         !notRounded ?? "rounded-pill",
         isHidden ?? false ? "d-none" : "",
+        disabled ? "disabled" : "",
       ].join(" ")}
       style={{ width: "fit-content" }}
       {...restProps}
+      data-testid={props.testId ?? "button"}
     >
       {iconProps !== null &&
+        !props.loading &&
         typeof iconProps === "object" &&
         !Array.isArray(iconProps) && (
           <Widget
@@ -140,6 +163,7 @@ const Button = ({
             props={iconProps}
           />
         )}
+      {props.loading ? LoadingButtonSpinner : null}
       <span className={classNames?.label} style={{ lineHeight: "inherit" }}>
         {label}
       </span>

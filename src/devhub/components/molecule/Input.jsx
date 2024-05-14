@@ -152,11 +152,14 @@ const TextInput = ({
               aria-describedby={key}
               data-testid={key}
               aria-label={label}
-              className={[
-                "form-control border",
-                inputClassName,
-                inputProps.prefix ? "border-start-0" : "",
-              ].join(" ")}
+              className={
+                inputClassName
+                  ? inputClassName
+                  : [
+                      "form-control border",
+                      inputProps.prefix ? "border-start-0" : "",
+                    ].join(" ")
+              }
               type={typeAttribute}
               maxLength={inputProps.max}
               value={state.data}

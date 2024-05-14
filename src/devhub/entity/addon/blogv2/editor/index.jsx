@@ -70,6 +70,8 @@ return (
                         onCancel,
                         onSubmit,
                         onDelete,
+                        handle: props.handle,
+                        allBlogs: providerProps.data,
                         ...p,
                       }}
                     />

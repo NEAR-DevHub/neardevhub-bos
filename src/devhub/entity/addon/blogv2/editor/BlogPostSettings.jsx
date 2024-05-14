@@ -13,6 +13,7 @@ return (
       props={{
         title: "Save Settings",
         onClick: () => onSubmitSettings(),
+        testId: "save-settings-button",
       }}
     />
     {/* TODO 599 content + form */}

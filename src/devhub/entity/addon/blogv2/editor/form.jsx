@@ -9,7 +9,7 @@ const {
   setTitle,
   subtitle,
   setSubtitle,
-  options,
+  options, // TODO 599
   category,
   setCategory,
   description,
@@ -23,151 +23,193 @@ const {
   setContent,
 } = props;
 
-const TitleInput = ({ title, setTitle }) => {
+const InputContainer = ({ heading, description, children }) => {
   return (
-    <div>
-      <h5>Title * </h5>
-      <div className="flex-grow-1">
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-          props={{
-            className: "flex-grow-1",
-            onChange: (e) => setTitle(e.target.value),
-            value: title,
-            placeholder: "Title",
-            inputProps: { name: "title" },
-            skipPaddingGap: true,
-          }}
-        />
-      </div>
-    </div>
-  );
-};
-const SubtitleInput = ({ subtitle, setSubtitle }) => {
-  return (
-    <div>
-      <h5>Subtitle * </h5>
-      <div className="flex-grow-1">
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-          props={{
-            className: "flex-grow-1",
-            onChange: (e) => setSubtitle(e.target.value),
-            value: subtitle,
-            placeholder: "Subtitle",
-            inputProps: { name: "subtitle" },
-            skipPaddingGap: true,
-          }}
-        />
-      </div>
+    <div className="d-flex flex-column gap-1 gap-sm-2 w-100">
+      <b className="h6 mb-0">{heading}</b>
+      {description && (
+        <div className="text-muted w-100 text-sm">{description}</div>
+      )}
+      {children}
     </div>
   );
 };
 
-const CategorySelect = ({ options, category, setCategory }) => {
+const TitleComponent = useMemo(() => {
   return (
-    <div>
-      <h5>Category</h5>
-      <div className="flex-grow-1">
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Select"}
-          props={{
-            className: "flex-grow-1",
-            options,
-            value: category,
-            onChange: (e) => setCategory(e.target.value),
-            placeholder: "Select a category",
-          }}
-        />
-      </div>
-    </div>
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      props={{
+        className: "flex-grow-1",
+        value: title,
+        placeholder: "Title",
+        onBlur: (e) => {
+          setTitle(e.target.value);
+        },
+        onChange: (e) => setTitle(e.target.value),
+        skipPaddingGap: true,
+        inputProps: {
+          max: 80,
+          required: true,
+          name: "title",
+          className:
+            "block w-full rounded-md border-0 px-1 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
+        },
+      }}
+    />
+  );
+}, []);
+
+const SubtitleComponent = useMemo(() => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      props={{
+        className: "flex-grow-1",
+        value: subtitle,
+        placeholder: "Subtitle",
+        onBlur: (e) => {
+          setSubtitle(e.target.value);
+        },
+        onChange: (e) => setSubtitle(e.target.value),
+        skipPaddingGap: true,
+        inputProps: {
+          required: true,
+          max: 80,
+          name: "subtitle",
+          className:
+            "block w-full rounded-md border-0 px-1 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
+        },
+      }}
+    />
+  );
+}, []);
+
+const CategorySelect = useMemo(() => {
+  return (
+    <Widget
+      src={
+        "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.CategoryDropdown"
+      }
+      props={{
+        options,
+        selectedValue: category,
+        onChange: setCategory,
+      }}
+    />
+  );
+}, []);
+
+const DescriptionInput = useMemo(() => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      props={{
+        className: "flex-grow-1",
+        onChange: (e) => setDescription(e.target.value),
+        value: description,
+        multiline: true,
+        placeholder: "Description",
+        inputProps: {
+          max: 500,
+          name: "description",
+          className:
+            "block w-full rounded-md border-0 px-1 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
+        },
+        skipPaddingGap: true,
+      }}
+    />
+  );
+}, []);
+
+const AuthorInput = useMemo(() => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      props={{
+        className: "flex-grow-1",
+        onChange: (e) => setAuthor(e.target.value),
+        value: author,
+        placeholder: "Author",
+        inputProps: {
+          name: "author",
+          className:
+            "block w-full rounded-md border-0 px-1 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
+        },
+        skipPaddingGap: true,
+      }}
+    />
+  );
+}, []);
+
+const DateInput = () => {
+  return (
+    <input
+      name="date"
+      type="date"
+      value={date}
+      className="block w-full rounded-md border-0 px-1 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+      onChange={(e) => setDate(e.target.value)}
+    />
   );
 };
 
-const DescriptionInput = ({ description, setDescription }) => {
+const ContentEditor = useMemo(() => {
   return (
-    <div>
-      <h5>Description * </h5>
-      <div className="flex-grow-1">
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-          props={{
-            className: "flex-grow-1",
-            onChange: (e) => setDescription(e.target.value),
-            value: description,
-            placeholder: "Description",
-            inputProps: { name: "description" },
-            skipPaddingGap: true,
-          }}
-        />
-      </div>
-    </div>
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
+      props={{ data: { content }, onChange: setContent, autoFocus: false }}
+    />
   );
-};
-
-const AuthorInput = ({ author, setAuthor }) => {
-  return (
-    <div>
-      <h5>Author * </h5>
-      <div className="flex-grow-1">
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-          props={{
-            className: "flex-grow-1",
-            onChange: (e) => setAuthor(e.target.value),
-            value: author,
-            placeholder: "Author",
-            inputProps: { name: "author" },
-            skipPaddingGap: true,
-          }}
-        />
-      </div>
-    </div>
-  );
-};
-
-const DateInput = ({ date, setDate }) => {
-  return (
-    <div>
-      <h5>Visible Publish Date *</h5>
-      <input
-        name="date"
-        type="date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-      />
-    </div>
-  );
-};
-
-const ContentEditor = ({ content, setContent }) => {
-  return (
-    <div>
-      <h5>Content *</h5>
-      <Widget
-        src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
-        props={{ data: { content }, onChange: setContent, autoFocus: false }}
-      />
-    </div>
-  );
-};
+}, []);
 
 return (
   <FormContainer id="blog-editor-form">
-    <TitleInput title={title} setTitle={setTitle} />
-    <SubtitleInput subtitle={subtitle} setSubtitle={setSubtitle} />
-    <CategorySelect
-      options={options}
-      category={category}
-      setCategory={setCategory}
-    />
-    <DescriptionInput
-      description={description}
-      setDescription={setDescription}
-      debouncedUpdateState={debouncedUpdateState}
-    />
-    <AuthorInput author={author} setAuthor={setAuthor} />
-    <DateInput date={date} setDate={setDate} />
-    <ContentEditor content={content} setContent={setContent} />
+    <InputContainer
+      heading="Title"
+      description="Highlight the essence of your blog in a few words. This will appear on your blog card and on the top of your blog."
+    >
+      {TitleComponent}
+    </InputContainer>
+    <InputContainer
+      heading="Subtitle"
+      description="Provide a brief subtitle for the blog"
+    >
+      {SubtitleComponent}
+    </InputContainer>
+    <InputContainer
+      heading="Category"
+      description={
+        <>
+          Choose the category that fits your blog best. Set up your categories
+          in the blog settings.
+        </>
+      }
+    >
+      {CategorySelect}
+    </InputContainer>
+
+    <InputContainer
+      heading="Description"
+      description="Provide a brief description for the blog"
+    >
+      {DescriptionInput}
+    </InputContainer>
+    <InputContainer heading="Author" description="Who wrote this blog?">
+      {AuthorInput}
+    </InputContainer>
+    <InputContainer
+      heading="Visible Publish Date"
+      description="What date do you want to have the blog published under?"
+    >
+      <DateInput />
+    </InputContainer>
+
+    <InputContainer
+      heading="Content"
+      description="Write your blog here. Use Markdown to format your content."
+    >
+      {ContentEditor}
+    </InputContainer>
   </FormContainer>
 );

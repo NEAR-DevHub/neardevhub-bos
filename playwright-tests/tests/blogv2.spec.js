@@ -1,6 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { pauseIfVideoRecording } from "../testUtils.js";
+import {
+  pauseIfVideoRecording,
+  generateRandom6CharUUID,
+} from "../testUtils.js";
 import { mockDefaultTabs } from "../util/addons.js";
+import { setDontAskAgainCacheValues } from "../util/cache.js";
+import {
+  mockTransactionSubmitRPCResponses,
+  decodeResultJSON,
+  encodeResultJSON,
+} from "../util/transaction.js";
 
 const baseUrl =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=first-blog";
@@ -62,7 +71,7 @@ test.describe("Wallet is not connected", () => {
       state: "visible",
     });
 
-    const span1 = await page.waitForSelector('h5:has-text("Published")', {
+    const span1 = await page.waitForSelector('h5:has-text("PublishedBlog")', {
       state: "visible",
     });
 
@@ -97,22 +106,526 @@ test.describe("Don't ask again enabled", () => {
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
 
-  test("Create blog", async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
+    test.setTimeout(60000);
     await page.goto(baseUrl);
+
+    const widgetSrc =
+      "devhub.near/widget/devhub.entity.addon.blogv2.editor.provider";
+    await setDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      methodName: "set_community_socialdb",
+      contractId: "devhub.near",
+    });
+
+    await pauseIfVideoRecording(page);
+  });
+
+  test("Create a blog", async ({ page }) => {
+    // test before each
+
+    await page.waitForTimeout(4000);
+    // Start configuring the blog addon
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
+
+    await pauseIfVideoRecording(page);
+    // Click new blog button
+    await page.getByTestId("new-blog-post-button").click();
+    // Fill the title
+    await page.getByPlaceholder("Title", { exact: true }).click();
+    const blogTitle = "the-blog-title";
+    await page.getByPlaceholder("Title", { exact: true }).fill(blogTitle);
+    await page.getByPlaceholder("Title", { exact: true }).press("Tab");
+    // Fill the subtitle
+    await page.getByPlaceholder("Subtitle").click();
+    await page.getByPlaceholder("Subtitle").fill("Subtitle");
+    // Choose the category
+    await page.getByText("Guide").click();
+    await page.getByText("News", { exact: true }).click();
+    // Fill the description
+    await page.getByPlaceholder("Description").click();
+    const descriptionText = "A very specific description";
+    await page.getByPlaceholder("Description").fill(descriptionText);
+    await page.getByPlaceholder("Description").press("Tab");
+    // Fill the author
+    const author = "thomasguntenaar.near";
+    await page.getByPlaceholder("Author").fill(author);
+    await page.getByPlaceholder("Author").press("Tab");
+    // Fill the date
+    const publishedDate = "1998-05-03";
+    await page.locator('input[name="date"]').fill("1998-05-03");
+    await page.locator('input[name="date"]').press("Tab");
+    // Fill the content
+    const content = "# Content";
+    await page.frameLocator("iframe").getByRole("textbox").fill(content);
+
+    // Mock transaction here
+    const communityHandle = "webassemblymusic.community.devhub.near";
+    let is_transaction_completed = false;
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        const requestPostData = request.postDataJSON();
+        const args_base64 = requestPostData.params?.args_base64;
+
+        // TODO Temporary
+        const response = await route.fetch();
+        const json = await response.json();
+
+        if (
+          requestPostData.params &&
+          requestPostData.params.account_id === "social.near" &&
+          requestPostData.params.method_name === "get"
+        ) {
+          if (requestPostData.params.args_base64) {
+            const decodedParams = atob(requestPostData.params.args_base64);
+            console.log({
+              decodedParams,
+              keyZero: JSON.parse(decodedParams).keys[0],
+            });
+            if (json.result.result) {
+              const resultObj = decodeResultJSON(json.result.result);
+              console.log("Inside customhandler", resultObj);
+            } else {
+              console.log("No json.result.result Inside customhandler");
+            }
+          } else {
+            console.log("No args_base64 Inside customhandler");
+          }
+        }
+        // TODO until here
+
+        // if (transaction_completed && args_base64) {
+        // Check if the transaction is completed
+        is_transaction_completed = true;
+
+        if (
+          requestPostData.params.account_id === "social.near" &&
+          requestPostData.params.method_name === "get" &&
+          args_base64 &&
+          JSON.parse(atob(args_base64)).keys[0] ===
+            "webassemblymusic.community.devhub.near/blog/**"
+        ) {
+          console.log("test");
+          const response = await route.fetch();
+          const json = await response.json();
+
+          const resultObj = decodeResultJSON(json.result.result);
+          console.log("Transaction completed create Blog", resultObj);
+
+          // TODO Add the blog post with the correct data to the resultObj
+
+          let id = `the-blog-title-${generateRandom6CharUUID()}`;
+          let publishedAt = new Date(publishedDate).toISOString().slice(0, 10);
+
+          let metadata = {
+            title: "the-blog-title",
+            publishedAt,
+            status: "PUBLISH",
+            subtitle: "Subtitle",
+            description: descriptionText,
+            author: author,
+            category: "news",
+            updatedAt: new Date().toISOString().slice(0, 10),
+          };
+
+          metadata.createdAt = new Date().toISOString().slice(0, 10);
+          metadata.communityAddonId = "blogv2";
+
+          resultObj["webassemblymusic.community.devhub.near"]["blog"][id] = {
+            "": content,
+            metadata: metadata,
+          };
+
+          console.log("Transaction completed After Blog is created", resultObj);
+
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+          return;
+        } else if (
+          // Make sure the addons are enabled
+          requestPostData.params &&
+          requestPostData.params.account_id === "devhub.near" &&
+          requestPostData.params.method_name === "get_community"
+        ) {
+          const response = await route.fetch();
+          const json = await response.json();
+
+          const resultObj = decodeResultJSON(json.result.result);
+          if (
+            !resultObj.addons
+              .map((addon) => addon.addon_id)
+              .includes("blogv2") ||
+            !resultObj.addons
+              .map((addon) => addon.addon_id)
+              .includes("blogv2instance2")
+          ) {
+            resultObj.addons = [
+              ...resultObj.addons,
+              {
+                addon_id: "blogv2",
+                display_name: "First Blog",
+                enabled: true,
+                id: "blogv2",
+                parameters: "{}",
+              },
+              {
+                addon_id: "blogv2",
+                display_name: "Second Blog",
+                enabled: true,
+                id: "blogv2instance2",
+                parameters: "{}",
+              },
+            ];
+          }
+
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+          return;
+        }
+        // } (transaction_completed && args_base64)
+
+        await route.continue();
+      }
+    );
+    // Switch to publish instead of draft
+    await page.getByTestId("toggle-dropdown").click();
+    await page
+      .getByTestId("submit-button-option-PUBLISH")
+      .locator("div")
+      .first()
+      .click();
+    const postButton = page
+      .getByTestId("submit-blog-button")
+      .getByText("Publish");
+    // Show loading indicator
+    const loadingIndicator = page
+      .locator(".submit-blog-loading-indicator")
+      .first();
+
+    await expect(loadingIndicator).not.toBeVisible();
+
+    // Click post button
+    await postButton.click();
+    await expect(loadingIndicator).toBeVisible();
+    await pauseIfVideoRecording(page);
+
+    // Expect the post button to be disabled
+    const parentDiv = page.getByTestId("parent-submit-blog-button");
+    const parentDivClasses =
+      "select-header d-flex gap-1 align-items-center submit-draft-button disabled";
+    await expect(parentDiv).toHaveClass(parentDivClasses);
+
+    await expect(page.locator("div.modal-body code")).not.toBeVisible();
+
+    const transaction_toast = await page.getByText(
+      "Calling contract devhub.near with method set_community_socialdb"
+    );
+    await expect(transaction_toast).toBeVisible();
+
+    await pauseIfVideoRecording(page);
+    // Maybe longer?
+    await page.waitForTimeout(5000);
+    // Wait for the transaction to complete
+    await expect(transaction_toast).not.toBeVisible();
+    await expect(loadingIndicator).not.toBeVisible();
+    // Expect the post button to be enabled
+    // const isDisabled = parentDiv.classList.includes("disabled");
+    // await expect(isDisabled).toBe(false);
+    // const contentBox = page.frameLocator("iframe").getByRole("textbox");
+    // await expect(contentBox).toBeEmpty();
+
+    await pauseIfVideoRecording(page);
+    // TODO
+    await expect(is_transaction_completed).toBe(true);
+
+    // await pauseIfVideoRecording(page);
+  });
+
+  test("Update a blog", async ({ page }) => {
+    // test before each
+
+    await page.waitForTimeout(4000);
+    // Start configuring the blog addon
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
 
     await pauseIfVideoRecording(page);
 
-    // const config = await page.waitForSelector(".bi.bi-gear");
+    // Click a blog to edit
+    await page.getByRole("cell", { name: "PublishedBlog" }).click();
+    // Change the category
+    await page.getByText("News", { exact: true }).click();
+    await page.getByText("Reference").click();
 
-    const tab = await page.getByRole("link", { name: "First Blog" });
+    // Change the content
+    // await page.frameLocator("iframe").getByRole("textbox").fill("# Content");
+    // TODO Change the status to draft
+    // Status to draft ..
 
-    await tab.waitFor({ state: "visible" });
+    // Mock transaction here
+    const communityHandle = "webassemblymusic.community.devhub.near";
+    let is_transaction_completed = false;
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        const requestPostData = request.requestPostDataJSON();
+        const args_base64 = requestPostData.params?.args_base64;
 
-    await tab.click();
+        if (transaction_completed && args_base64) {
+          // Check if the transaction is completed
+          is_transaction_completed = true;
+          const args = atob(args_base64);
+          if (
+            requestPostData.params.account_id === "social.near" &&
+            requestPostData.params.method_name === "get" &&
+            args === // FIXME:
+              `{"keys":["${communityHandle}.community.devhub.near/blog/**"]}`
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
 
-    // await page.getByRole("button", { name: "" }).click();
+            const resultObj = decodeResultJSON(json.result.result);
+            console.log("Transaction completed Update blog", resultObj);
+            // TODO Change the category and content in the RPC response
+
+            resultObj[blogId].metadata.category = "reference";
+            // TODO also the content && status
+            // resultObj[blogId].content = JSON.stringify({})
+            json.result.result = encodeResultJSON(resultObj);
+
+            await route.fulfill({ response, json });
+            return;
+          } else if (
+            // Make sure the addons are enabled
+            requestPostData.params &&
+            requestPostData.params.account_id === "devhub.near" &&
+            requestPostData.params.method_name === "get_community"
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+
+            const resultObj = decodeResultJSON(json.result.result);
+            if (
+              !resultObj.addons
+                .map((addon) => addon.addon_id)
+                .includes("blogv2") ||
+              !resultObj.addons
+                .map((addon) => addon.addon_id)
+                .includes("blogv2instance2")
+            ) {
+              resultObj.addons = [
+                ...resultObj.addons,
+                {
+                  addon_id: "blogv2",
+                  display_name: "First Blog",
+                  enabled: true,
+                  id: "blogv2",
+                  parameters: "{}",
+                },
+                {
+                  addon_id: "blogv2",
+                  display_name: "Second Blog",
+                  enabled: true,
+                  id: "blogv2instance2",
+                  parameters: "{}",
+                },
+              ];
+            }
+
+            json.result.result = encodeResultJSON(resultObj);
+
+            await route.fulfill({ response, json });
+            return;
+          }
+        }
+
+        await route.continue();
+      }
+    );
+
+    // Click post button
+    const postButton = page
+      .getByTestId("submit-blog-button")
+      .getByText("Publish");
+    const loadingIndicator = await page
+      .locator(".submit-blog-loading-indicator")
+      .first();
+
+    await expect(loadingIndicator).not.toBeVisible();
+
+    // Show loading indicator
+    await postButton.click();
+
+    await expect(loadingIndicator).toBeVisible();
+
+    // Expect the post button to be disabled
+    const parentDiv = page.getByTestId("parent-submit-blog-button");
+    const parentDivClasses =
+      "select-header d-flex gap-1 align-items-center submit-draft-button disabled";
+    await expect(parentDiv).toHaveClass(parentDivClasses);
+
+    await expect(page.locator("div.modal-body code")).not.toBeVisible();
+
+    const transaction_toast = await page.getByText(
+      "Calling contract devhub.near with method set_community_socialdb"
+    );
+    await expect(transaction_toast).toBeVisible();
+
+    // Wait for the transaction to complete
+    await expect(transaction_toast).not.toBeVisible();
+    await expect(loadingIndicator).not.toBeVisible();
+    // Expect the post button to be enabled
+    await expect(parentDiv).not.toHaveClass(parentDivClasses);
+    const contentBox = page.frameLocator("iframe").getByRole("textbox");
+    await expect(contentBox).toBeEmpty();
+
+    await pauseIfVideoRecording(page);
+    await expect(is_transaction_completed).toBe(true);
+  });
+  test("Delete a blog", async ({ page }) => {
+    // test before each
 
     await page.waitForTimeout(4000);
+    // Start configuring the blog addon
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
+
+    await pauseIfVideoRecording(page);
+
+    // Click a blog to edit
+    await page.getByRole("cell", { name: "PublishedBlog" }).click();
+
+    // Mock transaction here
+    const communityHandle = "webassemblymusic.community.devhub.near";
+    let is_transaction_completed = false;
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        const requestPostData = request.requestPostDataJSON();
+        const args_base64 = requestPostData.params?.args_base64;
+
+        if (transaction_completed && args_base64) {
+          // Check if the transaction is completed
+          is_transaction_completed = true;
+          const args = atob(args_base64);
+          if (
+            requestPostData.params.account_id === "social.near" &&
+            requestPostData.params.method_name === "get" &&
+            // TODO FIX
+            args ===
+              `{"keys":["${communityHandle}.community.devhub.near/blog/**"]}`
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+
+            const resultObj = decodeResultJSON(json.result.result);
+            console.log("Transaction completed deleteBlog", resultObj);
+            // FIXME: post main
+            resultObj[communityHandle].post.main = JSON.stringify({
+              text: descriptionText,
+            });
+            json.result.result = encodeResultJSON(resultObj);
+
+            await route.fulfill({ response, json });
+            return;
+          } else if (
+            // Make sure the addons are enabled
+            requestPostData.params &&
+            requestPostData.params.account_id === "devhub.near" &&
+            requestPostData.params.method_name === "get_community"
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+
+            const resultObj = decodeResultJSON(json.result.result);
+            if (
+              !resultObj.addons
+                .map((addon) => addon.addon_id)
+                .includes("blogv2") ||
+              !resultObj.addons
+                .map((addon) => addon.addon_id)
+                .includes("blogv2instance2")
+            ) {
+              resultObj.addons = [
+                ...resultObj.addons,
+                {
+                  addon_id: "blogv2",
+                  display_name: "First Blog",
+                  enabled: true,
+                  id: "blogv2",
+                  parameters: "{}",
+                },
+                {
+                  addon_id: "blogv2",
+                  display_name: "Second Blog",
+                  enabled: true,
+                  id: "blogv2instance2",
+                  parameters: "{}",
+                },
+              ];
+            }
+
+            json.result.result = encodeResultJSON(resultObj);
+
+            await route.fulfill({ response, json });
+            return;
+          }
+        } else if (
+          // Replace the remote components with local developed components
+          requestPostData.params &&
+          requestPostData.params.account_id === "social.near" &&
+          requestPostData.params.method_name === "get"
+        ) {
+          const social_get_key = JSON.parse(
+            atob(requestPostData.params.args_base64)
+          ).keys[0];
+
+          const response = await route.fetch({
+            url: "https://rpc.mainnet.near.org/",
+          });
+          const devComponents = (
+            await fetch("http://localhost:3030").then((r) => r.json())
+          ).components;
+          const json = await response.json();
+
+          // Replace component with local component
+          if (devComponents[social_get_key]) {
+            const social_get_key_parts = social_get_key.split("/");
+            const devWidget = {};
+            devWidget[social_get_key_parts[0]] = { widget: {} };
+            devWidget[social_get_key_parts[0]].widget[social_get_key_parts[2]] =
+              devComponents[social_get_key].code;
+            json.result.result = Array.from(
+              new TextEncoder().encode(JSON.stringify(devWidget))
+            );
+          }
+
+          await route.fulfill({ response, json });
+        }
+
+        await route.continue();
+      }
+    );
+
+    // Click delete button
+    const deleteButton = page.getByTestId("delete-blog-button");
+    await deleteButton.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+    await deleteButton.click();
+
+    // Show loading indicator
+    const loadingIndicator = await page.locator(".delete-blog-spinner").first();
+
+    await expect(loadingIndicator).toBeVisible();
+    // Expect the delete button to be disabled
+
+    const isDisabled = deleteButton.classList.contains("disabled");
+    await expect(isDisabled).toBe(true);
   });
 });
 
@@ -137,13 +650,15 @@ test.describe("Admin wallet is connected", () => {
     const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.click();
 
-    await page.getByRole("button", { name: " New Blog Post" }).click();
+    await page.getByTestId("new-blog-post-button").click();
     await page.getByRole("button", { name: "Cancel" }).click();
-    await page.getByRole("cell", { name: "Published" }).click();
+    await page.getByRole("cell", { name: "PublishedBlog" }).click();
     await page.getByPlaceholder("Title", { exact: true }).click();
   });
 
-  test("should have an empty form if select new blog", async ({ page }) => {
+  test("should have an empty form if select new blog, except author", async ({
+    page,
+  }) => {
     await page.goto(baseUrl);
     await page.waitForSelector("#blog-card-published-w5cj1y", {
       state: "visible",
@@ -153,7 +668,7 @@ test.describe("Admin wallet is connected", () => {
     await configureButton.click();
 
     // Create a new blog
-    await page.getByRole("button", { name: " New Blog Post" }).click();
+    await page.getByTestId("new-blog-post-button").click();
 
     await pauseIfVideoRecording(page);
     await page.waitForTimeout(2000);
@@ -166,10 +681,16 @@ test.describe("Admin wallet is connected", () => {
     const inputFieldSelectors = [
       'input[name="title"]',
       'input[name="subtitle"]',
-      'input[name="description"]',
-      'input[name="author"]',
+      'textarea[name="description"]',
       'input[name="date"]',
     ];
+
+    const authorInputSelector = 'input[name="author"]';
+    const authorInputElement = await page.$(authorInputSelector);
+    const authorInputValue = await authorInputElement.evaluate(
+      (element) => element.value
+    );
+    expect(authorInputValue).toBe("petersalomonsen.near");
 
     for (const inputSelector of inputFieldSelectors) {
       await page.waitForSelector(inputSelector, {
@@ -225,23 +746,30 @@ test.describe("Admin wallet is connected", () => {
       });
     });
     test("should be able to save blog as DRAFT", async ({ page }) => {
-      await page.getByRole("button", { name: " New Blog Post" }).click();
+      await page.getByTestId("new-blog-post-button").click();
 
       await page.getByPlaceholder("Title", { exact: true }).click();
       await page.getByPlaceholder("Title", { exact: true }).fill("Title");
       await page.getByPlaceholder("Title", { exact: true }).press("Tab");
+      await page.getByPlaceholder("Subtitle").click();
       await page.getByPlaceholder("Subtitle").fill("Subtitle");
-      await page.getByPlaceholder("Subtitle").press("Tab");
-      await page.getByRole("combobox").press("Tab");
+      await page.getByText("Guide").click();
+      await page.getByText("News", { exact: true }).click();
+      await page.getByPlaceholder("Description").click();
       await page.getByPlaceholder("Description").fill("Description");
       await page.getByPlaceholder("Description").press("Tab");
       await page.getByPlaceholder("Author").fill("Author");
       await page.getByPlaceholder("Author").press("Tab");
       await page.locator('input[name="date"]').fill("1998-05-03");
+
       await page.locator('input[name="date"]').press("Tab");
       await page.frameLocator("iframe").getByRole("textbox").fill("# Content");
-      await page.getByText("Save Draft").click();
 
+      const submitButton = page.getByTestId("submit-blog-button");
+      await submitButton.scrollIntoViewIfNeeded();
+      await submitButton.click();
+
+      // TODO SAVE DRAFT IS DISABLED CHECK CONDITION
       const transactionObj = JSON.parse(
         await page.locator("div.modal-body code").innerText()
       );
@@ -250,6 +778,7 @@ test.describe("Admin wallet is connected", () => {
       expect(transactionObj.data.blog[blogId].metadata.publishedAt).toBe(
         "1998-05-03"
       );
+      console.log({ transactionObj });
       expect(transactionObj.data.blog[blogId].metadata.createdAt).toBe(
         new Date().toISOString().slice(0, 10)
       );
@@ -267,11 +796,55 @@ test.describe("Admin wallet is connected", () => {
         "blogv2"
       );
       expect(transactionObj.data.blog[blogId].metadata.status).toBe("DRAFT");
+      expect(transactionObj.data.blog[blogId].metadata.category).toBe("news");
+    });
+
+    // TODO test
+    test("should not be able to save a blog if any field is missing", async ({
+      page,
+    }) => {
+      await page.getByTestId("new-blog-post-button").click();
+      const parentDivClasses =
+        "select-header d-flex gap-1 align-items-center submit-draft-button disabled";
+
+      const submitButton = page.getByTestId("submit-blog-button");
+      const parentDiv = page.getByTestId("parent-submit-blog-button");
+      await expect(parentDiv).toHaveClass(parentDivClasses);
+
+      await page.getByPlaceholder("Title", { exact: true }).click();
+      await page.getByPlaceholder("Title", { exact: true }).fill("Title");
+      await page.getByPlaceholder("Title", { exact: true }).press("Tab");
+      await expect(parentDiv).toHaveClass(parentDivClasses);
+
+      await page.getByPlaceholder("Subtitle").click();
+      await page.getByPlaceholder("Subtitle").fill("Subtitle");
+      await expect(parentDiv).toHaveClass(parentDivClasses);
+      await page.getByText("Guide").click();
+      await page.getByText("News", { exact: true }).click();
+
+      await page.getByPlaceholder("Description").click();
+      await page.getByPlaceholder("Description").fill("Description");
+      await page.getByPlaceholder("Description").press("Tab");
+      await expect(parentDiv).toHaveClass(parentDivClasses);
+
+      await page.getByPlaceholder("Author").fill("Author");
+      await page.getByPlaceholder("Author").press("Tab");
+      await expect(parentDiv).toHaveClass(parentDivClasses);
+
+      await page.locator('input[name="date"]').fill("1998-05-03");
+      await page.locator('input[name="date"]').press("Tab");
+      await expect(parentDiv).toHaveClass(parentDivClasses);
+
+      await page.frameLocator("iframe").getByRole("textbox").fill("# Content");
+
+      await expect(submitButton).toBeEnabled();
+
+      await page.getByText("Save Draft").click();
     });
 
     test("should be able to cancel editing a blog", async ({ page }) => {
-      // Click on the first row this blog title is called "Published"
-      await page.getByRole("cell", { name: "Published" }).click();
+      // Click on the first row this blog title is called "PublishedBlog"
+      await page.getByRole("cell", { name: "PublishedBlog" }).click();
 
       await page.getByRole("button", { name: "Cancel" }).click();
       await page.waitForSelector(`[id^="edit-blog-selector-"]`, {
@@ -284,7 +857,7 @@ test.describe("Admin wallet is connected", () => {
       });
     });
     test("should be able to cancel a new blog", async ({ page }) => {
-      await page.getByRole("button", { name: " New Blog Post" }).click();
+      await page.getByTestId("new-blog-post-button").click();
       await page.getByRole("button", { name: "Cancel" }).click();
       await page.waitForSelector(`[id^="edit-blog-selector-"]`, {
         state: "visible",
@@ -297,14 +870,15 @@ test.describe("Admin wallet is connected", () => {
     });
 
     test("should be able to publish a blog", async ({ page }) => {
-      await page.getByRole("button", { name: " New Blog Post" }).click();
+      await page.getByTestId("new-blog-post-button").click();
 
       await page.getByPlaceholder("Title", { exact: true }).click();
       await page.getByPlaceholder("Title", { exact: true }).fill("Title");
       await page.getByPlaceholder("Title", { exact: true }).press("Tab");
+      await page.getByPlaceholder("Subtitle").click();
       await page.getByPlaceholder("Subtitle").fill("Subtitle");
-      await page.getByPlaceholder("Subtitle").press("Tab");
-      await page.getByRole("combobox").press("Tab");
+      await page.getByRole("combobox").selectOption("news");
+      await page.getByPlaceholder("Description").click();
       await page.getByPlaceholder("Description").fill("Description");
       await page.getByPlaceholder("Description").press("Tab");
       await page.getByPlaceholder("Author").fill("Author");
@@ -346,7 +920,7 @@ test.describe("Admin wallet is connected", () => {
     const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.click();
 
-    await page.getByRole("cell", { name: "Published" }).click();
+    await page.getByRole("cell", { name: "PublishedBlog" }).click();
 
     const deleteButton = page.getByRole("button", { name: " Delete" });
     deleteButton.scrollIntoViewIfNeeded();
