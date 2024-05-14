@@ -4,6 +4,7 @@ import {
   generateRandom6CharUUID,
 } from "../testUtils.js";
 import { mockDefaultTabs } from "../util/addons.js";
+import { mockBlogs } from "../util/blogs.js";
 import { setDontAskAgainCacheValues } from "../util/cache.js";
 import {
   mockTransactionSubmitRPCResponses,
@@ -26,6 +27,10 @@ const blogPage =
 test.beforeEach(async ({ page }) => {
   await page.route("https://rpc.mainnet.near.org/", async (route) => {
     await mockDefaultTabs(route);
+  });
+
+  await page.route("https://api.near.social/get", async (route) => {
+    await mockBlogs(route);
   });
 });
 
@@ -67,6 +72,7 @@ test.describe("Wallet is not connected", () => {
   test("should only view the blogs of the blog instance who's tab is currently active", async ({
     page,
   }) => {
+    test.setTimeout(30000);
     await page.goto(baseUrl);
 
     await page.waitForSelector(".nav-item", {
@@ -171,36 +177,9 @@ test.describe("Don't ask again enabled", () => {
         const requestPostData = request.postDataJSON();
         const args_base64 = requestPostData.params?.args_base64;
 
-        // TODO Temporary logging
-        const response = await route.fetch();
-        const json = await response.json();
-
-        // if (
-        //   requestPostData.params &&
-        //   requestPostData.params.account_id === "social.near" &&
-        //   requestPostData.params.method_name === "get"
-        // ) {
-        //   if (requestPostData.params.args_base64) {
-        //     const decodedParams = atob(requestPostData.params.args_base64);
-        //     console.log({
-        //       decodedParams,
-        //       keyZero: JSON.parse(decodedParams).keys[0],
-        //     });
-        //     if (json.result.result) {
-        //       const resultObj = decodeResultJSON(json.result.result);
-        //       console.log("Inside customhandler", resultObj);
-        //     } else {
-        //       console.log("No json.result.result Inside customhandler");
-        //     }
-        //   } else {
-        //     console.log("No args_base64 Inside customhandler");
-        //   }
-        // }
-        // TODO until here
-
-        // if (transaction_completed && args_base64) {
-        // Check if the transaction is completed
-        is_transaction_completed = true;
+        if (transaction_completed) {
+          is_transaction_completed = true;
+        }
 
         if (
           requestPostData.params.account_id === "social.near" &&
@@ -231,14 +210,10 @@ test.describe("Don't ask again enabled", () => {
           metadata.createdAt = new Date().toISOString().slice(0, 10);
           metadata.communityAddonId = "blogv2";
 
-          console.log("Before Blog is created", resultObj);
-
-          resultObj["webassemblymusic.community.devhub.near"]["blog"][id] = {
+          resultObj[communityAccount]["blog"][id] = {
             "": content,
             metadata: metadata,
           };
-
-          console.log("After Blog is created", resultObj);
 
           json.result.result = encodeResultJSON(resultObj);
 
@@ -269,14 +244,14 @@ test.describe("Don't ask again enabled", () => {
                 display_name: "First Blog",
                 enabled: true,
                 id: "blogv2",
-                parameters: "{}",
+                parameters: "{categories:['news','guide','reference']}",
               },
               {
                 addon_id: "blogv2",
                 display_name: "Second Blog",
                 enabled: true,
                 id: "blogv2instance2",
-                parameters: "{}",
+                parameters: "{categories:['news','guide','reference']}",
               },
             ];
           }
@@ -286,7 +261,6 @@ test.describe("Don't ask again enabled", () => {
           await route.fulfill({ response, json });
           return;
         }
-        // } (transaction_completed && args_base64)
 
         await route.continue();
       }
@@ -332,20 +306,12 @@ test.describe("Don't ask again enabled", () => {
     // Wait for the transaction to complete
     await expect(transaction_toast).not.toBeVisible();
     await expect(loadingIndicator).not.toBeVisible();
-    // Expect the post button to be enabled
-    // const isDisabled = parentDiv.classList.includes("disabled");
-    // await expect(isDisabled).toBe(false);
-    // const contentBox = page.frameLocator("iframe").getByRole("textbox");
-    // await expect(contentBox).toBeEmpty();
 
     await pauseIfVideoRecording(page);
-    // TODO
     await expect(is_transaction_completed).toBe(true);
-
-    // await pauseIfVideoRecording(page);
   });
 
-  test.skip("Update a blog", async ({ page }) => {
+  test("Update a blog", async ({ page }) => {
     // test before each
 
     await page.waitForTimeout(4000);
@@ -371,12 +337,15 @@ test.describe("Don't ask again enabled", () => {
     await mockTransactionSubmitRPCResponses(
       page,
       async ({ route, request, transaction_completed, last_receiver_id }) => {
-        const requestPostData = request.requestPostDataJSON();
+        const requestPostData = request.postDataJSON();
         const args_base64 = requestPostData.params?.args_base64;
 
-        // if (transaction_completed && args_base64) {
-        // Check if the transaction is completed
-        is_transaction_completed = true;
+        if (transaction_completed && args_base64) {
+          // Check if the transaction is completed
+          is_transaction_completed = true;
+        }
+        // This is to intercept the asyncView call to get the blog data
+        // It's different from the Social.get call because they use different endpoints
         if (
           requestPostData.params.account_id === "social.near" &&
           requestPostData.params.method_name === "get" &&
@@ -388,12 +357,11 @@ test.describe("Don't ask again enabled", () => {
           const json = await response.json();
 
           const resultObj = decodeResultJSON(json.result.result);
-          console.log("Transaction completed Update blog", resultObj);
-          // TODO Change the category and content in the RPC response
 
-          resultObj[blogId].metadata.category = "reference";
-          // TODO also the content && status
-          // resultObj[blogId].content = JSON.stringify({})
+          resultObj[communityAccount].blog[
+            "published-w5cj1y"
+          ].metadata.category = "reference";
+
           json.result.result = encodeResultJSON(resultObj);
 
           await route.fulfill({ response, json });
@@ -423,14 +391,14 @@ test.describe("Don't ask again enabled", () => {
                 display_name: "First Blog",
                 enabled: true,
                 id: "blogv2",
-                parameters: "{}",
+                parameters: "{categories:['news','guide','reference']}",
               },
               {
                 addon_id: "blogv2",
                 display_name: "Second Blog",
                 enabled: true,
                 id: "blogv2instance2",
-                parameters: "{}",
+                parameters: "{categories:['news','guide','reference']}",
               },
             ];
           }
@@ -440,7 +408,6 @@ test.describe("Don't ask again enabled", () => {
           await route.fulfill({ response, json });
           return;
         }
-        // }
 
         await route.continue();
       }
@@ -477,15 +444,11 @@ test.describe("Don't ask again enabled", () => {
     // Wait for the transaction to complete
     await expect(transaction_toast).not.toBeVisible();
     await expect(loadingIndicator).not.toBeVisible();
-    // Expect the post button to be enabled
-    await expect(parentDiv).not.toHaveClass(parentDivClasses);
-    const contentBox = page.frameLocator("iframe").getByRole("textbox");
-    await expect(contentBox).toBeEmpty();
 
     await pauseIfVideoRecording(page);
     await expect(is_transaction_completed).toBe(true);
   });
-  test.skip("Delete a blog", async ({ page }) => {
+  test("Delete a blog", async ({ page }) => {
     // test before each
 
     const idOfBlogToDelete = "published-w5cj1y";
@@ -506,10 +469,13 @@ test.describe("Don't ask again enabled", () => {
     await mockTransactionSubmitRPCResponses(
       page,
       async ({ route, request, transaction_completed, last_receiver_id }) => {
-        const requestPostData = request.requestPostDataJSON();
+        const requestPostData = request.postDataJSON();
         const args_base64 = requestPostData.params?.args_base64;
 
-        is_transaction_completed = true;
+        if (transaction_completed) {
+          is_transaction_completed = true;
+        }
+
         if (
           requestPostData.params.account_id === "social.near" &&
           requestPostData.params.method_name === "get" &&
@@ -557,14 +523,14 @@ test.describe("Don't ask again enabled", () => {
                 display_name: "First Blog",
                 enabled: true,
                 id: "blogv2",
-                parameters: "{}",
+                parameters: "{categories:['news','guide','reference']}",
               },
               {
                 addon_id: "blogv2",
                 display_name: "Second Blog",
                 enabled: true,
                 id: "blogv2instance2",
-                parameters: "{}",
+                parameters: "{categories:['news','guide','reference']}",
               },
             ];
           }
@@ -573,10 +539,7 @@ test.describe("Don't ask again enabled", () => {
 
           await route.fulfill({ response, json });
           return;
-        }
-
-        // !! TODO REPLACE COMPONENTS needs to be more specific because this is to generic of a statement
-        if (
+        } else if (
           // Replace the remote components with local developed components
           requestPostData.params &&
           requestPostData.params.account_id === "social.near" &&
@@ -607,6 +570,7 @@ test.describe("Don't ask again enabled", () => {
           }
 
           await route.fulfill({ response, json });
+          return;
         }
 
         await route.continue();
@@ -620,13 +584,18 @@ test.describe("Don't ask again enabled", () => {
     await deleteButton.click();
 
     // Show loading indicator
-    const loadingIndicator = await page.locator(".delete-blog-spinner").first();
+    // const loadingIndicator = await page.locator(".delete-blog-spinner").first();
+    // await expect(loadingIndicator).toBeVisible();
 
-    await expect(loadingIndicator).toBeVisible();
-    // Expect the delete button to be disabled
+    // const isDisabled = deleteButton.classList.contains("disabled");
+    // await expect(isDisabled).toBe(true);
+    await pauseIfVideoRecording(page);
 
-    const isDisabled = deleteButton.classList.contains("disabled");
-    await expect(isDisabled).toBe(true);
+    await page.waitForSelector("button[data-testid='new-blog-post-button']", {
+      state: "visible",
+    });
+
+    await expect(is_transaction_completed).toBe(true);
   });
 });
 

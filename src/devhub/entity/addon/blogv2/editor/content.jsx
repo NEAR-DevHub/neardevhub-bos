@@ -215,20 +215,19 @@ const [selectedStatus, setSelectedStatus] = useState(
 const [submittedBlogDeleted, setSubmittedBlogDeleted] = useState(null);
 useEffect(() => {
   const checkForDeletedBlogInSocialDB = () => {
-    Near.asyncView(
-      "${REPL_SOCIAL_CONTRACT}",
-      "get",
-      {
-        keys: [`${handle}.community.devhub.near/blog/**`],
+    const communityAccount = `${handle}.community.devhub.near`;
+    Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
+      keys: [`${communityAccount}/blog/**`],
+      options: {
+        return_deleted: true,
       },
-      {
-        // TODO option check for deleted fields
-      }
-    ).then((result) => {
+    }).then((result) => {
       try {
-        if (JSON.parse(result[submittedBlogDeleted]) === null) {
+        if (
+          JSON.parse(result[communityAccount].blog[submittedBlogDeleted]) ===
+          null
+        ) {
           // Blog is deleted
-          // Stop loading indicator
           setSubmittedBlogDeleted(null);
         }
       } catch (e) {}
@@ -244,8 +243,9 @@ useEffect(() => {
 const [submittedBlogData, setSubmittedBlogData] = useState(null);
 useEffect(() => {
   const checkForNewOrUpdatedBlogInSocialDB = () => {
+    const communityAccount = `${handle}.community.devhub.near`;
     Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
-      keys: [`${handle}.community.devhub.near/blog/**`],
+      keys: [`${communityAccount}/blog/**`],
     }).then((result) => {
       try {
         // FIXME: if another field updated than title this check will break
@@ -254,26 +254,33 @@ useEffect(() => {
           console.log("UPDATING BLOG");
           // If updated we know the id.
           // Get the full data of the new blog and compare it with the blog in social db
-          const lastBlog = JSON.parse(result[initialData.id]).metadata;
-          // TODO deep check
-          if (lastBlog !== initialData) {
+          // console.log("blogs", result[communityAccount]["blog"]);
+          const updatedBlog =
+            result[communityAccount]["blog"][initialData.id].metadata;
+          updatedBlog.content =
+            result[communityAccount]["blog"][initialData.id][""];
+          console.log("initialData.id", initialData.id);
+          console.log("UPDATED BLOG", updatedBlog);
+
+          let theyMatch = true;
+          let keys = Object.keys(submittedBlogData);
+          for (const key of keys) {
+            if (updatedBlog[key] !== submittedBlogData[key]) {
+              theyMatch = false;
+              break;
+            }
+          }
+          if (theyMatch) {
+            console.log("THEY MATCH");
             setSubmittedBlogData(null);
           }
         } else {
-          console.log("Posting NEW BLOG");
           console.log("initialBlogAmount + 1 === Object.keys(result).length");
           console.log(
             initialBlogAmount,
             initialBlogAmount + 1,
-            Object.keys(
-              result["webassemblymusic.community.devhub.near"]["blog"]
-            ).length
+            Object.keys(result[communityAccount]["blog"]).length
           );
-          console.log({
-            result: Object.keys(
-              result["webassemblymusic.community.devhub.near"]["blog"]
-            ),
-          });
           if (initialBlogAmount + 1 === Object.keys(result).length) {
             setSubmittedBlogData(null);
           }
@@ -326,7 +333,18 @@ const SubmitBtn = () => {
 
   const handleSubmit = () => {
     // Set the title for dont ask me again check
-    setSubmittedBlogData(title);
+    setSubmittedBlogData({
+      title,
+      subtitle,
+      description,
+      author,
+      date,
+      content,
+      category,
+      community: handle,
+      publishedAt,
+      status: selectedStatus,
+    });
     handlePublish(selectedStatus);
   };
 
