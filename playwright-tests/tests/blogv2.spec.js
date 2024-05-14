@@ -170,7 +170,7 @@ test.describe("Don't ask again enabled", () => {
         const requestPostData = request.postDataJSON();
         const args_base64 = requestPostData.params?.args_base64;
 
-        // TODO Temporary
+        // TODO Temporary logging
         const response = await route.fetch();
         const json = await response.json();
 
@@ -376,73 +376,73 @@ test.describe("Don't ask again enabled", () => {
         const requestPostData = request.requestPostDataJSON();
         const args_base64 = requestPostData.params?.args_base64;
 
-        if (transaction_completed && args_base64) {
-          // Check if the transaction is completed
-          is_transaction_completed = true;
-          const args = atob(args_base64);
+        // if (transaction_completed && args_base64) {
+        // Check if the transaction is completed
+        is_transaction_completed = true;
+        if (
+          requestPostData.params.account_id === "social.near" &&
+          requestPostData.params.method_name === "get" &&
+          args_base64 &&
+          JSON.parse(atob(args_base64)).keys[0] ===
+            "webassemblymusic.community.devhub.near/blog/**"
+        ) {
+          const response = await route.fetch();
+          const json = await response.json();
+
+          const resultObj = decodeResultJSON(json.result.result);
+          console.log("Transaction completed Update blog", resultObj);
+          // TODO Change the category and content in the RPC response
+
+          resultObj[blogId].metadata.category = "reference";
+          // TODO also the content && status
+          // resultObj[blogId].content = JSON.stringify({})
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+          return;
+        } else if (
+          // Make sure the addons are enabled
+          requestPostData.params &&
+          requestPostData.params.account_id === "devhub.near" &&
+          requestPostData.params.method_name === "get_community"
+        ) {
+          const response = await route.fetch();
+          const json = await response.json();
+
+          const resultObj = decodeResultJSON(json.result.result);
           if (
-            requestPostData.params.account_id === "social.near" &&
-            requestPostData.params.method_name === "get" &&
-            args === // FIXME:
-              `{"keys":["${communityHandle}.community.devhub.near/blog/**"]}`
+            !resultObj.addons
+              .map((addon) => addon.addon_id)
+              .includes("blogv2") ||
+            !resultObj.addons
+              .map((addon) => addon.addon_id)
+              .includes("blogv2instance2")
           ) {
-            const response = await route.fetch();
-            const json = await response.json();
-
-            const resultObj = decodeResultJSON(json.result.result);
-            console.log("Transaction completed Update blog", resultObj);
-            // TODO Change the category and content in the RPC response
-
-            resultObj[blogId].metadata.category = "reference";
-            // TODO also the content && status
-            // resultObj[blogId].content = JSON.stringify({})
-            json.result.result = encodeResultJSON(resultObj);
-
-            await route.fulfill({ response, json });
-            return;
-          } else if (
-            // Make sure the addons are enabled
-            requestPostData.params &&
-            requestPostData.params.account_id === "devhub.near" &&
-            requestPostData.params.method_name === "get_community"
-          ) {
-            const response = await route.fetch();
-            const json = await response.json();
-
-            const resultObj = decodeResultJSON(json.result.result);
-            if (
-              !resultObj.addons
-                .map((addon) => addon.addon_id)
-                .includes("blogv2") ||
-              !resultObj.addons
-                .map((addon) => addon.addon_id)
-                .includes("blogv2instance2")
-            ) {
-              resultObj.addons = [
-                ...resultObj.addons,
-                {
-                  addon_id: "blogv2",
-                  display_name: "First Blog",
-                  enabled: true,
-                  id: "blogv2",
-                  parameters: "{}",
-                },
-                {
-                  addon_id: "blogv2",
-                  display_name: "Second Blog",
-                  enabled: true,
-                  id: "blogv2instance2",
-                  parameters: "{}",
-                },
-              ];
-            }
-
-            json.result.result = encodeResultJSON(resultObj);
-
-            await route.fulfill({ response, json });
-            return;
+            resultObj.addons = [
+              ...resultObj.addons,
+              {
+                addon_id: "blogv2",
+                display_name: "First Blog",
+                enabled: true,
+                id: "blogv2",
+                parameters: "{}",
+              },
+              {
+                addon_id: "blogv2",
+                display_name: "Second Blog",
+                enabled: true,
+                id: "blogv2instance2",
+                parameters: "{}",
+              },
+            ];
           }
+
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+          return;
         }
+        // }
 
         await route.continue();
       }
@@ -490,6 +490,9 @@ test.describe("Don't ask again enabled", () => {
   test("Delete a blog", async ({ page }) => {
     // test before each
 
+    const idOfBlogToDelete = "published-w5cj1y";
+    const blogTitle = "PublishedBlog";
+
     await page.waitForTimeout(4000);
     // Start configuring the blog addon
     const configureButton = page.getByTestId("configure-addon-button");
@@ -498,7 +501,7 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
 
     // Click a blog to edit
-    await page.getByRole("cell", { name: "PublishedBlog" }).click();
+    await page.getByRole("cell", { name: blogTitle }).click();
 
     // Mock transaction here
     const communityHandle = "webassemblymusic.community.devhub.near";
@@ -509,73 +512,73 @@ test.describe("Don't ask again enabled", () => {
         const requestPostData = request.requestPostDataJSON();
         const args_base64 = requestPostData.params?.args_base64;
 
-        if (transaction_completed && args_base64) {
-          // Check if the transaction is completed
-          is_transaction_completed = true;
-          const args = atob(args_base64);
-          if (
-            requestPostData.params.account_id === "social.near" &&
-            requestPostData.params.method_name === "get" &&
-            // TODO FIX
-            args ===
-              `{"keys":["${communityHandle}.community.devhub.near/blog/**"]}`
-          ) {
-            const response = await route.fetch();
-            const json = await response.json();
+        is_transaction_completed = true;
+        if (
+          requestPostData.params.account_id === "social.near" &&
+          requestPostData.params.method_name === "get" &&
+          args_base64 &&
+          JSON.parse(atob(args_base64)).keys[0] === `${communityHandle}/blog/**`
+        ) {
+          const response = await route.fetch();
+          const json = await response.json();
 
-            const resultObj = decodeResultJSON(json.result.result);
-            console.log("Transaction completed deleteBlog", resultObj);
-            // FIXME: post main
-            resultObj[communityHandle].post.main = JSON.stringify({
-              text: descriptionText,
-            });
-            json.result.result = encodeResultJSON(resultObj);
+          const resultObj = decodeResultJSON(json.result.result);
+          console.log("Before delete blog", resultObj);
 
-            await route.fulfill({ response, json });
-            return;
-          } else if (
-            // Make sure the addons are enabled
-            requestPostData.params &&
-            requestPostData.params.account_id === "devhub.near" &&
-            requestPostData.params.method_name === "get_community"
-          ) {
-            const response = await route.fetch();
-            const json = await response.json();
+          // Mock the deletion of the first blog id
+          resultObj[communityHandle].blog[idOfBlogToDelete] = null;
 
-            const resultObj = decodeResultJSON(json.result.result);
-            if (
-              !resultObj.addons
-                .map((addon) => addon.addon_id)
-                .includes("blogv2") ||
-              !resultObj.addons
-                .map((addon) => addon.addon_id)
-                .includes("blogv2instance2")
-            ) {
-              resultObj.addons = [
-                ...resultObj.addons,
-                {
-                  addon_id: "blogv2",
-                  display_name: "First Blog",
-                  enabled: true,
-                  id: "blogv2",
-                  parameters: "{}",
-                },
-                {
-                  addon_id: "blogv2",
-                  display_name: "Second Blog",
-                  enabled: true,
-                  id: "blogv2instance2",
-                  parameters: "{}",
-                },
-              ];
-            }
+          console.log("Transaction completed blog deleted", resultObj);
 
-            json.result.result = encodeResultJSON(resultObj);
+          json.result.result = encodeResultJSON(resultObj);
 
-            await route.fulfill({ response, json });
-            return;
-          }
+          await route.fulfill({ response, json });
+          return;
         } else if (
+          // Make sure the addons are enabled
+          requestPostData.params &&
+          requestPostData.params.account_id === "devhub.near" &&
+          requestPostData.params.method_name === "get_community"
+        ) {
+          const response = await route.fetch();
+          const json = await response.json();
+
+          const resultObj = decodeResultJSON(json.result.result);
+          if (
+            !resultObj.addons
+              .map((addon) => addon.addon_id)
+              .includes("blogv2") ||
+            !resultObj.addons
+              .map((addon) => addon.addon_id)
+              .includes("blogv2instance2")
+          ) {
+            resultObj.addons = [
+              ...resultObj.addons,
+              {
+                addon_id: "blogv2",
+                display_name: "First Blog",
+                enabled: true,
+                id: "blogv2",
+                parameters: "{}",
+              },
+              {
+                addon_id: "blogv2",
+                display_name: "Second Blog",
+                enabled: true,
+                id: "blogv2instance2",
+                parameters: "{}",
+              },
+            ];
+          }
+
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+          return;
+        }
+
+        // !! TODO REPLACE COMPONENTS needs to be more specific because this is to generic of a statement
+        if (
           // Replace the remote components with local developed components
           requestPostData.params &&
           requestPostData.params.account_id === "social.near" &&
