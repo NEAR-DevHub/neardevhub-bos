@@ -67,26 +67,11 @@ if (!getAllAddons || !setCommunityAddon) {
   return <p>Loading modules...</p>;
 }
 
-// TODO blogv2 needs to be added to the contract when before merging / removed here
-const blogv2 = {
-  configurator_widget:
-    "devhub.near/widget/devhub.entity.addon.blogv2.Configurator",
-  description: "Create a blog for your community",
-  icon: "bi bi-substack",
-  id: "blogv2",
-  title: "BlogV2",
-  view_widget: "devhub.near/widget/devhub.entity.addon.blogv2.Viewer",
-};
-
 const availableAddons = getAllAddons();
 
 let addonMatch = null; // If availableAddons is not an array, set addonMatch to null
 if (Array.isArray(availableAddons)) {
-  //availableAddons => [blogv2, ...availableAddons]
-  // [blogv2, ...availableAddons]
-  addonMatch = ([blogv2, ...availableAddons] ?? []).find(
-    (it) => it.id === addon.addon_id
-  );
+  addonMatch = (availableAddons ?? []).find((it) => it.id === addon.addon_id);
 }
 
 if (!addonMatch) {
@@ -154,7 +139,6 @@ return (
             },
             handle, // this is temporary prop drilling until kanban and github are migrated
             permissions,
-            // NOTE not the addon_id (same for every blog)
             communityAddonId: addon.id,
           }}
         />

@@ -54,14 +54,15 @@ tab = normalize(tab);
 
 const [isLinkCopied, setLinkCopied] = useState(false);
 
-// TODO
 // CommunityAddOn
 const blogv2 = {
   addon_id: "blogv2",
   display_name: "BlogV2",
   enabled: true,
   id: "blogv2",
-  parameters: "{title:'My blog page title'}",
+  parameters:
+    // TODO 599
+    '{"title":"My blog page title", "categories": ["category1", "category2"], "searchEnabled": true}',
 };
 const blogv2instance2 = {
   addon_id: "blogv2",
@@ -71,40 +72,22 @@ const blogv2instance2 = {
   parameters: "{}",
 };
 
-// TODO remove
-// const blog = {
-//   addon_id: "blog",
-//   display_name: "BlogV1",
-//   enabled: true,
-//   id: "blog",
-//   parameters: "{}",
-// };
-
-// TODO remove
+// TODO 599
 const tabs = [
-  {
-    title: "First Blog",
-    view: "${REPL_DEVHUB}/widget/devhub.page.addon",
-    params: {
-      addon: blogv2,
-      handle: community.handle,
-      transactionHashes: props.transactionHashes,
-    },
-  },
-  {
-    title: "Second Blog",
-    view: "${REPL_DEVHUB}/widget/devhub.page.addon",
-    params: {
-      addon: blogv2instance2,
-      handle: community.handle,
-      transactionHashes: props.transactionHashes,
-    },
-  },
   // {
-  //   title: "BlogV1",
+  //   title: "First Blog",
   //   view: "${REPL_DEVHUB}/widget/devhub.page.addon",
   //   params: {
-  //     addon: blog,
+  //     addon: blogv2,
+  //     handle: community.handle,
+  //     transactionHashes: props.transactionHashes,
+  //   },
+  // },
+  // {
+  //   title: "Second Blog",
+  //   view: "${REPL_DEVHUB}/widget/devhub.page.addon",
+  //   params: {
+  //     addon: blogv2instance2,
   //     handle: community.handle,
   //     transactionHashes: props.transactionHashes,
   //   },
@@ -403,7 +386,6 @@ return (
           props={{
             ...currentTab.params,
             view, // default view for an addon, can come as a prop from a community or from a direct link to page.addon
-
             // below is temporary prop drilling until kanban and github are migrated
             permissions,
             handle: community.handle,

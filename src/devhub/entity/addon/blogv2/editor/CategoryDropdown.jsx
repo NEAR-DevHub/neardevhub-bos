@@ -105,9 +105,6 @@ const Item = ({ option }) => {
     <div className="d-flex gap-3 align-items-center w-100">
       <div className="d-flex flex-column gap-1 w-100 text-wrap">
         <div className="h6 mb-0"> {option.title}</div>
-        {/* <div className="text-sm text-muted w-100 text-wrap">
-          {option.description}
-        </div> */}
       </div>
     </div>
   );

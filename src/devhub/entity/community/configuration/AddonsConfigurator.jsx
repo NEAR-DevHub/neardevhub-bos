@@ -2,6 +2,12 @@ const { getAllAddons } =
   VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
   (() => {});
 
+const { generateRandom6CharUUID } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.stringUtils"
+);
+
+generateRandom6CharUUID || (generateRandom6CharUUID = () => {});
+
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 const availableAddons = getAllAddons() || [];
@@ -53,18 +59,6 @@ const Row = styled.tr``;
 const Cell = styled.td`
   padding: 10px;
 `;
-
-function generateRandom6CharUUID() {
-  const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-  let result = "";
-
-  for (let i = 0; i < 6; i++) {
-    const randomIndex = Math.floor(Math.random() * chars.length);
-    result += chars[randomIndex];
-  }
-
-  return result;
-}
 
 const AddonItem = ({
   data,

@@ -175,7 +175,6 @@ const {
   onSubmit,
   onCancel,
   onDelete,
-  // All blogs of this instance
   allBlogs: allBlogsOfThisInstance,
 } = props;
 
@@ -248,33 +247,28 @@ useEffect(() => {
       keys: [`${communityAccount}/blog/**`],
     }).then((result) => {
       try {
-        // FIXME: if another field updated than title this check will break
-        // Can't just check the description text
         if (initialData.id) {
-          console.log("UPDATING BLOG");
-          // If updated we know the id.
-          // Get the full data of the new blog and compare it with the blog in social db
-          // console.log("blogs", result[communityAccount]["blog"]);
+          // Update
           const updatedBlog =
             result[communityAccount]["blog"][initialData.id].metadata;
           updatedBlog.content =
             result[communityAccount]["blog"][initialData.id][""];
-          console.log("initialData.id", initialData.id);
-          console.log("UPDATED BLOG", updatedBlog);
 
           let theyMatch = true;
           let keys = Object.keys(submittedBlogData);
           for (const key of keys) {
+            // Get the full data of the new blog and compare it to socialDB
             if (updatedBlog[key] !== submittedBlogData[key]) {
               theyMatch = false;
               break;
             }
           }
           if (theyMatch) {
-            console.log("THEY MATCH");
             setSubmittedBlogData(null);
           }
         } else {
+          // Create
+          // TODO PR
           console.log("initialBlogAmount + 1 === Object.keys(result).length");
           console.log(
             initialBlogAmount,

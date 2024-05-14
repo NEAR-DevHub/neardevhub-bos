@@ -64,8 +64,6 @@ function Card({ data }) {
   const options = { year: "numeric", month: "short", day: "numeric" };
   const formattedDate = new Date(date).toLocaleString("en-US", options);
 
-  // return <p>Card widget</p>;
-
   return (
     <Container id={`blog-card-${id}`} data-testid={id}>
       {category && <span className="category">{category}</span>}

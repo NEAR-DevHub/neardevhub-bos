@@ -2,6 +2,12 @@ const { getPost, setCommunitySocialDB } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
+const { generateRandom6CharUUID } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.stringUtils"
+);
+
+generateRandom6CharUUID || (generateRandom6CharUUID = () => {});
+
 const { Layout, handle, communityAddonId } = props;
 
 setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
@@ -78,18 +84,6 @@ const handleOnSubmit = (v, isEdit) => {
   });
 };
 
-function generateRandom6CharUUID() {
-  const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-  let result = "";
-
-  for (let i = 0; i < 6; i++) {
-    const randomIndex = Math.floor(Math.random() * chars.length);
-    result += chars[randomIndex];
-  }
-
-  return result;
-}
-
 const handleOnDelete = (id) => {
   setCommunitySocialDB({
     handle,
@@ -115,12 +109,7 @@ const handleOnDelete = (id) => {
   });
 };
 
-const handleSettingsPage = () => {
-  // TODO 599
-  // Pass this via editor.index to the layout
-};
-
-const saveBlogPostSettings = (v) => {
+const handleOnSubmitSettings = (v) => {
   // TODO 599 move to provider
   console.log("Implement saving blog settings issue 599");
 };
@@ -131,6 +120,6 @@ return (
     getData={handleGetData}
     onSubmit={handleOnSubmit}
     onDelete={handleOnDelete}
-    onSubmitSettings={saveBlogPostSettings}
+    onSubmitSettings={handleOnSubmitSettings}
   />
 );

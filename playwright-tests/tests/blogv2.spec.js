@@ -487,12 +487,9 @@ test.describe("Don't ask again enabled", () => {
           const json = await response.json();
 
           const resultObj = decodeResultJSON(json.result.result);
-          console.log("Before delete blog", resultObj);
 
           // Mock the deletion of the first blog id
           resultObj[communityAccount].blog[idOfBlogToDelete] = null;
-
-          console.log("Transaction completed blog deleted", resultObj);
 
           json.result.result = encodeResultJSON(resultObj);
 

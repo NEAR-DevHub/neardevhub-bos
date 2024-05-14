@@ -94,7 +94,6 @@ function BlogCard(flattenedBlog) {
 
 return (
   <div class="w-100">
-    {/* <p>{JSON.stringify(props)}</p> */}
     {/* TODO 599 {data.title || "Latest Blog Posts"} */}
     {!hideTitle && <Heading> Latest Blog Posts</Heading>}
     <Grid>
