@@ -23,15 +23,11 @@ const Wrapper = styled.div`
   }
 
   .inline-flex {
-    display: inline-flex !important;
+    display: -webkit-inline-box !important;
     align-items: center !important;
     gap: 0.25rem !important;
-  }
-
-  @media screen and (max-width: 768px) {
-    .inline-flex {
-      display: -webkit-inline-box !important;
-    }
+    margin-right: 2px;
+    flex-wrap: wrap;
   }
 `;
 
@@ -352,10 +348,7 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
           text && (
             <span key={index} className="inline-flex">
               {text}
-              {text &&
-                originalKeys.length > 1 &&
-                index < modifiedKeys.length - 1 &&
-                "･"}
+              {text && "･"}
             </span>
           )
         );
@@ -418,7 +411,7 @@ const Log = ({ timestamp }) => {
               <AccountProfile accountId={editorId} showAccountId={true} />
             </span>
             {parseProposalKeyAndValue(i.key, i.modifiedValue, i.originalValue)}
-            on
+            {i.key !== "timeline" && "･"}
             <Widget
               src="${REPL_NEAR}/widget/TimeAgo"
               props={{
