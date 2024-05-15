@@ -5,7 +5,6 @@ const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
 
-// TODO 599 change with settings
 const categories = [
   {
     label: "Guide",
@@ -202,7 +201,6 @@ const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || context.accountId);
 const [previewMode, setPreviewMode] = useState("edit"); // "edit" or "card" or "page"
 const [date, setDate] = useState(initialFormattedDate || new Date());
-// TODO 599 configurable by settings in addon parameters
 const [category, setCategory] = useState(initialData.category || "guide");
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);

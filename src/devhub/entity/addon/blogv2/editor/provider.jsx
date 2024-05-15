@@ -110,7 +110,6 @@ const handleOnDelete = (id) => {
 };
 
 const handleOnSubmitSettings = (v) => {
-  // TODO 599 move to provider
   console.log("Implement saving blog settings issue 599");
 };
 
