@@ -1,12 +1,12 @@
 import { test, expect } from "@playwright/test";
-import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
-import { pauseIfVideoRecording } from "../testUtils.js";
-import { setDontAskAgainCacheValues } from "../util/cache.js";
+import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
+import { setDontAskAgainCacheValues } from "../../util/cache.js";
 import {
   mockTransactionSubmitRPCResponses,
   decodeResultJSON,
   encodeResultJSON,
-} from "../util/transaction.js";
+} from "../../util/transaction.js";
 
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })

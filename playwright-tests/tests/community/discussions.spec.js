@@ -1,18 +1,18 @@
 import { test, expect } from "@playwright/test";
-import { pauseIfVideoRecording } from "../testUtils.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
 import {
   setDontAskAgainCacheValues,
   getDontAskAgainCacheValues,
   setCommitWritePermissionDontAskAgainCacheValues,
-} from "../util/cache.js";
-import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
+} from "../../util/cache.js";
+import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
 import {
   mockTransactionSubmitRPCResponses,
   decodeResultJSON,
   encodeResultJSON,
-} from "../util/transaction.js";
-import { mockDefaultTabs } from "../util/addons.js";
-import { mockSocialIndexResponses } from "../util/socialapi.js";
+} from "../../util/transaction.js";
+import { mockDefaultTabs } from "../../util/addons.js";
+import { mockSocialIndexResponses } from "../../util/socialapi.js";
 
 test.beforeEach(async ({ page }) => {
   await page.route("https://rpc.mainnet.near.org/", async (route) => {
