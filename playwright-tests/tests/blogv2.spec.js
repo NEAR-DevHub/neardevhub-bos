@@ -780,7 +780,6 @@ test.describe("Admin wallet is connected", () => {
       expect(transactionObj.data.blog[blogId].metadata.category).toBe("news");
     });
 
-    // TODO test
     test("should not be able to save a blog if any field is missing", async ({
       page,
     }) => {

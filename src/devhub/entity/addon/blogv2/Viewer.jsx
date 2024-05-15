@@ -28,10 +28,23 @@ const Heading = styled.h3`
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 48px */
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 
   @media screen and (max-width: 768px) {
     font-size: 1.5rem;
+  }
+`;
+
+const SubHeading = styled.h3`
+  color: #3b3b3b;
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 100%;
+  margin-bottom: 2rem;
+
+  @media screen and (max-width: 768px) {
+    font-size: 1rem;
   }
 `;
 
@@ -94,8 +107,13 @@ function BlogCard(flattenedBlog) {
 
 return (
   <div class="w-100">
-    {/* TODO 599 {data.title || "Latest Blog Posts"} */}
-    {!hideTitle && <Heading> Latest Blog Posts</Heading>}
+    {!hideTitle && <Heading> {data.title || "Latest Blog Posts"}</Heading>}
+    {!hideTitle && (
+      <SubHeading>
+        {data.subtitle ||
+          `Follow ${handle}.community.devhub.near to stay up to date.`}
+      </SubHeading>
+    )}
     <Grid>
       {processedData && processedData.length > 0
         ? processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))

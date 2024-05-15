@@ -36,6 +36,7 @@ return (
         props={{
           handle: props.handle,
           communityAddonId: props.communityAddonId,
+          parametersData,
           Layout: (providerProps) => {
             const { onSubmit, onCancel, getData, onDelete } = providerProps;
             return (
@@ -43,7 +44,6 @@ return (
                 src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.layout"
                 props={{
                   getData,
-                  parametersData,
                   BlogOverview: (p) => (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.BlogOverview"

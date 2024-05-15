@@ -67,11 +67,24 @@ if (!getAllAddons || !setCommunityAddon) {
   return <p>Loading modules...</p>;
 }
 
+// Remove --
+const blogv2 = {
+  configurator_widget:
+    "devhub.near/widget/devhub.entity.addon.blogv2.Configurator",
+  description: "Create a blog for your community",
+  icon: "bi bi-substack",
+  id: "blogv2",
+  title: "BlogV2",
+  view_widget: "devhub.near/widget/devhub.entity.addon.blogv2.Viewer",
+};
+
 const availableAddons = getAllAddons();
 
 let addonMatch = null; // If availableAddons is not an array, set addonMatch to null
 if (Array.isArray(availableAddons)) {
-  addonMatch = (availableAddons ?? []).find((it) => it.id === addon.addon_id);
+  addonMatch = ([blogv2, ...availableAddons] ?? []).find(
+    (it) => it.id === addon.addon_id
+  );
 }
 
 if (!addonMatch) {
