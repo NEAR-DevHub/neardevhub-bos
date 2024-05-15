@@ -285,7 +285,6 @@ test.describe("Don't ask again enabled", () => {
     // Click post button
     await postButton.click();
     await expect(loadingIndicator).toBeVisible();
-    await pauseIfVideoRecording(page);
 
     // Expect the post button to be disabled
     const parentDiv = page.getByTestId("parent-submit-blog-button");
