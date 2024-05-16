@@ -2,7 +2,6 @@ const {
   BlogOverview,
   data: processedBlogData,
   Content,
-  parametersData,
   onSubmit,
   BlogPostSettings,
 } = props;

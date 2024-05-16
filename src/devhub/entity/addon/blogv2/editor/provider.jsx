@@ -8,7 +8,7 @@ const { generateRandom6CharUUID } = VM.require(
 
 generateRandom6CharUUID || (generateRandom6CharUUID = () => {});
 
-const { Layout, handle, communityAddonId, parametersData } = props;
+const { Layout, handle, communityAddonId } = props;
 
 setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
 getPost = getPost || (() => <></>);
@@ -109,45 +109,11 @@ const handleOnDelete = (id) => {
   });
 };
 
-/**
- * If the settings are empty we use default values for blog settings
- * These default values should reflect in the configurator / viewer and settings page
- *
- */
-
-const handleOnSubmitSettings = (v) => {
-  // TODO 599
-
-  const structure = {
-    title: v.title || "Latest Blog Posts",
-    subtitle: "Creating blogs for the community",
-    searchEnabled: "disabled", // 'enabled', 'disabled'
-    orderBy: "timedesc", // timedesc, timeasc, alpha
-    categoriesEnabled: "disabled", // 'enabled', 'disabled'
-    categories: [],
-  };
-
-  setCommunityAddon({
-    handle,
-    addon: {
-      ...addon,
-      id: communityAddonId,
-      addon_id: "blogv2",
-
-      // configured in the addon settings
-      // - display_name
-      // - enabled
-      parameters: JSON.stringify(structure),
-    },
-  });
-};
-
 return (
   <Layout
     data={processedData || []}
     getData={handleGetData}
     onSubmit={handleOnSubmit}
     onDelete={handleOnDelete}
-    onSubmitSettings={handleOnSubmitSettings}
   />
 );
