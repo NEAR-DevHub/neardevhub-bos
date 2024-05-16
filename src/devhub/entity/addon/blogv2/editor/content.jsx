@@ -562,7 +562,7 @@ return (
       </div>
       <div className="flex gap-1">
         <button
-          className="rounded-md bg-white px-2.5 py-1.5 text-sm h-9 font-semibold text-gray-900 border ring-1 ring-inset ring-gray-300 hover:bg-gray-600 hover:border-1"
+          className={`rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold text-devhub-green hover:text-white shadow-sm hover:bg-indigo-100 bg-devhub-green-light text-devhub-green`}
           onClick={onCancel}
         >
           Cancel

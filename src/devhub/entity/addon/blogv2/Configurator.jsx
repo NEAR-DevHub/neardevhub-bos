@@ -28,7 +28,7 @@ const Tailwind = styled.div`
   }
 
   .bg-devhub-green-light {
-    background-color: rgb(212, 236, 227);
+    background-color: rgba(212, 236, 227, 0.1);
   }
 
   .text-devhub-green {
