@@ -79,7 +79,6 @@ const DropdownBtnContainer = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid #ccc;
     border-radius-top: 5px;
     cursor: pointer;
     background-color: #fff;
@@ -154,11 +153,11 @@ const DropdownBtnContainer = styled.div`
   }
 
   .grey {
-    background-color: #818181;
+    background-color: rgba(129, 129, 129, 0.5);
   }
 
   .green {
-    background-color: #04a46e;
+    background-color: #00ec97;
   }
 
   a:hover {
@@ -310,7 +309,7 @@ const SubmitBtn = () => {
       value: "DRAFT",
     },
     {
-      iconColor: "green",
+      iconColor: "bg-devhub-green",
       label: "Publish",
       description:
         "The blog will be shared with the community and can be viewed by everyone.",
@@ -351,7 +350,7 @@ const SubmitBtn = () => {
   return (
     <DropdownBtnContainer>
       <div
-        className="custom-select"
+        className="custom-select shadow-sm"
         tabIndex="0"
         onBlur={() => setDraftBtnOpen(false)}
       >
@@ -363,7 +362,7 @@ const SubmitBtn = () => {
         >
           <div
             onClick={() => !shouldBeDisabled() && handleSubmit()}
-            className="p-2 d-flex gap-2 align-items-center "
+            className="py-2.5 px-2 d-flex gap-2 align-items-center "
             data-testid="submit-blog-button"
           >
             {submittedBlogData ? (
@@ -374,7 +373,7 @@ const SubmitBtn = () => {
             <div className={`selected-option`}>{selectedOption.label}</div>
           </div>
           <div
-            className="h-100 p-2"
+            className="h-100 py-2.5 px-2"
             style={{ borderLeft: "1px solid #ccc" }}
             onClick={toggleDropdown}
           >
