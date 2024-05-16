@@ -38,8 +38,8 @@ return (
       <>
         {showScreen === "editor" ? null : (
           <div className="flex items-center justify-between w-100 mb-4">
-            <div className="">Blog Posts</div>
-            <div className="flex items-end justify-end gap-x-1">
+            <div className="text-xl font-bold">Blog Posts</div>
+            <div className="flex items-end justify-end gap-x-3">
               <Link
                 className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-white shadow-sm hover:bg-indigo-100"
                 href={postHogHref}

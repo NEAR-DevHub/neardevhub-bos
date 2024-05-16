@@ -542,7 +542,7 @@ return (
           </select>
         </div>
         <div className="hidden sm:block">
-          <div className="-mb-px flex gap-1" aria-label="Tabs">
+          <div className="-mb-px flex gap-x-3 px-4" aria-label="Tabs">
             {tabs.map((tab) => (
               <a
                 key={tab.name}
@@ -560,7 +560,7 @@ return (
           </div>
         </div>
       </div>
-      <div className="flex gap-1">
+      <div className="flex gap-x-3">
         <button
           className={`rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold text-devhub-green hover:text-white shadow-sm hover:bg-indigo-100 bg-devhub-green-light text-devhub-green`}
           onClick={onCancel}
