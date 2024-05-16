@@ -515,11 +515,6 @@ const tabs = [
   { name: "Preview Page", value: "page" },
 ];
 
-function classNames() {
-  const classes = Array.from(arguments);
-  return classes.filter(Boolean).join(" ");
-}
-
 return (
   <Container>
     <div className="flex gap-1 justify-between w-100 mb-4">
