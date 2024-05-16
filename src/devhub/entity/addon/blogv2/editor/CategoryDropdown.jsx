@@ -2,7 +2,6 @@ const { selectedValue, onChange, disabled } = props;
 
 onChange = onChange || (() => {});
 
-// TODO 599
 const options = [
   {
     title: "Guide",

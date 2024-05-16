@@ -1,4 +1,3 @@
-// TODO issue 599
 const { parametersData, onSubmitSettings, onHideSettings } = props;
 
 const data = JSON.parse(parametersData);

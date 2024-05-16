@@ -9,7 +9,7 @@ const {
   setTitle,
   subtitle,
   setSubtitle,
-  options, // TODO 599
+  options,
   category,
   setCategory,
   description,

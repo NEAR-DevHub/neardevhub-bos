@@ -2,15 +2,15 @@ import { expect, test } from "@playwright/test";
 import {
   pauseIfVideoRecording,
   generateRandom6CharUUID,
-} from "../testUtils.js";
-import { mockDefaultTabs } from "../util/addons.js";
-import { mockBlogs } from "../util/blogs.js";
-import { setDontAskAgainCacheValues } from "../util/cache.js";
+} from "../../testUtils.js";
+import { mockDefaultTabs } from "../../util/addons.js";
+import { mockBlogs } from "../../util/blogs.js";
+import { setDontAskAgainCacheValues } from "../../util/cache.js";
 import {
   mockTransactionSubmitRPCResponses,
   decodeResultJSON,
   encodeResultJSON,
-} from "../util/transaction.js";
+} from "../../util/transaction.js";
 
 const baseUrl =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=first-blog";
@@ -285,7 +285,6 @@ test.describe("Don't ask again enabled", () => {
     // Click post button
     await postButton.click();
     await expect(loadingIndicator).toBeVisible();
-    await pauseIfVideoRecording(page);
 
     // Expect the post button to be disabled
     const parentDiv = page.getByTestId("parent-submit-blog-button");
@@ -448,6 +447,7 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
     await expect(is_transaction_completed).toBe(true);
   });
+
   test("Delete a blog", async ({ page }) => {
     // test before each
 

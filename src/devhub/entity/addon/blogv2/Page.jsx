@@ -22,7 +22,6 @@ function Page({ data, onEdit, accountId, handle }) {
   });
   const isAllowedToEdit = permissions?.can_configure ?? false;
 
-  // TODO 599 category is not configurable
   const Container = styled.div`
     display: flex;
     flex-direction: column;

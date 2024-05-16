@@ -5,7 +5,6 @@ const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
 
-// TODO 599 change with settings
 const categories = [
   {
     label: "Guide",
@@ -202,7 +201,6 @@ const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || context.accountId);
 const [previewMode, setPreviewMode] = useState("edit"); // "edit" or "card" or "page"
 const [date, setDate] = useState(initialFormattedDate || new Date());
-// TODO 599 configurable by settings in addon parameters
 const [category, setCategory] = useState(initialData.category || "guide");
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
@@ -268,14 +266,18 @@ useEffect(() => {
           }
         } else {
           // Create
-          // TODO PR
-          console.log("initialBlogAmount + 1 === Object.keys(result).length");
-          console.log(
-            initialBlogAmount,
-            initialBlogAmount + 1,
-            Object.keys(result[communityAccount]["blog"]).length
+          let blogArray = Object.keys(result).map(
+            (blogKey) => result[communityAccount]["blog"][blogKey]
           );
-          if (initialBlogAmount + 1 === Object.keys(result).length) {
+
+          if (
+            blogArray.length &&
+            blogArray.find(
+              (blog) =>
+                blog.metadata.title === submittedBlogData.title &&
+                blog.metadata.description === submittedBlogData.description
+            )
+          ) {
             setSubmittedBlogData(null);
           }
         }
@@ -349,10 +351,9 @@ const SubmitBtn = () => {
       <div className="custom-select" tabIndex="0">
         <div
           data-testid="parent-submit-blog-button"
-          className={
-            "select-header d-flex gap-1 align-items-center submit-draft-button " +
-            (shouldBeDisabled() && "disabled")
-          }
+          className={`select-header d-flex gap-1 align-items-center submit-draft-button ${
+            shouldBeDisabled() ? "disabled" : ""
+          }`}
         >
           <div
             onClick={() => !shouldBeDisabled() && handleSubmit()}
@@ -410,11 +411,15 @@ const Container = styled.div`
 `;
 
 const shouldBeDisabled = () => {
+  console.log("data.id", data.id);
+  console.log("hasDataChanged()", hasDataChanged());
   if (data.id) {
     // means it's an existing blog post
     return !hasDataChanged() || hasEmptyFields() || submittedBlogData;
   }
 
+  console.log("hasEmptyFields()", hasEmptyFields());
+  console.log("submittedBlogData", submittedBlogData);
   return hasEmptyFields() || submittedBlogData;
 };
 

@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { pauseIfVideoRecording } from "../testUtils.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
 import {
   getDontAskAgainCacheValues,
   setDontAskAgainCacheValues,
   findKeysInCache,
-} from "../util/cache.js";
-import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
-import { mockTransactionSubmitRPCResponses } from "../util/transaction.js";
+} from "../../util/cache.js";
+import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
+import { mockTransactionSubmitRPCResponses } from "../../util/transaction.js";
 
 const RECEIVER_ID = "devgovgigs.near";
 test.afterEach(
