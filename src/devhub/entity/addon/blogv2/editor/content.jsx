@@ -431,7 +431,8 @@ const hasDataChanged = () => {
     description !== initialData.description ||
     author !== initialData.author ||
     date !== initialFormattedDate ||
-    category !== initialData.category
+    category !== initialData.category ||
+    selectedStatus !== initialData.status
   );
 };
 
