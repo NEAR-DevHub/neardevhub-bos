@@ -321,10 +321,12 @@ const SubmitBtn = () => {
   const handleOptionClick = (option) => {
     setDraftBtnOpen(false);
     setSelectedStatus(option.value);
+    setSubmittedBlogData(null);
   };
 
   const toggleDropdown = () => {
     setDraftBtnOpen(!isDraftBtnOpen);
+    setSubmittedBlogData(null);
   };
 
   const handleSubmit = () => {
@@ -348,7 +350,11 @@ const SubmitBtn = () => {
 
   return (
     <DropdownBtnContainer>
-      <div className="custom-select" tabIndex="0">
+      <div
+        className="custom-select"
+        tabIndex="0"
+        onBlur={() => setDraftBtnOpen(false)}
+      >
         <div
           data-testid="parent-submit-blog-button"
           className={`select-header d-flex gap-1 align-items-center submit-draft-button ${
@@ -411,15 +417,11 @@ const Container = styled.div`
 `;
 
 const shouldBeDisabled = () => {
-  console.log("data.id", data.id);
-  console.log("hasDataChanged()", hasDataChanged());
   if (data.id) {
     // means it's an existing blog post
     return !hasDataChanged() || hasEmptyFields() || submittedBlogData;
   }
 
-  console.log("hasEmptyFields()", hasEmptyFields());
-  console.log("submittedBlogData", submittedBlogData);
   return hasEmptyFields() || submittedBlogData;
 };
 
