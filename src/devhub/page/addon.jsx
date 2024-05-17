@@ -57,7 +57,7 @@ const CenteredMessage = styled.div`
   height: ${(p) => p.height ?? "100%"};
 `;
 
-const { addon, permissions, handle } = props;
+const { addon, permissions, handle, addonView, setAddonView } = props;
 
 const { getAllAddons, setCommunityAddon } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
@@ -93,8 +93,6 @@ const ButtonRow = styled.div`
   justify-content: space-between;
 `;
 
-const [view, setView] = useState("viewer");
-
 if ("${REPL_DEVHUB}" !== "devhub.near") {
   addonMatch.configurator_widget = addonMatch.configurator_widget.replace(
     "devhub.near/",
@@ -110,9 +108,11 @@ return (
   <Container>
     {permissions.can_configure && addonMatch.configurator_widget !== "" && (
       <SettingsButton
-        onClick={() => setView(view === "configure" ? "view" : "configure")}
+        onClick={() =>
+          setAddonView(addonView === "configure" ? "viewer" : "configure")
+        }
       >
-        {view === "configure" ? (
+        {addonView === "configure" ? (
           <span
             className="bi bi-x"
             data-testid="configure-addon-button-x"
@@ -126,7 +126,7 @@ return (
       </SettingsButton>
     )}
     <Content>
-      {view === "configure" ? (
+      {addonView === "configure" ? (
         <Widget
           src={addonMatch.configurator_widget}
           props={{
