@@ -76,7 +76,12 @@ function BlogCardWithLink(flattenedBlog) {
       style={{ textDecoration: "none" }}
       to={href({
         widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "blogv2", id: flattenedBlog.id, community: handle },
+        params: {
+          page: "blogv2",
+          id: flattenedBlog.id,
+          community: handle,
+          communityAddonId, // Passed in addon.jsx
+        },
       })}
     >
       {BlogCard(flattenedBlog)}

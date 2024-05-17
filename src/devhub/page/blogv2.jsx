@@ -1,4 +1,4 @@
-const { id, community } = props;
+const { id, community, communityAddonId } = props;
 
 const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
