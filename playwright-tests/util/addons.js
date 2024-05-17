@@ -1,9 +1,5 @@
 import { decodeResultJSON, encodeResultJSON } from "./transaction.js";
 
-// function atob(string) {
-//   return Buffer.from(string, "base64").toString("utf-8");
-// }
-
 export async function mockDefaultTabs(route) {
   const request = await route.request();
   const requestPostData = request.postDataJSON();
@@ -11,10 +7,6 @@ export async function mockDefaultTabs(route) {
   const devComponents = (
     await fetch("http://localhost:3030").then((r) => r.json())
   ).components;
-
-  if (requestPostData.params && requestPostData.params.args_base64) {
-    console.log(atob(requestPostData.params.args_base64));
-  }
 
   if (
     requestPostData.params &&
@@ -78,85 +70,13 @@ export async function mockDefaultTabs(route) {
 
     await route.fulfill({ response, json });
     return;
-  } else if (
-    requestPostData.params &&
-    requestPostData.params.account_id === "social.near" &&
-    requestPostData.params.method_name === "get" &&
-    // FIXME: this does not work
-    JSON.stringify(atob(requestPostData.params.args_base64)).includes(
-      "community.devhub.near/blog/"
-    )
-  ) {
-    console.log("Intercept blogs");
-    console.log("-------------------------------------");
-    console.log(atob(requestPostData.params.args_base64));
-    console.log("-------------------------------------");
-
-    // Intercept and adjust response to show the blogs we want
-    const response = await route.fetch({
-      url: "https://rpc.mainnet.near.org/",
-    });
-    const json = await response.json();
-    let resultObj = decodeResultJSON(json.result.result);
-
-    resultObj = {
-      ...resultObj,
-      "hello-world-0r4rmr": {
-        "": "# Content\n\n## subcontent\n\n### h3",
-        metadata: {
-          title: "Hello World",
-          createdAt: "2024-04-28",
-          updatedAt: "2024-04-28",
-          publishedAt: "1998-05-03",
-          status: "DRAFT",
-          subtitle: "Subtitle",
-          description: "Description",
-          author: "Author",
-          communityAddonId: "blogv2",
-        },
-      },
-      "published-w5cj1y": {
-        "": "# Content\n\n",
-        metadata: {
-          title: "Published",
-          createdAt: "2024-04-29",
-          updatedAt: "2024-04-29",
-          publishedAt: "2024-04-30",
-          status: "PUBLISH",
-          subtitle: "subtitle",
-          description: "Description",
-          author: "author",
-          communityAddonId: "blogv2",
-        },
-      },
-      "first-blog-of-instance-2-nhasab": {
-        "": "# First ever blog seperate from instance 1",
-        metadata: {
-          title: "First blog of instance",
-          createdAt: "2024-04-30",
-          updatedAt: "2024-04-30",
-          publishedAt: "2024-04-30",
-          status: "PUBLISH",
-          subtitle: "Subtitle",
-          description: "Description",
-          author: "thomasguntenaar.near",
-          communityAddonId: "blogv2instance2",
-        },
-      },
-    };
-
-    json.result.result = encodeResultJSON(resultObj);
-
-    await route.fulfill({ response, json });
   } else if (requestPostData.method === "tx") {
     await route.continue({ url: "https://archival-rpc.mainnet.near.org/" });
   } else if (
     requestPostData.params &&
     requestPostData.params.account_id === "social.near" &&
     requestPostData.params.method_name === "get"
-    // This get is supposed to be under the other more specific
   ) {
-    // console.log(JSON.parse(atob(requestPostData.params.args_base64)));
     const social_get_key = JSON.parse(atob(requestPostData.params.args_base64))
       .keys[0];
 

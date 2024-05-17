@@ -1,54 +1,16 @@
-const { className, title, icon, href, onClick } = props;
-
-const Button = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  border-radius: 4px;
-  background: #04a46e;
-
-  color: #f4f4f4;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 20px; /* 125% */
-
-  padding: 0.5rem 1rem;
-
-  text-wrap: nowrap;
-  width: auto;
-
-  &:hover {
-    background: #555555;
-    text-decoration: none !important;
-  }
-
-  outline: none;
-  border: none;
-`;
+const { title, onClick } = props;
 
 return (
-  <div className={`d-flex flex-row-reverse ${props.className}`}>
-    {props.href ? (
-      <Link to={props.href} style={{ textDecoration: "none" }}>
-        <Button
-          className="community-control"
-          data-testid={props.testId ? props.testId : ""}
-        >
-          <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
-          {props.title}
-        </Button>
-      </Link>
-    ) : (
-      <Button
-        onClick={props.onClick}
-        className="community-control"
-        data-testid={props.testId ? props.testId : ""}
-      >
-        <i className={props.icon ? props.icon : "bi bi-plus-circle-fill"}></i>
-        {props.title || "New Blog Post"}
-      </Button>
-    )}
-  </div>
+  <button
+    type="button"
+    data-testid={props.testId ? props.testId : ""}
+    className="inline-flex items-center gap-x-1.5 rounded-md bg-devhub-green px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+    onClick={props.onClick}
+  >
+    <i
+      className="-ml-0.5 h-5 w-5 bi bi-plus-circle-fill"
+      aria-hidden="true"
+    ></i>
+    {props.title || "New Blog Post"}
+  </button>
 );

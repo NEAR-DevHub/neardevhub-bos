@@ -2,6 +2,12 @@ const { getPost, setCommunitySocialDB } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
+const { generateRandom6CharUUID } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.stringUtils"
+);
+
+generateRandom6CharUUID || (generateRandom6CharUUID = () => {});
+
 const { Layout, handle, communityAddonId } = props;
 
 setCommunitySocialDB = setCommunitySocialDB || (() => <></>);
@@ -46,7 +52,6 @@ const handleOnSubmit = (v, isEdit) => {
   let id = isEdit
     ? v.id
     : `${transformString(v.title)}-${generateRandom6CharUUID()}`;
-  // v.date
   let publishedAt = new Date(v.date).toISOString().slice(0, 10);
 
   let metadata = {
@@ -56,6 +61,8 @@ const handleOnSubmit = (v, isEdit) => {
     subtitle: v.subtitle,
     description: v.description,
     author: v.author,
+    category: v.category,
+    updatedAt: new Date().toISOString().slice(0, 10),
   };
 
   if (!isEdit) {
@@ -77,18 +84,6 @@ const handleOnSubmit = (v, isEdit) => {
   });
 };
 
-function generateRandom6CharUUID() {
-  const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-  let result = "";
-
-  for (let i = 0; i < 6; i++) {
-    const randomIndex = Math.floor(Math.random() * chars.length);
-    result += chars[randomIndex];
-  }
-
-  return result;
-}
-
 const handleOnDelete = (id) => {
   setCommunitySocialDB({
     handle,
@@ -106,6 +101,7 @@ const handleOnDelete = (id) => {
             description: null,
             author: null,
             id: null,
+            category: null,
           },
         },
       },
@@ -113,13 +109,7 @@ const handleOnDelete = (id) => {
   });
 };
 
-const handleSettingsPage = () => {
-  // TODO 599
-  // Pass this via editor.index to the layout
-};
-
-const saveBlogPostSettings = (v) => {
-  // TODO 599 move to provider
+const handleOnSubmitSettings = (v) => {
   console.log("Implement saving blog settings issue 599");
 };
 
@@ -129,6 +119,6 @@ return (
     getData={handleGetData}
     onSubmit={handleOnSubmit}
     onDelete={handleOnDelete}
-    onSubmitSettings={saveBlogPostSettings}
+    onSubmitSettings={handleOnSubmitSettings}
   />
 );

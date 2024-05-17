@@ -4,10 +4,6 @@ const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
 const { readableDate } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
 ) || { readableDate: () => {} };
-const { getDepositAmountForWriteAccess } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common"
-);
-getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 
 const accountId = context.accountId;
 /*
@@ -28,6 +24,12 @@ const TIMELINE_STATUS = {
   PAYMENT_PROCESSING: "PAYMENT_PROCESSING",
   FUNDED: "FUNDED",
 };
+
+const DecisionStage = [
+  TIMELINE_STATUS.APPROVED,
+  TIMELINE_STATUS.REJECTED,
+  TIMELINE_STATUS.APPROVED_CONDITIONALLY,
+];
 
 const Container = styled.div`
   .full-width-div {
@@ -1402,12 +1404,13 @@ return (
                           }
                           props={{
                             label: "Save",
-                            disabled: !supervisor,
+                            disabled:
+                              !supervisor &&
+                              DecisionStage.includes(
+                                updatedProposalStatus.value.status
+                              ),
                             classNames: { root: "green-btn btn-sm" },
                             onClick: () => {
-                              if (!supervisor) {
-                                return;
-                              }
                               if (snapshot.supervisor !== supervisor) {
                                 editProposal({
                                   timeline: updatedProposalStatus.value,

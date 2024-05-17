@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { pauseIfVideoRecording } from "../testUtils.js";
-import { mockDefaultTabs } from "../util/addons.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
+import { mockDefaultTabs } from "../../util/addons.js";
 
 test("should load a community page if handle exists", async ({ page }) => {
   await page.goto(

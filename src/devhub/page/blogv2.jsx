@@ -80,11 +80,6 @@ const EditorContainer = styled.div`
   }
 `;
 
-// I like that this reduces duplicate code with the Viewer, but I don't like
-// that "Latest Blog Posts" carries over... // TOOD: create a common blog
-// feed... I think the addon.blog.Feed naming is confusing, as this should be a
-// generic feed component.
-
 if (showEditScreenData) {
   return (
     <EditorContainer>
@@ -92,7 +87,6 @@ if (showEditScreenData) {
         <i class="bi bi-arrow-return-left"></i>{" "}
         <p className="back-button">Back</p>
       </div>
-      {/* Wrap the configurator in blog to pass the communityAddonId */}
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Blog"
         props={{

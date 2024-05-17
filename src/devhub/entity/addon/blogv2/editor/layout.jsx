@@ -1,18 +1,23 @@
-const { BlogOverview, Content, parametersData, onSubmit, BlogPostSettings } =
-  props;
+const {
+  BlogOverview,
+  data: processedBlogData,
+  Content,
+  parametersData,
+  onSubmit,
+  BlogPostSettings,
+} = props;
 
 const [selectedItem, setSelectedItem] = useState(null);
-const [showEditor, setShowEditor] = useState(false);
-const [showBlogPostSettings, setBlogPostSettings] = useState(false);
+const [showScreen, setShowScreen] = useState("overview"); // overview, editor, settings
 
 const openBlogPostSettings = () => {
-  setBlogPostSettings(true);
+  setShowScreen(true);
 };
 
 const handleItemClick = (item) => {
   if (item) {
     setSelectedItem(item);
-    setShowEditor(true);
+    setShowScreen("editor");
   } else {
     setSelectedItem(null);
   }
@@ -20,56 +25,49 @@ const handleItemClick = (item) => {
 
 const goBack = () => {
   setSelectedItem(null);
-  setShowEditor(false);
-};
-
-const handlePublish = (status) => {
-  onSubmit &&
-    onSubmit(
-      {
-        id: data.id || undefined,
-        title,
-        subtitle,
-        description,
-        date,
-        status,
-        content,
-        author,
-        category,
-        community: handle,
-      },
-      data.id !== undefined
-    );
+  setShowScreen("overview");
 };
 
 const postHogHref = "https://eu.posthog.com/project/20896";
 
 return (
   <div style={{ width: "100%", height: "100%" }}>
-    {showBlogPostSettings ? (
-      <BlogPostSettings onHideSettings={() => setBlogPostSettings(false)} />
+    {showScreen === "settings" ? (
+      <BlogPostSettings onHideSettings={() => setShowScreen("overview")} />
     ) : (
       <>
-        {showEditor ? null : (
-          <div className="d-flex gap-1 align-items-end justify-content-end w-100 mb-4">
-            <Link className="btn btn-light" href={postHogHref} target="_blank">
-              Analytics
-            </Link>
-            <button className="btn btn-light" onClick={openBlogPostSettings}>
-              Settings
-            </button>
-            <Widget
-              src={
-                "${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"
-              }
-              props={{
-                title: "New Blog Post",
-                onClick: () => {
-                  handleItemClick("new");
-                  setShowEditor(true);
-                },
-              }}
-            />
+        {showScreen === "editor" ? null : (
+          <div className="flex items-center justify-between w-100 mb-4">
+            <div className="text-xl font-bold">Blog Posts</div>
+            <div className="flex items-end justify-end gap-x-3">
+              <Link
+                className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-white shadow-sm hover:bg-indigo-100"
+                href={postHogHref}
+                target="_blank"
+              >
+                Analytics
+              </Link>
+              {/* <button
+                onClick={() => setShowScreen("settings")}
+                type="button"
+                className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-white shadow-sm hover:bg-indigo-100"
+              >
+                Settings
+              </button> */}
+              <Widget
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"
+                }
+                props={{
+                  title: "New Blog Post",
+                  onClick: () => {
+                    handleItemClick("new");
+                    setShowScreen("editor");
+                  },
+                  testId: "new-blog-post-button",
+                }}
+              />
+            </div>
           </div>
         )}
         <div
@@ -79,16 +77,16 @@ return (
           <div
             className="left-panel"
             style={{
-              width: showEditor ? "20%" : "100%",
+              width: showScreen === "editor" ? "20%" : "100%",
             }}
           >
             <BlogOverview
               selectedItem={selectedItem}
               handleItemClick={handleItemClick}
-              hideColumns={showEditor}
+              hideColumns={showScreen === "editor"}
             />
           </div>
-          {showEditor && (
+          {showScreen === "editor" && (
             <div
               className="right-panel"
               style={{ flex: 1, width: 0, overflow: "scroll" }}
