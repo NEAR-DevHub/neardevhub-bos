@@ -1,6 +1,5 @@
 import { expect, test } from "@playwright/test";
 import { pauseIfVideoRecording } from "../testUtils.js";
-import { mockDefaultTabs } from "../util/addons.js";
 
 const baseUrl =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=blogv2";
@@ -74,7 +73,6 @@ test.describe("Wallet is not connected", () => {
   });
 
   test("should filter blog posts from search criteria", async ({ page }) => {
-    test.setTimeout(60000);
     const { categories, topics } = await setupBlogContentResponses(page);
     await page.goto(baseUrl);
 
@@ -91,8 +89,10 @@ test.describe("Wallet is not connected", () => {
     await expect(blogCards.length).toBeGreaterThan(3);
 
     for (const topic of topics) {
+      const startTime = new Date().getTime();
       await searchField.fill("");
-      await searchField.pressSequentially(topic, { delay: 50 });
+      const delayBetweenKeypress = 100;
+      await searchField.pressSequentially(topic, { delay: delayBetweenKeypress });
 
       await searchField.blur();
       await page.waitForTimeout(200);
@@ -104,6 +104,8 @@ test.describe("Wallet is not connected", () => {
             await expect(blogCard).toContainText(topic, { ignoreCase: true })
         )
       );
+      const endTime = new Date().getTime();
+      expect(endTime-startTime).toBeLessThan((topic.length * delayBetweenKeypress) + 500);
     }
   });
   test("should filter blog posts from category", async ({ page }) => {
