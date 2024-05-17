@@ -24,27 +24,15 @@ const Tailwind = styled.div`
   ${css}
 
   .bg-devhub-green {
-    background-color: #00ec97;
+    background-color: rgb(4, 164, 110);
   }
 
   .bg-devhub-green-light {
     background-color: rgba(212, 236, 227, 0.1);
   }
 
-  .bg-devhub-green-dark {
-    background-color: #04a46e;
-  }
-
   .text-devhub-green {
-    color: #00ec97;
-  }
-
-  .text-devhub-green-dark {
-    color: #04a46e;
-  }
-
-  .text-devhub-green-light {
-    color: rgba(212, 236, 227);
+    color: rgb(4, 164, 110);
   }
 `;
 
