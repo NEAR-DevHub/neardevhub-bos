@@ -51,6 +51,7 @@ if (!handle) {
 }
 
 const [blogPostQueryString, setBlogPostQueryString] = useState("");
+const [blogPostFilterCategory, setBlogPostFilterCategory] = useState("");
 
 const blogData =
   Social.get([`${handle}.community.devhub.near/blog/**`], "final") || {};
@@ -66,7 +67,7 @@ const processedData = Object.keys(blogData)
   // Show only published blogs
   .filter((blog) => blog.status === "PUBLISH")
   // Every instance of the blog tab has its own blogs
-  .filter((blog) => blog.communityAddonId === communityAddonId)
+  //.filter((blog) => blog.communityAddonId === communityAddonId)
   // Sort by published date
   .sort((blog1, blog2) => {
     return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
@@ -97,25 +98,58 @@ function BlogCard(flattenedBlog) {
 const searchInput = useMemo(() => {
   let timeout;
   return (
-    <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
-      props={{
-        className: "flex-grow-1",
-        value: blogPostQueryString,
-        placeholder: "search blog posts",
-        onChange: (e) => {
-          if (!timeout) {
-            timeout = setTimeout(() => {
-              setBlogPostQueryString(e.target.value);
-              timeout = null;
-            }, 200);
-          }
-        },
-        inputProps: {},
-      }}
-    />
+    <div className="d-flex flex-wrap gap-4 align-items-center">
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+        props={{
+          className: "flex-grow-1",
+          value: blogPostQueryString,
+          placeholder: "search blog posts",
+          onChange: (e) => {
+            if (!timeout) {
+              timeout = setTimeout(() => {
+                setBlogPostQueryString(e.target.value);
+                timeout = null;
+              }, 200);
+            }
+          },
+          inputProps: {
+            prefix: <i class="bi bi-search m-auto"></i>,
+          },
+        }}
+      />
+    </div>
   );
 }, []);
+
+const categoryInput = useMemo(() => {
+  const categories = {};
+  processedData.forEach((flattenedBlog) => {
+    if (!categories[flattenedBlog.category]) {
+      categories[flattenedBlog.category] = {
+        label: flattenedBlog.category,
+        value: flattenedBlog.category,
+      };
+    }
+  });
+
+  const options = Object.values(categories);
+
+  return (
+    <div className="d-flex flex-wrap gap-4 align-items-center">
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
+        props={{
+          options: options,
+          label: "Category",
+          onUpdate: (selectedCategory) => {
+            setBlogPostFilterCategory(selectedCategory.value);
+          },
+        }}
+      />
+    </div>
+  );
+}, [processedData]);
 
 const blogPostQueryStringLowerCase = blogPostQueryString
   ? blogPostQueryString.toLowerCase()
@@ -124,7 +158,10 @@ const blogPostQueryStringLowerCase = blogPostQueryString
 return (
   <div class="w-100">
     {!hideTitle && <Heading> Latest Blog Posts</Heading>}
-    {searchInput}
+    <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
+      {searchInput}
+      {categoryInput}
+    </div>
     <Grid>
       {processedData && processedData.length > 0
         ? processedData
@@ -134,6 +171,11 @@ return (
                 flattenedBlog.content
                   ?.toLowerCase()
                   .includes(blogPostQueryStringLowerCase)
+            )
+            .filter(
+              (flattenedBlog) =>
+                !blogPostFilterCategory ||
+                flattenedBlog.category === blogPostFilterCategory
             )
             .map((flattenedBlog) => BlogCardWithLink(flattenedBlog))
         : BlogCard({
