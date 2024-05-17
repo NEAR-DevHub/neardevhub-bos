@@ -70,8 +70,12 @@ if (!getAllAddons || !setCommunityAddon) {
 const availableAddons = getAllAddons();
 
 let addonMatch = null; // If availableAddons is not an array, set addonMatch to null
-if (Array.isArray(availableAddons)) {
-  addonMatch = (availableAddons ?? []).find((it) => it.id === addon.addon_id);
+if (
+  Array.isArray(availableAddons) &&
+  availableAddons !== null &&
+  availableAddons !== undefined
+) {
+  addonMatch = availableAddons.find((it) => it.id === addon.addon_id);
 }
 
 if (!addonMatch) {

@@ -109,16 +109,11 @@ const handleOnDelete = (id) => {
   });
 };
 
-const handleOnSubmitSettings = (v) => {
-  console.log("Implement saving blog settings issue 599");
-};
-
 return (
   <Layout
     data={processedData || []}
     getData={handleGetData}
     onSubmit={handleOnSubmit}
     onDelete={handleOnDelete}
-    onSubmitSettings={handleOnSubmitSettings}
   />
 );
