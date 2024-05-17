@@ -4,7 +4,7 @@ const blog =
   Social.get(`${handle}.community.devhub.near/blog/${blogId}/**`, "final") ||
   {};
 
-if (!blog) {
+if (!blog || Object.keys(blog).length === 0) {
   return <div>Loading ...</div>;
 }
 
