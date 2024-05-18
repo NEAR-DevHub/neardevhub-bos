@@ -36,7 +36,7 @@ const TextInput = ({
       }
       const handler = setTimeout(() => {
         onChange({ target: { value: state.data }, error: inputError });
-      }, 30);
+      }, 200);
 
       return () => {
         clearTimeout(handler);

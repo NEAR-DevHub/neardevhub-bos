@@ -53,25 +53,31 @@ if (!handle) {
 const [blogPostQueryString, setBlogPostQueryString] = useState("");
 const [blogPostFilterCategory, setBlogPostFilterCategory] = useState("");
 
-const blogData =
-  Social.get([`${handle}.community.devhub.near/blog/**`], "final") || {};
+const processedData = useMemo(() => {
+  const blogData = Social.get(
+    [`${handle}.community.devhub.near/blog/**`],
+    "final"
+  );
 
-const processedData = Object.keys(blogData)
-  .map((key) => {
-    return {
-      ...blogData[key].metadata,
-      id: key,
-      content: blogData[key][""],
-    };
-  })
-  // Show only published blogs
-  .filter((blog) => blog.status === "PUBLISH")
-  // Every instance of the blog tab has its own blogs
-  //.filter((blog) => blog.communityAddonId === communityAddonId)
-  // Sort by published date
-  .sort((blog1, blog2) => {
-    return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
-  });
+  return (
+    Object.keys(blogData)
+      .map((key) => {
+        return {
+          ...blogData[key].metadata,
+          id: key,
+          content: blogData[key][""],
+        };
+      })
+      // Show only published blogs
+      .filter((blog) => blog.status === "PUBLISH")
+      // Every instance of the blog tab has its own blogs
+      //.filter((blog) => blog.communityAddonId === communityAddonId)
+      // Sort by published date
+      .sort((blog1, blog2) => {
+        return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
+      })
+  );
+}, []);
 
 function BlogCardWithLink(flattenedBlog) {
   return (
@@ -100,23 +106,16 @@ function BlogCard(flattenedBlog) {
   );
 }
 
-const searchInput = useMemo(() => {
-  let timeout;
-  return (
+const searchInput = useMemo(
+  () => (
     <div className="d-flex flex-wrap gap-4 align-items-center">
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
         props={{
           className: "flex-grow-1",
-          value: blogPostQueryString,
           placeholder: "search blog posts",
           onChange: (e) => {
-            if (!timeout) {
-              timeout = setTimeout(() => {
-                setBlogPostQueryString(e.target.value);
-                timeout = null;
-              }, 200);
-            }
+            setBlogPostQueryString(e.target.value);
           },
           inputProps: {
             prefix: <i class="bi bi-search m-auto"></i>,
@@ -124,8 +123,9 @@ const searchInput = useMemo(() => {
         }}
       />
     </div>
-  );
-}, []);
+  ),
+  []
+);
 
 const categoryInput = useMemo(() => {
   const categories = {};
