@@ -54,7 +54,7 @@ const [blogPostQueryString, setBlogPostQueryString] = useState("");
 const [blogPostFilterCategory, setBlogPostFilterCategory] = useState("");
 
 const blogPostQueryStringLowerCase = blogPostQueryString
-  ? blogPostQueryString.toLowerCase()
+  ? blogPostQueryString.toLowerCase().trim()
   : "";
 
 const blogData = Social.get(
@@ -62,7 +62,12 @@ const blogData = Social.get(
   "final"
 );
 
-const categories = {};
+const categories = {
+  none: {
+    label: "None",
+    value: "",
+  },
+};
 
 const processedData = Object.keys(blogData)
   .map((key) => {
@@ -89,6 +94,12 @@ const processedData = Object.keys(blogData)
     (flattenedBlog) =>
       !blogPostQueryStringLowerCase ||
       flattenedBlog.content
+        ?.toLowerCase()
+        .includes(blogPostQueryStringLowerCase) ||
+      flattenedBlog.title
+        ?.toLowerCase()
+        .includes(blogPostQueryStringLowerCase) ||
+      flattenedBlog.subtitle
         ?.toLowerCase()
         .includes(blogPostQueryStringLowerCase)
   )

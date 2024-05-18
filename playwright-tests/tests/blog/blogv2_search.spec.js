@@ -18,6 +18,29 @@ async function setupBlogContentResponses(page) {
   ];
   const categories = ["Animals", "Tech", "Vehicle", "Philosophy"];
 
+  const blogPosts = {};
+  for (let n = 0; n < 100; n++) {
+    const topic = topics[n % topics.length];
+    const blogDate = new Date(2024, 0, 1);
+    blogDate.setDate(n);
+    blogPosts["new-blog-post-cg" + n] = {
+      "": `# Blog post ${n + 1}
+This is an article about ${topic}.
+`,
+      metadata: {
+        title: "New Blog Post" + n,
+        createdAt: blogDate.toJSON(),
+        updatedAt: blogDate.toJSON(),
+        publishedAt: blogDate.toJSON(),
+        status: "PUBLISH",
+        subtitle: `${topic.substring(0, 1).toUpperCase()}${topic.substring(1)}`,
+        description: "Description" + n,
+        author: "Author",
+        communityAddonId: "blogv2",
+        category: categories[n % categories.length],
+      },
+    };
+  }
   await page.route("https://api.near.social/get", async (route) => {
     const request = route.request();
     const requestBody = request.postDataJSON();
@@ -25,32 +48,6 @@ async function setupBlogContentResponses(page) {
     if (
       requestBody.keys[0] === "webassemblymusic.community.devhub.near/blog/**"
     ) {
-      const blogPosts = {};
-      for (let n = 0; n < 100; n++) {
-        const topic = topics[n % topics.length];
-        const blogDate = new Date(2024, 0, 1);
-        blogDate.setDate(n);
-        blogPosts["new-blog-post-cg" + n] = {
-          "": `# Blog post ${n + 1}
-This is an article about ${topic}.
-`,
-          metadata: {
-            title: "New Blog Post" + n,
-            createdAt: blogDate.toJSON(),
-            updatedAt: blogDate.toJSON(),
-            publishedAt: blogDate.toJSON(),
-            status: "PUBLISH",
-            subtitle: `${topic.substring(0, 1).toUpperCase()}${topic.substring(
-              1
-            )}`,
-            description: "Description" + n,
-            author: "Author",
-            communityAddonId: "blogv2",
-            category: categories[n % categories.length],
-          },
-        };
-      }
-
       const blogResults = {
         "webassemblymusic.community.devhub.near": {
           blog: blogPosts,
@@ -64,7 +61,7 @@ This is an article about ${topic}.
       await route.continue();
     }
   });
-  return { categories, topics };
+  return { categories, topics, blogPosts };
 }
 
 test.describe("Wallet is not connected", () => {
@@ -143,6 +140,57 @@ test.describe("Wallet is not connected", () => {
         )
       );
     }
+    await pauseIfVideoRecording(page);
+  });
+  test("should be possible to select no category", async ({ page }) => {
+    const { categories, blogPosts } = await setupBlogContentResponses(page);
+    await page.goto(baseUrl);
+
+    await page.waitForSelector(".nav-item", {
+      state: "visible",
+    });
+
+    await pauseIfVideoRecording(page);
+    const categoryDropdown = await page.getByRole("button", {
+      name: "Category",
+    });
+    await categoryDropdown.scrollIntoViewIfNeeded();
+
+    let blogCards = await page.locator("a div").all();
+    await expect(blogCards.length).toBeGreaterThan(3);
+
+    const category = categories[1];
+    await categoryDropdown.click();
+    await page.locator("li").filter({ hasText: category }).click();
+
+    blogCards = await page.locator("span.category").all();
+
+    await expect(blogCards.length).toBeGreaterThan(3);
+    await Promise.all(
+      blogCards.map(
+        async (blogCard, ndx) =>
+          await expect(blogCard).toHaveText(category, { ignoreCase: true })
+      )
+    );
+
+    await categoryDropdown.click();
+    await page.locator("li").filter({ hasText: "None" }).click();
+
+    await page.waitForTimeout(500);
+
+    blogCards = await page.locator("span.category").all();
+    const blogPostsValues = Object.values(blogPosts);
+    await expect(blogCards.length).toEqual(blogPostsValues.length);
+    await Promise.all(
+      blogCards.map(
+        async (blogCard, ndx) =>
+          await expect(blogCard).toHaveText(
+            blogPostsValues[blogPostsValues.length - 1 - ndx].metadata.category,
+            { ignoreCase: true }
+          )
+      )
+    );
+
     await pauseIfVideoRecording(page);
   });
 });
