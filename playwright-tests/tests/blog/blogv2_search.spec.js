@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { pauseIfVideoRecording } from "../testUtils.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
 
 const baseUrl =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=blogv2";
