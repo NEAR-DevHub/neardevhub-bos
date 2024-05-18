@@ -6,15 +6,15 @@ const baseUrl =
 
 async function setupBlogContentResponses(page) {
   const topics = [
-    "cows",
-    "cars",
-    "sheep",
-    "birds",
-    "computers",
-    "blockchain technology",
+    "Cows",
+    "Cars",
+    "Sheep",
+    "Birds",
+    "Computers",
+    "Blockchain technology",
     "Artificial intelligence",
-    "search for extra terrestrial life",
-    "the meaning of life",
+    "Search for extra terrestrial life",
+    "The meaning of life",
   ];
   const categories = ["Animals", "Tech", "Vehicle", "Philosophy"];
 
@@ -189,6 +189,73 @@ test.describe("Wallet is not connected", () => {
             { ignoreCase: true }
           )
       )
+    );
+
+    await pauseIfVideoRecording(page);
+  });
+  test("should search and limit to a category", async ({ page }) => {
+    const { categories, blogPosts } = await setupBlogContentResponses(page);
+    await page.goto(baseUrl);
+
+    await page.waitForSelector(".nav-item", {
+      state: "visible",
+    });
+
+    await pauseIfVideoRecording(page);
+    const categoryDropdown = await page.getByRole("button", {
+      name: "Category",
+    });
+    await categoryDropdown.scrollIntoViewIfNeeded();
+
+    const searchField = await page.getByPlaceholder("search blog posts");
+    const searchCriteria = "The meaning of life";
+    await searchField.fill(searchCriteria);
+
+    let blogCards = await page.locator("a div").all();
+    await expect(blogCards.length).toBeGreaterThan(3);
+
+    const category = categories[1];
+    await categoryDropdown.click();
+    await page.locator("li").filter({ hasText: category }).click();
+
+    blogCards = await page.locator("a div").all();
+
+    await expect(blogCards.length).toBeGreaterThan(3);
+    await Promise.all(
+      blogCards.map(async (blogCard, ndx) => {
+        await expect(blogCard).toContainText(category, { ignoreCase: true });
+        await expect(blogCard).toContainText(searchCriteria, {
+          ignoreCase: true,
+        });
+      })
+    );
+
+    await pauseIfVideoRecording(page);
+  });
+  test("should search title", async ({ page }) => {
+    const { categories } = await setupBlogContentResponses(page);
+    await page.goto(baseUrl);
+
+    await page.waitForSelector(".nav-item", {
+      state: "visible",
+    });
+
+    await pauseIfVideoRecording(page);
+
+    const searchField = await page.getByPlaceholder("search blog posts");
+    await searchField.scrollIntoViewIfNeeded();
+    const searchCriteria = "New Blog Post55";
+    await searchField.fill(searchCriteria);
+
+    await page.waitForTimeout(500);
+    let blogCards = await page.locator("a div h5").all();
+
+    await Promise.all(
+      blogCards.map(async (blogCard, ndx) => {
+        await expect(blogCard).toHaveText(searchCriteria, {
+          ignoreCase: true,
+        });
+      })
     );
 
     await pauseIfVideoRecording(page);
