@@ -64,6 +64,37 @@ This is an article about ${topic}.
   return { categories, topics, blogPosts };
 }
 
+async function configureSearchAndCategoriesEnabled({
+  page,
+  categoriesEnabled,
+  searchEnabled,
+}) {
+  await page.route("https://rpc.mainnet.near.org", async (route) => {
+    const postData = route.request().postDataJSON();
+    if (
+      postData.params.account_id === "devhub.near" &&
+      postData.params.method_name === "get_community"
+    ) {
+      const response = await route.fetch();
+      const json = await response.json();
+      const result = JSON.parse(
+        new TextDecoder().decode(new Uint8Array(json.result.result))
+      );
+      result.addons.find((addon) => addon.addon_id === "blogv2").parameters =
+        JSON.stringify({
+          categoriesEnabled,
+          searchEnabled,
+        });
+      json.result.result = Array.from(
+        new TextEncoder().encode(JSON.stringify(result))
+      );
+      await route.fulfill({ response, json });
+    } else {
+      await route.continue();
+    }
+  });
+}
+
 test.describe("Wallet is not connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
@@ -71,6 +102,11 @@ test.describe("Wallet is not connected", () => {
 
   test("should filter blog posts from search criteria", async ({ page }) => {
     const { topics } = await setupBlogContentResponses(page);
+    await configureSearchAndCategoriesEnabled({
+      page,
+      searchEnabled: true,
+      categoriesEnabled: false,
+    });
     await page.goto(baseUrl);
 
     await page.waitForSelector(".nav-item", {
@@ -113,6 +149,11 @@ test.describe("Wallet is not connected", () => {
   });
   test("should filter blog posts from category", async ({ page }) => {
     const { categories, topics } = await setupBlogContentResponses(page);
+    await configureSearchAndCategoriesEnabled({
+      page,
+      searchEnabled: true,
+      categoriesEnabled: true,
+    });
     await page.goto(baseUrl);
 
     await page.waitForSelector(".nav-item", {
@@ -144,6 +185,11 @@ test.describe("Wallet is not connected", () => {
   });
   test("should be possible to select no category", async ({ page }) => {
     const { categories, blogPosts } = await setupBlogContentResponses(page);
+    await configureSearchAndCategoriesEnabled({
+      page,
+      searchEnabled: true,
+      categoriesEnabled: true,
+    });
     await page.goto(baseUrl);
 
     await page.waitForSelector(".nav-item", {
@@ -194,6 +240,11 @@ test.describe("Wallet is not connected", () => {
     await pauseIfVideoRecording(page);
   });
   test("should search and limit to a category", async ({ page }) => {
+    await configureSearchAndCategoriesEnabled({
+      page,
+      searchEnabled: true,
+      categoriesEnabled: true,
+    });
     const { categories, blogPosts } = await setupBlogContentResponses(page);
     await page.goto(baseUrl);
 
@@ -234,6 +285,11 @@ test.describe("Wallet is not connected", () => {
   });
   test("should search title", async ({ page }) => {
     const { categories } = await setupBlogContentResponses(page);
+    await configureSearchAndCategoriesEnabled({
+      page,
+      searchEnabled: true,
+      categoriesEnabled: true,
+    });
     await page.goto(baseUrl);
 
     await page.waitForSelector(".nav-item", {
@@ -259,5 +315,41 @@ test.describe("Wallet is not connected", () => {
     );
 
     await pauseIfVideoRecording(page);
+  });
+  test("search enabled but not categories", async ({ page }) => {
+    const { topics } = await setupBlogContentResponses(page);
+    await configureSearchAndCategoriesEnabled({
+      page,
+      categoriesEnabled: false,
+      searchEnabled: true,
+    });
+    await page.goto(baseUrl);
+
+    const searchField = await page.getByPlaceholder("search blog posts");
+    await expect(searchField).toBeAttached();
+    await searchField.scrollIntoViewIfNeeded();
+
+    const categoryDropdown = await page.getByRole("button", {
+      name: "Category",
+    });
+    await expect(categoryDropdown).not.toBeAttached();
+  });
+  test("categories enabled but not search", async ({ page }) => {
+    const { topics } = await setupBlogContentResponses(page);
+    await configureSearchAndCategoriesEnabled({
+      page,
+      categoriesEnabled: true,
+      searchEnabled: false,
+    });
+    await page.goto(baseUrl);
+
+    const categoryDropdown = await page.getByRole("button", {
+      name: "Category",
+    });
+    await expect(categoryDropdown).toBeAttached();
+    await categoryDropdown.scrollIntoViewIfNeeded();
+
+    const searchField = await page.getByPlaceholder("search blog posts");
+    await expect(searchField).not.toBeAttached();
   });
 });

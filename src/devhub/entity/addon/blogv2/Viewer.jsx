@@ -185,8 +185,8 @@ return (
   <div class="w-100">
     {!hideTitle && <Heading> Latest Blog Posts</Heading>}
     <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
-      {searchInput}
-      {categoryInput}
+      {data.searchEnabled ? searchInput : ""}
+      {data.categoriesEnabled ? categoryInput : ""}
     </div>
     <Grid>
       {processedData && processedData.length > 0
