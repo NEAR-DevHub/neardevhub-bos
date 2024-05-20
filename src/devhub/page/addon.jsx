@@ -111,6 +111,11 @@ return (
         onClick={() =>
           setAddonView(addonView === "configure" ? "viewer" : "configure")
         }
+        aria-label={
+          addonView === "configure"
+            ? "Close configuration"
+            : "Open configuration"
+        }
       >
         {addonView === "configure" ? (
           <span
@@ -156,6 +161,7 @@ return (
             permissions,
             transactionHashes: props.transactionHashes,
             communityAddonId: addon.id,
+            setAddonView,
           }}
         />
       )}

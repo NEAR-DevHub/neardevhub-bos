@@ -5,10 +5,15 @@ const {
   parametersData,
   onSubmit,
   BlogPostSettings,
+  selectedBlog,
 } = props;
 
-const [selectedItem, setSelectedItem] = useState(null);
-const [showScreen, setShowScreen] = useState("overview"); // overview, editor, settings
+const [selectedItem, setSelectedItem] = useState(
+  selectedBlog ? selectedBlog : null
+);
+const [showScreen, setShowScreen] = useState(
+  selectedBlog ? "editor" : "overview"
+); // overview, editor, settings
 
 const openBlogPostSettings = () => {
   setShowScreen(true);
@@ -41,7 +46,7 @@ return (
             <div className="text-xl font-bold">Blog Posts</div>
             <div className="flex items-end justify-end gap-x-3">
               <Link
-                className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-white shadow-sm hover:bg-indigo-100"
+                className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-green shadow-sm hover:bg-devhub-green-transparent"
                 href={postHogHref}
                 target="_blank"
               >
@@ -50,7 +55,7 @@ return (
               {/* <button
                 onClick={() => setShowScreen("settings")}
                 type="button"
-                className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-white shadow-sm hover:bg-indigo-100"
+                className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-green shadow-sm hover:bg-devhub-green-transparent"
               >
                 Settings
               </button> */}

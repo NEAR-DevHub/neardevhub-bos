@@ -8,7 +8,14 @@ if (!Card) {
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
-const { data, handle, hideTitle, communityAddonId } = props;
+const {
+  data,
+  handle,
+  hideTitle,
+  communityAddonId,
+  setAddonView,
+  transactionHashes,
+} = props;
 
 const Grid = styled.div`
   display: grid;
@@ -50,21 +57,58 @@ if (!handle) {
   return <div>Missing handle</div>;
 }
 
-const blogData =
+let blogData =
   Social.get([`${handle}.community.devhub.near/blog/**`], "final") || {};
 
-const processedData = Object.keys(blogData)
-  .map((key) => {
-    return {
-      ...blogData[key].metadata,
-      id: key,
-      content: blogData[key][""],
-    };
-  })
-  // Show only published blogs
-  .filter((blog) => blog.status === "PUBLISH")
-  // Every instance of the blog tab has its own blogs
-  .filter((blog) => blog.communityAddonId === communityAddonId)
+function flattenBlogObject(blogsObject) {
+  return (
+    Object.keys(blogsObject)
+      .map((key) => {
+        return {
+          ...blogsObject[key].metadata,
+          id: key,
+          content: blogsObject[key][""],
+        };
+      })
+      // Show only published blogs
+      .filter((blog) => blog.status === "PUBLISH")
+      // Every instance of the blog tab has its own blogs
+      .filter((blog) => blog.communityAddonId === communityAddonId)
+  );
+}
+
+if (transactionHashes) {
+  // Fetch new blog data
+  const subscribeToBlogForNextFifteenSec = (tries) => {
+    console.log("Trying to fetch new blog data");
+    let newBlogData = Social.get(
+      [`${handle}.community.devhub.near/blog/**`],
+      "final"
+    );
+    if (tries >= 5) {
+      // If we have tried 5 times, just use the data we have for example onBlogUpdate
+      blogData = newBlogData;
+      return;
+    }
+    // Check the number of blogs in this instance with a different status
+    if (
+      flattenBlogObject(newBlogData).length !==
+      flattenBlogObject(blogData).length
+    ) {
+      blogData = newBlogData;
+    } else {
+      setTimeout(() => {
+        subscribeToBlogForNextFifteenSec(tries + 1);
+      }, 3000);
+    }
+  };
+  // After a second subscribe to the blog data
+  setTimeout(() => {
+    subscribeToBlogForNextFifteenSec(0);
+  }, 1000);
+}
+
+const processedData = flattenBlogObject(blogData)
   // Sort by published date
   .sort((blog1, blog2) => {
     return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
@@ -89,6 +133,22 @@ function BlogCardWithLink(flattenedBlog) {
   );
 }
 
+function NoBlogCard() {
+  return (
+    <div onClick={() => setAddonView("configure")} className="min-vh-100">
+      <div>
+        {BlogCard({
+          category: "",
+          title: "No blogs yet",
+          description: "Click here to add your first blog!",
+          publishedAt: new Date().toISOString(),
+          id: "new",
+        })}
+      </div>
+    </div>
+  );
+}
+
 function BlogCard(flattenedBlog) {
   return (
     <CardContainer>
@@ -103,13 +163,7 @@ return (
     <Grid>
       {processedData && processedData.length > 0
         ? processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))
-        : BlogCard({
-            category: "Category",
-            title: "Placeholder",
-            subtitle: "No blog data yet",
-            publishedAt: new Date().toISOString(),
-            id: "new",
-          })}
+        : NoBlogCard()}
     </Grid>
   </div>
 );

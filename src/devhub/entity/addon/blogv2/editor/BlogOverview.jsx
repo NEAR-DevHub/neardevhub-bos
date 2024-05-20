@@ -25,17 +25,21 @@ return (
   <table id="manage-blog-table" className="w-full table-auto text-sm text-left">
     <thead className="bg-gray-50 text-gray-600 font-medium border-b">
       <tr>
-        <th className="py-3 px-6">Name</th>
+        <th scope="col" className={`py-3 px-6 ${props.hideColumns && "px-2"}`}>
+          Name
+        </th>
         {props.hideColumns ? null : (
           <>
-            <th className="py-3 px-6">Status</th>
-            <th className="py-3 px-6" data-testid="createdAt">
-              Created At
+            <th scope="col" className="py-3 px-6">
+              Status
             </th>
-            <th className="py-3 px-6" data-testid="updatedAt">
-              Updated At
+            <th scope="col" className="py-3 px-6" data-testid="createdAt">
+              Created
             </th>
-            <th className="py-3 px-6" data-testid="publishedAt">
+            <th scope="col" className="py-3 px-6" data-testid="updatedAt">
+              Updated
+            </th>
+            <th scope="col" className="py-3 px-6" data-testid="publishedAt">
               Visible Publish Date
             </th>
           </>
@@ -49,27 +53,38 @@ return (
           return;
         }
 
+        const isSelected =
+          it.id === selectedItem.id ||
+          (it.id === "new" && selectedItem === "new");
+
         return (
           <tr
             id={`edit-blog-selector-${it.id}`}
+            className={`cursor-pointer hover-bg-slate-300 ${
+              it.id === selectedItem.id ? "bg-gray-100" : ""
+            }`}
             key={it.id}
             onClick={() => handleItemClick(it)}
           >
-            <td scope="row" className={`px-6 py-4 whitespace-nowrap`}>
-              {it.id === selectedItem.id ||
-              (it.id === "new" && selectedItem === "new") ? (
-                <span
-                  className={`px-3 py-2 rounded-full font-semibold text-xs ${"text-green-600 bg-green-50"}`}
-                >
-                  {it.title}
-                </span>
-              ) : (
-                it.title
-              )}
+            <td
+              scope="row"
+              className={`px-6 py-4 ${props.hideColumns && "px-2"}`}
+            >
+              <div
+                className={`${
+                  isSelected && "font-semibold text-base text-green-600"
+                } ${
+                  props.hideColumns &&
+                  "whitespace-nowrap truncate overflow-hidden w-40"
+                }`}
+              >
+                {it.title}
+              </div>
             </td>
-            {!props.hideColumns ? (
+
+            {props.hideColumns ? null : (
               <>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 ">
                   <span
                     className={`px-3 py-2 rounded-full font-semibold text-xs ${
                       it.status == "PUBLISH"
@@ -80,17 +95,11 @@ return (
                     {it.status == "PUBLISH" ? "Published" : "Draft"}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {formattedDate(it.createdAt)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {formattedDate(it.updatedAt)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {formattedDate(it.publishedAt)}
-                </td>
+                <td className="px-6 py-4 ">{formattedDate(it.createdAt)}</td>
+                <td className="px-6 py-4  ">{formattedDate(it.updatedAt)}</td>
+                <td className="px-6 py-4  ">{formattedDate(it.publishedAt)}</td>
               </>
-            ) : null}
+            )}
           </tr>
         );
       })}

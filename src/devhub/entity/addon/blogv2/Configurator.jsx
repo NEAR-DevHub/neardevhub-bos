@@ -1,4 +1,4 @@
-const { data, handle, communityAddonId } = props;
+const { data, handle, communityAddonId, selectedBlog } = props;
 
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
@@ -28,11 +28,23 @@ const Tailwind = styled.div`
   }
 
   .bg-devhub-green-light {
-    background-color: rgba(212, 236, 227, 0.1);
+    background-color: rgba(212, 236, 227, 0.2);
   }
 
   .text-devhub-green {
     color: rgb(4, 164, 110);
+  }
+
+  .hover\:bg-devhub-green-transparent:hover {
+    background-color: rgba(4, 164, 110, 0.8) !important;
+  }
+
+  .w-40 {
+    width: 10rem;
+  }
+
+  .hover-bg-slate-300:hover {
+    background-color: rgb(226 232 240);
   }
 `;
 
@@ -46,6 +58,7 @@ return (
             data,
             handle,
             communityAddonId,
+            selectedBlog: props.selectedBlog,
           }}
         />
       </Container>
