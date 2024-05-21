@@ -1,5 +1,9 @@
+const data = fetch(`https://httpbin.org/headers`);
+const gatewayURL = data?.body?.headers?.Origin ?? "";
+
+// we need fixed positioning for near social and not for org
 const Theme = styled.div`
-  position: fixed;
+  position: ${gatewayURL.includes("near.org") ? "inherit" : "fixed"};
   inset: 73px 0px 0px;
   width: 100%;
   display: flex;
