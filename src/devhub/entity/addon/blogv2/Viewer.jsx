@@ -64,10 +64,7 @@ const blogPostQueryStringLowerCase = blogPostQueryString
   ? blogPostQueryString.toLowerCase().trim()
   : "";
 
-let blogData = Social.get(
-  [`${handle}.community.devhub.near/blog/**`],
-  "final"
-);
+let blogData = Social.get([`${handle}.community.devhub.near/blog/**`], "final");
 
 const categories = {
   none: {
@@ -88,35 +85,35 @@ function flattenBlogObject(blogsObject) {
       })
       // Show only published blogs
       .filter((blog) => blog.status === "PUBLISH")
-  .map((flattenedBlog) => {
-    if (!categories[flattenedBlog.category]) {
-      categories[flattenedBlog.category] = {
-        label: flattenedBlog.category,
-        value: flattenedBlog.category,
-      };
-    }
-    return flattenedBlog;
-  })
+      .map((flattenedBlog) => {
+        if (!categories[flattenedBlog.category]) {
+          categories[flattenedBlog.category] = {
+            label: flattenedBlog.category,
+            value: flattenedBlog.category,
+          };
+        }
+        return flattenedBlog;
+      })
       // Every instance of the blog tab has its own blogs
       .filter((blog) => blog.communityAddonId === communityAddonId)
-  .filter(
-    (flattenedBlog) =>
-      !blogPostQueryStringLowerCase ||
-      flattenedBlog.content
-        ?.toLowerCase()
-        .includes(blogPostQueryStringLowerCase) ||
-      flattenedBlog.title
-        ?.toLowerCase()
-        .includes(blogPostQueryStringLowerCase) ||
-      flattenedBlog.subtitle
-        ?.toLowerCase()
-        .includes(blogPostQueryStringLowerCase)
-  )
-  .filter(
-    (flattenedBlog) =>
-      !blogPostFilterCategory ||
-      flattenedBlog.category === blogPostFilterCategory
-  )
+      .filter(
+        (flattenedBlog) =>
+          !blogPostQueryStringLowerCase ||
+          flattenedBlog.content
+            ?.toLowerCase()
+            .includes(blogPostQueryStringLowerCase) ||
+          flattenedBlog.title
+            ?.toLowerCase()
+            .includes(blogPostQueryStringLowerCase) ||
+          flattenedBlog.subtitle
+            ?.toLowerCase()
+            .includes(blogPostQueryStringLowerCase)
+      )
+      .filter(
+        (flattenedBlog) =>
+          !blogPostFilterCategory ||
+          flattenedBlog.category === blogPostFilterCategory
+      )
   );
 }
 

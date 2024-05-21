@@ -34,9 +34,11 @@ This is an article about ${topic}.
         publishedAt: blogDate.toJSON(),
         status: "PUBLISH",
         subtitle: `${topic.substring(0, 1).toUpperCase()}${topic.substring(1)}`,
-        description: "Description" + n,
+        description: `${topic.substring(0, 1).toUpperCase()}${topic.substring(
+          1
+        )}`,
         author: "Author",
-        communityAddonId: "blogv2",
+        communityAddonId: "g1709r",
         category: categories[n % categories.length],
       },
     };
@@ -305,6 +307,8 @@ test.describe("Wallet is not connected", () => {
 
     await page.waitForTimeout(500);
     let blogCards = await page.locator("a div h5").all();
+
+    expect(blogCards.length).toBeGreaterThan(0);
 
     await Promise.all(
       blogCards.map(async (blogCard, ndx) => {
