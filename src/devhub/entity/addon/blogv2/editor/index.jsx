@@ -44,6 +44,9 @@ return (
                 props={{
                   getData,
                   parametersData,
+                  // On the blog page, when the user clicks on the edit button, the
+                  // blog id is passed to the Configurator > layout > blogOverview
+                  selectedBlog: props.selectedBlog,
                   BlogOverview: (p) => (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.BlogOverview"
@@ -72,6 +75,7 @@ return (
                         onDelete,
                         handle: props.handle,
                         allBlogs: providerProps.data,
+                        communityAddonId: props.communityAddonId,
                         ...p,
                       }}
                     />

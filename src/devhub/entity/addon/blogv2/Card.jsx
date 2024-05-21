@@ -1,5 +1,5 @@
 function Card({ data }) {
-  const { category, title, subtitle, publishedAt: date, id } = data;
+  const { category, title, description, publishedAt: date, id } = data;
 
   const Container = styled.div`
     min-height: 12.5rem;
@@ -68,7 +68,7 @@ function Card({ data }) {
     <Container id={`blog-card-${id}`} data-testid={id}>
       {category && <span className="category">{category}</span>}
       <h5>{title}</h5>
-      <p>{subtitle}</p>
+      <p>{description}</p>
       <span className="date">{formattedDate}</span>
     </Container>
   );
