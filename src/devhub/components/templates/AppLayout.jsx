@@ -1,4 +1,5 @@
 const Theme = styled.div`
+  position: fixed;
   inset: 73px 0px 0px;
   width: 100%;
   display: flex;

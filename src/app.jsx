@@ -21,6 +21,9 @@ if (!AppLayout) {
 // CSS styles to be used across the app.
 // Define fonts here, as well as any other global styles.
 const Theme = styled.div`
+  div[data-component="devhub.near/widget/devhub.components.templates.AppLayout"] {
+    position: relative !important;
+  }
   a {
     color: inherit;
   }
