@@ -4,6 +4,7 @@ const { Card } =
 const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 const categories = [
   {
@@ -154,11 +155,11 @@ const DropdownBtnContainer = styled.div`
   }
 
   .grey {
-    background-color: #818181;
+    background-color: rgba(129, 129, 129, 0.5);
   }
 
   .green {
-    background-color: #04a46e;
+    background-color: #00ec97;
   }
 
   a:hover {
@@ -175,6 +176,7 @@ const {
   onCancel,
   onDelete,
   allBlogs: allBlogsOfThisInstance,
+  communityAddonId,
 } = props;
 
 const allBlogKeys =
@@ -310,7 +312,7 @@ const SubmitBtn = () => {
       value: "DRAFT",
     },
     {
-      iconColor: "green",
+      iconColor: "bg-devhub-green",
       label: "Publish",
       description:
         "The blog will be shared with the community and can be viewed by everyone.",
@@ -321,10 +323,12 @@ const SubmitBtn = () => {
   const handleOptionClick = (option) => {
     setDraftBtnOpen(false);
     setSelectedStatus(option.value);
+    setSubmittedBlogData(null);
   };
 
   const toggleDropdown = () => {
     setDraftBtnOpen(!isDraftBtnOpen);
+    setSubmittedBlogData(null);
   };
 
   const handleSubmit = () => {
@@ -348,7 +352,11 @@ const SubmitBtn = () => {
 
   return (
     <DropdownBtnContainer>
-      <div className="custom-select" tabIndex="0">
+      <div
+        className="custom-select shadow-sm"
+        tabIndex="0"
+        onBlur={() => setDraftBtnOpen(false)}
+      >
         <div
           data-testid="parent-submit-blog-button"
           className={`select-header d-flex gap-1 align-items-center submit-draft-button ${
@@ -357,7 +365,7 @@ const SubmitBtn = () => {
         >
           <div
             onClick={() => !shouldBeDisabled() && handleSubmit()}
-            className="p-2 d-flex gap-2 align-items-center "
+            className="py-2.5 px-2 d-flex gap-2 align-items-center "
             data-testid="submit-blog-button"
           >
             {submittedBlogData ? (
@@ -368,7 +376,7 @@ const SubmitBtn = () => {
             <div className={`selected-option`}>{selectedOption.label}</div>
           </div>
           <div
-            className="h-100 p-2"
+            className="h-100 py-2.5 px-2"
             style={{ borderLeft: "1px solid #ccc" }}
             onClick={toggleDropdown}
           >
@@ -410,30 +418,9 @@ const Container = styled.div`
   text-align: left;
 `;
 
+// TODO do the test still succeed
 const shouldBeDisabled = () => {
-  console.log("data.id", data.id);
-  console.log("hasDataChanged()", hasDataChanged());
-  if (data.id) {
-    // means it's an existing blog post
-    return !hasDataChanged() || hasEmptyFields() || submittedBlogData;
-  }
-
-  console.log("hasEmptyFields()", hasEmptyFields());
-  console.log("submittedBlogData", submittedBlogData);
   return hasEmptyFields() || submittedBlogData;
-};
-
-const hasDataChanged = () => {
-  return (
-    content !== initialData.content ||
-    title !== initialData.title ||
-    subtitle !== initialData.subtitle ||
-    description !== initialData.description ||
-    author !== initialData.author ||
-    date !== initialFormattedDate ||
-    category !== initialData.category ||
-    selectedStatus !== initialData.status
-  );
 };
 
 const hasEmptyFields = () => {
@@ -467,10 +454,10 @@ const handlePublish = (status) => {
     );
 };
 
-const handleDelete = () => {
+function handleDelete() {
   setSubmittedBlogDeleted(initialData.id);
   onDelete(data.id);
-};
+}
 
 function Preview() {
   switch (previewMode) {
@@ -517,47 +504,72 @@ const tabs = [
 
 return (
   <Container>
-    <div className="flex gap-1 justify-between w-100 mb-4">
-      <div>
-        <div className="sm:hidden">
-          <label htmlFor="tabs" className="sr-only">
-            Select a tab
-          </label>
-          <select
-            id="tabs"
-            name="tabs"
-            className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-            defaultValue={tabs.find((tab) => tab.value === previewMode).name}
-          >
-            {tabs.map((tab) => (
-              <option key={tab.name} onClick={() => setPreviewMode(tab.value)}>
-                {tab.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="hidden sm:block">
-          <div className="-mb-px flex gap-1" aria-label="Tabs">
-            {tabs.map((tab) => (
-              <a
-                key={tab.name}
-                onClick={() => setPreviewMode(tab.value)}
-                className={`rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold text-devhub-green hover:text-white shadow-sm hover:bg-indigo-100 ${
-                  tab.value === previewMode
-                    ? " bg-devhub-green text-white"
-                    : " bg-devhub-green-light text-devhub-green"
-                }`}
-                aria-current={tab.value === previewMode ? "page" : undefined}
-              >
-                {tab.name}
-              </a>
-            ))}
-          </div>
+    <div className="flex flex-wrap-reverse gap-1 justify-between w-100 mb-4">
+      <div className="sm:hidden grow rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
+        <label
+          htmlFor="tabs"
+          className="sr-only block text-xs font-medium text-gray-900"
+        >
+          Select a tab
+        </label>
+        <select
+          id="tabs"
+          name="tabs"
+          className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 h-9 border-gray-300 block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+          defaultValue={tabs.find((tab) => tab.value === previewMode).name}
+        >
+          {tabs.map((tab) => (
+            <option key={tab.name} onClick={() => setPreviewMode(tab.value)}>
+              {tab.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="hidden sm:block">
+        <div className="-mb-px flex gap-x-3 px-4" aria-label="Tabs">
+          {tabs.map((tab) => (
+            <a
+              key={tab.name}
+              onClick={() => setPreviewMode(tab.value)}
+              className={`rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold text-devhub-green hover:text-green shadow-sm hover:bg-devhub-green-transparent whitespace-nowrap overflow-hidden truncate ${
+                tab.value === previewMode
+                  ? " bg-devhub-green text-white"
+                  : " bg-devhub-green-light text-devhub-green"
+              }`}
+              aria-current={tab.value === previewMode ? "page" : undefined}
+            >
+              {tab.name}
+            </a>
+          ))}
         </div>
       </div>
-      <div className="flex gap-1">
+      <div className="flex gap-x-3 px-4">
+        <p className="text-nowrap py-2.5 px-1">
+          Status:{" "}
+          <span className="text-amber-500">
+            {initialData.status === "PUBLISH" ? (
+              <Link
+                to={href({
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
+                  params: {
+                    page: "blogv2",
+                    id: initialData.id,
+                    community: handle,
+                    communityAddonId,
+                  },
+                })}
+                target="_blank"
+                className="cursor-pointer underline"
+              >
+                Published
+              </Link>
+            ) : (
+              <>Draft</>
+            )}
+          </span>
+        </p>
         <button
-          className="rounded-md bg-white px-2.5 py-1.5 text-sm h-9 font-semibold text-gray-900 border ring-1 ring-inset ring-gray-300 hover:bg-gray-600 hover:border-1"
+          className={`rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold text-devhub-green hover:text-green shadow-sm hover:bg-devhub-green-transparent bg-devhub-green-light text-devhub-green`}
           onClick={onCancel}
         >
           Cancel
@@ -595,20 +607,13 @@ return (
               className={
                 "d-flex align-items-center justify-content-start gap-3 mt-4"
               }
+              data-testid="delete-blog-button"
             >
               <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+                src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.DeleteButton"
                 props={{
-                  classNames: { root: "btn-danger" },
-                  icon: {
-                    type: "bootstrap_icon",
-                    variant: "bi-trash",
-                  },
-                  label: "Delete",
-                  testId: "delete-blog-button",
+                  onDelete: handleDelete,
                   disabled: submittedBlogDeleted,
-                  loading: submittedBlogDeleted,
-                  onClick: handleDelete,
                 }}
               />
             </div>

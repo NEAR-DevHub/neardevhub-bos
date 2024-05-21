@@ -102,6 +102,7 @@ const handleOnDelete = (id) => {
             author: null,
             id: null,
             category: null,
+            communityAddonId: null,
           },
         },
       },

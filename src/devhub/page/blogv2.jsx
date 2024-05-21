@@ -1,4 +1,4 @@
-const { id, community } = props;
+const { id, community, communityAddonId } = props;
 
 const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
@@ -68,15 +68,17 @@ const EditorContainer = styled.div`
     position: absolute;
     top: 0px;
     left: 30px;
-    font-size: 25px;
+    font-size: 18px;
     cursor: pointer;
     display: flex;
   }
 
   .back-button {
-    font-size: 16px;
+    font-size: 18px;
     line-height: 25px;
     margin-left: 10px;
+    justify-content: center;
+    align-items: center;
   }
 `;
 
@@ -84,8 +86,7 @@ if (showEditScreenData) {
   return (
     <EditorContainer>
       <div className="cancel-icon" onClick={() => setShowEditScreen(null)}>
-        <i class="bi bi-arrow-return-left"></i>{" "}
-        <p className="back-button">Back</p>
+        <i class="bi bi-arrow-left"></i> <p className="back-button">Back</p>
       </div>
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Blog"
@@ -100,6 +101,7 @@ if (showEditScreenData) {
                   ...showEditScreenData,
                   handle: community,
                   communityAddonId: p.data.communityAddonId,
+                  selectedBlog: { ...p.data, id },
                 }}
               />
             );

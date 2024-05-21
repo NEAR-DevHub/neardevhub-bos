@@ -24,15 +24,27 @@ const Tailwind = styled.div`
   ${css}
 
   .bg-devhub-green {
-    background-color: #00ec97;
+    background-color: rgb(4, 164, 110);
   }
 
   .bg-devhub-green-light {
-    background-color: rgba(212, 236, 227, 0.1);
+    background-color: rgba(212, 236, 227, 0.2);
   }
 
   .text-devhub-green {
-    color: #00ec97;
+    color: rgb(4, 164, 110);
+  }
+
+  .hover\:bg-devhub-green-transparent:hover {
+    background-color: rgba(4, 164, 110, 0.8) !important;
+  }
+
+  .w-40 {
+    width: 10rem;
+  }
+
+  .hover-bg-slate-300:hover {
+    background-color: rgb(226 232 240);
   }
 `;
 
@@ -47,6 +59,7 @@ return (
             handle,
             communityAddonId,
             onSubmit,
+            selectedBlog: props.selectedBlog,
           }}
         />
       </Container>
