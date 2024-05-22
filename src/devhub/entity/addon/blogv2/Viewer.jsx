@@ -1,6 +1,6 @@
-const { Card } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card") ||
-  (() => <></>);
+const { Card } = VM.require(
+  "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card"
+);
 
 if (!Card) {
   return <p>Loading modules...</p>;
@@ -57,8 +57,21 @@ if (!handle) {
   return <div>Missing handle</div>;
 }
 
-let blogData =
-  Social.get([`${handle}.community.devhub.near/blog/**`], "final") || {};
+const [blogPostQueryString, setBlogPostQueryString] = useState("");
+const [blogPostFilterCategory, setBlogPostFilterCategory] = useState("");
+
+const blogPostQueryStringLowerCase = blogPostQueryString
+  ? blogPostQueryString.toLowerCase().trim()
+  : "";
+
+let blogData = Social.get([`${handle}.community.devhub.near/blog/**`], "final");
+
+const categories = {
+  none: {
+    label: "None",
+    value: "",
+  },
+};
 
 function flattenBlogObject(blogsObject) {
   return (
@@ -72,8 +85,35 @@ function flattenBlogObject(blogsObject) {
       })
       // Show only published blogs
       .filter((blog) => blog.status === "PUBLISH")
+      .map((flattenedBlog) => {
+        if (!categories[flattenedBlog.category]) {
+          categories[flattenedBlog.category] = {
+            label: flattenedBlog.category,
+            value: flattenedBlog.category,
+          };
+        }
+        return flattenedBlog;
+      })
       // Every instance of the blog tab has its own blogs
       .filter((blog) => blog.communityAddonId === communityAddonId)
+      .filter(
+        (flattenedBlog) =>
+          !blogPostQueryStringLowerCase ||
+          flattenedBlog.content
+            ?.toLowerCase()
+            .includes(blogPostQueryStringLowerCase) ||
+          flattenedBlog.title
+            ?.toLowerCase()
+            .includes(blogPostQueryStringLowerCase) ||
+          flattenedBlog.subtitle
+            ?.toLowerCase()
+            .includes(blogPostQueryStringLowerCase)
+      )
+      .filter(
+        (flattenedBlog) =>
+          !blogPostFilterCategory ||
+          flattenedBlog.category === blogPostFilterCategory
+      )
   );
 }
 
@@ -157,9 +197,54 @@ function BlogCard(flattenedBlog) {
   );
 }
 
+const searchInput = useMemo(
+  () => (
+    <div className="d-flex flex-wrap gap-4 align-items-center">
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+        props={{
+          className: "flex-grow-1",
+          placeholder: "search blog posts",
+          debounceTimeout: 300,
+          onChange: (e) => {
+            setBlogPostQueryString(e.target.value);
+          },
+          inputProps: {
+            prefix: <i class="bi bi-search m-auto"></i>,
+          },
+        }}
+      />
+    </div>
+  ),
+  []
+);
+
+const categoryInput = useMemo(() => {
+  const options = Object.values(categories);
+
+  return (
+    <div className="d-flex flex-wrap gap-4 align-items-center">
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
+        props={{
+          options: options,
+          label: "Category",
+          onUpdate: (selectedCategory) => {
+            setBlogPostFilterCategory(selectedCategory.value);
+          },
+        }}
+      />
+    </div>
+  );
+}, []);
+
 return (
   <div class="w-100">
     {!hideTitle && <Heading> Latest Blog Posts</Heading>}
+    <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
+      {data.searchEnabled ? searchInput : ""}
+      {data.categoriesEnabled ? categoryInput : ""}
+    </div>
     <Grid>
       {processedData && processedData.length > 0
         ? processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))
