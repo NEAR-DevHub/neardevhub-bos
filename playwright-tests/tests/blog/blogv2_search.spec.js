@@ -131,7 +131,7 @@ test.describe("Wallet is not connected", () => {
     for (const topic of topics) {
       const startTime = new Date().getTime();
       const delayBetweenKeypress = 50;
-      await searchField.press("Control+a");
+      await searchField.fill("");
       await searchField.pressSequentially(topic, {
         delay: delayBetweenKeypress,
       });
