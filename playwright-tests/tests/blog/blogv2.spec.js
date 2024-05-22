@@ -580,6 +580,7 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
     await deleteButton.click();
 
+    await page.getByRole("button", { name: "Continue to delete" }).click();
     // Show loading indicator
     // const loadingIndicator = await page.locator(".delete-blog-spinner").first();
     // await expect(loadingIndicator).toBeVisible();
@@ -914,6 +915,8 @@ test.describe("Admin wallet is connected", () => {
     await pauseIfVideoRecording(page);
     await deleteButton.click();
 
+    await page.getByRole("button", { name: "Continue to delete" }).click();
+
     const transactionObj = JSON.parse(
       await page.locator("div.modal-body code").innerText()
     );
@@ -938,6 +941,7 @@ test.describe("Admin wallet is connected", () => {
                   author: null,
                   id: null,
                   category: null,
+                  communityAddonId: null,
                 },
               },
             },

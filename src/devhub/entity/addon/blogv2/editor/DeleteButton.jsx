@@ -47,7 +47,7 @@ return (
   <Tailwind>
     <AlertDialog>
       <AlertDialogTrigger>
-        <Button className={buttonDestructive}>
+        <Button className={buttonDestructive} data-testid="delete-blog-button">
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.components.atom.Icon"}
             props={{
@@ -71,7 +71,7 @@ return (
           <AlertDialogAction
             className={buttonContinue}
             onClick={() => {
-              if (disabled) return;
+              if (disabled) return console.log("disabled");
               onDelete();
             }}
           >

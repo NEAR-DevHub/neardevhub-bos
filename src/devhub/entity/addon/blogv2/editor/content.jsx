@@ -607,7 +607,6 @@ return (
               className={
                 "d-flex align-items-center justify-content-start gap-3 mt-4"
               }
-              data-testid="delete-blog-button"
             >
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.DeleteButton"
