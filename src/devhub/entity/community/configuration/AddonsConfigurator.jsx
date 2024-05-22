@@ -218,7 +218,8 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
     );
     if (!firstBlogV2Addon) {
       // If no blogv2 addon is found, return a static id
-      return "first-blogv2-no-random-id";
+      // "first-blogv2-no-random-id";
+      return "blogv2";
     }
     return `blogv2-id-${generateRandom6CharUUID()}`;
   };
