@@ -271,6 +271,7 @@ test.describe("Wallet is not connected", () => {
     await categoryDropdown.click();
     await page.locator("li").filter({ hasText: category }).click();
 
+    await page.waitForTimeout(500);
     blogCards = await page.locator("a div").all();
 
     await expect(blogCards.length).toBeGreaterThan(3);
