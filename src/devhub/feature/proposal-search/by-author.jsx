@@ -6,7 +6,7 @@ if (!authorsOptions.length) {
   const authors = Near.view(
     "${REPL_DEVHUB_CONTRACT}",
     "get_all_proposal_authors",
-    {}
+    {},
   );
 
   if (Array.isArray(authors)) {
@@ -17,8 +17,15 @@ if (!authorsOptions.length) {
   }
 }
 
+const Container = styled.div`
+  .dropdown-menu {
+    max-height: 400px;
+    overflow-x: auto;
+  }
+`;
+
 return (
-  <div>
+  <Container>
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
       props={{
@@ -31,5 +38,5 @@ return (
         selectedValue: props.author,
       }}
     />
-  </div>
+  </Container>
 );
