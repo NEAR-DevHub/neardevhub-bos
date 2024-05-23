@@ -10,7 +10,6 @@ const options = [
   { label: "Cancelled", value: "CANCELLED" },
   { label: "Payment Processing", value: "PAYMENT" },
   { label: "Funded", value: "FUNDED" },
-
 ];
 
 const setSelected = props.onStateChange ?? (() => {});
