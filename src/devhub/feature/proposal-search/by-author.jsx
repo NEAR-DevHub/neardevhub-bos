@@ -2,7 +2,7 @@ const [authorsOptions, setAuthorsOptions] = useState([]);
 const [selectedAuthor, setSelectedAuthor] = useState(null);
 
 if (!authorsOptions.length) {
-  const data = [{ label: "None", value: "" }];
+  const data = [{ label: "All", value: "" }];
   const authors = Near.view(
     "${REPL_DEVHUB_CONTRACT}",
     "get_all_proposal_authors",
