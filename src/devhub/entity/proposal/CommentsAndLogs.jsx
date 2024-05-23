@@ -56,10 +56,11 @@ function getDifferentKeysWithValues(obj1, obj2) {
       if (key !== "editor_id" && obj2.hasOwnProperty(key)) {
         const value1 = obj1[key];
         const value2 = obj2[key];
-
-        if (typeof value1 === "object" && typeof value2 === "object") {
-          return JSON.stringify(value1) !== JSON.stringify(value2);
-        } else if (Array.isArray(value1) && Array.isArray(value2)) {
+        if (Array.isArray(value1) && Array.isArray(value2)) {
+          const sortedValue1 = [...value1].sort();
+          const sortedValue2 = [...value2].sort();
+          return JSON.stringify(sortedValue1) !== JSON.stringify(sortedValue2);
+        } else if (typeof value1 === "object" && typeof value2 === "object") {
           return JSON.stringify(value1) !== JSON.stringify(value2);
         } else {
           return value1 !== value2;
@@ -290,6 +291,8 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
     case "summary":
     case "description":
       return <span>changed {key}</span>;
+    case "labels":
+      return <span>changed labels to {(modifiedValue ?? []).join(", ")}</span>;
     case "category":
       return (
         <span>
