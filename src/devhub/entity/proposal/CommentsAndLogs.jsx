@@ -23,15 +23,11 @@ const Wrapper = styled.div`
   }
 
   .inline-flex {
-    display: inline-flex !important;
+    display: -webkit-inline-box !important;
     align-items: center !important;
     gap: 0.25rem !important;
-  }
-
-  @media screen and (max-width: 768px) {
-    .inline-flex {
-      display: -webkit-inline-box !important;
-    }
+    margin-right: 2px;
+    flex-wrap: wrap;
   }
 `;
 
@@ -60,10 +56,11 @@ function getDifferentKeysWithValues(obj1, obj2) {
       if (key !== "editor_id" && obj2.hasOwnProperty(key)) {
         const value1 = obj1[key];
         const value2 = obj2[key];
-
-        if (typeof value1 === "object" && typeof value2 === "object") {
-          return JSON.stringify(value1) !== JSON.stringify(value2);
-        } else if (Array.isArray(value1) && Array.isArray(value2)) {
+        if (Array.isArray(value1) && Array.isArray(value2)) {
+          const sortedValue1 = [...value1].sort();
+          const sortedValue2 = [...value2].sort();
+          return JSON.stringify(sortedValue1) !== JSON.stringify(sortedValue2);
+        } else if (typeof value1 === "object" && typeof value2 === "object") {
           return JSON.stringify(value1) !== JSON.stringify(value2);
         } else {
           return value1 !== value2;
@@ -111,7 +108,7 @@ function sortTimelineAndComments() {
     ? Promise.all(
         comments.map((item) => {
           return asyncFetch(
-            `https://api.near.social/time?blockHeight=${item.blockHeight}`
+            `https://api.near.social/time?blockHeight=${item.blockHeight}`,
           ).then((res) => {
             const timeMs = parseFloat(res.body);
             return {
@@ -119,7 +116,7 @@ function sortTimelineAndComments() {
               timestamp: timeMs,
             };
           });
-        })
+        }),
       ).then((res) => res)
     : Promise.resolve([]);
 
@@ -294,6 +291,8 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
     case "summary":
     case "description":
       return <span>changed {key}</span>;
+    case "labels":
+      return <span>changed labels to {(modifiedValue ?? []).join(", ")}</span>;
     case "category":
       return (
         <span>
@@ -352,10 +351,7 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
           text && (
             <span key={index} className="inline-flex">
               {text}
-              {text &&
-                originalKeys.length > 1 &&
-                index < modifiedKeys.length - 1 &&
-                "･"}
+              {text && "･"}
             </span>
           )
         );
@@ -381,10 +377,10 @@ const Log = ({ timestamp }) => {
       state.changedKeysListWithValues.find((obj) =>
         Object.values(obj).some(
           (value) =>
-            value && parseFloat(value.modifiedValue / 1e6) === timestamp
-        )
+            value && parseFloat(value.modifiedValue / 1e6) === timestamp,
+        ),
       ),
-    [state.changedKeysListWithValues, timestamp]
+    [state.changedKeysListWithValues, timestamp],
   );
 
   const editorId = updatedData.editorId;
@@ -395,7 +391,7 @@ const Log = ({ timestamp }) => {
   }
 
   return valuesArray.map((i, index) => {
-    if (i.key && i.key !== "timestamp") {
+    if (i.key && i.key !== "timestamp" && i.key !== "proposal_body_version") {
       return (
         <LogIconContainer
           className="d-flex gap-3 align-items-center"
@@ -418,7 +414,7 @@ const Log = ({ timestamp }) => {
               <AccountProfile accountId={editorId} showAccountId={true} />
             </span>
             {parseProposalKeyAndValue(i.key, i.modifiedValue, i.originalValue)}
-            on
+            {i.key !== "timeline" && "･"}
             <Widget
               src="${REPL_NEAR}/widget/TimeAgo"
               props={{
@@ -443,7 +439,7 @@ if (Array.isArray(state.data)) {
         {state.data.map((i, index) => {
           if (i.blockHeight) {
             const item = state.socialComments.find(
-              (t) => t.blockHeight === i.blockHeight
+              (t) => t.blockHeight === i.blockHeight,
             );
             return <Comment commentItem={item} />;
           } else {

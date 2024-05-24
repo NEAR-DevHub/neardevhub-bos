@@ -1,5 +1,5 @@
 const { getAllAuthors } = VM.require(
-  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract",
 );
 
 if (!getAllAuthors) {
