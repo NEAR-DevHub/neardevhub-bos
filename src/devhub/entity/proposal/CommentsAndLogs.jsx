@@ -108,7 +108,7 @@ function sortTimelineAndComments() {
     ? Promise.all(
         comments.map((item) => {
           return asyncFetch(
-            `https://api.near.social/time?blockHeight=${item.blockHeight}`,
+            `https://api.near.social/time?blockHeight=${item.blockHeight}`
           ).then((res) => {
             const timeMs = parseFloat(res.body);
             return {
@@ -116,7 +116,7 @@ function sortTimelineAndComments() {
               timestamp: timeMs,
             };
           });
-        }),
+        })
       ).then((res) => res)
     : Promise.resolve([]);
 
@@ -377,10 +377,10 @@ const Log = ({ timestamp }) => {
       state.changedKeysListWithValues.find((obj) =>
         Object.values(obj).some(
           (value) =>
-            value && parseFloat(value.modifiedValue / 1e6) === timestamp,
-        ),
+            value && parseFloat(value.modifiedValue / 1e6) === timestamp
+        )
       ),
-    [state.changedKeysListWithValues, timestamp],
+    [state.changedKeysListWithValues, timestamp]
   );
 
   const editorId = updatedData.editorId;
@@ -439,7 +439,7 @@ if (Array.isArray(state.data)) {
         {state.data.map((i, index) => {
           if (i.blockHeight) {
             const item = state.socialComments.find(
-              (t) => t.blockHeight === i.blockHeight,
+              (t) => t.blockHeight === i.blockHeight
             );
             return <Comment commentItem={item} />;
           } else {

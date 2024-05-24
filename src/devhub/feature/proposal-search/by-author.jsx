@@ -6,7 +6,7 @@ if (!authorsOptions.length) {
   const authors = Near.view(
     "${REPL_DEVHUB_CONTRACT}",
     "get_all_proposal_authors",
-    {},
+    {}
   );
 
   if (Array.isArray(authors)) {
