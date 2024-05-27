@@ -4,7 +4,21 @@ const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
 
+const { getAccountCommunityPermissions } = VM.require(
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+) || {
+  getAccountCommunityPermissions: () => {},
+};
+
 const [showEditScreenData, setShowEditScreen] = useState(null);
+
+const permissions = getAccountCommunityPermissions({
+  account_id: context.accountId,
+  community_handle: community,
+}) || {
+  can_configure: false,
+  can_delete: false,
+};
 
 if (id && !showEditScreenData) {
   return (
@@ -20,6 +34,7 @@ if (id && !showEditScreenData) {
               setShowEditScreen({ ...p, data: { ...p.data, id: id } });
             }}
             accountId={context.accountId}
+            community={community}
           />
         ),
       }}
@@ -102,6 +117,7 @@ if (showEditScreenData) {
                   handle: community,
                   communityAddonId: p.data.communityAddonId,
                   selectedBlog: { ...p.data, id },
+                  permissions,
                 }}
               />
             );

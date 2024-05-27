@@ -1,4 +1,5 @@
-const { data, handle, communityAddonId, onSubmit } = props;
+const { data, handle, communityAddonId, onSubmit, selectedBlog, permissions } =
+  props;
 
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
@@ -35,6 +36,10 @@ const Tailwind = styled.div`
     color: rgb(4, 164, 110);
   }
 
+  .text-devhub-gray {
+    color: #6c757d;
+  }
+
   .hover\:bg-devhub-green-transparent:hover {
     background-color: rgba(4, 164, 110, 0.8) !important;
   }
@@ -44,9 +49,22 @@ const Tailwind = styled.div`
   }
 
   .hover-bg-slate-300:hover {
-    background-color: rgb(226 232 240);
+    background-color: rgb(244, 244, 244);
   }
 `;
+
+if (permissions.can_configure !== true) {
+  return (
+    <div
+      className="d-flex flex-column align-items-center justify-content-center gap-4"
+      style={{ height: 384 }}
+    >
+      <h5 className="h5 d-inline-flex gap-2 m-0">
+        You don't have permission to configure this blog.
+      </h5>
+    </div>
+  );
+}
 
 return (
   <Tailwind>

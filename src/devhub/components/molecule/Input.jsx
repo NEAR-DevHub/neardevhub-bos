@@ -6,6 +6,7 @@ const TextInput = ({
   label,
   multiline,
   onChange,
+  debounceTimeout,
   placeholder,
   type,
   value,
@@ -36,7 +37,7 @@ const TextInput = ({
       }
       const handler = setTimeout(() => {
         onChange({ target: { value: state.data }, error: inputError });
-      }, 30);
+      }, debounceTimeout ?? 30);
 
       return () => {
         clearTimeout(handler);

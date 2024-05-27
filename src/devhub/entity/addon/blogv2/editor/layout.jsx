@@ -10,6 +10,8 @@ const {
 const [selectedItem, setSelectedItem] = useState(
   selectedBlog ? selectedBlog : null
 );
+const [selectedItemChanged, setSelectedItemChanged] = useState(false);
+
 const [showScreen, setShowScreen] = useState(
   selectedBlog ? "editor" : "overview"
 ); // overview, editor, settings
@@ -18,6 +20,20 @@ const openBlogPostSettings = () => {
   setShowScreen(true);
 };
 
+const [isSwitchBlogModalOpen, setIsSwitchBlogModalOpen] = useState(false);
+
+// This function checks for unsaved changes and shows a modal if there are any
+const checkForUnsavedChanges = (item) => {
+  const unsavedChanges = selectedItemChanged;
+  // If the user has edited show the confirm modal otherwise just switch
+  if (unsavedChanges) {
+    setIsSwitchBlogModalOpen(item);
+  } else {
+    handleItemClick(item);
+  }
+};
+
+// This function
 const handleItemClick = (item) => {
   if (item) {
     setSelectedItem(item);
@@ -25,11 +41,13 @@ const handleItemClick = (item) => {
   } else {
     setSelectedItem(null);
   }
+  setSelectedItemChanged(false);
 };
 
 const goBack = () => {
   setSelectedItem(null);
   setShowScreen("overview");
+  setSelectedItemChanged(false);
 };
 
 const postHogHref = "https://eu.posthog.com/project/20896";
@@ -86,8 +104,26 @@ return (
           >
             <BlogOverview
               selectedItem={selectedItem}
-              handleItemClick={handleItemClick}
+              handleItemClick={checkForUnsavedChanges}
               hideColumns={showScreen === "editor"}
+            />
+            <Widget
+              src={
+                "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
+              }
+              props={{
+                isOpen: isSwitchBlogModalOpen,
+                onCancelClick: () => setIsSwitchBlogModalOpen(false),
+                onConfirmClick: () => {
+                  handleItemClick(isSwitchBlogModalOpen);
+                  setIsSwitchBlogModalOpen(false);
+                },
+                title: "Are you sure you want to continue?",
+                content: "Unsaved changes will be lost.",
+                confirmLabel: "Continue",
+                cancelLabel: "Cancel",
+                buttonRoot: "btn-danger",
+              }}
             />
           </div>
           {showScreen === "editor" && (
@@ -96,7 +132,11 @@ return (
               style={{ flex: 1, width: 0, overflow: "scroll" }}
               key={selectedItem.id}
             >
-              <Content data={selectedItem} onCancel={goBack} />
+              <Content
+                data={selectedItem}
+                onCancel={goBack}
+                setSelectedItemChanged={setSelectedItemChanged}
+              />
             </div>
           )}
         </div>

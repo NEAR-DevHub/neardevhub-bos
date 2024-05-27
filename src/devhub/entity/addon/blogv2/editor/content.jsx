@@ -93,7 +93,7 @@ const DropdownBtnContainer = styled.div`
 
   .options-card {
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     right: 0;
     width: 200%;
     border: 1px solid #ccc;
@@ -177,6 +177,7 @@ const {
   onDelete,
   allBlogs: allBlogsOfThisInstance,
   communityAddonId,
+  setSelectedItemChanged,
 } = props;
 
 const allBlogKeys =
@@ -209,6 +210,7 @@ const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
 const [selectedStatus, setSelectedStatus] = useState(
   initialData.status || "DRAFT"
 );
+const [isDeleteModalOpen, setDeleteModal] = useState(false);
 
 // Dont ask me again check when deleting
 const [submittedBlogDeleted, setSubmittedBlogDeleted] = useState(null);
@@ -324,6 +326,8 @@ const SubmitBtn = () => {
     setDraftBtnOpen(false);
     setSelectedStatus(option.value);
     setSubmittedBlogData(null);
+    // TODO test is
+    handleSubmit(option.value);
   };
 
   const toggleDropdown = () => {
@@ -331,7 +335,7 @@ const SubmitBtn = () => {
     setSubmittedBlogData(null);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (status) => {
     // Set the title for dont ask me again check
     setSubmittedBlogData({
       title,
@@ -343,9 +347,9 @@ const SubmitBtn = () => {
       category,
       community: handle,
       publishedAt,
-      status: selectedStatus,
+      status,
     });
-    handlePublish(selectedStatus);
+    handlePublish(status);
   };
 
   const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
@@ -364,7 +368,9 @@ const SubmitBtn = () => {
           }`}
         >
           <div
-            onClick={() => !shouldBeDisabled() && handleSubmit()}
+            onClick={() =>
+              !shouldBeDisabled() && handleSubmit(selectedOption.value)
+            }
             className="py-2.5 px-2 d-flex gap-2 align-items-center "
             data-testid="submit-blog-button"
           >
@@ -418,7 +424,6 @@ const Container = styled.div`
   text-align: left;
 `;
 
-// TODO do the test still succeed
 const shouldBeDisabled = () => {
   return hasEmptyFields() || submittedBlogData;
 };
@@ -434,6 +439,36 @@ const hasEmptyFields = () => {
     category.trim() === ""
   );
 };
+
+const unsavedChanges = () => {
+  return (
+    initialData.content !== content ||
+    initialData.title !== title ||
+    initialData.subtitle !== subtitle ||
+    initialData.description !== description ||
+    initialData.author !== author ||
+    initialData.category !== category ||
+    initialData.publishedAt !== date ||
+    initialData.status !== selectedStatus
+  );
+};
+
+useEffect(() => {
+  if (unsavedChanges()) {
+    setSelectedItemChanged(true);
+  } else {
+    setSelectedItemChanged(false);
+  }
+}, [
+  content,
+  title,
+  subtitle,
+  description,
+  author,
+  category,
+  date,
+  selectedStatus,
+]);
 
 const handlePublish = (status) => {
   onSubmit &&
@@ -493,6 +528,8 @@ function Preview() {
         />
       );
     }
+    default:
+      return null;
   }
 }
 
@@ -518,35 +555,45 @@ return (
           className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 h-9 border-gray-300 block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
           defaultValue={tabs.find((tab) => tab.value === previewMode).name}
         >
-          {tabs.map((tab) => (
-            <option key={tab.name} onClick={() => setPreviewMode(tab.value)}>
-              {tab.name}
-            </option>
-          ))}
+          {tabs.map((tab) => {
+            if (tab.value === previewMode) {
+              return;
+            }
+            return (
+              <option key={tab.name} onClick={() => setPreviewMode(tab.value)}>
+                {tab.name}
+              </option>
+            );
+          })}
         </select>
       </div>
       <div className="hidden sm:block">
-        <div className="-mb-px flex gap-x-3 px-4" aria-label="Tabs">
-          {tabs.map((tab) => (
-            <a
-              key={tab.name}
-              onClick={() => setPreviewMode(tab.value)}
-              className={`rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold text-devhub-green hover:text-green shadow-sm hover:bg-devhub-green-transparent whitespace-nowrap overflow-hidden truncate ${
-                tab.value === previewMode
-                  ? " bg-devhub-green text-white"
-                  : " bg-devhub-green-light text-devhub-green"
-              }`}
-              aria-current={tab.value === previewMode ? "page" : undefined}
-            >
-              {tab.name}
-            </a>
-          ))}
+        <div className="-mb-px flex gap-x-3 px-2" aria-label="Tabs">
+          {tabs.map((tab) => {
+            return (
+              <a
+                key={tab.name}
+                onClick={() => setPreviewMode(tab.value)}
+                className={`${
+                  tab.value === previewMode ? "hidden" : ""
+                } rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold whitespace-nowrap overflow-hidden truncate text-devhub-gray`}
+              >
+                {tab.name}
+              </a>
+            );
+          })}
         </div>
       </div>
-      <div className="flex gap-x-3 px-4">
-        <p className="text-nowrap py-2.5 px-1">
+      <div className="flex gap-x-3">
+        <p className="text-nowrap text-sm text-devhub-gray font-semibold py-2.5 px-1">
           Status:{" "}
-          <span className="text-amber-500">
+          <span
+            className={`px-3 py-2 rounded-full font-semibold text-xs ${
+              initialData.status == "PUBLISH"
+                ? "text-green-600 bg-green-50"
+                : "text-blue-600 bg-blue-50"
+            }`}
+          >
             {initialData.status === "PUBLISH" ? (
               <Link
                 to={href({
@@ -568,13 +615,6 @@ return (
             )}
           </span>
         </p>
-        <button
-          className={`rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold text-devhub-green hover:text-green shadow-sm hover:bg-devhub-green-transparent bg-devhub-green-light text-devhub-green`}
-          onClick={onCancel}
-        >
-          Cancel
-        </button>
-        <SubmitBtn />
       </div>
     </div>
 
@@ -602,22 +642,60 @@ return (
             }}
           />
           {/* Show delete button */}
-          {data.id ? (
-            <div
-              className={
-                "d-flex align-items-center justify-content-start gap-3 mt-4"
-              }
-              data-testid="delete-blog-button"
-            >
+          <div
+            className={"d-flex align-items-center justify-between gap-3 mt-4"}
+          >
+            {data.id ? (
+              <>
+                <Widget
+                  src={
+                    "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
+                  }
+                  props={{
+                    isOpen: isDeleteModalOpen,
+                    onCancelClick: () => setDeleteModal(false),
+                    onConfirmClick: () => {
+                      setDeleteModal(false);
+                      handleDelete();
+                    },
+                    title: "Are you sure you want to delete this blog?",
+                    content: "This will permanently remove your blog.",
+                    confirmLabel: "Ready to Delete",
+                    cancelLabel: "Cancel",
+                  }}
+                />
+                <Widget
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                  props={{
+                    classNames: {
+                      root: "btn-outline-danger shadow-none border-0 btn-sm",
+                    },
+                    label: (
+                      <div className="d-flex align-items-center gap-1">
+                        <i class="bi bi-trash3"></i> Delete
+                      </div>
+                    ),
+                    testId: "delete-blog-button",
+                    disabled: submittedBlogDeleted,
+                    onClick: () => setDeleteModal(true),
+                  }}
+                />
+              </>
+            ) : null}
+            <div className="flex gap-x-3">
               <Widget
-                src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.DeleteButton"
+                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                 props={{
-                  onDelete: handleDelete,
-                  disabled: submittedBlogDeleted,
+                  classNames: {
+                    root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
+                  },
+                  label: "Cancel",
+                  onClick: onCancel,
                 }}
               />
+              <SubmitBtn />
             </div>
-          ) : null}
+          </div>
         </div>
       )}
       {(previewMode === "page" || previewMode === "card") && (

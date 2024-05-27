@@ -72,7 +72,7 @@ return (
             >
               <div
                 className={`${
-                  isSelected && "font-semibold text-base text-green-600"
+                  isSelected && "font-semibold text-base text-secondary"
                 } ${
                   props.hideColumns &&
                   "whitespace-nowrap truncate overflow-hidden w-40"

@@ -185,7 +185,7 @@ return (
 
     <InputContainer
       heading="Description"
-      description="Provide a brief description for the blog"
+      description="Provide a brief description for the blog. This will appear on the blog card."
     >
       {DescriptionInput}
     </InputContainer>

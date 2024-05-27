@@ -45,7 +45,6 @@ return (
           Layout: (providerProps) => {
             const {
               onSubmit: onSubmitBlogData,
-              onCancel,
               getData,
               onDelete,
             } = providerProps;
@@ -82,7 +81,6 @@ return (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.content"
                       props={{
-                        onCancel,
                         onSubmit: onSubmitBlogData,
                         onDelete,
                         handle: props.handle,
