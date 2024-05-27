@@ -238,7 +238,6 @@ const categoryInput = useMemo(() => {
     </div>
   );
 }, []);
-processedData = null;
 
 if (!processedData || processedData.length === 0) {
   return (

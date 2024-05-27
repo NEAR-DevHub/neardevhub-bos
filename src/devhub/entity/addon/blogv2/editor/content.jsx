@@ -568,12 +568,16 @@ return (
             )}
           </span>
         </p>
-        <button
-          className={`rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold text-devhub-green hover:text-green shadow-sm hover:bg-devhub-green-transparent bg-devhub-green-light text-devhub-green`}
-          onClick={onCancel}
-        >
-          Cancel
-        </button>
+        <Widget
+          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+          props={{
+            classNames: {
+              root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
+            },
+            label: "Cancel",
+            onClick: onCancel,
+          }}
+        />
         <SubmitBtn />
       </div>
     </div>

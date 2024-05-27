@@ -37,7 +37,7 @@ return (
           handle: props.handle,
           communityAddonId: props.communityAddonId,
           Layout: (providerProps) => {
-            const { onSubmit, onCancel, getData, onDelete } = providerProps;
+            const { onSubmit, getData, onDelete } = providerProps;
             return (
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.layout"
@@ -70,7 +70,6 @@ return (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.content"
                       props={{
-                        onCancel,
                         onSubmit,
                         onDelete,
                         handle: props.handle,
