@@ -76,7 +76,7 @@ return (
               onDelete();
             }}
           >
-            Continue to delete
+            Ready to delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
