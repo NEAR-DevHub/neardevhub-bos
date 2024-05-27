@@ -6,7 +6,7 @@ const { getAccountCommunityPermissions } = VM.require(
 const imagelink =
   "https://ipfs.near.social/ipfs/bafkreiajzvmy7574k7mp3if6u53mdukfr3hoc2kjkhjadt6x56vqhd5swy";
 
-function Page({ data, onEdit, accountId, handle }) {
+function Page({ data, onEdit, accountId, community }) {
   const {
     category,
     title,
@@ -18,7 +18,7 @@ function Page({ data, onEdit, accountId, handle }) {
 
   const permissions = getAccountCommunityPermissions({
     account_id: accountId,
-    community_handle: handle,
+    community_handle: community,
   });
 
   const isAllowedToEdit = permissions?.can_configure ?? false;

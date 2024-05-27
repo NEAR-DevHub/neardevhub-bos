@@ -1,4 +1,4 @@
-const { data, handle, communityAddonId, selectedBlog } = props;
+const { data, handle, communityAddonId, selectedBlog, permissions } = props;
 
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
@@ -47,6 +47,19 @@ const Tailwind = styled.div`
     background-color: rgb(226 232 240);
   }
 `;
+
+if (permissions.can_configure !== true) {
+  return (
+    <div
+      className="d-flex flex-column align-items-center justify-content-center gap-4"
+      style={{ height: 384 }}
+    >
+      <h5 className="h5 d-inline-flex gap-2 m-0">
+        You don't have permission to configure this blog.
+      </h5>
+    </div>
+  );
+}
 
 return (
   <Tailwind>
