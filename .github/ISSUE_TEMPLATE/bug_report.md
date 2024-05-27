@@ -1,38 +1,40 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Report an issue to help us improve.
 title: ''
 labels: bug
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Affected Portal:**
+Select one: DevHub, Events, Infrastructure, All, Unsure
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Description:**
+Provide a clear and concise description of the bug. What exactly is happening that should not?
+
+**User Type:**
+Specify: Regular User, Not Logged In, DevHub Admin, Other
+
+**Reproduction Steps**
+1. Step 1
+2. Step 2
+3. Continue with all the steps needed to trigger the bug ...
 
 **Expected behavior**
-A clear and concise description of what you expected to happen.
+Describe what you expected to happen
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Visual Reference**
+If applicable, add screenshots or video recording to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Priority**
+Select One: Critical (P0) – Cannot complete critical action, High (P1) – Unexpected error or behavior, Medium (P2) – Major inconvenience, Low (P3) – Minor inconvenience
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Environment Details**
+- Device: [e.g. Desktop, Phone, Tablet]
+- OS: [e.g. Windows, Mac, iOS]
+- Browser [e.g. Chrome, Safari]
+- Version [e.g. 22]
 
-**Additional context**
-Add any other context about the problem here.
+**Additional Context**
+Include any other relevant information that might help diagnose the issue, such as error messages or other observations.
