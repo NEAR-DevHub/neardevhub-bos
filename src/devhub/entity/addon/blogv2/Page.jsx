@@ -14,6 +14,7 @@ function Page({ data, onEdit, accountId, community }) {
     subtitle,
     publishedAt: date,
     content,
+    author,
   } = data;
 
   const permissions = getAccountCommunityPermissions({
@@ -49,13 +50,14 @@ function Page({ data, onEdit, accountId, community }) {
     }
     `}
 
-    span.date {
+    div.date {
       color: #818181;
       font-size: 1rem;
       font-style: normal;
       font-weight: 400;
       line-height: 20px; /* 125% */
       margin: 1.5rem 0;
+      width: 100%;
     }
 
     h1 {
@@ -122,7 +124,10 @@ function Page({ data, onEdit, accountId, community }) {
         {category && <span className="category">{category}</span>}
         <h1>{title}</h1>
         <p className="subtitle">{subtitle}</p>
-        <span className="date">{formattedDate}</span>
+        <div className="d-flex flex-row justify-content-between date">
+          {author && <div>{author}</div>}
+          <div>{formattedDate}</div>
+        </div>
         <p>{description}</p>
         <Widget
           src={
