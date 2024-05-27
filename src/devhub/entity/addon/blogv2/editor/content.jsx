@@ -568,17 +568,6 @@ return (
             )}
           </span>
         </p>
-        <Widget
-          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-          props={{
-            classNames: {
-              root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
-            },
-            label: "Cancel",
-            onClick: onCancel,
-          }}
-        />
-        <SubmitBtn />
       </div>
     </div>
 
@@ -608,9 +597,7 @@ return (
           {/* Show delete button */}
           {data.id ? (
             <div
-              className={
-                "d-flex align-items-center justify-content-start gap-3 mt-4"
-              }
+              className={"d-flex align-items-center justify-between gap-3 mt-4"}
             >
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.DeleteButton"
@@ -619,6 +606,19 @@ return (
                   disabled: submittedBlogDeleted,
                 }}
               />
+              <div className="flex gap-x-3">
+                <Widget
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                  props={{
+                    classNames: {
+                      root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
+                    },
+                    label: "Cancel",
+                    onClick: onCancel,
+                  }}
+                />
+                <SubmitBtn />
+              </div>
             </div>
           ) : null}
         </div>
