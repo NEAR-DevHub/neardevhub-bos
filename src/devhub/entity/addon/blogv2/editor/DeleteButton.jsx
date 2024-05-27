@@ -60,10 +60,11 @@ return (
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>
+            Are you sure you want to delete this blog?
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your blog
-            and remove your data from socialDB.
+            This will permanently remove your blog.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
