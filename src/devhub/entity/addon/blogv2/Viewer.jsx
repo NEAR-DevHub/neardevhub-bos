@@ -238,6 +238,7 @@ const categoryInput = useMemo(() => {
     </div>
   );
 }, []);
+processedData = null;
 
 if (!processedData || processedData.length === 0) {
   return (
@@ -245,10 +246,12 @@ if (!processedData || processedData.length === 0) {
       className="d-flex flex-column align-items-center justify-content-center gap-4"
       style={{ height: 384 }}
     >
-      <h5 className="h5 d-inline-flex gap-2 m-0">
+      <h5 className="h5 d-inline-flex gap-2 m-0 text-center">
+        {"This blog isn't configured yet."}
+        <br />
         {permissions.can_configure
-          ? "You can configure the blog by clicking on the settings icon."
-          : "This blog isn't configured yet."}
+          ? "Go to settings to configure your blog or create your first post."
+          : ""}
       </h5>
     </div>
   );
