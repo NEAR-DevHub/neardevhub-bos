@@ -75,6 +75,7 @@ const categories = {
 };
 
 function flattenBlogObject(blogsObject) {
+  if (!blogsObject) return [];
   return (
     Object.keys(blogsObject)
       .map((key) => {
@@ -264,7 +265,8 @@ return (
       {data.categoriesEnabled ? categoryInput : ""}
     </div>
     <Grid>
-      {processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))}
+      {processedData &&
+        processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))}
     </Grid>
   </div>
 );
