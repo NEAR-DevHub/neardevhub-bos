@@ -493,6 +493,8 @@ function Preview() {
         />
       );
     }
+    default:
+      return null;
   }
 }
 
@@ -518,35 +520,45 @@ return (
           className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 h-9 border-gray-300 block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
           defaultValue={tabs.find((tab) => tab.value === previewMode).name}
         >
-          {tabs.map((tab) => (
-            <option key={tab.name} onClick={() => setPreviewMode(tab.value)}>
-              {tab.name}
-            </option>
-          ))}
+          {tabs.map((tab) => {
+            if (tab.value === previewMode) {
+              return;
+            }
+            return (
+              <option key={tab.name} onClick={() => setPreviewMode(tab.value)}>
+                {tab.name}
+              </option>
+            );
+          })}
         </select>
       </div>
       <div className="hidden sm:block">
-        <div className="-mb-px flex gap-x-3 px-4" aria-label="Tabs">
-          {tabs.map((tab) => (
-            <a
-              key={tab.name}
-              onClick={() => setPreviewMode(tab.value)}
-              className={`rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold text-devhub-green hover:text-green shadow-sm hover:bg-devhub-green-transparent whitespace-nowrap overflow-hidden truncate ${
-                tab.value === previewMode
-                  ? " bg-devhub-green text-white"
-                  : " bg-devhub-green-light text-devhub-green"
-              }`}
-              aria-current={tab.value === previewMode ? "page" : undefined}
-            >
-              {tab.name}
-            </a>
-          ))}
+        <div className="-mb-px flex gap-x-3 px-2" aria-label="Tabs">
+          {tabs.map((tab) => {
+            return (
+              <a
+                key={tab.name}
+                onClick={() => setPreviewMode(tab.value)}
+                className={`${
+                  tab.value === previewMode ? "hidden" : ""
+                } rounded-md px-3.5 py-2.5 text-sm cursor-pointer font-semibold whitespace-nowrap overflow-hidden truncate text-devhub-gray`}
+              >
+                {tab.name}
+              </a>
+            );
+          })}
         </div>
       </div>
-      <div className="flex gap-x-3 px-4">
-        <p className="text-nowrap py-2.5 px-1">
+      <div className="flex gap-x-3">
+        <p className="text-nowrap text-sm text-devhub-gray font-semibold py-2.5 px-1">
           Status:{" "}
-          <span className="text-amber-500">
+          <span
+            className={`px-3 py-2 rounded-full font-semibold text-xs ${
+              initialData.status == "PUBLISH"
+                ? "text-green-600 bg-green-50"
+                : "text-blue-600 bg-blue-50"
+            }`}
+          >
             {initialData.status === "PUBLISH" ? (
               <Link
                 to={href({

@@ -35,6 +35,10 @@ const Tailwind = styled.div`
     color: rgb(4, 164, 110);
   }
 
+  .text-devhub-gray {
+    color: #6c757d;
+  }
+
   .hover\:bg-devhub-green-transparent:hover {
     background-color: rgba(4, 164, 110, 0.8) !important;
   }
