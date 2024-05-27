@@ -580,7 +580,7 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
     await deleteButton.click();
 
-    await page.getByRole("button", { name: "Continue to delete" }).click();
+    await page.getByRole("button", { name: "Ready to Delete" }).click();
     // Show loading indicator
     // const loadingIndicator = await page.locator(".delete-blog-spinner").first();
     // await expect(loadingIndicator).toBeVisible();
@@ -915,7 +915,7 @@ test.describe("Admin wallet is connected", () => {
     await pauseIfVideoRecording(page);
     await deleteButton.click();
 
-    await page.getByRole("button", { name: "Continue to delete" }).click();
+    await page.getByRole("button", { name: "Ready to Delete" }).click();
 
     const transactionObj = JSON.parse(
       await page.locator("div.modal-body code").innerText()

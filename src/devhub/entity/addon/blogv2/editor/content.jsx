@@ -177,6 +177,7 @@ const {
   onDelete,
   allBlogs: allBlogsOfThisInstance,
   communityAddonId,
+  setSelectedItemChanged,
 } = props;
 
 const allBlogKeys =
@@ -209,6 +210,7 @@ const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
 const [selectedStatus, setSelectedStatus] = useState(
   initialData.status || "DRAFT"
 );
+const [isDeleteModalOpen, setDeleteModal] = useState(false);
 
 // Dont ask me again check when deleting
 const [submittedBlogDeleted, setSubmittedBlogDeleted] = useState(null);
@@ -418,7 +420,6 @@ const Container = styled.div`
   text-align: left;
 `;
 
-// TODO do the test still succeed
 const shouldBeDisabled = () => {
   return hasEmptyFields() || submittedBlogData;
 };
@@ -434,6 +435,36 @@ const hasEmptyFields = () => {
     category.trim() === ""
   );
 };
+
+const unsavedChanges = () => {
+  return (
+    initialData.content !== content ||
+    initialData.title !== title ||
+    initialData.subtitle !== subtitle ||
+    initialData.description !== description ||
+    initialData.author !== author ||
+    initialData.category !== category ||
+    initialData.publishedAt !== date ||
+    initialData.status !== selectedStatus
+  );
+};
+
+useEffect(() => {
+  if (unsavedChanges()) {
+    setSelectedItemChanged(true);
+  } else {
+    setSelectedItemChanged(false);
+  }
+}, [
+  content,
+  title,
+  subtitle,
+  description,
+  author,
+  category,
+  date,
+  selectedStatus,
+]);
 
 const handlePublish = (status) => {
   onSubmit &&
@@ -612,10 +643,36 @@ return (
               className={"d-flex align-items-center justify-between gap-3 mt-4"}
             >
               <Widget
-                src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.DeleteButton"
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
+                }
                 props={{
-                  onDelete: handleDelete,
+                  isOpen: isDeleteModalOpen,
+                  onCancelClick: () => setDeleteModal(false),
+                  onConfirmClick: () => {
+                    setDeleteModal(false);
+                    handleDelete();
+                  },
+                  title: "Are you sure you want to delete this blog?",
+                  content: "This will permanently remove your blog.",
+                  confirmLabel: "Ready to Delete",
+                  cancelLabel: "Cancel",
+                }}
+              />
+              <Widget
+                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                props={{
+                  classNames: {
+                    root: "btn-outline-danger shadow-none border-0 btn-sm",
+                  },
+                  label: (
+                    <div className="d-flex align-items-center gap-1">
+                      <i class="bi bi-trash3"></i> Delete
+                    </div>
+                  ),
+                  testId: "delete-blog-button",
                   disabled: submittedBlogDeleted,
+                  onClick: () => setDeleteModal(true),
                 }}
               />
               <div className="flex gap-x-3">
