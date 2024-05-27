@@ -267,23 +267,21 @@ test.describe("Don't ask again enabled", () => {
     );
     // Switch to publish instead of draft
     await page.getByTestId("toggle-dropdown").click();
-    await page
-      .getByTestId("submit-button-option-PUBLISH")
-      .locator("div")
-      .first()
-      .click();
-    const postButton = page
-      .getByTestId("submit-blog-button")
-      .getByText("Publish");
-    // Show loading indicator
+
+    // Expect the indicator to not be visible
     const loadingIndicator = page
       .locator(".submit-blog-loading-indicator")
       .first();
 
     await expect(loadingIndicator).not.toBeVisible();
 
-    // Click post button
-    await postButton.click();
+    // Click on publish
+    await page
+      .getByTestId("submit-button-option-PUBLISH")
+      .locator("div")
+      .first()
+      .click();
+
     await expect(loadingIndicator).toBeVisible();
 
     // Expect the post button to be disabled
@@ -880,10 +878,6 @@ test.describe("Admin wallet is connected", () => {
       const publishOption = page.getByTestId("submit-button-option-PUBLISH");
 
       await publishOption.click();
-
-      const publishButton = page.getByTestId("submit-blog-button");
-
-      await publishButton.click();
 
       const transactionObj = JSON.parse(
         await page.locator("div.modal-body code").innerText()

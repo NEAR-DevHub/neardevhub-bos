@@ -642,58 +642,60 @@ return (
             }}
           />
           {/* Show delete button */}
-          {data.id ? (
-            <div
-              className={"d-flex align-items-center justify-between gap-3 mt-4"}
-            >
-              <Widget
-                src={
-                  "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
-                }
-                props={{
-                  isOpen: isDeleteModalOpen,
-                  onCancelClick: () => setDeleteModal(false),
-                  onConfirmClick: () => {
-                    setDeleteModal(false);
-                    handleDelete();
-                  },
-                  title: "Are you sure you want to delete this blog?",
-                  content: "This will permanently remove your blog.",
-                  confirmLabel: "Ready to Delete",
-                  cancelLabel: "Cancel",
-                }}
-              />
-              <Widget
-                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-                props={{
-                  classNames: {
-                    root: "btn-outline-danger shadow-none border-0 btn-sm",
-                  },
-                  label: (
-                    <div className="d-flex align-items-center gap-1">
-                      <i class="bi bi-trash3"></i> Delete
-                    </div>
-                  ),
-                  testId: "delete-blog-button",
-                  disabled: submittedBlogDeleted,
-                  onClick: () => setDeleteModal(true),
-                }}
-              />
-              <div className="flex gap-x-3">
+          <div
+            className={"d-flex align-items-center justify-between gap-3 mt-4"}
+          >
+            {data.id ? (
+              <>
+                <Widget
+                  src={
+                    "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
+                  }
+                  props={{
+                    isOpen: isDeleteModalOpen,
+                    onCancelClick: () => setDeleteModal(false),
+                    onConfirmClick: () => {
+                      setDeleteModal(false);
+                      handleDelete();
+                    },
+                    title: "Are you sure you want to delete this blog?",
+                    content: "This will permanently remove your blog.",
+                    confirmLabel: "Ready to Delete",
+                    cancelLabel: "Cancel",
+                  }}
+                />
                 <Widget
                   src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                   props={{
                     classNames: {
-                      root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
+                      root: "btn-outline-danger shadow-none border-0 btn-sm",
                     },
-                    label: "Cancel",
-                    onClick: onCancel,
+                    label: (
+                      <div className="d-flex align-items-center gap-1">
+                        <i class="bi bi-trash3"></i> Delete
+                      </div>
+                    ),
+                    testId: "delete-blog-button",
+                    disabled: submittedBlogDeleted,
+                    onClick: () => setDeleteModal(true),
                   }}
                 />
-                <SubmitBtn />
-              </div>
+              </>
+            ) : null}
+            <div className="flex gap-x-3">
+              <Widget
+                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                props={{
+                  classNames: {
+                    root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
+                  },
+                  label: "Cancel",
+                  onClick: onCancel,
+                }}
+              />
+              <SubmitBtn />
             </div>
-          ) : null}
+          </div>
         </div>
       )}
       {(previewMode === "page" || previewMode === "card") && (
