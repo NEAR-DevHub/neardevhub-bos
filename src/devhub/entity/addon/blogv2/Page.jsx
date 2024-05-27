@@ -18,8 +18,9 @@ function Page({ data, onEdit, accountId, handle }) {
 
   const permissions = getAccountCommunityPermissions({
     account_id: accountId,
-    community_handle: "webassemblymusic",
+    community_handle: handle,
   });
+
   const isAllowedToEdit = permissions?.can_configure ?? false;
 
   const Container = styled.div`
