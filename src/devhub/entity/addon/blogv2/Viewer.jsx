@@ -15,6 +15,7 @@ const {
   communityAddonId,
   setAddonView,
   transactionHashes,
+  permissions,
 } = props;
 
 const Grid = styled.div`
@@ -238,17 +239,30 @@ const categoryInput = useMemo(() => {
   );
 }, []);
 
+if (!processedData || processedData.length === 0) {
+  return (
+    <div
+      className="d-flex flex-column align-items-center justify-content-center gap-4"
+      style={{ height: 384 }}
+    >
+      <h5 className="h5 d-inline-flex gap-2 m-0">
+        {permissions.can_configure
+          ? "You can configure the blog by clicking on the settings icon."
+          : "This blog isn't configured yet."}
+      </h5>
+    </div>
+  );
+}
+
 return (
   <div class="w-100">
-    {!hideTitle && <Heading> Latest Blog Posts</Heading>}
+    {!hideTitle && <Heading>Latest Blog Posts</Heading>}
     <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
       {data.searchEnabled ? searchInput : ""}
       {data.categoriesEnabled ? categoryInput : ""}
     </div>
     <Grid>
-      {processedData && processedData.length > 0
-        ? processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))
-        : NoBlogCard()}
+      {processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))}
     </Grid>
   </div>
 );
