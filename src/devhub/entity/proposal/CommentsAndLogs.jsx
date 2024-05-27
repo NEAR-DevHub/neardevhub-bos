@@ -388,7 +388,7 @@ const Log = ({ timestamp }) => {
   }
 
   return valuesArray.map((i, index) => {
-    if (i.key && i.key !== "timestamp") {
+    if (i.key && i.key !== "timestamp" && i.key !== "proposal_body_version") {
       return (
         <LogIconContainer
           className="d-flex gap-3 align-items-center"

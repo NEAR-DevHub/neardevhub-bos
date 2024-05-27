@@ -1,5 +1,9 @@
 const options = [
   {
+    label: "All",
+    value: "",
+  },
+  {
     label: "DevDAO Operations",
     value: "DevDAO Operations",
   },
@@ -30,10 +34,6 @@ const options = [
   {
     label: "Other",
     value: "Other",
-  },
-  {
-    label: "None",
-    value: "",
   },
 ];
 
