@@ -44,7 +44,7 @@ const Tailwind = styled.div`
   }
 
   .hover-bg-slate-300:hover {
-    background-color: rgb(226 232 240);
+    background-color: rgb(244, 244, 244);
   }
 `;
 
