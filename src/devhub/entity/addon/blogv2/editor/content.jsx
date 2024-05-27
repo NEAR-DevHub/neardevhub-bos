@@ -93,7 +93,7 @@ const DropdownBtnContainer = styled.div`
 
   .options-card {
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     right: 0;
     width: 200%;
     border: 1px solid #ccc;
@@ -326,6 +326,8 @@ const SubmitBtn = () => {
     setDraftBtnOpen(false);
     setSelectedStatus(option.value);
     setSubmittedBlogData(null);
+    // TODO test is
+    handleSubmit(option.value);
   };
 
   const toggleDropdown = () => {
@@ -333,7 +335,7 @@ const SubmitBtn = () => {
     setSubmittedBlogData(null);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (status) => {
     // Set the title for dont ask me again check
     setSubmittedBlogData({
       title,
@@ -345,9 +347,9 @@ const SubmitBtn = () => {
       category,
       community: handle,
       publishedAt,
-      status: selectedStatus,
+      status,
     });
-    handlePublish(selectedStatus);
+    handlePublish(status);
   };
 
   const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
@@ -366,7 +368,9 @@ const SubmitBtn = () => {
           }`}
         >
           <div
-            onClick={() => !shouldBeDisabled() && handleSubmit()}
+            onClick={() =>
+              !shouldBeDisabled() && handleSubmit(selectedOption.value)
+            }
             className="py-2.5 px-2 d-flex gap-2 align-items-center "
             data-testid="submit-blog-button"
           >
