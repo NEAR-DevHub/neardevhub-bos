@@ -102,6 +102,7 @@ function flattenBlogObject(blogsObject) {
       .filter((blog) => blog.status === "PUBLISH")
       .map((flattenedBlog) => {
         if (!categories[flattenedBlog.category]) {
+          console.log("flattenedBlog.category", flattenedBlog.category);
           categories[flattenedBlog.category] = {
             label: flattenedBlog.category,
             value: flattenedBlog.category,
@@ -251,7 +252,7 @@ const categoryInput = useMemo(() => {
       />
     </div>
   );
-}, []);
+}, [categories]);
 
 if (!processedData || processedData.length === 0) {
   return (
