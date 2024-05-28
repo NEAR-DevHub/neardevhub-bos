@@ -217,7 +217,7 @@ test.describe("Is DevHUB platform community admin", () => {
       "/devhub.near/widget/app?page=community&handle=devhub-platform&tab=github"
     );
     await pauseIfVideoRecording(page);
-    const configureButton = await page.getByRole("button", { name: "" });
+    const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.scrollIntoViewIfNeeded();
     await configureButton.click();
     await pauseIfVideoRecording(page);
