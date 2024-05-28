@@ -3,7 +3,7 @@ let variables = props.variables;
 
 const {
   communityAddonId,
-  data,
+  data: addonParameters,
   handle,
   onSubmit: onSubmitBlogSettings,
 } = props;
@@ -72,7 +72,7 @@ return (
                       props={{
                         ...p,
                         ...providerProps,
-                        data,
+                        data: addonParameters,
                         onSubmit: onSubmitBlogSettings,
                       }}
                     />
@@ -86,6 +86,7 @@ return (
                         handle: props.handle,
                         allBlogs: providerProps.data,
                         communityAddonId: props.communityAddonId,
+                        addonParameters: addonParameters,
                         ...p,
                       }}
                     />

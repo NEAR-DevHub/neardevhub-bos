@@ -17,7 +17,11 @@ const [categoryRequired, setCategoryRequired] = useState(
 );
 const [title, setTitle] = useState(data.title || "Latest Blog Posts");
 const [subtitle, setSubtitle] = useState(
-  data.subtitle || "Creating blogs for the community" // TODO change default
+  data.subtitle || "Stay up to date with the community blog"
+);
+
+const [authorEnabled, setAuthorEnabled] = useState(
+  data.authorEnabled || "disabled"
 );
 
 const [postPerPage, setPostPerPage] = useState(data.postPerPage || 10);
@@ -33,6 +37,24 @@ const InputContainer = ({ heading, description, children }) => {
     </div>
   );
 };
+
+const AuthorEnabledSwitchComponent = useMemo(() => {
+  return (
+    <Widget
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Switch"
+      props={{
+        currentValue: authorEnabled,
+        key: "authorEnabled",
+        onChange: (e) => setAuthorEnabled(e.target.value),
+        options: [
+          { label: "Enabled", value: "enabled" },
+          { label: "Disabled", value: "disabled" },
+        ],
+        title: "Author Enabled",
+      }}
+    />
+  );
+}, [authorEnabled]);
 
 const CategoryRequiredSwitchComponent = useMemo(() => {
   return (
@@ -154,32 +176,26 @@ const SubtitleComponent = useMemo(() => {
 
 initState({
   labels,
-  labelStringsArray: [],
-  newOption: "",
+  categoriesArray: [],
 });
 
-const checkLabel = (label) => {};
+const checkCategory = (category) => {
+  console.log("checkCategory", category);
+};
 
-const setLabels = (labels) => {
-  labels = labels.map((o) => {
-    o.category = normalize(o.category);
-    return o;
-  });
-  if (labels.length < state.labels.length) {
-    let oldLabels = new Set(state.labels.map((label) => label.category));
-    for (let label of labels) {
-      oldLabels.delete(label.category);
-    }
-  } else {
-    let labelStringsArray = labels.map((o) => {
-      return o.category;
-    });
-    State.update({ labels, labelStringsArray });
-  }
+const setCategories = (labels) => {
+  labels = labels.map((o) => ({
+    category: o.category, // For the typeahead labelKey
+    label: o.category,
+    value: normalize(o.category),
+  }));
+  let categoriesArray = [];
+  categoriesArray = labels.map((o) => o.label);
+  State.update({ labels, categoriesArray });
 };
 
 const categoriesEditor = useMemo(() => {
-  const examples = ["News", "Guide", "Reference", "Tutorial", "Other"];
+  const examples = ["News", "Guide", "Reference"];
   const options = examples.map((category) => {
     return { category };
   });
@@ -188,26 +204,16 @@ const categoriesEditor = useMemo(() => {
     <Typeahead
       multiple
       labelKey="category"
-      onInputChange={checkLabel}
-      onChange={setLabels}
+      onInputChange={checkCategory}
+      onChange={setCategories}
       options={options}
       placeholder="News, Guide, Reference, etc."
       selected={state.labels}
       positionFixed
+      caseSensitive={true}
       allowNew={(results, props) => {
-        console.log({
-          results,
-          props,
-          labels: state.labels,
-          labelStringsArray,
-          size: new Set(state.labels).size,
-          length: state.labels.length,
-        });
-        // Don't allow double and no more than 10 labels
-        return (
-          !new Set(labelStringsArray).has(props.text) &&
-          props.options.length < 3
-        );
+        // Don't allow more than 10 categories
+        return props.selected.length < 10;
       }}
     />
   );
@@ -259,10 +265,11 @@ const handleOnSubmit = () => {
   onSubmit({
     title,
     subtitle,
+    authorEnabled,
     searchEnabled,
     orderBy,
     categoriesEnabled,
-    categories,
+    categories: state.labels,
     categoryRequired,
   });
 };
@@ -300,8 +307,7 @@ return (
         Blog List Page
       </h2>
       <p className="mt-1 text-sm leading-6 text-gray-500">
-        This information will be displayed publicly so be careful what you
-        share.
+        This information will be displayed publicly.
       </p>
       <div className="w-100 border-b"></div>
 
@@ -316,6 +322,12 @@ return (
         description="Provide a brief subtitle for the blog"
       >
         {SubtitleComponent}
+      </InputContainer>
+      <InputContainer
+        heading="Author visible"
+        description="Show the author of the blog post."
+      >
+        {AuthorEnabledSwitchComponent}
       </InputContainer>
       <InputContainer
         heading="Search"
@@ -342,8 +354,7 @@ return (
         Blog Post Fields
       </h2>
       <p className="mt-1 text-sm leading-6 text-gray-500">
-        This information will be displayed publicly so be careful what you
-        share.
+        This information will be displayed publicly.
       </p>
       <div className="w-100 border-b"></div>
       <InputContainer
@@ -365,5 +376,24 @@ return (
         {CategoryRequiredSwitchComponent}
       </InputContainer>
     </FormContainer>
+
+    <div className="d-flex gap-1 align-items-end justify-content-end mt-3">
+      <button
+        onClick={onHideSettings}
+        type="button"
+        className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-white shadow-sm hover:bg-indigo-100"
+      >
+        Cancel
+      </button>
+      <Widget
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"}
+        props={{
+          title: "Save Settings",
+          onClick: handleOnSubmit,
+          testId: "save-settings-button",
+          disabled: submitDisabled(),
+        }}
+      />
+    </div>
   </div>
 );

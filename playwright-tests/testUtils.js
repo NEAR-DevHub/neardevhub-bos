@@ -27,6 +27,12 @@ export const waitForSelectorToBeVisible = async (page, selector) => {
   });
 };
 
+export const waitForTestIdToBeVisible = async (page, testId) => {
+  await page.waitForSelector(`[data-testid='${testId}']`, {
+    state: "visible",
+  });
+};
+
 export const clickWhenSelectorIsVisible = async (page, selector) => {
   waitForSelectorToBeVisible(page, selector);
   await page.click(selector);

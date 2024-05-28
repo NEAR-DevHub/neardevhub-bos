@@ -1,12 +1,13 @@
-const { getAccountCommunityPermissions } = VM.require(
+const { getAccountCommunityPermissions, getCommunity } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 ) || {
   getAccountCommunityPermissions: () => {},
+  getCommunity: () => {},
 };
 const imagelink =
   "https://ipfs.near.social/ipfs/bafkreiajzvmy7574k7mp3if6u53mdukfr3hoc2kjkhjadt6x56vqhd5swy";
 
-function Page({ data, onEdit, accountId, community }) {
+function Page({ data, onEdit, community: handle }) {
   const {
     category,
     title,
@@ -15,11 +16,27 @@ function Page({ data, onEdit, accountId, community }) {
     publishedAt: date,
     content,
     author,
+    communityAddonId,
   } = data;
 
+  if (!handle) {
+    return <div>Community handle not found</div>;
+  }
+
+  const community = getCommunity({ handle: handle });
+
+  let communityConfig = community.addons.find(
+    (addon) => addon.id === communityAddonId
+  );
+
+  if (communityConfig === undefined) {
+    return <div>Community addon not found</div>;
+  }
+  const parameters = JSON.parse(communityConfig.parameters) || {};
+
   const permissions = getAccountCommunityPermissions({
-    account_id: accountId,
-    community_handle: community,
+    account_id: context.accountId,
+    community_handle: handle,
   });
 
   const isAllowedToEdit = permissions?.can_configure ?? false;
@@ -125,8 +142,10 @@ function Page({ data, onEdit, accountId, community }) {
         <h1>{title}</h1>
         <p className="subtitle">{subtitle}</p>
         <div className="d-flex flex-row justify-content-between date">
-          {author && <div>{author}</div>}
-          <div>{formattedDate}</div>
+          {author && parameters.authorEnabled !== "disabled" && (
+            <div data-testid="blog-author">{author}</div>
+          )}
+          <div data-testid="blog-date">{formattedDate}</div>
         </div>
         <p>{description}</p>
         <Widget

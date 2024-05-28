@@ -178,6 +178,7 @@ const {
   allBlogs: allBlogsOfThisInstance,
   communityAddonId,
   setSelectedItemChanged,
+  addonParameters,
 } = props;
 
 const allBlogKeys =
@@ -524,7 +525,9 @@ function Preview() {
             author,
             category,
             community: handle,
+            communityAddonId,
           }}
+          community={handle}
         />
       );
     }
@@ -534,9 +537,9 @@ function Preview() {
 }
 
 const tabs = [
-  { name: "Edit", value: "edit" },
-  { name: "Preview Card", value: "card" },
-  { name: "Preview Page", value: "page" },
+  { name: "Edit", value: "edit", testId: "edit-blog-toggle" },
+  { name: "Preview Card", value: "card", testId: "preview-card-blog-toggle" },
+  { name: "Preview Page", value: "page", testId: "preview-page-blog-toggle" },
 ];
 
 return (
@@ -572,6 +575,7 @@ return (
           {tabs.map((tab) => {
             return (
               <a
+                data-testid={tab.testId}
                 key={tab.name}
                 onClick={() => setPreviewMode(tab.value)}
                 className={`${
@@ -602,7 +606,6 @@ return (
                     page: "blogv2",
                     id: initialData.id,
                     community: handle,
-                    communityAddonId,
                   },
                 })}
                 target="_blank"
@@ -639,6 +642,7 @@ return (
               setDate,
               content,
               setContent,
+              addonParameters,
             }}
           />
           {/* Show delete button */}

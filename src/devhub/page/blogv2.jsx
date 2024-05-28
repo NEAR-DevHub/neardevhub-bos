@@ -1,4 +1,4 @@
-const { id, community, communityAddonId } = props;
+const { id, community } = props;
 
 const { Page } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
@@ -33,7 +33,6 @@ if (id && !showEditScreenData) {
             onEdit={() => {
               setShowEditScreen({ ...p, data: { ...p.data, id: id } });
             }}
-            accountId={context.accountId}
             community={community}
           />
         ),

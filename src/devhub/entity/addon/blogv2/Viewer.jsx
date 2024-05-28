@@ -102,7 +102,6 @@ function flattenBlogObject(blogsObject) {
       .filter((blog) => blog.status === "PUBLISH")
       .map((flattenedBlog) => {
         if (!categories[flattenedBlog.category]) {
-          console.log("flattenedBlog.category", flattenedBlog.category);
           categories[flattenedBlog.category] = {
             label: flattenedBlog.category,
             value: flattenedBlog.category,
@@ -180,7 +179,6 @@ function BlogCardWithLink(flattenedBlog) {
           page: "blogv2",
           id: flattenedBlog.id,
           community: handle,
-          communityAddonId, // Passed in addon.jsx
         },
       })}
     >
@@ -219,6 +217,7 @@ const searchInput = useMemo(
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
         props={{
+          key: "search-blog-posts",
           className: "flex-grow-1",
           placeholder: "search blog posts",
           debounceTimeout: 300,
@@ -273,11 +272,15 @@ if (!processedData || processedData.length === 0) {
 
 return (
   <div class="w-100">
-    {!hideTitle && <Heading> {data.title || "Latest Blog Posts"}</Heading>}
     {!hideTitle && (
-      <SubHeading>
-        {data.subtitle ||
-          `Follow ${handle}.community.devhub.near to stay up to date.`}
+      <Heading data-testid="blog-instance-title">
+        {" "}
+        {data.title || "Latest Blog Posts"}
+      </Heading>
+    )}
+    {!hideTitle && (
+      <SubHeading data-testid="blog-instance-subtitle">
+        {data.subtitle || ``}
       </SubHeading>
     )}
     <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">

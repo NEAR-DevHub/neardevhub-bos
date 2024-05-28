@@ -55,7 +55,15 @@ export async function mockDefaultTabs(route) {
         display_name: "First Blog",
         enabled: true,
         id: "blogv2",
-        parameters: "{}",
+        parameters:
+          '{"title":"Mocked configured blog page title",\
+        "subtitle":"Mocked configured subtitle",\
+        "authorEnabled": "disabled",\
+        "searchEnabled": "enabled",\
+        "orderBy": "timedesc",\
+        "categoriesEnabled": "enabled",\
+        "categories": ["news", "guide", "reference"],\
+        "categoryRequired": false}',
       },
       {
         addon_id: "blogv2",
