@@ -1,70 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
+import { setupBlogContentResponses } from "../../util/blogs.js";
 
 const baseUrl =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=blogv2";
-
-async function setupBlogContentResponses(page) {
-  const topics = [
-    "Cows",
-    "Cars",
-    "Sheep",
-    "Birds",
-    "Computers",
-    "Blockchain technology",
-    "Artificial intelligence",
-    "Search for extra terrestrial life",
-    "The meaning of life",
-  ];
-  const categories = ["Animals", "Tech", "Vehicle", "Philosophy"];
-
-  const blogPosts = {};
-  for (let n = 0; n < 100; n++) {
-    const topic = topics[n % topics.length];
-    const blogDate = new Date(2024, 0, 1);
-    blogDate.setDate(n);
-    blogPosts["new-blog-post-cg" + n] = {
-      "": `# Blog post ${n + 1}
-This is an article about ${topic}.
-`,
-      metadata: {
-        title: "New Blog Post" + n,
-        createdAt: blogDate.toJSON(),
-        updatedAt: blogDate.toJSON(),
-        publishedAt: blogDate.toJSON(),
-        status: "PUBLISH",
-        subtitle: `${topic.substring(0, 1).toUpperCase()}${topic.substring(1)}`,
-        description: `${topic.substring(0, 1).toUpperCase()}${topic.substring(
-          1
-        )}`,
-        author: "Author",
-        communityAddonId: "g1709r",
-        category: categories[n % categories.length],
-      },
-    };
-  }
-  await page.route("https://api.near.social/get", async (route) => {
-    const request = route.request();
-    const requestBody = request.postDataJSON();
-
-    if (
-      requestBody.keys[0] === "webassemblymusic.community.devhub.near/blog/**"
-    ) {
-      const blogResults = {
-        "webassemblymusic.community.devhub.near": {
-          blog: blogPosts,
-        },
-      };
-      await route.fulfill({
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(blogResults, null, 1),
-      });
-    } else {
-      await route.continue();
-    }
-  });
-  return { categories, topics, blogPosts };
-}
 
 async function configureSearchAndCategoriesEnabled({
   page,

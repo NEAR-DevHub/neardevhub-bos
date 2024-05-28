@@ -60,7 +60,7 @@ export async function mockDefaultTabs(route) {
         "subtitle":"Mocked configured subtitle",\
         "authorEnabled": "disabled",\
         "searchEnabled": "enabled",\
-        "orderBy": "timedesc",\
+        "orderBy": "timeasc",\
         "categoriesEnabled": "enabled",\
         "categories": ["news", "guide", "reference"],\
         "categoryRequired": false}',
@@ -71,6 +71,29 @@ export async function mockDefaultTabs(route) {
         enabled: true,
         id: "blogv2instance2",
         parameters: "{}",
+      },
+      {
+        addon_id: "blogv2",
+        display_name: "Third Blog",
+        enabled: true,
+        id: "g1709r",
+        parameters:
+          '{"title": "WebAssemblyMusic",\
+          "subtitle": "Stay up to date with the community blog",\
+          "authorEnabled": "disabled",\
+          "searchEnabled": "disabled",\
+          "orderBy": "alpha",\
+          "categoriesEnabled": "disabled",\
+          "categories": [{\
+                  "category": "News",\
+                  "label": "News",\
+                  "value": "news"},\
+              {\
+                "category": "Olivier",\
+                "label": "Olivier",\
+                "value": "olivier"},\
+          "categoryRequired": "not_required"\
+        }',
       },
     ];
 

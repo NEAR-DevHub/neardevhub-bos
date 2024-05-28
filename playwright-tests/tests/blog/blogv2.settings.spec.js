@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
 import {
   pauseIfVideoRecording,
-  generateRandom6CharUUID,
   waitForTestIdToBeVisible,
   waitForSelectorToBeVisible,
 } from "../../testUtils.js";
@@ -19,6 +18,9 @@ const baseUrl =
 
 const otherInstance =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=second-blog";
+
+const thirdInstance =
+  "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=third-blog";
 
 const communityAccount = "webassemblymusic.community.devhub.near";
 
@@ -154,7 +156,6 @@ test.describe("Admin wallet is connected", () => {
     // Author is default enabled
     // In which case it is on the blog..
     await page.goto(blogPageOtherInstance);
-    console.log("0");
     await waitForTestIdToBeVisible(page, "blog-author");
     expect(await page.getByTestId("blog-author").isVisible()).toBe(true);
     // And also in the blog form
@@ -173,7 +174,6 @@ test.describe("Admin wallet is connected", () => {
     // And also in the blog preview
     const blogPreviewPageButton = page.getByTestId("preview-page-blog-toggle");
     await blogPreviewPageButton.click();
-    console.log("1");
     await waitForTestIdToBeVisible(page, "blog-author");
     expect(await page.getByTestId("blog-author").isVisible()).toBe(true);
 
@@ -194,16 +194,72 @@ test.describe("Admin wallet is connected", () => {
     await expect(page.getByTestId("author-input-field")).not.toBeVisible();
     // And also in the blog preview page
     await blogPreviewPageButton.click();
-    console.log("2");
 
     await waitForTestIdToBeVisible(page, "blog-date");
     await expect(page.getByTestId("blog-author")).not.toBeVisible();
   });
 
   test("can configure how to blog posts are ordered", async ({ page }) => {
-    // Go to the Viewer and check the if search is visible
-    const configureButton = page.getByTestId("configure-addon-button-x");
-    await configureButton.click();
+    // Go to the Viewer and check if the default is timedesc
+    await page.goto(otherInstance); // timedesc
+
+    // Get all the blog posts
+    await pauseIfVideoRecording(page);
+    const blogCards = page.locator(`[id^="blog-card-"]`);
+    const elements = await page.$$(`[data-testid="blog-card-date"]`);
+    const numberOfBlogCards = await blogCards.count();
+    expect(numberOfBlogCards).toBeGreaterThan(3);
+
+    let lastDate = new Date();
+
+    // Extract the innerText of each element
+    const dateTextsDesc = await Promise.all(
+      elements.map(async (element) => {
+        return await element.innerText();
+      })
+    );
+    dateTextsDesc.map((dateText) => {
+      const date = new Date(dateText);
+      expect(date <= lastDate).toBe(true);
+      lastDate = date;
+    });
+
+    // Go to other instance to check if the order it timeasc
+    await page.goto(baseUrl); // timeasc
+    await pauseIfVideoRecording(page);
+    const elements2 = await page.$$(`[data-testid="blog-card-date"]`);
+
+    let firstDate = new Date();
+
+    // Extract the innerText of each element
+    const dateTextsAsc = await Promise.all(
+      elements2.map(async (element) => {
+        return await element.innerText();
+      })
+    );
+    dateTextsAsc.map((dateText) => {
+      const date = new Date(dateText);
+      expect(date >= firstDate).toBe(true);
+      firstDate = date;
+    });
+
+    // Go to third instance to check if the order is alpha
+    await page.goto(thirdInstance); // alpha
+    await pauseIfVideoRecording(page);
+    const titleElements = await page.$$(`[data-testid="blog-card-title"]`);
+
+    let firstTitle = "AAAAAAA";
+
+    // Extract the innerText of each element
+    const titleTextAlpha = await Promise.all(
+      titleElements.map(async (element) => {
+        return await element.innerText();
+      })
+    );
+    titleTextAlpha.map((titleText) => {
+      expect(titleText >= firstTitle).toBe(true);
+      firstTitle = titleText;
+    });
   });
 
   test.skip("can configure the number of blogs to display per page", async ({

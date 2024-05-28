@@ -67,9 +67,11 @@ function Card({ data }) {
   return (
     <Container id={`blog-card-${id}`} data-testid={id}>
       {category && <span className="category">{category}</span>}
-      <h5>{title}</h5>
+      <h5 data-testid="blog-card-title">{title}</h5>
       <p>{description}</p>
-      <span className="date">{formattedDate}</span>
+      <span className="date" data-testid="blog-card-date">
+        {formattedDate}
+      </span>
     </Container>
   );
 }
