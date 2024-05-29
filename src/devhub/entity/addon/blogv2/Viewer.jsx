@@ -1,3 +1,17 @@
+const { Tailwind } = VM.require("uiisnear.near/widget/tailwind");
+const { ButtonConf } = VM.require("uiisnear.near/widget/button");
+const {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+  paginationPreviousClassname,
+  paginationNextClassname,
+} = VM.require("uiisnear.near/widget/pagination");
+
 const { Card } = VM.require(
   "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card"
 );
@@ -7,6 +21,44 @@ if (!Card) {
 }
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+
+const [paginationLink, setPaginationLink] = useState("");
+const [paginationLinkPrevious, setPaginationLinkPrevious] = useState("");
+const [paginationLinkNext, setPaginationLinkNext] = useState("");
+const [paginationLinkActive, setPaginationLinkActive] = useState("");
+
+if (ButtonConf == undefined) return "";
+
+if (paginationLink === "")
+  return <ButtonConf output={setPaginationLink} variant="ghost" size="icon" />;
+if (paginationLinkPrevious === "")
+  return (
+    <ButtonConf
+      output={setPaginationLinkPrevious}
+      variant="ghost"
+      size="default"
+      className={paginationPreviousClassname}
+    />
+  );
+if (paginationLinkNext === "")
+  return (
+    <ButtonConf
+      output={setPaginationLinkNext}
+      variant="ghost"
+      size="default"
+      className={paginationNextClassname}
+    />
+  );
+if (paginationLinkActive === "")
+  return (
+    <ButtonConf
+      output={setPaginationLinkActive}
+      variant="outline"
+      size="icon"
+    />
+  );
+
+if (Tailwind == undefined) return "";
 
 const {
   data,
@@ -30,7 +82,7 @@ const Grid = styled.div`
   }
 `;
 
-const Heading = styled.h3`
+const Heading = styled.div`
   color: #151515;
   font-size: 2rem;
   font-style: normal;
@@ -43,7 +95,7 @@ const Heading = styled.h3`
   }
 `;
 
-const SubHeading = styled.h3`
+const SubHeading = styled.div`
   color: #3b3b3b;
   font-size: 1.5rem;
   font-style: normal;
@@ -211,22 +263,6 @@ function BlogCardWithLink(flattenedBlog) {
   );
 }
 
-function NoBlogCard() {
-  return (
-    <div onClick={() => setAddonView("configure")} className="min-vh-100">
-      <div>
-        {BlogCard({
-          category: "",
-          title: "No blogs yet",
-          description: "Click here to add your first blog!",
-          publishedAt: new Date().toISOString(),
-          id: "new",
-        })}
-      </div>
-    </div>
-  );
-}
-
 function BlogCard(flattenedBlog) {
   return (
     <CardContainer>
@@ -312,5 +348,41 @@ return (
       {processedData &&
         processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))}
     </Grid>
+    <Tailwind>
+      <div className="flex mx-auto w-max pt-10">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious className={paginationLinkPrevious} href="#" />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink className={paginationLink} href="#">
+                1
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                className={paginationLinkActive}
+                href="#"
+                isActive
+              >
+                2
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink className={paginationLink} href="#">
+                3
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext className={paginationLinkNext} href="#" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+    </Tailwind>
   </div>
 );
