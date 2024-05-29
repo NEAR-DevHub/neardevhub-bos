@@ -1,9 +1,6 @@
 const { Card } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card") ||
   (() => <></>);
-const { Page } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
-  (() => <></>);
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 const categories = [
@@ -515,19 +512,22 @@ function Preview() {
     }
     case "page": {
       return (
-        <Page
-          data={{
-            title,
-            subtitle,
-            description,
-            publishedAt: date,
-            content,
-            author,
-            category,
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page"
+          props={{
+            data: {
+              title,
+              subtitle,
+              description,
+              publishedAt: date,
+              content,
+              author,
+              category,
+              community: handle,
+              communityAddonId,
+            },
             community: handle,
-            communityAddonId,
           }}
-          community={handle}
         />
       );
     }

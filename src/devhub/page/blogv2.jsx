@@ -1,9 +1,5 @@
 const { id, community } = props;
 
-const { Page } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
-  (() => <></>);
-
 const { getAccountCommunityPermissions } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 ) || {
@@ -28,12 +24,16 @@ if (id && !showEditScreenData) {
         blogId: id,
         handle: community,
         template: (p) => (
-          <Page
-            {...(p || {})}
-            onEdit={() => {
-              setShowEditScreen({ ...p, data: { ...p.data, id: id } });
+          <Widget
+            src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page"
+            props={{
+              data: { ...p.data, id },
+              onEdit: () => {
+                setShowEditScreen({ ...p, data: { ...p.data, id } });
+              },
+              community,
+              isAllowedToEdit: permissions.can_configure,
             }}
-            community={community}
           />
         ),
       }}
