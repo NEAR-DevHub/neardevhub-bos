@@ -58,7 +58,7 @@ export async function mockDefaultTabs(route) {
         parameters:
           '{"title":"Mocked configured blog page title",\
         "subtitle":"Mocked configured subtitle",\
-        "authorEnabled": "disabled",\
+        "authorEnabled": "enabled",\
         "searchEnabled": "enabled",\
         "orderBy": "timeasc",\
         "postPerPage": 5,\

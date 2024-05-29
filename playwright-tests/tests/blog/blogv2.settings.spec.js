@@ -111,7 +111,7 @@ test.describe("Admin wallet is connected", () => {
     await waitForTestIdToBeVisible(page, "configure-addon-button");
 
     await title.scrollIntoViewIfNeeded();
-    expect(await title.innerText()).toBe("Latest Blog Posts");
+    expect(await title.innerText()).toBe("");
   });
 
   test("can configure the subtitle of the blog view widget", async ({

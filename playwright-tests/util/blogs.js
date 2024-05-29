@@ -39,7 +39,7 @@ This is an article about ${topic}.
       },
     };
   }
-  return blogPosts;
+  return { blogPosts, categories, topics };
 }
 
 export async function mockBlogs(route) {
@@ -55,7 +55,7 @@ export async function mockBlogs(route) {
     requestPostData.keys &&
     requestPostData.keys[0] === `${communityAccount}/blog/**`
   ) {
-    const blogPosts = createLotsOfBlogs({
+    const { blogPosts } = createLotsOfBlogs({
       communityAddonIds: ["g1709r", "blogv2", "blogv2instance2"],
     });
 
@@ -146,7 +146,9 @@ export async function mockBlogs(route) {
 }
 
 export async function setupBlogContentResponses(page) {
-  const blogPosts = createLotsOfBlogs({ communityAddonIds: ["g1709r"] });
+  const { blogPosts, categories, topics } = createLotsOfBlogs({
+    communityAddonIds: ["g1709r"],
+  });
   await page.route("https://api.near.social/get", async (route) => {
     const request = route.request();
     const requestBody = request.postDataJSON();

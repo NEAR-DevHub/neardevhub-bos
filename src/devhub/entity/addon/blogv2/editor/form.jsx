@@ -191,7 +191,9 @@ return (
     >
       {DescriptionInput}
     </InputContainer>
-    {addonParameters.authorEnabled === "disabled" ? null : (
+    {addonParameters.authorEnabled === "disabled" ? (
+      <></>
+    ) : (
       <InputContainer heading="Author" description="Who wrote this blog?">
         {AuthorInput}
       </InputContainer>
