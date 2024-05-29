@@ -78,7 +78,18 @@ const blogPostQueryStringLowerCase = blogPostQueryString
   ? blogPostQueryString.toLowerCase().trim()
   : "";
 
-let blogData = Social.get([`${handle}.community.devhub.near/blog/**`], "final");
+const [blogData, setBlogData] = useState([]);
+
+const initialBlogData = Social.get(
+  [`${handle}.community.devhub.near/blog/**`],
+  "final"
+);
+
+useEffect(() => {
+  if (initialBlogData) {
+    setBlogData(initialBlogData);
+  }
+}, [initialBlogData]);
 
 const categories = {
   none: {
@@ -100,6 +111,9 @@ function flattenBlogObject(blogsObject) {
       })
       // Show only published blogs
       .filter((blog) => blog.status === "PUBLISH")
+      // Every instance of the blog tab has its own blogs
+      .filter((blog) => blog.communityAddonId === communityAddonId)
+      // Add categories to the dropdown
       .map((flattenedBlog) => {
         if (!categories[flattenedBlog.category]) {
           categories[flattenedBlog.category] = {
@@ -109,8 +123,6 @@ function flattenBlogObject(blogsObject) {
         }
         return flattenedBlog;
       })
-      // Every instance of the blog tab has its own blogs
-      .filter((blog) => blog.communityAddonId === communityAddonId)
       .filter(
         (flattenedBlog) =>
           !blogPostQueryStringLowerCase ||
@@ -131,41 +143,54 @@ function flattenBlogObject(blogsObject) {
       )
   );
 }
-
-if (transactionHashes) {
-  // Fetch new blog data
-  const subscribeToBlogForNextFifteenSec = (tries) => {
-    console.log("Trying to fetch new blog data");
-    let newBlogData = Social.get(
-      [`${handle}.community.devhub.near/blog/**`],
-      "final"
-    );
-    if (tries >= 5) {
-      // If we have tried 5 times, just use the data we have for example onBlogUpdate
-      blogData = newBlogData;
-      return;
-    }
-    // Check the number of blogs in this instance with a different status
-    if (
-      flattenBlogObject(newBlogData).length !==
-      flattenBlogObject(blogData).length
-    ) {
-      blogData = newBlogData;
-    } else {
-      setTimeout(() => {
-        subscribeToBlogForNextFifteenSec(tries + 1);
-      }, 3000);
-    }
-  };
-  // After a second subscribe to the blog data
-  setTimeout(() => {
-    subscribeToBlogForNextFifteenSec(0);
-  }, 1000);
+function checkHashes() {
+  if (transactionHashes) {
+    // Fetch new blog data
+    const subscribeToBlogForNextFifteenSec = (tries) => {
+      if (tries >= 5) {
+        return;
+      }
+      Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
+        keys: [`${handle}.community.devhub.near/blog/**`],
+      }).then((result) => {
+        try {
+          const newBlogPosts = result[`${handle}.community.devhub.near`].blog;
+          // Check the number of blogs in this instance with a different status
+          if (
+            flattenBlogObject(newBlogPosts).length !==
+            flattenBlogObject(blogData).length
+          ) {
+            setBlogData(newBlogPosts);
+          } else {
+            setTimeout(() => {
+              subscribeToBlogForNextFifteenSec(tries + 1);
+            }, 3000);
+          }
+        } catch (e) {}
+      });
+    };
+    // After a second subscribe to the blog data
+    setTimeout(() => {
+      subscribeToBlogForNextFifteenSec(0);
+    }, 1000);
+  }
 }
+useEffect(() => {
+  // Only render one time
+  checkHashes();
+}, []);
 
 const processedData = flattenBlogObject(blogData)
   // Sort by published date
   .sort((blog1, blog2) => {
+    if (data.orderBy === "timeasc") {
+      return new Date(blog1.publishedAt) - new Date(blog2.publishedAt);
+    }
+    if (data.orderBy === "alpha") {
+      console.log("alpha", blog1.title, blog2.title);
+      return (blog1.title || "").localCompare(blog2.title || "");
+    }
+    // timedesc is the default order
     return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
   });
 
@@ -274,7 +299,6 @@ return (
   <div class="w-100">
     {!hideTitle && (
       <Heading data-testid="blog-instance-title">
-        {" "}
         {data.title || "Latest Blog Posts"}
       </Heading>
     )}

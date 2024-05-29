@@ -91,7 +91,7 @@ export async function mockDefaultTabs(route) {
               {\
                 "category": "Olivier",\
                 "label": "Olivier",\
-                "value": "olivier"},\
+                "value": "olivier"}],\
           "categoryRequired": "not_required"\
         }',
       },

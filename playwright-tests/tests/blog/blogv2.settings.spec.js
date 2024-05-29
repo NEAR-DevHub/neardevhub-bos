@@ -3,6 +3,7 @@ import {
   pauseIfVideoRecording,
   waitForTestIdToBeVisible,
   waitForSelectorToBeVisible,
+  fmtDate,
 } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
 import { mockBlogs } from "../../util/blogs.js";
@@ -220,7 +221,10 @@ test.describe("Admin wallet is connected", () => {
     );
     dateTextsDesc.map((dateText) => {
       const date = new Date(dateText);
-      expect(date <= lastDate).toBe(true);
+      expect(
+        date <= lastDate,
+        `Expected ${date} to be less than or equal to ${lastDate}`
+      ).toBe(true);
       lastDate = date;
     });
 
@@ -229,7 +233,7 @@ test.describe("Admin wallet is connected", () => {
     await pauseIfVideoRecording(page);
     const elements2 = await page.$$(`[data-testid="blog-card-date"]`);
 
-    let firstDate = new Date();
+    let firstDate = new Date("December 17, 1995");
 
     // Extract the innerText of each element
     const dateTextsAsc = await Promise.all(
@@ -239,10 +243,19 @@ test.describe("Admin wallet is connected", () => {
     );
     dateTextsAsc.map((dateText) => {
       const date = new Date(dateText);
-      expect(date >= firstDate).toBe(true);
+      expect(
+        date >= firstDate,
+        `Expected ${fmtDate(date)} to be greater than or equal to ${fmtDate(
+          firstDate
+        )}`
+      ).toBe(true);
       firstDate = date;
     });
+  });
 
+  test("Can configure to sort the blog posts alphabetically", async ({
+    page,
+  }) => {
     // Go to third instance to check if the order is alpha
     await page.goto(thirdInstance); // alpha
     await pauseIfVideoRecording(page);
@@ -257,7 +270,14 @@ test.describe("Admin wallet is connected", () => {
       })
     );
     titleTextAlpha.map((titleText) => {
-      expect(titleText >= firstTitle).toBe(true);
+      if (firstTitle === "AAAAAAA") {
+        firstTitle = titleText;
+        return;
+      }
+      expect(
+        firstTitle.localeCompare(titleText),
+        `Expect '${firstTitle}' to come before '${titleText}'`
+      ).toBe(-1);
       firstTitle = titleText;
     });
   });

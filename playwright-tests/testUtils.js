@@ -49,3 +49,8 @@ export function generateRandom6CharUUID() {
 
   return result;
 }
+
+export function fmtDate(date) {
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  return new Date(date).toLocaleString("en-US", options);
+}
