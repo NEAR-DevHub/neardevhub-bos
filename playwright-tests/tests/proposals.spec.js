@@ -175,10 +175,11 @@ test.describe("Don't ask again enabled", () => {
     await commentArea.blur();
     await pauseIfVideoRecording(page);
 
+    const account = "petersalomonsen.near";
     await setCommitWritePermissionDontAskAgainCacheValues({
       page,
       widgetSrc,
-      accountId: "petersalomonsen.near",
+      accountId: account,
     });
 
     await mockTransactionSubmitRPCResponses(
@@ -224,7 +225,7 @@ test.describe("Don't ask again enabled", () => {
     await expect(transaction_successful_toast).toBeVisible();
 
     await expect(transaction_successful_toast).not.toBeAttached();
-    await expect(commentArea).toBeEmpty();
+    await expect(commentArea).toHaveText("");
 
     await pauseIfVideoRecording(page);
   });
