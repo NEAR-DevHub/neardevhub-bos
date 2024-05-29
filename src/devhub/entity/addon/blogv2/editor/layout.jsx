@@ -69,14 +69,18 @@ return (
               >
                 Analytics
               </Link>
-              <button
-                onClick={() => setShowScreen("settings")}
-                type="button"
-                data-testid="settings-button"
-                className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-green shadow-sm hover:bg-devhub-green-transparent"
-              >
-                Settings
-              </button>
+
+              <Widget
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"
+                }
+                props={{
+                  title: "Settings",
+                  onClick: () => setShowScreen("settings"),
+                  testId: "settings-button",
+                  icon: "bi-gear-fill",
+                }}
+              />
               <Widget
                 src={
                   "${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"
@@ -87,6 +91,7 @@ return (
                     handleItemClick("new");
                     setShowScreen("editor");
                   },
+                  icon: "bi-plus-circle-fill",
                   testId: "new-blog-post-button",
                 }}
               />

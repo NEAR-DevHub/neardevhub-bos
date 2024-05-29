@@ -1,4 +1,4 @@
-const { title, onClick } = props;
+const { title, onClick, icon } = props;
 
 return (
   <button
@@ -8,10 +8,7 @@ return (
     onClick={props.onClick}
     disabled={props.disabled}
   >
-    <i
-      className="-ml-0.5 h-5 w-5 bi bi-plus-circle-fill"
-      aria-hidden="true"
-    ></i>
+    <i className={`-ml-0.5 h-5 w-5 bi ${props.icon}`} aria-hidden="true"></i>
     {props.title || "New Blog Post"}
   </button>
 );

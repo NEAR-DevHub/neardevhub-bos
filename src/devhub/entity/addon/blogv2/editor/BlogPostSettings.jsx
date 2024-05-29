@@ -19,10 +19,12 @@ const [postPerPage, setPostPerPage] = useState(data.postPerPage || 10);
 const [categoriesEnabled, setCategoriesEnabled] = useState(
   data.categoriesEnabled || "disabled" // 'enabled', 'disabled'
 );
-initState({
-  labels: data.categories || [],
-  categoriesArray: (data.categories || []).map((o) => o.category),
-});
+
+const [labels, setLabels] = useState(data.categories || []);
+const [categories, setCategories] = useState(
+  (data.categories || []).map((o) => o.category)
+);
+
 const [categoryRequired, setCategoryRequired] = useState(
   data.categoryRequired || "not_required" // required | not_required
 );
@@ -179,14 +181,15 @@ const checkCategory = (category) => {
   console.log("checkCategory", category);
 };
 
-const setCategories = (labels) => {
+const onChangeCategories = (labels) => {
   labels = labels.map((o) => ({
     category: o.category, // labelKey == category
     value: normalize(o.category),
   }));
   let categoriesArray = [];
   categoriesArray = labels.map((o) => o.label);
-  State.update({ labels, categoriesArray });
+  setCategories(categoriesArray);
+  setLabels(labels);
 };
 
 const categoriesEditor = useMemo(() => {
@@ -200,7 +203,7 @@ const categoriesEditor = useMemo(() => {
       multiple
       labelKey="category"
       onInputChange={checkCategory}
-      onChange={setCategories}
+      onChange={onChangeCategories}
       options={options}
       placeholder="News, Guide, Reference, etc."
       selected={state.labels}
@@ -311,6 +314,7 @@ return (
                 onClick: handleOnSubmit,
                 testId: "save-settings-button",
                 disabled: submitDisabled(),
+                icon: "bi-plus-circle-fill",
               }}
             />
           </div>
@@ -403,6 +407,7 @@ return (
           onClick: handleOnSubmit,
           testId: "save-settings-button",
           disabled: submitDisabled(),
+          icon: "bi-plus-circle-fill",
         }}
       />
     </div>
