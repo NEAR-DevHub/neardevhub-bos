@@ -93,6 +93,58 @@ test.describe("Admin wallet is connected", () => {
 
     expect(await settingsButton.isVisible()).toBe(true);
     await settingsButton.click();
+
+    const saveSettingsButton = page.getByTestId("save-settings-button").first();
+    await saveSettingsButton.scrollIntoViewIfNeeded();
+    await expect(saveSettingsButton).toBeVisible();
+  });
+
+  test("can edit and submit the blog settings of a not yet configured blog", async ({
+    page,
+  }) => {
+    // Go to the settings page of a not yet configured blog
+    await page.goto(baseUrl);
+    await pauseIfVideoRecording(page);
+
+    await waitForTestIdToBeVisible(page, "configure-addon-button");
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
+    await waitForSelectorToBeVisible(page, `[id^="edit-blog-selector-"]`);
+    // Navigate to the settings page
+    const settingsButton = page.getByTestId("settings-button");
+    await settingsButton.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+
+    expect(await settingsButton.isVisible()).toBe(true);
+    await settingsButton.click();
+  });
+
+  test("can edit and submit the blog settings of a configured blog", async ({
+    page,
+  }) => {
+    // Navigate to the settings page
+    const settingsButton = page.getByTestId("settings-button");
+    await settingsButton.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+
+    expect(await settingsButton.isVisible()).toBe(true);
+    await settingsButton.click();
+    await page.getByPlaceholder("Title", { exact: true }).click();
+    await page
+      .getByPlaceholder("Title", { exact: true })
+      .fill("Mocked configured blog page title!");
+    await page.getByPlaceholder("Title", { exact: true }).press("Tab");
+    await page.getByPlaceholder("Subtitle").click();
+    await page.getByPlaceholder("Subtitle").fill("Mocked configured subtitle!");
+    await page.getByLabel("Author Enabled").getByText("Disabled").click();
+    await page.getByLabel("Search").getByText("Disabled").click();
+    await page.getByText("Newest to oldest", { exact: true }).click();
+    await page.getByTestId("post-per-page-input").click();
+    await page.getByTestId("post-per-page-input").fill("6");
+    await page.locator(".sc-liQGml").click();
+    await page.locator(".rbt-input-wrapper > div:nth-child(4)").click();
+    await page.getByRole("combobox").fill("extra");
+    await page.getByLabel("menu-options").click();
   });
 
   test("can configure the title of the blog view widget", async ({ page }) => {
