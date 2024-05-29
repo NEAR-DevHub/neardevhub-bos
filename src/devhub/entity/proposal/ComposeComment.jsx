@@ -169,7 +169,7 @@ function composeData() {
     onCommit: () => {
       setCommentToast(true);
       setComment("");
-      setHandler("refreshEditor");
+      setHandler("committed");
       setTxnCreated(false);
     },
     onCancel: () => {

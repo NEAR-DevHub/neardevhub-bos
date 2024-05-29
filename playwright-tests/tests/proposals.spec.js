@@ -214,6 +214,9 @@ test.describe("Don't ask again enabled", () => {
     const commentButton = await page.getByRole("button", { name: "Comment" });
     await commentButton.scrollIntoViewIfNeeded();
     await commentButton.click();
+    await expect(
+      await page.frameLocator("iframe").locator(".CodeMirror")
+    ).toContainText(text);
     const loadingIndicator = await page.locator(".comment-btn-spinner");
     await expect(loadingIndicator).toBeAttached();
     await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
@@ -225,8 +228,12 @@ test.describe("Don't ask again enabled", () => {
     await expect(transaction_successful_toast).toBeVisible();
 
     await expect(transaction_successful_toast).not.toBeAttached();
-    await expect(commentArea).toHaveText("");
-
+    await expect(
+      await page.frameLocator("iframe").locator(".CodeMirror")
+    ).not.toContainText(text);
+    await expect(
+      await page.frameLocator("iframe").locator(".CodeMirror")
+    ).toContainText("Add your comment here...");
     await pauseIfVideoRecording(page);
   });
 });

@@ -462,7 +462,7 @@ window.addEventListener("message", (event) => {
     simplemde.value(event.data.content);
     isEditorInitialized = true;
   } else {
-    if (event.data.handler === 'refreshEditor' || event.data.handler === 'update') {
+    if (event.data.handler === 'refreshEditor' || event.data.handler === 'committed') {
       codeMirrorInstance.getDoc().setValue(event.data.content);
     }
   }
