@@ -1,9 +1,5 @@
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
-const { getDepositAmountForWriteAccess } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common"
-);
 const draftKey = "PROPOSAL_EDIT";
-getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 href || (href = () => {});
 
 const { id, timestamp } = props;
@@ -760,21 +756,6 @@ const onSubmit = ({ isDraft, isCancel }) => {
 function cleanDraft() {
   Storage.privateSet(draftKey, null);
 }
-
-const descriptionPlaceholder = `**PROJECT DETAILS**
-Provide a clear overview of the scope, deliverables, and expected outcomes. What benefits will it provide to the NEAR community? How will you measure success?
-
-**TIMELINE**
-Describe the timeline of your project and key milestones, specifying if the work was already complete or not. Include your plans for reporting progress to the community.
-
-OPTIONAL FIELDS
-
-**TEAM**
-Provide a list of who will be working on the project along with their relevant skillset and experience. You may include links to portfolios or profiles to help the community get to know who the DAO will fund and how their backgrounds will contribute to your project’s success.
-
-**BUDGET BREAKDOWN**
-Include a detailed breakdown on how you will use the funds and include rate justification. Our community values transparency, so be as specific as possible.
-`;
 
 if (loading) {
   return (

@@ -18,7 +18,7 @@ const handleEditModerators = () => {
     teamName: "moderators",
     description:
       "The moderator group has permissions to edit any posts and apply all labels, including restricted ones.",
-    label: "any",
+    label: "*",
     editPost: true,
     useLabels: true,
     members: moderators,
