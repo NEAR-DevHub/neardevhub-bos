@@ -545,6 +545,12 @@ const tabs = [
 return (
   <Container>
     <div className="flex flex-wrap-reverse gap-1 justify-between w-100 mb-4">
+      <div
+        className="flex cursor-pointer align-items-center justify-content-center gap-1 px-4"
+        onClick={onCancel}
+      >
+        <i class="bi bi-arrow-left"></i>
+      </div>
       <div className="sm:hidden grow rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
         <label
           htmlFor="tabs"
