@@ -138,7 +138,10 @@ export async function setCommitWritePermissionDontAskAgainCacheValues({
       type: "write_permission",
     },
   });
-  const value = { post: { main: true }, index: { post: true, notify: true } };
+  const value = {
+    post: { main: true, comment: true },
+    index: { post: true, comment: true, notify: true, hashtag: true },
+  };
   await setCacheValue({ page, key, value });
 }
 
