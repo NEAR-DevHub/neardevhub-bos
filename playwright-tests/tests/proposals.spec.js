@@ -156,25 +156,13 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
   test("should add comment on a proposal", async ({ page }) => {
-    test.setTimeout(120000);
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
     await page.goto("/devhub.near/widget/app?page=proposal&id=17");
     const widgetSrc =
       "devhub.near/widget/devhub.entity.proposal.ComposeComment";
-    const account = "petersalomonsen.near";
-    await setDontAskAgainCacheValues({
-      page,
-      widgetSrc,
-      methodName: "set",
-      contractId: "social.near",
-    });
-    await setCommitWritePermissionDontAskAgainCacheValues({
-      page,
-      widgetSrc,
-      accountId: account,
-    });
+
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentArea = await page
       .frameLocator("iframe")
@@ -186,39 +174,42 @@ test.describe("Don't ask again enabled", () => {
     });
     await commentArea.blur();
     await pauseIfVideoRecording(page);
-    let is_transaction_completed = false;
+
+    await setCommitWritePermissionDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      accountId: "petersalomonsen.near",
+    });
 
     await mockTransactionSubmitRPCResponses(
       page,
       async ({ route, request, transaction_completed, last_receiver_id }) => {
-        // const postData = request.postDataJSON();
-        // const args_base64 = postData.params?.args_base64;
-        // console.log("calledd",postData,args_base64)
-        // if (transaction_completed && args_base64) {
-        //   is_transaction_completed = true;
-        //   const args = atob(args_base64);
-        //   if (
-        //     postData.params.account_id === "social.near" &&
-        //     postData.params.method_name === "get" &&
-        //     args === `{"keys":["${account}/post/**"]}`
-        //   ) {
-        //     const response = await route.fetch();
-        //     const json = await response.json();
-        //     const resultObj = decodeResultJSON(json.result.result);
-        //     resultObj[account].post.main = JSON.stringify({
-        //       text: text,
-        //     });
-        //     json.result.result = encodeResultJSON(resultObj);
-        //     await route.fulfill({ response, json });
-        //     return;
-        //   } else {
-        //     await route.continue();
-        //   }
-        // }
+        const postData = request.postDataJSON();
+        const args_base64 = postData.params?.args_base64;
+        if (transaction_completed && args_base64) {
+          const args = atob(args_base64);
+          if (
+            postData.params.account_id === "social.near" &&
+            postData.params.method_name === "get" &&
+            args === `{"keys":["${account}/post/**"]}`
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+            const resultObj = decodeResultJSON(json.result.result);
+            resultObj[account].post.main = JSON.stringify({
+              text: text,
+            });
+            json.result.result = encodeResultJSON(resultObj);
+            await route.fulfill({ response, json });
+            return;
+          } else {
+            await route.continue();
+          }
+        } else {
+          await route.continue();
+        }
       }
     );
-
-    test.setTimeout(120000);
     const commentButton = await page.getByRole("button", { name: "Comment" });
     await commentButton.scrollIntoViewIfNeeded();
     await commentButton.click();
@@ -227,18 +218,14 @@ test.describe("Don't ask again enabled", () => {
     await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
     await expect(loadingIndicator).not.toBeVisible();
     const transaction_successful_toast = await page.getByText(
-      "Comment Submitted Successfully"
+      "Comment Submitted Successfully",
+      { exact: true }
     );
     await expect(transaction_successful_toast).toBeVisible();
 
-    await transaction_successful_toast.waitFor({
-      state: "detached",
-      timeout: 3000,
-    });
-    await expect(transaction_successful_toast).not.toBeVisible();
+    await expect(transaction_successful_toast).not.toBeAttached();
     await expect(commentArea).toBeEmpty();
 
-    await page.waitForTimeout(1000);
     await pauseIfVideoRecording(page);
   });
 });
