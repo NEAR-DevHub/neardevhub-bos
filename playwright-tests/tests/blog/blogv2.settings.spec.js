@@ -286,6 +286,8 @@ test.describe("Admin wallet is connected", () => {
     page,
   }) => {});
 
+  test("can disable categories", async ({ page }) => {});
+
   test.skip("should be able to configure the settings of the blogv2 addon instance", async ({
     page,
   }) => {});

@@ -686,12 +686,12 @@ return (
                 />
               </>
             ) : null}
-            <div className="flex gap-x-3">
+            <div className="flex gap-x-3 align-items-center">
               <Widget
                 src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                 props={{
                   classNames: {
-                    root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
+                    root: "d-flex  text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
                   },
                   label: "Cancel",
                   onClick: onCancel,

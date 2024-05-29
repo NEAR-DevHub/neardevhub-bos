@@ -187,7 +187,6 @@ const processedData = flattenBlogObject(blogData)
       return new Date(blog1.publishedAt) - new Date(blog2.publishedAt);
     }
     if (data.orderBy === "alpha") {
-      console.log("alpha", blog1.title, blog2.title);
       return (blog1.title || "").localCompare(blog2.title || "");
     }
     // timedesc is the default order
@@ -298,13 +297,11 @@ if (!processedData || processedData.length === 0) {
 return (
   <div class="w-100">
     {!hideTitle && (
-      <Heading data-testid="blog-instance-title">
-        {data.title || "Latest Blog Posts"}
-      </Heading>
+      <Heading data-testid="blog-instance-title">{data.title || ""}</Heading>
     )}
     {!hideTitle && (
       <SubHeading data-testid="blog-instance-subtitle">
-        {data.subtitle || ``}
+        {data.subtitle || ""}
       </SubHeading>
     )}
     <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">

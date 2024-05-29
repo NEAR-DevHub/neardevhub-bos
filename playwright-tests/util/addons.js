@@ -61,6 +61,7 @@ export async function mockDefaultTabs(route) {
         "authorEnabled": "disabled",\
         "searchEnabled": "enabled",\
         "orderBy": "timeasc",\
+        "postPerPage": 5,\
         "categoriesEnabled": "enabled",\
         "categories": ["news", "guide", "reference"],\
         "categoryRequired": false}',
@@ -83,14 +84,13 @@ export async function mockDefaultTabs(route) {
           "authorEnabled": "disabled",\
           "searchEnabled": "disabled",\
           "orderBy": "alpha",\
-          "categoriesEnabled": "disabled",\
+          "postPerPage": 10,\
+          "categoriesEnabled": "enabled",\
           "categories": [{\
                   "category": "News",\
-                  "label": "News",\
                   "value": "news"},\
               {\
                 "category": "Olivier",\
-                "label": "Olivier",\
                 "value": "olivier"}],\
           "categoryRequired": "not_required"\
         }',
