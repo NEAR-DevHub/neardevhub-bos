@@ -5,6 +5,7 @@
 
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
+const onChangeKeyup = props.onChangeKeyup ?? (() => {}); // in case where we want immediate action
 const height = props.height ?? "390";
 const className = props.className ?? "w-100";
 const embeddCSS = props.embeddCSS;
@@ -26,6 +27,7 @@ const alignToolItems = props.alignToolItems ?? "right";
 const placeholder = props.placeholder ?? "";
 const showAccountAutoComplete = props.showAutoComplete ?? false;
 const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
+const autoFocus = props.autoFocus ?? false;
 
 const queryName =
   "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot";
@@ -79,6 +81,14 @@ const code = `
 
   .editor-toolbar {
       text-align: ${alignToolItems};
+  }
+  
+  .CodeMirror {
+    min-height:200px !important; // for autocomplete to be visble 
+  }
+
+  .CodeMirror-scroll {
+    min-height:200px !important; // for autocomplete to be visble 
   }
 
   ${embeddCSS}
@@ -250,6 +260,7 @@ const simplemde = new SimpleMDE({
 		singleLineBreaks: false,
 		codeSyntaxHighlighting: true,
 	},
+  autofocus:${autoFocus}
 });
 
 codeMirrorInstance = simplemde.codemirror;
@@ -273,8 +284,14 @@ const updateIframeHeight = () => {
 // On Change
 simplemde.codemirror.on('blur', () => {
   updateContent();
-  updateIframeHeight();
 });
+
+simplemde.codemirror.on('keyup', () => {
+  updateIframeHeight();
+  const content = simplemde.value();
+  window.parent.postMessage({ handler: "updateOnKeyup", content }, "*");
+});
+
 
 if (showAccountAutoComplete) {
   let mentionToken;
@@ -445,7 +462,7 @@ window.addEventListener("message", (event) => {
     simplemde.value(event.data.content);
     isEditorInitialized = true;
   } else {
-    if (event.data.handler === 'autocompleteSelected') {
+    if (event.data.handler === 'refreshEditor' || event.data.handler === 'committed') {
       codeMirrorInstance.getDoc().setValue(event.data.content);
     }
   }
@@ -469,6 +486,8 @@ return (
     className={className}
     style={{
       height: `${state.iframeHeight}px`,
+      maxHeight: "410px",
+      minHeight: "250px",
     }}
     srcDoc={code}
     message={{
@@ -476,6 +495,7 @@ return (
       followingData,
       profilesData: JSON.stringify(profilesData),
       query: query,
+      handler: props.data.handler,
     }}
     onMessage={(e) => {
       switch (e.handler) {
@@ -488,6 +508,11 @@ return (
           {
             const offset = 10;
             State.update({ iframeHeight: e.height + offset });
+          }
+          break;
+        case "updateOnKeyup":
+          {
+            onChangeKeyup(e.content);
           }
           break;
       }

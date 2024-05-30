@@ -81,7 +81,7 @@ State.init({
 });
 
 function sortTimelineAndComments() {
-  const comments = Social.index("comment", props.item);
+  const comments = Social.index("comment", props.item, { subscribe: true });
 
   if (state.changedKeysListWithValues === null) {
     const changedKeysListWithValues = snapshotHistory
@@ -388,7 +388,7 @@ const Log = ({ timestamp }) => {
   }
 
   return valuesArray.map((i, index) => {
-    if (i.key && i.key !== "timestamp") {
+    if (i.key && i.key !== "timestamp" && i.key !== "proposal_body_version") {
       return (
         <LogIconContainer
           className="d-flex gap-3 align-items-center"
