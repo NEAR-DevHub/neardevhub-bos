@@ -202,7 +202,7 @@ const FeedPage = () => {
     input: "",
     loading: false,
     loadingMore: false,
-    aggregatedCount: 0,
+    aggregatedCount: null,
     currentlyDisplaying: 0,
   });
 
@@ -273,7 +273,7 @@ const FeedPage = () => {
     if (state.stage) {
       // timeline is stored as jsonb
       where = {
-        timeline: { _cast: { String: { _ilike: `%${state.stage}%` } } },
+        timeline: { _cast: { String: { _regex: `${state.stage}` } } },
         ...where,
       };
     }
@@ -284,7 +284,14 @@ const FeedPage = () => {
       }
 
       if (text) {
-        where = { description: { _ilike: `%${text}%` }, ...where };
+        where = {
+          _or: [
+            { name: { _iregex: `${text}` } },
+            { summary: { _iregex: `${text}` } },
+            { description: { _iregex: `${text}` } },
+          ],
+          ...where,
+        };
       }
     }
 
@@ -309,7 +316,7 @@ const FeedPage = () => {
       offset = 0;
     }
     if (state.loading) return;
-    const FETCH_LIMIT = 10;
+    const FETCH_LIMIT = 20;
     const variables = {
       limit: FETCH_LIMIT,
       offset,
@@ -413,6 +420,16 @@ const FeedPage = () => {
 
   const renderedItems = state.data ? state.data.map(cachedRenderItem) : null;
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      fetchProposals();
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [state.input]);
+
   return (
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
       <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
@@ -432,7 +449,6 @@ const FeedPage = () => {
               className: "w-xs-100",
               onSearch: (input) => {
                 State.update({ input });
-                fetchProposals();
               },
               onEnter: () => {
                 fetchProposals();
@@ -561,14 +577,18 @@ const FeedPage = () => {
                 </p>
               </div>
               <div className="mt-4 border rounded-2">
-                {state.data.length > 0 ? (
+                {state.aggregatedCount === 0 ? (
+                  <div class="alert alert-danger m-2" role="alert">
+                    No proposals found for selected filter.{" "}
+                  </div>
+                ) : state.aggregatedCount > 0 ? (
                   <InfiniteScroll
                     pageStart={0}
                     loadMore={makeMoreItems}
                     hasMore={state.aggregatedCount > state.data.length}
                     loader={loader}
                     useWindow={false}
-                    threshold={100}
+                    threshold={50}
                   >
                     {renderedItems}
                   </InfiniteScroll>
