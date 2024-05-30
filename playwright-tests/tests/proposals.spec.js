@@ -160,9 +160,9 @@ test.describe("Don't ask again enabled", () => {
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
-    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    await page.goto("/events-committee.near/widget/app?page=proposal&id=5");
     const widgetSrc =
-      "devhub.near/widget/devhub.entity.proposal.ComposeComment";
+      "events-committee.near/widget/devhub.entity.proposal.ComposeComment";
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentArea = await page
