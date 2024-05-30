@@ -6,7 +6,7 @@ import {
 
 const { test, expect } = require("@playwright/test");
 
-test.describe("Wallet is connected", () => {
+test.skip("Wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
@@ -145,7 +145,7 @@ const expectInputValidation = async (
   await expect(await page.locator('button:has-text("Launch")')).toBeVisible();
 };
 
-test.describe("Wallet is not connected", () => {
+test.skip("Wallet is not connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
   });

@@ -51,6 +51,7 @@ const Section = styled.div`
     font-weight: 400;
     line-height: 150%;
     margin-bottom: 1rem;
+    text-align: justify;
   }
 
   h3 {
@@ -62,114 +63,106 @@ const Section = styled.div`
 
     margin-top: 1rem;
   }
+
+  h4 {
+    color: #151515;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 150%;
+  }
+
+  li {
+    text-align: justify;
+  }
+
+  ol li {
+    font-size: 1.25rem;
+  }
 `;
 
 return (
   <>
-    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
+    {/* <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} /> */}
     <Section>
-      <h2>
+      {/* <h2>
         What is <span style={{ color: "#00EC97" }}>near</span>/dev/hub?
-      </h2>
+      </h2> */}
 
       <div>
         <p>
-          DevHub brings together individuals, projects, and organizations to
-          build a decentralized NEAR developer ecosystem. We provide social
-          structure and tools to fuel innovation, collaboration, and community
-          within the NEAR ecosystem. Whether you’re a blockchain developer or
-          advocate for the open web, DevHub is your gateway to making a
-          meaningful impact on NEAR and beyond.
+          Welcome to the Events Committee page! We are a cross-team organization
+          responsible for hosting and sponsoring developer-focused events online
+          and IRL for the benefit of the global Near ecosystem.
         </p>
 
-        <h3>Mission</h3>
+        <h2>Our Groups:</h2>
+        <p></p>
+
+        <h3>1. Working Group:</h3>
         <p>
-          Build a self-sufficient developer community to enable a thriving NEAR
-          ecosystem.
+          Our formal Working Group comprises seasoned experts who meticulously
+          evaluate proposals and make official decisions regarding hackathons
+          and technical events within the NEAR ecosystem. This dedicated team
+          follows a rigorous process to review submissions, recommend funding
+          allocations to NEAR Foundation, and ensure accountability among grant
+          recipients. Engaging with the wider community, they actively solicit
+          feedback, fostering a culture of collaboration and innovation.
+        </p>
+        <p>
+          <h4>Member organizations:</h4>
+          <ul>
+            <li> NEAR Foundation</li>
+            <li>DevHub</li>
+            <li>NEAR HZN</li>
+            <li>Aurora</li>
+            <li>Calimero</li>
+            <li>Proximity</li>
+            <li>NEARWEEK</li>
+          </ul>
         </p>
 
-        <h3>Values</h3>
+        <h3>2. Community Group:</h3>
         <p>
+          Our informal Community Group is a dynamic space where enthusiasts come
+          together to brainstorm and execute ideas for developer-focused events.
+          While this group doesn't make official decisions, it provides an
+          invaluable platform for ideation, discussion, and collaboration. Led
+          by passionate individuals, it operates autonomously, ensuring
+          inclusivity and diversity of thought.
+        </p>
+
+        <p>
+          <h4>Communication Channels:</h4>
           <ul>
             <li>
-              <b>Decentralized</b>: We are building together.
-            </li>
-            <li>
-              <b>Transparent</b>: All decision making and communication is open.
-            </li>
-            <li>
-              <b>Self-sufficient</b>: We do not critically depend on any single
-              entity.
-            </li>
-            <li>
-              <b>Robust</b>: Any role or team can be duplicated or replaced.
-            </li>
-            <li>
-              <b>High-velocity</b>: We need to move faster than classic OSS.
+              {" "}
+              DevHub Hacks Community Group on Telegram (
+              <a href="https://t.me/neardevhubhacks" target="_blank">
+                https://t.me/neardevhubhacks
+              </a>
+              ){" "}
             </li>
           </ul>
         </p>
 
-        <h3>Scope</h3>
-        <p>
-          DevHub covers a wide range of areas to support the NEAR developer
-          ecosystem, including:
-          <ul>
-            <li>
-              <b>Developer Tooling</b>: Contributing code to the NEAR Platform
-              (blockchain and devtools) and facilitating technical decisions
-              with recognized experts based on the needs of the community and
-              ecosystem.
-            </li>
-            <li>
-              <b>Developer Relations</b>: Engaging with the community across
-              various social channels, gathering feedback, and improving
-              documentation.
-            </li>
-            <li>
-              <b>Deep-Tech Awareness</b>: Working with marketing partners to
-              create awareness on interesting projects and technology areas.
-            </li>
-            <li>
-              <b>Events and Hackathons</b>: Organizing events and empowering
-              community leaders with resources to grow their local communities.
-            </li>
-            <li>
-              <b>Education</b>: Partnering with universities across the globe to
-              support students and scholars in exploring Web3 technologies
-            </li>
-            <li>
-              <b>Platform</b>: Developing DevHub platform as a product to enable
-              communities to collaborate and support each other.
-            </li>
-          </ul>
-        </p>
+        <h4>How to Get Involved:</h4>
+        <ol>
+          <li>
+            Join Telegram: Dive into our dedicated Telegram group to stay
+            updated on discussions and activities. Introduce yourself and become
+            part of the conversation!
+          </li>
+          <li>
+            Engage on the Proposal Feed: Participate in discussions, share your
+            insights, or propose new ideas to contribute to our vibrant
+            community.
+          </li>
+          <li>Volunteer: Step up to host your own developer focused event!</li>
+        </ol>
 
-        <h3>Our Contributors</h3>
         <p>
-          DevHub operates through DevDAO, which provides social structures to
-          support developers. Within DevDAO, we have a dedicated core team of
-          moderators and community contributors who work across the key areas
-          above. We welcome contributions from any community members who want to
-          join us in building our ecosystem and their own skills!
-        </p>
-
-        <h3>Our Platform</h3>
-        <p>
-          Our main tool for interfacing is the DevHub Platform, where you can
-          connect with others, share ideas and solutions, and access resources
-          and support. You can also find communities working on a variety of
-          areas, from protocol development to tooling and documentation.
-        </p>
-
-        <h3>Join Us in Shaping NEAR’s Future</h3>
-        <p>
-          Regardless of your background or where you are on your developer
-          journey, we’re happy you’re here! We hope you’ll explore, find your
-          people, and discover paths to contribute that are most gratifying for
-          you.
-          <br />
-          Let’s build the open web together.
+          Join us as we hack our way towards a better tomorrow. Together, let's
+          innovate, collaborate, and shape the future of blockchain technology!
         </p>
       </div>
     </Section>

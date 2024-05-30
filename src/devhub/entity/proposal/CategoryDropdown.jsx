@@ -5,58 +5,45 @@ onChange = onChange || (() => {});
 const options = [
   {
     icon: "https://ipfs.near.social/ipfs/bafkreiet5w62oeef6msfsakdskq7zkjk33ngogcerfdmqewnsuj74u376e",
-    title: "DevDAO Operations",
-    description:
-      "Provide core operations and leadership for the DAO or infrastructure support.",
-    value: "DevDAO Operations",
+    title: "Bounty",
+    description: "",
+    value: "Bounty",
   },
   {
     icon: "https://ipfs.near.social/ipfs/bafkreiengkdru4fczwltjylfqeeypsdf4hb5fdxa6t67l3x2qtqgeo3pzq",
-    title: "DevDAO Platform",
-    description:
-      "Build & maintain the interface for DevHub’s community & funding activities.",
-    value: "DevDAO Platform",
+    title: "Bounty booster",
+    description: "",
+    value: "Bounty booster",
   },
   {
     icon: "https://ipfs.near.social/ipfs/bafkreicpt3ulwsmptzdbtkhvxodvo7pcajcpyr35tqcbfdnaipzrx5re7e",
-    title: "Events & Hackathons",
-    description:
-      "Organize or support events, hackathons, and local meet ups to grow communities.",
-    value: "Events & Hackathons",
+    title: "Hackathon",
+    description: "",
+    value: "Hackathon",
   },
   {
     icon: "https://ipfs.near.social/ipfs/bafkreibdrwhbouuutvrk4qt2udf4kumbyy5ebjkezobbahxvo7fyxo2ec4",
-    title: "Engagement & Awareness",
-    description:
-      "Create content from social posts to real world swag to drive awareness to NEAR.",
-    value: "Engagement & Awareness",
+    title: "Hackbox",
+    description: "",
+    value: "Hackbox",
   },
   {
     icon: "https://ipfs.near.social/ipfs/bafkreiem2vjsp6wu3lkd4zagpm43f32egdjjzchmleky6rr2ydzhlkrxam",
-    title: "Decentralized DevRel",
-    description:
-      "Provide support, gather feedback, and maintain docs to drive engagement.",
-    value: "Decentralized DevRel",
+    title: "Event sponsorship",
+    description: "",
+    value: "Event sponsorship",
   },
   {
     icon: "https://ipfs.near.social/ipfs/bafkreic3prsy52hwueugqj5rwualib4imguelezsbvgrxtezw4u33ldxqq",
-    title: "Universities & Bootcamps",
-    description:
-      "Engage with students and universities globally to encourage NEAR.",
-    value: "Universities & Bootcamps",
+    title: "Meetup",
+    description: "",
+    value: "Meetup",
   },
   {
     icon: "https://ipfs.near.social/ipfs/bafkreigf7j5isssumbjl24zy4pr27ryfqivan3vuwu2uwsofcujhhkk7cq",
-    title: "Tooling & Infrastructure",
-    description:
-      "Contribute code to NEAR tooling or facilitating technical decisions.",
-    value: "Tooling & Infrastructure",
-  },
-  {
-    icon: "https://ipfs.near.social/ipfs/bafkreihctatkwnvpmblgqnpw76zggfet3fmpgurqvtj7vbm3cb5r3pp52u",
-    title: "Other",
-    description: "Use this category if you are not sure which one to use.",
-    value: "Other",
+    title: "Travel expenses",
+    description: "",
+    value: "Travel expenses",
   },
 ];
 

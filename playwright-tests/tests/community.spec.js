@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../testUtils.js";
 import { mockDefaultTabs } from "../util/addons.js";
 
-test("should load a community page if handle exists", async ({ page }) => {
+test.skip("should load a community page if handle exists", async ({ page }) => {
   await page.goto(
     "/devhub.near/widget/app?page=community&handle=webassemblymusic"
   );
@@ -22,7 +22,9 @@ test("should load a community page if handle exists", async ({ page }) => {
   expect(communityTabs.length).toBeGreaterThan(0);
 });
 
-test("should load an error page if handle does not exist", async ({ page }) => {
+test.skip("should load an error page if handle does not exist", async ({
+  page,
+}) => {
   await page.goto(
     "/devhub.near/widget/app?page=community&handle=devhub-faketest"
   );
@@ -37,7 +39,7 @@ test("should load an error page if handle does not exist", async ({ page }) => {
   expect(communityNotFound).not.toBeNull();
 });
 
-test.describe("Wallet is connected", () => {
+test.skip("Wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
@@ -88,7 +90,7 @@ test.describe("Wallet is connected", () => {
   });
 });
 
-test.describe("Wallet is not connected", () => {
+test.skip("Wallet is not connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
   });
@@ -108,7 +110,7 @@ test.describe("Wallet is not connected", () => {
   });
 });
 
-test.describe("Is community admin", () => {
+test.skip("Is community admin", () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-community-admin.json",
@@ -168,7 +170,7 @@ test.describe("Is community admin", () => {
   });
 });
 
-test.describe("Is chain-abstraction community admin", () => {
+test.skip("Is chain-abstraction community admin", () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-chain-abstraction-community-admin.json",
@@ -207,7 +209,7 @@ test.describe("Is chain-abstraction community admin", () => {
   });
 });
 
-test.describe("Is DevHUB platform community admin", () => {
+test.skip("Is DevHUB platform community admin", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });

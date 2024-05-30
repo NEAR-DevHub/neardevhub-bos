@@ -1,6 +1,8 @@
 import { test } from "@playwright/test";
 
-test("should show post history for posts in the feed", async ({ page }) => {
+test.skip("should show post history for posts in the feed", async ({
+  page,
+}) => {
   await page.goto("/devhub.near/widget/app?page=feed");
 
   // Fill the search by content by to

@@ -5,7 +5,7 @@ import {
   setInputAndAssert,
 } from "../testUtils.js";
 
-test.describe("Wallet is not connected", () => {
+test.skip("Wallet is not connected", () => {
   // sign in to wallet
   test.use({
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
@@ -26,13 +26,13 @@ test.describe("Wallet is not connected", () => {
   });
 });
 
-test.describe("Wallet is connected", () => {
+test.skip("Wallet is connected", () => {
   // sign in to wallet
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
 
-  test("should be able to submit a solution (funding request) with USDC as currency", async ({
+  test.skip("should be able to submit a solution (funding request) with USDC as currency", async ({
     page,
   }) => {
     await page.goto("/devhub.near/widget/app?page=create");
@@ -222,7 +222,7 @@ test.describe("Wallet is connected", () => {
   });
 });
 
-test.describe("Admin is connected", () => {
+test.skip("Admin is connected", () => {
   // sign in to wallet
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-admin.json",

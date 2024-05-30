@@ -28,7 +28,7 @@ const showAccountAutoComplete = props.showAutoComplete ?? false;
 const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
 
 const queryName =
-  "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot";
+  "thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot";
 const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
 ${queryName}(
   offset: $offset
@@ -218,7 +218,7 @@ async function getSuggestedProposals(id) {
     .then((res) => {
       const proposals =
         res?.data?.[
-          "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot"
+          "thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot"
         ];
       results = proposals;
     })
@@ -385,7 +385,7 @@ if (showProposalIdAutoComplete) {
             const startIndex = selectedText.indexOf('#') + 1; 
             const endIndex = selectedText.indexOf(' ', startIndex);
             const id = endIndex !== -1 ? selectedText.substring(startIndex, endIndex) : selectedText.substring(startIndex);
-            const link = "https://near.social/devhub.near/widget/app?page=proposal&id=" + id;
+            const link = "https://near.social/events-committee.near/widget/app?page=proposal&id=" + id;
             const adjustedStart = {
               line: referenceCursorStart.line,
               ch: referenceCursorStart.ch - 1

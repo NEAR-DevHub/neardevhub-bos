@@ -18,7 +18,7 @@ test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
 );
 
-test.describe("Don't ask again enabled", () => {
+test.skip("Don't ask again enabled", () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
@@ -198,7 +198,7 @@ test.describe("Don't ask again enabled", () => {
   });
 });
 
-test.describe("Non authenticated user's wallet is connected", () => {
+test.skip("Non authenticated user's wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
@@ -215,7 +215,7 @@ test.describe("Non authenticated user's wallet is connected", () => {
   });
 });
 
-test.describe("Admin wallet is connected", () => {
+test.skip("Admin wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });

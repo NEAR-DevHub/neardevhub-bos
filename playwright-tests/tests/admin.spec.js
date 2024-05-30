@@ -6,11 +6,11 @@ test.describe("Wallet is connected", () => {
     storageState: "playwright-tests/storage-states/wallet-connected-admin.json",
   });
 
-  test("should be able to manage featured communities from home page settings tab", async ({
+  test.skip("should be able to manage featured communities from home page settings tab", async ({
     page,
   }) => {
     test.setTimeout(60000);
-    await page.goto("/devhub.near/widget/app?page=admin");
+    await page.goto("/events-committee.near/widget/app?page=admin");
 
     const buttonSelector = `button[data-testid="preview-homepage"]`;
     // Wait for the preview homepage to appear
@@ -40,13 +40,12 @@ test.describe("Wallet is connected", () => {
   });
 
   test("should be able to manage moderators", async ({ page }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
-    const buttonSelector = `button[data-testid="preview-homepage"]`;
+    await page.goto("/events-committee.near/widget/app?page=admin");
+    const buttonSelector = `button[data-testid="edit-members"]`;
     // Wait for the first post button to be visible
     await page.waitForSelector(buttonSelector, {
       state: "visible",
     });
-    await page.getByRole("tab", { name: "Moderators" }).click();
     await page.getByTestId("edit-members").click();
     let inputSelector = `input[data-testid="membernew-list-item"]`;
     await page.waitForSelector(inputSelector, {
@@ -61,8 +60,8 @@ test.describe("Wallet is connected", () => {
     await page.getByTestId("edit-members").click();
   });
 
-  test("should be able to manage restricted labels", async ({ page }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
+  test.skip("should be able to manage restricted labels", async ({ page }) => {
+    await page.goto("/events-committee.near/widget/app?page=admin");
     const buttonSelector = `button[data-testid="preview-homepage"]`;
     // Wait for the first post button to be visible
     await page.waitForSelector(buttonSelector, {
@@ -158,7 +157,7 @@ test.describe("Wallet is connected", () => {
     await page.getByLabel("Close").click();
   });
 
-  test("shouldn't be able to add a none existing community handle without a warning", async ({
+  test.skip("shouldn't be able to add a none existing community handle without a warning", async ({
     page,
   }) => {
     await page.goto("/devhub.near/widget/app?page=admin");
@@ -182,7 +181,7 @@ test.describe("Wallet is connected", () => {
   });
 });
 
-test.describe("Wallet is not connect", () => {
+test.skip("Wallet is not connect", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
   });

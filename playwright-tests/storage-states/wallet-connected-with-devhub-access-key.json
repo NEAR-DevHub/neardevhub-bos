@@ -17,7 +17,7 @@
           "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
         },
         {
-          "name": "devhub.near_wallet_auth_key",
+          "name": "events-committee.near_wallet_auth_key",
           "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
         },
         {
@@ -29,7 +29,7 @@
           "value": "ed25519:4SViyksDtdDdCPkkyzMg4HYADEQ3t5YGEd3EBoSADxdaAzDasZ7qJbxr2wNSFkWipya6C2eVJJucK1vkyoGndiyt"
         },
         {
-          "name": "devhub.near:keystore:petersalomonsen.near:mainnet",
+          "name": "events-committee.near:keystore:petersalomonsen.near:mainnet",
           "value": "ed25519:eUVkG7dVfg5Z776MPy7d4L23cmEtAxrYoP1HgWSQrBy1GHdaZystRkYyz4ANN5uyKceuUrjyoLWaPgpzvo3BNDZ"
         },
         {

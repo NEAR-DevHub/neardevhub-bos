@@ -29,6 +29,12 @@ const TIMELINE_STATUS = {
   FUNDED: "FUNDED",
 };
 
+const DecisionStage = [
+  TIMELINE_STATUS.APPROVED,
+  TIMELINE_STATUS.REJECTED,
+  TIMELINE_STATUS.APPROVED_CONDITIONALLY,
+];
+
 const Container = styled.div`
   .full-width-div {
     width: 100vw;
@@ -166,7 +172,7 @@ const Container = styled.div`
   }
 
   .green-btn {
-    background-color: #04a46e !important;
+    background-color: #03ba16 !important;
     border: none;
     color: white;
 
@@ -411,7 +417,7 @@ const LinkedProposals = () => {
   return (
     <div className="d-flex flex-column gap-3">
       {linkedProposalsData.map((item) => {
-        const link = `https://near.org/devhub.near/widget/app?page=proposal&id=${item.id}`;
+        const link = `https://near.org/${REPL_DEVHUB}/widget/app?page=proposal&id=${item.id}`;
         return (
           <a href={link} target="_blank" rel="noopener noreferrer">
             <div className="d-flex gap-2">
@@ -499,7 +505,7 @@ const editProposal = ({ timeline }) => {
     requested_sponsor: snapshot.requested_sponsor,
     timeline: timeline,
   };
-  const args = { labels: [], body: body, id: proposal.id };
+  const args = { labels: snapshot.labels, body: body, id: proposal.id };
 
   Near.call([
     {
@@ -805,11 +811,13 @@ return (
                     <div>
                       <Widget
                         src={
-                          "${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryDropdown"
+                          "${REPL_DEVHUB}/widget/devhub.entity.proposal.MultiSelectLabelsDropdown"
                         }
                         props={{
-                          selectedValue: snapshot.category,
+                          selected: snapshot.labels,
+                          onChange: () => {},
                           disabled: true,
+                          hideDropdown: true,
                         }}
                       />
                     </div>
@@ -946,17 +954,6 @@ return (
                       accountId === authorId,
                   }}
                 />
-              </SidePanelItem>
-              <SidePanelItem title="Requested Sponsor">
-                {snapshot.requested_sponsor && (
-                  <Widget
-                    src="${REPL_NEAR}/widget/AccountProfile"
-                    props={{
-                      accountId: snapshot.requested_sponsor,
-                      noOverlay: true,
-                    }}
-                  />
-                )}
               </SidePanelItem>
               <SidePanelItem title="Supervisor">
                 {snapshot.supervisor ? (
@@ -1402,12 +1399,13 @@ return (
                           }
                           props={{
                             label: "Save",
-                            disabled: !supervisor,
+                            disabled:
+                              !supervisor &&
+                              DecisionStage.includes(
+                                updatedProposalStatus.value.status
+                              ),
                             classNames: { root: "green-btn btn-sm" },
                             onClick: () => {
-                              if (!supervisor) {
-                                return;
-                              }
                               if (snapshot.supervisor !== supervisor) {
                                 editProposal({
                                   timeline: updatedProposalStatus.value,

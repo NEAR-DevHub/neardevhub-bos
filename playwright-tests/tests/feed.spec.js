@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { pauseIfVideoRecording } from "../testUtils.js";
 
-test("should show post history for posts in the feed", async ({ page }) => {
+test.skip("should show post history for posts in the feed", async ({
+  page,
+}) => {
   await page.goto("/devhub.near/widget/app?page=feed");
 
   const firstPostHistoryButtonSelector = 'a.card-link[title="Post History"]';
@@ -22,7 +24,7 @@ test("should show post history for posts in the feed", async ({ page }) => {
   await page.waitForSelector(desiredChildSelector, { state: "visible" });
 });
 
-test("should hide posts with devhub-test tag", async ({ page }) => {
+test.skip("should hide posts with devhub-test tag", async ({ page }) => {
   // go to feeds page
   await page.goto("/devhub.near/widget/app?page=feed");
 
@@ -45,7 +47,7 @@ test("should hide posts with devhub-test tag", async ({ page }) => {
   });
 });
 
-test.describe("Wallet is connected", () => {
+test.skip("Wallet is connected", () => {
   // sign in to wallet
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",

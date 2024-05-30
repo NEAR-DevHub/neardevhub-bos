@@ -11,7 +11,7 @@ const { id, timestamp } = props;
 const isEditPage = typeof id === "string";
 const author = context.accountId;
 const FundingDocs =
-  "https://near.social/devhub.near/widget/app?page=community&handle=developer-dao&tab=funding";
+  "https://near.social/${REPL_DEVHUB}/widget/app?page=community&handle=developer-dao&tab=funding";
 
 if (!author) {
   return (
@@ -110,7 +110,7 @@ const Container = styled.div`
     border: 1px solid #e2e6ec;
   }
   .green-btn {
-    background-color: #04a46e !important;
+    background-color: #03ba16 !important;
     border: none;
     color: white;
     &:active {
@@ -233,16 +233,18 @@ const tokensOptions = [
   },
 ];
 
-const devdaoAccount = "neardevdao.near";
+const eventsCommitteeAccount = "events-committee.near";
 
-const [category, setCategory] = useState(null);
+const [labels, setLabels] = useState([]);
 const [title, setTitle] = useState(null);
 const [description, setDescription] = useState(null);
 const [summary, setSummary] = useState(null);
 const [consent, setConsent] = useState({ toc: false, coc: false });
 const [linkedProposals, setLinkedProposals] = useState([]);
 const [receiverAccount, setReceiverAccount] = useState(context.accountId);
-const [requestedSponsor, setRequestedSponsor] = useState(devdaoAccount);
+const [requestedSponsor, setRequestedSponsor] = useState(
+  eventsCommitteeAccount
+);
 const [requestedSponsorshipAmount, setRequestedSponsorshipAmount] =
   useState(null);
 const [requestedSponsorshipToken, setRequestedSponsorshipToken] = useState(
@@ -274,7 +276,7 @@ const memoizedDraftData = useMemo(
     snapshot: {
       name: title,
       description: description,
-      category: category,
+      labels: labels,
       summary: summary,
       requested_sponsorship_usd_amount: requestedSponsorshipAmount,
       requested_sponsorship_paid_in_currency: requestedSponsorshipToken.value,
@@ -287,7 +289,7 @@ const memoizedDraftData = useMemo(
     title,
     summary,
     description,
-    category,
+    labels,
     requestedSponsorshipAmount,
     requestedSponsorshipToken,
     receiverAccount,
@@ -316,7 +318,8 @@ useEffect(() => {
           ...JSON.parse(draftProposalData).snapshot,
         };
       }
-      setCategory(snapshot.category);
+
+      setLabels(snapshot.labels ?? []);
       setTitle(snapshot.name);
       setSummary(snapshot.summary);
       setDescription(snapshot.description);
@@ -352,7 +355,7 @@ useEffect(() => {
       !title ||
       !description ||
       !summary ||
-      !category ||
+      !(labels ?? []).length ||
       !requestedSponsorshipAmount ||
       !receiverAccount ||
       !requestedSponsor ||
@@ -446,6 +449,7 @@ useEffect(() => {
       }
     }
   }
+  setLoading(false);
 });
 
 useEffect(() => {
@@ -720,7 +724,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
     proposal_body_version: "V0",
     name: title,
     description: description,
-    category: category,
+    category: "Bounty",
     summary: summary,
     linked_proposals: linkedProposalsIds,
     requested_sponsorship_usd_amount: requestedSponsorshipAmount,
@@ -742,7 +746,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
           reviewer_completed_attestation: false,
         },
   };
-  const args = { labels: [], body: body };
+  const args = { labels: (labels ?? []).map((i) => i.value), body: body };
   if (isEditPage) {
     args["id"] = editProposalData.id;
   }
@@ -826,10 +830,12 @@ const CollapsibleContainer = ({ title, children, noPaddingTop }) => {
 const CategoryDropdown = useMemo(() => {
   return (
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryDropdown"}
+      src={
+        "${REPL_DEVHUB}/widget/devhub.entity.proposal.MultiSelectLabelsDropdown"
+      }
       props={{
-        selectedValue: category,
-        onChange: setCategory,
+        selected: labels,
+        onChange: setLabels,
       }}
     />
   );
@@ -909,7 +915,7 @@ const ConsentComponent = useMemo(() => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                DevHub’s Terms and Conditions
+                Event Committee’s Terms and Conditions
               </a>
               and commit to honoring it
             </>
@@ -937,7 +943,7 @@ const ConsentComponent = useMemo(() => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                DevHub’s Code of Conduct
+                Event Committee’s Code of Conduct
               </a>
               and commit to honoring it
             </>
@@ -988,7 +994,7 @@ const ReceiverAccountComponent = useMemo(() => {
       src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
       props={{
         value: receiverAccount,
-        placeholder: devdaoAccount,
+        placeholder: eventsCommitteeAccount,
         onUpdate: setReceiverAccount,
       }}
     />
@@ -1308,9 +1314,6 @@ if (showProposalPage) {
                     description="Select your preferred currency for receiving funds. Note: The exchange rate for NEAR tokens will be the closing rate at the day of the invoice."
                   >
                     {CurrencyComponent}
-                  </InputContainer>
-                  <InputContainer heading="Requested Sponsor" description="">
-                    {SponsorComponent}
                   </InputContainer>
                   <InputContainer
                     heading="Supervisor (Optional)"

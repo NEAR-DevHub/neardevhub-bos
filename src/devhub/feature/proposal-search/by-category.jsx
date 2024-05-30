@@ -1,35 +1,31 @@
 const options = [
   {
-    label: "DevDAO Operations",
-    value: "DevDAO Operations",
+    label: "Bounty",
+    value: "Bounty",
   },
   {
-    label: "DevDAO Platform",
-    value: "DevDAO Platform",
+    label: "Bounty booster",
+    value: "Bounty booster",
   },
   {
-    label: "Events & Hackathons",
-    value: "Events & Hackathons",
+    label: "Hackathon",
+    value: "Hackathon",
   },
   {
-    label: "Engagement & Awareness",
-    value: "Engagement & Awareness",
+    label: "Hackbox",
+    value: "Hackbox",
   },
   {
-    label: "Decentralized DevRel",
-    value: "Decentralized DevRel",
+    label: "Event sponsorship",
+    value: "Event sponsorship",
   },
   {
-    label: "Universities & Bootcamps",
-    value: "Universities & Bootcamps",
+    label: "Meetup",
+    value: "Meetup",
   },
   {
-    label: "Tooling & Infrastructure",
-    value: "Tooling & Infrastructure",
-  },
-  {
-    label: "Other",
-    value: "Other",
+    label: "Travel expenses",
+    value: "Travel expenses",
   },
   {
     label: "None",

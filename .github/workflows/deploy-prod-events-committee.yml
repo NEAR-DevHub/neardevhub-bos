@@ -1,0 +1,27 @@
+name: Deploy Widgets to Events Committee
+on:
+  push:
+    branches: [events-committee]
+jobs:
+  deploy-widgets:
+    runs-on: ubuntu-latest
+    name: Deploy widgets to events-committee.near (mainnet)
+    env:
+      EVENTS_COMMITTEE_PUBLIC_KEY: ${{ vars.EVENTS_COMMITTEE_PUBLIC_KEY }}
+      EVENTS_COMMITTEE_PRIVATE_KEY: ${{ secrets.EVENTS_COMMITTEE_PRIVATE_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Replace variables
+        run: |
+          npm run build:preview -- -a events-committee.near -c events-committee.near
+
+      - name: Install bos CLI
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.6/bos-cli-installer.sh | sh
+
+      - name: Deploy widgets
+        working-directory: ./build
+        run: |
+          bos components deploy events-committee.near sign-as events-committee.near network-config mainnet sign-with-plaintext-private-key --signer-public-key "$EVENTS_COMMITTEE_PUBLIC_KEY" --signer-private-key "$EVENTS_COMMITTEE_PRIVATE_KEY" send

@@ -53,16 +53,16 @@ const DropdownMenu = styled.div`
 `;
 
 const DropdownLink = styled.div`
-  color: inherit;
+  color: #fff;
   text-decoration: none;
 
   &.active {
-    color: #555555;
+    color: #03ba16 !important;
   }
 
   &:hover {
     text-decoration: none;
-    color: #096d50 !important;
+    color: #03ba16 !important;
   }
 `;
 
