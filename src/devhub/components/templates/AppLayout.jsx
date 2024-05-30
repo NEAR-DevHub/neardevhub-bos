@@ -18,6 +18,7 @@ const Theme = styled.div`
   flex-direction: column;
   padding-top: calc(-1 * var(--body-top-padding));
   background: #f4f4f4;
+  padding-bottom: 2rem;
   .container-xl {
     padding-inline: 0px !important;
   }
