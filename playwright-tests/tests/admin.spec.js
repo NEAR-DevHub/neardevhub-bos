@@ -41,12 +41,11 @@ test.describe("Wallet is connected", () => {
 
   test("should be able to manage moderators", async ({ page }) => {
     await page.goto("/events-committee.near/widget/app?page=admin");
-    const buttonSelector = `button[data-testid="preview-homepage"]`;
+    const buttonSelector = `button[data-testid="edit-members"]`;
     // Wait for the first post button to be visible
     await page.waitForSelector(buttonSelector, {
       state: "visible",
     });
-    await page.getByRole("tab", { name: "Moderators" }).click();
     await page.getByTestId("edit-members").click();
     let inputSelector = `input[data-testid="membernew-list-item"]`;
     await page.waitForSelector(inputSelector, {
