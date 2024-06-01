@@ -10,6 +10,7 @@ import {
   decodeResultJSON,
   encodeResultJSON,
 } from "../util/transaction.js";
+import { mockRpcRequest } from "../util/rpcmock.js";
 
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
@@ -235,6 +236,40 @@ test.describe("Don't ask again enabled", () => {
       await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText("Add your comment here...");
     await pauseIfVideoRecording(page);
+  });
+});
+test.describe('Moderator with "Don\'t ask again" enabled', () => {
+  test.use({
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
+  });
+  test("should edit proposal timeline", async ({ page }) => {
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+    await mockRpcRequest({
+      page,
+      filterParams: {
+        method_name: "get_proposal",
+      },
+      modifyOriginalResultFunction: (originalResult) => {
+        originalResult.snapshot.timeline.status = "REVIEW";
+        return originalResult;
+      },
+    });
+
+    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    await setDontAskAgainCacheValues({
+      page,
+      widgetSrc: "devhub.near/widget/devhub.entity.proposal.Proposal",
+      methodName: "edit_proposal_timeline",
+    });
+
+    await page.locator(".d-flex > div > .bi").click();
+    await page.getByRole("button", { name: "Review", exact: true }).click();
+    await page.getByText("Approved", { exact: true }).first().click();
+    await page.getByRole("button", { name: "Save" }).click();
+    await page.waitForTimeout(5000);
   });
 });
 
