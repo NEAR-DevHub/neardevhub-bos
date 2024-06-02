@@ -258,9 +258,24 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       },
     });
 
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({
+        route,
+        request,
+        transaction_completed,
+        last_receiver_id,
+        requestPostData,
+      }) => {
+        console.log("RPC mock", requestPostData);
+        await route.fallback();
+      }
+    );
+
     await page.goto("/devhub.near/widget/app?page=proposal&id=17");
     await setDontAskAgainCacheValues({
       page,
+      contractId: "devhub.near",
       widgetSrc: "devhub.near/widget/devhub.entity.proposal.Proposal",
       methodName: "edit_proposal_timeline",
     });
@@ -269,7 +284,9 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByText("Approved", { exact: true }).first().click();
     await page.getByRole("button", { name: "Save" }).click();
-    await page.waitForTimeout(5000);
+    const callContractToast = await page.getByText("Sending transaction");
+    await expect(callContractToast).toBeVisible();
+    await expect(callContractToast).not.toBeAttached();
   });
 });
 
