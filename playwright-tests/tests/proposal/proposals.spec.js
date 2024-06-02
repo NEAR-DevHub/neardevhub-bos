@@ -455,6 +455,33 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
+  test("should show only valid input in amount field and show error for invalid", async ({
+    page,
+  }) => {
+    test.setTimeout(120000);
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    const input = page.locator('input[type="text"]').nth(2);
+    const errorText = await page.getByText(
+      "Please enter the nearest positive whole number."
+    );
+    await input.pressSequentially("12345de", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await expect(errorText).toBeVisible();
+    // clear input field
+    for (let i = 0; i < 7; i++) {
+      await input.press("Backspace", {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      });
+    }
+    await input.pressSequentially("12334", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await expect(errorText).toBeHidden();
+    await pauseIfVideoRecording(page);
+  });
+
   test("should create a proposal, autolink reference to existing proposal", async ({
     page,
   }) => {
@@ -557,30 +584,44 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test("should show only valid input in amount field and show error for invalid", async ({
-    page,
-  }) => {
+  test("should filter proposals by categories", async ({ page }) => {
     test.setTimeout(120000);
-    const delay_milliseconds_between_keypress_when_typing = 0;
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
-    const input = page.locator('input[type="text"]').nth(2);
-    const errorText = await page.getByText(
-      "Please enter the nearest positive whole number."
-    );
-    await input.pressSequentially("12345de", {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-    await expect(errorText).toBeVisible();
-    // clear input field
-    for (let i = 0; i < 7; i++) {
-      await input.press("Backspace", {
-        delay: delay_milliseconds_between_keypress_when_typing,
-      });
-    }
-    await input.pressSequentially("12334", {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-    await expect(errorText).toBeHidden();
-    await pauseIfVideoRecording(page);
+    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.getByRole("button", { name: "Category" }).click();
+    await page.getByRole("list").getByText("DevDAO Operations").click();
+    await expect(
+      page.getByRole("button", { name: "Category : DevDAO Operations" })
+    ).toBeVisible();
+    test.setTimeout(4000);
+  });
+
+  test("should filter proposals by timeline", async ({ page }) => {
+    test.setTimeout(120000);
+    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.getByRole("button", { name: "Stage" }).click();
+    await page.getByRole("list").getByText("Funded").click();
+    await expect(
+      page.getByRole("button", { name: "Stage : Funded" })
+    ).toBeVisible();
+    test.setTimeout(4000);
+  });
+
+  test("should filter proposals by author", async ({ page }) => {
+    test.setTimeout(120000);
+    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.getByRole("button", { name: "Author" }).click();
+    await page.getByRole("list").getByText("megha19.near").click();
+    await expect(
+      page.getByRole("button", { name: "Author : megha19.near" })
+    ).toBeVisible();
+    test.setTimeout(4000);
+  });
+
+  test("should filter proposals by search text", async ({ page }) => {
+    test.setTimeout(120000);
+    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.getByPlaceholder("Search by content").click();
+    await page.getByPlaceholder("Search by content").fill("megha");
+    test.setTimeout(4000);
   });
 });
