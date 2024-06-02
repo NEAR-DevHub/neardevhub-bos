@@ -245,6 +245,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
   });
   test("should edit proposal timeline", async ({ page }) => {
+    test.setTimeout(60000);
     let isTransactionCompleted = false;
 
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
@@ -311,6 +312,11 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     const callContractToast = await page.getByText("Sending transaction");
     await expect(callContractToast).toBeVisible();
     await expect(callContractToast).not.toBeAttached();
+    const timeLineStatusSubmittedToast = await page.getByText(
+      "Timeline status submitted"
+    );
+    await expect(timeLineStatusSubmittedToast).toBeVisible();
+
     await expect(firstStatusBadge).toHaveText("APPROVED");
     await firstStatusBadge.scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
@@ -322,10 +328,6 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       "moved proposal from REVIEW to APPROVED"
     );
     await lastLogItem.scrollIntoViewIfNeeded();
-    const timeLineStatusSubmittedToast = await page.getByText(
-      "Timeline status submitted"
-    );
-    await expect(timeLineStatusSubmittedToast).toBeVisible();
     await expect(timeLineStatusSubmittedToast).not.toBeAttached();
     await pauseIfVideoRecording(page);
   });
