@@ -11,6 +11,7 @@ import {
   encodeResultJSON,
 } from "../util/transaction.js";
 import { mockRpcRequest } from "../util/rpcmock.js";
+import { mockSocialIndexResponses } from "../util/socialapi.js";
 
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
@@ -245,6 +246,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
   });
   test("should edit proposal timeline", async ({ page }) => {
     let isTransactionCompleted = false;
+
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
@@ -254,9 +256,24 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
         method_name: "get_proposal",
       },
       modifyOriginalResultFunction: (originalResult) => {
-        originalResult.snapshot.timeline.status = isTransactionCompleted
-          ? "APPROVED"
-          : "REVIEW";
+        originalResult.snapshot.timeline.status = "REVIEW";
+
+        if (isTransactionCompleted) {
+          const lastSnapshot =
+            originalResult.snapshot_history[
+              originalResult.snapshot_history.length - 1
+            ];
+          lastSnapshot.timeline.status = "REVIEW";
+
+          const newSnapshot = Object.assign({}, originalResult.snapshot);
+          newSnapshot.timeline.status = "APPROVED";
+          newSnapshot.timestamp = (
+            BigInt(new Date().getTime()) * 1_000_000n
+          ).toString();
+          originalResult.snapshot = newSnapshot;
+          originalResult.snapshot_history.push(lastSnapshot);
+        }
+
         return originalResult;
       },
     });
@@ -295,6 +312,17 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     await expect(callContractToast).toBeVisible();
     await expect(callContractToast).not.toBeAttached();
     await expect(firstStatusBadge).toHaveText("APPROVED");
+    await firstStatusBadge.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+    const lastLogItem = await page.locator(
+      "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
+      { hasText: /.*s ago/ }
+    );
+    await expect(lastLogItem).toContainText(
+      "moved proposal from REVIEW to APPROVED"
+    );
+    await lastLogItem.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
   });
 });
 
