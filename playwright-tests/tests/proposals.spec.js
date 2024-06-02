@@ -455,4 +455,31 @@ test.describe("Wallet is connected", () => {
 
     await pauseIfVideoRecording(page);
   });
+
+  test("should show only valid input in amount field and show error for invalid", async ({
+    page,
+  }) => {
+    test.setTimeout(120000);
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    const input = page.locator('input[type="text"]').nth(2);
+    const errorText = await page.getByText(
+      "Please enter the nearest positive whole number."
+    );
+    await input.pressSequentially("12345de", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await expect(errorText).toBeVisible();
+    // clear input field
+    for (let i = 0; i < 7; i++) {
+      await input.press("Backspace", {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      });
+    }
+    await input.pressSequentially("12334", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await expect(errorText).toBeHidden();
+    await pauseIfVideoRecording(page);
+  });
 });
