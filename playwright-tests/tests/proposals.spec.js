@@ -308,7 +308,13 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     await page.locator(".d-flex > div > .bi").click();
     await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByText("Approved", { exact: true }).first().click();
+
+    await pauseIfVideoRecording(page);
+
+    const saveButton = await page.getByRole("button", { name: "Save" });
+    await saveButton.scrollIntoViewIfNeeded();
     await page.getByRole("button", { name: "Save" }).click();
+
     const callContractToast = await page.getByText("Sending transaction");
     await expect(callContractToast).toBeVisible();
     await expect(callContractToast).not.toBeAttached();
