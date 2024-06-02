@@ -322,6 +322,11 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       "moved proposal from REVIEW to APPROVED"
     );
     await lastLogItem.scrollIntoViewIfNeeded();
+    const timeLineStatusSubmittedToast = await page.getByText(
+      "Timeline status submitted"
+    );
+    await expect(timeLineStatusSubmittedToast).toBeVisible();
+    await expect(timeLineStatusSubmittedToast).not.toBeAttached();
     await pauseIfVideoRecording(page);
   });
 });
