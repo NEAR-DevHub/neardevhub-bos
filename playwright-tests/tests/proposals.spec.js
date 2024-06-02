@@ -244,6 +244,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
   });
   test("should edit proposal timeline", async ({ page }) => {
+    let isTransactionCompleted = false;
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
@@ -253,7 +254,9 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
         method_name: "get_proposal",
       },
       modifyOriginalResultFunction: (originalResult) => {
-        originalResult.snapshot.timeline.status = "REVIEW";
+        originalResult.snapshot.timeline.status = isTransactionCompleted
+          ? "APPROVED"
+          : "REVIEW";
         return originalResult;
       },
     });
@@ -267,7 +270,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
         last_receiver_id,
         requestPostData,
       }) => {
-        console.log("RPC mock", requestPostData);
+        isTransactionCompleted = transaction_completed;
         await route.fallback();
       }
     );
@@ -280,6 +283,10 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       methodName: "edit_proposal_timeline",
     });
 
+    const firstStatusBadge = await page
+      .locator("div.fw-bold.rounded-2.p-1.px-2")
+      .first();
+    await expect(firstStatusBadge).toHaveText("REVIEW");
     await page.locator(".d-flex > div > .bi").click();
     await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByText("Approved", { exact: true }).first().click();
@@ -287,6 +294,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     const callContractToast = await page.getByText("Sending transaction");
     await expect(callContractToast).toBeVisible();
     await expect(callContractToast).not.toBeAttached();
+    await expect(firstStatusBadge).toHaveText("APPROVED");
   });
 });
 
