@@ -30,7 +30,7 @@ const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
 const autoFocus = props.autoFocus ?? false;
 
 const queryName =
-  "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot";
+  "polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot";
 const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
 ${queryName}(
   offset: $offset
@@ -218,7 +218,7 @@ async function getSuggestedProposals(id) {
   }
   await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
     method: "POST",
-    headers: { "x-hasura-role": "thomasguntenaar_near" },
+    headers: { "x-hasura-role": "polyprogrammist_near" },
     body: JSON.stringify({
       query: query,
       variables: variables,
@@ -228,7 +228,7 @@ async function getSuggestedProposals(id) {
     .then((res) => {
       const proposals =
         res?.data?.[
-          "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot"
+          "polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot"
         ];
       results = proposals;
     })
