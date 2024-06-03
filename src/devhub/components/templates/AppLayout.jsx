@@ -18,6 +18,7 @@ const Theme = styled.div`
   flex-direction: column;
   padding-top: calc(-1 * var(--body-top-padding));
   background: #f4f4f4;
+  padding-bottom: 2rem;
   .container-xl {
     padding-inline: 0px !important;
   }
@@ -45,23 +46,6 @@ const AppHeader = ({ page }) => (
   />
 );
 
-const Footer = styled.div`
-  width: 100%;
-  background-color: #fff;
-  padding: 5rem;
-  margin-top: 2rem;
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-
-  @media screen and (max-width: 768px) {
-    padding: 1rem;
-  }
-`;
-
 function AppLayout({ page, children }) {
   return (
     <ParentContainer>
@@ -71,7 +55,6 @@ function AppLayout({ page, children }) {
           <ContentContainer className="container-xl">
             {children}
           </ContentContainer>
-          <Footer page={page} />
         </Container>
       </Theme>
     </ParentContainer>

@@ -1,5 +1,9 @@
 const options = [
   {
+    label: "All",
+    value: "",
+  },
+  {
     label: "Bounty",
     value: "Bounty",
   },
@@ -26,10 +30,6 @@ const options = [
   {
     label: "Travel expenses",
     value: "Travel expenses",
-  },
-  {
-    label: "None",
-    value: "",
   },
 ];
 

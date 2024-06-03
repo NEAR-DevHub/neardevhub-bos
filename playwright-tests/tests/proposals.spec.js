@@ -1,7 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../util/bos-loader.js";
 import { pauseIfVideoRecording } from "../testUtils.js";
-import { setDontAskAgainCacheValues } from "../util/cache.js";
+import {
+  setCommitWritePermissionDontAskAgainCacheValues,
+  setDontAskAgainCacheValues,
+} from "../util/cache.js";
 import {
   mockTransactionSubmitRPCResponses,
   decodeResultJSON,
@@ -151,6 +154,87 @@ test.describe("Don't ask again enabled", () => {
     await expect(loadingIndicator).not.toBeVisible();
 
     await page.waitForTimeout(1000);
+    await pauseIfVideoRecording(page);
+  });
+  test("should add comment on a proposal", async ({ page }) => {
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+    await page.goto("/events-committee.near/widget/app?page=proposal&id=5");
+    const widgetSrc =
+      "events-committee.near/widget/devhub.entity.proposal.ComposeComment";
+
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const commentArea = await page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentArea.focus();
+    const text = "Comment testing";
+    await commentArea.pressSequentially(text, {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await commentArea.blur();
+    await pauseIfVideoRecording(page);
+
+    const account = "petersalomonsen.near";
+    await setCommitWritePermissionDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      accountId: account,
+    });
+
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        const postData = request.postDataJSON();
+        const args_base64 = postData.params?.args_base64;
+        if (transaction_completed && args_base64) {
+          const args = atob(args_base64);
+          if (
+            postData.params.account_id === "social.near" &&
+            postData.params.method_name === "get" &&
+            args === `{"keys":["${account}/post/**"]}`
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+            const resultObj = decodeResultJSON(json.result.result);
+            resultObj[account].post.main = JSON.stringify({
+              text: text,
+            });
+            json.result.result = encodeResultJSON(resultObj);
+            await route.fulfill({ response, json });
+            return;
+          } else {
+            await route.continue();
+          }
+        } else {
+          await route.continue();
+        }
+      }
+    );
+    const commentButton = await page.getByRole("button", { name: "Comment" });
+    await commentButton.scrollIntoViewIfNeeded();
+    await commentButton.click();
+    await expect(
+      await page.frameLocator("iframe").locator(".CodeMirror")
+    ).toContainText(text);
+    const loadingIndicator = await page.locator(".comment-btn-spinner");
+    await expect(loadingIndicator).toBeAttached();
+    await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
+    await expect(loadingIndicator).not.toBeVisible();
+    const transaction_successful_toast = await page.getByText(
+      "Comment Submitted Successfully",
+      { exact: true }
+    );
+    await expect(transaction_successful_toast).toBeVisible();
+
+    await expect(transaction_successful_toast).not.toBeAttached();
+    await expect(
+      await page.frameLocator("iframe").locator(".CodeMirror")
+    ).not.toContainText(text);
+    await expect(
+      await page.frameLocator("iframe").locator(".CodeMirror")
+    ).toContainText("Add your comment here...");
     await pauseIfVideoRecording(page);
   });
 });
