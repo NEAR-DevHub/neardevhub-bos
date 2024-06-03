@@ -207,7 +207,7 @@ const FeedPage = () => {
   });
 
   const queryName =
-    "thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot";
+    "polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot";
   const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
       offset: $offset
@@ -239,7 +239,7 @@ const FeedPage = () => {
   function fetchGraphQL(operationsDoc, operationName, variables) {
     return asyncFetch(QUERYAPI_ENDPOINT, {
       method: "POST",
-      headers: { "x-hasura-role": `thomasguntenaar_near` },
+      headers: { "x-hasura-role": `polyprogrammist_near` },
       body: JSON.stringify({
         query: operationsDoc,
         variables: variables,
@@ -320,10 +320,10 @@ const FeedPage = () => {
         if (result.body.data) {
           const data =
             result.body.data
-              .thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot;
+              .polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot;
           const totalResult =
             result.body.data
-              .thomasguntenaar_near_devhub_proposals_quebec_proposals_with_latest_snapshot_aggregate;
+              .polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot_aggregate;
           State.update({ aggregatedCount: totalResult.aggregate.count });
           // Parse timeline
           fetchBlockHeights(data, offset);

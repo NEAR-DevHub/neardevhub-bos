@@ -81,7 +81,7 @@ State.init({
 });
 
 function sortTimelineAndComments() {
-  const comments = Social.index("comment", props.item);
+  const comments = Social.index("comment", props.item, { subscribe: true });
 
   if (state.changedKeysListWithValues === null) {
     const changedKeysListWithValues = snapshotHistory
@@ -260,6 +260,8 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
           </span>
         )
       );
+    case "payouts":
+      return <span>updated the funding payment links.</span>;
     // we don't have this step for now
     // case "request_for_trustees_created":
     //   return !oldValue && newValue && <span>successfully created request for trustees</span>;
