@@ -45,16 +45,22 @@ const AppHeader = ({ page }) => (
   />
 );
 
-const Footer = (props) => {
-  return (
-    <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.organism.NewsLetter"
-      props={{
-        ...props,
-      }}
-    />
-  );
-};
+const Footer = styled.div`
+  width: 100%;
+  background-color: #fff;
+  padding: 5rem;
+  margin-top: 2rem;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+  }
+`;
 
 function AppLayout({ page, children }) {
   return (
@@ -65,7 +71,7 @@ function AppLayout({ page, children }) {
           <ContentContainer className="container-xl">
             {children}
           </ContentContainer>
-          {/* <Footer page={page} /> */}
+          <Footer page={page} />
         </Container>
       </Theme>
     </ParentContainer>
