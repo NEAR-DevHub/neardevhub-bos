@@ -76,7 +76,7 @@ return (
                 } ${
                   props.hideColumns &&
                   "whitespace-nowrap truncate overflow-hidden w-40"
-                }`}
+                } text-truncate`}
               >
                 {it.title}
               </div>
