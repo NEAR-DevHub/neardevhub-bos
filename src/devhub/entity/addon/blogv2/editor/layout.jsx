@@ -64,9 +64,10 @@ return (
             <div className="text-xl font-bold">Blog Posts</div>
             <div className="flex items-end justify-end gap-x-3">
               <Link
-                className="rounded-md bg-devhub-green-light px-3.5 py-2.5 text-sm font-semibold text-devhub-green hover:text-green shadow-sm hover:bg-devhub-green-transparent"
+                className="rounded-md px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm"
                 href={postHogHref}
                 target="_blank"
+                style={{ backgroundColor: "rgb(104, 112, 118)" }}
               >
                 Analytics
               </Link>
