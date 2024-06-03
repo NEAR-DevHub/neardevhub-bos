@@ -207,6 +207,7 @@ const searchInput = useMemo(
         src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
         props={{
           className: "flex-grow-1",
+          skipPaddingGap: true,
           placeholder: "search blog posts",
           debounceTimeout: 300,
           onChange: (e) => {
@@ -261,7 +262,7 @@ if (!processedData || processedData.length === 0) {
 return (
   <div class="w-100">
     {!hideTitle && <Heading>Latest Blog Posts</Heading>}
-    <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
+    <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center mb-5">
       {data.searchEnabled ? searchInput : ""}
       {data.categoriesEnabled ? categoryInput : ""}
     </div>
