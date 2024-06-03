@@ -71,9 +71,7 @@ return (
               className={`px-6 py-4 ${props.hideColumns && "px-2"}`}
             >
               <div
-                className={`${
-                  isSelected && "font-semibold text-base text-secondary"
-                } ${
+                className={`${isSelected && "font-semibold text-secondary"} ${
                   props.hideColumns &&
                   "whitespace-nowrap truncate overflow-hidden w-40"
                 } text-truncate`}
