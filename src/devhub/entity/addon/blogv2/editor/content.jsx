@@ -200,7 +200,7 @@ const [title, setTitle] = useState(initialData.title || "");
 const [subtitle, setSubtitle] = useState(initialData.subtitle || "");
 const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || context.accountId);
-const [previewMode, setPreviewMode] = useState("edit"); // "edit" or "card" or "page"
+const [previewMode, setPreviewMode] = useState("edit"); // "edit" or "preview" // "card" or "page"
 const [date, setDate] = useState(initialFormattedDate || new Date());
 const [category, setCategory] = useState(initialData.category || "guide");
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
@@ -492,54 +492,9 @@ function handleDelete() {
   onDelete(data.id);
 }
 
-function Preview() {
-  switch (previewMode) {
-    case "card": {
-      return (
-        <Card
-          data={{
-            title,
-            subtitle,
-            description,
-            publishedAt: date,
-            content,
-            author,
-            category,
-            community: handle,
-          }}
-        />
-      );
-    }
-    case "page": {
-      return (
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page"
-          props={{
-            data: {
-              title,
-              subtitle,
-              description,
-              publishedAt: date,
-              content,
-              author,
-              category,
-              community: handle,
-              communityAddonId,
-            },
-            community: handle,
-          }}
-        />
-      );
-    }
-    default:
-      return null;
-  }
-}
-
 const tabs = [
   { name: "Edit", value: "edit", testId: "edit-blog-toggle" },
-  { name: "Preview Card", value: "card", testId: "preview-card-blog-toggle" },
-  { name: "Preview Page", value: "page", testId: "preview-page-blog-toggle" },
+  { name: "Preview", value: "preview", testId: "preview-page-blog-toggle" },
 ];
 
 return (
@@ -565,9 +520,6 @@ return (
           defaultValue={tabs.find((tab) => tab.value === previewMode).name}
         >
           {tabs.map((tab) => {
-            if (tab.value === previewMode) {
-              return;
-            }
             return (
               <option key={tab.name} onClick={() => setPreviewMode(tab.value)}>
                 {tab.name}
@@ -708,13 +660,42 @@ return (
           </div>
         </div>
       )}
-      {(previewMode === "page" || previewMode === "card") && (
+      {previewMode === "preview" && (
         <div
-          className="w-100 h-100 p-4"
+          className="w-100 h-100 p-4 flex flex-column gap-4"
           id="preview"
           style={{ position: "relative" }}
         >
-          <Preview />
+          <Card
+            data={{
+              title,
+              subtitle,
+              description,
+              publishedAt: date,
+              content,
+              author,
+              category,
+              community: handle,
+            }}
+          />
+
+          <Widget
+            src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page"
+            props={{
+              data: {
+                title,
+                subtitle,
+                description,
+                publishedAt: date,
+                content,
+                author,
+                category,
+                community: handle,
+                communityAddonId,
+              },
+              community: handle,
+            }}
+          />
         </div>
       )}
     </div>

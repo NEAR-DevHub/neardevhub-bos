@@ -279,6 +279,7 @@ const searchInput = useMemo(
         props={{
           key: "search-blog-posts",
           className: "flex-grow-1",
+          skipPaddingGap: true,
           placeholder: "search blog posts",
           debounceTimeout: 300,
           onChange: (e) => {
@@ -340,7 +341,7 @@ return (
         {data.subtitle || ""}
       </SubHeading>
     )}
-    <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
+    <div className="d-flex justify-content-start flex-wrap gap-2 align-items-center mb-5">
       {data.searchEnabled ? searchInput : ""}
       {data.categoriesEnabled ? categoryInput : ""}
     </div>
