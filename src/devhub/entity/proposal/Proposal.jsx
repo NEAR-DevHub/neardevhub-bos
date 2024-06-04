@@ -525,10 +525,15 @@ const editProposalStatus = ({ timeline }) => {
       gas: 270000000000000,
     },
   ]);
+  setEditProposalTimelineCalled(true);
 };
 
 const [isReviewModalOpen, setReviewModal] = useState(false);
 const [isCancelModalOpen, setCancelModal] = useState(false);
+const [isEditProposalTimelineCalled, setEditProposalTimelineCalled] =
+  useState(false);
+const [showTimeLineStatusSubmittedToast, setShowTimeLineStatusSubmittedToast] =
+  useState(false);
 const [showTimelineSetting, setShowTimelineSetting] = useState(false);
 const proposalStatus = useCallback(
   () =>
@@ -540,6 +545,10 @@ const proposalStatus = useCallback(
 const [updatedProposalStatus, setUpdatedProposalStatus] = useState({});
 
 useEffect(() => {
+  if (isEditProposalTimelineCalled) {
+    setShowTimeLineStatusSubmittedToast(true);
+    setEditProposalTimelineCalled(false);
+  }
   setUpdatedProposalStatus({
     ...proposalStatus(),
     value: { ...proposalStatus().value, ...snapshot.timeline },
@@ -616,6 +625,17 @@ const createdDate =
 
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
+    <Widget
+      src="near/widget/DIG.Toast"
+      props={{
+        title: "Timeline status submitted successfully",
+        type: "success",
+        open: showTimeLineStatusSubmittedToast,
+        onOpenChange: (v) => setShowTimeLineStatusSubmittedToast(v),
+        trigger: <></>,
+        providerProps: { duration: 3000 },
+      }}
+    />
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal"}
       props={{

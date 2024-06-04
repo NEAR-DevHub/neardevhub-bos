@@ -79,12 +79,13 @@ State.init({
   data: null,
   socialComments: null,
   changedKeysListWithValues: null,
+  snapshotHistoryLength: 0,
 });
 
 function sortTimelineAndComments() {
   const comments = Social.index("comment", props.item, { subscribe: true });
 
-  if (state.changedKeysListWithValues === null) {
+  if (snapshotHistory.length > state.snapshotHistoryLength) {
     const changedKeysListWithValues = snapshotHistory
       .slice(1)
       .map((item, index) => {
@@ -94,7 +95,10 @@ function sortTimelineAndComments() {
           ...getDifferentKeysWithValues(startingPoint, item),
         };
       });
-    State.update({ changedKeysListWithValues });
+    State.update({
+      changedKeysListWithValues,
+      snapshotHistoryLength: snapshotHistory.length,
+    });
   }
 
   // sort comments and timeline logs by time
