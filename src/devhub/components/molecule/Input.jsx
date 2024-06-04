@@ -14,6 +14,7 @@ const TextInput = ({
   error,
   ...otherProps
 }) => {
+  onChange = typeof onChange === "function" ? onChange : () => {};
   State.init({
     data: value,
     error: error,
@@ -162,7 +163,7 @@ const TextInput = ({
               value={state.data}
               onChange={(e) => State.update({ data: e.target.value })}
               onBlur={(e) => {
-                if (props.onBlur) {
+                if (typeof onBlur === "function") {
                   onBlur({ target: { value: e.target.value } });
                 }
               }}
@@ -191,7 +192,7 @@ const TextInput = ({
           value={state.data}
           onChange={(e) => State.update({ data: e.target.value })}
           onBlur={(e) => {
-            if (props.onBlur) {
+            if (typeof onBlur === "function") {
               onBlur({ target: { value: e.target.value } });
             }
           }}
