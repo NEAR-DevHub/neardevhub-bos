@@ -10,6 +10,8 @@ import {
   decodeResultJSON,
   encodeResultJSON,
 } from "../util/transaction.js";
+import { mockRpcRequest } from "../util/rpcmock.js";
+import { mockSocialIndexResponses } from "../util/socialapi.js";
 
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
@@ -234,6 +236,105 @@ test.describe("Don't ask again enabled", () => {
     await expect(
       await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText("Add your comment here...");
+    await pauseIfVideoRecording(page);
+  });
+});
+test.describe('Moderator with "Don\'t ask again" enabled', () => {
+  test.use({
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
+  });
+  test("should edit proposal timeline", async ({ page }) => {
+    test.setTimeout(60000);
+    let isTransactionCompleted = false;
+
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+    await mockRpcRequest({
+      page,
+      filterParams: {
+        method_name: "get_proposal",
+      },
+      modifyOriginalResultFunction: (originalResult) => {
+        originalResult.snapshot.timeline.status = "REVIEW";
+
+        if (isTransactionCompleted) {
+          const lastSnapshot =
+            originalResult.snapshot_history[
+              originalResult.snapshot_history.length - 1
+            ];
+          lastSnapshot.timeline.status = "REVIEW";
+
+          const newSnapshot = Object.assign({}, originalResult.snapshot);
+          newSnapshot.timeline.status = "APPROVED";
+          newSnapshot.timestamp = (
+            BigInt(new Date().getTime()) * 1_000_000n
+          ).toString();
+          originalResult.snapshot = newSnapshot;
+          originalResult.snapshot_history.push(lastSnapshot);
+        }
+
+        return originalResult;
+      },
+    });
+
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({
+        route,
+        request,
+        transaction_completed,
+        last_receiver_id,
+        requestPostData,
+      }) => {
+        isTransactionCompleted = transaction_completed;
+        await route.fallback();
+      }
+    );
+
+    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    await setDontAskAgainCacheValues({
+      page,
+      contractId: "devhub.near",
+      widgetSrc: "devhub.near/widget/devhub.entity.proposal.Proposal",
+      methodName: "edit_proposal_timeline",
+    });
+
+    const firstStatusBadge = await page
+      .locator("div.fw-bold.rounded-2.p-1.px-2")
+      .first();
+    await expect(firstStatusBadge).toHaveText("REVIEW");
+    await page.locator(".d-flex > div > .bi").click();
+    await page.getByRole("button", { name: "Review", exact: true }).click();
+    await page.getByText("Approved", { exact: true }).first().click();
+
+    await pauseIfVideoRecording(page);
+
+    const saveButton = await page.getByRole("button", { name: "Save" });
+    await saveButton.scrollIntoViewIfNeeded();
+    await page.getByRole("button", { name: "Save" }).click();
+
+    const callContractToast = await page.getByText("Sending transaction");
+    await expect(callContractToast).toBeVisible();
+    await expect(callContractToast).not.toBeAttached();
+    const timeLineStatusSubmittedToast = await page.getByText(
+      "Timeline status submitted"
+    );
+    await expect(timeLineStatusSubmittedToast).toBeVisible();
+
+    await expect(firstStatusBadge).toHaveText("APPROVED");
+    await firstStatusBadge.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+    const lastLogItem = await page.locator(
+      "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
+      { hasText: /.*s ago/ }
+    );
+    await expect(lastLogItem).toContainText(
+      "moved proposal from REVIEW to APPROVED"
+    );
+    await lastLogItem.scrollIntoViewIfNeeded();
+    await expect(timeLineStatusSubmittedToast).not.toBeAttached();
     await pauseIfVideoRecording(page);
   });
 });
