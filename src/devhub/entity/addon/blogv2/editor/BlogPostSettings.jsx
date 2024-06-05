@@ -292,7 +292,7 @@ return (
       <div>
         <div className="d-flex justify-content-between">
           <div>
-            <h2 className="text-xl font-bold leading-7 text-gray-900">
+            <h2 className="text-xl font-semibold leading-7 text-gray-600">
               Blog List Page
             </h2>
             <p className="mt-1 text-sm leading-6 text-gray-500">
@@ -365,7 +365,7 @@ return (
         {PostsPerPageComponent}
       </InputContainer>
       <div>
-        <h2 className="text-xl font-bold leading-7 text-gray-900">
+        <h2 className="text-xl font-semibold leading-7 text-gray-600">
           Blog Post Fields
         </h2>
         <p className="mt-1 text-sm leading-6 text-gray-500">
