@@ -633,14 +633,15 @@ const SubmitBtn = () => {
   const handleOptionClick = (option) => {
     setDraftBtnOpen(false);
     setSelectedStatus(option.value);
+    handleSubmit(option.value);
   };
 
   const toggleDropdown = () => {
     setDraftBtnOpen(!isDraftBtnOpen);
   };
 
-  const handleSubmit = () => {
-    const isDraft = selectedStatus === "draft";
+  const handleSubmit = (status) => {
+    const isDraft = status === "draft";
     if (isDraft) {
       onSubmit({ isDraft });
       cleanDraft();
@@ -665,7 +666,7 @@ const SubmitBtn = () => {
           }
         >
           <div
-            onClick={() => !disabledSubmitBtn && handleSubmit()}
+            onClick={() => !disabledSubmitBtn && handleSubmit(selectedStatus)}
             className="p-2 d-flex gap-2 align-items-center "
           >
             {isTxnCreated ? (
