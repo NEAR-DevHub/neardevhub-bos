@@ -1,12 +1,17 @@
 import { test, expect } from "@playwright/test";
 import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
 import { pauseIfVideoRecording } from "../../testUtils.js";
-import { setDontAskAgainCacheValues } from "../../util/cache.js";
+import {
+  setCommitWritePermissionDontAskAgainCacheValues,
+  setDontAskAgainCacheValues,
+} from "../../util/cache.js";
 import {
   mockTransactionSubmitRPCResponses,
   decodeResultJSON,
   encodeResultJSON,
 } from "../../util/transaction.js";
+import { mockRpcRequest } from "../../util/rpcmock.js";
+import { mockSocialIndexResponses } from "../../util/socialapi.js";
 
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
@@ -150,6 +155,186 @@ test.describe("Don't ask again enabled", () => {
     await expect(loadingIndicator).not.toBeVisible();
 
     await page.waitForTimeout(1000);
+    await pauseIfVideoRecording(page);
+  });
+  test("should add comment on a proposal", async ({ page }) => {
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    const widgetSrc =
+      "devhub.near/widget/devhub.entity.proposal.ComposeComment";
+
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const commentArea = await page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentArea.focus();
+    const text = "Comment testing";
+    await commentArea.pressSequentially(text, {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await commentArea.blur();
+    await pauseIfVideoRecording(page);
+
+    const account = "petersalomonsen.near";
+    await setCommitWritePermissionDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      accountId: account,
+    });
+
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        const postData = request.postDataJSON();
+        const args_base64 = postData.params?.args_base64;
+        if (transaction_completed && args_base64) {
+          const args = atob(args_base64);
+          if (
+            postData.params.account_id === "social.near" &&
+            postData.params.method_name === "get" &&
+            args === `{"keys":["${account}/post/**"]}`
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+            const resultObj = decodeResultJSON(json.result.result);
+            resultObj[account].post.main = JSON.stringify({
+              text: text,
+            });
+            json.result.result = encodeResultJSON(resultObj);
+            await route.fulfill({ response, json });
+            return;
+          } else {
+            await route.continue();
+          }
+        } else {
+          await route.continue();
+        }
+      }
+    );
+    const commentButton = await page.getByRole("button", { name: "Comment" });
+    await commentButton.scrollIntoViewIfNeeded();
+    await commentButton.click();
+    await expect(
+      await page.frameLocator("iframe").locator(".CodeMirror")
+    ).toContainText(text);
+    const loadingIndicator = await page.locator(".comment-btn-spinner");
+    await expect(loadingIndicator).toBeAttached();
+    await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
+    await expect(loadingIndicator).not.toBeVisible();
+    const transaction_successful_toast = await page.getByText(
+      "Comment Submitted Successfully",
+      { exact: true }
+    );
+    await expect(transaction_successful_toast).toBeVisible();
+
+    await expect(transaction_successful_toast).not.toBeAttached();
+    await expect(
+      await page.frameLocator("iframe").locator(".CodeMirror")
+    ).not.toContainText(text);
+    await expect(
+      await page.frameLocator("iframe").locator(".CodeMirror")
+    ).toContainText("Add your comment here...");
+    await pauseIfVideoRecording(page);
+  });
+});
+test.describe('Moderator with "Don\'t ask again" enabled', () => {
+  test.use({
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
+  });
+  test("should edit proposal timeline", async ({ page }) => {
+    test.setTimeout(60000);
+    let isTransactionCompleted = false;
+
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+    await mockRpcRequest({
+      page,
+      filterParams: {
+        method_name: "get_proposal",
+      },
+      modifyOriginalResultFunction: (originalResult) => {
+        originalResult.snapshot.timeline.status = "REVIEW";
+
+        if (isTransactionCompleted) {
+          const lastSnapshot =
+            originalResult.snapshot_history[
+              originalResult.snapshot_history.length - 1
+            ];
+          lastSnapshot.timeline.status = "REVIEW";
+
+          const newSnapshot = Object.assign({}, originalResult.snapshot);
+          newSnapshot.timeline.status = "APPROVED";
+          newSnapshot.timestamp = (
+            BigInt(new Date().getTime()) * 1_000_000n
+          ).toString();
+          originalResult.snapshot = newSnapshot;
+          originalResult.snapshot_history.push(lastSnapshot);
+        }
+
+        return originalResult;
+      },
+    });
+
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({
+        route,
+        request,
+        transaction_completed,
+        last_receiver_id,
+        requestPostData,
+      }) => {
+        isTransactionCompleted = transaction_completed;
+        await route.fallback();
+      }
+    );
+
+    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    await setDontAskAgainCacheValues({
+      page,
+      contractId: "devhub.near",
+      widgetSrc: "devhub.near/widget/devhub.entity.proposal.Proposal",
+      methodName: "edit_proposal_timeline",
+    });
+
+    const firstStatusBadge = await page
+      .locator("div.fw-bold.rounded-2.p-1.px-2")
+      .first();
+    await expect(firstStatusBadge).toHaveText("REVIEW");
+    await page.locator(".d-flex > div > .bi").click();
+    await page.getByRole("button", { name: "Review", exact: true }).click();
+    await page.getByText("Approved", { exact: true }).first().click();
+
+    await pauseIfVideoRecording(page);
+
+    const saveButton = await page.getByRole("button", { name: "Save" });
+    await saveButton.scrollIntoViewIfNeeded();
+    await page.getByRole("button", { name: "Save" }).click();
+
+    const callContractToast = await page.getByText("Sending transaction");
+    await expect(callContractToast).toBeVisible();
+    await expect(callContractToast).not.toBeAttached();
+    const timeLineStatusSubmittedToast = await page.getByText(
+      "Timeline status submitted"
+    );
+    await expect(timeLineStatusSubmittedToast).toBeVisible();
+
+    await expect(firstStatusBadge).toHaveText("APPROVED");
+    await firstStatusBadge.scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+    const lastLogItem = await page.locator(
+      "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
+      { hasText: /.*s ago/ }
+    );
+    await expect(lastLogItem).toContainText(
+      "moved proposal from REVIEW to APPROVED"
+    );
+    await lastLogItem.scrollIntoViewIfNeeded();
+    await expect(timeLineStatusSubmittedToast).not.toBeAttached();
     await pauseIfVideoRecording(page);
   });
 });
@@ -369,6 +554,33 @@ test.describe("Wallet is connected", () => {
       )
     );
 
+    await pauseIfVideoRecording(page);
+  });
+
+  test("should show only valid input in amount field and show error for invalid", async ({
+    page,
+  }) => {
+    test.setTimeout(120000);
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    const input = page.locator('input[type="text"]').nth(2);
+    const errorText = await page.getByText(
+      "Please enter the nearest positive whole number."
+    );
+    await input.pressSequentially("12345de", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await expect(errorText).toBeVisible();
+    // clear input field
+    for (let i = 0; i < 7; i++) {
+      await input.press("Backspace", {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      });
+    }
+    await input.pressSequentially("12334", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await expect(errorText).toBeHidden();
     await pauseIfVideoRecording(page);
   });
 });

@@ -157,6 +157,7 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
         request,
         transaction_completed,
         last_receiver_id,
+        requestPostData,
       });
     } else {
       await route.continue();

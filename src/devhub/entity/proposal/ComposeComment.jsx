@@ -1,6 +1,6 @@
 const proposalId = props.id;
 const draftKey = "COMMENT_DRAFT" + proposalId;
-const draftComment = Storage.privateGet(draftKey);
+let draftComment = "";
 
 const ComposeEmbeddCSS = `
   .CodeMirror {
@@ -14,6 +14,7 @@ const ComposeEmbeddCSS = `
 
   .CodeMirror-scroll{
     min-height: 50px !important;
+    max-height: 300px !important;
   }
 `;
 const notifyAccountId = props.notifyAccountId;
@@ -21,23 +22,47 @@ const accountId = context.accountId;
 const item = props.item;
 const [allowGetDraft, setAllowGetDraft] = useState(true);
 const [comment, setComment] = useState(null);
+const [isTxnCreated, setTxnCreated] = useState(false);
+const [handler, setHandler] = useState("update"); // to update editor state on draft and txn approval
+const [showCommentToast, setCommentToast] = useState(false);
+
+if (allowGetDraft) {
+  draftComment = Storage.privateGet(draftKey);
+}
 
 useEffect(() => {
-  if (draftComment && allowGetDraft) {
+  if (draftComment) {
     setComment(draftComment);
     setAllowGetDraft(false);
+    setHandler("refreshEditor");
   }
 }, [draftComment]);
 
 useEffect(() => {
+  if (draftComment === comment) {
+    return;
+  }
   const handler = setTimeout(() => {
-    if (comment !== draftComment) Storage.privateSet(draftKey, comment);
-  }, 2000);
+    Storage.privateSet(draftKey, comment);
+  }, 1000);
 
   return () => {
     clearTimeout(handler);
   };
-}, [comment, draftKey]);
+}, [comment]);
+
+useEffect(() => {
+  if (handler === "update") {
+    return;
+  }
+  const handler = setTimeout(() => {
+    setHandler("update");
+  }, 3000);
+
+  return () => {
+    clearTimeout(handler);
+  };
+}, [handler]);
 
 if (!accountId) {
   return (
@@ -98,6 +123,7 @@ function extractTagNotifications(text, item) {
 }
 
 function composeData() {
+  setTxnCreated(true);
   const data = {
     post: {
       comment: JSON.stringify({
@@ -141,9 +167,14 @@ function composeData() {
   Social.set(data, {
     force: true,
     onCommit: () => {
+      setCommentToast(true);
       setComment("");
+      setHandler("committed");
+      setTxnCreated(false);
     },
-    onCancel: () => {},
+    onCancel: () => {
+      setTxnCreated(false);
+    },
   });
 }
 
@@ -153,8 +184,45 @@ useEffect(() => {
   }
 }, [props.transactionHashes]);
 
+const LoadingButtonSpinner = (
+  <span
+    class="comment-btn-spinner spinner-border spinner-border-sm"
+    role="status"
+    aria-hidden="true"
+  ></span>
+);
+
+const Compose = useMemo(() => {
+  return (
+    <Widget
+      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
+      props={{
+        data: comment,
+        onChangeKeyup: setComment,
+        autocompleteEnabled: true,
+        placeholder: "Add your comment here...",
+        height: "250",
+        embeddCSS: ComposeEmbeddCSS,
+        handler: handler,
+        showProposalIdAutoComplete: true,
+      }}
+    />
+  );
+}, [draftComment, handler]);
+
 return (
   <div className="d-flex gap-2">
+    <Widget
+      src="near/widget/DIG.Toast"
+      props={{
+        title: "Comment Submitted Successfully",
+        type: "success",
+        open: showCommentToast,
+        onOpenChange: (v) => setCommentToast(v),
+        trigger: <></>,
+        providerProps: { duration: 3000 },
+      }}
+    />
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
       props={{
@@ -163,24 +231,14 @@ return (
     />
     <div className="d-flex flex-column gap-2 w-100">
       <b className="mt-1">Add a comment</b>
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
-        props={{
-          data: comment,
-          onChange: setComment,
-          autocompleteEnabled: true,
-          placeholder: "Add your comment here...",
-          height: "160",
-          embeddCSS: ComposeEmbeddCSS,
-          showProposalIdAutoComplete: true,
-        }}
-      />
+      {Compose}
       <div className="d-flex gap-2 align-content-center justify-content-end">
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
-            label: "Comment",
-            disabled: !comment,
+            label: isTxnCreated ? LoadingButtonSpinner : "Comment",
+            ["data-testid"]: "compose-comment",
+            disabled: !comment || isTxnCreated,
             classNames: { root: "green-btn btn-sm" },
             onClick: () => {
               composeData();
