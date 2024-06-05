@@ -245,6 +245,19 @@ const processedData = flattenBlogObject(blogData)
     return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
   });
 
+// Pagination
+const [currentPage, setCurrentPage] = useState(0);
+const amountOfBlogPosts = processedData.length;
+const amountOfBlogPostsPerPage = data.postPerPage;
+const amountOfPages = Math.ceil(amountOfBlogPosts / amountOfBlogPostsPerPage);
+let currentPageData = processedData.slice(
+  currentPage * amountOfBlogPostsPerPage,
+  (currentPage + 1) * amountOfBlogPostsPerPage
+);
+const showPreviousButton = currentPage !== 0;
+const showNextButton = currentPage !== amountOfPages - 1;
+// End Pagination
+
 function BlogCardWithLink(flattenedBlog) {
   return (
     <Link
@@ -347,40 +360,47 @@ return (
     </div>
     <Grid>
       {processedData &&
-        processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))}
+        currentPageData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))}
     </Grid>
     <Tailwind>
       <div className="flex mx-auto w-max pt-10">
         <Pagination>
           <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious className={paginationLinkPrevious} href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink className={paginationLink} href="#">
-                1
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink
-                className={paginationLinkActive}
-                href="#"
-                isActive
-              >
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink className={paginationLink} href="#">
-                3
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext className={paginationLinkNext} href="#" />
-            </PaginationItem>
+            {showPreviousButton && (
+              <PaginationItem>
+                <PaginationPrevious
+                  className={paginationLinkPrevious}
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                />
+              </PaginationItem>
+            )}
+            {[...Array(amountOfPages)].map((_, index) => {
+              console.log("index", index);
+              console.log("is active", index === currentPage);
+              return (
+                <PaginationItem>
+                  <PaginationLink
+                    className={
+                      index === currentPage
+                        ? paginationLinkActive
+                        : paginationLink
+                    }
+                    isActive={index === currentPage}
+                    onClick={() => setCurrentPage(index)}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            })}
+            {showNextButton && (
+              <PaginationItem>
+                <PaginationNext
+                  className={paginationLinkNext}
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                />
+              </PaginationItem>
+            )}
           </PaginationContent>
         </Pagination>
       </div>
