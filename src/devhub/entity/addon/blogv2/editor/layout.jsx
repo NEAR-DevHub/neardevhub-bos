@@ -77,6 +77,7 @@ return (
                 }
                 props={{
                   title: "Settings",
+                  color: "rgb(104, 112, 118)",
                   onClick: () => setShowScreen("settings"),
                   testId: "settings-button",
                   icon: "bi-gear-fill",
