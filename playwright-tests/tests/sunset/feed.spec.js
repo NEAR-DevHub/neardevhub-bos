@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { pauseIfVideoRecording } from "../testUtils.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
 
 test.skip("should show post history for posts in the feed", async ({
   page,

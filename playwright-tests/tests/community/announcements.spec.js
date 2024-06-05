@@ -1,12 +1,12 @@
 import { test, expect } from "@playwright/test";
-import { setDontAskAgainCacheValues } from "../util/cache.js";
-import { pauseIfVideoRecording } from "../testUtils";
+import { setDontAskAgainCacheValues } from "../../util/cache.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
 import {
   mockTransactionSubmitRPCResponses,
   decodeResultJSON,
   encodeResultJSON,
-} from "../util/transaction.js";
-import { mockDefaultTabs } from "../util/addons.js";
+} from "../../util/transaction.js";
+import { mockDefaultTabs } from "../../util/addons.js";
 
 test.beforeEach(async ({ page }) => {
   await page.route("https://rpc.mainnet.near.org/", async (route) => {
