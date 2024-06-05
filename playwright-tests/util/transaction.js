@@ -54,8 +54,8 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
   let lastViewedAccessKey;
   await page.route("https://rpc.mainnet.near.org/", async (route) => {
     const request = await route.request();
-
     const requestPostData = request.postDataJSON();
+
     if (
       requestPostData.params &&
       requestPostData.params.request_type === "view_access_key_list"

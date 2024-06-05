@@ -6,6 +6,7 @@ const TextInput = ({
   label,
   multiline,
   onChange,
+  debounceTimeout,
   placeholder,
   type,
   value,
@@ -44,7 +45,7 @@ const TextInput = ({
       }
       const handler = setTimeout(() => {
         onChange({ target: { value: inputValue }, error: inputError });
-      }, 30);
+      }, debounceTimeout || 30);
 
       return () => {
         clearTimeout(handler);
@@ -171,11 +172,12 @@ const TextInput = ({
               aria-describedby={key}
               data-testid={key}
               aria-label={label}
-              className={[
-                "form-control border",
-                inputClassName,
-                inputProps.prefix ? "border-start-0" : "",
-              ].join(" ")}
+              className={
+                inputClassName ||
+                `form-control border ${
+                  inputProps.prefix ? "border-start-0" : ""
+                }`
+              }
               type={typeAttribute}
               maxLength={inputProps.max}
               value={getFormattedData()}

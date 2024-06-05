@@ -2,6 +2,12 @@ const { getAllAddons } =
   VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
   (() => {});
 
+const { generateRandom6CharUUID } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.stringUtils"
+);
+
+generateRandom6CharUUID || (generateRandom6CharUUID = () => {});
+
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 const availableAddons = getAllAddons() || [];
@@ -53,18 +59,6 @@ const Row = styled.tr``;
 const Cell = styled.td`
   padding: 10px;
 `;
-
-function generateRandom6CharUUID() {
-  const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-  let result = "";
-
-  for (let i = 0; i < 6; i++) {
-    const randomIndex = Math.floor(Math.random() * chars.length);
-    result += chars[randomIndex];
-  }
-
-  return result;
-}
 
 const AddonItem = ({
   data,
@@ -211,9 +205,28 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
 
   const [selectedAddon, setSelectedAddon] = useState(null);
 
+  /**
+   * Necessary solution to migrate the old blogs to the new blogv2.
+   * Since the blogs are migrated before the addon instance is created.
+   */
+  const getRandomIdExceptFirstBlogV2Instance = (selectedAddonId) => {
+    if (selectedAddonId !== "blogv2") {
+      return generateRandom6CharUUID();
+    }
+    const firstBlogV2Addon = availableAddons.find(
+      (addon) => addon.id === "blogv2"
+    );
+    if (!firstBlogV2Addon) {
+      // If no blogv2 addon is found, return a static id
+      // "first-blogv2-no-random-id";
+      return "blogv2";
+    }
+    return `blogv2-id-${generateRandom6CharUUID()}`;
+  };
+
   const handleAddItem = () => {
     const newItem = {
-      id: generateRandom6CharUUID(),
+      id: getRandomIdExceptFirstBlogV2Instance(selectedAddon.id),
       addon_id: selectedAddon.id,
       display_name: selectedAddon.title,
       enabled: true,

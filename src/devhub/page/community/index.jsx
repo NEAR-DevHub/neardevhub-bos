@@ -38,7 +38,7 @@ const NavUnderline = styled.ul`
   border-bottom: 1px solid #cccccc;
 `;
 
-const { tab, permissions, community, view } = props;
+const { tab, permissions, community } = props;
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
@@ -53,6 +53,8 @@ if (!tab) {
 tab = normalize(tab);
 
 const [isLinkCopied, setLinkCopied] = useState(false);
+// Addons have either 2 or 1 child widgets, viewer and configure or only the viewer
+const [addonView, setAddonView] = useState("viewer");
 
 const tabs = [];
 
@@ -60,7 +62,6 @@ const tabs = [];
   addon.enabled &&
     tabs.push({
       title: addon.display_name,
-      view: "${REPL_DEVHUB}/widget/devhub.page.addon",
       params: {
         addon,
         handle: community.handle,
@@ -276,7 +277,11 @@ return (
         {tabs.map(
           ({ title }) =>
             title && (
-              <li className="nav-item" key={title}>
+              <li
+                className="nav-item"
+                key={title}
+                onClick={() => setAddonView("viewer")}
+              >
                 <Link
                   to={href({
                     widgetSrc: "${REPL_DEVHUB}/widget/app",
@@ -344,11 +349,11 @@ return (
     {currentTab && (
       <div className="d-flex w-100 h-100" key={currentTab.title}>
         <Widget
-          src={currentTab.view}
+          src={"${REPL_DEVHUB}/widget/devhub.page.addon"}
           props={{
             ...currentTab.params,
-            view, // default view for an addon, can come as a prop from a community or from a direct link to page.addon
-
+            addonView,
+            setAddonView,
             // below is temporary prop drilling until kanban and github are migrated
             permissions,
             handle: community.handle,
