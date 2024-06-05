@@ -335,19 +335,19 @@ return (
       </InputContainer>
       <InputContainer
         heading="Subtitle"
-        description="Provide a brief subtitle for the blog"
+        description="Provide a brief subtitle for the blog."
       >
         {SubtitleComponent}
       </InputContainer>
       <InputContainer
         heading="Author visible"
-        description="Show the author of the blog post."
+        description="Show the author of each blog post."
       >
         {AuthorEnabledSwitchComponent}
       </InputContainer>
       <InputContainer
         heading="Search"
-        description="Enable or disable the user to search for blog posts"
+        description="Enable or disable the user to search for blog posts."
       >
         {SearchSwitchComponent}
       </InputContainer>
@@ -360,7 +360,7 @@ return (
       </InputContainer>
       <InputContainer
         heading="Number of blogs per page (Numbers Only)"
-        description="Number of visible blog cards displayed per blog tab"
+        description="Number of visible blog cards displayed per blog tab."
       >
         {PostsPerPageComponent}
       </InputContainer>
@@ -382,7 +382,7 @@ return (
       </InputContainer>
       <InputContainer
         heading="Manage categories"
-        description="Add/edit/delete up to 10 custom category options"
+        description="Add/edit/delete up to 10 custom category options."
       >
         {CategoriesEditor}
       </InputContainer>
