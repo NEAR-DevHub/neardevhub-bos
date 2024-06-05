@@ -3,8 +3,6 @@ normalize || (normalize = () => {});
 
 const { data, onHideSettings, onSubmit } = props;
 
-// console.log("addonParametersJSON", addonParametersJSON);
-
 const [title, setTitle] = useState(data.title || "");
 const [subtitle, setSubtitle] = useState(data.subtitle || "");
 const [authorEnabled, setAuthorEnabled] = useState(
@@ -22,10 +20,10 @@ const [categoriesEnabled, setCategoriesEnabled] = useState(
   data.categoriesEnabled || "disabled" // 'enabled', 'disabled'
 );
 // TODO
-const [labels, setLabels] = useState(data.categories || []);
-const [categories, setCategories] = useState(
-  (data.categories || []).map((o) => o.category)
-);
+const filteredCategories =
+  data.categories.filter((categories) => categories !== null) || [];
+console.log("filteredCategories", filteredCategories);
+const [selected, setSelected] = useState(filteredCategories);
 // TODO
 const [categoryRequired, setCategoryRequired] = useState(
   data.categoryRequired || "not_required" // required | not_required
@@ -92,6 +90,7 @@ const AuthorEnabledSwitchComponent = useMemo(() => {
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.Switch"
       props={{
+        className: "w-32 shadow-none",
         currentValue: authorEnabled,
         key: "authorEnabled",
         onChange: (e) => setAuthorEnabled(e.target.value),
@@ -110,6 +109,8 @@ const SearchSwitchComponent = useMemo(() => {
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.Switch"
       props={{
+        className: "w-32 shadow-none",
+
         currentValue: searchEnabled,
         key: "search",
         onChange: (e) => setSearchEnabled(e.target.value),
@@ -128,6 +129,8 @@ const OrderBySwitchComponent = useMemo(() => {
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.Switch"
       props={{
+        className: "shadow-none",
+        style: { width: "24rem" },
         currentValue: orderBy,
         key: "orderBy",
         onChange: (e) => setOrderBy(e.target.value),
@@ -163,6 +166,7 @@ const CategoriesEnabledComponent = useMemo(() => {
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.Switch"
       props={{
+        className: "w-32 shadow-none",
         currentValue: categoriesEnabled,
         key: "categories",
         onChange: (e) => setCategoriesEnabled(e.target.value),
@@ -182,6 +186,8 @@ const CategoryRequiredSwitchComponent = useMemo(() => {
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.Switch"
       props={{
+        className: "shadow-none",
+        style: { width: "12rem" },
         currentValue: categoryRequired,
         key: "categoryRequired",
         onChange: (e) => setCategoryRequired(e.target.value),
@@ -204,10 +210,8 @@ const onChangeCategories = (_labels) => {
     category: o.category, // labelKey == category
     value: normalize(o.category),
   }));
-  let categoriesArray = [];
-  categoriesArray = _labels.map((o) => o.category);
-  setCategories(categoriesArray);
-  setLabels(_labels);
+  // This is for the Typeahead
+  setSelected(_labels);
 };
 
 const CategoriesEditor = useMemo(() => {
@@ -216,7 +220,7 @@ const CategoriesEditor = useMemo(() => {
     .map((category) => {
       return { category };
     })
-    .filter((o) => !categories.includes(o.category));
+    .filter((o) => !selected.includes(o.category));
 
   return (
     <Typeahead
@@ -226,7 +230,7 @@ const CategoriesEditor = useMemo(() => {
       onChange={onChangeCategories}
       options={options}
       placeholder="News, Guide, Reference, etc."
-      selected={labels}
+      selected={selected}
       positionFixed
       caseSensitive={true}
       allowNew={(results, props) => {
@@ -235,17 +239,13 @@ const CategoriesEditor = useMemo(() => {
       }}
     />
   );
-}, [categories, labels]);
+}, [selected]);
 
 const FormContainer = styled.div`
   & > *:not(:last-child) {
     margin-bottom: 2rem;
   }
 `;
-
-useEffect(() => {
-  console.log(categories);
-}, [categories]);
 
 /**
  * If the settings are empty we use default values for blog settings
@@ -259,9 +259,7 @@ const handleOnSubmit = () => {
   const cEnabled = categoriesEnabled || "disabled";
   // If categories are enabled there must be at least 1 category
   const cats =
-    cEnabled == "enabled" && categories && categories.length > 0
-      ? categories
-      : [];
+    cEnabled == "enabled" && selected && selected.length > 0 ? selected : [];
   // If categories are empty they can not be required
   const req = cats.length ? categoryRequired : "not_required";
 
@@ -292,9 +290,7 @@ return (
       <div>
         <div className="d-flex justify-content-between">
           <div>
-            <h2 className="text-xl font-semibold leading-7 text-gray-600">
-              Blog List Page
-            </h2>
+            <h2 className="text-xl leading-7 text-gray-600">Blog List Page</h2>
             <p className="mt-1 text-sm leading-6 text-gray-500">
               This information will be displayed publicly.
             </p>
@@ -365,9 +361,7 @@ return (
         {PostsPerPageComponent}
       </InputContainer>
       <div>
-        <h2 className="text-xl font-semibold leading-7 text-gray-600">
-          Blog Post Fields
-        </h2>
+        <h2 className="text-xl leading-7 text-gray-600">Blog Post Fields</h2>
         <p className="mt-1 text-sm leading-6 text-gray-500">
           The blog and preview card, both display the category when it is
           enabled.

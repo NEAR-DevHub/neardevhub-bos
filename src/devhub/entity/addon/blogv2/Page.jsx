@@ -129,7 +129,7 @@ let communityConfig = (community.addons || []).find(
 if (communityConfig === undefined) {
   return <div>Community addon not found</div>;
 }
-const parameters = JSON.parse(communityConfig.parameters) || {};
+const parameters = JSON.parse(communityConfig.parameters || {}) || {};
 
 const options = { year: "numeric", month: "short", day: "numeric" };
 const formattedDate = new Date(date).toLocaleString("en-US", options);
