@@ -356,7 +356,7 @@ return (
       </InputContainer>
       <InputContainer
         heading="Number of blogs per page (Numbers Only)"
-        description="Number of visible blog cards displayed per blog tab."
+        description="Number of visible blog cards displayed per blog tab. Minimum of 5 posts per page. It is recommended to be a multiple of 3."
       >
         {PostsPerPageComponent}
       </InputContainer>
