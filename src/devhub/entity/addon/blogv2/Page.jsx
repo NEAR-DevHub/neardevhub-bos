@@ -87,7 +87,7 @@ const Container = styled.div`
 
   .share-icon {
     position: absolute;
-    top: 18px;
+    top: 25px;
     right: 55px;
     cursor: pointer;
   }
@@ -133,38 +133,28 @@ const parameters = JSON.parse(communityConfig.parameters) || {};
 
 const options = { year: "numeric", month: "short", day: "numeric" };
 const formattedDate = new Date(date).toLocaleString("en-US", options);
-const [isLinkCopied, setLinkCopied] = useState(false);
-
-const onShareClick = () =>
-  clipboard
-    .writeText(
-      href({
-        gateway: httpbin?.body?.headers?.Origin.slice(8) ?? "near.social",
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "blogv2", community: community.handle, id: data.id },
-      })
-    )
-    .then(setLinkCopied(true));
 
 return (
   <>
     <BackgroundImage src={imagelink} />
     <Container>
-      <div
-        className="share-icon"
-        onClick={onShareClick}
-        onMouseLeave={() =>
-          setTimeout(() => {
-            setLinkCopied(false);
-          }, 1000)
-        }
-      >
-        {isLinkCopied ? (
-          <div class="bi bi-clipboard-check" style={{ fontSize: "30px" }}></div>
-        ) : (
-          <div class="bi bi-box-arrow-up" style={{ fontSize: "30px" }}></div>
-        )}
-      </div>
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.ShareButton"
+        props={{
+          className: "share-icon",
+          size: "35px",
+          postType: "blog",
+          externalLink: href({
+            gateway: httpbin?.body?.headers?.Origin.slice(8) ?? "near.social",
+            widgetSrc: "${REPL_DEVHUB}/widget/app",
+            params: {
+              page: "blogv2",
+              community: community.handle,
+              id: data.id,
+            },
+          }),
+        }}
+      />
       {isAllowedToEdit && (
         <div className="edit-icon" onClick={onEdit}>
           <div class="bi bi-pencil-square" style={{ fontSize: "30px" }}></div>
