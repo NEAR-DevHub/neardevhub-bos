@@ -1,3 +1,6 @@
+const { getLinkUsingCurrentGateway } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.url"
+) || { getLinkUsingCurrentGateway: () => {} };
 const snapshotHistory = props.snapshotHistory;
 
 const Wrapper = styled.div`
@@ -140,7 +143,9 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  const link = `https://near.social/${REPL_DEVHUB}/widget/app?page=proposal&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`;
+  const link = getLinkUsingCurrentGateway(
+    `${REPL_DEVHUB}/widget/app?page=proposal&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`
+  );
   const hightlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&
     props.accountId === accountId;
