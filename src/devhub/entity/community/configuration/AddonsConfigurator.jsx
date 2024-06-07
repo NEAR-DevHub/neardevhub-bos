@@ -213,12 +213,9 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
     if (selectedAddonId !== "blogv2") {
       return generateRandom6CharUUID();
     }
-    const firstBlogV2Addon = availableAddons.find(
-      (addon) => addon.id === "blogv2"
-    );
+    const firstBlogV2Addon = list.find((addon) => addon.id === "blogv2");
     if (!firstBlogV2Addon) {
       // If no blogv2 addon is found, return a static id
-      // "first-blogv2-no-random-id";
       return "blogv2";
     }
     return `blogv2-id-${generateRandom6CharUUID()}`;
