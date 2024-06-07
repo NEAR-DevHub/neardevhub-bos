@@ -205,7 +205,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
 
   const [selectedAddon, setSelectedAddon] = useState(null);
 
-/**
+  /**
    * Necessary solution to migrate the old blogs to the new blogv2.
    * Since the blogs are migrated before the addon instance is created.
    */
@@ -213,9 +213,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
     if (selectedAddonId !== "blogv2") {
       return generateRandom6CharUUID();
     }
-    const firstBlogV2Addon = list.find(
-      (addon) => addon.id === "blogv2"
-    );
+    const firstBlogV2Addon = list.find((addon) => addon.id === "blogv2");
     if (!firstBlogV2Addon) {
       // If no blogv2 addon is found, return a static id
       return "blogv2";
