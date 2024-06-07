@@ -41,7 +41,6 @@ function href({ gateway, widgetSrc, params }) {
 }
 
 function getLinkUsingCurrentGateway(url) {
-  console.log("called");
   const data = fetch(`https://httpbin.org/headers`);
   const gatewayURL = data?.body?.headers?.Origin ?? "";
   return `https://${
