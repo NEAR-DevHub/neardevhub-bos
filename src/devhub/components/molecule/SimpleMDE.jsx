@@ -2,7 +2,9 @@
  * iframe embedding a SimpleMDE component
  * https://github.com/sparksuite/simplemde-markdown-editor
  */
-
+const { getLinkUsingCurrentGateway } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.url"
+) || { getLinkUsingCurrentGateway: () => {} };
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
 const onChangeKeyup = props.onChangeKeyup ?? (() => {}); // in case where we want immediate action
@@ -42,6 +44,10 @@ ${queryName}(
   proposal_id
 }
 }`;
+
+const proposalLink = getLinkUsingCurrentGateway(
+  `devhub.near/widget/app?page=proposal&id=`
+);
 
 const code = `
 <!doctype html>
@@ -124,6 +130,7 @@ let codeMirrorInstance;
 let isEditorInitialized = false;
 let followingData = {};
 let profilesData = {};
+let proposalLink = '';
 let query = '';
 let showAccountAutoComplete = ${showAccountAutoComplete};
 let showProposalIdAutoComplete = ${showProposalIdAutoComplete};
@@ -213,7 +220,13 @@ async function getSuggestedProposals(id) {
     if (proposalId) {
       variables["where"] = { proposal_id: { _eq: id } };
     } else {
-      variables["where"] = { name: { _ilike: "%" + id + "%" } };
+      variables["where"] = {
+        _or: [
+          { name: { _iregex: id } },
+          { summary: { _iregex: id } },
+          { description: { _iregex: id } },
+        ],
+      };
     }
   }
   await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
@@ -402,7 +415,7 @@ if (showProposalIdAutoComplete) {
             const startIndex = selectedText.indexOf('#') + 1; 
             const endIndex = selectedText.indexOf(' ', startIndex);
             const id = endIndex !== -1 ? selectedText.substring(startIndex, endIndex) : selectedText.substring(startIndex);
-            const link = "https://near.social/devhub.near/widget/app?page=proposal&id=" + id;
+            const link = proposalLink + id;
             const adjustedStart = {
               line: referenceCursorStart.line,
               ch: referenceCursorStart.ch - 1
@@ -475,6 +488,9 @@ window.addEventListener("message", (event) => {
   if (event.data.query) {
     query = event.data.query;
   }
+  if (event.data.proposalLink) {
+    proposalLink = event.data.proposalLink;
+  }
 });
 </script>
 </body>
@@ -496,6 +512,7 @@ return (
       profilesData: JSON.stringify(profilesData),
       query: query,
       handler: props.data.handler,
+      proposalLink: proposalLink,
     }}
     onMessage={(e) => {
       switch (e.handler) {

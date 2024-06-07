@@ -40,4 +40,13 @@ function href({ gateway, widgetSrc, params }) {
   }
 }
 
-return { href };
+function getLinkUsingCurrentGateway(url) {
+  console.log("called");
+  const data = fetch(`https://httpbin.org/headers`);
+  const gatewayURL = data?.body?.headers?.Origin ?? "";
+  return `https://${
+    gatewayURL.includes("near.org") ? "dev.near.org" : "near.social"
+  }/${url}`;
+}
+
+return { href, getLinkUsingCurrentGateway };

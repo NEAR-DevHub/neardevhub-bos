@@ -519,7 +519,7 @@ const FeedPage = () => {
                     <span className="fw-bold">
                       Welcome to
                       <a
-                        href="https://near.social/devhub.near/widget/app?page=community&handle=developer-dao&tab=overview"
+                        href="?page=community&handle=developer-dao&tab=overview"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -528,7 +528,7 @@ const FeedPage = () => {
                     </span>
                     This dedicated space replaces the
                     <a
-                      href="https://near.org/devhub.near/widget/app?page=feed"
+                      href="?page=feed"
                       className="text-decoration-underline no-space"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -539,7 +539,7 @@ const FeedPage = () => {
                     DevDAO, the primary organization behind DevHub. To submit a
                     formal proposal, click New Proposal. See our{" "}
                     <a
-                      href="https://near.org/devhub.near/widget/app?page=community&handle=developer-dao&tab=funding"
+                      href="?page=community&handle=developer-dao&tab=funding"
                       className="text-decoration-underline no-space"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -549,7 +549,7 @@ const FeedPage = () => {
                     for details. For discussions and brainstorming, please
                     utilize the relevant{" "}
                     <a
-                      href="https://near.org/devhub.near/widget/app?page=communities"
+                      href="?page=communities"
                       className="text-decoration-underline no-space"
                       target="_blank"
                       rel="noopener noreferrer"
