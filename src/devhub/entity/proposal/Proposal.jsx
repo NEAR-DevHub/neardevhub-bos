@@ -424,9 +424,11 @@ const LinkedProposals = () => {
                 }}
               />
               <div className="d-flex flex-column" style={{ maxWidth: 250 }}>
-                <LinkProfile account={item.snapshot.name}>
-                  <b className="text-truncate">{item.snapshot.name}</b>
-                </LinkProfile>
+                <div className="text-truncate">
+                  <LinkProfile account={item.snapshot.name}>
+                    <b>{item.snapshot.name}</b>
+                  </LinkProfile>
+                </div>
                 <div className="text-sm text-muted">
                   created on {readableDate(item.snapshot.timestamp / 1000000)}
                 </div>
