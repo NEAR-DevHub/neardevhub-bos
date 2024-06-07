@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
-import { pauseIfVideoRecording } from "../testUtils.js";
-import { mockDefaultTabs } from "../util/addons.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
+import { mockDefaultTabs } from "../../util/addons.js";
 
 test.beforeEach(async ({ page }) => {
   await page.route("https://rpc.mainnet.near.org/", async (route) => {

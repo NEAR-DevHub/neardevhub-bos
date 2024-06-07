@@ -3,7 +3,7 @@ import {
   pauseIfVideoRecording,
   selectAndAssert,
   setInputAndAssert,
-} from "../testUtils.js";
+} from "../../testUtils.js";
 
 test.describe("Wallet is not connected", () => {
   // sign in to wallet
