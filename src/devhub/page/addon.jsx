@@ -19,7 +19,7 @@ const Content = styled.div`
 
 const SettingsButton = styled.button`
   position: absolute;
-  top: 10px;
+  top: -100px;
   right: 10px;
 
   background-color: #fff;
@@ -57,7 +57,7 @@ const CenteredMessage = styled.div`
   height: ${(p) => p.height ?? "100%"};
 `;
 
-const { addon, permissions, handle } = props;
+const { addon, permissions, handle, addonView, setAddonView } = props;
 
 const { getAllAddons, setCommunityAddon } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
@@ -69,9 +69,14 @@ if (!getAllAddons || !setCommunityAddon) {
 
 const availableAddons = getAllAddons();
 
-const addonMatch = (availableAddons ?? []).find(
-  (it) => it.id === addon.addon_id
-);
+let addonMatch = null; // If availableAddons is not an array, set addonMatch to null
+if (
+  Array.isArray(availableAddons) &&
+  availableAddons !== null &&
+  availableAddons !== undefined
+) {
+  addonMatch = availableAddons.find((it) => it.id === addon.addon_id);
+}
 
 if (!addonMatch) {
   return (
@@ -88,8 +93,6 @@ const ButtonRow = styled.div`
   justify-content: space-between;
 `;
 
-const [view, setView] = useState(props.view || "viewer");
-
 if ("${REPL_DEVHUB}" !== "devhub.near") {
   addonMatch.configurator_widget = addonMatch.configurator_widget.replace(
     "devhub.near/",
@@ -105,17 +108,30 @@ return (
   <Container>
     {permissions.can_configure && addonMatch.configurator_widget !== "" && (
       <SettingsButton
-        onClick={() => setView(view === "configure" ? "view" : "configure")}
+        onClick={() =>
+          setAddonView(addonView === "configure" ? "viewer" : "configure")
+        }
+        aria-label={
+          addonView === "configure"
+            ? "Close configuration"
+            : "Open configuration"
+        }
       >
-        {view === "configure" ? (
-          <span className="bi bi-x"></span>
+        {addonView === "configure" ? (
+          <span
+            className="bi bi-x"
+            data-testid="configure-addon-button-x"
+          ></span>
         ) : (
-          <span className="bi bi-gear"></span>
+          <span
+            className="bi bi-gear"
+            data-testid="configure-addon-button"
+          ></span>
         )}
       </SettingsButton>
     )}
     <Content>
-      {view === "configure" ? (
+      {addonView === "configure" ? (
         <Widget
           src={addonMatch.configurator_widget}
           props={{
@@ -132,6 +148,7 @@ return (
             },
             handle, // this is temporary prop drilling until kanban and github are migrated
             permissions,
+            communityAddonId: addon.id,
           }}
         />
       ) : (
@@ -143,6 +160,8 @@ return (
             handle,
             permissions,
             transactionHashes: props.transactionHashes,
+            communityAddonId: addon.id,
+            setAddonView,
           }}
         />
       )}
