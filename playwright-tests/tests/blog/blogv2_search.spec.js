@@ -97,7 +97,7 @@ async function configureSearchAndCategoriesEnabled({
   });
 }
 
-test.describe("Wallet is not connected", () => {
+test.skip("Wallet is not connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
   });

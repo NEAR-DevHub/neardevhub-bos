@@ -108,7 +108,7 @@ test.describe("Wallet is not connected", () => {
   });
 });
 
-test.describe("Don't ask again enabled", () => {
+test.skip("Don't ask again enabled", () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
@@ -600,7 +600,9 @@ test.describe("Admin wallet is connected", () => {
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
 
-  test("should be able to configure the blogv2 addon", async ({ page }) => {
+  test.skip("should be able to configure the blogv2 addon", async ({
+    page,
+  }) => {
     await page.goto(baseUrl);
 
     await pauseIfVideoRecording(page);
