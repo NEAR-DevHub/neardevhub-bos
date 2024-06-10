@@ -76,7 +76,7 @@ if (!accountId) {
     >
       <Link to="https://near.org/signup">
         <Widget
-          src={"${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "grey-btn" },
             label: "Sign up",
@@ -195,7 +195,7 @@ const LoadingButtonSpinner = (
 const Compose = useMemo(() => {
   return (
     <Widget
-      src={"${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
+      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
       props={{
         data: comment,
         onChangeKeyup: setComment,
@@ -224,7 +224,7 @@ return (
       }}
     />
     <Widget
-      src={"${alias_REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
       props={{
         accountId: accountId,
       }}
@@ -234,7 +234,7 @@ return (
       {Compose}
       <div className="d-flex gap-2 align-content-center justify-content-end">
         <Widget
-          src={"${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             label: isTxnCreated ? LoadingButtonSpinner : "Comment",
             ["data-testid"]: "compose-comment",

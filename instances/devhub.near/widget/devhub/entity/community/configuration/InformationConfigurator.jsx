@@ -66,7 +66,7 @@ function handleOnSubmit(v) {
 
 return (
   <Widget
-    src={"${alias_REPL_DEVHUB}/widget/devhub.components.organism.Configurator"}
+    src={"${REPL_DEVHUB}/widget/devhub.components.organism.Configurator"}
     props={{
       externalState: data,
       schema: CommunityInformationSchema,

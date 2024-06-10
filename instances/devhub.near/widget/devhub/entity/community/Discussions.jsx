@@ -2,7 +2,7 @@ const NEW_DISCUSSION_POSTED_CONTENT_STORAGE_KEY =
   "new_discussion_posted_content";
 const { handle } = props;
 const { getCommunity, setCommunitySocialDB } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 getCommunity = getCommunity || (() => <></>);
@@ -75,10 +75,10 @@ const [sort, setSort] = useState("desc");
 const [isTransactionFinished, setIsTransactionFinished] = useState(false);
 
 const discussionsAccountId =
-  "discussions." + handle + ".community.${alias_REPL_DEVHUB_CONTRACT}";
+  "discussions." + handle + ".community.${REPL_DEVHUB_CONTRACT}";
 
 function checkIfReposted(blockHeight) {
-  Near.asyncView("${alias_REPL_SOCIAL_CONTRACT}", "get", {
+  Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
     keys: [`${discussionsAccountId}/index/**`],
   })
     .then((response) => {
@@ -101,7 +101,7 @@ function checkIfReposted(blockHeight) {
 function repostOnDiscussions(blockHeight) {
   Near.call([
     {
-      contractName: "${alias_REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "create_discussion",
       args: {
         handle,
@@ -115,7 +115,7 @@ function repostOnDiscussions(blockHeight) {
 
 async function checkHashes() {
   if (props.transactionHashes) {
-    asyncFetch("${alias_REPL_RPC_URL}", {
+    asyncFetch("${REPL_RPC_URL}", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -151,7 +151,7 @@ function getBlockHeightAndRepost() {
   );
   console.log("new discussion content", newDiscussionPostedContent);
 
-  Near.asyncView("${alias_REPL_SOCIAL_CONTRACT}", "get", {
+  Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
     keys: [`${context.accountId}/post/**`],
     options: {
       with_block_height: true,
@@ -191,9 +191,7 @@ return (
           {context.accountId && (
             <div className="card p-4">
               <Widget
-                src={
-                  "${alias_REPL_DEVHUB}/widget/devhub.entity.community.Compose"
-                }
+                src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                 props={{
                   isFinished: () => isTransactionFinished,
                   onSubmit: (v) => {
@@ -237,11 +235,11 @@ return (
           <div className={"card p-4"}>
             <Widget
               key="feed"
-              src="${alias_REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
+              src="${REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
               props={{
                 sort: sort,
                 accounts: [
-                  `discussions.${handle}.community.${alias_REPL_DEVHUB_CONTRACT}`,
+                  `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
                 ],
               }}
             />
@@ -265,7 +263,7 @@ return (
                 style={{ fontWeight: 500 }}
               >
                 <Widget
-                  src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
+                  src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
                   props={{ accountId }}
                 />
               </div>

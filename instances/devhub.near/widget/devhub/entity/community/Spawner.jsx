@@ -1,4 +1,4 @@
-const { typeMatch } = VM.require("${alias_REPL_DEVHUB}/widget/core.lib.struct");
+const { typeMatch } = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 
 if (!typeMatch) {
   return <p>Loading modules...</p>;
@@ -79,7 +79,7 @@ const CommunityInputsDefaults = {
 
 return (
   <Widget
-    src="${alias_REPL_DEVHUB}/widget/devhub.components.organism.Configurator"
+    src="${REPL_DEVHUB}/widget/devhub.components.organism.Configurator"
     props={{
       heading: "Community information",
       externalState: CommunityInputsDefaults,

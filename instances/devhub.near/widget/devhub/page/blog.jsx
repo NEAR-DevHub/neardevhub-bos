@@ -1,7 +1,7 @@
 const { id } = props;
 
 const { Page } =
-  VM.require("${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blog.Page") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Page") ||
   (() => <></>);
 
 const [showEditScreenData, setShowEditScreen] = useState(null);
@@ -9,7 +9,7 @@ const [showEditScreenData, setShowEditScreen] = useState(null);
 if (id && !showEditScreenData) {
   return (
     <Widget
-      src="${alias_REPL_DEVHUB}/widget/devhub.entity.post.Postv2"
+      src="${REPL_DEVHUB}/widget/devhub.entity.post.Postv2"
       props={{
         postKey: id,
         template: (p) => (
@@ -83,7 +83,7 @@ if (showEditScreenData) {
         <i class="bi bi-x-circle"></i>
       </div>
       <Widget
-        src={`${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator`}
+        src={`${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Configurator`}
         props={{
           ...showEditScreenData,
           handle: showEditScreenData?.labels?.[1], // community-handle
@@ -94,15 +94,13 @@ if (showEditScreenData) {
 }
 return (
   <div className="w-100">
-    <Widget
-      src={`${alias_REPL_DEVHUB}/widget/devhub.components.island.banner`}
-    />
+    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
     <HeaderContainer>
       <Header>Blog</Header>
     </HeaderContainer>
     <BlogContainer>
       <Widget
-        src={"${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blog.Viewer"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Viewer"}
         props={{
           handle: "developer-dao",
           hideTitle: true,

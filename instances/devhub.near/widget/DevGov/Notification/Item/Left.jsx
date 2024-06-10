@@ -1,5 +1,4 @@
-const { href } =
-  VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 if (!props.type) {
   return "Loading ...";
@@ -20,7 +19,7 @@ return props.type ? (
     <a
       className="fw-bold text-muted"
       href={href({
-        widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: {
           page: "post",
           id: props.post,

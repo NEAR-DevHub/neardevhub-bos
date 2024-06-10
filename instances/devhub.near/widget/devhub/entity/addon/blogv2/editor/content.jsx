@@ -1,11 +1,10 @@
 const { Card } =
-  VM.require("${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card") ||
   (() => <></>);
 const { Page } =
-  VM.require("${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
-const { href } =
-  VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 const categories = [
   {
@@ -218,7 +217,7 @@ const [submittedBlogDeleted, setSubmittedBlogDeleted] = useState(null);
 useEffect(() => {
   const checkForDeletedBlogInSocialDB = () => {
     const communityAccount = `${handle}.community.devhub.near`;
-    Near.asyncView("${alias_REPL_SOCIAL_CONTRACT}", "get", {
+    Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
       keys: [`${communityAccount}/blog/**`],
       options: {
         return_deleted: true,
@@ -246,7 +245,7 @@ const [submittedBlogData, setSubmittedBlogData] = useState(null);
 useEffect(() => {
   const checkForNewOrUpdatedBlogInSocialDB = () => {
     const communityAccount = `${handle}.community.devhub.near`;
-    Near.asyncView("${alias_REPL_SOCIAL_CONTRACT}", "get", {
+    Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
       keys: [`${communityAccount}/blog/**`],
     }).then((result) => {
       try {
@@ -555,7 +554,7 @@ return (
             {initialData.status === "PUBLISH" ? (
               <Link
                 to={href({
-                  widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
                   params: {
                     page: "blogv2",
                     id: initialData.id,
@@ -580,7 +579,7 @@ return (
       {previewMode === "edit" && (
         <div className="tab-pane show active p-4" id="edit">
           <Widget
-            src="${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.form"
+            src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.form"
             props={{
               title,
               setTitle,
@@ -607,7 +606,7 @@ return (
               <>
                 <Widget
                   src={
-                    "${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
+                    "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
                   }
                   props={{
                     isOpen: isDeleteModalOpen,
@@ -623,7 +622,7 @@ return (
                   }}
                 />
                 <Widget
-                  src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                   props={{
                     classNames: {
                       root: "btn-outline-danger shadow-none border-0 btn-sm",
@@ -642,7 +641,7 @@ return (
             ) : null}
             <div className="flex gap-x-3">
               <Widget
-                src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                 props={{
                   classNames: {
                     root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",

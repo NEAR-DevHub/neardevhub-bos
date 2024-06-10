@@ -6,7 +6,7 @@ return (
       Cancel
     </button>
     <Widget
-      src={"${alias_REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"}
+      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"}
       props={{
         title: "Save Settings",
         onClick: () => onSubmitSettings(),

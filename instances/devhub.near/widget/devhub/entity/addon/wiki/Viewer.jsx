@@ -85,7 +85,7 @@ if (!content) {
       <Content>
         <Widget
           src={
-            "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+            "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
           }
           props={{ text: content }}
         />

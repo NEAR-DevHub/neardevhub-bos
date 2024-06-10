@@ -136,7 +136,7 @@ return (
           >
             <Widget
               key="feed"
-              src="${alias_REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
+              src="${REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
               props={{
                 sort: sort,
                 accounts: filteredAccountIds,

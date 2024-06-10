@@ -21,7 +21,7 @@ const className = props.className ?? "";
 
 return (
   <Widget
-    src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+    src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
     props={{
       className: "flex-grow-1 w-100" + className,
       value: search,

@@ -1,4 +1,4 @@
-const { href } = VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 if (!href) {
   return <p>Loading modules...</p>;
@@ -97,14 +97,14 @@ const FeedItem = ({ proposal, index }) => {
   const blockHeight = parseInt(proposal.social_db_post_block_height);
   const item = {
     type: "social",
-    path: `${alias_REPL_DEVHUB_CONTRACT}/post/main`,
+    path: `${REPL_DEVHUB_CONTRACT}/post/main`,
     blockHeight: blockHeight,
   };
 
   return (
     <a
       href={href({
-        widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: {
           page: "proposal",
           id: proposal.proposal_id,
@@ -121,7 +121,7 @@ const FeedItem = ({ proposal, index }) => {
       >
         <div className="d-flex gap-4 w-100">
           <Widget
-            src={"${alias_REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
             props={{
               accountId,
             }}
@@ -130,9 +130,7 @@ const FeedItem = ({ proposal, index }) => {
             <div className="d-flex gap-2 align-items-center flex-wrap w-100">
               <div className="h6 mb-0 text-black">{proposal.name}</div>
               <Widget
-                src={
-                  "${alias_REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryTag"
-                }
+                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryTag"}
                 props={{
                   category: proposal.category,
                 }}
@@ -144,7 +142,7 @@ const FeedItem = ({ proposal, index }) => {
                 By {profile.name ?? accountId} ･{" "}
               </div>
               <Widget
-                src="${alias_REPL_NEAR}/widget/TimeAgo"
+                src="${REPL_NEAR}/widget/TimeAgo"
                 props={{
                   blockHeight,
                   blockTimestamp: proposal.timestamp,
@@ -153,7 +151,7 @@ const FeedItem = ({ proposal, index }) => {
             </div>
             <div className="d-flex gap-2 align-items-center">
               <Widget
-                src="${alias_REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
+                src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
                 props={{
                   item,
                   proposalId: proposal.id,
@@ -162,9 +160,7 @@ const FeedItem = ({ proposal, index }) => {
               />
 
               <Widget
-                src={
-                  "${alias_REPL_DEVHUB}/widget/devhub.entity.proposal.CommentIcon"
-                }
+                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentIcon"}
                 props={{
                   item,
                   showOverlay: false,
@@ -176,7 +172,7 @@ const FeedItem = ({ proposal, index }) => {
         </div>
         <div className="align-self-center" style={{ minWidth: "fit-content" }}>
           <Widget
-            src={"${alias_REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
             props={{
               timelineStatus: proposal.timeline.status,
             }}
@@ -188,7 +184,7 @@ const FeedItem = ({ proposal, index }) => {
 };
 
 const getProposal = (proposal_id) => {
-  return Near.asyncView("${alias_REPL_DEVHUB_CONTRACT}", "get_proposal", {
+  return Near.asyncView("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
     proposal_id,
   });
 };
@@ -417,7 +413,7 @@ const FeedPage = () => {
   const loader = (
     <div className="d-flex justify-content-center align-items-center w-100">
       <Widget
-        src={"${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
       />
     </div>
   );
@@ -446,7 +442,7 @@ const FeedPage = () => {
         <div className="d-flex flex-wrap gap-4 align-items-center">
           <Widget
             src={
-              "${alias_REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-input"
+              "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-input"
             }
             props={{
               search: state.input,
@@ -460,9 +456,7 @@ const FeedPage = () => {
             }}
           />
           <Widget
-            src={
-              "${alias_REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-sort"
-            }
+            src={"${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-sort"}
             props={{
               onStateChange: (select) => {
                 State.update({ sort: select.value });
@@ -472,7 +466,7 @@ const FeedPage = () => {
           <div className="d-flex gap-4 align-items-center">
             <Widget
               src={
-                "${alias_REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-category"
+                "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-category"
               }
               props={{
                 onStateChange: (select) => {
@@ -482,7 +476,7 @@ const FeedPage = () => {
             />
             <Widget
               src={
-                "${alias_REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-stage"
+                "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-stage"
               }
               props={{
                 onStateChange: (select) => {
@@ -492,7 +486,7 @@ const FeedPage = () => {
             />
             <Widget
               src={
-                "${alias_REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-author"
+                "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-author"
               }
               props={{
                 onAuthorChange: (select) => {
@@ -505,14 +499,12 @@ const FeedPage = () => {
         <div className="mt-2 mt-xs-0">
           <Link
             to={href({
-              widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+              widgetSrc: "${REPL_DEVHUB}/widget/app",
               params: { page: "create-proposal" },
             })}
           >
             <Widget
-              src={
-                "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-              }
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
                 label: (
                   <div className="d-flex gap-2 align-items-center">

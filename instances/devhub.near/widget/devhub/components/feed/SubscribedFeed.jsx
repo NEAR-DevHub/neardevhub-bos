@@ -168,7 +168,7 @@ const renderItem = (item) =>
   item.action === "post" ? renderPost(item) : renderRepost(item);
 return (
   <Widget
-    src="${alias_REPL_DEVHUB}/widget/devhub.components.feed.MergedIndexFeed"
+    src="${REPL_DEVHUB}/widget/devhub.components.feed.MergedIndexFeed"
     props={{
       index,
       renderItem,

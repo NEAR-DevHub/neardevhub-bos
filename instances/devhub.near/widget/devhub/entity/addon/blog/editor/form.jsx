@@ -29,7 +29,7 @@ const TitleInput = ({ title, setTitle }) => {
       <h5>Title</h5>
       <div className="flex-grow-1">
         <Widget
-          src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
           props={{
             className: "flex-grow-1",
             onChange: (e) => setTitle(e.target.value),
@@ -48,7 +48,7 @@ const SubtitleInput = ({ subtitle, setSubtitle }) => {
       <h5>Subtitle</h5>
       <div className="flex-grow-1">
         <Widget
-          src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
           props={{
             className: "flex-grow-1",
             onChange: (e) => setSubtitle(e.target.value),
@@ -68,7 +68,7 @@ const CategorySelect = ({ options, category, setCategory }) => {
       <h5>Category</h5>
       <div className="flex-grow-1">
         <Widget
-          src={"${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Select"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Select"}
           props={{
             className: "flex-grow-1",
             options,
@@ -88,7 +88,7 @@ const DescriptionInput = ({ description, setDescription }) => {
       <h5>Description</h5>
       <div className="flex-grow-1">
         <Widget
-          src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
           props={{
             className: "flex-grow-1",
             onChange: (e) => setDescription(e.target.value),
@@ -108,7 +108,7 @@ const AuthorInput = ({ author, setAuthor }) => {
       <h5>Author</h5>
       <div className="flex-grow-1">
         <Widget
-          src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
           props={{
             className: "flex-grow-1",
             onChange: (e) => setAuthor(e.target.value),
@@ -141,7 +141,7 @@ const ContentEditor = ({ content, setContent }) => {
     <div>
       <h5>Content</h5>
       <Widget
-        src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
         props={{ data: { content }, onChange: setContent }}
       />
     </div>

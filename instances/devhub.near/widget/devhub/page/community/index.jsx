@@ -1,6 +1,4 @@
-const { normalize } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.lib.stringUtils"
-);
+const { normalize } = VM.require("${REPL_DEVHUB}/widget/core.lib.stringUtils");
 
 normalize || (normalize = () => {});
 
@@ -42,7 +40,7 @@ const NavUnderline = styled.ul`
 
 const { tab, permissions, community } = props;
 
-const { href } = VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 if (!href) {
   return <></>;
@@ -77,7 +75,7 @@ const onShareClick = () =>
     .writeText(
       href({
         gateway: "near.social",
-        widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: { page: "community", handle: community.handle },
       })
     )
@@ -225,12 +223,10 @@ return (
       <div className="d-flex align-items-end gap-3 ms-auto mb-md-5 me-4">
         {permissions.can_configure && (
           <Link
-            to={`/${alias_REPL_DEVHUB}/widget/app?page=community.configuration&handle=${community.handle}`}
+            to={`/${REPL_DEVHUB}/widget/app?page=community.configuration&handle=${community.handle}`}
           >
             <Widget
-              src={
-                "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-              }
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
                 classNames: { root: "btn-outline-light text-dark shadow-none" },
                 notRounded: true,
@@ -254,7 +250,7 @@ return (
           </Link>
         )}
         <Widget
-          src={"${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-outline-light text-dark shadow-none" },
             notRounded: true,
@@ -288,7 +284,7 @@ return (
               >
                 <Link
                   to={href({
-                    widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+                    widgetSrc: "${REPL_DEVHUB}/widget/app",
                     params: {
                       page: "community",
                       handle: community.handle,
@@ -317,12 +313,12 @@ return (
               <span>Required tags:</span>
               <Link
                 to={href({
-                  widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
                   params: { page: "feed", tag: community.tag },
                 })}
               >
                 <Widget
-                  src={"${alias_REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+                  src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
                   props={{
                     tag: community.tag,
                   }}
@@ -333,12 +329,12 @@ return (
           {context.accountId && (
             <Widget
               src={
-                "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.PostControls"
               }
               props={{
                 title: "Post",
                 href: href({
-                  widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+                  widgetSrc: "${REPL_DEVHUB}/widget/app",
                   params: {
                     page: "create",
                     labels: [community.tag],
@@ -353,7 +349,7 @@ return (
     {currentTab && (
       <div className="d-flex w-100 h-100" key={currentTab.title}>
         <Widget
-          src={"${alias_REPL_DEVHUB}/widget/devhub.page.addon"}
+          src={"${REPL_DEVHUB}/widget/devhub.page.addon"}
           props={{
             ...currentTab.params,
             addonView,

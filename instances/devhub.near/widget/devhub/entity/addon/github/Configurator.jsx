@@ -1,13 +1,13 @@
-const Struct = VM.require("${alias_REPL_DEVHUB}/widget/core.lib.struct");
+const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
 
 if (!Struct) {
   return <p>Loading modules...</p>;
 }
 const { useQuery } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 const { uuid, withUUIDIndex } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.lib.uuid"
+  "${REPL_DEVHUB}/widget/core.lib.uuid"
 );
 
 uuid || (uuid = () => {});
@@ -248,7 +248,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
     <>
       <div className="d-flex flex-column">
         <Widget
-          src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
           props={{
             className: "w-100",
             key: `${metadataState.metadata.id}-repoURL`,
@@ -262,7 +262,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
           }}
         />
         <Widget
-          src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
           props={{
             className: "w-100",
             key: `${metadataState.metadata.id}-title`,
@@ -273,7 +273,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
           }}
         />
         <Widget
-          src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
           props={{
             className: "w-100",
             key: `${metadataState.metadata.id}-description`,
@@ -291,7 +291,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
         <label>Select which tasks you want to display:</label>
         <div className="input-group" style={{ width: "fit-content" }}>
           <Widget
-            src={`${alias_REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+            src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
             props={{
               heading: "Ticket types",
               classNames: { root: "col-12 col-md-4 h-auto" },
@@ -313,7 +313,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
         <label>Select which state of tickets you want to display:</label>
         <div className="input-group mt-2">
           <Widget
-            src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Switch`}
+            src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Switch`}
             props={{
               currentValue: metadataState.ticketState,
               key: "ticketState",
@@ -336,7 +336,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
         </label>
         <div className="input-group" style={{ width: "fit-content" }}>
           <Widget
-            src={`${alias_REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+            src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
             props={{
               heading: "Card fields",
               classNames: { root: "col-12 col-md-4 h-auto" },
@@ -375,7 +375,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
               <div className="d-flex flex-column gap-1 w-100">
                 <div>Board #{index}</div>
                 <Widget
-                  src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
                   props={{
                     className: "flex-grow-1",
                     key: `${metadataState.metadata.id}-column-${id}-title`,
@@ -411,7 +411,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
                 </div>
                 <div style={{ width: "fit-content" }}>
                   <Widget
-                    src={`${alias_REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
+                    src={`${REPL_DEVHUB}/widget/devhub.components.organism.Configurator`}
                     props={{
                       heading: "",
                       classNames: { root: "col-12 col-md-4 h-auto" },
@@ -432,7 +432,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
                   />
                 </div>
                 <Widget
-                  src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
                   props={{
                     className: "flex-grow-1",
                     key: `${metadataState.metadata.id}-column-${id}-description`,
@@ -514,7 +514,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
       {showPreview ? (
         <div>
           <Widget
-            src={`${alias_REPL_DEVHUB}/widget/devhub.entity.addon.github.Viewer`}
+            src={`${REPL_DEVHUB}/widget/devhub.entity.addon.github.Viewer`}
             props={{
               kanbanBoards: {
                 [parentState.metadata.id]: parentState,
@@ -544,7 +544,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
               <div className="d-flex justify-content-between gap-2 mt-4">
                 <div style={{ minWidth: "200px" }}>
                   <Widget
-                    src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                     props={{
                       classNames: {
                         root: "btn-sm btn-outline-secondary",
@@ -565,7 +565,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
                 </div>
                 <div className="d-flex gap-3 justify-content-end w-100">
                   <Widget
-                    src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                     props={{
                       classNames: {
                         root: "d-flex btn btn-outline-danger shadow-none border-0",
@@ -576,7 +576,7 @@ const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
                     }}
                   />
                   <Widget
-                    src={`${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                    src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                     props={{
                       classNames: { root: "btn btn-success" },
                       icon: {

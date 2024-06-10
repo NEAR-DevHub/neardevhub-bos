@@ -1,4 +1,4 @@
-const { href } = VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 href || (href = () => {});
 
@@ -183,7 +183,7 @@ const Content = (
 
     <Link
       to={href({
-        widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: { page: "contribute" },
       })}
       style={{ textDecoration: "none" }}
@@ -195,7 +195,7 @@ const Content = (
 
 return (
   <Widget
-    src="${alias_REPL_DEVHUB}/widget/devhub.components.island.home-section"
+    src="${REPL_DEVHUB}/widget/devhub.components.island.home-section"
     props={{
       title: "/participate",
       titleColor: "#555555",

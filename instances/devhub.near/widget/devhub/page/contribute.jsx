@@ -186,9 +186,7 @@ const ActionContainer = styled.div`
 
 return (
   <>
-    <Widget
-      src={`${alias_REPL_DEVHUB}/widget/devhub.components.island.banner`}
-    />
+    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
     <Header>
       <PageHeader>Contribute</PageHeader>
     </Header>

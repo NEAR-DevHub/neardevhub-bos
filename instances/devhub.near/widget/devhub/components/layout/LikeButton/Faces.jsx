@@ -61,16 +61,16 @@ return (
       {renderFaces.map((accountId, i) => (
         <a
           key={i}
-          href={`#/${alias_REPL_MOB}/widget/ProfilePage?accountId=${accountId}`}
+          href={`#/${REPL_MOB}/widget/ProfilePage?accountId=${accountId}`}
           className="text-decoration-none d-inline-block"
         >
           <Widget
-            src="${alias_REPL_MOB}/widget/Profile.OverlayTrigger"
+            src="${REPL_MOB}/widget/Profile.OverlayTrigger"
             props={{
               accountId,
               children: (
                 <Widget
-                  src="${alias_REPL_MOB}/widget/ProfileImage"
+                  src="${REPL_MOB}/widget/ProfileImage"
                   props={{
                     metadata,
                     accountId,
@@ -100,7 +100,7 @@ return (
               {faces.slice(0, 10).map((accountId, i) => (
                 <Fragment key={i}>
                   <Widget
-                    src="${alias_REPL_MOB}/widget/ProfileLine"
+                    src="${REPL_MOB}/widget/ProfileLine"
                     props={{ accountId, link: false }}
                   />
                   <br />

@@ -1,9 +1,9 @@
 const { getPost, setCommunitySocialDB } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 const { generateRandom6CharUUID } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.lib.stringUtils"
+  "${REPL_DEVHUB}/widget/core.lib.stringUtils"
 );
 
 generateRandom6CharUUID || (generateRandom6CharUUID = () => {});

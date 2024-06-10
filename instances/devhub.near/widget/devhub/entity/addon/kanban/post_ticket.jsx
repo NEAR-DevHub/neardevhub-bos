@@ -1,6 +1,6 @@
 const columnId = props.columnId;
 
-const { href } = VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 href || (href = () => {});
 
 const AttractableDiv = styled.div`
@@ -63,7 +63,7 @@ const KanbanPostTicket = ({ metadata, data }) => {
       {features.like_count && (
         <div className="d-flex gap-2 align-items-center">
           <Widget
-            src={`${alias_REPL_DEVHUB}/widget/devhub.components.atom.Icon`}
+            src={`${REPL_DEVHUB}/widget/devhub.components.atom.Icon`}
             props={{
               type: "bootstrap_icon",
               variant: "bi-heart-fill",

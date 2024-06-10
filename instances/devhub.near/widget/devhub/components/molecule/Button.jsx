@@ -153,7 +153,7 @@ const Button = ({
         typeof iconProps === "object" &&
         !Array.isArray(iconProps) && (
           <Widget
-            src={"${alias_REPL_DEVHUB}/widget/devhub.components.atom.Icon"}
+            src={"${REPL_DEVHUB}/widget/devhub.components.atom.Icon"}
             props={iconProps}
           />
         )}

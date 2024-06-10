@@ -1,5 +1,5 @@
-const Struct = VM.require("${alias_REPL_DEVHUB}/widget/core.lib.struct");
-const { href } = VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url");
+const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 if (!Struct) {
   return <p>Loading modules...</p>;
@@ -24,7 +24,7 @@ if (!data || !data?.metadata) {
 
 return (
   <Widget
-    src={`${alias_REPL_DEVHUB}/widget/devhub.entity.addon.${data.metadata.type}`}
+    src={`${REPL_DEVHUB}/widget/devhub.entity.addon.${data.metadata.type}`}
     props={{
       ...data,
       isSynced: true,

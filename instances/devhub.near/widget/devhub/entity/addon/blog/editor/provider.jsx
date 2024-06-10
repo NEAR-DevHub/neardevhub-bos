@@ -1,5 +1,5 @@
 const { getPost } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 ) || { getPost: () => {} };
 
 const { Layout, handle } = props;
@@ -81,7 +81,7 @@ const handleOnChange = (v) => {
 
 const handleGetData = (v) => {
   const postId = parseInt(v);
-  return Near.asyncView("${alias_REPL_DEVHUB_LEGACY}", "get_post", {
+  return Near.asyncView("${REPL_DEVHUB_LEGACY}", "get_post", {
     post_id: postId,
   }).then((post) => {
     const description = JSON.parse(post.snapshot.description || "null") || {};
@@ -95,7 +95,7 @@ const handleGetData = (v) => {
 const handleOnSubmit = (v, isEdit) => {
   if (isEdit) {
     Near.call({
-      contractName: "${alias_REPL_DEVHUB_LEGACY}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "edit_post",
       args: {
         id: parseInt(v.id),
@@ -110,7 +110,7 @@ const handleOnSubmit = (v, isEdit) => {
     });
   } else {
     Near.call({
-      contractName: "${alias_REPL_DEVHUB_LEGACY}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "add_post",
       args: {
         labels: ["blog", handle],

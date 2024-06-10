@@ -60,7 +60,7 @@ const CenteredMessage = styled.div`
 const { addon, permissions, handle, addonView, setAddonView } = props;
 
 const { getAllAddons, setCommunityAddon } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 if (!getAllAddons || !setCommunityAddon) {
@@ -93,14 +93,14 @@ const ButtonRow = styled.div`
   justify-content: space-between;
 `;
 
-if ("${alias_REPL_DEVHUB}" !== "devhub.near") {
+if ("${REPL_DEVHUB}" !== "devhub.near") {
   addonMatch.configurator_widget = addonMatch.configurator_widget.replace(
     "devhub.near/",
-    "${alias_REPL_DEVHUB}/"
+    "${REPL_DEVHUB}/"
   );
   addonMatch.view_widget = addonMatch.view_widget.replace(
     "devhub.near/",
-    "${alias_REPL_DEVHUB}/"
+    "${REPL_DEVHUB}/"
   );
 }
 

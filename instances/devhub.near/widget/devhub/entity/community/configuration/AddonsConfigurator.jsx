@@ -1,15 +1,14 @@
 const { getAllAddons } =
-  VM.require("${alias_REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
+  VM.require("${REPL_DEVHUB}/widget/core.adapter.devhub-contract") ||
   (() => {});
 
 const { generateRandom6CharUUID } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.lib.stringUtils"
+  "${REPL_DEVHUB}/widget/core.lib.stringUtils"
 );
 
 generateRandom6CharUUID || (generateRandom6CharUUID = () => {});
 
-const { href } =
-  VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 const availableAddons = getAllAddons() || [];
 
@@ -125,7 +124,7 @@ const AddonItem = ({
       </Cell>
       <Cell>
         <Widget
-          src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
           props={{
             label: " ",
             value: data.display_name,
@@ -145,7 +144,7 @@ const AddonItem = ({
           }
         >
           <Widget
-            src={"${alias_REPL_DEVHUB}/widget/devhub.components.atom.Toggle"}
+            src={"${REPL_DEVHUB}/widget/devhub.components.atom.Toggle"}
             props={{
               value: data.enabled,
               onChange: handleEnableChange,
@@ -283,9 +282,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
         <div className="d-flex justify-content-center pt-2">
           <div className="d-flex gap-2 flex-grow-1 px-4">
             <Widget
-              src={
-                "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Select"
-              }
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Select"}
               props={{
                 className: "flex-grow-1",
                 options: availableAddons.map((addon) => ({
@@ -315,9 +312,7 @@ const AddonsConfigurator = ({ data, onSubmit }) => {
           className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
         >
           <Widget
-            src={
-              "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-            }
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
             props={{
               classNames: { root: "btn-success" },
               disabled: !changesMade,

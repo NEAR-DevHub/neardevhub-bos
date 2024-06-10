@@ -521,16 +521,14 @@ const search = (processedQueryArray, index) => {
 const amountOfResultsToShowFirst = 5;
 
 const buildPostsIndex = () => {
-  return Near.asyncView("${alias_REPL_DEVHUB_LEGACY}", "get_posts").then(
-    (posts) => {
-      const index = buildIndex(posts);
-      const data = posts.reduce((acc, post) => {
-        acc[post.id] = post;
-        return acc;
-      }, {});
-      return { index, data };
-    }
-  );
+  return Near.asyncView("${REPL_DEVHUB_LEGACY}", "get_posts").then((posts) => {
+    const index = buildIndex(posts);
+    const data = posts.reduce((acc, post) => {
+      acc[post.id] = post;
+      return acc;
+    }, {});
+    return { index, data };
+  });
 };
 
 const getProcessedPostsCached = () => {
@@ -682,7 +680,7 @@ return (
       </div>
       <div class="dropdown">
         <Widget
-          src="${alias_REPL_DEVHUB}/widget/devhub.feature.post-search.by-author"
+          src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-author"
           props={{
             authorQuery: props.authorQuery,
             onAuthorSearch: props.onAuthorSearch,
@@ -691,7 +689,7 @@ return (
       </div>
       <div>
         <Widget
-          src="${alias_REPL_DEVHUB}/widget/devhub.feature.post-search.by-tag"
+          src="${REPL_DEVHUB}/widget/devhub.feature.post-search.by-tag"
           props={{
             tagQuery: props.tagQuery,
             onTagSearch: props.onTagSearch,
@@ -712,7 +710,7 @@ return (
       )}
     {state.term && state.term.length > 1 && state.searchResult ? (
       <Widget
-        src={"${alias_REPL_DEVHUB}/widget/devhub.entity.post.List"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.List"}
         props={{
           searchResult: {
             postIds: state.searchResult,
@@ -730,7 +728,7 @@ return (
       />
     ) : (
       <Widget
-        src={"${alias_REPL_DEVHUB}/widget/devhub.entity.post.List"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.post.List"}
         props={{
           recency: props.recency,
           tag: props.tag,

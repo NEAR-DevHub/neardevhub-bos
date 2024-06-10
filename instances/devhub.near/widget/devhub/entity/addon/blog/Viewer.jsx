@@ -1,9 +1,8 @@
 const { Card } =
-  VM.require("${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blog.Card") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Card") ||
   (() => <></>);
 
-const { href } =
-  VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 const { includeLabels, excludeLabels, layout, handle, hideTitle } = props;
 
@@ -48,13 +47,13 @@ function BlogCard(postId) {
     <Link
       style={{ textDecoration: "none" }}
       to={href({
-        widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: { page: "blog", id: postId },
       })}
     >
       <CardContainer>
         <Widget // We need this so the individual posts can make the necessary call for more data
-          src="${alias_REPL_DEVHUB}/widget/devhub.entity.post.Postv2"
+          src="${REPL_DEVHUB}/widget/devhub.entity.post.Postv2"
           props={{ postKey: postId, template: (p) => <Card {...(p || {})} /> }} // I wonder if this could take list of types, their templates, normalizer functions, etc... and have this all as a module
         />
         {/* // so then you could swap between devhub contract or social contract sources, it doesn't matter. */}
@@ -67,7 +66,7 @@ return (
   <div class="w-100">
     {!hideTitle && <Heading>Latest Blog Posts</Heading>}
     <Widget
-      src={"${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blog.Feed"}
+      src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blog.Feed"}
       // TODO: This needs to filter by more labels
       props={{
         includeLabels: ["blog", handle, ...(includeLabels || [])], // make sure this has the community handle

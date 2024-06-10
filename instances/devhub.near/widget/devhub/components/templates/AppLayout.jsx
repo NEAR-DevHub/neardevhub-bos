@@ -37,7 +37,7 @@ const ContentContainer = styled.div`
 
 const AppHeader = ({ page }) => (
   <Widget
-    src="${alias_REPL_DEVHUB}/widget/devhub.components.organism.Navbar"
+    src="${REPL_DEVHUB}/widget/devhub.components.organism.Navbar"
     props={{
       page: page,
       ...props,
@@ -48,7 +48,7 @@ const AppHeader = ({ page }) => (
 const Footer = (props) => {
   return (
     <Widget
-      src="${alias_REPL_DEVHUB}/widget/devhub.components.organism.NewsLetter"
+      src="${REPL_DEVHUB}/widget/devhub.components.organism.NewsLetter"
       props={{
         ...props,
       }}

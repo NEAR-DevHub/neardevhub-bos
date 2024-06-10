@@ -5,7 +5,7 @@
  */
 
 const { getAccessControlInfo, getRootMembers, removeMember } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 if (!getAccessControlInfo || !getRootMembers || !removeMember) {
@@ -94,7 +94,7 @@ function editTeam({
       if (!membersAndTeams.includes(member)) {
         // Contract panic member does not exist in the members_list yet.
         txn.push({
-          contractName: "${alias_REPL_DEVHUB_CONTRACT}",
+          contractName: "${REPL_DEVHUB_CONTRACT}",
           methodName: "add_member",
           args: {
             member: member,
@@ -119,7 +119,7 @@ function editTeam({
   Near.call([
     ...txn,
     {
-      contractName: "${alias_REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_DEVHUB_CONTRACT}",
       methodName: "edit_member",
       args: {
         member: `team:${tmnm}`,
@@ -161,7 +161,7 @@ return (
     <tr>
       <th scope="row" class=" justify-content-center align-items-center p-3">
         <Widget
-          src={"${alias_REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
           props={{
             tag: backwardsCompatibleLabel(label),
           }}
@@ -212,9 +212,7 @@ return (
       <td class=" justify-content-center align-items-center p-3">
         {editMode ? (
           <Widget
-            src={
-              "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-            }
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
             props={{
               classNames: { root: "btn-outline-danger" },
               icon: {
@@ -227,9 +225,7 @@ return (
           />
         ) : (
           <Widget
-            src={
-              "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-            }
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
             props={{
               classNames: { root: "btn-outline-light text-dark" },
               icon: {
@@ -247,7 +243,7 @@ return (
       <tr>
         <th scope="row" colspan="6">
           <Widget
-            src={"${alias_REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
+            src={"${REPL_DEVHUB}/widget/devhub.entity.team.Configurator"}
             props={{
               data: configuratorData,
               onCancel: () => setEditMode(false),
@@ -255,7 +251,7 @@ return (
             }}
           />
           <Widget
-            src="${alias_REPL_DEVHUB}/widget/devhub.components.atom.Alert"
+            src="${REPL_DEVHUB}/widget/devhub.components.atom.Alert"
             props={{
               onClose: () => setAlertMessage(""),
               message: alertMessage,

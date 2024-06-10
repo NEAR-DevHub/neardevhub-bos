@@ -1,11 +1,11 @@
 const { id, community, communityAddonId } = props;
 
 const { Page } =
-  VM.require("${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
 
 const { getAccountCommunityPermissions } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 ) || {
   getAccountCommunityPermissions: () => {},
 };
@@ -23,7 +23,7 @@ const permissions = getAccountCommunityPermissions({
 if (id && !showEditScreenData) {
   return (
     <Widget
-      src="${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Blog"
+      src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Blog"
       props={{
         blogId: id,
         handle: community,
@@ -104,14 +104,14 @@ if (showEditScreenData) {
         <i class="bi bi-arrow-left"></i> <p className="back-button">Back</p>
       </div>
       <Widget
-        src="${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Blog"
+        src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Blog"
         props={{
           blogId: id,
           handle: community,
           template: (p) => {
             return (
               <Widget
-                src={`${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Configurator`}
+                src={`${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Configurator`}
                 props={{
                   ...showEditScreenData,
                   handle: community,
@@ -129,15 +129,13 @@ if (showEditScreenData) {
 }
 return (
   <div className="w-100">
-    <Widget
-      src={`${alias_REPL_DEVHUB}/widget/devhub.components.island.banner`}
-    />
+    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
     <HeaderContainer>
       <Header>Blog</Header>
     </HeaderContainer>
     <BlogContainer>
       <Widget
-        src={"${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Viewer"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Viewer"}
         props={{
           handle: community,
           hideTitle: true,

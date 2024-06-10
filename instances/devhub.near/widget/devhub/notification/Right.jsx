@@ -1,5 +1,4 @@
-const { href } =
-  VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
 return props.proposal === undefined ? (
   "Loading ..."
@@ -8,7 +7,7 @@ return props.proposal === undefined ? (
     <a
       className="btn btn-outline-dark"
       href={href({
-        widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: {
           page: "proposal",
           id: props.proposal,

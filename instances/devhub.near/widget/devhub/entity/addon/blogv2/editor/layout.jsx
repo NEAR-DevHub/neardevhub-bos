@@ -80,7 +80,7 @@ return (
               </button> */}
               <Widget
                 src={
-                  "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"
+                  "${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"
                 }
                 props={{
                   title: "New Blog Post",
@@ -111,7 +111,7 @@ return (
             />
             <Widget
               src={
-                "${alias_REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
+                "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
               }
               props={{
                 isOpen: isSwitchBlogModalOpen,

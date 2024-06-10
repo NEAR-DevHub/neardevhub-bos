@@ -77,7 +77,7 @@ return (
       >
         <div style={{ position: "absolute", top: 10, right: 0 }}>
           <Widget
-            src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Switch"
+            src="${REPL_DEVHUB}/widget/devhub.components.molecule.Switch"
             props={{
               currentValue: textAlign,
               key: "textAlign",
@@ -93,7 +93,7 @@ return (
         <FormContainer>
           <div className="flex-grow-1">
             <Widget
-              src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+              src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
               props={{
                 label: "Title",
                 className: "flex-grow-1",
@@ -109,7 +109,7 @@ return (
           </div>
           <div className="flex-grow-1">
             <Widget
-              src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+              src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
               props={{
                 label: "Subtitle",
                 className: "flex-grow-1",
@@ -123,7 +123,7 @@ return (
             />
           </div>
           <Widget
-            src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
+            src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
             props={{ data: { content }, onChange: setContent }}
           />
         </FormContainer>
@@ -131,9 +131,7 @@ return (
           className={"d-flex align-items-center justify-content-end gap-3 mt-4"}
         >
           <Widget
-            src={
-              "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-            }
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
             props={{
               classNames: { root: "btn-success" },
               disabled: !hasDataChanged() || !title || !content,
@@ -155,7 +153,7 @@ return (
       >
         <div className="w-100 h-100 p-4">
           <Widget
-            src="${alias_REPL_DEVHUB}/widget/devhub.entity.addon.wiki.Viewer"
+            src="${REPL_DEVHUB}/widget/devhub.entity.addon.wiki.Viewer"
             props={{ title, subtitle, content, textAlign }}
           />
         </div>

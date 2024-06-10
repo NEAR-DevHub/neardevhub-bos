@@ -1,6 +1,6 @@
 const { handle } = props;
 const { getCommunity, setCommunitySocialDB } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 );
 
 getCommunity = getCommunity || (() => <></>);
@@ -14,7 +14,7 @@ const [lastQueryRequestTimestamp, setLastQueryRequestTimestamp] = useState(
 );
 const [submittedAnnouncementData, setSubmittedAnnouncementData] =
   useState(null);
-const communityAccountId = `${handle}.community.${alias_REPL_DEVHUB_CONTRACT}`;
+const communityAccountId = `${handle}.community.${REPL_DEVHUB_CONTRACT}`;
 
 let checkIndexerInterval;
 const onNewUnseenPosts = (newUnseenPosts) => {
@@ -26,7 +26,7 @@ const onNewUnseenPosts = (newUnseenPosts) => {
 useEffect(() => {
   if (submittedAnnouncementData) {
     const checkForAnnouncementInSocialDB = () => {
-      Near.asyncView("${alias_REPL_SOCIAL_CONTRACT}", "get", {
+      Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
         keys: [`${communityAccountId}/post/**`],
       }).then((result) => {
         try {
@@ -123,15 +123,13 @@ return (
             (communityData?.admins ?? []).includes(context.accountId) && (
               <div className="card p-4">
                 <Widget
-                  src={
-                    "${alias_REPL_DEVHUB}/widget/devhub.entity.community.Compose"
-                  }
+                  src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
                   props={{
                     onSubmit: (v) => {
                       setSubmittedAnnouncementData(v);
                       setCommunitySocialDB({ handle, data: v });
                     },
-                    profileAccountId: `${handle}.community.${alias_REPL_DEVHUB_CONTRACT}`,
+                    profileAccountId: `${handle}.community.${REPL_DEVHUB_CONTRACT}`,
                     isFinished: () => submittedAnnouncementData === null,
                   }}
                 />
@@ -169,7 +167,7 @@ return (
           )}
           <div className={postsExists && "card p-4"}>
             <Widget
-              src="${alias_REPL_DEVHUB}/widget/devhub.components.organism.Feed"
+              src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
               props={{
                 filteredAccountIds: [communityAccountId],
                 sort: sort,
@@ -199,7 +197,7 @@ return (
                 style={{ fontWeight: 500 }}
               >
                 <Widget
-                  src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
+                  src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
                   props={{ accountId }}
                 />
               </div>

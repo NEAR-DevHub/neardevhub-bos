@@ -1,13 +1,13 @@
 // Ideally, this would be a page
 
-const { href } = VM.require("${alias_REPL_DEVHUB}/widget/core.lib.url");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const { getDepositAmountForWriteAccess } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/core.lib.common"
+  "${REPL_DEVHUB}/widget/core.lib.common"
 );
 
 getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
 const { draftState, onDraftStateChange } = VM.require(
-  "${alias_REPL_DEVHUB}/widget/devhub.entity.post.draft"
+  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
 );
 
 if (!href) {
@@ -45,7 +45,7 @@ const [numLikes, setNumLikes] = useState(null);
 
 const post =
   props.post ??
-  Near.view("${alias_REPL_DEVHUB_LEGACY}", "get_post", { post_id: postId });
+  Near.view("${REPL_DEVHUB_LEGACY}", "get_post", { post_id: postId });
 
 if (!post) {
   return <div>Loading ...</div>;
@@ -81,12 +81,12 @@ const compareSnapshot =
 // If this post is displayed under another post. Used to limit the size.
 const isUnderPost = props.isUnderPost ? true : false;
 
-const parentId = Near.view("${alias_REPL_DEVHUB_LEGACY}", "get_parent_id", {
+const parentId = Near.view("${REPL_DEVHUB_LEGACY}", "get_parent_id", {
   post_id: postId,
 });
 
 const childPostIdsUnordered =
-  Near.view("${alias_REPL_DEVHUB_LEGACY}", "get_children_ids", {
+  Near.view("${REPL_DEVHUB_LEGACY}", "get_children_ids", {
     post_id: postId,
   }) ?? [];
 
@@ -109,7 +109,7 @@ const postSearchKeywords = props.searchKeywords ? (
 
     {props.searchKeywords.map((tag) => (
       <Widget
-        src={"${alias_REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
         props={{ linkTo: "Feed", tag }}
       />
     ))}
@@ -128,7 +128,7 @@ const searchKeywords = props.searchKeywords ? (
 
 const allowedToEdit =
   !props.isPreview &&
-  Near.view("${alias_REPL_DEVHUB_LEGACY}", "is_allowed_to_edit", {
+  Near.view("${REPL_DEVHUB_LEGACY}", "is_allowed_to_edit", {
     post_id: postId,
     editor: context.accountId,
   });
@@ -180,7 +180,7 @@ const shareButton = props.isPreview ? (
   <Link
     class="card-link text-dark"
     to={href({
-      widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+      widgetSrc: "${REPL_DEVHUB}/widget/app",
       params: { page: "post", id: postId },
     })}
     role="button"
@@ -206,7 +206,7 @@ const header = (
           <ProfileCardContainer>
             <Widget
               src={
-                "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
+                "${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
               }
               props={{
                 accountId: post.author_id,
@@ -219,7 +219,7 @@ const header = (
             {timestamp}
 
             <Widget
-              src={"${alias_REPL_DEVHUB}/widget/devhub.entity.post.History"}
+              src={"${REPL_DEVHUB}/widget/devhub.entity.post.History"}
               props={{
                 post,
                 timestamp: currentTimestamp,
@@ -284,16 +284,16 @@ const likeBtnClass = containsLike ? fillIcons.Like : emptyIcons.Like;
 // This must be outside onLike, because Near.view returns null at first, and when the view call finished, it returns true/false.
 // If checking this inside onLike, it will give `null` and we cannot tell the result is true or false.
 let grantNotify = Near.view(
-  "${alias_REPL_SOCIAL_CONTRACT}",
+  "${REPL_SOCIAL_CONTRACT}",
   "is_write_permission_granted",
   {
-    predecessor_id: "${alias_REPL_DEVHUB_LEGACY}",
+    predecessor_id: "${REPL_DEVHUB_LEGACY}",
     key: context.accountId + "/index/notify",
   }
 );
 
 const userStorageDeposit = Near.view(
-  "${alias_REPL_SOCIAL_CONTRACT}",
+  "${REPL_SOCIAL_CONTRACT}",
   "storage_balance_of",
   {
     account_id: context.accountId,
@@ -311,7 +311,7 @@ const onLike = () => {
 
   let likeTxn = [
     {
-      contractName: "${alias_REPL_DEVHUB_LEGACY}",
+      contractName: "${REPL_DEVHUB_LEGACY}",
       methodName: "add_like",
       args: {
         post_id: postId,
@@ -322,10 +322,10 @@ const onLike = () => {
 
   if (grantNotify === false) {
     likeTxn.unshift({
-      contractName: "${alias_REPL_SOCIAL_CONTRACT}",
+      contractName: "${REPL_SOCIAL_CONTRACT}",
       methodName: "grant_write_permission",
       args: {
-        predecessor_id: "${alias_REPL_DEVHUB_LEGACY}",
+        predecessor_id: "${REPL_DEVHUB_LEGACY}",
         keys: [context.accountId + "/index/notify"],
       },
       gas: Big(10).pow(14),
@@ -386,7 +386,7 @@ const buttonsFooter = props.isPreview ? null : (
             "Like"
           ) : (
             <Widget
-              src="${alias_REPL_DEVHUB}/widget/devhub.components.layout.LikeButton.Faces"
+              src="${REPL_DEVHUB}/widget/devhub.components.layout.LikeButton.Faces"
               props={{
                 likesByUsers: Object.fromEntries(
                   post.likes.map(({ author_id }) => [author_id, ""])
@@ -469,7 +469,7 @@ const buttonsFooter = props.isPreview ? null : (
         ) : (
           <Link
             to={href({
-              widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+              widgetSrc: "${REPL_DEVHUB}/widget/app",
               params: { page: "post", id: parentId },
             })}
           >
@@ -573,7 +573,7 @@ function Editor() {
         {state.editorType === "CREATE" ? (
           <>
             <Widget
-              src={"${alias_REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
+              src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
               props={{
                 postType: state.postType,
                 onDraftStateChange,
@@ -590,7 +590,7 @@ function Editor() {
         ) : (
           <>
             <Widget
-              src={"${alias_REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
+              src={"${REPL_DEVHUB}/widget/devhub.entity.post.PostEditor"}
               props={{
                 postType: state.postType,
                 postId,
@@ -633,7 +633,7 @@ const tags = post.snapshot.labels ? (
       <div className="d-flex align-items-center my-3 me-3">
         <Link
           to={href({
-            widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+            widgetSrc: "${REPL_DEVHUB}/widget/app",
             params: { page: "feed", tag: tag },
           })}
         >
@@ -647,7 +647,7 @@ const tags = post.snapshot.labels ? (
             style={{ cursor: "pointer", textDecoration: "none" }}
           >
             <Widget
-              src={"${alias_REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
+              src={"${REPL_DEVHUB}/widget/devhub.components.atom.Tag"}
               props={{
                 tag,
                 black: true,
@@ -694,9 +694,7 @@ const postExtra =
       <h6 class="card-subtitle mb-2 text-muted">
         Supervisor:{" "}
         <Widget
-          src={
-            "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.ProfileLine"
-          }
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileLine"}
           props={{ accountId: snapshot.supervisor }}
         />
       </h6>
@@ -735,7 +733,7 @@ const postsList =
         {childPostIds.map((childId) => (
           <div key={childId} style={{ marginBottom: "0.5rem" }}>
             <Widget
-              src="${alias_REPL_DEVHUB}/widget/devhub.entity.post.Post"
+              src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
               props={{
                 id: childId,
                 isUnderPost: true,
@@ -783,9 +781,7 @@ const descriptionArea = isUnderPost ? (
       text: snapshot.description,
     })} */}
     <Widget
-      src={
-        "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
-      }
+      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
       props={{
         text: snapshot.description,
       }}
@@ -798,9 +794,7 @@ const descriptionArea = isUnderPost ? (
         text: state.clamp ? clampedContent : snapshot.description,
       })} */}
       <Widget
-        src={
-          "${alias_REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
-        }
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
         props={{
           text: state.clamp ? clampedContent : snapshot.description,
         }}
@@ -823,7 +817,7 @@ const timestampElement = (_snapshot) => {
     <Link
       class="text-muted"
       href={href({
-        widgetSrc: "${alias_REPL_DEVHUB}/widget/app",
+        widgetSrc: "${REPL_DEVHUB}/widget/app",
         params: {
           page: "post",
           id: postId,
@@ -836,7 +830,7 @@ const timestampElement = (_snapshot) => {
       {readableDate(_snapshot.timestamp / 1000000).substring(4)}
 
       <Widget
-        src="${alias_REPL_MOB}/widget/ProfileImage"
+        src="${REPL_MOB}/widget/ProfileImage"
         props={{
           accountId: _snapshot.editor_id,
           style: {

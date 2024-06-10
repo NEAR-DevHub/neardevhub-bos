@@ -43,7 +43,7 @@ const renderMention =
   ((accountId) => (
     <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
       <Widget
-        src="${alias_REPL_DEVHUB}/widget/devhub.components.molecule.ProfileLine"
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileLine"
         props={{
           accountId: accountId.toLowerCase(),
           hideAccountId: true,
