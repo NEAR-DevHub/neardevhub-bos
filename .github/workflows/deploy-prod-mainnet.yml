@@ -6,7 +6,7 @@ on:
 jobs:
   deploy-widgets:
     runs-on: ubuntu-latest
-    name: Deploy widgets to social.near (mainnet)
+    name: Deploy ( or diff from PR )
     env:
       NEAR_SOCIAL_DEPLOY_ID: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
       NEAR_SOCIAL_ACCOUNT_ID: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
@@ -40,8 +40,8 @@ jobs:
       - name: Deploy widgets
         run: |
           if [[ "$BRANCH" != "main" ]]; then
-            echo "Not on main branch, dry run"
-            bos components diff "$NEAR_SOCIAL_DEPLOY_ID" network-config mainnet
+            echo "Not on main branch, dry run by diff with devhub.near"
+            bos components diff devhub.near network-config mainnet
           else
             bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
           fi
