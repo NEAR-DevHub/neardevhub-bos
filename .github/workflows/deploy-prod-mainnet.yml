@@ -1,5 +1,6 @@
 name: Deploy Widgets to Mainnet
 on:
+  pull_request:
   push:
     branches: [main]
 jobs:
@@ -12,6 +13,9 @@ jobs:
       NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY: ${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}
       NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY: ${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+    defaults:
+      run:
+        working-directory: ./instances/devhub.near
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -19,7 +23,7 @@ jobs:
       - name: Set replacements
         id: set_replacements
         run: |
-          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value), {"find": "${REPL_POSTHOG_API_KEY}", "replace": "'$POSTHOG_API_KEY'"}]' replacements.mainnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
+          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value), {"find": "${REPL_POSTHOG_API_KEY}", "replace": "'$POSTHOG_API_KEY'"}]' aliases.mainnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
 
       - name: Replace placeholders
         uses: flcdrg/replace-multiple-action@v1
@@ -35,4 +39,9 @@ jobs:
 
       - name: Deploy widgets
         run: |
-          bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
+          if [[ "$BRANCH" != "main" ]]; then
+            echo "Not on main branch, dry run"
+            bos components diff "$NEAR_SOCIAL_DEPLOY_ID" network-config mainnet
+          else
+            bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
+          fi
