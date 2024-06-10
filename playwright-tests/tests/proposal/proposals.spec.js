@@ -318,9 +318,9 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     const callContractToast = await page.getByText("Sending transaction");
     await expect(callContractToast).toBeVisible();
     await expect(callContractToast).not.toBeAttached();
-    const timeLineStatusSubmittedToast = await page.getByText(
-      "Timeline status submitted"
-    );
+    const timeLineStatusSubmittedToast = await page
+      .getByText("Timeline status submitted successfully")
+      .first();
     await expect(timeLineStatusSubmittedToast).toBeVisible();
 
     await expect(firstStatusBadge).toHaveText("APPROVED");
@@ -330,6 +330,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
       { hasText: /.*s ago/ }
     );
+    console.log(lastLogItem);
     await expect(lastLogItem).toContainText(
       "moved proposal from REVIEW to APPROVED"
     );
