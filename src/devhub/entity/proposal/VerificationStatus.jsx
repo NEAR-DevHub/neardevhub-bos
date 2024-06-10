@@ -27,8 +27,12 @@ useEffect(() => {
             case "Pending":
               displayableText = "Pending";
               break;
-            default:
+            case "NotSubmitted":
+            case "Rejected":
               displayableText = "Not Verfied";
+              break;
+            default:
+              displayableText = "Failed to get status";
               break;
           }
           setVerificationStatus(displayableText);
