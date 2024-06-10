@@ -20,6 +20,7 @@
     "build:preview": "node ./scripts/build-preview.mjs",
     "dev": "npm run dev:mainnet",
     "bw:dev:devhub": "bw dev instances/devhub.near",
+    "bw:build:devhub": "bw build instances/devhub.near",
     "gateway": "node scripts/dev-gateway.mjs",
     "test": "npx playwright test",
     "test:watch:codespaces": "npm test -- --ui-host=0.0.0.0",
