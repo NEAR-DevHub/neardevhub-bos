@@ -4,7 +4,7 @@
   "description": "NEAR DevHub widgets for NEAR Social",
   "devDependencies": {
     "@playwright/test": "^1.42.1",
-    "bos-workspace": "^1.0.0-alpha.26",
+    "bos-workspace": "1.0.0-alpha.27",
     "http-server": "^14.1.1",
     "near-bos-webcomponent": "^0.0.5",
     "prettier": "^2.8.4",
