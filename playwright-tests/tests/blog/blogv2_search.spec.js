@@ -38,7 +38,7 @@ This is an article about ${topic}.
           1
         )}`,
         author: "Author",
-        communityAddonId: "g1709r",
+        communityAddonId: "blogv2",
         category: categories[n % categories.length],
       },
     };
