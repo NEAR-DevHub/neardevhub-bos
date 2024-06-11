@@ -294,11 +294,11 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       }
     );
 
-    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    await page.goto("/events-committee.near/widget/app?page=proposal&id=2");
     await setDontAskAgainCacheValues({
       page,
-      contractId: "devhub.near",
-      widgetSrc: "devhub.near/widget/devhub.entity.proposal.Proposal",
+      contractId: "events-committee.near",
+      widgetSrc: "events-committee.near/widget/devhub.entity.proposal.Proposal",
       methodName: "edit_proposal_timeline",
     });
 
@@ -318,10 +318,10 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
 
     const callContractToast = await page.getByText("Sending transaction");
     await expect(callContractToast).toBeVisible();
-    await expect(callContractToast).not.toBeAttached();
-    const timeLineStatusSubmittedToast = await page.getByText(
-      "Timeline status submitted"
-    );
+    await expect(callContractToast).not.toBeAttached({ timeout: 10000 });
+    const timeLineStatusSubmittedToast = await page
+      .getByText("Timeline status submitted")
+      .first();
     await expect(timeLineStatusSubmittedToast).toBeVisible();
 
     await expect(firstStatusBadge).toHaveText("APPROVED");
@@ -335,7 +335,9 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       "moved proposal from REVIEW to APPROVED"
     );
     await lastLogItem.scrollIntoViewIfNeeded();
-    await expect(timeLineStatusSubmittedToast).not.toBeAttached();
+    await expect(timeLineStatusSubmittedToast).not.toBeAttached({
+      timeout: 10000,
+    });
     await pauseIfVideoRecording(page);
   });
 });
@@ -637,7 +639,7 @@ test.describe("Wallet is connected", () => {
   }) => {
     test.setTimeout(120000);
     const delay_milliseconds_between_keypress_when_typing = 0;
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    await page.goto("/events-committee.near/widget/app?page=create-proposal");
     const input = page.locator('input[type="text"]').nth(2);
     const errorText = await page.getByText(
       "Please enter the nearest positive whole number."

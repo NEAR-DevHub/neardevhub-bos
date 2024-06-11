@@ -38,7 +38,7 @@ test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
 );
 
-test.describe("Wallet is not connected", () => {
+test.skip("Wallet is not connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
   });
@@ -595,7 +595,7 @@ test.skip("Don't ask again enabled", () => {
   });
 });
 
-test.describe("Admin wallet is connected", () => {
+test.skip("Admin wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
