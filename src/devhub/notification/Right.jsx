@@ -1,20 +1,36 @@
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
+const widgetAccountId = props.widgetAccountId;
 return props.proposal === undefined ? (
   "Loading ..."
 ) : (
   <>
-    <a
-      className="btn btn-outline-dark"
-      href={href({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: {
-          page: "proposal",
-          id: props.proposal,
-        },
-      })}
-    >
-      View DevHub proposal
-    </a>
+    {props.proposal ? (
+      <a
+        className="fw-bold text-muted"
+        href={href({
+          widgetSrc: `${widgetAccountId}/widget/app`,
+          params: {
+            page: "proposal",
+            id: props.proposal,
+          },
+        })}
+      >
+        proposal
+      </a>
+    ) : (
+      <a
+        className="fw-bold text-muted"
+        href={href({
+          widgetSrc: `${widgetAccountId}/widget/app`,
+          params: {
+            page: "rfp",
+            id: props.rfp,
+          },
+        })}
+      >
+        RFP
+      </a>
+    )}
   </>
 );
