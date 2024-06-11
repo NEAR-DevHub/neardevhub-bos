@@ -42,6 +42,8 @@ test.describe("Wallet is not connected", () => {
   });
 
   test("should filter blog posts from search criteria", async ({ page }) => {
+    test.setTimeout(60000);
+
     const { topics } = await setupBlogContentResponses(page);
     await configureSearchAndCategoriesEnabled({
       page,
@@ -167,7 +169,10 @@ test.describe("Wallet is not connected", () => {
 
     blogCards = await page.locator("span.category").all();
     const blogPostsValues = Object.values(blogPosts);
-    await expect(blogCards.length).toEqual(blogPostsValues.length);
+    await expect(
+      blogCards.length,
+      "Expect to show the amount of blogs that pagination allows for."
+    ).toEqual(blogPostsValues.length);
     await Promise.all(
       blogCards.map(
         async (blogCard, ndx) =>

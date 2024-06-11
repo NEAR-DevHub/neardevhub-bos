@@ -19,9 +19,16 @@ const [postPerPage, setPostPerPage] = useState(data.postPerPage || 10);
 const [categoriesEnabled, setCategoriesEnabled] = useState(
   data.categoriesEnabled || "disabled" // 'enabled', 'disabled'
 );
+const switchCategoryEnabled = (value) => {
+  if (value === "disabled") {
+    setSelected([]);
+    setCategoryRequired("not_required");
+  }
+  setCategoriesEnabled(value);
+};
 // TODO
 const filteredCategories =
-  data.categories.filter((categories) => categories !== null) || [];
+  (data.categories || []).filter((categories) => categories !== null) || [];
 console.log("filteredCategories", filteredCategories);
 const [selected, setSelected] = useState(filteredCategories);
 // TODO
@@ -169,7 +176,7 @@ const CategoriesEnabledComponent = useMemo(() => {
         className: "w-32 shadow-none",
         currentValue: categoriesEnabled,
         key: "categories",
-        onChange: (e) => setCategoriesEnabled(e.target.value),
+        onChange: (e) => switchCategoryEnabled(e.target.value),
         options: [
           { label: "Enabled", value: "enabled" },
           { label: "Disabled", value: "disabled" },
@@ -374,18 +381,24 @@ return (
       >
         {CategoriesEnabledComponent}
       </InputContainer>
-      <InputContainer
-        heading="Manage categories"
-        description="Add/edit/delete up to 10 custom category options."
-      >
-        {CategoriesEditor}
-      </InputContainer>
-      <InputContainer
-        heading="Category Required"
-        description="Decide if to make this field required for every blog post. You must have 1 category to require this field."
-      >
-        {CategoryRequiredSwitchComponent}
-      </InputContainer>
+      {categoriesEnabled === "disabled" ? (
+        <></>
+      ) : (
+        <>
+          <InputContainer
+            heading="Manage categories"
+            description="Add/edit/delete up to 10 custom category options."
+          >
+            {CategoriesEditor}
+          </InputContainer>
+          <InputContainer
+            heading="Category Required"
+            description="Decide if to make this field required for every blog post. You must have 1 category to require this field."
+          >
+            {CategoryRequiredSwitchComponent}
+          </InputContainer>
+        </>
+      )}
     </FormContainer>
 
     <div className="d-flex gap-1 align-items-center justify-content-end mt-3">

@@ -32,6 +32,9 @@ const blogPage =
 const blogPageOtherInstance =
   "/devhub.near/widget/app?page=blogv2&id=first-blog-of-instance-2-nhasab&community=webassemblymusic";
 
+const blogPageThirdInstance =
+  "/devhub.near/widget/app?page=blogv2&community=webassemblymusic&id=this-is-the-blog-title-xfxkzh";
+
 test.beforeEach(async ({ page }) => {
   await page.route("https://rpc.mainnet.near.org/", async (route) => {
     await mockDefaultTabs(route);
@@ -232,13 +235,13 @@ test.describe("Admin wallet is connected", () => {
     expect(await page.getByTestId("blog-author").isVisible()).toBe(true);
 
     // However it can be disabled
-    await page.goto(blogPage);
+    await page.goto(blogPageThirdInstance);
     // In which case the author is removed from the blog page
     await waitForTestIdToBeVisible(page, "blog-date");
     const blogAuthor = page.getByTestId("blog-author");
     await expect(blogAuthor).not.toBeVisible();
     // And also from the blog editor
-    await page.goto(baseUrl);
+    await page.goto(thirdInstance);
     await waitForTestIdToBeVisible(page, "configure-addon-button");
     await configureButton.click();
     await waitForSelectorToBeVisible(page, `[id^="edit-blog-selector-"]`);
@@ -253,7 +256,7 @@ test.describe("Admin wallet is connected", () => {
     await expect(page.getByTestId("blog-author")).not.toBeVisible();
   });
 
-  test("can configure how to blog posts are ordered", async ({ page }) => {
+  test("can configure how the blog posts are ordered", async ({ page }) => {
     // Go to the Viewer and check if the default is timedesc
     await page.goto(otherInstance); // timedesc
 

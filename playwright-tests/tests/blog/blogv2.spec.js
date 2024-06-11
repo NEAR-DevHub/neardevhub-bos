@@ -79,12 +79,13 @@ test.describe("Wallet is not connected", () => {
       state: "visible",
     });
 
-    const span1 = await page.waitForSelector('h5:has-text("PublishedBlog")', {
+    const span1 = await page.waitForSelector('h5:has-text("Test Subscribe")', {
       state: "visible",
+      timeout: 10000,
     });
 
     // Find the first published blog
-    const published = page.getByTestId("published-w5cj1y");
+    const published = page.getByTestId("test-subscribe-mujrt8");
     await published.scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
 
@@ -440,7 +441,7 @@ test.describe("Don't ask again enabled", () => {
 
     // Wait for the transaction to complete
     await expect(transaction_toast).not.toBeVisible();
-    await expect(loadingIndicator).not.toBeVisible();
+    await expect(loadingIndicator).not.toBeVisible({ timeout: 10000 });
 
     await pauseIfVideoRecording(page);
     await expect(is_transaction_completed).toBe(true);
@@ -448,9 +449,6 @@ test.describe("Don't ask again enabled", () => {
 
   test("Delete a blog", async ({ page }) => {
     // test before each
-
-    const idOfBlogToDelete = "published-w5cj1y";
-    const blogTitle = "PublishedBlog";
 
     await page.waitForTimeout(4000);
     // Start configuring the blog addon
@@ -460,7 +458,10 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
 
     // Click a blog to edit
-    await page.getByRole("cell", { name: blogTitle }).click();
+    const blogRowSelector = '[id^="edit-blog-selector-"]';
+    await page.waitForSelector(blogRowSelector);
+    const row = page.locator(blogRowSelector).first();
+    await row.click();
 
     // Mock transaction here
     let is_transaction_completed = false;
@@ -487,7 +488,8 @@ test.describe("Don't ask again enabled", () => {
           const resultObj = decodeResultJSON(json.result.result);
 
           // Mock the deletion of the first blog id
-          resultObj[communityAccount].blog[idOfBlogToDelete] = null;
+          const blogId = Object.keys(resultObj[communityAccount].blog)[0];
+          resultObj[communityAccount].blog[blogId] = null;
 
           json.result.result = encodeResultJSON(resultObj);
 
@@ -605,11 +607,10 @@ test.describe("Admin wallet is connected", () => {
 
     await pauseIfVideoRecording(page);
 
-    await page.waitForSelector("#blog-card-published-w5cj1y", {
-      state: "visible",
-    });
+    const blogCardSelector = '[id^="blog-card-"]';
+    await page.waitForSelector(blogCardSelector);
 
-    const card = page.getByTestId("published-w5cj1y");
+    const card = page.locator(blogCardSelector).first();
 
     expect(await card.isVisible()).toBeTruthy();
 
@@ -618,7 +619,13 @@ test.describe("Admin wallet is connected", () => {
 
     await page.getByTestId("new-blog-post-button").click();
     await page.getByRole("button", { name: "Cancel" }).click();
-    await page.getByRole("cell", { name: "PublishedBlog" }).click();
+
+    const blogRowSelector = '[id^="edit-blog-selector-"]';
+    await page.waitForSelector(blogRowSelector);
+
+    const row = page.locator(blogRowSelector).first();
+
+    await row.click();
     await page.getByPlaceholder("Title", { exact: true }).click();
   });
 
@@ -626,7 +633,9 @@ test.describe("Admin wallet is connected", () => {
     page,
   }) => {
     await page.goto(baseUrl);
-    await page.waitForSelector("#blog-card-published-w5cj1y", {
+    const blogCardSelector = '[id^="blog-card-"]';
+
+    await page.waitForSelector(blogCardSelector, {
       state: "visible",
     });
 
@@ -891,14 +900,22 @@ test.describe("Admin wallet is connected", () => {
     await page.goto(baseUrl);
     await pauseIfVideoRecording(page);
 
-    await page.waitForSelector("#blog-card-published-w5cj1y", {
-      state: "visible",
-    });
+    const blogCardSelector = '[id^="blog-card-"]';
+    await page.waitForSelector(blogCardSelector);
+
+    const card = page.locator(blogCardSelector).first();
+
+    expect(await card.isVisible()).toBeTruthy();
 
     const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.click();
 
-    await page.getByRole("cell", { name: "PublishedBlog" }).click();
+    const blogRowSelector = '[id^="edit-blog-selector-"]';
+    await page.waitForSelector(blogRowSelector);
+
+    const row = page.locator(blogRowSelector).first();
+
+    await row.click();
 
     await pauseIfVideoRecording(page);
     await page.waitForTimeout(2000);
@@ -949,17 +966,22 @@ test.describe("Admin wallet is connected", () => {
   test("should show 3 timestamps in the BlogOverview", async ({ page }) => {
     await page.goto(baseUrl);
     await pauseIfVideoRecording(page);
-    await page.waitForSelector("#blog-card-published-w5cj1y", {
-      state: "visible",
-    });
 
+    const blogCardSelector = '[id^="blog-card-"]';
+    await page.waitForSelector(blogCardSelector);
+
+    const card = page.locator(blogCardSelector).first();
+
+    expect(await card.isVisible()).toBeTruthy();
     const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.click();
 
-    await page.waitForSelector("#edit-blog-selector-published-w5cj1y", {
-      state: "visible",
-    });
+    const blogRowSelector = '[id^="edit-blog-selector-"]';
+    await page.waitForSelector(blogRowSelector);
 
+    const row = page.locator(blogRowSelector).first();
+
+    await row.click();
     const createdAtColumn = page.getByTestId("createdAt");
     const updatedAtColumn = page.getByTestId("updatedAt");
     const publishedAtColumn = page.getByTestId("publishedAt");

@@ -32,6 +32,7 @@ if (id && !showEditScreenData) {
                 setShowEditScreen({ ...p, data: { ...p.data, id } });
               },
               community,
+              accountId: context.accountId,
               isAllowedToEdit: permissions.can_configure,
             }}
           />

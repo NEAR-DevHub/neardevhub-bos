@@ -649,7 +649,7 @@ return (
                 src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                 props={{
                   classNames: {
-                    root: "d-flex  text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
+                    root: "d-flex text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
                   },
                   label: "Cancel",
                   onClick: onCancel,

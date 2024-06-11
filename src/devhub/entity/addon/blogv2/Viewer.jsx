@@ -247,10 +247,10 @@ const processedData = flattenBlogObject(blogData)
 
 // Pagination
 const [currentPage, setCurrentPage] = useState(0);
-const amountOfBlogPosts = processedData.length;
-const amountOfBlogPostsPerPage = data.postPerPage;
+const amountOfBlogPosts = processedData.length || 0;
+const amountOfBlogPostsPerPage = data.postPerPage || 100; // Default to 100 if not set
 const amountOfPages = Math.ceil(amountOfBlogPosts / amountOfBlogPostsPerPage);
-let currentPageData = processedData.slice(
+let currentPageData = (processedData || [1, 2, 3, 4, 5]).slice(
   currentPage * amountOfBlogPostsPerPage,
   (currentPage + 1) * amountOfBlogPostsPerPage
 );
@@ -375,8 +375,6 @@ return (
               </PaginationItem>
             )}
             {[...Array(amountOfPages)].map((_, index) => {
-              console.log("index", index);
-              console.log("is active", index === currentPage);
               return (
                 <PaginationItem>
                   <PaginationLink

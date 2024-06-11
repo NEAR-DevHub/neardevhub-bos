@@ -167,6 +167,7 @@ return (
         {author && parameters.authorEnabled !== "disabled" && (
           <div data-testid="blog-author">{author}</div>
         )}
+        {communityAddonId}
         <div data-testid="blog-date">{formattedDate}</div>
       </div>
       <p>{description}</p>

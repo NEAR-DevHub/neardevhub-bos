@@ -49,6 +49,7 @@ export async function mockBlogs(route) {
   // Intercept the actual route
   const response = await route.fetch();
   const json = await response.json();
+  const regex = /webassemblymusic\.community\.devhub\.near\/blog\/(.+)\/\*\*/g;
 
   if (
     requestPostData &&
@@ -56,8 +57,10 @@ export async function mockBlogs(route) {
     requestPostData.keys[0] === `${communityAccount}/blog/**`
   ) {
     const { blogPosts } = createLotsOfBlogs({
-      communityAddonIds: ["g1709r", "blogv2", "blogv2instance2"],
+      communityAddonIds: ["blogv2", "blogv2instance2", "g1709r"],
     });
+
+    console.log("Mocking blog posts");
 
     // Mock blog responses
     json[communityAccount]["blog"] = {
@@ -86,8 +89,38 @@ export async function mockBlogs(route) {
           status: "PUBLISH",
           subtitle: "subtitle",
           description: "Description",
-          author: "author",
+          author: "thomasguntenaar.near",
+          communityAddonId: "g1709r",
+          category: "news",
+        },
+      },
+      "published-w5cj1y2": {
+        "": "# Content\n\n",
+        metadata: {
+          title: "PublishedBlog",
+          createdAt: "2024-04-29",
+          updatedAt: "2024-04-29",
+          publishedAt: "2024-04-30",
+          status: "PUBLISH",
+          subtitle: "subtitle",
+          description: "Description",
+          author: "thomasguntenaar.near",
           communityAddonId: "blogv2",
+          category: "news",
+        },
+      },
+      "this-is-the-blog-title-xfxkzh": {
+        "": "# Content\n\n",
+        metadata: {
+          title: "PublishedBlog",
+          createdAt: "2024-04-29",
+          updatedAt: "2024-04-29",
+          publishedAt: "2024-04-30",
+          status: "PUBLISH",
+          subtitle: "subtitle",
+          description: "Description",
+          author: "thomasguntenaar.near",
+          communityAddonId: "g1709r",
           category: "news",
         },
       },
@@ -140,6 +173,41 @@ export async function mockBlogs(route) {
     };
 
     await route.fulfill({ response, json });
+  } else if (
+    requestPostData &&
+    requestPostData.keys &&
+    requestPostData.keys[0].match(regex) // On the blog page blogv2.Blog
+  ) {
+    const blogId = requestPostData.keys[0].split("/blog/")[1].split("/")[0];
+    console.log({ blogId });
+    console.log({
+      blog: JSON.stringify(json[communityAccount]["blog"], null, 2),
+    });
+    console.log({
+      communityAddonId:
+        json[communityAccount]["blog"][blogId].metadata.communityAddonId,
+    });
+    // Mock blog responses
+    json[communityAccount]["blog"] = {
+      [blogId]: {
+        "": "# Content\n\n## subcontent\n\n### h3",
+        metadata: {
+          title: "Hello World",
+          createdAt: "2024-04-28",
+          updatedAt: "2024-04-28",
+          publishedAt: "1998-05-03",
+          status: "DRAFT",
+          subtitle: "Subtitle",
+          description: "Description",
+          author: "thomasguntenaar.near",
+          category: "news",
+          communityAddonId:
+            json[communityAccount]["blog"][blogId].metadata.communityAddonId ||
+            "g1709r",
+        },
+      },
+    };
+    await route.fulfill({ response, json });
   } else {
     await route.continue();
   }
@@ -147,7 +215,7 @@ export async function mockBlogs(route) {
 
 export async function setupBlogContentResponses(page) {
   const { blogPosts, categories, topics } = createLotsOfBlogs({
-    communityAddonIds: ["g1709r"],
+    communityAddonIds: ["blogv2"],
   });
   await page.route("https://api.near.social/get", async (route) => {
     const request = route.request();

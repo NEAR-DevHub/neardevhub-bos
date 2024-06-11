@@ -318,9 +318,9 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     const callContractToast = await page.getByText("Sending transaction");
     await expect(callContractToast).toBeVisible();
     await expect(callContractToast).not.toBeAttached();
-    const timeLineStatusSubmittedToast = await page.getByText(
-      "Timeline status submitted"
-    );
+    const timeLineStatusSubmittedToast = await page
+      .getByText("Timeline status submitted successfully")
+      .first();
     await expect(timeLineStatusSubmittedToast).toBeVisible();
 
     await expect(firstStatusBadge).toHaveText("APPROVED");
@@ -330,6 +330,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
       { hasText: /.*s ago/ }
     );
+    console.log(lastLogItem);
     await expect(lastLogItem).toContainText(
       "moved proposal from REVIEW to APPROVED"
     );
@@ -455,6 +456,33 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
+  test("should show only valid input in amount field and show error for invalid", async ({
+    page,
+  }) => {
+    test.setTimeout(120000);
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    const input = page.locator('input[type="text"]').nth(2);
+    const errorText = await page.getByText(
+      "Please enter the nearest positive whole number."
+    );
+    await input.pressSequentially("12345de", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await expect(errorText).toBeVisible();
+    // clear input field
+    for (let i = 0; i < 7; i++) {
+      await input.press("Backspace", {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      });
+    }
+    await input.pressSequentially("12334", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await expect(errorText).toBeHidden();
+    await pauseIfVideoRecording(page);
+  });
+
   test("should create a proposal, autolink reference to existing proposal", async ({
     page,
   }) => {
@@ -557,30 +585,53 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test("should show only valid input in amount field and show error for invalid", async ({
-    page,
-  }) => {
-    test.setTimeout(120000);
-    const delay_milliseconds_between_keypress_when_typing = 0;
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
-    const input = page.locator('input[type="text"]').nth(2);
-    const errorText = await page.getByText(
-      "Please enter the nearest positive whole number."
-    );
-    await input.pressSequentially("12345de", {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-    await expect(errorText).toBeVisible();
-    // clear input field
-    for (let i = 0; i < 7; i++) {
-      await input.press("Backspace", {
-        delay: delay_milliseconds_between_keypress_when_typing,
-      });
-    }
-    await input.pressSequentially("12334", {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-    await expect(errorText).toBeHidden();
-    await pauseIfVideoRecording(page);
+  test("should filter proposals by categories", async ({ page }) => {
+    test.setTimeout(60000);
+    const category = "DevDAO Operations";
+    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.getByRole("button", { name: "Category" }).click();
+    await page.getByRole("list").getByText(category).click();
+    await expect(
+      page.getByRole("button", { name: `Category : ${category}` })
+    ).toBeVisible();
+    const categoryTag = await page.locator(".purple-bg").first();
+    await expect(categoryTag).toContainText(category);
+  });
+
+  test("should filter proposals by timeline", async ({ page }) => {
+    test.setTimeout(60000);
+    const stage = "Funded";
+    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.getByRole("button", { name: "Stage" }).click();
+    await page.getByRole("list").getByText(stage).click();
+    await expect(
+      page.getByRole("button", { name: `Stage : ${stage}` })
+    ).toBeVisible();
+    const timelineTag = await page.locator(".green-tag").first();
+    await expect(timelineTag).toContainText(stage.toUpperCase());
+  });
+
+  test("should filter proposals by author", async ({ page }) => {
+    test.setTimeout(60000);
+    const accountId = "megha19.near";
+    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.getByRole("button", { name: "Author" }).click();
+    await page.getByRole("list").getByText(accountId).click();
+    await expect(
+      page.getByRole("button", { name: `Author : ${accountId}` })
+    ).toBeVisible();
+    await expect(page.getByText(`By ${accountId} ･`)).toBeVisible();
+  });
+
+  test("should filter proposals by search text", async ({ page }) => {
+    test.setTimeout(60000);
+    const term = "DevHub Developer Contributor report by Megha";
+    await page.goto("/devhub.near/widget/app?page=proposals");
+    const input = await page.getByPlaceholder("Search by content");
+    await input.click();
+    await input.fill(term);
+    await input.press("Enter");
+    const element = page.locator(`:has-text("${term}")`).nth(1);
+    await expect(element).toBeVisible();
   });
 });
