@@ -5,6 +5,7 @@ if (!props.type) {
 }
 
 const type = props.type.split("/")[1];
+const widgetAccountId = props.widgetAccountId;
 return props.type ? (
   <>
     {type == "like"
@@ -16,18 +17,33 @@ return props.type ? (
       : type == "mention"
       ? "mentioned you in their"
       : type}
-    <a
-      className="fw-bold text-muted"
-      href={href({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: {
-          page: "proposal",
-          id: props.proposal,
-        },
-      })}
-    >
-      DevHub proposal
-    </a>
+    {props.proposal ? (
+      <a
+        className="fw-bold text-muted"
+        href={href({
+          widgetSrc: `${widgetAccountId}/widget/app`,
+          params: {
+            page: "proposal",
+            id: props.proposal,
+          },
+        })}
+      >
+        proposal
+      </a>
+    ) : (
+      <a
+        className="fw-bold text-muted"
+        href={href({
+          widgetSrc: `${widgetAccountId}/widget/app`,
+          params: {
+            page: "rfp",
+            id: props.rfp,
+          },
+        })}
+      >
+        RFP
+      </a>
+    )}
   </>
 ) : (
   "Loading ..."
