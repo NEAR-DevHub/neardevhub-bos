@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { pauseIfVideoRecording } from "../testUtils.js";
-import { mockDefaultTabs } from "../util/addons.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
+import { mockDefaultTabs } from "../../util/addons.js";
 
 test.skip("should load a community page if handle exists", async ({ page }) => {
   await page.goto(
@@ -219,7 +219,7 @@ test.skip("Is DevHUB platform community admin", () => {
       "/devhub.near/widget/app?page=community&handle=devhub-platform&tab=github"
     );
     await pauseIfVideoRecording(page);
-    const configureButton = await page.getByRole("button", { name: "" });
+    const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.scrollIntoViewIfNeeded();
     await configureButton.click();
     await pauseIfVideoRecording(page);

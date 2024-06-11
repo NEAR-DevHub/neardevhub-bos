@@ -31,3 +31,15 @@ export const clickWhenSelectorIsVisible = async (page, selector) => {
   waitForSelectorToBeVisible(page, selector);
   await page.click(selector);
 };
+
+export function generateRandom6CharUUID() {
+  const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+  let result = "";
+
+  for (let i = 0; i < 6; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
+  }
+
+  return result;
+}

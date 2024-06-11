@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { pauseIfVideoRecording } from "../testUtils.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
 
 test.skip("Non authenticated user's wallet is connected", () => {
   test.use({

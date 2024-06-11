@@ -1,5 +1,8 @@
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
+const { href, getLinkUsingCurrentGateway } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.url"
+) || {
   href: () => {},
+  getLinkUsingCurrentGateway: () => {},
 };
 const { readableDate } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
@@ -291,7 +294,9 @@ const item = {
   path: `${REPL_DEVHUB_CONTRACT}/post/main`,
   blockHeight,
 };
-const proposalURL = `https://near.org/${REPL_DEVHUB}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`;
+const proposalURL = getLinkUsingCurrentGateway(
+  `${REPL_DEVHUB}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
+);
 
 const KycVerificationStatus = () => {
   const isVerified = true;
@@ -413,9 +418,12 @@ const LinkedProposals = () => {
   return (
     <div className="d-flex flex-column gap-3">
       {linkedProposalsData.map((item) => {
-        const link = `https://near.org/${REPL_DEVHUB}/widget/app?page=proposal&id=${item.id}`;
         return (
-          <a href={link} target="_blank" rel="noopener noreferrer">
+          <a
+            href={`?page=proposal&id=${item.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <div className="d-flex gap-2">
               <Widget
                 src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
@@ -525,10 +533,15 @@ const editProposalStatus = ({ timeline }) => {
       gas: 270000000000000,
     },
   ]);
+  setEditProposalTimelineCalled(true);
 };
 
 const [isReviewModalOpen, setReviewModal] = useState(false);
 const [isCancelModalOpen, setCancelModal] = useState(false);
+const [isEditProposalTimelineCalled, setEditProposalTimelineCalled] =
+  useState(false);
+const [showTimeLineStatusSubmittedToast, setShowTimeLineStatusSubmittedToast] =
+  useState(false);
 const [showTimelineSetting, setShowTimelineSetting] = useState(false);
 const proposalStatus = useCallback(
   () =>
@@ -540,6 +553,10 @@ const proposalStatus = useCallback(
 const [updatedProposalStatus, setUpdatedProposalStatus] = useState({});
 
 useEffect(() => {
+  if (isEditProposalTimelineCalled) {
+    setShowTimeLineStatusSubmittedToast(true);
+    setEditProposalTimelineCalled(false);
+  }
   setUpdatedProposalStatus({
     ...proposalStatus(),
     value: { ...proposalStatus().value, ...snapshot.timeline },
@@ -616,6 +633,17 @@ const createdDate =
 
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
+    <Widget
+      src="near/widget/DIG.Toast"
+      props={{
+        title: "Timeline status submitted successfully",
+        type: "success",
+        open: showTimeLineStatusSubmittedToast,
+        onOpenChange: (v) => setShowTimeLineStatusSubmittedToast(v),
+        trigger: <></>,
+        providerProps: { duration: 3000 },
+      }}
+    />
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal"}
       props={{

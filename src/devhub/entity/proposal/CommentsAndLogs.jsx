@@ -1,3 +1,6 @@
+const { getLinkUsingCurrentGateway } = VM.require(
+  "${REPL_DEVHUB}/widget/core.lib.url"
+) || { getLinkUsingCurrentGateway: () => {} };
 const snapshotHistory = props.snapshotHistory;
 
 const Wrapper = styled.div`
@@ -79,12 +82,13 @@ State.init({
   data: null,
   socialComments: null,
   changedKeysListWithValues: null,
+  snapshotHistoryLength: 0,
 });
 
 function sortTimelineAndComments() {
   const comments = Social.index("comment", props.item, { subscribe: true });
 
-  if (state.changedKeysListWithValues === null) {
+  if (snapshotHistory.length > state.snapshotHistoryLength) {
     const changedKeysListWithValues = snapshotHistory
       .slice(1)
       .map((item, index) => {
@@ -94,7 +98,10 @@ function sortTimelineAndComments() {
           ...getDifferentKeysWithValues(startingPoint, item),
         };
       });
-    State.update({ changedKeysListWithValues });
+    State.update({
+      changedKeysListWithValues,
+      snapshotHistoryLength: snapshotHistory.length,
+    });
   }
 
   // sort comments and timeline logs by time
@@ -136,7 +143,9 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  const link = `https://near.social/${REPL_DEVHUB}/widget/app?page=proposal&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`;
+  const link = getLinkUsingCurrentGateway(
+    `${REPL_DEVHUB}/widget/app?page=proposal&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`
+  );
   const hightlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&
     props.accountId === accountId;
@@ -261,6 +270,8 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
           </span>
         )
       );
+    case "payouts":
+      return <span>updated the funding payment links.</span>;
     // we don't have this step for now
     // case "request_for_trustees_created":
     //   return !oldValue && newValue && <span>successfully created request for trustees</span>;

@@ -1,6 +1,7 @@
 const SelectInput = ({
   className,
   key,
+  inputProps: { className: inputClassName, ...inputProps },
   label,
   onChange,
   options,
@@ -29,7 +30,7 @@ const SelectInput = ({
 
       <div className="input-group">
         <select
-          className="form-select border border-2"
+          className={["form-select border border-2 ", inputClassName].join(" ")}
           value={value}
           onChange={onChange}
           aria-label={label}

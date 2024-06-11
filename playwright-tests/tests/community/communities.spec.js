@@ -2,7 +2,7 @@ import {
   clickWhenSelectorIsVisible,
   setInputAndAssert,
   waitForSelectorToBeVisible,
-} from "../testUtils";
+} from "../../testUtils";
 
 const { test, expect } = require("@playwright/test");
 

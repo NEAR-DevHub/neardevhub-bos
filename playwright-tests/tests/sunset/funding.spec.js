@@ -3,7 +3,7 @@ import {
   pauseIfVideoRecording,
   selectAndAssert,
   setInputAndAssert,
-} from "../testUtils";
+} from "../../testUtils";
 
 test.skip("Wallet is connected", () => {
   // sign in to wallet
