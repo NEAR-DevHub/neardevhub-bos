@@ -100,7 +100,7 @@ const likeClick = (e) => {
           type: "proposal/like",
           item,
           proposal: proposalId,
-          widgetAccountId: "REPL_DEVHUB",
+          widgetAccountId: "${REPL_DEVHUB}",
         },
       });
     } else {

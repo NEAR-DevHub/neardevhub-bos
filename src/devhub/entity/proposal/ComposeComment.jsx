@@ -154,7 +154,7 @@ function composeData() {
         type: "proposal/reply",
         item,
         proposal: proposalId,
-        widgetAccountId: "REPL_DEVHUB",
+        widgetAccountId: "${REPL_DEVHUB}",
       },
     });
   }
