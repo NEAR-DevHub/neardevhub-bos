@@ -44,7 +44,7 @@ function getLinkUsingCurrentGateway(url) {
   const data = fetch(`https://httpbin.org/headers`);
   const gatewayURL = data?.body?.headers?.Origin ?? "";
   return `https://${
-    gatewayURL.includes("near.org") ? "dev.near.org" : "near.social"
+    gatewayURL.includes("near.org") ? "near.org" : "near.social"
   }/${url}`;
 }
 
