@@ -46,7 +46,7 @@ ${queryName}(
 }`;
 
 const proposalLink = getLinkUsingCurrentGateway(
-  `devhub.near/widget/app?page=proposal&id=`
+  `${REPL_DEVHUB}/widget/app?page=proposal&id=`
 );
 
 const code = `

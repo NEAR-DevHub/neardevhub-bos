@@ -143,7 +143,7 @@ const Comment = ({ commentItem }) => {
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
   const link = getLinkUsingCurrentGateway(
-    `devhub.near/widget/app?page=proposal&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`
+    `${REPL_DEVHUB}/widget/app?page=proposal&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`
   );
   const hightlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&

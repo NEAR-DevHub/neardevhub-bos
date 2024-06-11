@@ -295,7 +295,7 @@ const item = {
   blockHeight,
 };
 const proposalURL = getLinkUsingCurrentGateway(
-  `devhub.near/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
+  `${REPL_DEVHUB}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
 );
 
 const KycVerificationStatus = () => {
