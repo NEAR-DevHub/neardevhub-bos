@@ -39,6 +39,8 @@ jobs:
 
       - name: Deploy widgets
         run: |
+          BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+          echo "on branch $BRANCH"
           if [[ "$BRANCH" != "main" ]]; then
             echo "Not on main branch, dry run by diff with devhub.near"
             bos components diff devhub.near network-config mainnet
