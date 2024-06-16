@@ -48,12 +48,12 @@ test.describe("Wallet is connected", () => {
     });
     await page.getByRole("tab", { name: "Moderators" }).click();
     await page.getByTestId("edit-members").click();
-    let inputSelector = `input[data-testid="membernew-list-item"]`;
-    await page.waitForSelector(inputSelector, {
-      state: "visible",
-    });
-    await page.locator(inputSelector).click();
-    await page.locator(inputSelector).fill("test.near");
+    const inputElement = page.locator(
+      ".flex-grow-1 > div > div > div > .input-group > .form-control"
+    );
+    expect(inputElement).toBeVisible();
+    await inputElement.click();
+    await inputElement.fill("test.near");
     await page.getByRole("button", { name: "" }).click();
     await page.getByRole("button", { name: " Submit" }).click();
     await page.getByRole("button", { name: "Confirm" }).click();
