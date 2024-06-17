@@ -15,15 +15,17 @@ const {
   addonParameters,
 } = props;
 
-const selectOptions = useMemo(
-  () =>
-    (addonParameters.categories || []).map((it) => ({
-      title: it.category,
-      description: "",
-      value: it.value,
-    })),
-  [addonParameters]
-);
+const selectOptions = useMemo(() => {
+  let ops = (addonParameters.categories || []).map((it) => ({
+    title: it.category,
+    description: "",
+    value: it.value,
+  }));
+  if (addonParameters.categoryRequired === "required") {
+    return ops;
+  }
+  return [{ title: "None", value: "" }, ...ops];
+}, [addonParameters]);
 
 const Banner = styled.div`
   border-radius: var(--bs-border-radius-xl) !important;
@@ -188,7 +190,14 @@ const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || context.accountId);
 const [previewMode, setPreviewMode] = useState("edit"); // "edit" or "preview" // "card" or "page"
 const [date, setDate] = useState(initialFormattedDate || new Date());
-const [category, setCategory] = useState(initialData.category || "guide");
+
+// Initial category
+const initialCategory =
+  addonParameters.categoryRequired === "required" ? selectOptions[0].value : "";
+
+const [category, setCategory] = useState(
+  initialData.category || initialCategory
+);
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
 const [selectedStatus, setSelectedStatus] = useState(

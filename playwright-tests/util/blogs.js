@@ -57,10 +57,13 @@ export async function mockBlogs(route) {
     requestPostData.keys[0] === `${communityAccount}/blog/**`
   ) {
     const { blogPosts } = createLotsOfBlogs({
-      communityAddonIds: ["blogv2", "blogv2instance2", "g1709r"],
+      communityAddonIds: [
+        "blogv2",
+        "blogv2instance2",
+        "g1709r",
+        "blogv2instance4",
+      ],
     });
-
-    console.log("Mocking blog posts");
 
     // Mock blog responses
     json[communityAccount]["blog"] = {
@@ -179,14 +182,6 @@ export async function mockBlogs(route) {
     requestPostData.keys[0].match(regex) // On the blog page blogv2.Blog
   ) {
     const blogId = requestPostData.keys[0].split("/blog/")[1].split("/")[0];
-    console.log({ blogId });
-    console.log({
-      blog: JSON.stringify(json[communityAccount]["blog"], null, 2),
-    });
-    console.log({
-      communityAddonId:
-        json[communityAccount]["blog"][blogId].metadata.communityAddonId,
-    });
     // Mock blog responses
     json[communityAccount]["blog"] = {
       [blogId]: {

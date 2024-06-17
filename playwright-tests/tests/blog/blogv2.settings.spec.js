@@ -23,6 +23,9 @@ const otherInstance =
 const thirdInstance =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=third-blog";
 
+const fourthInstance =
+  "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=fourth-blog";
+
 const communityAccount = "webassemblymusic.community.devhub.near";
 
 // This blog is mocked in util/addons.js
@@ -281,15 +284,40 @@ test.describe("Admin wallet is connected", () => {
     await page.getByPlaceholder("Title", { exact: true }).click();
     await page
       .getByPlaceholder("Title", { exact: true })
-      .fill("Mocked configured blog page title!");
+      .fill("New mocked configured blog page title!");
     await page.getByPlaceholder("Title", { exact: true }).press("Tab");
     await page.getByPlaceholder("Subtitle").click();
-    await page.getByPlaceholder("Subtitle").fill("Mocked configured subtitle!");
+    await page
+      .getByPlaceholder("Subtitle")
+      .fill("New mocked configured subtitle!");
     await page.getByLabel("Author Enabled").getByText("Disabled").click();
     await page.getByLabel("Search").getByText("Disabled").click();
     await page.getByText("Newest to oldest", { exact: true }).click();
     await page.getByTestId("post-per-page-input").click();
     await page.getByTestId("post-per-page-input").fill("6");
+
+    await page.getByText("Not Required").click();
+    await page.getByTestId("save-settings-button").nth(1).click();
+
+    await expect(page.locator("div.modal-body code")).toBeVisible();
+    const transactionObj = JSON.parse(
+      await page.locator("div.modal-body code").innerText()
+    );
+
+    const parameters = JSON.parse(transactionObj.community_addon.parameters);
+    expect(parameters.title).toBe("New mocked configured blog page title!");
+    expect(parameters.subtitle).toBe("New mocked configured subtitle!");
+    expect(parameters.authorEnabled).toBe("disabled");
+    expect(parameters.searchEnabled).toBe("disabled");
+    expect(parameters.orderBy).toBe("timedesc");
+    expect(parameters.postPerPage).toBe("6");
+    expect(parameters.categoryRequired).toBe("not_required");
+    expect(parameters.categoriesEnabled).toBe("enabled");
+    expect(parameters.categories).toEqual([
+      { category: "News", value: "news" },
+      { category: "Guide", value: "guide" },
+      { category: "Reference", value: "reference" },
+    ]);
   });
 
   test("can configure the title of the blog view widget", async ({ page }) => {
@@ -406,6 +434,9 @@ test.describe("Admin wallet is connected", () => {
     const blogCards = page.locator(`[id^="blog-card-"]`);
     const elements = await page.$$(`[data-testid="blog-card-date"]`);
     const numberOfBlogCards = await blogCards.count();
+
+    await waitForTestIdToBeVisible(page, "blog-card-date");
+
     expect(numberOfBlogCards).toBeGreaterThan(3);
 
     let lastDate = new Date();
@@ -638,5 +669,61 @@ test.describe("Admin wallet is connected", () => {
     );
 
     expect(categoryTexts).toEqual(categories);
+  });
+
+  test("should be require the category to be selected when required", async ({
+    page,
+  }) => {
+    // Click on new blog post button
+    const firstRow = page.getByTestId("edit-blog-row").first();
+    await firstRow.click();
+
+    const categoryDropdown = page.getByTestId("category-dropdown");
+    await categoryDropdown.scrollIntoViewIfNeeded();
+
+    await categoryDropdown.click();
+
+    const option = page.locator(`[data-testid^="category-option-"]`);
+    const options = await page.$$(`[data-testid^="category-option-"]`);
+    const numberOfOptions = await option.count();
+    expect(numberOfOptions).toBe(3);
+
+    // check that the innertext of the options is the same as the categories
+    const categoryTexts = await Promise.all(
+      options.map(async (option) => {
+        return await option.innerText();
+      })
+    );
+
+    expect(categoryTexts).not.toContain("None");
+
+    await page.goto(fourthInstance);
+    await pauseIfVideoRecording(page);
+
+    await waitForTestIdToBeVisible(page, "configure-addon-button");
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
+
+    await waitForSelectorToBeVisible(page, `[id^="edit-blog-selector-"]`);
+
+    // Click on new blog post button
+    await firstRow.click();
+
+    await categoryDropdown.scrollIntoViewIfNeeded();
+
+    await categoryDropdown.click();
+
+    const optionsSecondInstance = await page.$$(
+      `[data-testid^="category-option-"]`
+    );
+
+    // check that the innertext of the options is the same as the categories
+    const categoryTextsSecondInstance = await Promise.all(
+      optionsSecondInstance.map(async (option) => {
+        return await option.innerText();
+      })
+    );
+
+    expect(categoryTextsSecondInstance).toContain("None");
   });
 });

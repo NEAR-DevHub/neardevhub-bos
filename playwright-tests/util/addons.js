@@ -92,6 +92,23 @@ export async function mockDefaultTabs(route) {
           "categoryRequired": "not_required"\
         }',
       },
+      {
+        addon_id: "blogv2",
+        display_name: "Fourth Blog",
+        enabled: true,
+        id: "blogv2instance4",
+        parameters:
+          '{"title": "WebAssemblyMusic",\
+          "subtitle": "Stay up to date with the community blog",\
+          "authorEnabled": "disabled",\
+          "searchEnabled": "disabled",\
+          "orderBy": "alpha",\
+          "postPerPage": 10,\
+          "categoriesEnabled": "enabled",\
+          "categories": [{"category":"News","value":"news"}],\
+          "categoryRequired": "not_required"\
+        }',
+      },
     ];
 
     json.result.result = encodeResultJSON(resultObj);
