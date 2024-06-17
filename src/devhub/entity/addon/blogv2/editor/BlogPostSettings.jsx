@@ -36,6 +36,8 @@ const [categoryRequired, setCategoryRequired] = useState(
   data.categoryRequired || "not_required" // required | not_required
 );
 
+const [loadingSaveSettings, setLoadingSaveSettings] = useState(false);
+
 const InputContainer = ({ heading, description, children }) => {
   return (
     <div className="d-flex flex-column gap-1 gap-sm-2 w-2/3">
@@ -259,8 +261,9 @@ const FormContainer = styled.div`
  * These default values should reflect in the configurator / viewer and settings page
  */
 const handleOnSubmit = () => {
+  setLoadingSaveSettings(true);
   if (categoriesEnabled === "enabled" && categories.length === 0) {
-    return;
+    return setLoadingSaveSettings(false);
   }
 
   const cEnabled = categoriesEnabled || "disabled";
@@ -282,13 +285,16 @@ const handleOnSubmit = () => {
     // minimum of 5 posts per page
     postPerPage: postPerPage < 5 ? 5 : postPerPage,
   });
+  setTimeout(() => {
+    setLoadingSaveSettings(false);
+  }, 2000);
 };
 
 const categoriesIsInvalid = () =>
   categoriesEnabled === "enabled" && categories.length === 0;
 
 const submitDisabled = () => {
-  return categoriesIsInvalid() || !title || !subtitle;
+  return categoriesIsInvalid() || !title || !subtitle || loadingSaveSettings;
 };
 
 return (
@@ -322,6 +328,7 @@ return (
                 onClick: handleOnSubmit,
                 testId: "save-settings-button",
                 disabled: submitDisabled(),
+                loading: loadingSaveSettings,
                 icon: "bi-plus-circle-fill",
               }}
             />
@@ -420,6 +427,7 @@ return (
           testId: "save-settings-button",
           disabled: submitDisabled(),
           icon: "bi-plus-circle-fill",
+          loading: loadingSaveSettings,
         }}
       />
     </div>

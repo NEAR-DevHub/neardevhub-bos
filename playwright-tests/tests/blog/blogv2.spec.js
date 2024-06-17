@@ -183,44 +183,6 @@ test.describe("Don't ask again enabled", () => {
         }
 
         if (
-          requestPostData.params.account_id === "social.near" &&
-          requestPostData.params.method_name === "get" &&
-          args_base64 &&
-          JSON.parse(atob(args_base64)).keys[0] ===
-            `${communityAccount}/blog/**`
-        ) {
-          const response = await route.fetch();
-          const json = await response.json();
-
-          const resultObj = decodeResultJSON(json.result.result);
-
-          let id = `the-blog-title-${generateRandom6CharUUID()}`;
-          let publishedAt = new Date(publishedDate).toISOString().slice(0, 10);
-
-          let metadata = {
-            title: "the-blog-title",
-            publishedAt,
-            status: "PUBLISH",
-            subtitle: "Subtitle",
-            description: descriptionText,
-            author: author,
-            category: "news",
-            updatedAt: new Date().toISOString().slice(0, 10),
-          };
-
-          metadata.createdAt = new Date().toISOString().slice(0, 10);
-          metadata.communityAddonId = "blogv2";
-
-          resultObj[communityAccount]["blog"][id] = {
-            "": content,
-            metadata: metadata,
-          };
-
-          json.result.result = encodeResultJSON(resultObj);
-
-          await route.fulfill({ response, json });
-          return;
-        } else if (
           // Make sure the addons are enabled
           requestPostData.params &&
           requestPostData.params.account_id === "devhub.near" &&
@@ -245,14 +207,45 @@ test.describe("Don't ask again enabled", () => {
                 display_name: "First Blog",
                 enabled: true,
                 id: "blogv2",
-                parameters: "{categories:['news','guide','reference']}",
+                parameters:
+                  '{"title":"Mocked configured blog page title",\
+                "subtitle":"Mocked configured subtitle",\
+                "authorEnabled": "enabled",\
+                "searchEnabled": "enabled",\
+                "orderBy": "timeasc",\
+                "postPerPage": 5,\
+                "categoriesEnabled": "enabled",\
+                "categories": ["news", "guide", "reference"],\
+                "categoryRequired": false}',
               },
               {
                 addon_id: "blogv2",
                 display_name: "Second Blog",
                 enabled: true,
                 id: "blogv2instance2",
-                parameters: "{categories:['news','guide','reference']}",
+                parameters: "{}",
+              },
+              {
+                addon_id: "blogv2",
+                display_name: "Third Blog",
+                enabled: true,
+                id: "g1709r",
+                parameters:
+                  '{"title": "WebAssemblyMusic",\
+                  "subtitle": "Stay up to date with the community blog",\
+                  "authorEnabled": "disabled",\
+                  "searchEnabled": "disabled",\
+                  "orderBy": "alpha",\
+                  "postPerPage": 10,\
+                  "categoriesEnabled": "enabled",\
+                  "categories": [{\
+                          "category": "News",\
+                          "value": "news"},\
+                      {\
+                        "category": "Olivier",\
+                        "value": "olivier"}],\
+                  "categoryRequired": "not_required"\
+                }',
               },
             ];
           }

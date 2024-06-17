@@ -58,19 +58,165 @@ test.describe("Don't ask again enabled", () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
     await page.goto(baseUrl);
-    const widgetSrc =
-      "devhub.near/widget/devhub.entity.addon.blogv2.editor.provider";
+    const widgetSrc = "devhub.near/widget/devhub.page.addon";
     await setDontAskAgainCacheValues({
       page,
       widgetSrc,
-      methodName: "set_community_socialdb",
+      methodName: "set_community_addon",
       contractId: "devhub.near",
     });
 
     await pauseIfVideoRecording(page);
   });
 
-  test.skip("Save blog configuration", async ({ page }) => {});
+  test("Save blog configuration", async ({ page }) => {
+    await page.goto(baseUrl);
+    await pauseIfVideoRecording(page);
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
+
+    await page.getByTestId("settings-button").click();
+    await page.waitForTimeout(4000);
+    await page.getByPlaceholder("Title", { exact: true }).click();
+    await page
+      .getByPlaceholder("Title", { exact: true })
+      .fill("Mocked configured blog page title 2");
+    await page.getByText("Provide a brief subtitle for").click();
+    await page.getByPlaceholder("Subtitle").click();
+    await page
+      .getByPlaceholder("Subtitle")
+      .fill("Mocked configured subtitle 2");
+    await page.getByLabel("Author Enabled").getByText("Disabled").click();
+    await page.getByLabel("Author Enabled").getByText("Enabled").click();
+    await page.getByLabel("Search").getByText("Disabled").click();
+    await page.getByLabel("Search").getByText("Enabled").click();
+    await page.getByText("Newest to oldest", { exact: true }).click();
+    await page.getByTestId("post-per-page-input").click();
+    await page.getByTestId("post-per-page-input").fill("8");
+    await page.getByText("Required", { exact: true }).click();
+
+    // Mock transaction here
+    let is_transaction_completed = false;
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        const requestPostData = request.postDataJSON();
+        const args_base64 = requestPostData.params?.args_base64;
+
+        if (transaction_completed) {
+          is_transaction_completed = true;
+        }
+
+        if (
+          requestPostData.params.account_id === "social.near" &&
+          requestPostData.params.method_name === "get" &&
+          args_base64 &&
+          JSON.parse(atob(args_base64)).keys[0] ===
+            `${communityAccount}/blog/**`
+        ) {
+          const response = await route.fetch();
+          const json = await response.json();
+
+          const resultObj = decodeResultJSON(json.result.result);
+
+          let id = `the-blog-title-${generateRandom6CharUUID()}`;
+          let publishedAt = new Date(publishedDate).toISOString().slice(0, 10);
+
+          let metadata = {
+            title: "the-blog-title",
+            publishedAt,
+            status: "PUBLISH",
+            subtitle: "Subtitle",
+            description: descriptionText,
+            author: author,
+            category: "news",
+            updatedAt: new Date().toISOString().slice(0, 10),
+          };
+
+          metadata.createdAt = new Date().toISOString().slice(0, 10);
+          metadata.communityAddonId = "blogv2";
+
+          resultObj[communityAccount]["blog"][id] = {
+            "": content,
+            metadata: metadata,
+          };
+
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+          return;
+        } else if (
+          // Make sure the addons are enabled
+          requestPostData.params &&
+          requestPostData.params.account_id === "devhub.near" &&
+          requestPostData.params.method_name === "get_community"
+        ) {
+          const response = await route.fetch();
+          const json = await response.json();
+
+          const resultObj = decodeResultJSON(json.result.result);
+          if (
+            !resultObj.addons
+              .map((addon) => addon.addon_id)
+              .includes("blogv2") ||
+            !resultObj.addons
+              .map((addon) => addon.addon_id)
+              .includes("blogv2instance2")
+          ) {
+            resultObj.addons = [
+              ...resultObj.addons,
+              {
+                addon_id: "blogv2",
+                display_name: "First Blog",
+                enabled: true,
+                id: "blogv2",
+                parameters: "{categories:['news','guide','reference']}",
+              },
+              {
+                addon_id: "blogv2",
+                display_name: "Second Blog",
+                enabled: true,
+                id: "blogv2instance2",
+                parameters: "{categories:['news','guide','reference']}",
+              },
+            ];
+          }
+
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+          return;
+        }
+
+        await route.continue();
+      }
+    );
+
+    const saveSettingsButton = page.getByTestId("save-settings-button").nth(1);
+
+    // Save the settings
+    await saveSettingsButton.click();
+
+    // expect(saveSettingsButton.innerText()).toBe("Loading...");
+
+    await expect(saveSettingsButton).toBeDisabled();
+
+    await expect(page.locator("div.modal-body code")).not.toBeVisible();
+
+    const transaction_toast = await page.getByText(
+      "Calling contract devhub.near with method set_community_addon"
+    );
+    await expect(transaction_toast).toBeVisible();
+
+    await pauseIfVideoRecording(page);
+    // Maybe longer?
+    await page.waitForTimeout(5000);
+    // Wait for the transaction to complete
+    await expect(transaction_toast).not.toBeVisible();
+
+    await pauseIfVideoRecording(page);
+    await expect(is_transaction_completed).toBe(true);
+  });
 });
 
 test.describe("Admin wallet is connected", () => {
