@@ -84,7 +84,7 @@ const processedData = Object.keys(blogData)
       return new Date(blog1.publishedAt) - new Date(blog2.publishedAt);
     }
     if (data.orderBy === "alpha") {
-      return (blog1.title || "").localCompare(blog2.title || "");
+      return (blog1.title || "").localeCompare(blog2.title || "");
     }
     // timedesc is the default order
     return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);

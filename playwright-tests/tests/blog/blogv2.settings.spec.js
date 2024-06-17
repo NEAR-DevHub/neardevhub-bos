@@ -290,11 +290,6 @@ test.describe("Admin wallet is connected", () => {
     await page.getByText("Newest to oldest", { exact: true }).click();
     await page.getByTestId("post-per-page-input").click();
     await page.getByTestId("post-per-page-input").fill("6");
-    // TODO:
-    // await page.locator(".sc-liQGml").click();
-    // await page.locator(".rbt-input-wrapper > div:nth-child(4)").click();
-    // await page.getByRole("combobox").fill("extra");
-    // await page.getByLabel("menu-options").click();
   });
 
   test("can configure the title of the blog view widget", async ({ page }) => {
@@ -484,13 +479,164 @@ test.describe("Admin wallet is connected", () => {
     });
   });
 
-  test.skip("can configure the number of blogs to display per page", async ({
+  test("can configure the number of blogs to display per page", async ({
     page,
-  }) => {});
+  }) => {
+    test.setTimeout(60000);
+    // Go to the first blog instance
+    // Go to the Viewer
+    const configureButton = page.getByTestId("configure-addon-button-x");
+    await configureButton.click();
+    // this instance has 5 posts per page
+    await waitForSelectorToBeVisible(page, `[id^="blog-card-"]`);
+    const blogCards = page.locator(`[id^="blog-card-"]`);
+    await blogCards.first().scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+    const numberOfBlogCards = await blogCards.count();
+    expect(numberOfBlogCards).toBe(5);
 
-  test("can disable categories", async ({ page }) => {});
+    await page.waitForTimeout(2000);
 
-  test.skip("should be able to configure the settings of the blogv2 addon instance", async ({
+    // Go to the second blog instance
+    await page.goto(otherInstance);
+    await waitForSelectorToBeVisible(page, `[id^="blog-card-"]`);
+    const blogCardsSecondInstance = page.locator(`[id^="blog-card-"]`);
+    await blogCardsSecondInstance.first().scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+    // this instance has 100 posts per page
+    const numberOfBlogCardsSecondInstance =
+      await blogCardsSecondInstance.count();
+    expect(numberOfBlogCardsSecondInstance).toBeGreaterThan(10);
+    expect(numberOfBlogCardsSecondInstance).toBeLessThanOrEqual(100);
+
+    await page.waitForTimeout(2000);
+
+    // Go to the third blog instance
+    await page.goto(thirdInstance);
+    await waitForSelectorToBeVisible(page, `[id^="blog-card-"]`);
+    const blogCardsThirdInstance = page.locator(`[id^="blog-card-"]`);
+
+    await blogCardsThirdInstance.first().scrollIntoViewIfNeeded();
+    await pauseIfVideoRecording(page);
+    // this instance has 10 posts per page
+    const numberOfBlogCardsThirdInstance = await blogCardsThirdInstance.count();
+    expect(numberOfBlogCardsThirdInstance).toBe(10);
+  });
+
+  test("should hide categories in the cards by default and when disabled", async ({
     page,
-  }) => {});
+  }) => {
+    test.setTimeout(60000);
+
+    // Check that categories are visible in the first blog instance
+    await page.goto(baseUrl);
+    await pauseIfVideoRecording(page);
+    await waitForSelectorToBeVisible(page, `[id^="blog-card-"]`);
+    const categoryFieldInCard = page.getByTestId("card-category").first();
+    expect(categoryFieldInCard).toBeVisible();
+
+    // Go to the second viewer
+    // It is not configured so should not be visible
+    await page.goto(otherInstance);
+    await pauseIfVideoRecording(page);
+    await waitForSelectorToBeVisible(page, `[id^="blog-card-"]`);
+    // Check if the categories are not visible
+    expect(categoryFieldInCard).not.toBeVisible();
+
+    // Go tot the third viewer
+    await page.goto(thirdInstance);
+    await pauseIfVideoRecording(page);
+    await waitForSelectorToBeVisible(page, `[id^="blog-card-"]`);
+    // Check if the categories are not visible
+    expect(categoryFieldInCard).not.toBeVisible();
+  });
+
+  test("should hide the category on the blog page by default and when disabled", async ({
+    page,
+  }) => {
+    await page.goto(blogPage);
+    await waitForTestIdToBeVisible(page, "blog-title");
+    const category = page.getByTestId("blog-category");
+    expect(category).toBeVisible();
+
+    // Go to the second viewer
+    await page.goto(blogPageOtherInstance);
+    await waitForTestIdToBeVisible(page, "blog-title");
+    // Check if the categories are not visible
+    expect(category).not.toBeVisible();
+
+    // Go to the third viewer
+    await page.goto(blogPageThirdInstance);
+    await waitForTestIdToBeVisible(page, "blog-title");
+    // Check if the categories are not visible
+    expect(category).not.toBeVisible();
+  });
+
+  test("should be hidden from the form when categories isn't enabled in the instance", async ({
+    page,
+  }) => {
+    test.setTimeout(60000);
+
+    const firstRow = page.getByTestId("edit-blog-row").first();
+    await firstRow.click();
+
+    const categoryDropdown = page.getByTestId("category-dropdown");
+    await categoryDropdown.scrollIntoViewIfNeeded();
+    expect(categoryDropdown).toBeVisible();
+
+    // Check if the category dropdown is hidden by default
+    await page.goto(otherInstance);
+    await pauseIfVideoRecording(page);
+
+    await waitForTestIdToBeVisible(page, "configure-addon-button");
+    const configureButton = page.getByTestId("configure-addon-button");
+    await configureButton.click();
+    await waitForSelectorToBeVisible(page, `[id^="edit-blog-selector-"]`);
+
+    await firstRow.click();
+
+    const descriptionField = page.getByTestId("description-input-field");
+    await descriptionField.scrollIntoViewIfNeeded();
+    expect(categoryDropdown).not.toBeVisible();
+
+    // Check if the category dropdown is hidden when disabled
+    await page.goto(thirdInstance);
+    await pauseIfVideoRecording(page);
+
+    await waitForTestIdToBeVisible(page, "configure-addon-button");
+    await configureButton.click();
+    await waitForSelectorToBeVisible(page, `[id^="edit-blog-selector-"]`);
+
+    await firstRow.click();
+    await descriptionField.scrollIntoViewIfNeeded();
+    expect(categoryDropdown).not.toBeVisible();
+  });
+
+  test("should show the configured categories in the form", async ({
+    page,
+  }) => {
+    const firstRow = page.getByTestId("edit-blog-row").first();
+    await firstRow.click();
+
+    const categoryDropdown = page.getByTestId("category-dropdown");
+    await categoryDropdown.scrollIntoViewIfNeeded();
+
+    await categoryDropdown.click();
+
+    const option = page.locator(`[data-testid^="category-option-"]`);
+    const options = await page.$$(`[data-testid^="category-option-"]`);
+    const numberOfOptions = await option.count();
+    expect(numberOfOptions).toBe(3);
+
+    const categories = ["News", "Guide", "Reference"];
+
+    // check that the innertext of the options is the same as the categories
+    const categoryTexts = await Promise.all(
+      options.map(async (option) => {
+        return await option.innerText();
+      })
+    );
+
+    expect(categoryTexts).toEqual(categories);
+  });
 });

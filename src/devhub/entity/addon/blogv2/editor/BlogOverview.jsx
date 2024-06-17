@@ -63,6 +63,7 @@ return (
         return (
           <tr
             id={`edit-blog-selector-${it.id}`}
+            data-testid="edit-blog-row"
             className={`cursor-pointer hover-bg-slate-300 ${
               it.id === selectedItem.id ? "bg-gray-100" : ""
             }`}

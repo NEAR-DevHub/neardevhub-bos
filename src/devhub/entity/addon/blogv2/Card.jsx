@@ -1,5 +1,6 @@
-function Card({ data }) {
+function Card({ data, addonParameters }) {
   const { category, title, description, publishedAt: date, id } = data;
+  const { categoriesEnabled } = addonParameters;
 
   const Container = styled.div`
     min-height: 12.5rem;
@@ -66,7 +67,11 @@ function Card({ data }) {
 
   return (
     <Container id={`blog-card-${id}`} data-testid={id}>
-      {category && <span className="category">{category}</span>}
+      {category && categoriesEnabled === "enabled" && (
+        <span className="category" data-testid="card-category">
+          {category}
+        </span>
+      )}
       <h5 data-testid="blog-card-title">{title}</h5>
       <p>{description}</p>
       <span className="date" data-testid="blog-card-date">

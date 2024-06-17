@@ -63,8 +63,10 @@ export async function mockDefaultTabs(route) {
         "orderBy": "timeasc",\
         "postPerPage": 5,\
         "categoriesEnabled": "enabled",\
-        "categories": ["news", "guide", "reference"],\
-        "categoryRequired": false}',
+        "categories": [{"category":"News","value":"news"},\
+        {"category":"Guide","value":"guide"},\
+        {"category":"Reference","value":"reference"}],\
+        "categoryRequired": "required"}',
       },
       {
         addon_id: "blogv2",
@@ -85,13 +87,8 @@ export async function mockDefaultTabs(route) {
           "searchEnabled": "disabled",\
           "orderBy": "alpha",\
           "postPerPage": 10,\
-          "categoriesEnabled": "enabled",\
-          "categories": [{\
-                  "category": "News",\
-                  "value": "news"},\
-              {\
-                "category": "Olivier",\
-                "value": "olivier"}],\
+          "categoriesEnabled": "disabled",\
+          "categories": [],\
           "categoryRequired": "not_required"\
         }',
       },

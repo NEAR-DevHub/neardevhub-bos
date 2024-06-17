@@ -3,28 +3,26 @@ const { Card } =
   (() => <></>);
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
-const categories = [
-  {
-    label: "Guide",
-    value: "guide",
-  },
-  {
-    label: "News",
-    value: "news",
-  },
-  {
-    label: "Reference",
-    value: "reference",
-  },
-];
+const {
+  data,
+  handle,
+  onSubmit,
+  onCancel,
+  onDelete,
+  allBlogs: allBlogsOfThisInstance,
+  communityAddonId,
+  setSelectedItemChanged,
+  addonParameters,
+} = props;
 
 const selectOptions = useMemo(
   () =>
-    categories.map((it) => ({
-      label: it.label,
+    (addonParameters.categories || []).map((it) => ({
+      title: it.category,
+      description: "",
       value: it.value,
     })),
-  [categories]
+  [addonParameters]
 );
 
 const Banner = styled.div`
@@ -165,18 +163,6 @@ const DropdownBtnContainer = styled.div`
 
 }
 `;
-
-const {
-  data,
-  handle,
-  onSubmit,
-  onCancel,
-  onDelete,
-  allBlogs: allBlogsOfThisInstance,
-  communityAddonId,
-  setSelectedItemChanged,
-  addonParameters,
-} = props;
 
 const allBlogKeys =
   Social.keys(`${handle}.community.devhub.near/blog/*`, "final") || {};
@@ -324,7 +310,6 @@ const SubmitBtn = () => {
     setDraftBtnOpen(false);
     setSelectedStatus(option.value);
     setSubmittedBlogData(null);
-    // TODO test is
     handleSubmit(option.value);
   };
 
@@ -677,6 +662,7 @@ return (
               category,
               community: handle,
             }}
+            addonParameters={addonParameters}
           />
 
           <Widget

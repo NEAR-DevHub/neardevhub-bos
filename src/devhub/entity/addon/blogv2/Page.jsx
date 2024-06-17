@@ -160,14 +160,17 @@ return (
           <div class="bi bi-pencil-square" style={{ fontSize: "30px" }}></div>
         </div>
       )}
-      {category && <span className="category">{category}</span>}
-      <h1>{title}</h1>
+      {category && parameters.categoriesEnabled === "enabled" && (
+        <span className="category" data-testid="blog-category">
+          {category}
+        </span>
+      )}
+      <h1 data-testid="blog-title">{title}</h1>
       <p className="subtitle">{subtitle}</p>
       <div className="d-flex flex-row justify-content-between date">
         {author && parameters.authorEnabled !== "disabled" && (
           <div data-testid="blog-author">{author}</div>
         )}
-        {communityAddonId}
         <div data-testid="blog-date">{formattedDate}</div>
       </div>
       <p>{description}</p>

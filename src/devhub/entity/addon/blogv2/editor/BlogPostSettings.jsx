@@ -12,10 +12,8 @@ const [searchEnabled, setSearchEnabled] = useState(
   data.searchEnabled || "disabled" // 'enabled', 'disabled'
 );
 const [orderBy, setOrderBy] = useState(data.orderBy || "timedesc"); // timedesc, timeasc, alpha
-// TODO
 const [postPerPage, setPostPerPage] = useState(data.postPerPage || 10);
 
-// TODO
 const [categoriesEnabled, setCategoriesEnabled] = useState(
   data.categoriesEnabled || "disabled" // 'enabled', 'disabled'
 );
@@ -26,12 +24,10 @@ const switchCategoryEnabled = (value) => {
   }
   setCategoriesEnabled(value);
 };
-// TODO
 const filteredCategories =
   (data.categories || []).filter((categories) => categories !== null) || [];
 console.log("filteredCategories", filteredCategories);
 const [selected, setSelected] = useState(filteredCategories);
-// TODO
 const [categoryRequired, setCategoryRequired] = useState(
   data.categoryRequired || "not_required" // required | not_required
 );
