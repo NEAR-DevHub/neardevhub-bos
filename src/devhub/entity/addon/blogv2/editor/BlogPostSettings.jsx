@@ -3,6 +3,8 @@ normalize || (normalize = () => {});
 
 const { data, onHideSettings, onSubmit } = props;
 
+const [isConfirmModalOpen, setModalVisible] = useState(false);
+
 const [title, setTitle] = useState(data.title || "");
 const [subtitle, setSubtitle] = useState(data.subtitle || "");
 const [authorEnabled, setAuthorEnabled] = useState(
@@ -26,7 +28,7 @@ const switchCategoryEnabled = (value) => {
 };
 const filteredCategories =
   (data.categories || []).filter((categories) => categories !== null) || [];
-console.log("filteredCategories", filteredCategories);
+
 const [selected, setSelected] = useState(filteredCategories);
 const [categoryRequired, setCategoryRequired] = useState(
   data.categoryRequired || "not_required" // required | not_required
@@ -206,10 +208,6 @@ const CategoryRequiredSwitchComponent = useMemo(() => {
   );
 }, [categoryRequired]);
 
-const checkCategory = (category) => {
-  console.log("checkCategory", category);
-};
-
 const onChangeCategories = (_labels) => {
   _labels = _labels.map((o) => ({
     category: o.category, // labelKey == category
@@ -231,7 +229,6 @@ const CategoriesEditor = useMemo(() => {
     <Typeahead
       multiple
       labelKey="category"
-      onInputChange={checkCategory}
       onChange={onChangeCategories}
       options={options}
       placeholder="News, Guide, Reference, etc."
@@ -251,6 +248,16 @@ const FormContainer = styled.div`
     margin-bottom: 2rem;
   }
 `;
+
+const handleUpdate = () => {
+  // TODO check if we should use .value or .category
+  console.log({ filteredCategories, selected });
+  if (filteredCategories.some((category) => !selected.includes(category))) {
+    setModalVisible(true);
+    return;
+  }
+  handleOnSubmit();
+};
 
 /**
  * If the settings are empty we use default values for blog settings
@@ -321,7 +328,7 @@ return (
               }
               props={{
                 title: "Save Settings",
-                onClick: handleOnSubmit,
+                onClick: handleUpdate,
                 testId: "save-settings-button",
                 disabled: submitDisabled(),
                 loading: loadingSaveSettings,
@@ -403,7 +410,28 @@ return (
         </>
       )}
     </FormContainer>
-
+    <Widget
+      src={
+        "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
+      }
+      props={{
+        isOpen: isConfirmModalOpen,
+        onCancelClick: () => setModalVisible(false),
+        onConfirmClick: () => {
+          setModalVisible(false);
+          /**
+           * Alternatively:
+           * Either make sure they can't delete those categories if a blog still has them
+           * or just hide categories that are not in the list of options.
+           */
+          handleOnSubmit();
+        },
+        title: "Are you sure you want to make changes to categories?",
+        content: "All previous blogs with removed categories will be effected.",
+        confirmLabel: "I understand",
+        cancelLabel: "Cancel",
+      }}
+    />
     <div className="d-flex gap-1 align-items-center justify-content-end mt-3">
       <Widget
         src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
@@ -419,7 +447,7 @@ return (
         src={"${REPL_DEVHUB}/widget/devhub.components.molecule.BlogControl"}
         props={{
           title: "Save Settings",
-          onClick: handleOnSubmit,
+          onClick: handleUpdate,
           testId: "save-settings-button",
           disabled: submitDisabled(),
           icon: "bi-plus-circle-fill",

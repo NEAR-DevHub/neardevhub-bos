@@ -131,6 +131,18 @@ if (communityConfig === undefined) {
 }
 const parameters = JSON.parse(communityConfig.parameters || {}) || {};
 
+// Make sure only the categories that are configured in the settings are displayed.
+let categoryIsOptionInSettings = true;
+let categoriesInSettings = parameters.categories.map((c) => c.value);
+if (
+  categoriesInSettings.length > 0 &&
+  !categoriesInSettings.includes(category) &&
+  category !== "" &&
+  category !== null
+) {
+  categoryIsOptionInSettings = false;
+}
+
 const options = { year: "numeric", month: "short", day: "numeric" };
 const formattedDate = new Date(date).toLocaleString("en-US", options);
 
@@ -160,11 +172,13 @@ return (
           <div class="bi bi-pencil-square" style={{ fontSize: "30px" }}></div>
         </div>
       )}
-      {category && parameters.categoriesEnabled === "enabled" && (
-        <span className="category" data-testid="blog-category">
-          {category}
-        </span>
-      )}
+      {category &&
+        parameters.categoriesEnabled === "enabled" &&
+        categoryIsOptionInSettings && (
+          <span className="category" data-testid="blog-category">
+            {category}
+          </span>
+        )}
       <h1 data-testid="blog-title">{title}</h1>
       <p className="subtitle">{subtitle}</p>
       <div className="d-flex flex-row justify-content-between date">

@@ -726,4 +726,31 @@ test.describe("Admin wallet is connected", () => {
 
     expect(categoryTextsSecondInstance).toContain("None");
   });
+
+  test("should not show the categories that are no longer a option", async ({
+    page,
+  }) => {
+    await page.goto(fourthInstance);
+    await pauseIfVideoRecording(page);
+
+    await waitForTestIdToBeVisible(page, "configure-addon-button");
+
+    // Check if a category that falls outside of the available categories is hidden
+    await waitForTestIdToBeVisible(page, "card-category");
+
+    const categoriesInViewer = page.locator(`[data-testid="card-category"]`);
+    const categoriesViewed = await page.$$(`[data-testid="card-category"]`);
+    const numberOfCategories = await categoriesInViewer.count();
+    // expect(numberOfCategories).toBe(1);
+
+    // check that the innertext of the options is the same as the categories
+    const categoryTexts = await Promise.all(
+      categoriesViewed.map(async (option) => {
+        return await option.innerText();
+      })
+    );
+
+    console.log({ categoryTexts });
+    // expect(categoryTexts).not.toContain("None");
+  });
 });

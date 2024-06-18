@@ -172,6 +172,21 @@ export async function mockBlogs(route) {
           updatedAt: "2024-05-13",
         },
       },
+      "fourth-instance-blog": {
+        "": "# Content",
+        metadata: {
+          title: "Fourth",
+          publishedAt: "2023-04-03",
+          status: "PUBLISH",
+          subtitle: "subtitle",
+          description: "description",
+          author: "thomasguntenaar.near",
+          createdAt: "2024-05-01",
+          communityAddonId: "blogv2instance4",
+          category: "news",
+          updatedAt: "2024-05-13",
+        },
+      },
       ...blogPosts,
     };
 
