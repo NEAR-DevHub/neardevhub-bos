@@ -250,9 +250,11 @@ const FormContainer = styled.div`
 `;
 
 const handleUpdate = () => {
-  // TODO check if we should use .value or .category
-  console.log({ filteredCategories, selected });
-  if (filteredCategories.some((category) => !selected.includes(category))) {
+  if (
+    filteredCategories.some(
+      (category) => !selected.map((e) => e.value).includes(category.value)
+    )
+  ) {
     setModalVisible(true);
     return;
   }
@@ -419,11 +421,6 @@ return (
         onCancelClick: () => setModalVisible(false),
         onConfirmClick: () => {
           setModalVisible(false);
-          /**
-           * Alternatively:
-           * Either make sure they can't delete those categories if a blog still has them
-           * or just hide categories that are not in the list of options.
-           */
           handleOnSubmit();
         },
         title: "Are you sure you want to make changes to categories?",

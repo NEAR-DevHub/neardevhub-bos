@@ -73,13 +73,10 @@ test.describe("Don't ask again enabled", () => {
   });
 
   test("Save blog configuration", async ({ page }) => {
-    await page.goto(baseUrl);
-    await pauseIfVideoRecording(page);
     const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.click();
 
     await page.getByTestId("settings-button").click();
-    await page.waitForTimeout(4000);
     await page.getByPlaceholder("Title", { exact: true }).click();
     await page
       .getByPlaceholder("Title", { exact: true })
@@ -173,14 +170,19 @@ test.describe("Don't ask again enabled", () => {
                 display_name: "First Blog",
                 enabled: true,
                 id: "blogv2",
-                parameters: "{categories:['news','guide','reference']}",
-              },
-              {
-                addon_id: "blogv2",
-                display_name: "Second Blog",
-                enabled: true,
-                id: "blogv2instance2",
-                parameters: "{categories:['news','guide','reference']}",
+                // After the transactions with updated parameters
+                parameters:
+                  '{"title":"Mocked configured blog page title",\
+                "subtitle":"Mocked configured subtitle",\
+                "authorEnabled": "enabled",\
+                "searchEnabled": "enabled",\
+                "orderBy": "timeasc",\
+                "postPerPage": 5,\
+                "categoriesEnabled": "enabled",\
+                "categories": [{"category":"News","value":"news"},\
+                {"category":"Guide","value":"guide"},\
+                {"category":"Reference","value":"reference"}],\
+                "categoryRequired": "required"}',
               },
             ];
           }
