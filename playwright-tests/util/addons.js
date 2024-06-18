@@ -16,7 +16,13 @@ export async function mockDefaultTabs(route) {
   ) {
     // Add default tabs to community
     const response = await route.fetch();
-    const json = await response.json();
+    let json = {};
+    try {
+      json = await response.json();
+    } catch (error) {
+      console.error("Error parsing JSON response");
+      console.log(await response.text());
+    }
 
     let resultObj = decodeResultJSON(json.result.result);
 
@@ -128,7 +134,13 @@ export async function mockDefaultTabs(route) {
     const response = await route.fetch({
       url: "https://rpc.mainnet.near.org/",
     });
-    const json = await response.json();
+    let json = {};
+    try {
+      json = await response.json();
+    } catch (error) {
+      console.error("Error parsing JSON response");
+      console.log(JSON.stringify(await response.text()));
+    }
 
     // Replace component with local component
     if (devComponents[social_get_key]) {
