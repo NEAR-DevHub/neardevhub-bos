@@ -355,8 +355,8 @@ return (
       </SubHeading>
     )}
     <div className="d-flex justify-content-start flex-wrap gap-2 align-items-center mb-5">
-      {data.searchEnabled ? searchInput : ""}
-      {data.categoriesEnabled ? categoryInput : ""}
+      {data.searchEnabled === "enabled" ? searchInput : ""}
+      {data.categoriesEnabled === "enabled" ? categoryInput : ""}
     </div>
     <Grid>
       {processedData &&

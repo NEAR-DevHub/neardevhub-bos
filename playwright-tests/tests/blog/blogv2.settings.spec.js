@@ -743,7 +743,7 @@ test.describe("Admin wallet is connected", () => {
     const categoriesInViewer = page.locator(`[data-testid="card-category"]`);
     const categoriesViewed = await page.$$(`[data-testid="card-category"]`);
     const numberOfCategories = await categoriesInViewer.count();
-    // expect(numberOfCategories).toBe(1);
+    expect(numberOfCategories).toBe(1);
 
     // check that the innertext of the options is the same as the categories
     const categoryTexts = await Promise.all(
@@ -752,7 +752,6 @@ test.describe("Admin wallet is connected", () => {
       })
     );
 
-    console.log({ categoryTexts });
-    // expect(categoryTexts).not.toContain("None");
+    expect(categoryTexts).not.toContain("None");
   });
 });

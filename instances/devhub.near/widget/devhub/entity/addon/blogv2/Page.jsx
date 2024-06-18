@@ -133,7 +133,7 @@ const parameters = JSON.parse(communityConfig.parameters || {}) || {};
 
 // Make sure only the categories that are configured in the settings are displayed.
 let categoryIsOptionInSettings = true;
-let categoriesInSettings = parameters.categories.map((c) => c.value);
+let categoriesInSettings = (parameters?.categories || []).map((c) => c.value);
 if (
   categoriesInSettings.length > 0 &&
   !categoriesInSettings.includes(category) &&

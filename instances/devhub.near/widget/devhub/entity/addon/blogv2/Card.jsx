@@ -3,7 +3,7 @@ function Card({ data, addonParameters }) {
   const { categoriesEnabled, categories } = addonParameters;
 
   let categoryIsOptionInSettings = true;
-  let categoriesInSettings = categories.map((c) => c.value);
+  let categoriesInSettings = (categories || []).map((c) => c.value);
   if (
     categoriesInSettings.length > 0 &&
     !categoriesInSettings.includes(category) &&
