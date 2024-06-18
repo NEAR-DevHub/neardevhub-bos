@@ -1,0 +1,6 @@
+{
+  "account": "devhub.near",
+  "aliasPrefix": "REPL",
+  "aliasesContainsPrefix": true,
+  "aliases": ["./aliases.mainnet.json"]
+}

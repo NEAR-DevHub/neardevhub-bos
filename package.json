@@ -4,6 +4,7 @@
   "description": "NEAR DevHub widgets for NEAR Social",
   "devDependencies": {
     "@playwright/test": "^1.42.1",
+    "bos-workspace": "1.0.0-alpha.27",
     "http-server": "^14.1.1",
     "near-bos-webcomponent": "^0.0.5",
     "prettier": "^2.8.4",
@@ -14,11 +15,9 @@
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
     "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
     "build": "npm run fmt",
-    "dev:testnet": "./scripts/dev.sh",
-    "dev:mainnet": "./scripts/dev.sh -a devhub.near -c devhub.near -n mainnet",
-    "build:preview": "node ./scripts/build-preview.mjs",
-    "dev": "npm run dev:mainnet",
-    "gateway": "node scripts/dev-gateway.mjs",
+    "bw:dev:devhub": "bw dev instances/devhub.near",
+    "bw:build:devhub": "bw build instances/devhub.near",
+    "gateway:devhub": "node scripts/dev-gateway.mjs devhub.near",
     "test": "npx playwright test",
     "test:watch:codespaces": "npm test -- --ui-host=0.0.0.0",
     "test:watch": "npm test -- --ui"

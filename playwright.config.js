@@ -26,9 +26,9 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 6 : 0,
+  retries: process.env.CI ? 8 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? "50%" : undefined,
+  workers: process.env.CI ? "100%" : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "line",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -102,7 +102,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     env: { POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456" },
-    command: "npm run gateway",
+    command: "npm run gateway:devhub",
     port: 3030,
     reuseExistingServer: !process.env.CI,
   },
