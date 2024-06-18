@@ -428,36 +428,6 @@ test.describe("Admin wallet is connected", () => {
   });
 
   test("can configure how the blog posts are ordered", async ({ page }) => {
-    // Go to the Viewer and check if the default is timedesc
-    await page.goto(otherInstance); // timedesc
-
-    // Get all the blog posts
-    await pauseIfVideoRecording(page);
-    const blogCards = page.locator(`[id^="blog-card-"]`);
-    const elements = await page.$$(`[data-testid="blog-card-date"]`);
-    const numberOfBlogCards = await blogCards.count();
-
-    await waitForTestIdToBeVisible(page, "blog-card-date");
-
-    expect(numberOfBlogCards).toBeGreaterThan(3);
-
-    let lastDate = new Date();
-
-    // Extract the innerText of each element
-    const dateTextsDesc = await Promise.all(
-      elements.map(async (element) => {
-        return await element.innerText();
-      })
-    );
-    dateTextsDesc.map((dateText) => {
-      const date = new Date(dateText);
-      expect(
-        date <= lastDate,
-        `Expected ${date} to be less than or equal to ${lastDate}`
-      ).toBe(true);
-      lastDate = date;
-    });
-
     // Go to other instance to check if the order it timeasc
     await page.goto(baseUrl); // timeasc
     await pauseIfVideoRecording(page);
@@ -481,9 +451,39 @@ test.describe("Admin wallet is connected", () => {
       ).toBe(true);
       firstDate = date;
     });
+
+    // Go to the Viewer and check if the default is timedesc
+    await page.goto(otherInstance); // timedesc
+
+    // Get all the blog posts
+    await pauseIfVideoRecording(page);
+    const blogCards = page.locator(`[id^="blog-card-"]`);
+    const elements = await page.$$(`[data-testid="blog-card-date"]`);
+    await waitForTestIdToBeVisible(page, "blog-card-date");
+
+    const numberOfBlogCards = await blogCards.count();
+
+    expect(numberOfBlogCards).toBeGreaterThan(3);
+
+    let lastDate = new Date();
+
+    // Extract the innerText of each element
+    const dateTextsDesc = await Promise.all(
+      elements.map(async (element) => {
+        return await element.innerText();
+      })
+    );
+    dateTextsDesc.map((dateText) => {
+      const date = new Date(dateText);
+      expect(
+        date <= lastDate,
+        `Expected ${date} to be less than or equal to ${lastDate}`
+      ).toBe(true);
+      lastDate = date;
+    });
   });
 
-  test("Can configure to sort the blog posts alphabetically", async ({
+  test("can configure to sort the blog posts alphabetically", async ({
     page,
   }) => {
     // Go to third instance to check if the order is alpha

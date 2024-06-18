@@ -322,7 +322,7 @@ test.describe("Wallet is not connected", () => {
       searchEnabled: "disabled",
     });
     await page.goto(baseUrl);
-
+    await waitForTestIdToBeVisible(page, "dropdown");
     const categoryDropdown = await page.getByRole("button", {
       name: "Category",
     });

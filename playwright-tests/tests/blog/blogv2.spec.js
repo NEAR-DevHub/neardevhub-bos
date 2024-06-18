@@ -132,9 +132,6 @@ test.describe("Don't ask again enabled", () => {
   });
 
   test("Create a blog", async ({ page }) => {
-    // test before each
-
-    await page.waitForTimeout(4000);
     // Start configuring the blog addon
     const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.click();
@@ -151,8 +148,9 @@ test.describe("Don't ask again enabled", () => {
     await page.getByPlaceholder("Subtitle").click();
     await page.getByPlaceholder("Subtitle").fill("Subtitle");
     // Choose the category
-    await page.getByText("Guide").click();
-    await page.getByText("News", { exact: true }).click();
+    await page.getByPlaceholder("Description").scrollIntoViewIfNeeded();
+    await page.getByText("News").first().click();
+    await page.getByText("Guide", { exact: true }).click();
     // Fill the description
     await page.getByPlaceholder("Description").click();
     const descriptionText = "A very specific description";
@@ -689,7 +687,6 @@ test.describe("Admin wallet is connected", () => {
   }) => {
     await page.goto(baseUrl);
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(2000);
 
     const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.click();
@@ -731,8 +728,8 @@ test.describe("Admin wallet is connected", () => {
       await page.getByPlaceholder("Title", { exact: true }).press("Tab");
       await page.getByPlaceholder("Subtitle").click();
       await page.getByPlaceholder("Subtitle").fill("Subtitle");
-      await page.getByText("Guide").click();
-      await page.getByText("News", { exact: true }).click();
+      await page.getByText("News").first().click();
+      await page.getByText("Guide", { exact: true }).click();
       await page.getByPlaceholder("Description").click();
       await page.getByPlaceholder("Description").fill("Description");
       await page.getByPlaceholder("Description").press("Tab");
@@ -778,7 +775,7 @@ test.describe("Admin wallet is connected", () => {
         "blogv2"
       );
       expect(transactionObj.data.blog[blogId].metadata.status).toBe("DRAFT");
-      expect(transactionObj.data.blog[blogId].metadata.category).toBe("news");
+      expect(transactionObj.data.blog[blogId].metadata.category).toBe("guide");
     });
 
     test("should not be able to save a blog if any field is missing", async ({
@@ -800,8 +797,8 @@ test.describe("Admin wallet is connected", () => {
       await page.getByPlaceholder("Subtitle").click();
       await page.getByPlaceholder("Subtitle").fill("Subtitle");
       await expect(parentDiv).toHaveClass(parentDivClasses);
-      await page.getByText("Guide").click();
-      await page.getByText("News", { exact: true }).click();
+      await page.getByText("News").first().click();
+      await page.getByText("Guide", { exact: true }).click();
 
       await page.getByPlaceholder("Description").click();
       await page.getByPlaceholder("Description").fill("Description");
@@ -860,8 +857,8 @@ test.describe("Admin wallet is connected", () => {
       await page.getByPlaceholder("Subtitle").click();
       await page.getByPlaceholder("Subtitle").fill("Subtitle");
       // Select News category
-      await page.getByText("Guide").click();
-      await page.getByText("News", { exact: true }).click();
+      await page.getByText("News").first().click();
+      await page.getByText("Guide", { exact: true }).click();
       await page.getByPlaceholder("Description").click();
       await page.getByPlaceholder("Description").fill("Description");
       await page.getByPlaceholder("Description").press("Tab");
