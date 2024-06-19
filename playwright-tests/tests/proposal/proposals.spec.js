@@ -465,11 +465,13 @@ test.describe("Wallet is connected", () => {
       state: "visible",
     });
 
-    const smt = page.getByRole("link", { name: "geforcy.near" });
-    await smt.waitFor();
+    const comment = page.getByRole("link", { name: "geforcy.near" });
+    await comment.waitFor();
+    await comment.scrollIntoViewIfNeeded();
 
     const heading = page.getByRole("heading", { name: "Relevant Mentions" });
     await heading.waitFor();
+    await heading.scrollIntoViewIfNeeded();
 
     await page.waitForTimeout(5000);
 

@@ -137,12 +137,16 @@ let showAccountAutoComplete = ${showAccountAutoComplete};
 let showProposalIdAutoComplete = ${showProposalIdAutoComplete};
 
 function getSuggestedAccounts(term) {
-  let results = [${sortedRelevantUsers
-    .map((u) => "{accountId:'" + u + "', score: 100}")
-    .join(",")}];
+  let results = [];
 
   term = (term || "").replace(/\W/g, "").toLowerCase();
-  const limit = ${5 + sortedRelevantUsers.length};
+  let limit = 5;
+  if (term.length < 2) {
+   results = [${sortedRelevantUsers
+     .map((u) => "{accountId:'" + u + "', score: 60}")
+     .join(",")}];
+    limit = ${5 + sortedRelevantUsers.length};
+  }
 
   const profiles = Object.entries(profilesData);
 
