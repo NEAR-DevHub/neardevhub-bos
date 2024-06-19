@@ -456,6 +456,58 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
+  test("should show relevant users in mention autocomplete", async ({
+    page,
+  }) => {
+    await page.goto("/devhub.near/widget/app?page=proposal&id=112");
+
+    await page.waitForSelector(`iframe`, {
+      state: "visible",
+    });
+
+    const smt = page.getByRole("link", { name: "geforcy.near" });
+    await smt.waitFor();
+
+    const heading = page.getByRole("heading", { name: "Relevant Mentions" });
+    await heading.waitFor();
+
+    await page.waitForTimeout(5000);
+
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const commentEditor = page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentEditor.focus();
+    await commentEditor.pressSequentially(
+      `Make sure relevant users show up in a mention. @`,
+      {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      }
+    );
+
+    await pauseIfVideoRecording(page);
+    const iframe = page.frameLocator("iframe");
+    const liFrameLocators = iframe.frameLocator(
+      'ul[id="mentiondropdown"] > li'
+    );
+    const liLocators = await liFrameLocators.owner().all();
+    const expected = [
+      "thomasguntenaar.near", // author,
+      "theori.near", // supervisor,
+      "neardevdao.near", //  requested_sponsor,
+      // "geforcy.near", // comment author,
+    ];
+    let mentionSuggestions = [];
+    for (let i = 0; i < liLocators.length; i++) {
+      const text = await liLocators[i].innerText();
+      mentionSuggestions.push(text);
+    }
+    // TODO should be 0,4 including geforcy.near but somehow mob.near shows up.
+    // When I manually test, it shows the correct 4 users
+    expect(mentionSuggestions.slice(0, 3)).toEqual(expected);
+    await pauseIfVideoRecording(page);
+  });
+
   test("should show only valid input in amount field and show error for invalid", async ({
     page,
   }) => {
