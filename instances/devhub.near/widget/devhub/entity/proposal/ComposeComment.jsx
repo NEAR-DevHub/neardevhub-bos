@@ -206,6 +206,7 @@ const Compose = useMemo(() => {
         embeddCSS: ComposeEmbeddCSS,
         handler: handler,
         showProposalIdAutoComplete: true,
+        sortedRelevantUsers: props.sortedRelevantUsers,
       }}
     />
   );

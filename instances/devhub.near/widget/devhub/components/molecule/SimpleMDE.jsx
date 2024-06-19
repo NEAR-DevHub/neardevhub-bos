@@ -11,6 +11,7 @@ const onChangeKeyup = props.onChangeKeyup ?? (() => {}); // in case where we wan
 const height = props.height ?? "390";
 const className = props.className ?? "w-100";
 const embeddCSS = props.embeddCSS;
+const sortedRelevantUsers = props.sortedRelevantUsers || [];
 
 State.init({
   iframeHeight: height,
@@ -136,10 +137,12 @@ let showAccountAutoComplete = ${showAccountAutoComplete};
 let showProposalIdAutoComplete = ${showProposalIdAutoComplete};
 
 function getSuggestedAccounts(term) {
-  let results = [];
+  let results = [${sortedRelevantUsers
+    .map((u) => "{accountId:'" + u + "', score: 100}")
+    .join(",")}];
 
   term = (term || "").replace(/\W/g, "").toLowerCase();
-  const limit = 5;
+  const limit = ${5 + sortedRelevantUsers.length};
 
   const profiles = Object.entries(profilesData);
 
