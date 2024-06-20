@@ -87,17 +87,21 @@ test.describe("Wallet is not connected", () => {
 
     await pauseIfVideoRecording(page);
 
-    const searchField = await page.getByPlaceholder("search blog posts");
+    await page.waitForSelector("[placeholder='search blog posts']", {
+      state: "visible",
+    });
+
+    const searchField = page.getByPlaceholder("search blog posts");
     await expect(searchField).toBeAttached();
     await searchField.scrollIntoViewIfNeeded();
 
-    while (true) {
-      const blogCards = await page.locator("a div").all();
-      try {
-        await expect(blogCards.length).toBeGreaterThan(3);
-        break;
-      } catch (e) {}
-    }
+    await waitForSelectorToBeVisible(page, `[id^="blog-card-"]`);
+
+    const blogCards = page.locator(`[id^="blog-card-"]`);
+    await blogCards.first().scrollIntoViewIfNeeded();
+    const numberOfBlogCards = await blogCards.count();
+    expect(numberOfBlogCards).toBeGreaterThan(3);
+
     for (const topic of topics) {
       const startTime = new Date().getTime();
       const delayBetweenKeypress = 50;
@@ -198,7 +202,7 @@ test.describe("Wallet is not connected", () => {
 
     blogCards = await page.locator("span.category").all();
     const blogPostsValues = Object.values(blogPosts);
-    await expect(
+    expect(
       blogCards.length,
       "Expect to show the amount of blogs that pagination allows for."
     ).toEqual(blogPostsValues.length);

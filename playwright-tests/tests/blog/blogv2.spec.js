@@ -48,7 +48,12 @@ test.describe("Wallet is not connected", () => {
   }) => {
     await page.goto(baseUrl);
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(6000);
+    const blogCardSelector = '[id^="blog-card-"]';
+    await page.waitForSelector(blogCardSelector);
+
+    const card = page.locator(blogCardSelector).first();
+
+    expect(await card.isVisible()).toBeTruthy();
 
     const configureButton = await page.$(".bi.bi-gear");
     expect(configureButton).toBeNull();
@@ -284,26 +289,23 @@ test.describe("Don't ask again enabled", () => {
 
     await expect(page.locator("div.modal-body code")).not.toBeVisible();
 
-    const transaction_toast = await page.getByText(
+    const transaction_toast = page.getByText(
       "Calling contract devhub.near with method set_community_socialdb"
     );
     await expect(transaction_toast).toBeVisible();
 
     await pauseIfVideoRecording(page);
-    // Maybe longer?
-    await page.waitForTimeout(5000);
     // Wait for the transaction to complete
     await expect(transaction_toast).not.toBeVisible();
     await expect(loadingIndicator).not.toBeVisible();
 
     await pauseIfVideoRecording(page);
-    await expect(is_transaction_completed).toBe(true);
+    expect(is_transaction_completed).toBe(true);
   });
 
   test("Update a blog", async ({ page }) => {
     // test before each
 
-    await page.waitForTimeout(4000);
     // Start configuring the blog addon
     const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.click();
@@ -315,11 +317,6 @@ test.describe("Don't ask again enabled", () => {
     // Change the category
     await page.getByText("News", { exact: true }).click();
     await page.getByText("Reference").click();
-
-    // Change the content
-    // await page.frameLocator("iframe").getByRole("textbox").fill("# Content");
-    // TODO Change the status to draft
-    // Status to draft ..
 
     // Mock transaction here
     let is_transaction_completed = false;
@@ -425,7 +422,7 @@ test.describe("Don't ask again enabled", () => {
 
     await expect(page.locator("div.modal-body code")).not.toBeVisible();
 
-    const transaction_toast = await page.getByText(
+    const transaction_toast = page.getByText(
       "Calling contract devhub.near with method set_community_socialdb"
     );
     await expect(transaction_toast).toBeVisible();
@@ -441,7 +438,6 @@ test.describe("Don't ask again enabled", () => {
   test("Delete a blog", async ({ page }) => {
     // test before each
 
-    await page.waitForTimeout(4000);
     // Start configuring the blog addon
     const configureButton = page.getByTestId("configure-addon-button");
     await configureButton.click();
@@ -573,18 +569,20 @@ test.describe("Don't ask again enabled", () => {
 
     await page.getByRole("button", { name: "Ready to Delete" }).click();
     // Show loading indicator
-    // const loadingIndicator = await page.locator(".delete-blog-spinner").first();
-    // await expect(loadingIndicator).toBeVisible();
+    const transaction_toast = page.getByText(
+      "Calling contract devhub.near with method set_community_socialdb"
+    );
+    await expect(transaction_toast).toBeVisible();
 
-    // const isDisabled = deleteButton.classList.contains("disabled");
-    // await expect(isDisabled).toBe(true);
+    await expect(deleteButton).toBeDisabled();
+
     await pauseIfVideoRecording(page);
 
     await page.waitForSelector("button[data-testid='new-blog-post-button']", {
       state: "visible",
     });
 
-    await expect(is_transaction_completed).toBe(true);
+    expect(is_transaction_completed).toBe(true);
   });
 });
 
@@ -637,7 +635,6 @@ test.describe("Admin wallet is connected", () => {
     await page.getByTestId("new-blog-post-button").click();
 
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(2000);
 
     const formSelector = `[id^="blog-editor-form"]`;
     await page.waitForSelector(formSelector, {
@@ -702,7 +699,6 @@ test.describe("Admin wallet is connected", () => {
     test.beforeEach(async ({ page }) => {
       await page.goto(baseUrl);
       await pauseIfVideoRecording(page);
-      await page.waitForTimeout(2000);
 
       const configureButton = page.getByTestId("configure-addon-button");
       await configureButton.click();
@@ -745,7 +741,7 @@ test.describe("Admin wallet is connected", () => {
 
       await submitButton.scrollIntoViewIfNeeded();
       await pauseIfVideoRecording(page);
-      await page.waitForTimeout(1000);
+
       await submitButton.click();
       await parentButton.click();
 
@@ -908,7 +904,6 @@ test.describe("Admin wallet is connected", () => {
     await row.click();
 
     await pauseIfVideoRecording(page);
-    await page.waitForTimeout(2000);
 
     const deleteButton = page.getByTestId("delete-blog-button");
     await deleteButton.scrollIntoViewIfNeeded();

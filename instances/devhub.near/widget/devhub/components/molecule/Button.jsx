@@ -144,6 +144,7 @@ const Button = ({
         isHidden ?? false ? "d-none" : "",
         disabled ? "disabled" : "",
       ].join(" ")}
+      disabled={disabled}
       style={{ width: "fit-content" }}
       {...restProps}
       data-testid={props.testId ?? "button"}
