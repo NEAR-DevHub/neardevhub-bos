@@ -497,16 +497,16 @@ test.describe("Wallet is connected", () => {
       "thomasguntenaar.near", // author,
       "theori.near", // supervisor,
       "neardevdao.near", //  requested_sponsor,
-      // "geforcy.near", // comment author,
+      "geforcy.near", // comment author,
     ];
     let mentionSuggestions = [];
     for (let i = 0; i < liLocators.length; i++) {
       const text = await liLocators[i].innerText();
       mentionSuggestions.push(text);
     }
-    // TODO should be 0,4 including geforcy.near but somehow mob.near shows up.
+
     // When I manually test, it shows the correct 4 users
-    expect(mentionSuggestions.slice(0, 3)).toEqual(expected);
+    expect(mentionSuggestions.slice(0, 4)).toEqual(expected);
     await pauseIfVideoRecording(page);
   });
 

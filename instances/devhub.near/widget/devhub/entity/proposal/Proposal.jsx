@@ -294,7 +294,8 @@ const item = {
   path: `${REPL_DEVHUB_CONTRACT}/post/main`,
   blockHeight,
 };
-const comments = Social.index("comment", item) ?? [];
+const comments = Social.index("comment", item, { subscribe: true }) ?? [];
+
 const commentAuthors = [
   ...new Set(comments.map((comment) => comment.accountId)),
 ];
@@ -926,7 +927,7 @@ return (
                       snapshot.supervisor,
                       snapshot.requested_sponsor,
                       ...commentAuthors,
-                    ],
+                    ].filter((user) => user !== accountId),
                   }}
                 />
               </div>
