@@ -214,8 +214,6 @@ test.describe("Don't ask again enabled", () => {
     await expect(transaction_toast).toBeVisible();
 
     await pauseIfVideoRecording(page);
-    // Maybe longer?
-    await page.waitForTimeout(5000);
     // Wait for the transaction to complete
     await expect(transaction_toast).not.toBeVisible();
 
@@ -528,8 +526,6 @@ test.describe("Admin wallet is connected", () => {
     const numberOfBlogCards = await blogCards.count();
     expect(numberOfBlogCards).toBe(5);
 
-    await page.waitForTimeout(2000);
-
     // Go to the second blog instance
     await page.goto(otherInstance);
     await waitForSelectorToBeVisible(page, `[id^="blog-card-"]`);
@@ -541,8 +537,6 @@ test.describe("Admin wallet is connected", () => {
       await blogCardsSecondInstance.count();
     expect(numberOfBlogCardsSecondInstance).toBeGreaterThan(10);
     expect(numberOfBlogCardsSecondInstance).toBeLessThanOrEqual(100);
-
-    await page.waitForTimeout(2000);
 
     // Go to the third blog instance
     await page.goto(thirdInstance);

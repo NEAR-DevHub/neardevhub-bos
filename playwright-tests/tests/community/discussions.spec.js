@@ -146,8 +146,8 @@ test.describe("Wallet is connected", () => {
     );
 
     const transactionConfirmationModal = page.locator("div.modal-body code");
-    await page.waitForTimeout(4000);
-    expect(await transactionConfirmationModal.isVisible()).toBeFalsy();
+
+    await expect(transactionConfirmationModal).not.toBeVisible();
   });
 });
 

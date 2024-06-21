@@ -39,10 +39,11 @@ test.describe("Non authenticated user's wallet is connected", () => {
     await page.goto("/devhub.near/widget/app?page=announcements");
 
     // Wait for the page to load more posts
-    await page.waitForTimeout(3000);
+    const posts = page.locator(".post");
+
+    await posts.first().scrollIntoViewIfNeeded();
 
     // Check that there are more than 10 posts
-    const posts = await page.locator(".post");
     expect(await posts.count()).toEqual(10);
   });
 
@@ -51,11 +52,13 @@ test.describe("Non authenticated user's wallet is connected", () => {
 
     await page.locator(".post").nth(9).scrollIntoViewIfNeeded();
 
-    // Wait for the page to load more posts
-    await page.waitForTimeout(6000);
+    // Wait for more than 10 posts to be visible
+    await page.waitForFunction(() => {
+      return document.querySelectorAll(".post").length > 10;
+    });
 
     // Check that there are more than 10 posts
-    const posts = await page.locator(".post");
+    const posts = page.locator(".post");
     expect(await posts.count()).toBeGreaterThan(10);
   });
 
@@ -68,14 +71,14 @@ test.describe("Non authenticated user's wallet is connected", () => {
     // Go back to All
     await page.getByText("All", { exact: true }).click();
 
-    // Scroll to the bottom of the page
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    // Scroll to a lower post
+    await page.locator(".post").nth(9).scrollIntoViewIfNeeded();
 
-    // Wait for the page to load more posts
-    await page.waitForTimeout(3000);
+    // Wait for the page to load more posts and for a repost to be visible
+    await page.waitForSelector('[data-testid="repost"]');
 
     // Check that at least one post contains the text "Reposted by"
-    const el = await page.getByTestId("repost");
+    const el = page.getByTestId("repost");
     expect(el).toBeDefined();
   });
 });
