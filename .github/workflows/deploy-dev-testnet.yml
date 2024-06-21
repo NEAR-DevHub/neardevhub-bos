@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set replacements
         id: set_replacements
@@ -23,15 +23,15 @@ jobs:
       - name: Replace placeholders
         uses: flcdrg/replace-multiple-action@v1
         with:
-          files: '**/*.jsx'
-          find: '${{ steps.set_replacements.outputs.replacements }}'
-          prefix: '(^|.*)'
-          suffix: '($|.*)'
+          files: "**/*.jsx"
+          find: "${{ steps.set_replacements.outputs.replacements }}"
+          prefix: "(^|.*)"
+          suffix: "($|.*)"
 
       - name: Install bos CLI
         run: |
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.2/bos-cli-installer.sh | sh
-      
+
       - name: Deploy widgets
         run: |
           which bos
