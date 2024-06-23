@@ -97,6 +97,22 @@ function sortTimelineAndComments() {
           ...getDifferentKeysWithValues(startingPoint, item),
         };
       });
+
+    // add log for accepting terms and condition
+    changedKeysListWithValues.unshift({
+      0: {
+        key: "timestamp",
+        originalValue: "0",
+        modifiedValue: snapshotHistory[0].timestamp,
+      },
+      1: {
+        key: "terms_and_condition",
+        originalValue: "",
+        modifiedValue: "accepted",
+      },
+      editorId: snapshotHistory[0].editor_id,
+    });
+
     State.update({
       changedKeysListWithValues,
       snapshotHistoryLength: snapshotHistory.length,
@@ -296,6 +312,20 @@ const AccountProfile = ({ accountId }) => {
 
 const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
   switch (key) {
+    case "terms_and_condition": {
+      return (
+        <span>
+          accepted
+          <a
+            href={`/${REPL_MOB}/widget/ProfilePage?accountId=${accountId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            T&C
+          </a>
+        </span>
+      );
+    }
     case "name":
       return <span>changed title</span>;
     case "summary":
