@@ -6,7 +6,7 @@
     "@playwright/test": "^1.42.1",
     "bos-workspace": "1.0.0-alpha.27",
     "http-server": "^14.1.1",
-    "near-bos-webcomponent": "^0.0.5",
+    "near-bos-webcomponent": "^0.0.9",
     "prettier": "^2.8.4",
     "replace-in-files": "^3.0.0",
     "simple-git-hooks": "^2.9.0"
