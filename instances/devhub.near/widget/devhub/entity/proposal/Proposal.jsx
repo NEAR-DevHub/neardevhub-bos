@@ -456,6 +456,7 @@ const CheckBox = ({ value, isChecked, label, disabled, onClick }) => {
   return (
     <div className="d-flex gap-2 align-items-center">
       <input
+        data-testid={label}
         class="form-check-input"
         type="checkbox"
         value={value}
@@ -1431,6 +1432,7 @@ return (
                             },
                           }}
                         />
+
                         <Widget
                           src={
                             "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"

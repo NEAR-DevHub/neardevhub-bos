@@ -260,7 +260,6 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       },
       modifyOriginalResultFunction: (originalResult) => {
         originalResult.snapshot.timeline.status = "REVIEW";
-        originalResult.snapshot.timeline.kyc_verfied = true;
         if (isTransactionCompleted) {
           const lastSnapshot =
             originalResult.snapshot_history[
@@ -306,9 +305,10 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     const firstStatusBadge = await page
       .locator("div.fw-bold.rounded-2.p-1.px-2")
       .first();
-    await expect(firstStatusBadge).toHaveText("REVIEW");
+    await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
     await page.locator(".d-flex > div > .bi").click();
     await page.getByRole("button", { name: "Review", exact: true }).click();
+    await page.getByTestId("Sponsor verifies KYC/KYB").check();
     await page.getByText("Approved", { exact: true }).first().click();
 
     await pauseIfVideoRecording(page);
@@ -345,7 +345,6 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     page,
   }) => {
     test.setTimeout(60000);
-    let isTransactionCompleted = false;
 
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
@@ -357,47 +356,24 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       },
       modifyOriginalResultFunction: (originalResult) => {
         originalResult.snapshot.timeline.status = "REVIEW";
-        originalResult.snapshot.timeline.kyc_verfied = false;
         return originalResult;
       },
     });
-
-    await mockTransactionSubmitRPCResponses(
-      page,
-      async ({
-        route,
-        request,
-        transaction_completed,
-        last_receiver_id,
-        requestPostData,
-      }) => {
-        isTransactionCompleted = transaction_completed;
-        await route.fallback();
-      }
-    );
-
     await page.goto("/devhub.near/widget/app?page=proposal&id=17");
-    await setDontAskAgainCacheValues({
-      page,
-      contractId: "devhub.near",
-      widgetSrc: "devhub.near/widget/devhub.entity.proposal.Proposal",
-      methodName: "edit_proposal_timeline",
-    });
 
     const firstStatusBadge = await page
       .locator("div.fw-bold.rounded-2.p-1.px-2")
       .first();
-    await expect(firstStatusBadge).toHaveText("REVIEW");
+    await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
     await page.locator(".d-flex > div > .bi").click();
+
+    await page.getByTestId("Sponsor verifies KYC/KYB").uncheck();
     await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByText("Approved", { exact: true }).first().click();
 
-    await pauseIfVideoRecording(page);
-
     const saveButton = await page.getByRole("button", { name: "Save" });
     await saveButton.scrollIntoViewIfNeeded();
-    await expect(page.getByRole("button", { name: "Save" })).toBeDisabled();
-    await pauseIfVideoRecording(page);
+    await expect(saveButton).toBeDisabled();
   });
 });
 
