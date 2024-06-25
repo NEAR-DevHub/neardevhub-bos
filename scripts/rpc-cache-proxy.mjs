@@ -10,6 +10,16 @@ export async function rpcProxy() {
     return createHash('md5').update(body).digest('hex');
   }
 
+  // Function to fetch from a URL and return the JSON response
+  async function fetchFromUrl(url, reqBody, reqHeaders) {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { ...reqHeaders, 'host': new URL(url).host },
+      body: reqBody
+    });
+    return response.json();
+  }
+
   // Function to handle incoming requests
   function handleRequest(req, res) {
     if (req.method !== 'POST') {
@@ -27,7 +37,7 @@ export async function rpcProxy() {
       body += chunk.toString();
     });
 
-    req.on('end', () => {
+    req.on('end', async () => {
       const cacheKey = getCacheKey(body);
 
       if (cache.has(cacheKey)) {
@@ -41,35 +51,37 @@ export async function rpcProxy() {
         return res.end(JSON.stringify(cache.get(cacheKey)));
       }
 
-      const targetUrl = `https://rpc.mainnet.near.org`;
+      const targetUrls = [
+        'https://1rpc.io/near',
+        'https://rpc.mainnet.near.org'
+        
+      ];
 
-      fetch(targetUrl, {
-        method: 'POST',
-        headers: { ...req.headers, 'host': 'rpc.fastnear.com', Referer: 'https://near.social/' },
-        body: body
-      })
-        .then(response => response.json())
-        .then(data => {
+      for (const targetUrl of targetUrls) {
+        try {
+          const data = await fetchFromUrl(targetUrl, body, req.headers);
           cache.set(cacheKey, data);
-          console.log(`Fetched from NEAR RPC and cached request with body: ${body}`);
+          console.log(`Fetched from ${targetUrl} and cached request with body: ${body}`);
           res.writeHead(200, {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'POST',
             'Access-Control-Allow-Headers': 'Content-Type'
           });
-          res.end(JSON.stringify(data));
-        })
-        .catch(error => {
-          console.error(`Error fetching from NEAR RPC: ${error.message}`);
-          res.writeHead(500, {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type'
-          });
-          res.end(JSON.stringify({ error: 'Internal Server Error' }));
-        });
+          return res.end(JSON.stringify(data));
+        } catch (error) {
+          console.error(`Error fetching from ${targetUrl}: ${error.message}`);
+        }
+      }
+
+      // If all requests fail
+      res.writeHead(500, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
+      res.end(JSON.stringify({ error: 'Internal Server Error' }));
     });
   }
 

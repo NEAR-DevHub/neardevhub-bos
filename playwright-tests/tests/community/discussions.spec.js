@@ -262,7 +262,9 @@ test.describe("Don't ask again enabled", () => {
             await route.fulfill({ response, json });
             return;
           } else if (postData.method === "tx") {
-            await route.continue();
+            const response = await route.fetch({url: 'http://localhost:20000'});
+            const json = await response.json();
+            await route.fulfill({response, json});
           } else if (
             postData.params &&
             postData.params.account_id === "devhub.near" &&
