@@ -1,4 +1,4 @@
-export const MOCK_RPC_URL = "https://near.lava.build";
+export const MOCK_RPC_URL = "http://localhost:20000";
 
 export async function mockRpcRequest({
   page,

@@ -122,7 +122,7 @@ export async function mockDefaultTabs(route) {
     await route.fulfill({ response, json });
     return;
   } else if (requestPostData.method === "tx") {
-    await route.continue({ url: "https://archival-rpc.mainnet.near.org/" });
+    await route.continue();
   } else if (
     requestPostData.params &&
     requestPostData.params.account_id === "social.near" &&
@@ -132,7 +132,7 @@ export async function mockDefaultTabs(route) {
       .keys[0];
 
     const response = await route.fetch({
-      url: "https://near.lava.build/",
+      url: "http://localhost:20000/",
     });
     let json = {};
     try {

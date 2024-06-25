@@ -15,7 +15,7 @@ import { mockDefaultTabs } from "../../util/addons.js";
 import { mockSocialIndexResponses } from "../../util/socialapi.js";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("https://near.lava.build/", async (route) => {
+  await page.route("http://localhost:20000/", async (route) => {
     await mockDefaultTabs(route);
   });
 });
@@ -34,7 +34,7 @@ test.describe("Wallet is connected", () => {
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions"
     );
     const socialdbaccount = "petersalomonsen.near";
-    const viewsocialdbpostresult = await fetch("https://near.lava.build", {
+    const viewsocialdbpostresult = await fetch("http://localhost:20000", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -102,7 +102,7 @@ test.describe("Wallet is connected", () => {
     );
 
     const socialdbaccount = "petersalomonsen.near";
-    const viewsocialdbpostresult = await fetch("https://near.lava.build", {
+    const viewsocialdbpostresult = await fetch("http://localhost:20000", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -199,7 +199,7 @@ test.describe("Don't ask again enabled", () => {
       accountId: "petersalomonsen.near",
     });
     const socialdbaccount = "petersalomonsen.near";
-    const viewsocialdbpostresult = await fetch("https://near.lava.build", {
+    const viewsocialdbpostresult = await fetch("http://localhost:20000", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -262,9 +262,7 @@ test.describe("Don't ask again enabled", () => {
             await route.fulfill({ response, json });
             return;
           } else if (postData.method === "tx") {
-            await route.continue({
-              url: "https://archival-rpc.mainnet.near.org/",
-            });
+            await route.continue();
           } else if (
             postData.params &&
             postData.params.account_id === "devhub.near" &&

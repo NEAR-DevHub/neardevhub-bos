@@ -3,7 +3,7 @@ import { pauseIfVideoRecording } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("https://near.lava.build/", async (route) => {
+  await page.route("http://localhost:20000/", async (route) => {
     await mockDefaultTabs(route);
   });
 });
@@ -33,7 +33,7 @@ test.describe("Wallet is not connected", () => {
   });
 
   test("should load teams addon", async ({ page }) => {
-    await page.route("https://near.lava.build/", async (route) => {
+    await page.route("http://localhost:20000/", async (route) => {
       await mockDefaultTabs(route);
     });
 

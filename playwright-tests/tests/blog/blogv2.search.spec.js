@@ -14,7 +14,7 @@ async function configureSearchAndCategoriesEnabled({
   categoriesEnabled,
   searchEnabled,
 }) {
-  await page.route("https://near.lava.build", async (route) => {
+  await page.route("http://localhost:20000", async (route) => {
     const postData = route.request().postDataJSON();
 
     if (

@@ -39,7 +39,7 @@ const blogPageThirdInstance =
   "/devhub.near/widget/app?page=blogv2&community=webassemblymusic&id=this-is-the-blog-title-xfxkzh";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("https://near.lava.build/", async (route) => {
+  await page.route("http://localhost:20000/", async (route) => {
     await mockDefaultTabs(route);
   });
 
