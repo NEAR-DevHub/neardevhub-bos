@@ -534,7 +534,7 @@ test.describe("Don't ask again enabled", () => {
           ).keys[0];
 
           const response = await route.fetch({
-            url: "https://rpc.mainnet.near.org/",
+            url: "https://near.lava.build/",
           });
           const devComponents = (
             await fetch("http://localhost:3030").then((r) => r.json())

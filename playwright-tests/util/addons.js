@@ -132,7 +132,7 @@ export async function mockDefaultTabs(route) {
       .keys[0];
 
     const response = await route.fetch({
-      url: "https://rpc.mainnet.near.org/",
+      url: "https://near.lava.build/",
     });
     let json = {};
     try {
