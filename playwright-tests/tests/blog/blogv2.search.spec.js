@@ -14,7 +14,7 @@ async function configureSearchAndCategoriesEnabled({
   categoriesEnabled,
   searchEnabled,
 }) {
-  await page.route("https://rpc.mainnet.near.org", async (route) => {
+  await page.route("https://near.lava.build", async (route) => {
     const postData = route.request().postDataJSON();
 
     if (

@@ -9,7 +9,7 @@ import {
 import { mockDefaultTabs } from "../../util/addons.js";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+  await page.route("https://near.lava.build/", async (route) => {
     await mockDefaultTabs(route);
   });
 });

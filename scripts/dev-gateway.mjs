@@ -2,14 +2,27 @@ import httpServer from 'http-server';
 import path from 'path';
 import { spawn } from 'child_process';
 import { homedir, tmpdir } from 'os';
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, cp } from 'fs/promises';
 
 const instanceName = process.argv[process.argv.length - 1];
 const instanceFolder = `instances/${instanceName}`;
 
-// Start the HTTP server
+const statingWebHostinFolder = tmpdir()+'/bos'+new Date().toJSON().replace(/[^0-9]/g,'');
+
+await cp( path.join(process.cwd(),'node_modules/near-bos-webcomponent/dist'), statingWebHostinFolder, {recursive: true});
+
+const replaceRpc = async (htmlfile) => {
+  const indexHtmlFilePath = `${statingWebHostinFolder}/${htmlfile}`;
+
+  let indexHtmlData = await readFile(indexHtmlFilePath, 'utf8');
+  indexHtmlData = indexHtmlData.replace('<near-social-viewer></near-social-viewer>', '<near-social-viewer rpc="https://near.lava.build"></near-social-viewer>');
+  await writeFile(indexHtmlFilePath, indexHtmlData, 'utf8'); 
+}
+await replaceRpc('index.html');
+await replaceRpc('404.html')
+
 const server = httpServer.createServer({
-  root: path.join(process.cwd(), 'node_modules/near-bos-webcomponent/dist/')
+  root: statingWebHostinFolder
 });
 
 server.listen(8080, () => {

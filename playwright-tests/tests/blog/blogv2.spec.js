@@ -25,7 +25,7 @@ const blogPage =
   "/devhub.near/widget/app?page=blogv2&id=published-w5cj1y&community=webassemblymusic";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+  await page.route("https://near.lava.build/", async (route) => {
     await mockDefaultTabs(route);
   });
 

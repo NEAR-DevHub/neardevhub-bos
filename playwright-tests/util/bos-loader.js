@@ -8,7 +8,7 @@ export async function modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFrom
     await fetch("http://localhost:3030").then((r) => r.json())
   ).components;
 
-  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+  await page.route("https://near.lava.build/", async (route) => {
     const request = await route.request();
 
     const requestPostData = request.postDataJSON();
