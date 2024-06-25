@@ -122,9 +122,9 @@ export async function mockDefaultTabs(route) {
     await route.fulfill({ response, json });
     return;
   } else if (requestPostData.method === "tx") {
-    const response = await route.fetch({url: 'http://localhost:20000'});
+    const response = await route.fetch({ url: "http://localhost:20000" });
     const json = await response.json();
-    await route.fulfill({response, json});
+    await route.fulfill({ response, json });
   } else if (
     requestPostData.params &&
     requestPostData.params.account_id === "social.near" &&
