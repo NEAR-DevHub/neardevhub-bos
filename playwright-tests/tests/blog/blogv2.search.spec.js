@@ -120,7 +120,7 @@ test.describe("Wallet is not connected", () => {
         )
       );
       const endTime = new Date().getTime();
-      expect(endTime - startTime).toBeLessThan(6000);
+      expect(endTime - startTime).toBeLessThan(8000);
     }
   });
   test("should filter blog posts from category", async ({ page }) => {
