@@ -63,11 +63,17 @@ export async function rpcProxy() {
         return res.end(JSON.stringify(cache.get(cacheKey)));
       }
 
-      const targetUrls = [
+      let targetUrls = [
         'https://rpc.fastnear.com/',
         'https://1rpc.io/near',
         'https://rpc.mainnet.near.org'
       ];
+
+      if (body.includes('"method":"tx"')) {
+        targetUrls = [
+          'https://1rpc.io/near',
+        ]
+      }
 
       for (const targetUrl of targetUrls) {
         try {
