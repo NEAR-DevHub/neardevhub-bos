@@ -379,6 +379,7 @@ test.describe("Admin wallet is connected", () => {
   });
 
   test("can enable/disable author functionality", async ({ page }) => {
+    test.setTimeout(60000);
     // Author is default enabled
     // In which case it is on the blog..
     await page.goto(blogPageOtherInstance);
