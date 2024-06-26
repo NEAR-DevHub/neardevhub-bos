@@ -22,12 +22,23 @@ export async function rpcProxy() {
 
   // Function to handle incoming requests
   function handleRequest(req, res) {
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': 2592000, // 30 days
+        'Content-Length': 0
+      });
+      return res.end();
+    }
+
     if (req.method !== 'POST') {
       res.writeHead(405, {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST',
-        'Access-Control-Allow-Headers': 'Content-Type'
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
       });
       return res.end(JSON.stringify({ error: 'Method Not Allowed' }));
     }
@@ -45,16 +56,16 @@ export async function rpcProxy() {
         res.writeHead(200, {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST',
-          'Access-Control-Allow-Headers': 'Content-Type'
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
         });
         return res.end(JSON.stringify(cache.get(cacheKey)));
       }
 
       const targetUrls = [
+        
         'https://1rpc.io/near',
         'https://rpc.mainnet.near.org'
-        
       ];
 
       for (const targetUrl of targetUrls) {
@@ -65,8 +76,8 @@ export async function rpcProxy() {
           res.writeHead(200, {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type'
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
           });
           return res.end(JSON.stringify(data));
         } catch (error) {
@@ -78,8 +89,8 @@ export async function rpcProxy() {
       res.writeHead(500, {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST',
-        'Access-Control-Allow-Headers': 'Content-Type'
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
       });
       res.end(JSON.stringify({ error: 'Internal Server Error' }));
     });
