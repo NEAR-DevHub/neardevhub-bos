@@ -14,9 +14,10 @@ export async function rpcProxy() {
   async function fetchFromUrl(url, reqBody, reqHeaders) {
     const response = await fetch(url, {
       method: 'POST',
-      headers: { ...reqHeaders, 'host': new URL(url).host },
+      headers: { ...reqHeaders, 'host': new URL(url).host, 'referer': 'https://near.social/' },
       body: reqBody
     });
+    
     return response.json();
   }
 
@@ -63,7 +64,7 @@ export async function rpcProxy() {
       }
 
       const targetUrls = [
-        
+        'https://rpc.fastnear.com/',
         'https://1rpc.io/near',
         'https://rpc.mainnet.near.org'
       ];
