@@ -294,6 +294,12 @@ const item = {
   path: `${REPL_DEVHUB_CONTRACT}/post/main`,
   blockHeight,
 };
+const comments = Social.index("comment", item, { subscribe: true }) ?? [];
+
+const commentAuthors = [
+  ...new Set(comments.map((comment) => comment.accountId)),
+];
+
 const proposalURL = getLinkUsingCurrentGateway(
   `${REPL_DEVHUB}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
 );
@@ -916,6 +922,12 @@ return (
                     item: item,
                     notifyAccountId: authorId,
                     id: proposal.id,
+                    sortedRelevantUsers: [
+                      authorId,
+                      snapshot.supervisor,
+                      snapshot.requested_sponsor,
+                      ...commentAuthors,
+                    ].filter((user) => user !== accountId),
                   }}
                 />
               </div>
