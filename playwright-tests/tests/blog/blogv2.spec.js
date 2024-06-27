@@ -25,7 +25,7 @@ const blogPage =
   "/devhub.near/widget/app?page=blogv2&id=published-w5cj1y&community=webassemblymusic";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+  await page.route("http://localhost:20000/", async (route) => {
     await mockDefaultTabs(route);
   });
 
@@ -534,7 +534,7 @@ test.describe("Don't ask again enabled", () => {
           ).keys[0];
 
           const response = await route.fetch({
-            url: "https://rpc.mainnet.near.org/",
+            url: "http://localhost:20000/",
           });
           const devComponents = (
             await fetch("http://localhost:3030").then((r) => r.json())

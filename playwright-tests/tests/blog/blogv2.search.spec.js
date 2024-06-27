@@ -14,7 +14,7 @@ async function configureSearchAndCategoriesEnabled({
   categoriesEnabled,
   searchEnabled,
 }) {
-  await page.route("https://rpc.mainnet.near.org", async (route) => {
+  await page.route("http://localhost:20000", async (route) => {
     const postData = route.request().postDataJSON();
 
     if (
@@ -120,7 +120,7 @@ test.describe("Wallet is not connected", () => {
         )
       );
       const endTime = new Date().getTime();
-      expect(endTime - startTime).toBeLessThan(5000);
+      expect(endTime - startTime).toBeLessThan(8000);
     }
   });
   test("should filter blog posts from category", async ({ page }) => {

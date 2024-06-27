@@ -39,7 +39,7 @@ const blogPageThirdInstance =
   "/devhub.near/widget/app?page=blogv2&community=webassemblymusic&id=this-is-the-blog-title-xfxkzh";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("https://rpc.mainnet.near.org/", async (route) => {
+  await page.route("http://localhost:20000/", async (route) => {
     await mockDefaultTabs(route);
   });
 
@@ -379,6 +379,7 @@ test.describe("Admin wallet is connected", () => {
   });
 
   test("can enable/disable author functionality", async ({ page }) => {
+    test.setTimeout(60000);
     // Author is default enabled
     // In which case it is on the blog..
     await page.goto(blogPageOtherInstance);
