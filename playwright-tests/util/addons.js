@@ -16,7 +16,13 @@ export async function mockDefaultTabs(route) {
   ) {
     // Add default tabs to community
     const response = await route.fetch();
-    const json = await response.json();
+    let json = {};
+    try {
+      json = await response.json();
+    } catch (error) {
+      console.error("Error parsing JSON response");
+      console.log(await response.text());
+    }
 
     let resultObj = decodeResultJSON(json.result.result);
 
@@ -55,7 +61,18 @@ export async function mockDefaultTabs(route) {
         display_name: "First Blog",
         enabled: true,
         id: "blogv2",
-        parameters: "{}",
+        parameters:
+          '{"title":"Mocked configured blog page title",\
+        "subtitle":"Mocked configured subtitle",\
+        "authorEnabled": "enabled",\
+        "searchEnabled": "enabled",\
+        "orderBy": "timeasc",\
+        "postPerPage": 5,\
+        "categoriesEnabled": "enabled",\
+        "categories": [{"category":"News","value":"news"},\
+        {"category":"Guide","value":"guide"},\
+        {"category":"Reference","value":"reference"}],\
+        "categoryRequired": "required"}',
       },
       {
         addon_id: "blogv2",
@@ -64,14 +81,46 @@ export async function mockDefaultTabs(route) {
         id: "blogv2instance2",
         parameters: "{}",
       },
+      {
+        addon_id: "blogv2",
+        display_name: "Third Blog",
+        enabled: true,
+        id: "g1709r",
+        parameters:
+          '{"title": "WebAssemblyMusic",\
+          "subtitle": "Stay up to date with the community blog",\
+          "authorEnabled": "disabled",\
+          "searchEnabled": "disabled",\
+          "orderBy": "alpha",\
+          "postPerPage": 10,\
+          "categoriesEnabled": "disabled",\
+          "categories": [],\
+          "categoryRequired": "not_required"\
+        }',
+      },
+      {
+        addon_id: "blogv2",
+        display_name: "Fourth Blog",
+        enabled: true,
+        id: "blogv2instance4",
+        parameters:
+          '{"title": "WebAssemblyMusic",\
+          "subtitle": "Stay up to date with the community blog",\
+          "authorEnabled": "disabled",\
+          "searchEnabled": "disabled",\
+          "orderBy": "alpha",\
+          "postPerPage": 10,\
+          "categoriesEnabled": "enabled",\
+          "categories": [{"category":"News","value":"news"}],\
+          "categoryRequired": "not_required"\
+        }',
+      },
     ];
 
     json.result.result = encodeResultJSON(resultObj);
 
     await route.fulfill({ response, json });
     return;
-  } else if (requestPostData.method === "tx") {
-    await route.continue({ url: "https://archival-rpc.mainnet.near.org/" });
   } else if (
     requestPostData.params &&
     requestPostData.params.account_id === "social.near" &&
@@ -81,9 +130,15 @@ export async function mockDefaultTabs(route) {
       .keys[0];
 
     const response = await route.fetch({
-      url: "https://rpc.mainnet.near.org/",
+      url: "http://localhost:20000/",
     });
-    const json = await response.json();
+    let json = {};
+    try {
+      json = await response.json();
+    } catch (error) {
+      console.error("Error parsing JSON response");
+      console.log(JSON.stringify(await response.text()));
+    }
 
     // Replace component with local component
     if (devComponents[social_get_key]) {

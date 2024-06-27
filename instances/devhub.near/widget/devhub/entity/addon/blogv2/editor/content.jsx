@@ -1,34 +1,31 @@
 const { Card } =
   VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card") ||
   (() => <></>);
-const { Page } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
-  (() => <></>);
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
 
-const categories = [
-  {
-    label: "Guide",
-    value: "guide",
-  },
-  {
-    label: "News",
-    value: "news",
-  },
-  {
-    label: "Reference",
-    value: "reference",
-  },
-];
+const {
+  data,
+  handle,
+  onSubmit,
+  onCancel,
+  onDelete,
+  allBlogs: allBlogsOfThisInstance,
+  communityAddonId,
+  setSelectedItemChanged,
+  addonParameters,
+} = props;
 
-const selectOptions = useMemo(
-  () =>
-    categories.map((it) => ({
-      label: it.label,
-      value: it.value,
-    })),
-  [categories]
-);
+const selectOptions = useMemo(() => {
+  let ops = (addonParameters.categories || []).map((it) => ({
+    title: it.category,
+    description: "",
+    value: it.value,
+  }));
+  if (addonParameters.categoryRequired === "required") {
+    return ops;
+  }
+  return [{ title: "None", value: "" }, ...ops];
+}, [addonParameters]);
 
 const Banner = styled.div`
   border-radius: var(--bs-border-radius-xl) !important;
@@ -169,17 +166,6 @@ const DropdownBtnContainer = styled.div`
 }
 `;
 
-const {
-  data,
-  handle,
-  onSubmit,
-  onCancel,
-  onDelete,
-  allBlogs: allBlogsOfThisInstance,
-  communityAddonId,
-  setSelectedItemChanged,
-} = props;
-
 const allBlogKeys =
   Social.keys(`${handle}.community.devhub.near/blog/*`, "final") || {};
 
@@ -204,7 +190,14 @@ const [description, setDescription] = useState(initialData.description || "");
 const [author, setAuthor] = useState(initialData.author || context.accountId);
 const [previewMode, setPreviewMode] = useState("edit"); // "edit" or "preview" // "card" or "page"
 const [date, setDate] = useState(initialFormattedDate || new Date());
-const [category, setCategory] = useState(initialData.category || "guide");
+
+// Initial category
+const initialCategory =
+  addonParameters.categoryRequired === "required" ? selectOptions[0].value : "";
+
+const [category, setCategory] = useState(
+  initialData.category || initialCategory
+);
 const [disabledSubmitBtn, setDisabledSubmitBtn] = useState(false);
 const [isDraftBtnOpen, setDraftBtnOpen] = useState(false);
 const [selectedStatus, setSelectedStatus] = useState(
@@ -326,7 +319,6 @@ const SubmitBtn = () => {
     setDraftBtnOpen(false);
     setSelectedStatus(option.value);
     setSubmittedBlogData(null);
-    // TODO test is
     handleSubmit(option.value);
   };
 
@@ -495,13 +487,19 @@ function handleDelete() {
 }
 
 const tabs = [
-  { name: "Edit", value: "edit" },
-  { name: "Preview", value: "preview" },
+  { name: "Edit", value: "edit", testId: "edit-blog-toggle" },
+  { name: "Preview", value: "preview", testId: "preview-page-blog-toggle" },
 ];
 
 return (
   <Container>
     <div className="flex flex-wrap-reverse gap-1 justify-between w-100 mb-4">
+      <div
+        className="flex cursor-pointer align-items-center justify-content-center gap-1 px-4"
+        onClick={onCancel}
+      >
+        <i class="bi bi-arrow-left"></i>
+      </div>
       <div className="sm:hidden grow rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
         <label
           htmlFor="tabs"
@@ -529,6 +527,7 @@ return (
           {tabs.map((tab) => {
             return (
               <a
+                data-testid={tab.testId}
                 key={tab.name}
                 onClick={() => setPreviewMode(tab.value)}
                 className={`${
@@ -559,7 +558,6 @@ return (
                     page: "blogv2",
                     id: initialData.id,
                     community: handle,
-                    communityAddonId,
                   },
                 })}
                 target="_blank"
@@ -596,6 +594,7 @@ return (
               setDate,
               content,
               setContent,
+              addonParameters,
             }}
           />
           {/* Show delete button */}
@@ -639,12 +638,12 @@ return (
                 />
               </>
             ) : null}
-            <div className="flex gap-x-3">
+            <div className="flex gap-x-3 align-items-center">
               <Widget
                 src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                 props={{
                   classNames: {
-                    root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
+                    root: "d-flex text-muted fw-bold btn-outline shadow-none border-0 btn-sm",
                   },
                   label: "Cancel",
                   onClick: onCancel,
@@ -672,17 +671,23 @@ return (
               category,
               community: handle,
             }}
+            addonParameters={addonParameters}
           />
 
-          <Page
-            data={{
-              title,
-              subtitle,
-              description,
-              publishedAt: date,
-              content,
-              author,
-              category,
+          <Widget
+            src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page"
+            props={{
+              data: {
+                title,
+                subtitle,
+                description,
+                publishedAt: date,
+                content,
+                author,
+                category,
+                community: handle,
+                communityAddonId,
+              },
               community: handle,
             }}
           />

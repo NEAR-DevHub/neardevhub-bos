@@ -21,6 +21,7 @@ const {
   setDate,
   content,
   setContent,
+  addonParameters,
 } = props;
 
 const InputContainer = ({ heading, description, children }) => {
@@ -111,6 +112,7 @@ const DescriptionInput = useMemo(() => {
             "block w-full rounded-md border-0 px-1 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
         },
         skipPaddingGap: true,
+        key: "description-input-field",
       }}
     />
   );
@@ -131,6 +133,7 @@ const AuthorInput = useMemo(() => {
             "block w-full rounded-md border-0 px-1 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
         },
         skipPaddingGap: true,
+        key: "author-input-field",
       }}
     />
   );
@@ -171,17 +174,21 @@ return (
     >
       {SubtitleComponent}
     </InputContainer>
-    <InputContainer
-      heading="Category"
-      description={
-        <>
-          Choose the category that fits your blog best. Set up your categories
-          in the blog settings.
-        </>
-      }
-    >
-      {CategorySelect}
-    </InputContainer>
+    {addonParameters.categoriesEnabled === "enabled" ? (
+      <InputContainer
+        heading="Category"
+        description={
+          <>
+            Choose the category that fits your blog best. Set up your categories
+            in the blog settings.
+          </>
+        }
+      >
+        {CategorySelect}
+      </InputContainer>
+    ) : (
+      <></>
+    )}
 
     <InputContainer
       heading="Description"
@@ -189,9 +196,13 @@ return (
     >
       {DescriptionInput}
     </InputContainer>
-    <InputContainer heading="Author" description="Who wrote this blog?">
-      {AuthorInput}
-    </InputContainer>
+    {addonParameters.authorEnabled === "disabled" ? (
+      <></>
+    ) : (
+      <InputContainer heading="Author" description="Who wrote this blog?">
+        {AuthorInput}
+      </InputContainer>
+    )}
     <InputContainer
       heading="Visible Publish Date"
       description="What date do you want to have the blog published under?"
