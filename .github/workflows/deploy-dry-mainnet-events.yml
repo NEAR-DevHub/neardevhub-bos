@@ -19,10 +19,18 @@ jobs:
         run: |
           npm ci
 
-      - name: Build and replace
+      - name: Set replacements
         id: set_replacements
         run: |
-          npm run bw:build:events
+          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value), {"find": "${REPL_POSTHOG_API_KEY}", "replace": "'$POSTHOG_API_KEY'"}]' aliases.mainnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
+
+      - name: Replace placeholders
+        uses: flcdrg/replace-multiple-action@v1
+        with:
+          files: "**/*.jsx"
+          find: "${{ steps.set_replacements.outputs.replacements }}"
+          prefix: "(^|.*)"
+          suffix: "($|.*)"
 
       - name: Install bos CLI
         run: |
