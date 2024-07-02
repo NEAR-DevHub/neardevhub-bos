@@ -70,59 +70,18 @@ export default defineConfig({
       testMatch: /(proposal|events)\/.*.spec.js/,
       // testIgnore: /.*smoke.spec.ts/,
     },
-
-    /*{
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },*/
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { channel: 'chrome' },
-    // },
   ],
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
   outputDir: "test-results/",
 
   /* Run your local dev server before starting the tests */
-  webServer: [
-    {
-      env: {
-        POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456",
-      },
-      command: "npm run gateway:devhub",
-      port: 3030,
-      reuseExistingServer: !process.env.CI,
+  webServer: {
+    env: {
+      POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456",
     },
-    // Run the events-committee server on a different port
-    {
-      env: {
-        POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456",
-      },
-      command: "npm run gateway:events",
-      port: 3031,
-      reuseExistingServer: !process.env.CI,
-    },
-  ],
+    command: "npm run gateway:devhub",
+    port: 3030,
+    reuseExistingServer: !process.env.CI,
+  },
 });
