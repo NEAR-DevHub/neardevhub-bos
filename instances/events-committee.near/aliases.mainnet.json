@@ -1,0 +1,11 @@
+{
+  "REPL_DEVHUB": "events-committee.near",
+  "REPL_DEVHUB_LEGACY": "devgovgigs.near",
+  "REPL_DEVHUB_CONTRACT": "events-committee.near",
+  "REPL_NEAR": "near",
+  "REPL_MOB": "mob.near",
+  "REPL_EFIZ": "efiz.near",
+  "REPL_DEVS": "devs.near",
+  "REPL_SOCIAL_CONTRACT": "social.near",
+  "REPL_RPC_URL": "https://rpc.mainnet.near.org"
+}

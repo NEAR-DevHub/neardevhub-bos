@@ -1,0 +1,29 @@
+name: Dry-run Deploy Widgets to Mainnet
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+jobs:
+  deploy-widgets:
+    runs-on: ubuntu-latest
+    name: Diff from PR
+    defaults:
+      run:
+        working-directory: ./instances/events-committee.near
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build and replace
+        id: set_replacements
+        run: |
+          npm run bw:build:events
+
+      - name: Install bos CLI
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.6/bos-cli-installer.sh | sh
+
+      - name: Deploy widgets
+        run: |
+          bos components diff events-commitee.near network-config mainnet
