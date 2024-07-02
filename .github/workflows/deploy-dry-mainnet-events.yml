@@ -15,6 +15,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          npm ci
+
       - name: Build and replace
         id: set_replacements
         run: |
