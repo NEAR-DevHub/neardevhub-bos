@@ -64,6 +64,12 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
+    {
+      name: "events",
+      retries: process.env.CI ? 8 : 0,
+      testMatch: /(proposal|events)\/.*.spec.js/,
+      // testIgnore: /.*smoke.spec.ts/,
+    },
 
     /*{
       name: 'firefox',
@@ -100,10 +106,23 @@ export default defineConfig({
   outputDir: "test-results/",
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    env: { POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456" },
-    command: "npm run gateway:devhub",
-    port: 3030,
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      env: {
+        POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456",
+      },
+      command: "npm run gateway:devhub",
+      port: 3030,
+      reuseExistingServer: !process.env.CI,
+    },
+    // Run the events-committee server on a different port
+    {
+      env: {
+        POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456",
+      },
+      command: "npm run gateway:events",
+      port: 3031,
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
 });
