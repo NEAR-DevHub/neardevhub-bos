@@ -299,7 +299,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       page,
       contractId: "devhub.near",
       widgetSrc: "devhub.near/widget/devhub.entity.proposal.Proposal",
-      methodName: "edit_proposal_timeline",
+      methodName: "edit_proposal_versioned_timeline",
     });
 
     const firstStatusBadge = await page

@@ -531,7 +531,7 @@ const editProposalStatus = ({ timeline }) => {
   Near.call([
     {
       contractName: "${REPL_DEVHUB_CONTRACT}",
-      methodName: "edit_proposal_timeline",
+      methodName: "edit_proposal_versioned_timeline",
       args: {
         id: proposal.id,
         timeline: { timeline_version: "V1", ...timeline },
