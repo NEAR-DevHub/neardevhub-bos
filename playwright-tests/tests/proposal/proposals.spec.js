@@ -239,6 +239,15 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
 });
+test("share button should create a clean URL link", async ({ page }) => {
+  await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+    page
+  );
+  await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+  const widgetSrc = "devhub.near/widget/devhub.entity.proposal.ComposeComment";
+
+  await page.pause();
+});
 test.describe('Moderator with "Don\'t ask again" enabled', () => {
   test.use({
     storageState:
