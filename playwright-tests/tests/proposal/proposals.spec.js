@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test as base, expect } from "@playwright/test";
 import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import {
@@ -13,6 +13,12 @@ import {
 import { mockRpcRequest } from "../../util/rpcmock.js";
 import { mockSocialIndexResponses } from "../../util/socialapi.js";
 
+const test = base.extend({
+  // Define an option and provide a default value.
+  // We can later override it in the config.
+  account: ["devhub.near", { option: true }],
+});
+
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
 );
@@ -22,9 +28,12 @@ test.describe("Wallet is connected, but not KYC verified", () => {
     storageState:
       "playwright-tests/storage-states/wallet-connected-not-kyc-verified-account.json",
   });
-  test("should be able to blur 'get verified' drop-down", async ({ page }) => {
+  test("should be able to blur 'get verified' drop-down", async ({
+    page,
+    account,
+  }) => {
     test.setTimeout(120000);
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    await page.goto(`/${account}/widget/app?page=create-proposal`);
 
     const titleArea = await page.getByRole("textbox").first();
     await titleArea.fill("Test proposal 123456");
@@ -53,20 +62,21 @@ test.describe("Don't ask again enabled", () => {
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
-  test("should create a proposal", async ({ page }) => {
+  test("should create a proposal", async ({ page, account }) => {
     test.setTimeout(120000);
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
-    await page.goto("/devhub.near/widget/app?page=proposals");
+    console.log({ account });
+    await page.goto(`/${account}/widget/app?page=proposals`);
 
-    const widgetSrc = "devhub.near/widget/devhub.entity.proposal.Editor";
+    const widgetSrc = `${account}/widget/devhub.entity.proposal.Editor`;
 
     await setDontAskAgainCacheValues({
       page,
       widgetSrc,
       methodName: "add_proposal",
-      contractId: "devhub.near",
+      contractId: account,
     });
 
     await page.getByRole("button", { name: " New Proposal" }).click();
@@ -145,7 +155,7 @@ test.describe("Don't ask again enabled", () => {
     await expect(loadingIndicator).toBeAttached();
 
     const transaction_toast = await page.getByText(
-      "Calling contract devhub.near with method add_proposal"
+      `Calling contract ${account} with method add_proposal`
     );
     await expect(transaction_toast).toBeVisible();
 
@@ -157,13 +167,12 @@ test.describe("Don't ask again enabled", () => {
     await page.waitForTimeout(1000);
     await pauseIfVideoRecording(page);
   });
-  test("should add comment on a proposal", async ({ page }) => {
+  test("should add comment on a proposal", async ({ page, account }) => {
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
-    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
-    const widgetSrc =
-      "devhub.near/widget/devhub.entity.proposal.ComposeComment";
+    await page.goto(`/${account}/widget/app?page=proposal&id=17`);
+    const widgetSrc = `${account}/widget/devhub.entity.proposal.ComposeComment`;
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentArea = await page
@@ -177,11 +186,11 @@ test.describe("Don't ask again enabled", () => {
     await commentArea.blur();
     await pauseIfVideoRecording(page);
 
-    const account = "petersalomonsen.near";
+    const accountId = "petersalomonsen.near";
     await setCommitWritePermissionDontAskAgainCacheValues({
       page,
       widgetSrc,
-      accountId: account,
+      accountId: accountId,
     });
 
     await mockTransactionSubmitRPCResponses(
@@ -194,12 +203,12 @@ test.describe("Don't ask again enabled", () => {
           if (
             postData.params.account_id === "social.near" &&
             postData.params.method_name === "get" &&
-            args === `{"keys":["${account}/post/**"]}`
+            args === `{"keys":["${accountId}/post/**"]}`
           ) {
             const response = await route.fetch();
             const json = await response.json();
             const resultObj = decodeResultJSON(json.result.result);
-            resultObj[account].post.main = JSON.stringify({
+            resultObj[accountId].post.main = JSON.stringify({
               text: text,
             });
             json.result.result = encodeResultJSON(resultObj);
@@ -240,11 +249,18 @@ test.describe("Don't ask again enabled", () => {
   });
 });
 test.describe('Moderator with "Don\'t ask again" enabled', () => {
-  test.use({
-    storageState:
-      "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
-  });
-  test("should edit proposal timeline", async ({ page }) => {
+  test("should edit proposal timeline", async ({ page, account }) => {
+    let storageState =
+      "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json";
+
+    // TODO - cannot call test.use inside a test() block
+    if (account === "events-committee.near") {
+      storageState =
+        "playwright-tests/storage-states/wallet-connected-with-events-moderator-access-key.json";
+    }
+    test.use({
+      storageState,
+    });
     test.setTimeout(60000);
     let isTransactionCompleted = false;
 
@@ -293,11 +309,12 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       }
     );
 
-    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    await page.goto(`/${account}/widget/app?page=proposal&id=17`);
+    console.log({ account });
     await setDontAskAgainCacheValues({
       page,
-      contractId: "devhub.near",
-      widgetSrc: "devhub.near/widget/devhub.entity.proposal.Proposal",
+      contractId: account,
+      widgetSrc: `/${account}/widget/devhub.entity.proposal.Proposal`,
       methodName: "edit_proposal_timeline",
     });
 
@@ -346,9 +363,10 @@ test.describe("Wallet is connected", () => {
   });
   test("editing proposal should not be laggy, even if mentioning someone", async ({
     page,
+    account,
   }) => {
     test.setTimeout(120000);
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    await page.goto(`/${account}/widget/app?page=create-proposal`);
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
@@ -458,10 +476,11 @@ test.describe("Wallet is connected", () => {
 
   test("should show only valid input in amount field and show error for invalid", async ({
     page,
+    account,
   }) => {
     test.setTimeout(120000);
     const delay_milliseconds_between_keypress_when_typing = 0;
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    await page.goto(`/${account}/widget/app?page=create-proposal`);
     const input = page.locator('input[type="text"]').nth(2);
     const errorText = await page.getByText(
       "Please enter the nearest positive whole number."
@@ -485,9 +504,10 @@ test.describe("Wallet is connected", () => {
 
   test("should create a proposal, autolink reference to existing proposal", async ({
     page,
+    account,
   }) => {
     test.setTimeout(120000);
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    await page.goto(`/${account}/widget/app?page=create-proposal`);
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
@@ -585,10 +605,10 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test("should filter proposals by categories", async ({ page }) => {
+  test("should filter proposals by categories", async ({ page, account }) => {
     test.setTimeout(60000);
     const category = "DevDAO Operations";
-    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.goto(`/${account}/widget/app?page=proposals`);
     await page.getByRole("button", { name: "Category" }).click();
     await page.getByRole("list").getByText(category).click();
     await expect(
@@ -598,10 +618,10 @@ test.describe("Wallet is connected", () => {
     await expect(categoryTag).toContainText(category);
   });
 
-  test("should filter proposals by timeline", async ({ page }) => {
+  test("should filter proposals by timeline", async ({ page, account }) => {
     test.setTimeout(60000);
     const stage = "Funded";
-    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.goto(`/${account}/widget/app?page=proposals`);
     await page.getByRole("button", { name: "Stage" }).click();
     await page.getByRole("list").getByText(stage).click();
     await expect(
@@ -611,10 +631,10 @@ test.describe("Wallet is connected", () => {
     await expect(timelineTag).toContainText(stage.toUpperCase());
   });
 
-  test("should filter proposals by author", async ({ page }) => {
+  test("should filter proposals by author", async ({ page, account }) => {
     test.setTimeout(60000);
     const accountId = "megha19.near";
-    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.goto(`/${account}/widget/app?page=proposals`);
     await page.getByRole("button", { name: "Author" }).click();
     await page.getByRole("list").getByText(accountId).click();
     await expect(
@@ -623,10 +643,10 @@ test.describe("Wallet is connected", () => {
     await expect(page.getByText(`By ${accountId} ･`)).toBeVisible();
   });
 
-  test("should filter proposals by search text", async ({ page }) => {
+  test("should filter proposals by search text", async ({ page, account }) => {
     test.setTimeout(60000);
     const term = "DevHub Developer Contributor report by Megha";
-    await page.goto("/devhub.near/widget/app?page=proposals");
+    await page.goto(`/${account}/widget/app?page=proposals`);
     const input = await page.getByPlaceholder("Search by content");
     await input.click();
     await input.fill(term);

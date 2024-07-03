@@ -69,6 +69,10 @@ export default defineConfig({
       retries: process.env.CI ? 8 : 0,
       testMatch: /(proposal|events)\/.*.spec.js/,
       // testIgnore: /.*smoke.spec.ts/,
+      use: {
+        baseURL: "http://localhost:8080",
+        account: "events-committee.near",
+      },
     },
   ],
 
