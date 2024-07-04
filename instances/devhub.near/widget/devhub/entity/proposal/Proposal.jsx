@@ -511,7 +511,11 @@ const editProposal = ({ timeline }) => {
     requested_sponsor: snapshot.requested_sponsor,
     timeline: timeline,
   };
-  const args = { labels: [], body: body, id: proposal.id };
+  const args = {
+    labels: [],
+    body: body,
+    id: proposal.id,
+  };
 
   Near.call([
     {

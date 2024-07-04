@@ -2,6 +2,7 @@ const { getLinkUsingCurrentGateway } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.url"
 ) || { getLinkUsingCurrentGateway: () => {} };
 const snapshotHistory = props.snapshotHistory;
+const proposalId = props.id;
 
 const Wrapper = styled.div`
   position: relative;
@@ -316,13 +317,10 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
       return (
         <span>
           accepted
-          <a
-            href={`/${REPL_MOB}/widget/ProfilePage?accountId=${accountId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            T&C
-          </a>
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.T&C"}
+            props={{ proposalId: proposalId }}
+          />
         </span>
       );
     }
