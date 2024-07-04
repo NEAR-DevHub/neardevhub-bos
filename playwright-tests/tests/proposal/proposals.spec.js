@@ -239,15 +239,7 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
 });
-test("share button should create a clean URL link", async ({ page }) => {
-  await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-    page
-  );
-  await page.goto("/devhub.near/widget/app?page=proposal&id=17");
-  const widgetSrc = "devhub.near/widget/devhub.entity.proposal.ComposeComment";
 
-  await page.pause();
-});
 test.describe('Moderator with "Don\'t ask again" enabled', () => {
   test.use({
     storageState:
@@ -696,5 +688,40 @@ test.describe("Wallet is connected", () => {
     await input.press("Enter");
     const element = page.locator(`:has-text("${term}")`).nth(1);
     await expect(element).toBeVisible();
+  });
+});
+
+test.describe("share links", () => {
+  test.use({
+    contextOptions: {
+      permissions: ["clipboard-read", "clipboard-write"],
+    },
+  });
+  test("share button should create a clean URL link", async ({
+    page,
+    context,
+  }) => {
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+    await page.goto("/devhub.near/widget/app?page=proposal&id=127");
+
+    await expect(await page.getByText("#127")).toBeVisible();
+    const shareLinkButton = await page.getByRole("button", { name: "" });
+    await shareLinkButton.click();
+    await page.getByRole("button", { name: "Copy link to" }).click();
+
+    const linkUrlFromClipboard = await page.evaluate(
+      "navigator.clipboard.readText()"
+    );
+    expect(linkUrlFromClipboard).toEqual(
+      "https://devhub.near.page/proposal/127"
+    );
+    const newTab = await context.newPage();
+    newTab.goto(linkUrlFromClipboard);
+
+    await expect(await newTab.getByText("#127")).toBeVisible({
+      timeout: 10000,
+    });
   });
 });
