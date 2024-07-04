@@ -249,18 +249,11 @@ test.describe("Don't ask again enabled", () => {
   });
 });
 test.describe('Moderator with "Don\'t ask again" enabled', () => {
+  test.use({
+    storageState:
+      "playwright-tests/storage-states/wallet-connected-with-events-moderator-access-key.json",
+  });
   test("should edit proposal timeline", async ({ page, account }) => {
-    let storageState =
-      "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json";
-
-    // TODO - cannot call test.use inside a test() block
-    if (account === "events-committee.near") {
-      storageState =
-        "playwright-tests/storage-states/wallet-connected-with-events-moderator-access-key.json";
-    }
-    test.use({
-      storageState,
-    });
     test.setTimeout(60000);
     let isTransactionCompleted = false;
 
