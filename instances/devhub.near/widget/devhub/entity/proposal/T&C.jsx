@@ -4,7 +4,6 @@ const { getLinkUsingCurrentGateway } = VM.require(
 
 State.init({
   proposalBlockHeight: null,
-  acceptedTermsVersion: "${REPL_TERMS_AND_CONDITION_BLOCKHEIGHT}",
 });
 
 const proposalId = props.proposalId;
@@ -51,30 +50,36 @@ fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
   }
 });
 
-// NEED TO UPDATE TO GET ARGS DATA
+let acceptedTermsVersion = "${REPL_TERMS_AND_CONDITION_BLOCKHEIGHT}";
+
 if (state.proposalBlockHeight !== null) {
-  const data = fetch("https://1rpc.io/near", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: "dontcare",
-      method: "query",
-      params: {
-        request_type: "call_function",
-        block_id: proposalBlockHeight,
-        method_name: "add_proposal",
-      },
-    }),
-  });
+  const data = fetch(
+    `https://mainnet.neardata.xyz/v0/block/${state.proposalBlockHeight}`
+  );
+  if (Array.isArray(data?.body?.shards)) {
+    data.body.shards.map((shard) => {
+      const data = shard.chunk.transactions.filter(
+        (txn) =>
+          txn.transaction.receiver_id === "devhub.near" &&
+          txn.transaction.actions[0].FunctionCall.method_name === "add_proposal"
+      );
+      if (data?.length) {
+        const args = JSON.parse(
+          Buffer.from(
+            data[0].transaction.actions[0].FunctionCall.args,
+            "base64"
+          ).toString("utf8")
+        );
+        acceptedTermsVersion = args.accepted_terms_and_conditions_version;
+      }
+    });
+  }
 }
 
 return (
   <a
     href={getLinkUsingCurrentGateway(
-      `${REPL_DEVHUB}/widget/devhub.entity.proposal.TermsAndCondition@${state.acceptedTermsVersion}`
+      `${REPL_DEVHUB}/widget/devhub.entity.proposal.TermsAndCondition@${acceptedTermsVersion}`
     )}
     className="text-decoration-underline"
     target="_blank"
