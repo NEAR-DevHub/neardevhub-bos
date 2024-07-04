@@ -300,9 +300,7 @@ const commentAuthors = [
   ...new Set(comments.map((comment) => comment.accountId)),
 ];
 
-const proposalURL = getLinkUsingCurrentGateway(
-  `${REPL_DEVHUB}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
-);
+const proposalURL = `https://${REPL_DEVHUB}.page/proposal/${proposal.id}`;
 
 const KycVerificationStatus = () => {
   const isVerified = true;
@@ -681,9 +679,9 @@ return (
       </div>
       <div className="d-flex gap-2 align-items-center">
         <Widget
-          src="${REPL_NEAR}/widget/ShareButton"
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.ShareLinkButton"
           props={{
-            postType: "post",
+            postType: "proposal",
             url: proposalURL,
           }}
         />
