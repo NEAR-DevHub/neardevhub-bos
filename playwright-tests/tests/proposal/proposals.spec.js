@@ -697,10 +697,7 @@ test.describe("share links", () => {
       permissions: ["clipboard-read", "clipboard-write"],
     },
   });
-  test("copy link button should create a clean URL link", async ({
-    page,
-    context,
-  }) => {
+  test("copy link button should create a clean URL link", async ({ page }) => {
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
@@ -717,10 +714,10 @@ test.describe("share links", () => {
     expect(linkUrlFromClipboard).toEqual(
       "https://devhub.near.page/proposal/127"
     );
-    const newTab = await context.newPage();
-    newTab.goto(linkUrlFromClipboard);
+    await pauseIfVideoRecording(page);
+    await page.goto(linkUrlFromClipboard);
 
-    await expect(await newTab.getByText("#127")).toBeVisible({
+    await expect(await page.getByText("#127")).toBeVisible({
       timeout: 10000,
     });
   });
