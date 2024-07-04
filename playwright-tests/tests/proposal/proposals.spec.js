@@ -697,7 +697,7 @@ test.describe("share links", () => {
       permissions: ["clipboard-read", "clipboard-write"],
     },
   });
-  test("share button should create a clean URL link", async ({
+  test("copy link button should create a clean URL link", async ({
     page,
     context,
   }) => {
@@ -723,5 +723,27 @@ test.describe("share links", () => {
     await expect(await newTab.getByText("#127")).toBeVisible({
       timeout: 10000,
     });
+  });
+
+  test("share on X should create a clean URL link", async ({
+    page,
+    context,
+  }) => {
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+    await page.goto("/devhub.near/widget/app?page=proposal&id=127");
+
+    await expect(await page.getByText("#127")).toBeVisible();
+    const shareLinkButton = await page.getByRole("button", { name: "" });
+    await shareLinkButton.click();
+    const shareOnXLink = await page.getByRole("link", { name: " Share on X" });
+    const shareOnXUrl = await shareOnXLink.getAttribute("href");
+    await expect(shareOnXUrl).toEqual(
+      "https://x.com/intent/post?text=Check+out+this+post+on+%40NEARProtocol%0A%23NEAR+%23BOS%0Ahttps%3A%2F%2Fdevhub.near.page%2Fproposal%2F127"
+    );
+    await shareOnXLink.click();
+    const twitterPage = await context.waitForEvent("page");
+    await twitterPage.waitForURL(shareOnXUrl);
   });
 });

@@ -1,4 +1,12 @@
+const postType = props.postType ?? "post";
 const externalLink = props.url;
+
+const clickbaitPrompt =
+  props.clickbaitPrompt ??
+  `Check out this ${postType} on @NEARProtocol\n#NEAR #BOS\n${externalLink}`;
+
+const xUrl = new URL("https://x.com/intent/post");
+xUrl.searchParams.set("text", clickbaitPrompt);
 
 const Button = styled.button`
   border: 0;
@@ -76,14 +84,24 @@ return (
 
     <DropdownMenu sideOffset={5}>
       <ul>
-        <Widget
-          src="mob.near/widget/CopyButton"
-          props={{
-            text: externalLink,
-            className: "btn btn-outline-dark dropdown-item",
-            label: `Copy link to ${postType}`,
-          }}
-        />
+        <li>
+          <Widget
+            src="mob.near/widget/CopyButton"
+            props={{
+              text: externalLink,
+              className: "btn btn-outline-dark dropdown-item",
+              label: `Copy link to ${postType}`,
+            }}
+          />
+        </li>
+        <li>
+          <Popover.Close asChild>
+            <a href={xUrl.toString()} target="_blank">
+              <i className="bi bi-x" />
+              Share on X
+            </a>
+          </Popover.Close>
+        </li>
       </ul>
 
       <Popover.Arrow style={{ fill: "#fff" }} />
