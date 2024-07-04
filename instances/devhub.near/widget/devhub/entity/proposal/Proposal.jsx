@@ -681,7 +681,7 @@ return (
         <Widget
           src="${REPL_DEVHUB}/widget/devhub.components.molecule.ShareLinkButton"
           props={{
-            postType: "post",
+            postType: "proposal",
             url: proposalURL,
           }}
         />

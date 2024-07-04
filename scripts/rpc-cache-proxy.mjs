@@ -1,7 +1,47 @@
 import http from 'http';
 import { createHash } from 'crypto';
 
-export async function rpcProxy() {
+async function tryFetchingLocalBosLoaderComponent(instanceAccountId, requestPostData) {  
+  if (
+    requestPostData.params &&
+    requestPostData.params.account_id === "social.near" &&
+    requestPostData.params.method_name === "get"
+  ) {
+    const social_get_key = JSON.parse(
+      atob(requestPostData.params.args_base64)
+    ).keys[0];
+
+    const social_get_key_parts = social_get_key.split("/");
+    if (social_get_key_parts[0] === instanceAccountId && social_get_key_parts[1] === 'widget') {
+      const bosLoaderComponents = (
+        await fetch("http://localhost:3030").then((r) => r.json())
+      ).components;
+          
+      const devWidget = {};
+      devWidget[social_get_key_parts[0]] = { widget: {} };
+      devWidget[social_get_key_parts[0]].widget[social_get_key_parts[2]] = bosLoaderComponents[social_get_key].code;
+      console.log('Found local component', social_get_key);
+
+      const rpcResponse = {
+        "jsonrpc": "2.0",
+        "result": {
+          "result":  Array.from(
+            new TextEncoder().encode(JSON.stringify(devWidget))
+          ),
+          "logs": [],
+          "block_height": 17817336,
+          "block_hash": "4qkA4sUUG8opjH5Q9bL5mWJTnfR4ech879Db1BZXbx6P"
+        },
+        "id": "dontcare"
+      };
+      
+      return JSON.stringify(rpcResponse);
+    }
+  }
+  return null;
+}
+
+export async function rpcProxy(instanceAccountId) {
   // Simple in-memory cache
   const cache = new Map();
 
@@ -50,6 +90,14 @@ export async function rpcProxy() {
     });
 
     req.on('end', async () => {
+      try {
+        const bosLoaderLocalComponent = await tryFetchingLocalBosLoaderComponent(instanceAccountId, JSON.parse(body));
+        if (bosLoaderLocalComponent) {
+          return res.end(bosLoaderLocalComponent);
+        }
+      } catch(e) {
+        
+      }
       const cacheKey = getCacheKey(body);
 
       if (cache.has(cacheKey)) {

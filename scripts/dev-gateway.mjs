@@ -5,9 +5,8 @@ import { homedir, tmpdir } from 'os';
 import { readFile, writeFile, cp } from 'fs/promises';
 import { rpcProxy } from './rpc-cache-proxy.mjs';
 
-await rpcProxy();
-
 const instanceName = process.argv[process.argv.length - 1];
+await rpcProxy(instanceName);
 const instanceFolder = `instances/${instanceName}`;
 
 const statingWebHostinFolder = tmpdir()+'/bos'+new Date().toJSON().replace(/[^0-9]/g,'');
