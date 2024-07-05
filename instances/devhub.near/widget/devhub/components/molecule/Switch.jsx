@@ -1,5 +1,13 @@
-const { className, currentValue, isHidden, key, onChange, options, title } =
-  props;
+const {
+  className,
+  currentValue,
+  isHidden,
+  key,
+  onChange,
+  options,
+  title,
+  style,
+} = props;
 
 return (
   <div
@@ -8,6 +16,7 @@ return (
       className ?? "",
       isHidden ?? false ? "d-none" : "",
     ].join(" ")}
+    style={style ?? {}}
     role="group"
     aria-label={title}
     key={`${key}-${value}`}

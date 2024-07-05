@@ -5,7 +5,7 @@ const blog =
   {};
 
 if (!blog || Object.keys(blog).length === 0) {
-  return <div>Loading ...</div>;
+  return <div>Loading Blog...</div>;
 }
 
 const Template = template || (() => <></>);
