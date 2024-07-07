@@ -29,7 +29,7 @@ useEffect(() => {
 
 return (
   <div>
-    <div class="dropdown w-100">
+    <div class="dropdown w-100" data-testid="dropdown">
       <StyledDropdown>
         <button
           class="btn drop-btn text-truncate dropdown-toggle bg-white border rounded-2"

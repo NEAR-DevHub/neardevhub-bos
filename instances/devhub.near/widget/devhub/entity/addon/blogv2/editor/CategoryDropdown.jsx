@@ -1,24 +1,6 @@
-const { selectedValue, onChange, disabled } = props;
+const { selectedValue, onChange, disabled, options } = props;
 
 onChange = onChange || (() => {});
-
-const options = [
-  {
-    title: "Guide",
-    description: "",
-    value: "guide",
-  },
-  {
-    title: "News",
-    description: "",
-    value: "news",
-  },
-  {
-    title: "Reference",
-    description: "",
-    value: "reference",
-  },
-];
 
 const [isOpen, setIsOpen] = useState(false);
 const [selectedOptionValue, setSelectedValue] = useState(selectedValue);
@@ -118,6 +100,7 @@ return (
       className="custom-select w-100"
       tabIndex="0"
       onBlur={() => setIsOpen(false)}
+      data-testid="category-dropdown"
     >
       <div
         className={
@@ -137,6 +120,7 @@ return (
             {options.map((option) => (
               <div
                 key={option.value}
+                data-testid={`category-option-${option.value}`}
                 className={`dropdown-item cursor-pointer w-100 my-1 ${
                   selectedOption.value === option.value ? "selected" : ""
                 }`}

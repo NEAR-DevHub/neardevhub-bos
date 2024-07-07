@@ -1,6 +1,12 @@
 let theme = props.theme;
 let variables = props.variables;
-const parametersData = props.data;
+
+const {
+  communityAddonId,
+  data: addonParameters,
+  handle,
+  onSubmit: onSubmitBlogSettings,
+} = props;
 
 if (!variables) {
   variables = ``;
@@ -34,10 +40,14 @@ return (
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.provider"
         props={{
-          handle: props.handle,
-          communityAddonId: props.communityAddonId,
+          handle,
+          communityAddonId,
           Layout: (providerProps) => {
-            const { onSubmit, getData, onDelete } = providerProps;
+            const {
+              onSubmit: onSubmitBlogData,
+              getData,
+              onDelete,
+            } = providerProps;
             return (
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.layout"
@@ -62,7 +72,8 @@ return (
                       props={{
                         ...p,
                         ...providerProps,
-                        parametersData,
+                        data: addonParameters,
+                        onSubmit: onSubmitBlogSettings,
                       }}
                     />
                   ),
@@ -70,11 +81,12 @@ return (
                     <Widget
                       src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.content"
                       props={{
-                        onSubmit,
+                        onSubmit: onSubmitBlogData,
                         onDelete,
                         handle: props.handle,
                         allBlogs: providerProps.data,
                         communityAddonId: props.communityAddonId,
+                        addonParameters: addonParameters,
                         ...p,
                       }}
                     />

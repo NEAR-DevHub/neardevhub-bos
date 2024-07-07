@@ -53,8 +53,33 @@ if (!tab) {
 tab = normalize(tab);
 
 const [isLinkCopied, setLinkCopied] = useState(false);
-// Addons have either 2 or 1 child widgets, viewer and configure or only the viewer
+
 const [addonView, setAddonView] = useState("viewer");
+
+// CommunityAddOn
+const blogv2 = {
+  addon_id: "blogv2",
+  display_name: "BlogV2",
+  enabled: true,
+  id: "blogv2",
+  parameters:
+    '{"title":"My blog page title",\
+     "subtitle":"Classic subtitle",\
+     "auhtorEnabled": "enabled",\
+     "searchEnabled": "enabled",\
+     "orderBy": "timedesc",\
+     "categoriesEnabled": "enabled",\
+     "categories": ["news", "guide", "reference"],\
+     "categoryRequired": false}',
+};
+
+const blogv2instance2 = {
+  addon_id: "blogv2",
+  display_name: "BlogV2",
+  enabled: true,
+  id: "blogv2instance2",
+  parameters: "{}",
+};
 
 const tabs = [];
 
