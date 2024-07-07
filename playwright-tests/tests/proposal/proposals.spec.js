@@ -158,9 +158,6 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
   test("should add comment on a proposal", async ({ page }) => {
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
     await page.goto("/devhub.near/widget/app?page=proposal&id=17");
     const widgetSrc =
       "devhub.near/widget/devhub.entity.proposal.ComposeComment";
@@ -189,6 +186,14 @@ test.describe("Don't ask again enabled", () => {
       async ({ route, request, transaction_completed, last_receiver_id }) => {
         const postData = request.postDataJSON();
         const args_base64 = postData.params?.args_base64;
+        if (args_base64) {
+          console.log(
+            "TXXX",
+            last_receiver_id,
+            transaction_completed,
+            atob(args_base64)
+          );
+        }
         if (transaction_completed && args_base64) {
           const args = atob(args_base64);
           if (
@@ -196,6 +201,7 @@ test.describe("Don't ask again enabled", () => {
             postData.params.method_name === "get" &&
             args === `{"keys":["${account}/post/**"]}`
           ) {
+            console.log("tx completed", text);
             const response = await route.fetch();
             const json = await response.json();
             const resultObj = decodeResultJSON(json.result.result);
@@ -214,6 +220,7 @@ test.describe("Don't ask again enabled", () => {
       }
     );
     const commentButton = await page.getByRole("button", { name: "Comment" });
+    await expect(commentButton).toBeAttached();
     await commentButton.scrollIntoViewIfNeeded();
     await commentButton.click();
     await expect(
