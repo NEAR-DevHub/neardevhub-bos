@@ -640,54 +640,66 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test("should filter proposals by categories", async ({ page }) => {
-    test.setTimeout(60000);
-    const category = "DevDAO Operations";
-    await page.goto("/devhub.near/widget/app?page=proposals");
-    await page.getByRole("button", { name: "Category" }).click();
-    await page.getByRole("list").getByText(category).click();
-    await expect(
-      page.getByRole("button", { name: `Category : ${category}` })
-    ).toBeVisible();
-    const categoryTag = await page.locator(".purple-bg").first();
-    await expect(categoryTag).toContainText(category);
-  });
+  test.describe("filter proposals using different mechanism", () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto("/devhub.near/widget/app?page=proposals");
+      expect(page.locator(".proposal-card").first()).toBeVisible({
+        timeout: 10000,
+      });
+    });
+    test("should filter proposals by categories", async ({ page }) => {
+      test.setTimeout(60000);
+      const category = "DevDAO Operations";
+      await page.getByRole("button", { name: "Category" }).click();
+      await page.getByRole("list").getByText(category).click();
+      await expect(
+        page.getByRole("button", { name: `Category : ${category}` })
+      ).toBeVisible();
+      const loader = page.getByRole("img", { name: "loader" });
+      expect(loader).toBeHidden({ timeout: 10000 });
+      const categoryTag = await page.locator(".purple-bg").first();
+      await expect(categoryTag).toContainText(category);
+    });
 
-  test("should filter proposals by timeline", async ({ page }) => {
-    test.setTimeout(60000);
-    const stage = "Funded";
-    await page.goto("/devhub.near/widget/app?page=proposals");
-    await page.getByRole("button", { name: "Stage" }).click();
-    await page.getByRole("list").getByText(stage).click();
-    await expect(
-      page.getByRole("button", { name: `Stage : ${stage}` })
-    ).toBeVisible();
-    const timelineTag = await page.locator(".green-tag").first();
-    await expect(timelineTag).toContainText(stage.toUpperCase());
-  });
+    test("should filter proposals by timeline", async ({ page }) => {
+      test.setTimeout(60000);
+      const stage = "Funded";
+      await page.getByRole("button", { name: "Stage" }).click();
+      await page.getByRole("list").getByText(stage).click();
+      await expect(
+        page.getByRole("button", { name: `Stage : ${stage}` })
+      ).toBeVisible();
+      const loader = page.getByRole("img", { name: "loader" });
+      expect(loader).toBeHidden({ timeout: 10000 });
+      const timelineTag = await page.locator(".green-tag").first();
+      await expect(timelineTag).toContainText(stage.toUpperCase());
+    });
 
-  test("should filter proposals by author", async ({ page }) => {
-    test.setTimeout(60000);
-    const accountId = "megha19.near";
-    await page.goto("/devhub.near/widget/app?page=proposals");
-    await page.getByRole("button", { name: "Author" }).click();
-    await page.getByRole("list").getByText(accountId).click();
-    await expect(
-      page.getByRole("button", { name: `Author : ${accountId}` })
-    ).toBeVisible();
-    await expect(page.getByText(`By ${accountId} ･`)).toBeVisible();
-  });
+    test("should filter proposals by author", async ({ page }) => {
+      test.setTimeout(60000);
+      const accountId = "megha19.near";
+      await page.getByRole("button", { name: "Author" }).click();
+      await page.getByRole("list").getByText(accountId).click();
+      await expect(
+        page.getByRole("button", { name: `Author : ${accountId}` })
+      ).toBeVisible();
+      const loader = page.getByRole("img", { name: "loader" });
+      expect(loader).toBeHidden({ timeout: 10000 });
+      await expect(page.getByText(`By ${accountId} ･`).first()).toBeVisible();
+    });
 
-  test("should filter proposals by search text", async ({ page }) => {
-    test.setTimeout(60000);
-    const term = "DevHub Developer Contributor report by Megha";
-    await page.goto("/devhub.near/widget/app?page=proposals");
-    const input = await page.getByPlaceholder("Search by content");
-    await input.click();
-    await input.fill(term);
-    await input.press("Enter");
-    const element = page.locator(`:has-text("${term}")`).nth(1);
-    await expect(element).toBeVisible();
+    test("should filter proposals by search text", async ({ page }) => {
+      test.setTimeout(60000);
+      const term = "DevHub Developer Contributor report by Megha";
+      const input = await page.getByPlaceholder("Search by content");
+      await input.click();
+      await input.fill(term);
+      await input.press("Enter");
+      const loader = page.getByRole("img", { name: "loader" });
+      expect(loader).toBeHidden({ timeout: 10000 });
+      const element = page.locator(`:has-text("${term}")`).nth(1);
+      await expect(element).toBeVisible();
+    });
   });
 });
 

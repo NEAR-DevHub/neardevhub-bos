@@ -114,7 +114,8 @@ export async function rpcProxy(instanceAccountId) {
       let targetUrls = [
         'https://rpc.fastnear.com/',
         'https://1rpc.io/near',
-        'https://rpc.mainnet.near.org'
+        'https://rpc.mainnet.near.org',
+        'https://free.rpc.fastnear.com'
       ];
 
       if (body.includes('"method":"tx"')) {
