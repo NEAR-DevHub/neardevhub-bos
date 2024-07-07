@@ -63,7 +63,6 @@ export async function rpcProxy(instanceAccountId) {
 
   // Function to handle incoming requests
   function handleRequest(req, res) {
-    console.log("here",req.method)
     if (req.method === 'OPTIONS') {
       res.writeHead(204, {
         'Access-Control-Allow-Origin': '*',
