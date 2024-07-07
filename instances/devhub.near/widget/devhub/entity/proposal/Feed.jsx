@@ -74,6 +74,24 @@ const Container = styled.div`
     overflow: hidden;
     white-space: normal;
   }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .btn-grey-outline {
+    background-color: #fafafa;
+    border: 1px solid #e6e8eb;
+    color: #11181c;
+
+    &:hover {
+      background-color: #e6e8eb;
+    }
+
+    &:active {
+      border: 2px solid #e6e8eb;
+    }
+  }
 `;
 
 const Heading = styled.div`
@@ -194,14 +212,14 @@ const FeedPage = () => {
 
   State.init({
     data: [],
-    cachedItems: {},
     author: "",
     stage: "",
     sort: "",
     category: "",
     input: "",
     loading: false,
-    loadingMore: false,
+    searchLoader: false,
+    makeMoreLoader: false,
     aggregatedCount: null,
     currentlyDisplaying: 0,
   });
@@ -299,7 +317,7 @@ const FeedPage = () => {
   };
 
   const makeMoreItems = () => {
-    if (state.aggregatedCount <= state.currentlyDisplaying) return;
+    State.update({ makeMoreLoader: true });
     fetchProposals(state.data.length);
   };
 
@@ -308,7 +326,8 @@ const FeedPage = () => {
       offset = 0;
     }
     if (state.loading) return;
-    const FETCH_LIMIT = 20;
+    State.update({ loading: true });
+    const FETCH_LIMIT = 10;
     const variables = {
       limit: FETCH_LIMIT,
       offset,
@@ -331,34 +350,8 @@ const FeedPage = () => {
     });
   };
 
-  const renderItem = (item, index) => (
-    <div
-      key={item.proposal_id}
-      className={
-        (index !== state.data.length - 1 && "border-bottom ") + index === 0 &&
-        " rounded-top-2"
-      }
-    >
-      <FeedItem proposal={item} index={index} />
-    </div>
-  );
-  const cachedRenderItem = (item, index) => {
-    if (props.term) {
-      return renderItem(item, {
-        searchKeywords: [props.term],
-      });
-    }
-
-    const key = JSON.stringify(item);
-
-    if (!(key in state.cachedItems)) {
-      state.cachedItems[key] = renderItem(item, index);
-      State.update();
-    }
-    return state.cachedItems[key];
-  };
-
   useEffect(() => {
+    State.update({ searchLoader: true });
     fetchProposals();
   }, [state.author, state.sort, state.category, state.stage]);
 
@@ -391,12 +384,16 @@ const FeedPage = () => {
           data: newData,
           currentlyDisplaying: newData.length,
           loading: false,
+          searchLoader: false,
+          makeMoreLoader: false,
         });
       } else {
         State.update({
           data,
           currentlyDisplaying: data.length,
           loading: false,
+          searchLoader: false,
+          makeMoreLoader: false,
         });
       }
     });
@@ -409,8 +406,6 @@ const FeedPage = () => {
       />
     </div>
   );
-
-  const renderedItems = state.data ? state.data.map(cachedRenderItem) : null;
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -573,21 +568,54 @@ const FeedPage = () => {
                   <div class="alert alert-danger m-2" role="alert">
                     No proposals found for selected filter.{" "}
                   </div>
+                ) : state.searchLoader ? (
+                  loader
                 ) : state.aggregatedCount > 0 ? (
-                  <InfiniteScroll
-                    pageStart={0}
-                    loadMore={makeMoreItems}
-                    hasMore={state.aggregatedCount > state.data.length}
-                    loader={loader}
-                    useWindow={false}
-                    threshold={50}
-                  >
-                    {renderedItems}
-                  </InfiniteScroll>
+                  state.data.map((item, index) => {
+                    return (
+                      <div
+                        key={item.proposal_id}
+                        className={
+                          (index !== state.data.length - 1 &&
+                            "border-bottom ") +
+                            index ===
+                            0 && " rounded-top-2"
+                        }
+                      >
+                        <FeedItem proposal={item} index={index} />
+                      </div>
+                    );
+                  })
                 ) : (
                   loader
                 )}
               </div>
+              {state.aggregatedCount > 0 &&
+                state.aggregatedCount > state.data.length && (
+                  <div className="my-3 container-xl">
+                    {state.makeMoreLoader ? (
+                      loader
+                    ) : (
+                      <div>
+                        {!state.loading && (
+                          <div className="w-100">
+                            <Widget
+                              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                              props={{
+                                classNames: {
+                                  root: "btn-grey-outline w-100 ",
+                                  label: "text-center w-100",
+                                },
+                                label: "Load More",
+                                onClick: () => makeMoreItems(),
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
             </div>
           </div>
         )}
