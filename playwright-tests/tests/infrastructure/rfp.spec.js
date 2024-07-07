@@ -1,11 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils";
 import { mockRpcRequest } from "../../util/rpcmock";
-import {
-  setupRPCResponsesForDontAskAgain,
-  transactionCompleted,
-} from "../../util/dontaskagain";
 import { setDontAskAgainCacheValues } from "../../util/cache";
+import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader";
+import { mockTransactionSubmitRPCResponses } from "../../util/transaction";
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -180,7 +178,6 @@ test.describe("Wallet is connected with admin account", () => {
 
     await page.goto("/infrastructure-committee.near/widget/app?page=rfp&id=0");
     await page.getByRole("button", { name: "Edit" }).click();
-    await page.waitForTimeout(10000);
     await page.locator(".badge .bi-trash3-fill").click({ timeout: 1000 });
     await page.getByText("Select Category").click();
     await page.getByText("Explorers").click();
@@ -200,8 +197,8 @@ test.describe("Wallet is connected with admin account", () => {
       .frameLocator("iframe")
       .locator(".CodeMirror textarea");
     descriptionInput.click();
-    descriptionInput.fill(""); // Clear the textarea
-    page.waitForTimeout(1000);
+    await descriptionInput.press("Meta+A");
+    await descriptionInput.press("Backspace");
     await descriptionInput.pressSequentially("The edited RFP description");
     await descriptionInput.blur();
 
@@ -222,7 +219,7 @@ test.describe("Wallet is connected with admin account", () => {
             name: "test edited title",
             description: "The edited RFP description",
             summary: "the edited rfp summary",
-            submission_deadline: "1923264000000000000",
+            submission_deadline: "1903824000000000000",
             timeline: {
               status: "ACCEPTING_SUBMISSIONS",
             },
@@ -239,18 +236,23 @@ test.describe("Wallet is connected with admin account", () => {
 test.describe("Admin with don't ask again enabled", () => {
   test.use({
     storageState:
-      "playwright-tests/storage-states/wallet-connected-admin-dont-ask-again.json",
+      "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
   test("should edit RFP", async ({ page }) => {
+    test.setTimeout(120000);
+    let isTransactionCompleted = false;
     const theNewDescription = "The edited RFP description";
-    await setupRPCResponsesForDontAskAgain(page);
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+
     await mockRpcRequest({
       page,
       filterParams: {
         method_name: "get_rfp",
       },
       modifyOriginalResultFunction: async (originalResult) => {
-        if (transactionCompleted) {
+        if (isTransactionCompleted) {
           originalResult.snapshot.description = theNewDescription;
           originalResult.snapshot.timestamp = (
             BigInt(new Date().getTime()) * BigInt(1_000_000)
@@ -261,11 +263,27 @@ test.describe("Admin with don't ask again enabled", () => {
         return originalResult;
       },
     });
+
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({
+        route,
+        request,
+        transaction_completed,
+        last_receiver_id,
+        requestPostData,
+      }) => {
+        isTransactionCompleted = transaction_completed;
+        await route.fallback();
+      }
+    );
+
     await page.goto("/infrastructure-committee.near/widget/app?page=rfp&id=0");
     await setDontAskAgainCacheValues({
       page,
       widgetSrc: "infrastructure-committee.near/widget/components.rfps.Editor",
       methodName: "edit_rfp",
+      contractId: "infrastructure-committee.near",
     });
 
     await page.getByRole("button", { name: "Edit" }).click();
