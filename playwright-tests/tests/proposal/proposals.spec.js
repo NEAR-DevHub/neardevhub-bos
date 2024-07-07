@@ -239,6 +239,7 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
 });
+
 test.describe('Moderator with "Don\'t ask again" enabled', () => {
   test.use({
     storageState:
@@ -493,6 +494,60 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
+  test("should show relevant users in mention autocomplete", async ({
+    page,
+  }) => {
+    await page.goto("/devhub.near/widget/app?page=proposal&id=112");
+
+    await page.waitForSelector(`iframe`, {
+      state: "visible",
+    });
+
+    const comment = page.getByRole("link", { name: "geforcy.near" });
+    await comment.waitFor();
+    await comment.scrollIntoViewIfNeeded();
+
+    const heading = page.getByRole("heading", { name: "Relevant Mentions" });
+    await heading.waitFor();
+    await heading.scrollIntoViewIfNeeded();
+
+    await page.waitForTimeout(5000);
+
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const commentEditor = page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentEditor.focus();
+    await commentEditor.pressSequentially(
+      `Make sure relevant users show up in a mention. @`,
+      {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      }
+    );
+
+    await pauseIfVideoRecording(page);
+    const iframe = page.frameLocator("iframe");
+    const liFrameLocators = iframe.frameLocator(
+      'ul[id="mentiondropdown"] > li'
+    );
+    const liLocators = await liFrameLocators.owner().all();
+    const expected = [
+      "thomasguntenaar.near", // author,
+      "theori.near", // supervisor,
+      "neardevdao.near", //  requested_sponsor,
+      "geforcy.near", // comment author,
+    ];
+    let mentionSuggestions = [];
+    for (let i = 0; i < liLocators.length; i++) {
+      const text = await liLocators[i].innerText();
+      mentionSuggestions.push(text);
+    }
+
+    // When I manually test, it shows the correct 4 users
+    expect(mentionSuggestions.slice(0, 4)).toEqual(expected);
+    await pauseIfVideoRecording(page);
+  });
+
   test("should show only valid input in amount field and show error for invalid", async ({
     page,
   }) => {
@@ -670,5 +725,53 @@ test.describe("Wallet is connected", () => {
     await input.press("Enter");
     const element = page.locator(`:has-text("${term}")`).nth(1);
     await expect(element).toBeVisible();
+  });
+});
+
+test.describe("share links", () => {
+  test.use({
+    contextOptions: {
+      permissions: ["clipboard-read", "clipboard-write"],
+    },
+  });
+  test("copy link button should create a clean URL link", async ({ page }) => {
+    await page.goto("/devhub.near/widget/app?page=proposal&id=127");
+
+    await expect(await page.getByText("#127")).toBeVisible();
+    const shareLinkButton = await page.getByRole("button", { name: "" });
+    await shareLinkButton.click();
+    await page.getByRole("button", { name: "Copy link to proposal" }).click();
+
+    const linkUrlFromClipboard = await page.evaluate(
+      "navigator.clipboard.readText()"
+    );
+    expect(linkUrlFromClipboard).toEqual(
+      "https://devhub.near.page/proposal/127"
+    );
+    await pauseIfVideoRecording(page);
+    await page.goto(linkUrlFromClipboard);
+
+    await expect(await page.getByText("#127")).toBeVisible({
+      timeout: 10000,
+    });
+  });
+
+  test("share on X should create a clean URL link", async ({
+    page,
+    context,
+  }) => {
+    await page.goto("/devhub.near/widget/app?page=proposal&id=127");
+
+    await expect(await page.getByText("#127")).toBeVisible();
+    const shareLinkButton = await page.getByRole("button", { name: "" });
+    await shareLinkButton.click();
+    const shareOnXLink = await page.getByRole("link", { name: " Share on X" });
+    const shareOnXUrl = await shareOnXLink.getAttribute("href");
+    await expect(shareOnXUrl).toEqual(
+      "https://x.com/intent/post?text=Check+out+this+proposal+on+%40NEARProtocol%0A%23NEAR+%23BOS%0Ahttps%3A%2F%2Fdevhub.near.page%2Fproposal%2F127"
+    );
+    await shareOnXLink.click();
+    const twitterPage = await context.waitForEvent("page");
+    await twitterPage.waitForURL(shareOnXUrl);
   });
 });

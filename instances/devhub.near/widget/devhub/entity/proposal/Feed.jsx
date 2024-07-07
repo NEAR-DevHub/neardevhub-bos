@@ -298,14 +298,6 @@ const FeedPage = () => {
     return where;
   };
 
-  const buildOrderByClause = () => {
-    /**
-     * TODO
-     * Most commented -> edit contract and indexer
-     * Unanswered -> 0 comments
-     */
-  };
-
   const makeMoreItems = () => {
     if (state.aggregatedCount <= state.currentlyDisplaying) return;
     fetchProposals(state.data.length);

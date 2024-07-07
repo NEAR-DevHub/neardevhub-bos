@@ -1,3 +1,17 @@
+const { Tailwind } = VM.require("uiisnear.near/widget/tailwind");
+const { ButtonConf } = VM.require("uiisnear.near/widget/button");
+const {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+  paginationPreviousClassname,
+  paginationNextClassname,
+} = VM.require("uiisnear.near/widget/pagination");
+
 const { Card } = VM.require(
   "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card"
 );
@@ -7,6 +21,44 @@ if (!Card) {
 }
 
 const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+
+const [paginationLink, setPaginationLink] = useState("");
+const [paginationLinkPrevious, setPaginationLinkPrevious] = useState("");
+const [paginationLinkNext, setPaginationLinkNext] = useState("");
+const [paginationLinkActive, setPaginationLinkActive] = useState("");
+
+if (ButtonConf == undefined) return "";
+
+if (paginationLink === "")
+  return <ButtonConf output={setPaginationLink} variant="ghost" size="icon" />;
+if (paginationLinkPrevious === "")
+  return (
+    <ButtonConf
+      output={setPaginationLinkPrevious}
+      variant="ghost"
+      size="default"
+      className={paginationPreviousClassname}
+    />
+  );
+if (paginationLinkNext === "")
+  return (
+    <ButtonConf
+      output={setPaginationLinkNext}
+      variant="ghost"
+      size="default"
+      className={paginationNextClassname}
+    />
+  );
+if (paginationLinkActive === "")
+  return (
+    <ButtonConf
+      output={setPaginationLinkActive}
+      variant="outline"
+      size="icon"
+    />
+  );
+
+if (Tailwind == undefined) return "";
 
 const {
   data,
@@ -30,16 +82,29 @@ const Grid = styled.div`
   }
 `;
 
-const Heading = styled.h3`
+const Heading = styled.div`
   color: #151515;
   font-size: 2rem;
   font-style: normal;
   font-weight: 700;
   line-height: 120%; /* 48px */
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 
   @media screen and (max-width: 768px) {
     font-size: 1.5rem;
+  }
+`;
+
+const SubHeading = styled.div`
+  color: #3b3b3b;
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 100%;
+  margin-bottom: 2rem;
+
+  @media screen and (max-width: 768px) {
+    font-size: 1rem;
   }
 `;
 
@@ -65,7 +130,18 @@ const blogPostQueryStringLowerCase = blogPostQueryString
   ? blogPostQueryString.toLowerCase().trim()
   : "";
 
-let blogData = Social.get([`${handle}.community.devhub.near/blog/**`], "final");
+const [blogData, setBlogData] = useState([]);
+
+const initialBlogData = Social.get(
+  [`${handle}.community.devhub.near/blog/**`],
+  "final"
+);
+
+useEffect(() => {
+  if (initialBlogData) {
+    setBlogData(initialBlogData);
+  }
+}, [initialBlogData]);
 
 const categories = {
   none: {
@@ -87,9 +163,11 @@ function flattenBlogObject(blogsObject) {
       })
       // Show only published blogs
       .filter((blog) => blog.status === "PUBLISH")
+      // Every instance of the blog tab has its own blogs
+      .filter((blog) => blog.communityAddonId === communityAddonId)
+      // Add categories to the dropdown
       .map((flattenedBlog) => {
         if (!categories[flattenedBlog.category]) {
-          console.log("flattenedBlog.category", flattenedBlog.category);
           categories[flattenedBlog.category] = {
             label: flattenedBlog.category,
             value: flattenedBlog.category,
@@ -97,8 +175,6 @@ function flattenBlogObject(blogsObject) {
         }
         return flattenedBlog;
       })
-      // Every instance of the blog tab has its own blogs
-      .filter((blog) => blog.communityAddonId === communityAddonId)
       .filter(
         (flattenedBlog) =>
           !blogPostQueryStringLowerCase ||
@@ -119,43 +195,68 @@ function flattenBlogObject(blogsObject) {
       )
   );
 }
-
-if (transactionHashes) {
-  // Fetch new blog data
-  const subscribeToBlogForNextFifteenSec = (tries) => {
-    console.log("Trying to fetch new blog data");
-    let newBlogData = Social.get(
-      [`${handle}.community.devhub.near/blog/**`],
-      "final"
-    );
-    if (tries >= 5) {
-      // If we have tried 5 times, just use the data we have for example onBlogUpdate
-      blogData = newBlogData;
-      return;
-    }
-    // Check the number of blogs in this instance with a different status
-    if (
-      flattenBlogObject(newBlogData).length !==
-      flattenBlogObject(blogData).length
-    ) {
-      blogData = newBlogData;
-    } else {
-      setTimeout(() => {
-        subscribeToBlogForNextFifteenSec(tries + 1);
-      }, 3000);
-    }
-  };
-  // After a second subscribe to the blog data
-  setTimeout(() => {
-    subscribeToBlogForNextFifteenSec(0);
-  }, 1000);
+function checkHashes() {
+  if (transactionHashes) {
+    // Fetch new blog data
+    const subscribeToBlogForNextFifteenSec = (tries) => {
+      if (tries >= 5) {
+        return;
+      }
+      Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
+        keys: [`${handle}.community.devhub.near/blog/**`],
+      }).then((result) => {
+        try {
+          const newBlogPosts = result[`${handle}.community.devhub.near`].blog;
+          // Check the number of blogs in this instance with a different status
+          if (
+            flattenBlogObject(newBlogPosts).length !==
+            flattenBlogObject(blogData).length
+          ) {
+            setBlogData(newBlogPosts);
+          } else {
+            setTimeout(() => {
+              subscribeToBlogForNextFifteenSec(tries + 1);
+            }, 3000);
+          }
+        } catch (e) {}
+      });
+    };
+    // After a second subscribe to the blog data
+    setTimeout(() => {
+      subscribeToBlogForNextFifteenSec(0);
+    }, 1000);
+  }
 }
+useEffect(() => {
+  // Only render one time
+  checkHashes();
+}, []);
 
 const processedData = flattenBlogObject(blogData)
   // Sort by published date
   .sort((blog1, blog2) => {
+    if (data.orderBy === "timeasc") {
+      return new Date(blog1.publishedAt) - new Date(blog2.publishedAt);
+    }
+    if (data.orderBy === "alpha") {
+      return (blog1.title || "").localeCompare(blog2.title || "");
+    }
+    // timedesc is the default order
     return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
   });
+
+// Pagination
+const [currentPage, setCurrentPage] = useState(0);
+const amountOfBlogPosts = processedData.length || 0;
+const amountOfBlogPostsPerPage = data.postPerPage || 100; // Default to 100 if not set
+const amountOfPages = Math.ceil(amountOfBlogPosts / amountOfBlogPostsPerPage);
+let currentPageData = (processedData || [1, 2, 3, 4, 5]).slice(
+  currentPage * amountOfBlogPostsPerPage,
+  (currentPage + 1) * amountOfBlogPostsPerPage
+);
+const showPreviousButton = currentPage !== 0;
+const showNextButton = currentPage !== amountOfPages - 1;
+// End Pagination
 
 function BlogCardWithLink(flattenedBlog) {
   return (
@@ -167,7 +268,6 @@ function BlogCardWithLink(flattenedBlog) {
           page: "blogv2",
           id: flattenedBlog.id,
           community: handle,
-          communityAddonId, // Passed in addon.jsx
         },
       })}
     >
@@ -176,26 +276,10 @@ function BlogCardWithLink(flattenedBlog) {
   );
 }
 
-function NoBlogCard() {
-  return (
-    <div onClick={() => setAddonView("configure")} className="min-vh-100">
-      <div>
-        {BlogCard({
-          category: "",
-          title: "No blogs yet",
-          description: "Click here to add your first blog!",
-          publishedAt: new Date().toISOString(),
-          id: "new",
-        })}
-      </div>
-    </div>
-  );
-}
-
 function BlogCard(flattenedBlog) {
   return (
     <CardContainer>
-      <Card data={flattenedBlog} />
+      <Card data={flattenedBlog} addonParameters={data} />
     </CardContainer>
   );
 }
@@ -206,6 +290,7 @@ const searchInput = useMemo(
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
         props={{
+          key: "search-blog-posts",
           className: "flex-grow-1",
           skipPaddingGap: true,
           placeholder: "search blog posts",
@@ -261,14 +346,62 @@ if (!processedData || processedData.length === 0) {
 
 return (
   <div class="w-100">
-    {!hideTitle && <Heading>Latest Blog Posts</Heading>}
+    {!hideTitle && (
+      <Heading data-testid="blog-instance-title">{data.title || ""}</Heading>
+    )}
+    {!hideTitle && (
+      <SubHeading data-testid="blog-instance-subtitle">
+        {data.subtitle || ""}
+      </SubHeading>
+    )}
     <div className="d-flex justify-content-start flex-wrap gap-2 align-items-center mb-5">
-      {data.searchEnabled ? searchInput : ""}
-      {data.categoriesEnabled ? categoryInput : ""}
+      {data.searchEnabled === "enabled" ? searchInput : ""}
+      {data.categoriesEnabled === "enabled" ? categoryInput : ""}
     </div>
     <Grid>
       {processedData &&
-        processedData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))}
+        currentPageData.map((flattenedBlog) => BlogCardWithLink(flattenedBlog))}
     </Grid>
+    <Tailwind>
+      <div className="flex mx-auto w-max pt-10">
+        <Pagination>
+          <PaginationContent>
+            {showPreviousButton && (
+              <PaginationItem>
+                <PaginationPrevious
+                  className={paginationLinkPrevious}
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                />
+              </PaginationItem>
+            )}
+            {[...Array(amountOfPages)].map((_, index) => {
+              return (
+                <PaginationItem>
+                  <PaginationLink
+                    className={
+                      index === currentPage
+                        ? paginationLinkActive
+                        : paginationLink
+                    }
+                    isActive={index === currentPage}
+                    onClick={() => setCurrentPage(index)}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            })}
+            {showNextButton && (
+              <PaginationItem>
+                <PaginationNext
+                  className={paginationLinkNext}
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                />
+              </PaginationItem>
+            )}
+          </PaginationContent>
+        </Pagination>
+      </div>
+    </Tailwind>
   </div>
 );

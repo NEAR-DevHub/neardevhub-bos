@@ -93,6 +93,13 @@ const ButtonRow = styled.div`
   justify-content: space-between;
 `;
 
+const BannerWrapper = styled.div`
+  background-color: #ffd2d2;
+  .text-sm {
+    font-size: 13px;
+  }
+`;
+
 if ("${REPL_DEVHUB}" !== "devhub.near") {
   addonMatch.configurator_widget = addonMatch.configurator_widget.replace(
     "devhub.near/",
@@ -130,6 +137,20 @@ return (
         )}
       </SettingsButton>
     )}
+    {permissions.can_configure && config === null ? (
+      <BannerWrapper className="d-flex gap-3 align-items-center mb-4 p-3 rounded-3">
+        <div>
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <div>
+          <div className="fw-bold">Addon Misconfiguration</div>
+          <div className="text-sm">
+            It appears that this addon is missing some required parameters.
+            Please contact a DevHub administrator for assistance.
+          </div>
+        </div>
+      </BannerWrapper>
+    ) : null}
     <Content>
       {addonView === "configure" ? (
         <Widget

@@ -1,4 +1,5 @@
-const { data, handle, communityAddonId, selectedBlog, permissions } = props;
+const { data, handle, communityAddonId, onSubmit, selectedBlog, permissions } =
+  props;
 
 const { Tile } =
   VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
@@ -75,6 +76,7 @@ return (
             data,
             handle,
             communityAddonId,
+            onSubmit,
             selectedBlog: props.selectedBlog,
           }}
         />
