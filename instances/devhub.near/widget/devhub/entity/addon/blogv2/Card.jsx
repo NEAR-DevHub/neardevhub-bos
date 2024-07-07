@@ -1,5 +1,17 @@
-function Card({ data }) {
+function Card({ data, addonParameters }) {
   const { category, title, description, publishedAt: date, id } = data;
+  const { categoriesEnabled, categories } = addonParameters;
+
+  let categoryIsOptionInSettings = true;
+  let categoriesInSettings = (categories || []).map((c) => c.value);
+  if (
+    categoriesInSettings.length > 0 &&
+    !categoriesInSettings.includes(category) &&
+    category !== "" &&
+    category !== null
+  ) {
+    categoryIsOptionInSettings = false;
+  }
 
   const Container = styled.div`
     min-height: 12.5rem;
@@ -66,10 +78,18 @@ function Card({ data }) {
 
   return (
     <Container id={`blog-card-${id}`} data-testid={id}>
-      {category && <span className="category">{category}</span>}
-      <h5>{title}</h5>
+      {category &&
+        categoriesEnabled === "enabled" &&
+        categoryIsOptionInSettings && (
+          <span className="category" data-testid="card-category">
+            {category}
+          </span>
+        )}
+      <h5 data-testid="blog-card-title">{title}</h5>
       <p>{description}</p>
-      <span className="date">{formattedDate}</span>
+      <span className="date" data-testid="blog-card-date">
+        {formattedDate}
+      </span>
     </Container>
   );
 }

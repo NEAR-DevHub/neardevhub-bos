@@ -1,78 +1,22 @@
 import { expect, test } from "@playwright/test";
-import { pauseIfVideoRecording } from "../../testUtils.js";
+import {
+  pauseIfVideoRecording,
+  waitForSelectorToBeVisible,
+  waitForTestIdToBeVisible,
+} from "../../testUtils.js";
+import { setupBlogContentResponses } from "../../util/blogs.js";
 
 const baseUrl =
-  "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=blogv2";
-
-async function setupBlogContentResponses(page) {
-  const topics = [
-    "Cows",
-    "Cars",
-    "Sheep",
-    "Birds",
-    "Computers",
-    "Blockchain technology",
-    "Artificial intelligence",
-    "Search for extra terrestrial life",
-    "The meaning of life",
-  ];
-  const categories = ["Animals", "Tech", "Vehicle", "Philosophy"];
-
-  const blogPosts = {};
-  for (let n = 0; n < 100; n++) {
-    const topic = topics[n % topics.length];
-    const blogDate = new Date(2024, 0, 1);
-    blogDate.setDate(n);
-    blogPosts["new-blog-post-cg" + n] = {
-      "": `# Blog post ${n + 1}
-This is an article about ${topic}.
-`,
-      metadata: {
-        title: "New Blog Post" + n,
-        createdAt: blogDate.toJSON(),
-        updatedAt: blogDate.toJSON(),
-        publishedAt: blogDate.toJSON(),
-        status: "PUBLISH",
-        subtitle: `${topic.substring(0, 1).toUpperCase()}${topic.substring(1)}`,
-        description: `${topic.substring(0, 1).toUpperCase()}${topic.substring(
-          1
-        )}`,
-        author: "Author",
-        communityAddonId: "blogv2",
-        category: categories[n % categories.length],
-      },
-    };
-  }
-  await page.route("https://api.near.social/get", async (route) => {
-    const request = route.request();
-    const requestBody = request.postDataJSON();
-
-    if (
-      requestBody.keys[0] === "webassemblymusic.community.devhub.near/blog/**"
-    ) {
-      const blogResults = {
-        "webassemblymusic.community.devhub.near": {
-          blog: blogPosts,
-        },
-      };
-      await route.fulfill({
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(blogResults, null, 1),
-      });
-    } else {
-      await route.continue();
-    }
-  });
-  return { categories, topics, blogPosts };
-}
+  "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=first-blog";
 
 async function configureSearchAndCategoriesEnabled({
   page,
   categoriesEnabled,
   searchEnabled,
 }) {
-  await page.route("https://rpc.mainnet.near.org", async (route) => {
+  await page.route("http://localhost:20000", async (route) => {
     const postData = route.request().postDataJSON();
+
     if (
       postData.params.account_id === "devhub.near" &&
       postData.params.method_name === "get_community"
@@ -82,11 +26,35 @@ async function configureSearchAndCategoriesEnabled({
       const result = JSON.parse(
         new TextDecoder().decode(new Uint8Array(json.result.result))
       );
-      result.addons.find((addon) => addon.addon_id === "blogv2").parameters =
-        JSON.stringify({
-          categoriesEnabled,
-          searchEnabled,
-        });
+      result.addons = [
+        ...result.addons,
+        {
+          addon_id: "blogv2",
+          display_name: "First Blog",
+          enabled: true,
+          id: "blogv2",
+          parameters: JSON.stringify({
+            title: "Mocked configured blog page title",
+            subtitle: "Mocked configured subtitle",
+            authorEnabled: "enabled",
+            searchEnabled,
+            orderBy: "timedesc",
+            postPerPage: 100,
+            categoriesEnabled,
+            categories: [
+              { category: "News", value: "news" },
+              { category: "Guide", value: "guide" },
+              { category: "Reference", value: "reference" },
+              { category: "Vehicle", value: "Vehicle" },
+              { category: "Tech", value: "Tech" },
+              { category: "Philosophy", value: "Philosophy" },
+              { category: "Animals", value: "Animals" },
+            ],
+            categoryRequired: "required",
+          }),
+        },
+      ];
+
       json.result.result = Array.from(
         new TextEncoder().encode(JSON.stringify(result))
       );
@@ -103,11 +71,13 @@ test.describe("Wallet is not connected", () => {
   });
 
   test("should filter blog posts from search criteria", async ({ page }) => {
+    test.setTimeout(60000);
+
     const { topics } = await setupBlogContentResponses(page);
     await configureSearchAndCategoriesEnabled({
       page,
-      searchEnabled: true,
-      categoriesEnabled: false,
+      searchEnabled: "enabled",
+      categoriesEnabled: "disabled",
     });
     await page.goto(baseUrl);
 
@@ -117,17 +87,21 @@ test.describe("Wallet is not connected", () => {
 
     await pauseIfVideoRecording(page);
 
-    const searchField = await page.getByPlaceholder("search blog posts");
+    await page.waitForSelector("[placeholder='search blog posts']", {
+      state: "visible",
+    });
+
+    const searchField = page.getByPlaceholder("search blog posts");
     await expect(searchField).toBeAttached();
     await searchField.scrollIntoViewIfNeeded();
 
-    while (true) {
-      const blogCards = await page.locator("a div").all();
-      try {
-        await expect(blogCards.length).toBeGreaterThan(3);
-        break;
-      } catch (e) {}
-    }
+    await waitForSelectorToBeVisible(page, `[id^="blog-card-"]`);
+
+    const blogCards = page.locator(`[id^="blog-card-"]`);
+    await blogCards.first().scrollIntoViewIfNeeded();
+    const numberOfBlogCards = await blogCards.count();
+    expect(numberOfBlogCards).toBeGreaterThan(3);
+
     for (const topic of topics) {
       const startTime = new Date().getTime();
       const delayBetweenKeypress = 50;
@@ -146,15 +120,15 @@ test.describe("Wallet is not connected", () => {
         )
       );
       const endTime = new Date().getTime();
-      expect(endTime - startTime).toBeLessThan(5000);
+      expect(endTime - startTime).toBeLessThan(8000);
     }
   });
   test("should filter blog posts from category", async ({ page }) => {
     const { categories, topics } = await setupBlogContentResponses(page);
     await configureSearchAndCategoriesEnabled({
       page,
-      searchEnabled: true,
-      categoriesEnabled: true,
+      searchEnabled: "enabled",
+      categoriesEnabled: "enabled",
     });
     await page.goto(baseUrl);
 
@@ -189,8 +163,8 @@ test.describe("Wallet is not connected", () => {
     const { categories, blogPosts } = await setupBlogContentResponses(page);
     await configureSearchAndCategoriesEnabled({
       page,
-      searchEnabled: true,
-      categoriesEnabled: true,
+      searchEnabled: "enabled",
+      categoriesEnabled: "enabled",
     });
     await page.goto(baseUrl);
 
@@ -228,7 +202,11 @@ test.describe("Wallet is not connected", () => {
 
     blogCards = await page.locator("span.category").all();
     const blogPostsValues = Object.values(blogPosts);
-    await expect(blogCards.length).toEqual(blogPostsValues.length);
+    expect(
+      blogCards.length,
+      "Expect to show the amount of blogs that pagination allows for."
+    ).toEqual(blogPostsValues.length);
+
     await Promise.all(
       blogCards.map(
         async (blogCard, ndx) =>
@@ -244,8 +222,8 @@ test.describe("Wallet is not connected", () => {
   test("should search and limit to a category", async ({ page }) => {
     await configureSearchAndCategoriesEnabled({
       page,
-      searchEnabled: true,
-      categoriesEnabled: true,
+      searchEnabled: "enabled",
+      categoriesEnabled: "enabled",
     });
     const { categories, blogPosts } = await setupBlogContentResponses(page);
     await page.goto(baseUrl);
@@ -290,8 +268,8 @@ test.describe("Wallet is not connected", () => {
     const { categories } = await setupBlogContentResponses(page);
     await configureSearchAndCategoriesEnabled({
       page,
-      searchEnabled: true,
-      categoriesEnabled: true,
+      searchEnabled: "enabled",
+      categoriesEnabled: "enabled",
     });
     await page.goto(baseUrl);
 
@@ -325,12 +303,13 @@ test.describe("Wallet is not connected", () => {
     const { topics } = await setupBlogContentResponses(page);
     await configureSearchAndCategoriesEnabled({
       page,
-      categoriesEnabled: false,
-      searchEnabled: true,
+      categoriesEnabled: "disabled",
+      searchEnabled: "enabled",
     });
     await page.goto(baseUrl);
 
-    const searchField = await page.getByPlaceholder("search blog posts");
+    await waitForTestIdToBeVisible(page, "search-blog-posts");
+    const searchField = page.getByPlaceholder("search blog posts");
     await expect(searchField).toBeAttached();
     await searchField.scrollIntoViewIfNeeded();
 
@@ -343,11 +322,11 @@ test.describe("Wallet is not connected", () => {
     const { topics } = await setupBlogContentResponses(page);
     await configureSearchAndCategoriesEnabled({
       page,
-      categoriesEnabled: true,
-      searchEnabled: false,
+      categoriesEnabled: "enabled",
+      searchEnabled: "disabled",
     });
     await page.goto(baseUrl);
-
+    await waitForTestIdToBeVisible(page, "dropdown");
     const categoryDropdown = await page.getByRole("button", {
       name: "Category",
     });

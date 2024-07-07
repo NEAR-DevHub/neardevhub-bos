@@ -22,7 +22,10 @@ const blogData = [
 ];
 
 return (
-  <table id="manage-blog-table" className="w-full table-auto text-sm text-left">
+  <table
+    id="manage-blog-table"
+    className="w-full table-auto text-sm text-left overflow-y-scroll h-dvh"
+  >
     <thead className="bg-gray-50 text-gray-600 font-medium border-b">
       <tr>
         <th scope="col" className={`py-3 px-6 ${props.hideColumns && "px-2"}`}>
@@ -60,6 +63,7 @@ return (
         return (
           <tr
             id={`edit-blog-selector-${it.id}`}
+            data-testid="edit-blog-row"
             className={`cursor-pointer hover-bg-slate-300 ${
               it.id === selectedItem.id ? "bg-gray-100" : ""
             }`}

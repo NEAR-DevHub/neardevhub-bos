@@ -18,8 +18,54 @@ const handleGetData = (v) => {
   return blogData[id] || {};
 };
 
-const blogData =
+const [blogData, setBlogData] = useState([]);
+
+const initialBlogData =
   Social.get([`${handle}.community.devhub.near/blog/**`], "final") || {};
+
+useEffect(() => {
+  if (initialBlogData) {
+    setBlogData(initialBlogData);
+  }
+}, [initialBlogData]);
+
+function checkHashes() {
+  if (transactionHashes) {
+    // Fetch new blog data
+    const subscribeToBlogForNextFifteenSec = (tries) => {
+      if (tries >= 5) {
+        return;
+      }
+      Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
+        keys: [`${handle}.community.devhub.near/blog/**`],
+      }).then((result) => {
+        try {
+          const newBlogPosts = result[`${handle}.community.devhub.near`].blog;
+          // Check the number of blogs in this instance with a different status
+          if (
+            flattenBlogObject(newBlogPosts).length !==
+            flattenBlogObject(blogData).length
+          ) {
+            setBlogData(newBlogPosts);
+          } else {
+            setTimeout(() => {
+              subscribeToBlogForNextFifteenSec(tries + 1);
+            }, 3000);
+          }
+        } catch (e) {}
+      });
+    };
+    // After a second subscribe to the blog data
+    setTimeout(() => {
+      subscribeToBlogForNextFifteenSec(0);
+    }, 1000);
+  }
+}
+
+useEffect(() => {
+  // Only render one time
+  checkHashes();
+}, []);
 
 // Show only published blogs
 const processedData = Object.keys(blogData)
@@ -34,6 +80,13 @@ const processedData = Object.keys(blogData)
   .filter((blog) => blog.communityAddonId === communityAddonId)
   // Sort by published date
   .sort((blog1, blog2) => {
+    if (data.orderBy === "timeasc") {
+      return new Date(blog1.publishedAt) - new Date(blog2.publishedAt);
+    }
+    if (data.orderBy === "alpha") {
+      return (blog1.title || "").localeCompare(blog2.title || "");
+    }
+    // timedesc is the default order
     return new Date(blog2.publishedAt) - new Date(blog1.publishedAt);
   });
 

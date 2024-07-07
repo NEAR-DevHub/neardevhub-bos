@@ -27,6 +27,12 @@ export const waitForSelectorToBeVisible = async (page, selector) => {
   });
 };
 
+export const waitForTestIdToBeVisible = async (page, testId) => {
+  await page.waitForSelector(`[data-testid='${testId}']`, {
+    state: "visible",
+  });
+};
+
 export const clickWhenSelectorIsVisible = async (page, selector) => {
   waitForSelectorToBeVisible(page, selector);
   await page.click(selector);
@@ -42,4 +48,9 @@ export function generateRandom6CharUUID() {
   }
 
   return result;
+}
+
+export function fmtDate(date) {
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  return new Date(date).toLocaleString("en-US", options);
 }

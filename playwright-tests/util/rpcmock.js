@@ -1,4 +1,4 @@
-export const MOCK_RPC_URL = "https://rpc.mainnet.near.org";
+export const MOCK_RPC_URL = "http://localhost:20000";
 
 export async function mockRpcRequest({
   page,
