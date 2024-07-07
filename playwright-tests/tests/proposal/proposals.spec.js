@@ -389,7 +389,10 @@ test.describe("Wallet is connected", () => {
 
     await pauseIfVideoRecording(page);
 
-    await page.frameLocator("iframe").getByText("petersalomonsen.near").click();
+    await page
+      .frameLocator("iframe")
+      .getByText("petersalomonsen.near")
+      .click({ timeout: 10000 });
 
     await descriptionArea.pressSequentially(`. Also mentioning @m`, {
       delay: delay_milliseconds_between_keypress_when_typing,
@@ -448,6 +451,7 @@ test.describe("Wallet is connected", () => {
               status: "DRAFT",
             },
           },
+          accepted_terms_and_conditions_version: null,
         },
         null,
         1
@@ -587,7 +591,7 @@ test.describe("Wallet is connected", () => {
       .getByText(
         "#2 DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024"
       )
-      .click();
+      .click({ timeout: 10000 });
 
     await page.locator('input[type="text"]').nth(2).pressSequentially("12345", {
       delay: delay_milliseconds_between_keypress_when_typing,
@@ -631,6 +635,7 @@ test.describe("Wallet is connected", () => {
               status: "DRAFT",
             },
           },
+          accepted_terms_and_conditions_version: null,
         },
         null,
         1
