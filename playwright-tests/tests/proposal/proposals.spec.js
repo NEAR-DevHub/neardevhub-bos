@@ -245,7 +245,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
   });
-  test("should be edit proposal timeline from review to decision stage with KYC verified", async ({
+  test("should edit proposal timeline from review to decision stage with KYC verified", async ({
     page,
   }) => {
     test.setTimeout(70000);
