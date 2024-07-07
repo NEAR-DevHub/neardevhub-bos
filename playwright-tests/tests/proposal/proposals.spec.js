@@ -186,14 +186,6 @@ test.describe("Don't ask again enabled", () => {
       async ({ route, request, transaction_completed, last_receiver_id }) => {
         const postData = request.postDataJSON();
         const args_base64 = postData.params?.args_base64;
-        if (args_base64) {
-          console.log(
-            "TXXX",
-            last_receiver_id,
-            transaction_completed,
-            atob(args_base64)
-          );
-        }
         if (transaction_completed && args_base64) {
           const args = atob(args_base64);
           if (
@@ -201,7 +193,6 @@ test.describe("Don't ask again enabled", () => {
             postData.params.method_name === "get" &&
             args === `{"keys":["${account}/post/**"]}`
           ) {
-            console.log("tx completed", text);
             const response = await route.fetch();
             const json = await response.json();
             const resultObj = decodeResultJSON(json.result.result);
