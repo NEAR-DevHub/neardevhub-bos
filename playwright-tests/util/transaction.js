@@ -38,6 +38,19 @@ const access_keys = [
     },
     public_key: "ed25519:EQr7NpVYFu1XcVZ23Lb4Ga3KbDQgrYeTMTgBsYa26Bne",
   },
+  {
+    access_key: {
+      nonce: 109629226000005,
+      permission: {
+        FunctionCall: {
+          allowance: "241917078840755500000000",
+          method_names: [],
+          receiver_id: "infrastructure-committee.near",
+        },
+      },
+    },
+    public_key: "ed25519:H8bRwTywvrCYbGuJtBuCAaZLjBBgAPKPAZKrWjA8Pj17",
+  },
 ];
 
 export function decodeResultJSON(resultArray) {
