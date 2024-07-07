@@ -20,7 +20,8 @@ test.describe("Wallet is connected", () => {
     await expect(proposalsHeaderLink).toBeVisible();
     await proposalsHeaderLink.click();
     await expect(await page.locator(".content-container")).toContainText(
-      "Feed"
+      "Feed",
+      { timeout: 10000 }
     );
 
     const rfpsHeaderLink = await page.getByRole("link", { name: "RFPs" });

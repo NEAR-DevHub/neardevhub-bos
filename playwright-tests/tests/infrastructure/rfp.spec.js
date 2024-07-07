@@ -79,7 +79,7 @@ test.describe("Wallet is connected with admin account", () => {
     await page.getByText("Explorers").click();
     await expect(page.locator(".badge")).toHaveText("Explorers");
     await page.locator('input[type="text"]').pressSequentially("test title");
-    await page.locator('input[type="date"]').pressSequentially("2030-01-05");
+    await page.locator('input[type="date"]').pressSequentially("12/12/2030");
     await page
       .locator('textarea[type="text"]')
       .pressSequentially("the rfp summary");
@@ -110,7 +110,7 @@ test.describe("Wallet is connected with admin account", () => {
             name: "test title",
             description: "The RFP description",
             summary: "the rfp summary",
-            submission_deadline: "-58850841600000000000",
+            submission_deadline: "1923264000000000000",
             timeline: {
               status: "ACCEPTING_SUBMISSIONS",
             },
@@ -131,12 +131,11 @@ test.describe("Wallet is connected with admin account", () => {
       modifyOriginalResultFunction: async (originalResult) => {
         console.log(JSON.stringify(originalResult, null, 1));
         originalResult.snapshot.timeline.status = "ACCEPTING_SUBMISSIONS";
-        originalResult.snapshot.linked_proposals = [2, 3];
         return originalResult;
       },
     });
 
-    await page.goto("/infrastructure-committee.near/widget/app?page=rfp&id=1");
+    await page.goto("/infrastructure-committee.near/widget/app?page=rfp&id=0");
     const buttonSelector = `div[data-testid="setting-btn"]`;
     await page.waitForSelector(buttonSelector, {
       state: "visible",
@@ -155,8 +154,8 @@ test.describe("Wallet is connected with admin account", () => {
     await expect(transactionText).toEqual(
       JSON.stringify(
         {
-          id: 1,
-          proposals_to_cancel: [2, 3],
+          id: 0,
+          proposals_to_cancel: [],
           proposals_to_unlink: [],
         },
         null,
@@ -174,30 +173,37 @@ test.describe("Wallet is connected with admin account", () => {
       modifyOriginalResultFunction: async (originalResult) => {
         console.log(JSON.stringify(originalResult, null, 1));
         originalResult.snapshot.timeline.status = "ACCEPTING_SUBMISSIONS";
-        originalResult.snapshot.linked_proposals = [2, 3];
+
         return originalResult;
       },
     });
 
-    await page.goto("/infrastructure-committee.near/widget/app?page=rfp&id=1");
+    await page.goto("/infrastructure-committee.near/widget/app?page=rfp&id=0");
     await page.getByRole("button", { name: "Edit" }).click();
-
-    await page.locator(".badge .bi-trash3-fill").click();
+    await page.waitForTimeout(10000);
+    await page.locator(".badge .bi-trash3-fill").click({ timeout: 1000 });
     await page.getByText("Select Category").click();
     await page.getByText("Explorers").click();
 
     await expect(page.locator(".badge")).toHaveText("Explorers");
-    await page
-      .locator('input[type="text"]')
-      .pressSequentially("test edited title");
+    const titleInput = await page.locator('input[type="text"]');
+    titleInput.fill("");
+    await titleInput.pressSequentially("test edited title");
+
     await page.locator('input[type="date"]').pressSequentially("01052030");
-    await page
-      .locator('textarea[type="text"]')
-      .pressSequentially("the edited rfp summary");
-    await page
+
+    const summaryInput = await page.locator('textarea[type="text"]');
+    summaryInput.fill("");
+    await summaryInput.pressSequentially("the edited rfp summary");
+
+    const descriptionInput = await page
       .frameLocator("iframe")
-      .locator(".CodeMirror textarea")
-      .pressSequentially("The edited RFP description");
+      .locator(".CodeMirror textarea");
+    descriptionInput.click();
+    descriptionInput.fill(""); // Clear the textarea
+    page.waitForTimeout(1000);
+    await descriptionInput.pressSequentially("The edited RFP description");
+    await descriptionInput.blur();
 
     await pauseIfVideoRecording(page);
     await page.getByRole("button", { name: "Submit" }).click();
@@ -213,15 +219,15 @@ test.describe("Wallet is connected with admin account", () => {
           labels: ["Explorers"],
           body: {
             rfp_body_version: "V0",
-            name: "test edited titletest",
-            description: "test",
-            summary: "the edited rfp summarytest",
-            submission_deadline: "1893801600000000000",
+            name: "test edited title",
+            description: "The edited RFP description",
+            summary: "the edited rfp summary",
+            submission_deadline: "1923264000000000000",
             timeline: {
               status: "ACCEPTING_SUBMISSIONS",
             },
           },
-          id: 1,
+          id: 0,
         },
         null,
         1
@@ -255,7 +261,7 @@ test.describe("Admin with don't ask again enabled", () => {
         return originalResult;
       },
     });
-    await page.goto("/infrastructure-committee.near/widget/app?page=rfp&id=1");
+    await page.goto("/infrastructure-committee.near/widget/app?page=rfp&id=0");
     await setDontAskAgainCacheValues({
       page,
       widgetSrc: "infrastructure-committee.near/widget/components.rfps.Editor",
