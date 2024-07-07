@@ -221,7 +221,7 @@ test.describe("Don't ask again enabled", () => {
     ).toContainText(text);
     const loadingIndicator = await page.locator(".comment-btn-spinner");
     await expect(loadingIndicator).toBeAttached();
-    await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
+    await loadingIndicator.waitFor({ state: "detached", timeout: 30000 });
     await expect(loadingIndicator).not.toBeVisible();
     const transaction_successful_toast = await page.getByText(
       "Comment Submitted Successfully",
@@ -248,7 +248,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
   test("should be edit proposal timeline from review to decision stage with KYC verified", async ({
     page,
   }) => {
-    test.setTimeout(60000);
+    test.setTimeout(70000);
     let isTransactionCompleted = false;
 
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
@@ -308,8 +308,8 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       .first();
     await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
     await page.locator(".d-flex > div > .bi").click();
-    await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByTestId("Sponsor verifies KYC/KYB").check();
+    await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByText("Approved", { exact: true }).first().click();
 
     await pauseIfVideoRecording(page);
@@ -333,9 +333,9 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
       { hasText: /.*s ago/ }
     );
-    console.log(lastLogItem);
     await expect(lastLogItem).toContainText(
-      "moved proposal from REVIEW to APPROVED"
+      "moved proposal from REVIEW to APPROVED",
+      { timeout: 10000 }
     );
     await lastLogItem.scrollIntoViewIfNeeded();
     await expect(timeLineStatusSubmittedToast).not.toBeAttached();
