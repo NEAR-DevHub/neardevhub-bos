@@ -29,6 +29,24 @@ useEffect(() => {
   }
 }, [initialBlogData]);
 
+function publishedBlogsOfThisInstance(blogsObject) {
+  if (!blogsObject) return [];
+  return (
+    Object.keys(blogsObject)
+      .map((key) => {
+        return {
+          ...blogsObject[key].metadata,
+          id: key,
+          content: blogsObject[key][""],
+        };
+      })
+      // Show only published blogs
+      .filter((blog) => blog.status === "PUBLISH")
+      // Every instance of the blog tab has its own blogs
+      .filter((blog) => blog.communityAddonId === communityAddonId)
+  );
+}
+
 function checkHashes() {
   if (transactionHashes) {
     // Fetch new blog data
@@ -43,8 +61,8 @@ function checkHashes() {
           const newBlogPosts = result[`${handle}.community.devhub.near`].blog;
           // Check the number of blogs in this instance with a different status
           if (
-            flattenBlogObject(newBlogPosts).length !==
-            flattenBlogObject(blogData).length
+            publishedBlogsOfThisInstance(newBlogPosts).length !==
+            publishedBlogsOfThisInstance(blogData).length
           ) {
             setBlogData(newBlogPosts);
           } else {
