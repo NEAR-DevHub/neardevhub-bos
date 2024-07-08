@@ -275,7 +275,7 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
       return !oldValue && newValue && <span>completed review</span>;
     case "reviewer_completed_attestation":
       return !oldValue && newValue && <span>completed attestation</span>;
-    case "kyc_verified":
+    case "kyc_verified_review":
       return !oldValue && newValue && <span>verified KYC/KYB</span>;
     case "test_transaction_sent":
       return (
