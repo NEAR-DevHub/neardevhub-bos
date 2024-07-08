@@ -742,9 +742,16 @@ const onSubmit = ({ isDraft, isCancel }) => {
           reviewer_completed_attestation: false,
         },
   };
-  const args = { labels: [], body: body };
+  const args = {
+    labels: [],
+    body: body,
+  };
   if (isEditPage) {
     args["id"] = editProposalData.id;
+  } else {
+    args["accepted_terms_and_conditions_version"] = parseInt(
+      "${REPL_TERMS_AND_CONDITION_BLOCKHEIGHT}"
+    );
   }
 
   Near.call([
@@ -884,16 +891,10 @@ const ConsentComponent = useMemo(() => {
           label: (
             <>
               I’ve agree to{" "}
-              <a
-                href={
-                  "https://docs.google.com/document/d/1nRGy7LhpLj56SjN9MseV1x-ubH8O_c6B9DOAZ9qTwMU/edit?usp=sharing"
-                }
-                className="text-decoration-underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                DevHub’s Terms and Conditions
-              </a>
+              <Widget
+                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.T&C"}
+                props={{ proposalId: proposalId }}
+              />
               and commit to honoring it
             </>
           ),
