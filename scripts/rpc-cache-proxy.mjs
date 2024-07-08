@@ -93,6 +93,12 @@ export async function rpcProxy(instanceAccountId) {
       try {
         const bosLoaderLocalComponent = await tryFetchingLocalBosLoaderComponent(instanceAccountId, JSON.parse(body));
         if (bosLoaderLocalComponent) {
+          res.writeHead(200, {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+          });
           return res.end(bosLoaderLocalComponent);
         }
       } catch(e) {

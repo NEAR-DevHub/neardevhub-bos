@@ -158,9 +158,6 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
   test("should add comment on a proposal", async ({ page }) => {
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
     await page.goto("/devhub.near/widget/app?page=proposal&id=17");
     const widgetSrc =
       "devhub.near/widget/devhub.entity.proposal.ComposeComment";
@@ -214,6 +211,7 @@ test.describe("Don't ask again enabled", () => {
       }
     );
     const commentButton = await page.getByRole("button", { name: "Comment" });
+    await expect(commentButton).toBeAttached();
     await commentButton.scrollIntoViewIfNeeded();
     await commentButton.click();
     await expect(
@@ -221,7 +219,7 @@ test.describe("Don't ask again enabled", () => {
     ).toContainText(text);
     const loadingIndicator = await page.locator(".comment-btn-spinner");
     await expect(loadingIndicator).toBeAttached();
-    await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
+    await loadingIndicator.waitFor({ state: "detached", timeout: 30000 });
     await expect(loadingIndicator).not.toBeVisible();
     const transaction_successful_toast = await page.getByText(
       "Comment Submitted Successfully",
@@ -245,8 +243,10 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
   });
-  test("should edit proposal timeline", async ({ page }) => {
-    test.setTimeout(60000);
+  test("should edit proposal timeline from review to decision stage with KYC verified", async ({
+    page,
+  }) => {
+    test.setTimeout(70000);
     let isTransactionCompleted = false;
 
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
@@ -259,7 +259,6 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       },
       modifyOriginalResultFunction: (originalResult) => {
         originalResult.snapshot.timeline.status = "REVIEW";
-
         if (isTransactionCompleted) {
           const lastSnapshot =
             originalResult.snapshot_history[
@@ -299,14 +298,15 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       page,
       contractId: "devhub.near",
       widgetSrc: "devhub.near/widget/devhub.entity.proposal.Proposal",
-      methodName: "edit_proposal_timeline",
+      methodName: "edit_proposal_versioned_timeline",
     });
 
     const firstStatusBadge = await page
       .locator("div.fw-bold.rounded-2.p-1.px-2")
       .first();
-    await expect(firstStatusBadge).toHaveText("REVIEW");
+    await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
     await page.locator(".d-flex > div > .bi").click();
+    await page.getByTestId("Sponsor verifies KYC/KYB").check();
     await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByText("Approved", { exact: true }).first().click();
 
@@ -331,13 +331,48 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
       { hasText: /.*s ago/ }
     );
-    console.log(lastLogItem);
     await expect(lastLogItem).toContainText(
-      "moved proposal from REVIEW to APPROVED"
+      "moved proposal from REVIEW to APPROVED",
+      { timeout: 10000 }
     );
     await lastLogItem.scrollIntoViewIfNeeded();
     await expect(timeLineStatusSubmittedToast).not.toBeAttached();
     await pauseIfVideoRecording(page);
+  });
+
+  test("should not be able to move proposal timeline to decision stage without approving KYC in review stage", async ({
+    page,
+  }) => {
+    test.setTimeout(60000);
+
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+    await mockRpcRequest({
+      page,
+      filterParams: {
+        method_name: "get_proposal",
+      },
+      modifyOriginalResultFunction: (originalResult) => {
+        originalResult.snapshot.timeline.status = "REVIEW";
+        return originalResult;
+      },
+    });
+    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+
+    const firstStatusBadge = await page
+      .locator("div.fw-bold.rounded-2.p-1.px-2")
+      .first();
+    await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
+    await page.locator(".d-flex > div > .bi").click();
+
+    await page.getByTestId("Sponsor verifies KYC/KYB").uncheck();
+    await page.getByRole("button", { name: "Review", exact: true }).click();
+    await page.getByText("Approved", { exact: true }).first().click();
+
+    const saveButton = await page.getByRole("button", { name: "Save" });
+    await saveButton.scrollIntoViewIfNeeded();
+    await expect(saveButton).toBeDisabled();
   });
 });
 
