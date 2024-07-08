@@ -36,23 +36,25 @@ function Card({ data, addonParameters }) {
       line-height: 110%; /* 39.6px */
     }
 
-    ${category &&
-    `
+    span.news {
+      color: #f40303;
+    }
+
+    span.reference {
+      color: #ff7a00;
+    }
+
+    span.guide {
+      color: #004be1;
+    }
+
     span.category {
-      color: ${
-        category.toLowerCase() === "news"
-          ? "#F40303"
-          : category.toLowerCase() === "guide"
-          ? "#004BE1"
-          : category.toLowerCase() === "reference" && "#FF7A00"
-      };
       font-size: 1rem;
       font-style: normal;
       font-weight: 700;
       line-height: 20px; /* 125% */
       text-transform: uppercase;
     }
-    `}
 
     span.date {
       color: #818181;
@@ -81,7 +83,10 @@ function Card({ data, addonParameters }) {
       {category &&
         categoriesEnabled === "enabled" &&
         categoryIsOptionInSettings && (
-          <span className="category" data-testid="card-category">
+          <span
+            className={`category ${category && category.toLowerCase()}`}
+            data-testid="card-category"
+          >
             {category}
           </span>
         )}
