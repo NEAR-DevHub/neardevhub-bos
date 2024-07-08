@@ -210,7 +210,7 @@ test.describe("Wallet is connected with admin account", () => {
     await descriptionInput.pressSequentially("The edited RFP description");
     await descriptionInput.blur();
 
-    await page.locator('input[type="date"]').pressSequentially("01052030");
+    await page.locator('input[type="date"]').pressSequentially("12/12/2030");
 
     await pauseIfVideoRecording(page);
     const submitButton = await page.getByRole("button", { name: "Submit" });
@@ -236,7 +236,7 @@ test.describe("Wallet is connected with admin account", () => {
             name: "test edited title",
             description: "The edited RFP description",
             summary: "the edited rfp summary",
-            submission_deadline: "1903824000000000000",
+            submission_deadline: "1923264000000000000",
             timeline: {
               status: "ACCEPTING_SUBMISSIONS",
             },
