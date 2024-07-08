@@ -80,6 +80,21 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
           (k) => k.public_key === requestPostData.params.public_key
         );
         json.result = lastViewedAccessKey.access_key;
+        delete json.error;
+
+        await route.fulfill({ response, json });
+      } else if (
+        requestPostData.params &&
+        requestPostData.params.request_type === "call_function" &&
+        requestPostData.params.method_name === "get_account_storage"
+      ) {
+        const response = await route.fetch();
+        const json = await response.json();
+
+        const storage = { used_bytes: 221234, available_bytes: 1337643 };
+        json.result.result = Array.from(
+          new TextEncoder().encode(JSON.stringify(storage))
+        );
 
         await route.fulfill({ response, json });
       } else if (requestPostData.method == "broadcast_tx_commit") {
