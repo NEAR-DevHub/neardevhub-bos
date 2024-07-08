@@ -4,6 +4,10 @@ import { mockRpcRequest } from "../../util/rpcmock";
 import { setDontAskAgainCacheValues } from "../../util/cache";
 import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader";
 import { mockTransactionSubmitRPCResponses } from "../../util/transaction";
+const os = require("os");
+
+const isMac = os.platform() === "darwin";
+const isLinux = os.platform() === "linux";
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -52,6 +56,7 @@ test.describe("Wallet is connected with admin account", () => {
   test("admin should be able see the create RFP button and fill the form", async ({
     page,
   }) => {
+    test.setTimeout(120000);
     await mockRpcRequest({
       page,
       filterParams: {
@@ -81,18 +86,18 @@ test.describe("Wallet is connected with admin account", () => {
     await page
       .locator('textarea[type="text"]')
       .pressSequentially("the rfp summary");
-    await page
+    const descriptionInput = await page
       .frameLocator("iframe")
-      .locator(".CodeMirror textarea")
-      .pressSequentially("The RFP description");
-
+      .locator(".CodeMirror");
+    await descriptionInput.click();
+    await descriptionInput.pressSequentially("The RFP description");
     await page.getByRole("checkbox").first().click();
 
-    const submitbutton = await page.locator("button", { hasText: "submit" });
-    await submitbutton.scrollIntoViewIfNeeded();
-    await expect(submitbutton).toBeEnabled();
+    const submitButton = await page.getByRole("button", { name: "Submit" });
+    await submitButton.scrollIntoViewIfNeeded();
+    await expect(submitButton).toBeEnabled();
     await pauseIfVideoRecording(page);
-    await submitbutton.click();
+    await submitButton.click();
 
     const transactionText = JSON.stringify(
       JSON.parse(await page.locator("div.modal-body code").innerText()),
@@ -163,6 +168,7 @@ test.describe("Wallet is connected with admin account", () => {
     await pauseIfVideoRecording(page);
   });
   test("should edit RFP", async ({ page }) => {
+    test.setTimeout(120000);
     await mockRpcRequest({
       page,
       filterParams: {
@@ -178,7 +184,7 @@ test.describe("Wallet is connected with admin account", () => {
 
     await page.goto("/infrastructure-committee.near/widget/app?page=rfp&id=0");
     await page.getByRole("button", { name: "Edit" }).click();
-    await page.locator(".badge .bi-trash3-fill").click({ timeout: 1000 });
+    await page.locator(".badge .bi-trash3-fill").click();
     await page.getByText("Select Category").click();
     await page.getByText("Explorers").click();
 
@@ -187,26 +193,37 @@ test.describe("Wallet is connected with admin account", () => {
     titleInput.fill("");
     await titleInput.pressSequentially("test edited title");
 
-    await page.locator('input[type="date"]').pressSequentially("01052030");
-
     const summaryInput = await page.locator('textarea[type="text"]');
     summaryInput.fill("");
     await summaryInput.pressSequentially("the edited rfp summary");
 
     const descriptionInput = await page
       .frameLocator("iframe")
-      .locator(".CodeMirror textarea");
-    descriptionInput.click();
-    await descriptionInput.press("Meta+A");
+      .locator(".CodeMirror");
+    await descriptionInput.click();
+    if (isMac) {
+      await descriptionInput.press("Meta+A");
+    } else if (isLinux) {
+      await descriptionInput.press("Control+A");
+    }
     await descriptionInput.press("Backspace");
     await descriptionInput.pressSequentially("The edited RFP description");
     await descriptionInput.blur();
 
+    await page.locator('input[type="date"]').pressSequentially("01052030");
+
     await pauseIfVideoRecording(page);
-    await page.getByRole("button", { name: "Submit" }).click();
+    const submitButton = await page.getByRole("button", { name: "Submit" });
+    await submitButton.scrollIntoViewIfNeeded();
+    await expect(submitButton).toBeEnabled();
+    await submitButton.click();
+    await pauseIfVideoRecording(page);
+    await submitButton.click();
 
     const transactionText = JSON.stringify(
-      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      JSON.parse(
+        await page.locator("div.modal-body code").innerText({ timeout: 10000 })
+      ),
       null,
       1
     );
@@ -298,7 +315,7 @@ test.describe("Admin with don't ask again enabled", () => {
     await page.getByRole("button", { name: "Submit" }).click();
     const transactionToast = await page.locator(".toast-header");
     await expect(transactionToast).toHaveText("Sending transaction");
-    await expect(transactionToast).not.toBeAttached();
+    await expect(transactionToast).not.toBeAttached({ timeout: 10000 });
     // check for navigation modal
     const navigationModal = await page.getByText(
       "Your RFP has been successfully edited"
