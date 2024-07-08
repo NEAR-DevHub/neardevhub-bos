@@ -79,7 +79,7 @@ if (state.proposalBlockHeight !== null) {
 return (
   <a
     href={getLinkUsingCurrentGateway(
-      `${REPL_DEVHUB}/widget/devhub.entity.proposal.TermsAndCondition@${acceptedTermsVersion}`
+      `${REPL_DEVHUB}/widget/devhub.entity.proposal.TermsAndConditions@${acceptedTermsVersion}`
     )}
     className="text-decoration-underline"
     target="_blank"

@@ -486,7 +486,7 @@ test.describe("Wallet is connected", () => {
               status: "DRAFT",
             },
           },
-          accepted_terms_and_conditions_version: null,
+          accepted_terms_and_conditions_version: 122927956,
         },
         null,
         1
@@ -670,7 +670,7 @@ test.describe("Wallet is connected", () => {
               status: "DRAFT",
             },
           },
-          accepted_terms_and_conditions_version: null,
+          accepted_terms_and_conditions_version: 122927956,
         },
         null,
         1
