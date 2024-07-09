@@ -16,7 +16,6 @@ const { data, onEdit, community: handle, isAllowedToEdit } = props;
 const {
   category,
   title,
-  description,
   subtitle,
   publishedAt: date,
   content,
@@ -193,7 +192,6 @@ return (
         )}
         <div data-testid="blog-date">{formattedDate}</div>
       </div>
-      <p>{description}</p>
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
         props={{ text: content }}

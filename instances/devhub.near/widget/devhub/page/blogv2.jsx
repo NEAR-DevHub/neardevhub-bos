@@ -1,9 +1,10 @@
 const { id, community } = props;
 
-const { getAccountCommunityPermissions } = VM.require(
+const { getAccountCommunityPermissions, getCommunity } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
 ) || {
   getAccountCommunityPermissions: () => {},
+  getCommunity: () => {},
 };
 
 const [showEditScreenData, setShowEditScreen] = useState(null);
@@ -127,6 +128,13 @@ if (showEditScreenData) {
     </EditorContainer>
   );
 }
+
+const communityObject = getCommunity({ handle: "developer-dao" });
+const blogv2 = (communityObject.addons || []).find(
+  (addon) => addon.id === "blogv2"
+);
+const config = JSON.parse(blogv2.parameters || {}) || {};
+
 return (
   <div className="w-100">
     <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
@@ -140,6 +148,7 @@ return (
           handle: "developer-dao",
           hideTitle: true,
           communityAddonId: "blogv2",
+          data: config,
         }}
       />
     </BlogContainer>
