@@ -391,6 +391,7 @@ const proposalStatusOptions = [
     value: {
       status: TIMELINE_STATUS.PAYMENT_PROCESSING,
       kyc_verified_review: true,
+      kyc_verified: true,
       test_transaction_sent: false,
       request_for_trustees_created: false,
       sponsor_requested_review: true,
@@ -403,6 +404,7 @@ const proposalStatusOptions = [
       status: TIMELINE_STATUS.FUNDED,
       trustees_released_payment: true,
       kyc_verified_review: true,
+      kyc_verified: true,
       test_transaction_sent: true,
       request_for_trustees_created: true,
       sponsor_requested_review: true,
