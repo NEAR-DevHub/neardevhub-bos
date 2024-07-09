@@ -446,7 +446,10 @@ const Log = ({ timestamp }) => {
                 : "inline-flex")
             }
           >
-            <span className="inline-flex fw-bold text-black">
+            <span
+              className="inline-flex fw-bold text-black"
+              style={{ marginRight: 0 }}
+            >
               <AccountProfile accountId={editorId} showAccountId={true} />
             </span>
             {parseProposalKeyAndValue(i.key, i.modifiedValue, i.originalValue)}

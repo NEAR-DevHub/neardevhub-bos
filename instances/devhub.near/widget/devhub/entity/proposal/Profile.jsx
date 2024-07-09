@@ -3,10 +3,10 @@ const size = props.size ?? "md";
 const showAccountId = props.showAccountId;
 const Avatar = styled.div`
   &.sm {
-    min-width: 30px;
-    max-width: 30px;
-    min-height: 30px;
-    max-height: 30px;
+    min-width: 26px;
+    max-width: 26px;
+    min-height: 26px;
+    max-height: 26px;
   }
   &.md {
     min-width: 40px;
