@@ -32,23 +32,26 @@ const Container = styled.div`
   padding: 0 3rem;
   margin-bottom: 2rem;
   position: relative;
-  ${category &&
-  `
-    span.category {
-      color: ${
-        category.toLowerCase() === "news"
-          ? "#F40303"
-          : category.toLowerCase() === "guide"
-          ? "#004BE1"
-          : category.toLowerCase() === "reference" && "#FF7A00"
-      };
-      font-size: 1.5rem;
-      font-style: normal;
-      font-weight: 700;
-      line-height: 20px; /* 125% */
-      text-transform: uppercase;
-    }
-    `}
+
+  span.news {
+    color: #f40303;
+  }
+
+  span.reference {
+    color: #ff7a00;
+  }
+
+  span.guide {
+    color: #004be1;
+  }
+
+  span.category {
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px; /* 125% */
+    text-transform: uppercase;
+  }
 
   div.date {
     color: #818181;
@@ -175,7 +178,10 @@ return (
       {category &&
         parameters.categoriesEnabled === "enabled" &&
         categoryIsOptionInSettings && (
-          <span className="category" data-testid="blog-category">
+          <span
+            className={`category ${category && category.toLowerCase()}`}
+            data-testid="blog-category"
+          >
             {category}
           </span>
         )}
