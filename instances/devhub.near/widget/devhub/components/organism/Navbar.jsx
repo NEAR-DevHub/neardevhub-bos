@@ -153,7 +153,7 @@ let links = [
     title: "/about",
     links: [
       { title: "mission", href: "about" },
-      { title: "blog", href: "blog" },
+      { title: "blog", href: "blogv2" },
       { title: "newsletter", href: "https://newsletter.neardevhub.org" },
       {
         title: "calendar",

@@ -150,7 +150,7 @@ const categories = {
   },
 };
 
-function flattenBlogObject(blogsObject) {
+function publishedBlogsOfThisInstance(blogsObject) {
   if (!blogsObject) return [];
   return (
     Object.keys(blogsObject)
@@ -165,6 +165,13 @@ function flattenBlogObject(blogsObject) {
       .filter((blog) => blog.status === "PUBLISH")
       // Every instance of the blog tab has its own blogs
       .filter((blog) => blog.communityAddonId === communityAddonId)
+  );
+}
+
+function flattenBlogObject(blogsObject) {
+  if (!blogsObject) return [];
+  return (
+    publishedBlogsOfThisInstance(blogsObject)
       // Add categories to the dropdown
       .map((flattenedBlog) => {
         if (!categories[flattenedBlog.category]) {
@@ -195,6 +202,7 @@ function flattenBlogObject(blogsObject) {
       )
   );
 }
+
 function checkHashes() {
   if (transactionHashes) {
     // Fetch new blog data
@@ -232,6 +240,7 @@ useEffect(() => {
   checkHashes();
 }, []);
 
+const publishedBlogs = publishedBlogsOfThisInstance(blogData);
 const processedData = flattenBlogObject(blogData)
   // Sort by published date
   .sort((blog1, blog2) => {
@@ -327,7 +336,7 @@ const categoryInput = useMemo(() => {
   );
 }, [categories]);
 
-if (!processedData || processedData.length === 0) {
+if (!publishedBlogs || publishedBlogs.length === 0) {
   return (
     <div
       className="d-flex flex-column align-items-center justify-content-center gap-4"

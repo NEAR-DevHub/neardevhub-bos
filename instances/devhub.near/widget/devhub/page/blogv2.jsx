@@ -137,8 +137,9 @@ return (
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Viewer"}
         props={{
-          handle: community,
+          handle: "developer-dao",
           hideTitle: true,
+          communityAddonId: "blogv2",
         }}
       />
     </BlogContainer>

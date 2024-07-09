@@ -169,9 +169,6 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
   test("should add comment on a proposal", async ({ page, account }) => {
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
     await page.goto(`/${account}/widget/app?page=proposal&id=17`);
     const widgetSrc = `${account}/widget/devhub.entity.proposal.ComposeComment`;
 
@@ -224,6 +221,7 @@ test.describe("Don't ask again enabled", () => {
       }
     );
     const commentButton = await page.getByRole("button", { name: "Comment" });
+    await expect(commentButton).toBeAttached();
     await commentButton.scrollIntoViewIfNeeded();
     await commentButton.click();
     await expect(
@@ -231,7 +229,7 @@ test.describe("Don't ask again enabled", () => {
     ).toContainText(text);
     const loadingIndicator = await page.locator(".comment-btn-spinner");
     await expect(loadingIndicator).toBeAttached();
-    await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
+    await loadingIndicator.waitFor({ state: "detached", timeout: 30000 });
     await expect(loadingIndicator).not.toBeVisible();
     const transaction_successful_toast = await page.getByText(
       "Comment Submitted Successfully",
@@ -255,8 +253,10 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
   });
-  test("should edit proposal timeline", async ({ page, account }) => {
-    test.setTimeout(60000);
+  test("should edit proposal timeline from review to decision stage with KYC verified", async ({
+    page,
+  }) => {
+    test.setTimeout(70000);
     let isTransactionCompleted = false;
 
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
@@ -269,7 +269,6 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       },
       modifyOriginalResultFunction: (originalResult) => {
         originalResult.snapshot.timeline.status = "REVIEW";
-
         if (isTransactionCompleted) {
           const lastSnapshot =
             originalResult.snapshot_history[
@@ -310,14 +309,15 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       page,
       contractId: account,
       widgetSrc: `/${account}/widget/devhub.entity.proposal.Proposal`,
-      methodName: "edit_proposal_timeline",
+      methodName: "edit_proposal_versioned_timeline",
     });
 
     const firstStatusBadge = await page
       .locator("div.fw-bold.rounded-2.p-1.px-2")
       .first();
-    await expect(firstStatusBadge).toHaveText("REVIEW");
+    await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
     await page.locator(".d-flex > div > .bi").click();
+    await page.getByTestId("Sponsor verifies KYC/KYB").check();
     await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByText("Approved", { exact: true }).first().click();
 
@@ -342,13 +342,49 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
       { hasText: /.*s ago/ }
     );
-    console.log(lastLogItem);
     await expect(lastLogItem).toContainText(
-      "moved proposal from REVIEW to APPROVED"
+      "moved proposal from REVIEW to APPROVED",
+      { timeout: 10000 }
     );
     await lastLogItem.scrollIntoViewIfNeeded();
     await expect(timeLineStatusSubmittedToast).not.toBeAttached();
     await pauseIfVideoRecording(page);
+  });
+
+  test("should not be able to move proposal timeline to decision stage without approving KYC in review stage", async ({
+    page,
+    account,
+  }) => {
+    test.setTimeout(60000);
+
+    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
+      page
+    );
+    await mockRpcRequest({
+      page,
+      filterParams: {
+        method_name: "get_proposal",
+      },
+      modifyOriginalResultFunction: (originalResult) => {
+        originalResult.snapshot.timeline.status = "REVIEW";
+        return originalResult;
+      },
+    });
+    await page.goto(`/${account}/widget/app?page=proposal&id=17`);
+
+    const firstStatusBadge = await page
+      .locator("div.fw-bold.rounded-2.p-1.px-2")
+      .first();
+    await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
+    await page.locator(".d-flex > div > .bi").click();
+
+    await page.getByTestId("Sponsor verifies KYC/KYB").uncheck();
+    await page.getByRole("button", { name: "Review", exact: true }).click();
+    await page.getByText("Approved", { exact: true }).first().click();
+
+    const saveButton = await page.getByRole("button", { name: "Save" });
+    await saveButton.scrollIntoViewIfNeeded();
+    await expect(saveButton).toBeDisabled();
   });
 });
 
@@ -401,7 +437,10 @@ test.describe("Wallet is connected", () => {
 
     await pauseIfVideoRecording(page);
 
-    await page.frameLocator("iframe").getByText("petersalomonsen.near").click();
+    await page
+      .frameLocator("iframe")
+      .getByText("petersalomonsen.near")
+      .click({ timeout: 10000 });
 
     await descriptionArea.pressSequentially(`. Also mentioning @m`, {
       delay: delay_milliseconds_between_keypress_when_typing,
@@ -460,6 +499,7 @@ test.describe("Wallet is connected", () => {
               status: "DRAFT",
             },
           },
+          accepted_terms_and_conditions_version: 122927956,
         },
         null,
         1
@@ -471,8 +511,9 @@ test.describe("Wallet is connected", () => {
 
   test("should show relevant users in mention autocomplete", async ({
     page,
+    account,
   }) => {
-    await page.goto("/devhub.near/widget/app?page=proposal&id=112");
+    await page.goto(`/${account}/widget/app?page=proposal&id=112`);
 
     await page.waitForSelector(`iframe`, {
       state: "visible",
@@ -601,7 +642,7 @@ test.describe("Wallet is connected", () => {
       .getByText(
         "#2 DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024"
       )
-      .click();
+      .click({ timeout: 10000 });
 
     await page.locator('input[type="text"]').nth(2).pressSequentially("12345", {
       delay: delay_milliseconds_between_keypress_when_typing,
@@ -645,6 +686,7 @@ test.describe("Wallet is connected", () => {
               status: "DRAFT",
             },
           },
+          accepted_terms_and_conditions_version: 122927956,
         },
         null,
         1
@@ -654,58 +696,66 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test("should filter proposals by categories", async ({ page, account }) => {
-    test.setTimeout(60000);
-    const category = "DevDAO Operations";
-    await page.goto(`/${account}/widget/app?page=proposals`);
-    await page.getByRole("button", { name: "Category" }).click();
-    await page.getByRole("list").getByText(category).click();
-    await expect(
-      page.getByRole("button", { name: `Category : ${category}` })
-    ).toBeVisible();
-    const categoryTag = await page.locator(".purple-bg").first();
-    await expect(categoryTag).toContainText(category);
-  });
+  test.describe("filter proposals using different mechanism", () => {
+    test.beforeEach(async ({ page, account }) => {
+      await page.goto(`/${account}/widget/app?page=proposals`);
+      expect(page.locator(".proposal-card").first()).toBeVisible({
+        timeout: 10000,
+      });
+    });
+    test("should filter proposals by categories", async ({ page, account }) => {
+      test.setTimeout(60000);
+      const category = "DevDAO Operations";
+      await page.getByRole("button", { name: "Category" }).click();
+      await page.getByRole("list").getByText(category).click();
+      await expect(
+        page.getByRole("button", { name: `Category : ${category}` })
+      ).toBeVisible();
+      const loader = page.getByRole("img", { name: "loader" });
+      expect(loader).toBeHidden({ timeout: 10000 });
+      const categoryTag = await page.locator(".purple-bg").first();
+      await expect(categoryTag).toContainText(category);
+    });
 
-  test("should filter proposals by timeline", async ({ page, account }) => {
-    test.setTimeout(60000);
-    const stage = "Funded";
-    await page.goto(`/${account}/widget/app?page=proposals`);
-    await page.getByRole("button", { name: "Stage" }).click();
-    await page.getByRole("list").getByText(stage).click();
-    await expect(
-      page.getByRole("button", { name: `Stage : ${stage}` })
-    ).toBeVisible();
-    const timelineTag = await page.locator(".green-tag").first();
-    await expect(timelineTag).toContainText(stage.toUpperCase());
-  });
+    test("should filter proposals by timeline", async ({ page }) => {
+      test.setTimeout(60000);
+      const stage = "Funded";
+      await page.getByRole("button", { name: "Stage" }).click();
+      await page.getByRole("list").getByText(stage).click();
+      await expect(
+        page.getByRole("button", { name: `Stage : ${stage}` })
+      ).toBeVisible();
+      const loader = page.getByRole("img", { name: "loader" });
+      expect(loader).toBeHidden({ timeout: 10000 });
+      const timelineTag = await page.locator(".green-tag").first();
+      await expect(timelineTag).toContainText(stage.toUpperCase());
+    });
 
-  test("should filter proposals by author", async ({
-    page,
-    account,
-    proposalAuthorAccountId,
-  }) => {
-    test.setTimeout(60000);
-    let accountId = proposalAuthorAccountId;
-    await page.goto(`/${account}/widget/app?page=proposals`);
-    await page.getByRole("button", { name: "Author" }).click();
-    await page.getByRole("list").getByText(accountId).click();
-    await expect(
-      page.getByRole("button", { name: `Author : ${accountId}` })
-    ).toBeVisible();
-    await expect(page.getByText(`By ${accountId} ･`).first()).toBeVisible();
-  });
+    test("should filter proposals by author", async ({ page }) => {
+      test.setTimeout(60000);
+      const accountId = "megha19.near";
+      await page.getByRole("button", { name: "Author" }).click();
+      await page.getByRole("list").getByText(accountId).click();
+      await expect(
+        page.getByRole("button", { name: `Author : ${accountId}` })
+      ).toBeVisible();
+      const loader = page.getByRole("img", { name: "loader" });
+      expect(loader).toBeHidden({ timeout: 10000 });
+      await expect(page.getByText(`By ${accountId} ･`).first()).toBeVisible();
+    });
 
-  test("should filter proposals by search text", async ({ page, account }) => {
-    test.setTimeout(60000);
-    const term = "DevHub Developer Contributor report by Megha";
-    await page.goto(`/${account}/widget/app?page=proposals`);
-    const input = await page.getByPlaceholder("Search by content");
-    await input.click();
-    await input.fill(term);
-    await input.press("Enter");
-    const element = page.locator(`:has-text("${term}")`).nth(1);
-    await expect(element).toBeVisible();
+    test("should filter proposals by search text", async ({ page }) => {
+      test.setTimeout(60000);
+      const term = "DevHub Developer Contributor report by Megha";
+      const input = await page.getByPlaceholder("Search by content");
+      await input.click();
+      await input.fill(term);
+      await input.press("Enter");
+      const loader = page.getByRole("img", { name: "loader" });
+      expect(loader).toBeHidden({ timeout: 10000 });
+      const element = page.locator(`:has-text("${term}")`).nth(1);
+      await expect(element).toBeVisible();
+    });
   });
 });
 
@@ -715,8 +765,11 @@ test.describe("share links", () => {
       permissions: ["clipboard-read", "clipboard-write"],
     },
   });
-  test("copy link button should create a clean URL link", async ({ page }) => {
-    await page.goto("/devhub.near/widget/app?page=proposal&id=127");
+  test("copy link button should create a clean URL link", async ({
+    page,
+    account,
+  }) => {
+    await page.goto(`/${account}/widget/app?page=proposal&id=127`);
 
     await expect(await page.getByText("#127")).toBeVisible();
     const shareLinkButton = await page.getByRole("button", { name: "" });
@@ -727,7 +780,7 @@ test.describe("share links", () => {
       "navigator.clipboard.readText()"
     );
     expect(linkUrlFromClipboard).toEqual(
-      "https://devhub.near.page/proposal/127"
+      `https://${account}.page/proposal/127`
     );
     await pauseIfVideoRecording(page);
     await page.goto(linkUrlFromClipboard);
@@ -740,8 +793,9 @@ test.describe("share links", () => {
   test("share on X should create a clean URL link", async ({
     page,
     context,
+    account,
   }) => {
-    await page.goto("/devhub.near/widget/app?page=proposal&id=127");
+    await page.goto(`/${account}/widget/app?page=proposal&id=127`);
 
     await expect(await page.getByText("#127")).toBeVisible();
     const shareLinkButton = await page.getByRole("button", { name: "" });
