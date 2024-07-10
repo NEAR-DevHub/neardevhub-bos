@@ -1,8 +1,12 @@
-const { getLinkUsingCurrentGateway } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.url"
-) || { getLinkUsingCurrentGateway: () => {} };
+const { RFP_TIMELINE_STATUS, getLinkUsingCurrentGateway } = VM.require(
+  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
+) || { RFP_TIMELINE_STATUS: {}, getLinkUsingCurrentGateway: () => {} };
+
+const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
+href || (href = () => {});
+
 const snapshotHistory = props.snapshotHistory;
-const proposalId = props.id;
+const approvedProposals = props.approvedProposals ?? [];
 
 const Wrapper = styled.div`
   position: relative;
@@ -60,10 +64,11 @@ function getDifferentKeysWithValues(obj1, obj2) {
       if (key !== "editor_id" && obj2.hasOwnProperty(key)) {
         const value1 = obj1[key];
         const value2 = obj2[key];
-
-        if (typeof value1 === "object" && typeof value2 === "object") {
-          return JSON.stringify(value1) !== JSON.stringify(value2);
-        } else if (Array.isArray(value1) && Array.isArray(value2)) {
+        if (Array.isArray(value1) && Array.isArray(value2)) {
+          const sortedValue1 = [...value1].sort();
+          const sortedValue2 = [...value2].sort();
+          return JSON.stringify(sortedValue1) !== JSON.stringify(sortedValue2);
+        } else if (typeof value1 === "object" && typeof value2 === "object") {
           return JSON.stringify(value1) !== JSON.stringify(value2);
         } else {
           return value1 !== value2;
@@ -82,13 +87,12 @@ State.init({
   data: null,
   socialComments: null,
   changedKeysListWithValues: null,
-  snapshotHistoryLength: 0,
 });
 
 function sortTimelineAndComments() {
-  const comments = Social.index("comment", props.item, { subscribe: true });
+  const comments = Social.index("comment", props.item);
 
-  if (snapshotHistory.length > state.snapshotHistoryLength) {
+  if (state.changedKeysListWithValues === null) {
     const changedKeysListWithValues = snapshotHistory
       .slice(1)
       .map((item, index) => {
@@ -98,26 +102,7 @@ function sortTimelineAndComments() {
           ...getDifferentKeysWithValues(startingPoint, item),
         };
       });
-
-    // add log for accepting terms and condition
-    changedKeysListWithValues.unshift({
-      0: {
-        key: "timestamp",
-        originalValue: "0",
-        modifiedValue: snapshotHistory[0].timestamp,
-      },
-      1: {
-        key: "terms_and_condition",
-        originalValue: "",
-        modifiedValue: "accepted",
-      },
-      editorId: snapshotHistory[0].editor_id,
-    });
-
-    State.update({
-      changedKeysListWithValues,
-      snapshotHistoryLength: snapshotHistory.length,
-    });
+    State.update({ changedKeysListWithValues });
   }
 
   // sort comments and timeline logs by time
@@ -150,7 +135,10 @@ function sortTimelineAndComments() {
   });
 }
 
-sortTimelineAndComments();
+if ((snapshotHistory ?? []).length > 0) {
+  sortTimelineAndComments();
+}
+
 const Comment = ({ commentItem }) => {
   const { accountId, blockHeight } = commentItem;
   const item = {
@@ -160,25 +148,31 @@ const Comment = ({ commentItem }) => {
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
   const link = getLinkUsingCurrentGateway(
-    `${REPL_DEVHUB}/widget/app?page=proposal&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`
+    `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=rfp&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`
   );
-  const hightlightComment =
-    parseInt(props.blockHeight ?? "") === blockHeight &&
-    props.accountId === accountId;
+  function getHighlightCommentStyle() {
+    const highlightComment =
+      parseInt(props.blockHeight ?? "") === blockHeight &&
+      props.accountId === accountId;
+
+    return {
+      border: highlightComment ? "2px solid black" : "",
+    };
+  }
 
   return (
     <div style={{ zIndex: 99, background: "white" }}>
       <div className="d-flex gap-2 flex-1">
         <div className="d-none d-sm-flex">
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+            src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile`}
             props={{
               accountId: accountId,
             }}
           />
         </div>
         <CommentContainer
-          style={{ border: hightlightComment ? "2px solid black" : "" }}
+          style={getHighlightCommentStyle()}
           className="rounded-2 flex-1"
         >
           <Header className="d-flex gap-3 align-items-center p-2 px-3">
@@ -188,7 +182,7 @@ const Comment = ({ commentItem }) => {
               </Link>
               commented ･{" "}
               <Widget
-                src="${REPL_NEAR}/widget/TimeAgo"
+                src={`${REPL_NEAR}/widget/TimeAgo`}
                 props={{
                   blockHeight: blockHeight,
                 }}
@@ -197,7 +191,7 @@ const Comment = ({ commentItem }) => {
             {context.accountId && (
               <div className="menu">
                 <Widget
-                  src="${REPL_NEAR}/widget/Posts.Menu"
+                  src={`${REPL_NEAR}/widget/Posts.Menu`}
                   props={{
                     accountId: accountId,
                     blockHeight: blockHeight,
@@ -210,9 +204,7 @@ const Comment = ({ commentItem }) => {
           </Header>
           <div className="p-2 px-3">
             <Widget
-              src={
-                "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
-              }
+              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer`}
               props={{
                 text: content.text,
               }}
@@ -220,14 +212,14 @@ const Comment = ({ commentItem }) => {
 
             <div className="d-flex gap-2 align-items-center mt-4">
               <Widget
-                src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
+                src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton`}
                 props={{
                   item: item,
                   notifyAccountId: accountId,
                 }}
               />
               <Widget
-                src="${REPL_NEAR}/widget/CopyUrlButton"
+                src={`${REPL_NEAR}/widget/CopyUrlButton`}
                 props={{
                   url: link,
                 }}
@@ -250,19 +242,42 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
   const newValue = modifiedValue[timeline];
   switch (timeline) {
     case "status":
+      if (newValue === RFP_TIMELINE_STATUS.PROPOSAL_SELECTED) {
+        return (
+          <span className="inline-flex">
+            moved RFP to{" "}
+            <Widget
+              src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.StatusTag`}
+              props={{
+                timelineStatus: newValue,
+              }}
+            />
+            ･ selected proposal(s) are{" "}
+            {approvedProposals.map((i, index) => (
+              <span>
+                <LinkToProposal id={i.proposal_id}>
+                  {" "}
+                  #{i.proposal_id} {i.name}
+                </LinkToProposal>
+                {index < approvedProposals.length - 1 && ", "}
+              </span>
+            ))}
+          </span>
+        );
+      }
       return (
         oldValue !== newValue && (
           <span className="inline-flex">
-            moved proposal from{" "}
+            moved RFP from{" "}
             <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+              src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.StatusTag`}
               props={{
                 timelineStatus: oldValue,
               }}
             />
             to{" "}
             <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+              src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.StatusTag`}
               props={{
                 timelineStatus: newValue,
               }}
@@ -271,26 +286,7 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
           </span>
         )
       );
-    case "sponsor_requested_review":
-      return !oldValue && newValue && <span>completed review</span>;
-    case "reviewer_completed_attestation":
-      return !oldValue && newValue && <span>completed attestation</span>;
-    case "kyc_verified_review":
-      return !oldValue && newValue && <span>verified KYC/KYB</span>;
-    case "test_transaction_sent":
-      return (
-        !oldValue &&
-        newValue && (
-          <span>
-            confirmed sponsorship and shared funding steps with recipient
-          </span>
-        )
-      );
-    case "payouts":
-      return <span>updated the funding payment links.</span>;
-    // we don't have this step for now
-    // case "request_for_trustees_created":
-    //   return !oldValue && newValue && <span>successfully created request for trustees</span>;
+
     default:
       return null;
   }
@@ -300,7 +296,7 @@ const AccountProfile = ({ accountId }) => {
   return (
     <span className="inline-flex fw-bold text-black">
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+        src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile`}
         props={{
           accountId: accountId,
           size: "sm",
@@ -311,73 +307,59 @@ const AccountProfile = ({ accountId }) => {
   );
 };
 
+function symmetricDifference(arr1, arr2) {
+  const diffA = arr1.filter((item) => !arr2.includes(item));
+  const diffB = arr2.filter((item) => !arr1.includes(item));
+  return [...diffA, ...diffB];
+}
+
+const LinkToProposal = ({ id, children }) => {
+  return (
+    <a
+      className="text-decoration-underline flex-1"
+      href={href({
+        widgetSrc: `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app`,
+        params: {
+          page: "proposal",
+          id: id,
+        },
+      })}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {children}
+    </a>
+  );
+};
+
 const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
   switch (key) {
-    case "terms_and_condition": {
-      return (
-        <span>
-          accepted
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"}
-            props={{ proposalId: proposalId }}
-          />
-        </span>
-      );
-    }
     case "name":
       return <span>changed title</span>;
     case "summary":
     case "description":
       return <span>changed {key}</span>;
-    case "category":
+    case "labels":
+      return <span>changed labels to {(modifiedValue ?? []).join(", ")}</span>;
+    case "linked_proposals": {
+      const newProposals = modifiedValue || [];
+      const oldProposals = originalValue || [];
+      const difference = symmetricDifference(oldProposals, newProposals).join(
+        ","
+      );
+
+      const isUnlinked = oldProposals.length > newProposals.length;
+      const actionText = isUnlinked
+        ? "unlinked a proposal"
+        : "linked a proposal";
+
       return (
         <span>
-          changed category from {originalValue} to {modifiedValue}
+          {actionText}{" "}
+          <LinkToProposal id={difference}> #{difference}</LinkToProposal>
         </span>
       );
-    case "linked_proposals":
-      return <span>updated linked proposals</span>;
-    case "requested_sponsorship_usd_amount":
-      return (
-        <span>
-          changed sponsorship amount from {originalValue} to {modifiedValue}
-        </span>
-      );
-    case "requested_sponsorship_paid_in_currency":
-      return (
-        <span>
-          changed sponsorship currency from {originalValue} to {modifiedValue}
-        </span>
-      );
-    case "receiver_account":
-      return (
-        <span className="inline-flex">
-          changed receiver account from{" "}
-          <AccountProfile accountId={originalValue} />
-          to <AccountProfile accountId={modifiedValue} />
-        </span>
-      );
-    case "supervisor":
-      return !originalValue && modifiedValue ? (
-        <span className="inline-flex">
-          added
-          <AccountProfile accountId={modifiedValue} />
-          as supervisor
-        </span>
-      ) : (
-        <span className="inline-flex">
-          changed receiver account from{" "}
-          <AccountProfile accountId={originalValue} />
-          to <AccountProfile accountId={modifiedValue} />
-        </span>
-      );
-    case "requested_sponsor":
-      return (
-        <span className="inline-flex">
-          changed sponsor from <AccountProfile accountId={originalValue} />
-          to <AccountProfile accountId={modifiedValue} />
-        </span>
-      );
+    }
     case "timeline": {
       const modifiedKeys = Object.keys(modifiedValue);
       const originalKeys = Object.keys(originalValue);
@@ -387,7 +369,10 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
           text && (
             <span key={index} className="inline-flex">
               {text}
-              {text && "･"}
+              {text &&
+                originalKeys.length > 1 &&
+                index < modifiedKeys.length - 1 &&
+                "･"}
             </span>
           )
         );
@@ -427,7 +412,7 @@ const Log = ({ timestamp }) => {
   }
 
   return valuesArray.map((i, index) => {
-    if (i.key && i.key !== "timestamp" && i.key !== "proposal_body_version") {
+    if (i.key && i.key !== "timestamp") {
       return (
         <LogIconContainer
           className="d-flex gap-3 align-items-center"
@@ -446,16 +431,13 @@ const Log = ({ timestamp }) => {
                 : "inline-flex")
             }
           >
-            <span
-              className="inline-flex fw-bold text-black"
-              style={{ marginRight: 0 }}
-            >
+            <span className="inline-flex fw-bold text-black">
               <AccountProfile accountId={editorId} showAccountId={true} />
             </span>
             {parseProposalKeyAndValue(i.key, i.modifiedValue, i.originalValue)}
-            {i.key !== "timeline" && "･"}
+            ･
             <Widget
-              src="${REPL_NEAR}/widget/TimeAgo"
+              src={`${REPL_NEAR}/widget/TimeAgo`}
               props={{
                 blockTimestamp: timestamp * 1000000,
               }}
