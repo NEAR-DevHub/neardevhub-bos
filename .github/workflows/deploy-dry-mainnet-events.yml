@@ -7,7 +7,7 @@ on:
 jobs:
   deploy-widgets:
     runs-on: ubuntu-latest
-    name: Diff from PR
+    name: Deploy ( or diff from PR )
     defaults:
       run:
         working-directory: ./instances/events-committee.near
