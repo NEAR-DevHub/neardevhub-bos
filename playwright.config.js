@@ -67,9 +67,9 @@ export default defineConfig({
     {
       name: "events",
       retries: process.env.CI ? 8 : 0,
-      testMatch: /(proposal|events)\/.*.spec.js/,
-      // testIgnore: /.*smoke.spec.ts/,
+      testMatch: /events\/.*.spec.js/, // (proposal|events)
       use: {
+        ...devices["Desktop Chrome"],
         baseURL: "http://localhost:8080",
         account: "events-committee.near",
         proposalAuthorAccountId: "yarotska.near",
@@ -85,7 +85,7 @@ export default defineConfig({
     env: {
       POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456",
     },
-    command: "npm run gateway:devhub",
+    command: `npm run gateway:${process.env.INSTANCE ?? "devhub"}`,
     port: 3030,
     reuseExistingServer: !process.env.CI,
   },
