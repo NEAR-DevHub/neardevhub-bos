@@ -18,6 +18,9 @@
     "bw:dev:devhub": "bw dev instances/devhub.near",
     "bw:build:devhub": "bw build instances/devhub.near",
     "gateway:devhub": "node scripts/dev-gateway.mjs devhub.near",
+    "bw:dev:infrastructure": "bw dev instances/infrastructure-committee.near",
+    "bw:build:infrastructure": "bw build instances/infrastructure-committee.near",
+    "gateway:infrastructure": "node scripts/dev-gateway.mjs infrastructure-committee.near",
     "test": "npx playwright test",
     "test:watch:codespaces": "npm test -- --ui-host=0.0.0.0",
     "test:watch": "npm test -- --ui"
