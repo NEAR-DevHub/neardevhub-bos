@@ -349,14 +349,14 @@ const proposalStatusOptions = [
       status: TIMELINE_STATUS.REVIEW,
       sponsor_requested_review: false,
       reviewer_completed_attestation: false,
-      kyc_verified_review: false,
+      kyc_verified: false,
     },
   },
   {
     label: "Approved",
     value: {
       status: TIMELINE_STATUS.APPROVED,
-      kyc_verified_review: true,
+      kyc_verified: true,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -365,7 +365,7 @@ const proposalStatusOptions = [
     label: "Approved-Conditionally",
     value: {
       status: TIMELINE_STATUS.APPROVED_CONDITIONALLY,
-      kyc_verified_review: true,
+      kyc_verified: true,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -390,7 +390,6 @@ const proposalStatusOptions = [
     label: "Payment-processing",
     value: {
       status: TIMELINE_STATUS.PAYMENT_PROCESSING,
-      kyc_verified_review: true,
       kyc_verified: true,
       test_transaction_sent: false,
       request_for_trustees_created: false,
@@ -403,7 +402,6 @@ const proposalStatusOptions = [
     value: {
       status: TIMELINE_STATUS.FUNDED,
       trustees_released_payment: true,
-      kyc_verified_review: true,
       kyc_verified: true,
       test_transaction_sent: true,
       request_for_trustees_created: true,
@@ -1175,9 +1173,7 @@ return (
                             }
                           />
                           <CheckBox
-                            value={
-                              updatedProposalStatus.value.kyc_verified_review
-                            }
+                            value={updatedProposalStatus.value.kyc_verified}
                             label="Sponsor verifies KYC/KYB"
                             disabled={selectedStatusIndex !== 1}
                             onClick={(value) =>
@@ -1185,13 +1181,11 @@ return (
                                 ...prevState,
                                 value: {
                                   ...prevState.value,
-                                  kyc_verified_review: value,
+                                  kyc_verified: value,
                                 },
                               }))
                             }
-                            isChecked={
-                              updatedProposalStatus.value.kyc_verified_review
-                            }
+                            isChecked={updatedProposalStatus.value.kyc_verified}
                           />
                         </div>
                       </TimelineItems>
@@ -1466,8 +1460,7 @@ return (
                                   TIMELINE_STATUS.APPROVED_CONDITIONALLY ||
                                 updatedProposalStatus.value.status ===
                                   TIMELINE_STATUS.PAYMENT_PROCESSING) &&
-                                !updatedProposalStatus.value
-                                  .kyc_verified_review) ||
+                                !updatedProposalStatus.value.kyc_verified) ||
                               (!supervisor &&
                                 DecisionStage.includes(
                                   updatedProposalStatus.value.status
