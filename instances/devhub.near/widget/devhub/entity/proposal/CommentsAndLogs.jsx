@@ -159,7 +159,7 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  const link = `https://${REPL_DEVHUB}.page/proposal/${proposal.id}?accountId=${accountId}&blockHeight=${blockHeight}`;
+  const link = `https://${REPL_DEVHUB}.page/proposal/${proposalId}?accountId=${accountId}&blockHeight=${blockHeight}`;
   const hightlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&
     props.accountId === accountId;

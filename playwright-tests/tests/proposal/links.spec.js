@@ -48,9 +48,7 @@ test.describe("share links", () => {
     await twitterPage.waitForURL(shareOnXUrl);
   });
 
-  test("copying comment links should have clean URLs and scroll into view", async ({
-    page,
-  }) => {
+  test("comment links should scroll into view", async ({ page }) => {
     await page.goto(
       "/devhub.near/widget/app?page=proposal&id=127&accountId=theori.near&blockHeight=121684702"
     );
@@ -82,5 +80,27 @@ test.describe("share links", () => {
     await expect(commentElement).toBeVisible();
 
     await expect(commentElement).toBeInViewport({ timeout: 10000 });
+  });
+
+  test("copying comment links should have clean URLs", async ({ page }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=proposal&id=127&accountId=theori.near&blockHeight=121684702"
+    );
+    const viewer = await page.locator("near-social-viewer");
+    const commentElement = await viewer.locator("css=div#theorinear121684702");
+    await expect(commentElement).toBeVisible();
+    await page
+      .locator("#theorinear121684702")
+      .getByLabel("Copy URL to clipboard")
+      .click();
+
+    const linkUrlFromClipboard = await page.evaluate(
+      "navigator.clipboard.readText()"
+    );
+    expect(linkUrlFromClipboard).toEqual(
+      "https://devhub.near.page/proposal/127?accountId=theori.near&blockHeight=121684702"
+    );
+    await pauseIfVideoRecording(page);
+    await page.goto(linkUrlFromClipboard);
   });
 });
