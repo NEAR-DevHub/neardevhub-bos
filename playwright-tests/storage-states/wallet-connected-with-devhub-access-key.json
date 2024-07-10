@@ -1,56 +1,59 @@
 {
   "cookies": [],
-  "origins": [{
-    "origin": "http://localhost:8080",
-    "localStorage": [{
-        "name": "near-wallet-selector:selectedWalletId",
-        "value": "\"my-near-wallet\""
-      },
-      {
-        "name": "near_app_wallet_auth_key",
-        "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
-      },
-      {
-        "name": "devgovgigs.near_wallet_auth_key",
-        "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
-      },
-      {
-        "name": "devhub.near_wallet_auth_key",
-        "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
-      },
-      {
-        "name": "near-api-js:keystore:petersalomonsen.near:mainnet",
-        "value": "ed25519:67p9ygtfVNZz5AzMkeN4bqstCck8RWxWDthcTa7JaBvxkrBRTc6A43SsuPy9LdtiR6XtSRD1HiS4KQTWCZw83FKS"
-      },
-      {
-        "name": "events-committee.near_wallet_auth_key",
-        "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
-      },
-      {
-        "name": "devgovgigs.near:keystore:petersalomonsen.near:mainnet",
-        "value": "ed25519:4SViyksDtdDdCPkkyzMg4HYADEQ3t5YGEd3EBoSADxdaAzDasZ7qJbxr2wNSFkWipya6C2eVJJucK1vkyoGndiyt"
-      },
-      {
-        "name": "devhub.near:keystore:petersalomonsen.near:mainnet",
-        "value": "ed25519:eUVkG7dVfg5Z776MPy7d4L23cmEtAxrYoP1HgWSQrBy1GHdaZystRkYyz4ANN5uyKceuUrjyoLWaPgpzvo3BNDZ"
-      },
-      {
-        "name": "events-committee.near:keystore:petersalomonsen.near:mainnet",
-        "value": "ed25519:2ALEv3XWjQT7osbBWTDZ49dAhq4tcnkY7PimfFAAiv6vb1BSaKT148XM8dsytmtbXJu1dfj595P5CnhFAtVZ5npM"
-      },
-      {
-        "name": "near-social-vm:v01::accountId:",
-        "value": "\"petersalomonsen.near\""
-      },
-      {
-        "name": "near-wallet-selector:recentlySignedInWallets",
-        "value": "[\"my-near-wallet\"]"
-      },
-      {
-        "name": "near-wallet-selector:contract",
-        "value": "{\"contractId\":\"social.near\",\"methodNames\":[]}"
-      }
-    ]
-  }],
+  "origins": [
+    {
+      "origin": "http://localhost:8080",
+      "localStorage": [
+        {
+          "name": "near-wallet-selector:selectedWalletId",
+          "value": "\"my-near-wallet\""
+        },
+        {
+          "name": "near_app_wallet_auth_key",
+          "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
+        },
+        {
+          "name": "devgovgigs.near_wallet_auth_key",
+          "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
+        },
+        {
+          "name": "devhub.near_wallet_auth_key",
+          "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
+        },
+        {
+          "name": "near-api-js:keystore:petersalomonsen.near:mainnet",
+          "value": "ed25519:67p9ygtfVNZz5AzMkeN4bqstCck8RWxWDthcTa7JaBvxkrBRTc6A43SsuPy9LdtiR6XtSRD1HiS4KQTWCZw83FKS"
+        },
+        {
+          "name": "events-committee.near_wallet_auth_key",
+          "value": "{\"accountId\":\"petersalomonsen.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
+        },
+        {
+          "name": "devgovgigs.near:keystore:petersalomonsen.near:mainnet",
+          "value": "ed25519:4SViyksDtdDdCPkkyzMg4HYADEQ3t5YGEd3EBoSADxdaAzDasZ7qJbxr2wNSFkWipya6C2eVJJucK1vkyoGndiyt"
+        },
+        {
+          "name": "devhub.near:keystore:petersalomonsen.near:mainnet",
+          "value": "ed25519:eUVkG7dVfg5Z776MPy7d4L23cmEtAxrYoP1HgWSQrBy1GHdaZystRkYyz4ANN5uyKceuUrjyoLWaPgpzvo3BNDZ"
+        },
+        {
+          "name": "events-committee.near:keystore:petersalomonsen.near:mainnet",
+          "value": "ed25519:2ALEv3XWjQT7osbBWTDZ49dAhq4tcnkY7PimfFAAiv6vb1BSaKT148XM8dsytmtbXJu1dfj595P5CnhFAtVZ5npM"
+        },
+        {
+          "name": "near-social-vm:v01::accountId:",
+          "value": "\"petersalomonsen.near\""
+        },
+        {
+          "name": "near-wallet-selector:recentlySignedInWallets",
+          "value": "[\"my-near-wallet\"]"
+        },
+        {
+          "name": "near-wallet-selector:contract",
+          "value": "{\"contractId\":\"social.near\",\"methodNames\":[]}"
+        }
+      ]
+    }
+  ],
   "sessionStorage": []
 }

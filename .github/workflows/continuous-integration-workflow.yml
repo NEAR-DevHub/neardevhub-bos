@@ -35,7 +35,7 @@ jobs:
           npx playwright install
       - name: Run tests
         run: |
-          npx playwright test playwright-tests/tests/blog
+          INSTANCE=devhub npx playwright test playwright-tests/tests/blog
   playwright-tests-community:
     name: Community - Playwright tests
     runs-on: ubuntu-latest
@@ -52,7 +52,7 @@ jobs:
           npx playwright install
       - name: Run tests
         run: |
-          npx playwright test playwright-tests/tests/community
+          INSTANCE=devhub npx playwright test playwright-tests/tests/community
   playwright-tests-other:
     name: Other - Playwright tests
     runs-on: ubuntu-latest
@@ -70,7 +70,7 @@ jobs:
           npx playwright install
       - name: Run tests
         run: |
-          npx playwright test playwright-tests/tests/other
+          INSTANCE=devhub npx playwright test playwright-tests/tests/other
   playwright-tests-proposal:
     name: Proposal - Playwright tests
     runs-on: ubuntu-latest
@@ -88,7 +88,7 @@ jobs:
           npx playwright install
       - name: Run tests
         run: |
-          npx playwright test playwright-tests/tests/proposal
+          INSTANCE=devhub npx playwright test playwright-tests/tests/proposal
   playwright-tests-sunset:
     name: Sunset - Playwright tests
     runs-on: ubuntu-latest
@@ -106,4 +106,4 @@ jobs:
           npx playwright install
       - name: Run tests
         run: |
-          npx playwright test playwright-tests/tests/sunset
+          INSTANCE=devhub npx playwright test playwright-tests/tests/sunset

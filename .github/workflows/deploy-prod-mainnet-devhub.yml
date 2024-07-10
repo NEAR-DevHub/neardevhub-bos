@@ -1,4 +1,4 @@
-name: Deploy Widgets to Mainnet
+name: Deploy Widgets to Mainnet - Devhub
 on:
   pull_request:
   push:
