@@ -36,6 +36,6 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.6/bos-cli-installer.sh | sh
 
-      - name: Deploy widgets
+      - name: Dry run deploying widgets
         run: |
           bos components diff events-commitee.near network-config mainnet
