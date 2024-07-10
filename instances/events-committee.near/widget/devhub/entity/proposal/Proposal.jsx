@@ -673,9 +673,9 @@ return (
       </div>
       <div className="d-flex gap-2 align-items-center">
         <Widget
-          src="${REPL_NEAR}/widget/ShareButton"
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.ShareLinkButton"
           props={{
-            postType: "post",
+            postType: "proposal",
             url: proposalURL,
           }}
         />

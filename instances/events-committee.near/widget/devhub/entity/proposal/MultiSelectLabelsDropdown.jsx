@@ -106,6 +106,13 @@ const Item = ({ option }) => {
   return <div> {option.label}</div>;
 };
 
+const isSelected = (selectedOptions ?? []).find(
+  (item) => item.value === option.value
+);
+
+const selectedClass = isSelected ? "selected" : "";
+const disabledClass = disabled ? "disabled" : "";
+
 return (
   <>
     <div className="d-flex gap-2 align-items-center">
@@ -145,10 +152,7 @@ return (
           onBlur={() => setIsOpen(false)}
         >
           <div
-            className={
-              "dropdown-toggle bg-white border rounded-2 btn drop-btn w-100 " +
-              (disabled ? "disabled" : "")
-            }
+            className={`dropdown-toggle bg-white border rounded-2 btn drop-btn w-100 ${disabledClass}`}
             onClick={!disabled && toggleDropdown}
           >
             <div className={`selected-option`}>Select Category</div>
@@ -160,13 +164,7 @@ return (
                 {availableOptions.map((option) => (
                   <div
                     key={option.value}
-                    className={`dropdown-item cursor-pointer w-100 my-1 ${
-                      (selectedOptions ?? []).find(
-                        (item) => item.value === option.value
-                      )
-                        ? "selected"
-                        : ""
-                    }`}
+                    className={`dropdown-item cursor-pointer w-100 my-1 ${selectedClass}`}
                     onClick={() => handleOptionClick(option)}
                   >
                     <Item option={option} />
