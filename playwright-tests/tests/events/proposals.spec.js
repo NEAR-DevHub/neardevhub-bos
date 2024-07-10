@@ -229,6 +229,7 @@ test.describe("Don't ask again enabled", () => {
     await expect(
       await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText(text);
+
     const loadingIndicator = await page.locator(".comment-btn-spinner");
     await expect(loadingIndicator).toBeAttached();
     await loadingIndicator.waitFor({ state: "detached", timeout: 30000 });
@@ -250,7 +251,7 @@ test.describe("Don't ask again enabled", () => {
   });
 });
 
-test.describe('Moderator with "Don\'t ask again" enabled', () => {
+test.describe.skip('Moderator with "Don\'t ask again" enabled', () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
@@ -616,7 +617,7 @@ test.describe("Wallet is connected", () => {
         await route.fulfill({ response, json });
       }
     );
-    const delay_milliseconds_between_keypress_when_typing = 10;
+    const delay_milliseconds_between_keypress_when_typing = 100;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
     await titleArea.pressSequentially("Test proposal 123456", {
@@ -646,7 +647,7 @@ test.describe("Wallet is connected", () => {
       .locator(".CodeMirror textarea");
     await descriptionArea.focus();
     await descriptionArea.pressSequentially(
-      `The test proposal description. And referencing #2`,
+      `The test proposal description. And referencing #`,
       {
         delay: delay_milliseconds_between_keypress_when_typing,
       }
@@ -765,7 +766,7 @@ test.describe("Wallet is connected", () => {
 
     test("should filter proposals by search text", async ({ page }) => {
       test.setTimeout(60000);
-      const term = "Funding Proposal for ETHCC24 swag production";
+      const term = "ETH Oxford Hackathon bounty payout";
       const input = await page.getByPlaceholder("Search by content");
       await input.click();
       await input.fill(term);

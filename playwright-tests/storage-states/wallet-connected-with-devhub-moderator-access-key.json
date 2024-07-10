@@ -1,51 +1,56 @@
 {
   "cookies": [],
-  "origins": [
-    {
-      "origin": "http://localhost:8080",
-      "localStorage": [
-        {
-          "name": "near-wallet-selector:selectedWalletId",
-          "value": "\"my-near-wallet\""
-        },
-        {
-          "name": "near_app_wallet_auth_key",
-          "value": "{\"accountId\":\"theori.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
-        },
-        {
-          "name": "devgovgigs.near_wallet_auth_key",
-          "value": "{\"accountId\":\"theori.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
-        },
-        {
-          "name": "devhub.near_wallet_auth_key",
-          "value": "{\"accountId\":\"theori.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
-        },
-        {
-          "name": "near-api-js:keystore:theori.near:mainnet",
-          "value": "ed25519:67p9ygtfVNZz5AzMkeN4bqstCck8RWxWDthcTa7JaBvxkrBRTc6A43SsuPy9LdtiR6XtSRD1HiS4KQTWCZw83FKS"
-        },
-        {
-          "name": "devgovgigs.near:keystore:theori.near:mainnet",
-          "value": "ed25519:4SViyksDtdDdCPkkyzMg4HYADEQ3t5YGEd3EBoSADxdaAzDasZ7qJbxr2wNSFkWipya6C2eVJJucK1vkyoGndiyt"
-        },
-        {
-          "name": "devhub.near:keystore:theori.near:mainnet",
-          "value": "ed25519:eUVkG7dVfg5Z776MPy7d4L23cmEtAxrYoP1HgWSQrBy1GHdaZystRkYyz4ANN5uyKceuUrjyoLWaPgpzvo3BNDZ"
-        },
-        {
-          "name": "near-social-vm:v01::accountId:",
-          "value": "\"theori.near\""
-        },
-        {
-          "name": "near-wallet-selector:recentlySignedInWallets",
-          "value": "[\"my-near-wallet\"]"
-        },
-        {
-          "name": "near-wallet-selector:contract",
-          "value": "{\"contractId\":\"social.near\",\"methodNames\":[]}"
-        }
-      ]
-    }
-  ],
+  "origins": [{
+    "origin": "http://localhost:8080",
+    "localStorage": [{
+        "name": "near-wallet-selector:selectedWalletId",
+        "value": "\"my-near-wallet\""
+      },
+      {
+        "name": "near_app_wallet_auth_key",
+        "value": "{\"accountId\":\"theori.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
+      },
+      {
+        "name": "devgovgigs.near_wallet_auth_key",
+        "value": "{\"accountId\":\"theori.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
+      },
+      {
+        "name": "devhub.near_wallet_auth_key",
+        "value": "{\"accountId\":\"theori.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
+      },
+      {
+        "name": "events-committee.near_wallet_auth_key",
+        "value": "{\"accountId\":\"theori.near\",\"allKeys\":[\"ed25519:9enAAsDiQ2NvKU2TsHLETp96sYeN2qkbHxhpXLjCQThS\"]}"
+      },
+      {
+        "name": "near-api-js:keystore:theori.near:mainnet",
+        "value": "ed25519:67p9ygtfVNZz5AzMkeN4bqstCck8RWxWDthcTa7JaBvxkrBRTc6A43SsuPy9LdtiR6XtSRD1HiS4KQTWCZw83FKS"
+      },
+      {
+        "name": "devgovgigs.near:keystore:theori.near:mainnet",
+        "value": "ed25519:4SViyksDtdDdCPkkyzMg4HYADEQ3t5YGEd3EBoSADxdaAzDasZ7qJbxr2wNSFkWipya6C2eVJJucK1vkyoGndiyt"
+      },
+      {
+        "name": "devhub.near:keystore:theori.near:mainnet",
+        "value": "ed25519:eUVkG7dVfg5Z776MPy7d4L23cmEtAxrYoP1HgWSQrBy1GHdaZystRkYyz4ANN5uyKceuUrjyoLWaPgpzvo3BNDZ"
+      },
+      {
+        "name": "events-committee.near:keystore:theori.near:mainnet",
+        "value": "ed25519:2fBVgJF9NpbAsGfNsGVZGbA1wX46Xyqcn9pZZ9hLA6BpawvDbeD9CAuXDteHMGa3mRuTg9pMQJqvqNhGRfUzYhtc"
+      },
+      {
+        "name": "near-social-vm:v01::accountId:",
+        "value": "\"theori.near\""
+      },
+      {
+        "name": "near-wallet-selector:recentlySignedInWallets",
+        "value": "[\"my-near-wallet\"]"
+      },
+      {
+        "name": "near-wallet-selector:contract",
+        "value": "{\"contractId\":\"social.near\",\"methodNames\":[]}"
+      }
+    ]
+  }],
   "sessionStorage": []
 }

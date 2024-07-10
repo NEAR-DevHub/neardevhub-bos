@@ -49,7 +49,7 @@ const access_keys = [
         },
       },
     },
-    public_key: "ed25519:13eo8G3waa9aUUWUrs159pQa9C6QRFHimeXQKmPsfc4W",
+    public_key: "ed25519:9enAAsDiQ2NvKU2TsHLETp96sYeN2qkbHxhpXLjCQThS",
   },
   {
     access_key: {

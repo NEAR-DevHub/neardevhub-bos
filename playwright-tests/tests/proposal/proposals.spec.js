@@ -255,6 +255,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
   });
   test("should edit proposal timeline from review to decision stage with KYC verified", async ({
     page,
+    account,
   }) => {
     test.setTimeout(70000);
     let isTransactionCompleted = false;
