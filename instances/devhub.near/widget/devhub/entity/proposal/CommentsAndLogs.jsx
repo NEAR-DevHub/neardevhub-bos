@@ -178,6 +178,7 @@ const Comment = ({ commentItem }) => {
           />
         </div>
         <CommentContainer
+          id={`${accountId.replace(/[^a-z0-9]/g, "")}_${blockHeight}`}
           style={{ border: hightlightComment ? "2px solid black" : "" }}
           className="rounded-2 flex-1"
         >
