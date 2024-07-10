@@ -38,6 +38,19 @@ const access_keys = [
     },
     public_key: "ed25519:EQr7NpVYFu1XcVZ23Lb4Ga3KbDQgrYeTMTgBsYa26Bne",
   },
+  {
+    access_key: {
+      nonce: 109629226000005,
+      permission: {
+        FunctionCall: {
+          allowance: "241917078840755500000000",
+          method_names: [],
+          receiver_id: "events-committee.near",
+        },
+      },
+    },
+    public_key: "ed25519:13eo8G3waa9aUUWUrs159pQa9C6QRFHimeXQKmPsfc4W",
+  },
 ];
 
 export function decodeResultJSON(resultArray) {
