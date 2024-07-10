@@ -1,4 +1,5 @@
 import test, { expect } from "@playwright/test";
+import { pauseIfVideoRecording } from "../../testUtils.js";
 
 test.describe("share links", () => {
   test.use({
@@ -47,7 +48,7 @@ test.describe("share links", () => {
     await twitterPage.waitForURL(shareOnXUrl);
   });
 
-  test("copying links should have clean URLs and scroll into view", async ({
+  test("copying comment links should have clean URLs and scroll into view", async ({
     page,
   }) => {
     await page.goto(
@@ -64,12 +65,8 @@ test.describe("share links", () => {
               /[^a-z0-9]/g,
               ""
             )}${blockHeight}`;
+
             const linkElement = document.querySelector(linkElementSelector);
-            console.log(
-              "waiting for target element to appear",
-              linkElementSelector,
-              n
-            );
             if (linkElement) {
               linkElement.scrollIntoView();
               console.log("scrolled into view");

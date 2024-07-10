@@ -11,7 +11,6 @@ import {
   encodeResultJSON,
 } from "../../util/transaction.js";
 import { mockRpcRequest } from "../../util/rpcmock.js";
-import { mockSocialIndexResponses } from "../../util/socialapi.js";
 
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
