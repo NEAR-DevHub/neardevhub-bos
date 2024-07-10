@@ -37,4 +37,4 @@ jobs:
           npx playwright install
       - name: Run tests
         run: |
-          INSTANCE=events npx playwright test --project=events playwright-tests/tests/events-committee
+          INSTANCE=events npx playwright test --project=events playwright-tests/tests/events
