@@ -112,6 +112,15 @@ test.describe("Wallet is not connected", () => {
     expect(span1.isVisible()).toBeTruthy();
     expect(span2.isVisible()).toBeTruthy();
   });
+
+  test("should show developer-dao blog via navigation", async ({ page }) => {
+    await page.goto("/devhub.near/widget/app?page=blogv2");
+    await page.waitForSelector(`[data-testid^="card-category"]`);
+
+    const categories = await page.$$(`[data-testid^="card-category"]`);
+
+    expect(categories.length).toBeGreaterThan(0);
+  });
 });
 
 test.describe("Don't ask again enabled", () => {

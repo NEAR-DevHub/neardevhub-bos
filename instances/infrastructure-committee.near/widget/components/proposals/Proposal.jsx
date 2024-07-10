@@ -1,37 +1,40 @@
-const { href, getLinkUsingCurrentGateway } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.url"
-) || {
-  href: () => {},
+const {
+  PROPOSAL_TIMELINE_STATUS,
+  fetchGraphQL,
+  parseJSON,
+  isNumber,
+  getLinkUsingCurrentGateway,
+} = VM.require(`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`) || {
+  PROPOSAL_TIMELINE_STATUS: {},
+  fetchGraphQL: () => {},
+  parseJSON: () => {},
+  isNumber: () => {},
   getLinkUsingCurrentGateway: () => {},
 };
+
+const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
+href || (href = () => {});
+const { getGlobalLabels } = VM.require(
+  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.core.lib.contract`
+) || { getGlobalLabels: () => {} };
+
 const { readableDate } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common"
+  `${REPL_DEVHUB}/widget/core.lib.common`
 ) || { readableDate: () => {} };
 
 const accountId = context.accountId;
 /*
----props---
-props.id: number;
-props.timestamp: number; optional
-accountId: string
-blockHeight:number
-*/
-
-const TIMELINE_STATUS = {
-  DRAFT: "DRAFT",
-  REVIEW: "REVIEW",
-  APPROVED: "APPROVED",
-  REJECTED: "REJECTED",
-  CANCELED: "CANCELLED",
-  APPROVED_CONDITIONALLY: "APPROVED_CONDITIONALLY",
-  PAYMENT_PROCESSING: "PAYMENT_PROCESSING",
-  FUNDED: "FUNDED",
-};
+  ---props---
+  props.id: number;
+  props.timestamp: number; optional
+  accountId: string
+  blockHeight:number
+  */
 
 const DecisionStage = [
-  TIMELINE_STATUS.APPROVED,
-  TIMELINE_STATUS.REJECTED,
-  TIMELINE_STATUS.APPROVED_CONDITIONALLY,
+  PROPOSAL_TIMELINE_STATUS.APPROVED,
+  PROPOSAL_TIMELINE_STATUS.REJECTED,
+  PROPOSAL_TIMELINE_STATUS.APPROVED_CONDITIONALLY,
 ];
 
 const Container = styled.div`
@@ -171,7 +174,7 @@ const Container = styled.div`
   }
 
   .green-btn {
-    background-color: #04a46e !important;
+    background-color: #03ba16 !important;
     border: none;
     color: white;
 
@@ -263,9 +266,68 @@ const LinkProfile = ({ account, children }) => {
 const stepsArray = [1, 2, 3, 4, 5];
 
 const { id, timestamp } = props;
-const proposal = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
-  proposal_id: parseInt(id),
-});
+const proposal = Near.view(
+  "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+  "get_proposal",
+  {
+    proposal_id: parseInt(id),
+  }
+);
+
+const [snapshotHistory, setSnapshotHistory] = useState([]);
+
+const queryName = "${REPL_PROPOSAL_QUERY_NAME}";
+const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
+  ${queryName}(
+    offset: $offset
+    limit: $limit
+    order_by: {ts: asc}
+    where: $where
+  ) {
+    editor_id
+    name
+    summary
+    description
+    ts
+    proposal_id
+    timeline
+    labels
+    linked_proposals
+    linked_rfp
+    requested_sponsorship_usd_amount
+    requested_sponsorship_paid_in_currency
+    receiver_account
+    requested_sponsor
+    supervisor
+  }
+}`;
+
+const fetchSnapshotHistory = () => {
+  const variables = {
+    where: { proposal_id: { _eq: id } },
+  };
+  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
+    if (result.status === 200) {
+      if (result.body.data) {
+        const data = result.body.data?.[queryName];
+        const history = data.map((item) => {
+          const proposalData = {
+            ...item,
+            timestamp: item.ts,
+            timeline: parseJSON(item.timeline),
+          };
+          delete proposalData.ts;
+          return proposalData;
+        });
+        setSnapshotHistory(history);
+      }
+    }
+  });
+};
+
+useEffect(() => {
+  fetchSnapshotHistory();
+}, [id]);
 
 if (!proposal) {
   return (
@@ -274,53 +336,30 @@ if (!proposal) {
       className="d-flex justify-content-center align-items-center w-100"
     >
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
+        src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner`}
       />
     </div>
   );
 }
 if (timestamp && proposal) {
   proposal.snapshot =
-    proposal.snapshot_history.find((item) => item.timestamp === timestamp) ??
+    snapshotHistory.find((item) => item.timestamp === timestamp) ??
     proposal.snapshot;
 }
 
 const { snapshot } = proposal;
+snapshot.timeline = parseJSON(snapshot.timeline);
 
 const authorId = proposal.author_id;
 const blockHeight = parseInt(proposal.social_db_post_block_height);
 const item = {
   type: "social",
-  path: `${REPL_DEVHUB_CONTRACT}/post/main`,
+  path: `${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}/post/main`,
   blockHeight,
 };
-const comments = Social.index("comment", item, { subscribe: true }) ?? [];
-
-const commentAuthors = [
-  ...new Set(comments.map((comment) => comment.accountId)),
-];
-
-const proposalURL = `https://${REPL_DEVHUB}.page/proposal/${proposal.id}`;
-
-const KycVerificationStatus = () => {
-  const isVerified = true;
-  return (
-    <div className="d-flex gap-2 align-items-center">
-      <img
-        src={
-          isVerified
-            ? "https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm"
-            : "https://ipfs.near.social/ipfs/bafkreieq4222tf3hkbccfnbw5kpgedm3bf2zcfgzbnmismxav2phqdwd7q"
-        }
-        height={40}
-      />
-      <div className="d-flex flex-column">
-        <div className="h6 mb-0">KYC Verified</div>
-        <div className="text-sm">Expires on Aug 24, 2024</div>
-      </div>
-    </div>
-  );
-};
+const proposalURL = getLinkUsingCurrentGateway(
+  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
+);
 
 const SidePanelItem = ({ title, children, hideBorder, ishidden }) => {
   return (
@@ -338,25 +377,25 @@ const SidePanelItem = ({ title, children, hideBorder, ishidden }) => {
   );
 };
 
+const rfpLabelOptions = getGlobalLabels();
+
 const proposalStatusOptions = [
   {
     label: "Draft",
-    value: { status: TIMELINE_STATUS.DRAFT },
+    value: { status: PROPOSAL_TIMELINE_STATUS.DRAFT },
   },
   {
     label: "Review",
     value: {
-      status: TIMELINE_STATUS.REVIEW,
+      status: PROPOSAL_TIMELINE_STATUS.REVIEW,
       sponsor_requested_review: false,
       reviewer_completed_attestation: false,
-      kyc_verified_review: false,
     },
   },
   {
     label: "Approved",
     value: {
-      status: TIMELINE_STATUS.APPROVED,
-      kyc_verified_review: true,
+      status: PROPOSAL_TIMELINE_STATUS.APPROVED,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -364,8 +403,7 @@ const proposalStatusOptions = [
   {
     label: "Approved-Conditionally",
     value: {
-      status: TIMELINE_STATUS.APPROVED_CONDITIONALLY,
-      kyc_verified_review: true,
+      status: PROPOSAL_TIMELINE_STATUS.APPROVED_CONDITIONALLY,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -373,7 +411,7 @@ const proposalStatusOptions = [
   {
     label: "Rejected",
     value: {
-      status: TIMELINE_STATUS.REJECTED,
+      status: PROPOSAL_TIMELINE_STATUS.REJECTED,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -381,7 +419,7 @@ const proposalStatusOptions = [
   {
     label: "Canceled",
     value: {
-      status: TIMELINE_STATUS.CANCELED,
+      status: PROPOSAL_TIMELINE_STATUS.CANCELED,
       sponsor_requested_review: false,
       reviewer_completed_attestation: false,
     },
@@ -389,9 +427,8 @@ const proposalStatusOptions = [
   {
     label: "Payment-processing",
     value: {
-      status: TIMELINE_STATUS.PAYMENT_PROCESSING,
-      kyc_verified_review: true,
-      kyc_verified: true,
+      status: PROPOSAL_TIMELINE_STATUS.PAYMENT_PROCESSING,
+      kyc_verified: false,
       test_transaction_sent: false,
       request_for_trustees_created: false,
       sponsor_requested_review: true,
@@ -401,9 +438,8 @@ const proposalStatusOptions = [
   {
     label: "Funded",
     value: {
-      status: TIMELINE_STATUS.FUNDED,
+      status: PROPOSAL_TIMELINE_STATUS.FUNDED,
       trustees_released_payment: true,
-      kyc_verified_review: true,
       kyc_verified: true,
       test_transaction_sent: true,
       request_for_trustees_created: true,
@@ -413,56 +449,10 @@ const proposalStatusOptions = [
   },
 ];
 
-const LinkedProposals = () => {
-  const linkedProposalsData = [];
-  snapshot.linked_proposals.map((item) => {
-    const data = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
-      proposal_id: item,
-    });
-    if (data !== null) {
-      linkedProposalsData.push(data);
-    }
-  });
-
-  return (
-    <div className="d-flex flex-column gap-3">
-      {linkedProposalsData.map((item) => {
-        return (
-          <a
-            href={`?page=proposal&id=${item.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <div className="d-flex gap-2">
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
-                props={{
-                  accountId: item.snapshot.editor_id,
-                }}
-              />
-              <div className="d-flex flex-column" style={{ maxWidth: 250 }}>
-                <div className="text-truncate">
-                  <LinkProfile account={item.snapshot.name}>
-                    <b>{item.snapshot.name}</b>
-                  </LinkProfile>
-                </div>
-                <div className="text-sm text-muted">
-                  created on {readableDate(item.snapshot.timestamp / 1000000)}
-                </div>
-              </div>
-            </div>
-          </a>
-        );
-      })}
-    </div>
-  );
-};
-
 const CheckBox = ({ value, isChecked, label, disabled, onClick }) => {
   return (
     <div className="d-flex gap-2 align-items-center">
       <input
-        data-testid={label}
         class="form-check-input"
         type="checkbox"
         value={value}
@@ -493,7 +483,7 @@ const RadioButton = ({ value, isChecked, label }) => {
 };
 
 const isAllowedToEditProposal = Near.view(
-  "${REPL_DEVHUB_CONTRACT}",
+  "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
   "is_allowed_to_edit_proposal",
   {
     proposal_id: proposal.id,
@@ -501,13 +491,17 @@ const isAllowedToEditProposal = Near.view(
   }
 );
 
-const isModerator = Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", {
-  account_id: accountId,
-});
+const isModerator = Near.view(
+  "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+  "is_allowed_to_write_rfps",
+  {
+    editor: context.accountId,
+  }
+);
 
 const editProposal = ({ timeline }) => {
   const body = {
-    proposal_body_version: "V0",
+    proposal_body_version: "V1",
     name: snapshot.name,
     description: snapshot.description,
     category: snapshot.category,
@@ -517,19 +511,20 @@ const editProposal = ({ timeline }) => {
     requested_sponsorship_paid_in_currency:
       snapshot.requested_sponsorship_paid_in_currency,
     receiver_account: snapshot.receiver_account,
-    supervisor: supervisor || null,
     requested_sponsor: snapshot.requested_sponsor,
     timeline: timeline,
+    linked_rfp: snapshot.linked_rfp,
+    supervisor: supervisor ?? snapshot.supervisor,
   };
   const args = {
-    labels: [],
+    labels: snapshot.linked_rfp ? [] : snapshot.labels,
     body: body,
     id: proposal.id,
   };
 
   Near.call([
     {
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
       methodName: "edit_proposal",
       args: args,
       gas: 270000000000000,
@@ -540,24 +535,19 @@ const editProposal = ({ timeline }) => {
 const editProposalStatus = ({ timeline }) => {
   Near.call([
     {
-      contractName: "${REPL_DEVHUB_CONTRACT}",
-      methodName: "edit_proposal_versioned_timeline",
+      contractName: "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+      methodName: "edit_proposal_timeline",
       args: {
         id: proposal.id,
-        timeline: { timeline_version: "V1", ...timeline },
+        timeline: timeline,
       },
       gas: 270000000000000,
     },
   ]);
-  setEditProposalTimelineCalled(true);
 };
 
 const [isReviewModalOpen, setReviewModal] = useState(false);
 const [isCancelModalOpen, setCancelModal] = useState(false);
-const [isEditProposalTimelineCalled, setEditProposalTimelineCalled] =
-  useState(false);
-const [showTimeLineStatusSubmittedToast, setShowTimeLineStatusSubmittedToast] =
-  useState(false);
 const [showTimelineSetting, setShowTimelineSetting] = useState(false);
 const proposalStatus = useCallback(
   () =>
@@ -569,10 +559,6 @@ const proposalStatus = useCallback(
 const [updatedProposalStatus, setUpdatedProposalStatus] = useState({});
 
 useEffect(() => {
-  if (isEditProposalTimelineCalled) {
-    setShowTimeLineStatusSubmittedToast(true);
-    setEditProposalTimelineCalled(false);
-  }
   setUpdatedProposalStatus({
     ...proposalStatus(),
     value: { ...proposalStatus().value, ...snapshot.timeline },
@@ -608,7 +594,7 @@ const TimelineItems = ({ title, children, value, values }) => {
   }
   if (
     statusIndex > indexOfCurrentItem ||
-    updatedProposalStatus.value.status === TIMELINE_STATUS.FUNDED
+    updatedProposalStatus.value.status === PROPOSAL_TIMELINE_STATUS.FUNDED
   ) {
     color = "#EEFEF0";
   }
@@ -635,7 +621,7 @@ const TimelineItems = ({ title, children, value, values }) => {
 };
 
 const link = href({
-  widgetSrc: "${REPL_DEVHUB}/widget/app",
+  widgetSrc: `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app`,
   params: {
     page: "create-proposal",
     id: proposal.id,
@@ -643,25 +629,12 @@ const link = href({
   },
 });
 
-const createdDate =
-  proposal.snapshot_history?.[proposal.snapshot_history.length - 1]
-    ?.timestamp ?? snapshot.timestamp;
+const createdDate = snapshotHistory[0]?.timestamp ?? snapshot.timestamp;
 
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
     <Widget
-      src="near/widget/DIG.Toast"
-      props={{
-        title: "Timeline status submitted successfully",
-        type: "success",
-        open: showTimeLineStatusSubmittedToast,
-        onOpenChange: (v) => setShowTimeLineStatusSubmittedToast(v),
-        trigger: <></>,
-        providerProps: { duration: 3000 },
-      }}
-    />
-    <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal"}
+      src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal`}
       props={{
         isOpen: isReviewModalOpen,
         onCancelClick: () => setReviewModal(false),
@@ -672,7 +645,7 @@ return (
       }}
     />
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmCancelModal"}
+      src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmCancelModal`}
       props={{
         isOpen: isCancelModalOpen,
         onCancelClick: () => setCancelModal(false),
@@ -689,18 +662,18 @@ return (
       </div>
       <div className="d-flex gap-2 align-items-center">
         <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.ShareLinkButton"
+          src={`${REPL_NEAR}/widget/ShareButton`}
           props={{
-            postType: "proposal",
+            postType: "post",
             url: proposalURL,
           }}
         />
         {((isAllowedToEditProposal &&
-          snapshot.timeline.status === TIMELINE_STATUS.DRAFT) ||
+          snapshot.timeline.status === PROPOSAL_TIMELINE_STATUS.DRAFT) ||
           isModerator) && (
           <Link to={link} style={{ textDecoration: "none" }}>
             <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
               props={{
                 label: "Edit",
                 classNames: { root: "grey-btn btn-sm" },
@@ -712,7 +685,7 @@ return (
     </div>
     <div className="d-flex flex-wrap flex-md-nowrap px-3 px-lg-0 gap-2 align-items-center text-sm pb-3 w-100">
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+        src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag`}
         props={{
           timelineStatus: snapshot.timeline.status,
           size: "sm",
@@ -727,7 +700,7 @@ return (
     </div>
     <div className="card no-border rounded-0 full-width-div px-3 px-lg-0">
       <div className="container-xl py-4">
-        {snapshot.timeline.status === TIMELINE_STATUS.DRAFT &&
+        {snapshot.timeline.status === PROPOSAL_TIMELINE_STATUS.DRAFT &&
           isAllowedToEditProposal && (
             <div className="draft-info-container p-3 p-sm-4 d-flex flex-wrap flex-sm-nowrap justify-content-between align-items-center gap-2 rounded-2">
               <div style={{ minWidth: "300px" }}>
@@ -744,9 +717,7 @@ return (
               </div>
               <div style={{ minWidth: "fit-content" }}>
                 <Widget
-                  src={
-                    "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                  }
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                   props={{
                     label: "Ready for review",
                     classNames: { root: "grey-btn btn-sm" },
@@ -756,7 +727,7 @@ return (
               </div>
             </div>
           )}
-        {snapshot.timeline.status === TIMELINE_STATUS.REVIEW &&
+        {snapshot.timeline.status === PROPOSAL_TIMELINE_STATUS.REVIEW &&
           isAllowedToEditProposal && (
             <div className="review-info-container p-3 p-sm-4 d-flex flex-wrap flex-sm-nowrap justify-content-between align-items-center gap-2 rounded-2">
               <div style={{ minWidth: "300px" }}>
@@ -773,9 +744,7 @@ return (
               </div>
               <div style={{ minWidth: "fit-content" }}>
                 <Widget
-                  src={
-                    "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                  }
+                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                   props={{
                     label: (
                       <div className="d-flex align-items-center gap-1">
@@ -805,7 +774,7 @@ return (
               >
                 <div className="d-none d-sm-flex">
                   <Widget
-                    src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+                    src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile`}
                     props={{
                       accountId: authorId,
                     }}
@@ -825,7 +794,7 @@ return (
                     >
                       ･{" "}
                       <Widget
-                        src="${REPL_NEAR}/widget/TimeAgo"
+                        src={`${REPL_NEAR}/widget/TimeAgo`}
                         props={{
                           blockHeight,
                           blockTimestamp: createdDate,
@@ -834,7 +803,7 @@ return (
                       {context.accountId && (
                         <div className="menu">
                           <Widget
-                            src="${REPL_NEAR}/widget/Posts.Menu"
+                            src={`${REPL_NEAR}/widget/Posts.Menu`}
                             props={{
                               accountId: authorId,
                               blockHeight: blockHeight,
@@ -850,12 +819,13 @@ return (
                     </div>
                     <div>
                       <Widget
-                        src={
-                          "${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryDropdown"
-                        }
+                        src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.MultiSelectCategoryDropdown`}
                         props={{
-                          selectedValue: snapshot.category,
+                          selected: snapshot.labels,
                           disabled: true,
+                          hideDropdown: true,
+                          onChange: () => {},
+                          availableOptions: rfpLabelOptions,
                         }}
                       />
                     </div>
@@ -867,23 +837,21 @@ return (
                       DESCRIPTION
                     </div>
                     <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+                      src={`${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer`}
                       props={{ text: snapshot.description }}
                     />
 
                     <div className="d-flex gap-2 align-items-center mt-4">
                       <Widget
-                        src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
+                        src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.LikeButton`}
                         props={{
                           item,
                           proposalId: proposal.id,
-                          notifyAccountId: authorId,
+                          notifyAccountIds: [authorId],
                         }}
                       />
                       <Widget
-                        src={
-                          "${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentIcon"
-                        }
+                        src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentIcon`}
                         props={{
                           item,
                           showOverlay: false,
@@ -891,7 +859,7 @@ return (
                         }}
                       />
                       <Widget
-                        src="${REPL_NEAR}/widget/CopyUrlButton"
+                        src={`${REPL_NEAR}/widget/CopyUrlButton`}
                         props={{
                           url: proposalURL,
                         }}
@@ -902,14 +870,13 @@ return (
               </div>
               <div className="border-bottom pb-4 mt-4">
                 <Widget
-                  src={
-                    "${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentsAndLogs"
-                  }
+                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.proposals.CommentsAndLogs`}
                   props={{
                     ...props,
                     id: proposal.id,
                     item: item,
-                    snapshotHistory: [...proposal.snapshot_history, snapshot],
+                    snapshotHistory: snapshotHistory,
+                    latestSnapshot: snapshot,
                   }}
                 />
               </div>
@@ -922,20 +889,12 @@ return (
                 className="pt-4"
               >
                 <Widget
-                  src={
-                    "${REPL_DEVHUB}/widget/devhub.entity.proposal.ComposeComment"
-                  }
+                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.ComposeComment`}
                   props={{
                     ...props,
                     item: item,
-                    notifyAccountId: authorId,
-                    id: proposal.id,
-                    sortedRelevantUsers: [
-                      authorId,
-                      snapshot.supervisor,
-                      snapshot.requested_sponsor,
-                      ...commentAuthors,
-                    ].filter((user) => user !== accountId),
+                    notifyAccountIds: [authorId],
+                    proposalId: proposal.id,
                   }}
                 />
               </div>
@@ -946,10 +905,21 @@ return (
             >
               <SidePanelItem title="Author">
                 <Widget
-                  src="${REPL_NEAR}/widget/AccountProfile"
+                  src={`${REPL_NEAR}/widget/AccountProfile`}
                   props={{
                     accountId: authorId,
                     noOverlay: true,
+                  }}
+                />
+              </SidePanelItem>
+              <SidePanelItem
+                title={"Linked RFP"}
+                ishidden={!isNumber(snapshot.linked_rfp)}
+              >
+                <Widget
+                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.LinkedRfps`}
+                  props={{
+                    linkedRfpIds: [snapshot.linked_rfp],
                   }}
                 />
               </SidePanelItem>
@@ -959,7 +929,12 @@ return (
                 }
                 ishidden={!snapshot.linked_proposals.length}
               >
-                <LinkedProposals />
+                <Widget
+                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.LinkedProposals`}
+                  props={{
+                    linkedProposalIds: snapshot.linked_proposals,
+                  }}
+                />
               </SidePanelItem>
               <SidePanelItem title="Funding Ask">
                 <div className="h4 text-black">
@@ -981,7 +956,7 @@ return (
               </SidePanelItem>
               <SidePanelItem title="Recipient Wallet Address">
                 <Widget
-                  src="${REPL_NEAR}/widget/AccountProfile"
+                  src={`${REPL_NEAR}/widget/AccountProfile`}
                   props={{
                     accountId: snapshot.receiver_account,
                     noOverlay: true,
@@ -990,7 +965,7 @@ return (
               </SidePanelItem>
               <SidePanelItem title="Recipient Verification Status">
                 <Widget
-                  src="${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus"
+                  src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus`}
                   props={{
                     receiverAccount: snapshot.receiver_account,
                     showGetVerifiedBtn:
@@ -999,29 +974,17 @@ return (
                   }}
                 />
               </SidePanelItem>
-              <SidePanelItem title="Requested Sponsor">
-                {snapshot.requested_sponsor && (
-                  <Widget
-                    src="${REPL_NEAR}/widget/AccountProfile"
-                    props={{
-                      accountId: snapshot.requested_sponsor,
-                      noOverlay: true,
-                    }}
-                  />
-                )}
-              </SidePanelItem>
-              <SidePanelItem title="Supervisor">
-                {snapshot.supervisor ? (
-                  <Widget
-                    src="${REPL_NEAR}/widget/AccountProfile"
-                    props={{
-                      accountId: snapshot.supervisor,
-                      noOverlay: true,
-                    }}
-                  />
-                ) : (
-                  "No Supervisor"
-                )}
+              <SidePanelItem
+                title="Project Coordinator"
+                ishidden={!snapshot.supervisor}
+              >
+                <Widget
+                  src={`${REPL_NEAR}/widget/AccountProfile`}
+                  props={{
+                    accountId: snapshot.supervisor,
+                    noOverlay: true,
+                  }}
+                />
               </SidePanelItem>
               <SidePanelItem
                 hideBorder={true}
@@ -1039,7 +1002,7 @@ return (
                       <div className="mt-2 d-flex flex-column gap-2">
                         <h6 className="mb-0">Proposal Status</h6>
                         <Widget
-                          src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
+                          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown`}
                           props={{
                             options: proposalStatusOptions,
                             selectedValue: updatedProposalStatus,
@@ -1083,7 +1046,7 @@ return (
                         const completed =
                           statusIndex > indexOfCurrentItem ||
                           updatedProposalStatus.value.status ===
-                            TIMELINE_STATUS.FUNDED;
+                            PROPOSAL_TIMELINE_STATUS.FUNDED;
                         return (
                           <div className="d-flex flex-column align-items-center gap-1">
                             <div
@@ -1122,7 +1085,7 @@ return (
                     <div className="d-flex flex-column gap-3">
                       <TimelineItems
                         title="1) Draft"
-                        value={TIMELINE_STATUS.DRAFT}
+                        value={PROPOSAL_TIMELINE_STATUS.DRAFT}
                       >
                         <div>
                           Once an author submits a proposal, it is in draft mode
@@ -1133,7 +1096,7 @@ return (
                       </TimelineItems>
                       <TimelineItems
                         title="2) Review"
-                        value={TIMELINE_STATUS.REVIEW}
+                        value={PROPOSAL_TIMELINE_STATUS.REVIEW}
                       >
                         <div className="d-flex flex-column gap-2">
                           Sponsors who agree to consider the proposal may
@@ -1174,33 +1137,14 @@ return (
                                 .reviewer_completed_attestation
                             }
                           />
-                          <CheckBox
-                            value={
-                              updatedProposalStatus.value.kyc_verified_review
-                            }
-                            label="Sponsor verifies KYC/KYB"
-                            disabled={selectedStatusIndex !== 1}
-                            onClick={(value) =>
-                              setUpdatedProposalStatus((prevState) => ({
-                                ...prevState,
-                                value: {
-                                  ...prevState.value,
-                                  kyc_verified_review: value,
-                                },
-                              }))
-                            }
-                            isChecked={
-                              updatedProposalStatus.value.kyc_verified_review
-                            }
-                          />
                         </div>
                       </TimelineItems>
                       <TimelineItems
                         title="3) Decision"
                         values={[
-                          TIMELINE_STATUS.APPROVED,
-                          TIMELINE_STATUS.APPROVED_CONDITIONALLY,
-                          TIMELINE_STATUS.REJECTED,
+                          PROPOSAL_TIMELINE_STATUS.APPROVED,
+                          PROPOSAL_TIMELINE_STATUS.APPROVED_CONDITIONALLY,
+                          PROPOSAL_TIMELINE_STATUS.REJECTED,
                         ]}
                       >
                         <div className="d-flex flex-column gap-2">
@@ -1210,11 +1154,11 @@ return (
                             label={<div className="fw-bold">Approved</div>}
                             isChecked={
                               updatedProposalStatus.value.status ===
-                                TIMELINE_STATUS.APPROVED ||
+                                PROPOSAL_TIMELINE_STATUS.APPROVED ||
                               updatedProposalStatus.value.status ===
-                                TIMELINE_STATUS.PAYMENT_PROCESSING ||
+                                PROPOSAL_TIMELINE_STATUS.PAYMENT_PROCESSING ||
                               updatedProposalStatus.value.status ===
-                                TIMELINE_STATUS.FUNDED
+                                PROPOSAL_TIMELINE_STATUS.FUNDED
                             }
                           />
                           <RadioButton
@@ -1232,7 +1176,7 @@ return (
                             }
                             isChecked={
                               updatedProposalStatus.value.status ===
-                              TIMELINE_STATUS.APPROVED_CONDITIONALLY
+                              PROPOSAL_TIMELINE_STATUS.APPROVED_CONDITIONALLY
                             }
                           />
                           <RadioButton
@@ -1240,7 +1184,7 @@ return (
                             label={<div className="fw-bold">Rejected</div>}
                             isChecked={
                               updatedProposalStatus.value.status ===
-                              TIMELINE_STATUS.REJECTED
+                              PROPOSAL_TIMELINE_STATUS.REJECTED
                             }
                           />
                           <RadioButton
@@ -1248,16 +1192,31 @@ return (
                             label={<div className="fw-bold">Canceled</div>}
                             isChecked={
                               updatedProposalStatus.value.status ===
-                              TIMELINE_STATUS.CANCELED
+                              PROPOSAL_TIMELINE_STATUS.CANCELED
                             }
                           />
                         </div>
                       </TimelineItems>
                       <TimelineItems
                         title="4) Payment Processing"
-                        value={TIMELINE_STATUS.PAYMENT_PROCESSING}
+                        value={PROPOSAL_TIMELINE_STATUS.PAYMENT_PROCESSING}
                       >
                         <div className="d-flex flex-column gap-2">
+                          <CheckBox
+                            value={updatedProposalStatus.value.kyc_verified}
+                            label="Sponsor verifies KYC/KYB"
+                            disabled={selectedStatusIndex !== 6}
+                            onClick={(value) =>
+                              setUpdatedProposalStatus((prevState) => ({
+                                ...prevState,
+                                value: {
+                                  ...prevState.value,
+                                  kyc_verified: value,
+                                },
+                              }))
+                            }
+                            isChecked={updatedProposalStatus.value.kyc_verified}
+                          />
                           <CheckBox
                             value={
                               updatedProposalStatus.value.test_transaction_sent
@@ -1277,47 +1236,11 @@ return (
                               updatedProposalStatus.value.test_transaction_sent
                             }
                           />
-                          {/* Not needed for Alpha testing */}
-                          {/* <CheckBox
-                          value=""
-                          disabled={selectedStatusIndex !== 6}
-                          label="Sponsor sends test transaction"
-                          onClick={(value) =>
-                            setUpdatedProposalStatus((prevState) => ({
-                              ...prevState,
-                              value: {
-                                ...prevState.value,
-                                test_transaction_sent: value
-                              }
-                            }))
-                          }
-                          isChecked={
-                            updatedProposalStatus.value.test_transaction_sent
-                          }
-                        />
-                        <CheckBox
-                          value=""
-                          disabled={selectedStatusIndex !== 6}
-                          label="Sponsor creates funding request from Trustees"
-                          onClick={(value) =>
-                            setUpdatedProposalStatus((prevState) => ({
-                              ...prevState,
-                              value: {
-                                ...prevState.value,
-                                request_for_trustees_created: value
-                              }
-                            }))
-                          }
-                          isChecked={
-                            updatedProposalStatus.value
-                              .request_for_trustees_created
-                          }
-                        /> */}
                         </div>
                       </TimelineItems>
                       <TimelineItems
                         title="5) Funded"
-                        value={TIMELINE_STATUS.FUNDED}
+                        value={PROPOSAL_TIMELINE_STATUS.FUNDED}
                       >
                         <div className="d-flex flex-column gap-2">
                           {paymentHashes?.length > 1 ? (
@@ -1361,25 +1284,27 @@ return (
                   {showTimelineSetting && (
                     <div className="d-flex flex-column gap-2">
                       <div className="border-vertical py-3 my-2">
-                        <label className="text-black h6">Supervisor</label>
+                        <label className="text-black h6">
+                          Project Coordinator
+                        </label>
                         <Widget
-                          src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
+                          src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput`}
                           props={{
                             value: supervisor,
-                            placeholder: "Enter Supervisor",
+                            placeholder: "",
                             onUpdate: setSupervisor,
                           }}
                         />
                       </div>
                       {updatedProposalStatus.value.status ===
-                        TIMELINE_STATUS.FUNDED && (
+                        PROPOSAL_TIMELINE_STATUS.FUNDED && (
                         <div className="border-vertical py-3 my-2">
                           <label className="text-black h6">Payment Link</label>
                           <div className="d-flex flex-column gap-2">
                             {paymentHashes.map((item, index) => (
                               <div className="d-flex gap-2 justify-content-between align-items-center">
                                 <Widget
-                                  src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Input`}
                                   props={{
                                     className: "flex-grow-1",
                                     value: item,
@@ -1395,9 +1320,7 @@ return (
                                 <div style={{ minWidth: 20 }}>
                                   {index !== paymentHashes.length - 1 ? (
                                     <Widget
-                                      src={
-                                        "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                                      }
+                                      src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                                       props={{
                                         classNames: {
                                           root: "btn-outline-danger shadow-none w-100",
@@ -1414,13 +1337,12 @@ return (
                                     />
                                   ) : (
                                     <Widget
-                                      src={
-                                        "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                                      }
+                                      src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                                       props={{
                                         classNames: {
                                           root: "green-btn shadow-none border-0 w-100",
                                         },
+                                        disabled: !item,
                                         label: <i class="bi bi-plus-lg"></i>,
                                         onClick: () =>
                                           setPaymentHashes([
@@ -1438,9 +1360,7 @@ return (
                       )}
                       <div className="d-flex gap-2 align-items-center justify-content-end text-sm">
                         <Widget
-                          src={
-                            "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                          }
+                          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                           props={{
                             label: "Cancel",
                             classNames: {
@@ -1452,26 +1372,15 @@ return (
                             },
                           }}
                         />
-
                         <Widget
-                          src={
-                            "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
-                          }
+                          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                           props={{
                             label: "Save",
                             disabled:
-                              ((updatedProposalStatus.value.status ===
-                                TIMELINE_STATUS.APPROVED ||
-                                updatedProposalStatus.value.status ===
-                                  TIMELINE_STATUS.APPROVED_CONDITIONALLY ||
-                                updatedProposalStatus.value.status ===
-                                  TIMELINE_STATUS.PAYMENT_PROCESSING) &&
-                                !updatedProposalStatus.value
-                                  .kyc_verified_review) ||
-                              (!supervisor &&
-                                DecisionStage.includes(
-                                  updatedProposalStatus.value.status
-                                )),
+                              !supervisor &&
+                              DecisionStage.includes(
+                                updatedProposalStatus.value.status
+                              ),
                             classNames: { root: "green-btn btn-sm" },
                             onClick: () => {
                               if (snapshot.supervisor !== supervisor) {
@@ -1480,7 +1389,7 @@ return (
                                 });
                               } else if (
                                 updatedProposalStatus.value.status ===
-                                TIMELINE_STATUS.FUNDED
+                                PROPOSAL_TIMELINE_STATUS.FUNDED
                               ) {
                                 editProposalStatus({
                                   timeline: {

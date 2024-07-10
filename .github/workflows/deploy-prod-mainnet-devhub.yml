@@ -1,0 +1,49 @@
+name: Deploy Widgets to Mainnet - Devhub
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  deploy-widgets:
+    runs-on: ubuntu-latest
+    name: Deploy ( or diff from PR )
+    env:
+      NEAR_SOCIAL_DEPLOY_ID: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
+      NEAR_SOCIAL_ACCOUNT_ID: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
+      NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY: ${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}
+      NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY: ${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}
+      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+    defaults:
+      run:
+        working-directory: ./instances/devhub.near
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set replacements
+        id: set_replacements
+        run: |
+          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value), {"find": "${REPL_POSTHOG_API_KEY}", "replace": "'$POSTHOG_API_KEY'"}]' aliases.mainnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
+
+      - name: Replace placeholders
+        uses: flcdrg/replace-multiple-action@v1
+        with:
+          files: "**/*.jsx"
+          find: "${{ steps.set_replacements.outputs.replacements }}"
+          prefix: "(^|.*)"
+          suffix: "($|.*)"
+
+      - name: Install bos CLI
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.6/bos-cli-installer.sh | sh
+
+      - name: Deploy widgets
+        run: |
+          BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+          echo "on branch $BRANCH"
+          if [[ "$BRANCH" != "main" ]]; then
+            echo "Not on main branch, dry run by diff with devhub.near"
+            bos components diff devhub.near network-config mainnet
+          else
+            bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
+          fi

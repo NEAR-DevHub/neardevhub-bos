@@ -1,4 +1,4 @@
-name: Deploy Widgets to Mainnet
+name: Deploy Widgets to Mainnet - Infrastructure
 on:
   pull_request:
   push:
@@ -8,14 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy ( or diff from PR )
     env:
-      NEAR_SOCIAL_DEPLOY_ID: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
-      NEAR_SOCIAL_ACCOUNT_ID: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
-      NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY: ${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}
-      NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY: ${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}
+      NEAR_SOCIAL_DEPLOY_ID: ${{ vars.NEAR_INFRA_SOCIAL_ACCOUNT_ID }}
+      NEAR_SOCIAL_ACCOUNT_ID: ${{ vars.NEAR_INFRA_SOCIAL_ACCOUNT_ID }}
+      NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY: ${{ vars.NEAR_INFRA_SOCIAL_ACCOUNT_PUBLIC_KEY }}
+      NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY: ${{ secrets.NEAR_INFRA_SOCIAL_ACCOUNT_PRIVATE_KEY }}
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
     defaults:
       run:
-        working-directory: ./instances/devhub.near
+        working-directory: ./instances/infrastructure-committee.near
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,8 +42,8 @@ jobs:
           BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           echo "on branch $BRANCH"
           if [[ "$BRANCH" != "main" ]]; then
-            echo "Not on main branch, dry run by diff with devhub.near"
-            bos components diff devhub.near network-config mainnet
+            echo "Not on main branch, dry run by diff with infrastructure-committee.near"
+            bos components diff infrastructure-committee.near network-config mainnet
           else
-            bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
+            bos components deploy "$NEAR_INFRA_SOCIAL_DEPLOY_ID" sign-as "$NEAR_INFRA_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_INFRA_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_INFRA_SOCIAL_ACCOUNT_PRIVATE_KEY" send
           fi

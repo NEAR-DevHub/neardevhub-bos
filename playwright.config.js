@@ -64,7 +64,7 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
-
+    { name: "infrastructure", use: { ...devices["Desktop Chrome"] } },
     /*{
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
@@ -102,7 +102,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     env: { POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456" },
-    command: "npm run gateway:devhub",
+    command: `npm run gateway:${process.env.INSTANCE ?? "devhub"}`,
     port: 3030,
     reuseExistingServer: !process.env.CI,
   },
