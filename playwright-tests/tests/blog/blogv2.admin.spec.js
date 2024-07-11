@@ -338,7 +338,8 @@ test.describe("Admin wallet is connected", () => {
     await pauseIfVideoRecording(page);
     await row.click();
 
-    const deleteButton = page.getByTestId("delete-blog-button");
+    const deleteButton = await page.getByTestId("delete-blog-button");
+    await expect(deleteButton).toBeAttached();
     await deleteButton.scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
     await deleteButton.click();
