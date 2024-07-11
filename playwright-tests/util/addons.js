@@ -4,10 +4,6 @@ export async function mockDefaultTabs(route) {
   const request = await route.request();
   const requestPostData = request.postDataJSON();
 
-  const devComponents = (
-    await fetch("http://localhost:3030").then((r) => r.json())
-  ).components;
-
   if (
     requestPostData.params &&
     requestPostData.params.account_id === "devhub.near" &&
@@ -121,38 +117,6 @@ export async function mockDefaultTabs(route) {
 
     await route.fulfill({ response, json });
     return;
-  } else if (
-    requestPostData.params &&
-    requestPostData.params.account_id === "social.near" &&
-    requestPostData.params.method_name === "get"
-  ) {
-    const social_get_key = JSON.parse(atob(requestPostData.params.args_base64))
-      .keys[0];
-
-    const response = await route.fetch({
-      url: "http://localhost:20000/",
-    });
-    let json = {};
-    try {
-      json = await response.json();
-    } catch (error) {
-      console.error("Error parsing JSON response");
-      console.log(JSON.stringify(await response.text()));
-    }
-
-    // Replace component with local component
-    if (devComponents[social_get_key]) {
-      const social_get_key_parts = social_get_key.split("/");
-      const devWidget = {};
-      devWidget[social_get_key_parts[0]] = { widget: {} };
-      devWidget[social_get_key_parts[0]].widget[social_get_key_parts[2]] =
-        devComponents[social_get_key].code;
-      json.result.result = Array.from(
-        new TextEncoder().encode(JSON.stringify(devWidget))
-      );
-    }
-
-    await route.fulfill({ response, json });
   } else {
     await route.continue();
   }
