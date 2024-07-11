@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
-import { mockBlogs } from "../../util/blogs.js";
+import { mockBlogs, blogs } from "../../util/blogs.js";
 import { setDontAskAgainCacheValues } from "../../util/cache.js";
 import {
   mockTransactionSubmitRPCResponses,
@@ -13,10 +13,6 @@ const baseUrl =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=first-blog";
 
 const communityAccount = "webassemblymusic.community.devhub.near";
-
-// This blog is mocked in addons.js
-const blogPage =
-  "/devhub.near/widget/app?page=blogv2&id=published-w5cj1y&community=webassemblymusic";
 
 test.beforeEach(async ({ page }) => {
   await page.route("http://localhost:20000/", async (route) => {
@@ -390,11 +386,13 @@ test.describe("Don't ask again enabled", () => {
           const json = await response.json();
 
           const resultObj = decodeResultJSON(json.result.result);
+          resultObj[communityAccount].blog = blogs;
 
-          // Mock the deletion of the first blog id
-          const blogId = Object.keys(resultObj[communityAccount].blog)[0];
-          resultObj[communityAccount].blog[blogId] = null;
+          const blogId = "published-w5cj1y2";
 
+          if (is_transaction_completed) {
+            resultObj[communityAccount].blog[blogId] = null;
+          }
           json.result.result = encodeResultJSON(resultObj);
 
           await route.fulfill({ response, json });
@@ -440,38 +438,6 @@ test.describe("Don't ask again enabled", () => {
 
           await route.fulfill({ response, json });
           return;
-        } else if (
-          // Replace the remote components with local developed components
-          requestPostData.params &&
-          requestPostData.params.account_id === "social.near" &&
-          requestPostData.params.method_name === "get"
-        ) {
-          const social_get_key = JSON.parse(
-            atob(requestPostData.params.args_base64)
-          ).keys[0];
-
-          const response = await route.fetch({
-            url: "http://localhost:20000/",
-          });
-          const devComponents = (
-            await fetch("http://localhost:3030").then((r) => r.json())
-          ).components;
-          const json = await response.json();
-
-          // Replace component with local component
-          if (devComponents[social_get_key]) {
-            const social_get_key_parts = social_get_key.split("/");
-            const devWidget = {};
-            devWidget[social_get_key_parts[0]] = { widget: {} };
-            devWidget[social_get_key_parts[0]].widget[social_get_key_parts[2]] =
-              devComponents[social_get_key].code;
-            json.result.result = Array.from(
-              new TextEncoder().encode(JSON.stringify(devWidget))
-            );
-          }
-
-          await route.fulfill({ response, json });
-          return;
         }
 
         await route.continue();
@@ -480,18 +446,17 @@ test.describe("Don't ask again enabled", () => {
 
     // Click delete button
     const deleteButton = await page.getByTestId("delete-blog-button");
-    await expect(deleteButton).toBeVisible();
+    await expect(deleteButton).toBeAttached();
     await deleteButton.scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
     await deleteButton.click();
 
     await page.getByRole("button", { name: "Ready to Delete" }).click();
     // Show loading indicator
-    const transaction_toast = page.getByText(
+    const transaction_toast = await page.getByText(
       "Calling contract devhub.near with method set_community_socialdb"
     );
     await expect(transaction_toast).toBeVisible();
-
     await expect(deleteButton).toBeDisabled();
 
     await pauseIfVideoRecording(page);

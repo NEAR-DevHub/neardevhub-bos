@@ -217,15 +217,12 @@ useEffect(() => {
       },
     }).then((result) => {
       try {
-        if (
-          JSON.parse(result[communityAccount].blog[submittedBlogDeleted]) ===
-          null
-        ) {
+        if (!result[communityAccount].blog[submittedBlogDeleted]) {
           // Blog is deleted
           setSubmittedBlogDeleted(null);
         }
       } catch (e) {}
-      setTimeout(() => checkForDeletedBlogInSocialDB(), 1000);
+      setTimeout(() => checkForDeletedBlogInSocialDB(), 500);
     });
   };
   if (submittedBlogDeleted) {
