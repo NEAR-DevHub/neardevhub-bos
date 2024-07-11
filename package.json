@@ -17,7 +17,7 @@
     "build": "npm run fmt",
     "bw": "bos-workspace",
     "bw:dev:devhub": "bw dev instances/devhub.near",
-    "bw:build:devhub": "bw build instances/devhub.near",
+    "bw:build:devhub": "bw build instances/devhub.near build/devhub.near && mv build/devhub.near/src/widget/* build/devhub.near/src/ && rm -Rf build/devhub.near/src/widget",
     "gateway:devhub": "node scripts/dev-gateway.mjs devhub.near",
     "bw:dev:infrastructure": "bw dev instances/infrastructure-committee.near",
     "bw:build:infrastructure": "bw build instances/infrastructure-committee.near",

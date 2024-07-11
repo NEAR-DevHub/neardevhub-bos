@@ -80,8 +80,17 @@ Feel free to specify a new placeholder if needed. The placeholder should have a 
 
 #### Deploying preview environments
 
-Refer to [BOS-workspace deployment instructions](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#deployment) for deploying preview environments.
+Creating a preview environment is often useful for reviewers to test the new features before deploying to production. Before we can deploy components, there are several replacements of global variables that needs to be made, which is handled by the BOS workspaces build command.
 
+By running: 
+
+```bash
+npm run bw:build:devhub
+```
+
+you will get a new folder `build/devhub.near` that contains a `src` folder with all the components ready for deployment. The replacements are made according to the settings in `instances/devhub.near/aliases.mainnet.json` so you should for example change `REPL_DEVHUB` to the account name you are using for your preview environment. Note that "BOS workspaces" has a built in connection to BOS CLI for deploying with one command, but since "BOS workspaces" will output to `src/widgets` instead of `src`, and that it requires the signing key as a command argument, we have chosen to split this process in two steps using `bw build ` for replacing and preparing the deployment folder, and using `bos components deploy` separately for the deployment.
+
+From the `build/devhub.near` folder you can use `bos components deploy`.
 
 #### Deploy for Production
 

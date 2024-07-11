@@ -197,7 +197,10 @@ test.describe("Don't ask again enabled", () => {
       }
     );
 
-    const saveSettingsButton = page.getByTestId("save-settings-button").nth(1);
+    const saveSettingsButton = await page
+      .getByTestId("save-settings-button")
+      .nth(1);
+    await expect(saveSettingsButton).toBeAttached();
 
     // Save the settings
     await saveSettingsButton.click();
@@ -246,7 +249,9 @@ test.describe("Admin wallet is connected", () => {
     expect(await settingsButton.isVisible()).toBe(true);
     await settingsButton.click();
 
-    const saveSettingsButton = page.getByTestId("save-settings-button").first();
+    const saveSettingsButton = await page
+      .getByTestId("save-settings-button")
+      .first();
     await saveSettingsButton.scrollIntoViewIfNeeded();
     await expect(saveSettingsButton).toBeVisible();
   });
@@ -325,7 +330,8 @@ test.describe("Admin wallet is connected", () => {
     const configureButton = page.getByTestId("configure-addon-button-x");
     await configureButton.click();
 
-    const title = page.getByTestId("blog-instance-title");
+    const title = await page.getByTestId("blog-instance-title");
+    await expect(title).toBeAttached();
     await title.scrollIntoViewIfNeeded();
     expect(await title.innerText()).toBe("Mocked configured blog page title");
 
@@ -346,7 +352,8 @@ test.describe("Admin wallet is connected", () => {
     const configureButton = page.getByTestId("configure-addon-button-x");
     await configureButton.click();
 
-    const subTitle = page.getByTestId("blog-instance-subtitle");
+    const subTitle = await page.getByTestId("blog-instance-subtitle");
+    await expect(subTitle).toBeAttached();
     await subTitle.scrollIntoViewIfNeeded();
     expect(await subTitle.innerText()).toBe("Mocked configured subtitle");
     // Go to the other Viewer where it is not configured and see the default title
