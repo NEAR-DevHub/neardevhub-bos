@@ -249,7 +249,9 @@ test.describe("Admin wallet is connected", () => {
     expect(await settingsButton.isVisible()).toBe(true);
     await settingsButton.click();
 
-    const saveSettingsButton = page.getByTestId("save-settings-button").first();
+    const saveSettingsButton = await page
+      .getByTestId("save-settings-button")
+      .first();
     await saveSettingsButton.scrollIntoViewIfNeeded();
     await expect(saveSettingsButton).toBeVisible();
   });
