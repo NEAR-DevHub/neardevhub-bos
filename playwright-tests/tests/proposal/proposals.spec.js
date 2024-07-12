@@ -403,8 +403,8 @@ test.describe("Wallet is connected", () => {
     page,
   }) => {
     test.setTimeout(120000);
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
     await getCurrentBlockHeight(page);
+    await page.goto("/devhub.near/widget/app?page=create-proposal");
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
@@ -600,8 +600,9 @@ test.describe("Wallet is connected", () => {
     page,
   }) => {
     test.setTimeout(120000);
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
     await getCurrentBlockHeight(page);
+    await page.goto("/devhub.near/widget/app?page=create-proposal");
+
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
