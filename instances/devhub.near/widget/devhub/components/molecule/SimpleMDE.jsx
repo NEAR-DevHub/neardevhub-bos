@@ -18,11 +18,9 @@ State.init({
   message: props.data,
 });
 
-const profilesData = Social.get("*/profile/name", "final");
-const followingData = Social.get(
-  `${context.accountId}/graph/follow/**`,
-  "final"
-);
+const profilesData = Social.get("*/profile/name", "final") ?? {};
+const followingData =
+  Social.get(`${context.accountId}/graph/follow/**`, "final") ?? {};
 
 // SIMPLEMDE CONFIG //
 const fontFamily = props.fontFamily ?? "sans-serif";
