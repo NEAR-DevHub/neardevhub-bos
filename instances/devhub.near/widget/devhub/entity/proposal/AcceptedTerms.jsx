@@ -44,13 +44,12 @@ fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
   if (result.status === 200) {
     if (result.body.data) {
       const data = result.body.data?.[queryName];
-      console.log(data);
       State.update({ proposalBlockHeight: data[0].block_height });
     }
   }
 });
 
-let acceptedTermsVersion = "${REPL_TERMS_AND_CONDITION_BLOCKHEIGHT}";
+let acceptedTermsVersion = Near.block().header.height;
 
 if (state.proposalBlockHeight !== null) {
   const data = fetch(

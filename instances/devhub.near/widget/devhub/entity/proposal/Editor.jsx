@@ -751,7 +751,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
     args["id"] = editProposalData.id;
   } else {
     args["accepted_terms_and_conditions_version"] = parseInt(
-      "${REPL_TERMS_AND_CONDITION_BLOCKHEIGHT}"
+      Near.block().header.height
     );
   }
 
