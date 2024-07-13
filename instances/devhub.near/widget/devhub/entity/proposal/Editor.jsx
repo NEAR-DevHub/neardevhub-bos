@@ -733,6 +733,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
           status: "CANCELLED",
           sponsor_requested_review: false,
           reviewer_completed_attestation: false,
+          kyc_verified: false,
         }
       : isDraft
       ? { status: "DRAFT" }
@@ -750,7 +751,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
     args["id"] = editProposalData.id;
   } else {
     args["accepted_terms_and_conditions_version"] = parseInt(
-      "${REPL_TERMS_AND_CONDITION_BLOCKHEIGHT}"
+      Near.block().header.height
     );
   }
 

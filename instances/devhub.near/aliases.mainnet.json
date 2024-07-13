@@ -7,6 +7,5 @@
   "REPL_EFIZ": "efiz.near",
   "REPL_DEVS": "devs.near",
   "REPL_SOCIAL_CONTRACT": "social.near",
-  "REPL_RPC_URL": "https://rpc.mainnet.near.org",
-  "REPL_TERMS_AND_CONDITION_BLOCKHEIGHT": "122927956"
+  "REPL_RPC_URL": "https://rpc.mainnet.near.org"
 }
