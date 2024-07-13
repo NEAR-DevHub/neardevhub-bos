@@ -12,7 +12,7 @@ const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
 const fetchGraphQL = (operationsDoc, operationName, variables) => {
   return asyncFetch(QUERYAPI_ENDPOINT, {
     method: "POST",
-    headers: { "x-hasura-role": `polyprogrammist_near` },
+    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
     body: JSON.stringify({
       query: operationsDoc,
       variables: variables,
@@ -21,8 +21,7 @@ const fetchGraphQL = (operationsDoc, operationName, variables) => {
   });
 };
 
-const queryName =
-  "polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot";
+const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
 const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
       offset: $offset
