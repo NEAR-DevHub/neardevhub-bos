@@ -1,4 +1,4 @@
-name: Dry-run Deploy Widgets to Mainnet
+name: Deploy Widgets to Mainnet - Events
 on:
   pull_request:
   push:
