@@ -62,9 +62,12 @@ export function encodeResultJSON(resultObj) {
 }
 
 export async function mockTransactionSubmitRPCResponses(page, customhandler) {
-  let transaction_completed = false;
-  let last_receiver_id;
-  let lastViewedAccessKey;
+  const status = {
+    transaction_completed: false,
+    last_receiver_id: undefined,
+    lastViewedAccessKey: undefined,
+    last_transaction: undefined,
+  };
   await page.route(
     (url) =>
       url.origin === "https://rpc.mainnet.near.org" ||
@@ -89,10 +92,10 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
         const response = await route.fetch();
         const json = await response.json();
 
-        lastViewedAccessKey = access_keys.find(
+        status.lastViewedAccessKey = access_keys.find(
           (k) => k.public_key === requestPostData.params.public_key
         );
-        json.result = lastViewedAccessKey.access_key;
+        json.result = status.lastViewedAccessKey.access_key;
         delete json.error;
 
         await route.fulfill({ response, json });
@@ -111,9 +114,11 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
 
         await route.fulfill({ response, json });
       } else if (requestPostData.method == "broadcast_tx_commit") {
-        transaction_completed = false;
-        last_receiver_id =
-          lastViewedAccessKey.access_key.permission.FunctionCall.receiver_id;
+        status.transaction_completed = false;
+        status.last_receiver_id =
+          status.lastViewedAccessKey.access_key.permission.FunctionCall.receiver_id;
+        status.last_transaction = requestPostData;
+
         await page.waitForTimeout(1000);
 
         await route.fulfill({
@@ -124,7 +129,7 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
                 SuccessValue: "",
               },
               transaction: {
-                receiver_id: last_receiver_id,
+                receiver_id: status.last_receiver_id,
               },
               transaction_outcome: {
                 proof: [],
@@ -146,9 +151,9 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
             },
           },
         });
-        transaction_completed = true;
+        status.transaction_completed = true;
       } else if (
-        transaction_completed &&
+        status.transaction_completed &&
         requestPostData.params &&
         requestPostData.params.method_name === "get_all_post_ids"
       ) {
@@ -166,7 +171,7 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
         );
         await route.fulfill({ response, json });
       } else if (
-        transaction_completed &&
+        status.transaction_completed &&
         requestPostData.params &&
         requestPostData.params.method_name === "get_post"
       ) {
@@ -187,8 +192,9 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
         await customhandler({
           route,
           request,
-          transaction_completed,
-          last_receiver_id,
+          transaction_completed: status.transaction_completed,
+          last_receiver_id: status.last_receiver_id,
+          last_transaction: status.last_transaction,
           requestPostData,
         });
       } else {
@@ -196,4 +202,5 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
       }
     }
   );
+  return status;
 }
