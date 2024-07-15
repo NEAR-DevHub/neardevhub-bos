@@ -23,6 +23,26 @@ test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
 );
 
+let acceptedTermsVersion = 122927956;
+async function getCurrentBlockHeight(page) {
+  // set current block height for accepted terms and conditions
+  await page.route(`http://localhost:20000/`, async (route) => {
+    const request = route.request();
+    const requestPostData = request.postDataJSON();
+    if (
+      requestPostData?.method === "block" &&
+      requestPostData?.params?.finality === "optimistic"
+    ) {
+      const response = await route.fetch();
+      const json = await response.json();
+      json.result.header.height = acceptedTermsVersion;
+      await route.fulfill({ response, json });
+    } else {
+      await route.continue();
+    }
+  });
+}
+
 test.describe("Wallet is connected, but not KYC verified", () => {
   test.use({
     storageState:
@@ -397,8 +417,8 @@ test.describe("Wallet is connected", () => {
     account,
   }) => {
     test.setTimeout(120000);
+    await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
-
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
@@ -478,7 +498,7 @@ test.describe("Wallet is connected", () => {
       null,
       1
     );
-    await expect(transactionText).toEqual(
+    expect(transactionText).toEqual(
       JSON.stringify(
         {
           labels: [],
@@ -499,7 +519,7 @@ test.describe("Wallet is connected", () => {
               status: "DRAFT",
             },
           },
-          accepted_terms_and_conditions_version: 122927956,
+          accepted_terms_and_conditions_version: acceptedTermsVersion,
         },
         null,
         1
@@ -597,6 +617,7 @@ test.describe("Wallet is connected", () => {
     account,
   }) => {
     test.setTimeout(120000);
+    await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
 
     const delay_milliseconds_between_keypress_when_typing = 0;
@@ -629,12 +650,12 @@ test.describe("Wallet is connected", () => {
       .locator(".CodeMirror textarea");
     await descriptionArea.focus();
     await descriptionArea.pressSequentially(
-      `The test proposal description. And referencing #2`,
+      `The test proposal description. And referencing #`,
       {
         delay: delay_milliseconds_between_keypress_when_typing,
       }
     );
-
+    await descriptionArea.pressSequentially("2", { delay: 10 });
     await pauseIfVideoRecording(page);
 
     await page
@@ -686,7 +707,7 @@ test.describe("Wallet is connected", () => {
               status: "DRAFT",
             },
           },
-          accepted_terms_and_conditions_version: 122927956,
+          accepted_terms_and_conditions_version: acceptedTermsVersion,
         },
         null,
         1
