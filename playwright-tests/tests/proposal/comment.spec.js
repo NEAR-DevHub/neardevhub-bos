@@ -176,7 +176,6 @@ test.describe("Don't ask again enabled", () => {
 
     let submittedTransactionJsonObject;
     await page.route("https://api.near.social/index", async (route) => {
-      const request = route.request();
       if (transactionMockStatus.transaction_completed) {
         const lastTransactionParamBuffer = Buffer.from(
           transactionMockStatus.last_transaction.params[0],
@@ -195,9 +194,21 @@ test.describe("Don't ask again enabled", () => {
         submittedTransactionJsonObject = JSON.parse(
           transactionDataJsonString.toString()
         );
-        console.log("SOCIAL_INDEX", request.postData());
+
+        const response = await route.fetch();
+        const json = await response.json();
+        json.push({
+          accountId: "theori.near",
+          blockHeight: 121684809,
+          value: {
+            type: "md",
+          },
+        });
+
+        await route.fulfill({ json });
+      } else {
+        await route.continue();
       }
-      route.continue();
     });
 
     await commentButton.click();
@@ -224,6 +235,13 @@ test.describe("Don't ask again enabled", () => {
       submittedTransactionJsonObject.data["petersalomonsen.near"].post.comment
     );
     expect(submittedComment.text).toEqual(commentText);
+    const commentElement = await page.locator("#theorinear121684809");
+    await expect(commentElement).toBeVisible();
+    await commentElement.scrollIntoViewIfNeeded();
+    await expect(commentElement).toContainText(
+      "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated."
+    );
+
     await pauseIfVideoRecording(page);
   });
 });
