@@ -94,7 +94,9 @@ test.describe("Don't ask again enabled", () => {
     ).toContainText("Add your comment here...");
     await pauseIfVideoRecording(page);
   });
-  test("should paste a long comment to a proposal, see that the comment appears after submission, and that the comment field is cleared, even after reloading the page", async ({ page }) => {
+  test("should paste a long comment to a proposal, see that the comment appears after submission, and that the comment field is cleared, even after reloading the page", async ({
+    page,
+  }) => {
     test.setTimeout(70000);
     await page.goto("/devhub.near/widget/app?page=proposal&id=17");
     const widgetSrc =
@@ -245,7 +247,7 @@ test.describe("Don't ask again enabled", () => {
     await page.reload();
 
     commentElement = await page.locator("#theorinear121684809");
-    await expect(commentElement).toBeVisible({timeout: 20000});
+    await expect(commentElement).toBeVisible({ timeout: 20000 });
     await commentElement.scrollIntoViewIfNeeded();
     await expect(commentElement).toContainText(
       "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated."
