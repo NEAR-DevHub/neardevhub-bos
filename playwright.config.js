@@ -68,13 +68,22 @@ export default defineConfig({
 
     {
       name: "events",
-      retries: process.env.CI ? 8 : 0,
       testMatch: /events\/.*.spec.js/, // (proposal|events)
       use: {
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:8080",
         account: "events-committee.near",
         proposalAuthorAccountId: "yarotska.near",
+      },
+    },
+    {
+      name: "devhub",
+      testMatch: /(blog|community|other|proposal|sunset)\/.*.spec.js/, // (proposal|events)
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: "http://localhost:8080",
+        account: "devhub.near",
+        proposalAuthorAccountId: "megha19.near",
       },
     },
   ],
@@ -85,7 +94,9 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     env: { POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456" },
-    command: `npm run gateway:${process.env.INSTANCE ?? "devhub"}`,
+    command: `echo ${process.env.INSTANCE ?? "devhub"}; npm run gateway:${
+      process.env.INSTANCE ?? "devhub"
+    }`,
     port: 3030,
     reuseExistingServer: !process.env.CI,
   },
