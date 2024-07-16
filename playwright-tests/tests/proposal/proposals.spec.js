@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test as base, expect } from "@playwright/test";
 import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import {
@@ -11,6 +11,13 @@ import {
   encodeResultJSON,
 } from "../../util/transaction.js";
 import { mockRpcRequest } from "../../util/rpcmock.js";
+
+const test = base.extend({
+  // Define an option and provide a default value.
+  // We can later override it in the config.
+  account: ["devhub.near", { option: true }],
+  proposalAuthorAccountId: ["megha19.near", { option: true }],
+});
 
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
@@ -41,9 +48,12 @@ test.describe("Wallet is connected, but not KYC verified", () => {
     storageState:
       "playwright-tests/storage-states/wallet-connected-not-kyc-verified-account.json",
   });
-  test("should be able to blur 'get verified' drop-down", async ({ page }) => {
+  test("should be able to blur 'get verified' drop-down", async ({
+    page,
+    account,
+  }) => {
     test.setTimeout(120000);
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    await page.goto(`/${account}/widget/app?page=create-proposal`);
 
     const titleArea = await page.getByRole("textbox").first();
     await titleArea.fill("Test proposal 123456");
@@ -72,20 +82,21 @@ test.describe("Don't ask again enabled", () => {
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
-  test("should create a proposal", async ({ page }) => {
+  test("should create a proposal", async ({ page, account }) => {
     test.setTimeout(120000);
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
-    await page.goto("/devhub.near/widget/app?page=proposals");
+    console.log({ account });
+    await page.goto(`/${account}/widget/app?page=proposals`);
 
-    const widgetSrc = "devhub.near/widget/devhub.entity.proposal.Editor";
+    const widgetSrc = `${account}/widget/devhub.entity.proposal.Editor`;
 
     await setDontAskAgainCacheValues({
       page,
       widgetSrc,
       methodName: "add_proposal",
-      contractId: "devhub.near",
+      contractId: account,
     });
 
     await page.getByRole("button", { name: " New Proposal" }).click();
@@ -164,7 +175,7 @@ test.describe("Don't ask again enabled", () => {
     await expect(loadingIndicator).toBeAttached();
 
     const transaction_toast = await page.getByText(
-      "Calling contract devhub.near with method add_proposal"
+      `Calling contract ${account} with method add_proposal`
     );
     await expect(transaction_toast).toBeVisible();
 
@@ -185,6 +196,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
   });
   test("should edit proposal timeline from review to decision stage with KYC verified", async ({
     page,
+    account,
   }) => {
     test.setTimeout(70000);
     let isTransactionCompleted = false;
@@ -233,11 +245,11 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       }
     );
 
-    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    await page.goto(`/${account}/widget/app?page=proposal&id=17`);
     await setDontAskAgainCacheValues({
       page,
-      contractId: "devhub.near",
-      widgetSrc: "devhub.near/widget/devhub.entity.proposal.Proposal",
+      contractId: account,
+      widgetSrc: `${account}/widget/devhub.entity.proposal.Proposal`,
       methodName: "edit_proposal_versioned_timeline",
     });
 
@@ -282,6 +294,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
 
   test("should not be able to move proposal timeline to decision stage without approving KYC in review stage", async ({
     page,
+    account,
   }) => {
     test.setTimeout(60000);
 
@@ -298,7 +311,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
         return originalResult;
       },
     });
-    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    await page.goto(`/${account}/widget/app?page=proposal&id=17`);
 
     const firstStatusBadge = await page
       .locator("div.fw-bold.rounded-2.p-1.px-2")
@@ -322,10 +335,11 @@ test.describe("Wallet is connected", () => {
   });
   test("editing proposal should not be laggy, even if mentioning someone", async ({
     page,
+    account,
   }) => {
     test.setTimeout(120000);
     await getCurrentBlockHeight(page);
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    await page.goto(`/${account}/widget/app?page=create-proposal`);
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
@@ -438,8 +452,9 @@ test.describe("Wallet is connected", () => {
 
   test("should show relevant users in mention autocomplete", async ({
     page,
+    account,
   }) => {
-    await page.goto("/devhub.near/widget/app?page=proposal&id=112");
+    await page.goto(`/${account}/widget/app?page=proposal&id=112`);
 
     await page.waitForSelector(`iframe`, {
       state: "visible",
@@ -492,10 +507,11 @@ test.describe("Wallet is connected", () => {
 
   test("should show only valid input in amount field and show error for invalid", async ({
     page,
+    account,
   }) => {
     test.setTimeout(120000);
     const delay_milliseconds_between_keypress_when_typing = 0;
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    await page.goto(`/${account}/widget/app?page=create-proposal`);
     const input = page.locator('input[type="text"]').nth(2);
     const errorText = await page.getByText(
       "Please enter the nearest positive whole number."
@@ -519,10 +535,11 @@ test.describe("Wallet is connected", () => {
 
   test("should create a proposal, autolink reference to existing proposal", async ({
     page,
+    account,
   }) => {
     test.setTimeout(120000);
     await getCurrentBlockHeight(page);
-    await page.goto("/devhub.near/widget/app?page=create-proposal");
+    await page.goto(`/${account}/widget/app?page=create-proposal`);
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
@@ -622,13 +639,13 @@ test.describe("Wallet is connected", () => {
   });
 
   test.describe("filter proposals using different mechanism", () => {
-    test.beforeEach(async ({ page }) => {
-      await page.goto("/devhub.near/widget/app?page=proposals");
+    test.beforeEach(async ({ page, account }) => {
+      await page.goto(`/${account}/widget/app?page=proposals`);
       expect(page.locator(".proposal-card").first()).toBeVisible({
         timeout: 10000,
       });
     });
-    test("should filter proposals by categories", async ({ page }) => {
+    test("should filter proposals by categories", async ({ page, account }) => {
       test.setTimeout(60000);
       const category = "DevDAO Operations";
       await page.getByRole("button", { name: "Category" }).click();
@@ -659,6 +676,7 @@ test.describe("Wallet is connected", () => {
     test("should filter proposals by author", async ({ page }) => {
       test.setTimeout(60000);
       const accountId = "megha19.near";
+      const profileName = "Megha";
       await page.getByRole("button", { name: "Author" }).click();
       await page.getByRole("list").getByText(accountId).click();
       await expect(
@@ -666,7 +684,7 @@ test.describe("Wallet is connected", () => {
       ).toBeVisible();
       const loader = page.getByRole("img", { name: "loader" });
       expect(loader).toBeHidden({ timeout: 10000 });
-      await expect(page.getByText(`By ${accountId} ･`).first()).toBeVisible();
+      await expect(page.getByText(`By ${profileName} ･`).first()).toBeVisible();
     });
 
     test("should filter proposals by search text", async ({ page }) => {

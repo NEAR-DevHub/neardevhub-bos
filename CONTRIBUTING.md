@@ -48,6 +48,16 @@ To initiate the development environment, you can use the following script. This 
 npm run bw:dev:devhub
 ```
 
+Running another instance like `events-committee.near` or `infra-structure-committee.near` can be done by the following scripts
+
+```sh
+npm run bw:dev:events
+```
+
+```sh
+npm run bw:dev:infra
+```
+
 #### Customizing Creator ID, Contract ID, or Network
 
 If you need to customize the account ID, override the contract ID, or specify a different network for your development environment, you can use the `overrides` feature of [bos-workspace](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#configuration).
@@ -100,9 +110,19 @@ npm run fmt
 
 #### Writing tests
 
-We use [Playwright](https://playwright.dev) for tests, which are located in the [playwright-tests](./playwright-tests/) folder. For each change or addition to the codebase you should also make sure that your changes are covered by tests in order to ensure that other developers will not break it in the future. Also you should write tests to accelerate your own development, so that you don't have to do manual coding/test interations via the browser.
+We use [Playwright](https://playwright.dev) for tests, which are located in the [playwright-tests](./playwright-tests/) folder. For each change or addition to the codebase you should also make sure that your changes are covered by tests in order to ensure that other developers will not break it in the future. Also you should write tests to accelerate your own development, so that you don't have to do manual coding/test interactions via the browser.
 
 Use the [dev-container](#using-a-dev-container) setup mentioned above for getting quick access to a complete development environment with test dependencies included, or see the [test-pipeline](./.github/workflows/continuous-integration-workflow.yml) for what dependencies that needs to be installed on your workstation for tests to run.
+
+Use the following script to run the test UI for `devhub.near` or `events-committee.near`.
+
+```sh
+npm test -- --ui
+```
+or
+```sh
+npm run test:events -- --ui
+```
 
 Currently, none of the tests post actual transactions to the smart contracts. Still you should try writing your tests so that they do the actual function call, but just skip the final step of sending the transaction. You can do this by capturing the transaction confirmation popup provided by the NEAR social VM.
 

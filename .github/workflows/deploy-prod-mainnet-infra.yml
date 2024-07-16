@@ -6,7 +6,7 @@ on:
 jobs:
   deploy-widgets:
     runs-on: ubuntu-latest
-    name: Deploy ( or diff from PR )
+    name: Deploy ( or diff from PR ) - Infrastructure
     env:
       NEAR_SOCIAL_DEPLOY_ID: ${{ vars.NEAR_INFRA_SOCIAL_ACCOUNT_ID }}
       NEAR_SOCIAL_ACCOUNT_ID: ${{ vars.NEAR_INFRA_SOCIAL_ACCOUNT_ID }}
