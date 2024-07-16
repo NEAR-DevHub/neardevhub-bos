@@ -634,7 +634,9 @@ return (
                   }}
                 />
               </>
-            ) : null}
+            ) : (
+              <div></div>
+            )}
             <div className="flex gap-x-3 align-items-center">
               <Widget
                 src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
