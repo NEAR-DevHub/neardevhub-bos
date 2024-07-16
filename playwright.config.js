@@ -61,14 +61,15 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      name: "infrastructure",
+      use: {
+        ...devices["Desktop Chrome"],
+        account: "infrastructure-committee.near",
+      },
     },
-    { name: "infrastructure", use: { ...devices["Desktop Chrome"] } },
-
     {
       name: "events",
-      testMatch: /events\/.*.spec.js/, // (proposal|events)
+      testMatch: /(events|proposal)\/.*.spec.js/, // (proposal|events)
       use: {
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:8080",

@@ -151,9 +151,10 @@ function composeData() {
     notifications.push({
       key: notifyAccountId,
       value: {
-        type: "devhub/reply",
+        type: "proposal/reply",
         item,
         proposal: proposalId,
+        widgetAccountId: "${REPL_DEVHUB}",
       },
     });
   }
@@ -169,6 +170,7 @@ function composeData() {
     onCommit: () => {
       setCommentToast(true);
       setComment("");
+      Storage.privateSet(draftKey, "");
       setHandler("committed");
       setTxnCreated(false);
     },
@@ -205,10 +207,11 @@ const Compose = useMemo(() => {
         embeddCSS: ComposeEmbeddCSS,
         handler: handler,
         showProposalIdAutoComplete: true,
+        sortedRelevantUsers: props.sortedRelevantUsers,
       }}
     />
   );
-}, [draftComment, handler]);
+}, [draftComment, handler, props.sortedRelevantUsers]);
 
 return (
   <div className="d-flex gap-2">

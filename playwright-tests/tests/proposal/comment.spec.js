@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test as base, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import { setCommitWritePermissionDontAskAgainCacheValues } from "../../util/cache.js";
 import {
@@ -6,6 +6,13 @@ import {
   decodeResultJSON,
   encodeResultJSON,
 } from "../../util/transaction.js";
+
+const test = base.extend({
+  // Define an option and provide a default value.
+  // We can later override it in the config.
+  account: ["devhub.near", { option: true }],
+  proposalAuthorAccountId: ["megha19.near", { option: true }],
+});
 
 test.describe("Don't ask again enabled", () => {
   test.use({
@@ -15,10 +22,15 @@ test.describe("Don't ask again enabled", () => {
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
-  test("should add comment to a proposal", async ({ page }) => {
-    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+  test("should add comment on a proposal", async ({
+    page,
+    account: instanceAccount,
+  }) => {
+    await page.goto(`/${instanceAccount}/widget/app?page=proposal&id=5`);
     const widgetSrc =
-      "devhub.near/widget/devhub.entity.proposal.ComposeComment";
+      instanceAccount === "infrastructure-committee.near"
+        ? "infrastructure-committee.near/widget/components.molecule.ComposeComment"
+        : `${instanceAccount}/widget/devhub.entity.proposal.ComposeComment`;
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentArea = await page
@@ -32,11 +44,11 @@ test.describe("Don't ask again enabled", () => {
     await commentArea.blur();
     await pauseIfVideoRecording(page);
 
-    const account = "petersalomonsen.near";
+    const accountId = "petersalomonsen.near";
     await setCommitWritePermissionDontAskAgainCacheValues({
       page,
       widgetSrc,
-      accountId: account,
+      accountId: accountId,
     });
 
     await mockTransactionSubmitRPCResponses(
@@ -49,12 +61,12 @@ test.describe("Don't ask again enabled", () => {
           if (
             postData.params.account_id === "social.near" &&
             postData.params.method_name === "get" &&
-            args === `{"keys":["${account}/post/**"]}`
+            args === `{"keys":["${accountId}/post/**"]}`
           ) {
             const response = await route.fetch();
             const json = await response.json();
             const resultObj = decodeResultJSON(json.result.result);
-            resultObj[account].post.main = JSON.stringify({
+            resultObj[accountId].post.main = JSON.stringify({
               text: text,
             });
             json.result.result = encodeResultJSON(resultObj);
@@ -75,6 +87,7 @@ test.describe("Don't ask again enabled", () => {
     await expect(
       await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText(text);
+
     const loadingIndicator = await page.locator(".comment-btn-spinner");
     await expect(loadingIndicator).toBeAttached();
     await loadingIndicator.waitFor({ state: "detached", timeout: 30000 });
@@ -96,11 +109,14 @@ test.describe("Don't ask again enabled", () => {
   });
   test("should paste a long comment to a proposal, see that the comment appears after submission, and that the comment field is cleared, even after reloading the page", async ({
     page,
+    account: instanceAccount,
   }) => {
     test.setTimeout(2 * 60000);
-    await page.goto("/devhub.near/widget/app?page=proposal&id=17");
+    await page.goto(`/${instanceAccount}/widget/app?page=proposal&id=5`);
     const widgetSrc =
-      "devhub.near/widget/devhub.entity.proposal.ComposeComment";
+      instanceAccount === "infrastructure-committee.near"
+        ? "infrastructure-committee.near/widget/components.molecule.ComposeComment"
+        : `${instanceAccount}/widget/devhub.entity.proposal.ComposeComment`;
 
     let commentButton = await page.getByRole("button", { name: "Comment" });
     await expect(commentButton).toBeAttached({ timeout: 10000 });
@@ -136,11 +152,11 @@ test.describe("Don't ask again enabled", () => {
     await commentArea.blur();
     await pauseIfVideoRecording(page);
 
-    const account = "petersalomonsen.near";
+    const userAccount = "petersalomonsen.near";
     await setCommitWritePermissionDontAskAgainCacheValues({
       page,
       widgetSrc,
-      accountId: account,
+      accountId: userAccount,
     });
 
     const transactionMockStatus = await mockTransactionSubmitRPCResponses(
@@ -154,13 +170,13 @@ test.describe("Don't ask again enabled", () => {
           if (
             postData.params.account_id === "social.near" &&
             postData.params.method_name === "get" &&
-            args === `{"keys":["${account}/post/**"]}`
+            args === `{"keys":["${userAccount}/post/**"]}`
           ) {
             const response = await route.fetch();
             const json = await response.json();
             const resultObj = decodeResultJSON(json.result.result);
 
-            resultObj[account].post.main = JSON.stringify({
+            resultObj[userAccount].post.main = JSON.stringify({
               text: commentText,
             });
             json.result.result = encodeResultJSON(resultObj);
