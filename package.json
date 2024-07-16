@@ -26,6 +26,7 @@
     "bw:build:events": "bw build instances/events-committee.near",
     "gateway:events": "node scripts/dev-gateway.mjs events-committee.near",
     "test": "npx playwright test",
+    "test:devhub": "INSTANCE=devhub npx playwright test --project=devhub --ui",
     "test:events": "INSTANCE=events npx playwright test --project=events --ui",
     "test:infrastructure": "INSTANCE=infrastructure npx playwright test --project=infrastructure --ui",
     "test:watch:codespaces": "npm test -- --ui-host=0.0.0.0",
