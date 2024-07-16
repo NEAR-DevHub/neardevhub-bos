@@ -6,7 +6,7 @@ on:
 jobs:
   deploy-widgets:
     runs-on: ubuntu-latest
-    name: Deploy ( or diff from PR )
+    name: Deploy ( or diff from PR ) - Events
     env:
       NEAR_SOCIAL_DEPLOY_ID: ${{ vars.NEAR_EVENTS_SOCIAL_ACCOUNT_ID }}
       NEAR_SOCIAL_ACCOUNT_ID: ${{ vars.NEAR_EVENTS_SOCIAL_ACCOUNT_ID }}
@@ -15,7 +15,7 @@ jobs:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
     defaults:
       run:
-        working-directory: ./instances/infrastructure-committee.near
+        working-directory: ./instances/events-committee.near
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,8 +42,8 @@ jobs:
           BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           echo "on branch $BRANCH"
           if [[ "$BRANCH" != "main" ]]; then
-            echo "Not on main branch, dry run by diff with infrastructure-committee.near"
-            bos components diff infrastructure-committee.near network-config mainnet
+            echo "Not on main branch, dry run by diff with events-committee.near"
+            bos components diff events-committee.near network-config mainnet
           else
             bos components deploy "$NEAR_EVENTS_SOCIAL_DEPLOY_ID" sign-as "$NEAR_EVENTS_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_EVENTS_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_EVENTS_SOCIAL_ACCOUNT_PRIVATE_KEY" send
           fi
