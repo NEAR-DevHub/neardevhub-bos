@@ -324,11 +324,10 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     );
 
     await page.goto(`/${account}/widget/app?page=proposal&id=17`);
-    console.log({ account });
     await setDontAskAgainCacheValues({
       page,
       contractId: account,
-      widgetSrc: `/${account}/widget/devhub.entity.proposal.Proposal`,
+      widgetSrc: `${account}/widget/devhub.entity.proposal.Proposal`,
       methodName: "edit_proposal_versioned_timeline",
     });
 
