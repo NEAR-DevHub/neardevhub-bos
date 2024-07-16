@@ -7,8 +7,8 @@ const clickbaitPrompt =
   props.clickbaitPrompt ??
   `Check out this ${postType} on @NearSocial_\n#NearSocial #NEAR #BOS\n${externalLink}`;
 
-const twitterUrl = new URL("https://twitter.com/intent/tweet");
-twitterUrl.searchParams.set("text", clickbaitPrompt);
+const xUrl = new URL("https://x.com/intent/tweet");
+xUrl.searchParams.set("text", clickbaitPrompt);
 
 const mailtoUrl = new URL("mailto:");
 mailtoUrl.searchParams.set(
@@ -93,11 +93,11 @@ return (
       <li className="dropdown-item">
         <a
           className="link-dark text-decoration-none"
-          href={twitterUrl.toString()}
+          href={xUrl.toString()}
           target="_blank"
         >
           <i className="bi bi-twitter" />
-          Share on Twitter
+          Share on X
         </a>
       </li>
     </ul>

@@ -45,6 +45,19 @@ const access_keys = [
         FunctionCall: {
           allowance: "241917078840755500000000",
           method_names: [],
+          receiver_id: "events-committee.near",
+        },
+      },
+    },
+    public_key: "ed25519:9enAAsDiQ2NvKU2TsHLETp96sYeN2qkbHxhpXLjCQThS",
+  },
+  {
+    access_key: {
+      nonce: 109629226000005,
+      permission: {
+        FunctionCall: {
+          allowance: "241917078840755500000000",
+          method_names: [],
           receiver_id: "infrastructure-committee.near",
         },
       },

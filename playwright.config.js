@@ -65,35 +65,27 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
     { name: "infrastructure", use: { ...devices["Desktop Chrome"] } },
-    /*{
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
 
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },*/
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { channel: 'chrome' },
-    // },
+      name: "events",
+      testMatch: /events\/.*.spec.js/, // (proposal|events)
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: "http://localhost:8080",
+        account: "events-committee.near",
+        proposalAuthorAccountId: "yarotska.near",
+      },
+    },
+    {
+      name: "devhub",
+      testMatch: /(blog|community|other|proposal|sunset)\/.*.spec.js/, // (proposal|events)
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: "http://localhost:8080",
+        account: "devhub.near",
+        proposalAuthorAccountId: "megha19.near",
+      },
+    },
   ],
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
@@ -102,7 +94,9 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     env: { POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456" },
-    command: `npm run gateway:${process.env.INSTANCE ?? "devhub"}`,
+    command: `echo ${process.env.INSTANCE ?? "devhub"}; npm run gateway:${
+      process.env.INSTANCE ?? "devhub"
+    }`,
     port: 3030,
     reuseExistingServer: !process.env.CI,
   },
