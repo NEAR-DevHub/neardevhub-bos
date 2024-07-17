@@ -56,10 +56,11 @@ if (state.proposalBlockHeight !== null) {
   );
   if (Array.isArray(data?.body?.shards)) {
     data.body.shards.map((shard) => {
-      const data = shard.chunk.transactions.filter(
+      const data = (shard?.chunk?.transactions ?? []).filter(
         (txn) =>
-          txn.transaction.receiver_id === "devhub.near" &&
-          txn.transaction.actions[0].FunctionCall.method_name === "add_proposal"
+          txn?.transaction?.receiver_id === "devhub.near" &&
+          txn?.transaction?.actions?.[0]?.FunctionCall?.method_name ===
+            "add_proposal"
       );
       if (data?.length) {
         const args = JSON.parse(
