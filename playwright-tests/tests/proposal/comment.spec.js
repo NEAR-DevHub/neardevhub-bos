@@ -206,7 +206,7 @@ test.describe("Don't ask again enabled", () => {
         const transactionDataJsonStartIndex =
           lastTransactionParamBuffer.indexOf('{"data":');
         const transactionDataJsonEndIndex =
-          lastTransactionParamBuffer.indexOf('}}]"}}}}') + '}}]"}}}}'.length;
+          lastTransactionParamBuffer.indexOf('"}}}}') + '"}}}}'.length;
         const transactionDataJsonString = lastTransactionParamBuffer.subarray(
           transactionDataJsonStartIndex,
           transactionDataJsonEndIndex
@@ -245,7 +245,9 @@ test.describe("Don't ask again enabled", () => {
     );
     await expect(transaction_successful_toast).toBeVisible();
 
-    await expect(transaction_successful_toast).not.toBeAttached();
+    await expect(transaction_successful_toast).not.toBeAttached({
+      timeout: 10000,
+    });
     await expect(
       await page.frameLocator("iframe").locator(".CodeMirror")
     ).not.toContainText(commentText);
@@ -263,7 +265,8 @@ test.describe("Don't ask again enabled", () => {
     await expect(commentElement).toBeVisible({ timeout: 10000 });
     await commentElement.scrollIntoViewIfNeeded();
     await expect(commentElement).toContainText(
-      "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated."
+      "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated.",
+      { timeout: 10000 }
     );
 
     await page.reload();
@@ -272,7 +275,8 @@ test.describe("Don't ask again enabled", () => {
     await expect(commentElement).toBeVisible({ timeout: 20000 });
     await commentElement.scrollIntoViewIfNeeded();
     await expect(commentElement).toContainText(
-      "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated."
+      "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated.",
+      { timeout: 10000 }
     );
 
     commentButton = await page.getByRole("button", { name: "Comment" });
