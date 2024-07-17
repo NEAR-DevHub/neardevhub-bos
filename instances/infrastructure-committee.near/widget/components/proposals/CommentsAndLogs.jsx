@@ -150,9 +150,8 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  const link = getLinkUsingCurrentGateway(
-    `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=proposal&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`
-  );
+  const link = `https://${REPL_DEVHUB}.page/proposal/${proposalId}?accountId=${accountId}&blockHeight=${blockHeight}`;
+
   const hightlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&
     props.accountId === accountId;
@@ -169,6 +168,7 @@ const Comment = ({ commentItem }) => {
           />
         </div>
         <CommentContainer
+          id={`${accountId.replace(/[^a-z0-9]/g, "")}${blockHeight}`}
           style={{ border: hightlightComment ? "2px solid black" : "" }}
           className="rounded-2 flex-1"
         >

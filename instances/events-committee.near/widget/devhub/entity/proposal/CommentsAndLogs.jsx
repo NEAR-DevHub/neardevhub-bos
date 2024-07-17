@@ -2,6 +2,7 @@ const { getLinkUsingCurrentGateway } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.url"
 ) || { getLinkUsingCurrentGateway: () => {} };
 const snapshotHistory = props.snapshotHistory;
+const proposalId = props.id;
 
 const Wrapper = styled.div`
   position: relative;
@@ -59,11 +60,10 @@ function getDifferentKeysWithValues(obj1, obj2) {
       if (key !== "editor_id" && obj2.hasOwnProperty(key)) {
         const value1 = obj1[key];
         const value2 = obj2[key];
-        if (Array.isArray(value1) && Array.isArray(value2)) {
-          const sortedValue1 = [...value1].sort();
-          const sortedValue2 = [...value2].sort();
-          return JSON.stringify(sortedValue1) !== JSON.stringify(sortedValue2);
-        } else if (typeof value1 === "object" && typeof value2 === "object") {
+
+        if (typeof value1 === "object" && typeof value2 === "object") {
+          return JSON.stringify(value1) !== JSON.stringify(value2);
+        } else if (Array.isArray(value1) && Array.isArray(value2)) {
           return JSON.stringify(value1) !== JSON.stringify(value2);
         } else {
           return value1 !== value2;
@@ -98,6 +98,22 @@ function sortTimelineAndComments() {
           ...getDifferentKeysWithValues(startingPoint, item),
         };
       });
+
+    // add log for accepting terms and condition
+    changedKeysListWithValues.unshift({
+      0: {
+        key: "timestamp",
+        originalValue: "0",
+        modifiedValue: snapshotHistory[0].timestamp,
+      },
+      1: {
+        key: "terms_and_condition",
+        originalValue: "",
+        modifiedValue: "accepted",
+      },
+      editorId: snapshotHistory[0].editor_id,
+    });
+
     State.update({
       changedKeysListWithValues,
       snapshotHistoryLength: snapshotHistory.length,
@@ -143,9 +159,7 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  const link = getLinkUsingCurrentGateway(
-    `${REPL_DEVHUB}/widget/app?page=proposal&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`
-  );
+  const link = `https://${REPL_DEVHUB}.page/proposal/${proposalId}?accountId=${accountId}&blockHeight=${blockHeight}`;
   const hightlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&
     props.accountId === accountId;
@@ -162,6 +176,7 @@ const Comment = ({ commentItem }) => {
           />
         </div>
         <CommentContainer
+          id={`${accountId.replace(/[^a-z0-9]/g, "")}${blockHeight}`}
           style={{ border: hightlightComment ? "2px solid black" : "" }}
           className="rounded-2 flex-1"
         >
@@ -297,13 +312,22 @@ const AccountProfile = ({ accountId }) => {
 
 const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
   switch (key) {
+    case "terms_and_condition": {
+      return (
+        <span>
+          accepted
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"}
+            props={{ proposalId: proposalId }}
+          />
+        </span>
+      );
+    }
     case "name":
       return <span>changed title</span>;
     case "summary":
     case "description":
       return <span>changed {key}</span>;
-    case "labels":
-      return <span>changed labels to {(modifiedValue ?? []).join(", ")}</span>;
     case "category":
       return (
         <span>
@@ -421,7 +445,10 @@ const Log = ({ timestamp }) => {
                 : "inline-flex")
             }
           >
-            <span className="inline-flex fw-bold text-black">
+            <span
+              className="inline-flex fw-bold text-black"
+              style={{ marginRight: 0 }}
+            >
               <AccountProfile accountId={editorId} showAccountId={true} />
             </span>
             {parseProposalKeyAndValue(i.key, i.modifiedValue, i.originalValue)}

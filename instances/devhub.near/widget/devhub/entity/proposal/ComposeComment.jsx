@@ -170,6 +170,7 @@ function composeData() {
     onCommit: () => {
       setCommentToast(true);
       setComment("");
+      Storage.privateSet(draftKey, "");
       setHandler("committed");
       setTxnCreated(false);
     },
