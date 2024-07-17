@@ -184,7 +184,7 @@ function composeData() {
       setCommentToast(true);
       setComment("");
       Storage.privateSet(draftKey, "");
-      setHandler("refreshEditor");
+      setHandler("committed");
       setTxnCreated(false);
     },
     onCancel: () => {
