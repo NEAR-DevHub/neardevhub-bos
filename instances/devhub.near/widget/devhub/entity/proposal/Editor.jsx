@@ -737,6 +737,8 @@ const onSubmit = ({ isDraft, isCancel }) => {
         }
       : isDraft
       ? { status: "DRAFT" }
+      : isEditPage
+      ? editProposalData.snapshot.timeline
       : {
           status: "REVIEW",
           sponsor_requested_review: false,
@@ -1025,7 +1027,7 @@ const SponsorComponent = useMemo(() => {
       src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
       props={{
         value: requestedSponsor,
-        placeholder: "DevDAO",
+        placeholder: "NEARDevDAO",
         onUpdate: setRequestedSponsor,
       }}
     />
