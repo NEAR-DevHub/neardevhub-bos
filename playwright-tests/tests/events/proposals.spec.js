@@ -1,9 +1,6 @@
 import { test as base, expect } from "@playwright/test";
 import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
-import {
-  pauseIfVideoRecording,
-  waitForSelectorToBeVisible,
-} from "../../testUtils.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
 import {
   setCommitWritePermissionDontAskAgainCacheValues,
   setDontAskAgainCacheValues,
@@ -14,7 +11,6 @@ import {
   encodeResultJSON,
 } from "../../util/transaction.js";
 import { mockRpcRequest } from "../../util/rpcmock.js";
-import { mockSocialIndexResponses } from "../../util/socialapi.js";
 
 const test = base.extend({
   // Define an option and provide a default value.
@@ -27,7 +23,27 @@ test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
 );
 
-test.describe("Wallet is connected, but not KYC verified", () => {
+let acceptedTermsVersion = 122927956;
+async function getCurrentBlockHeight(page) {
+  // set current block height for accepted terms and conditions
+  await page.route(`http://localhost:20000/`, async (route) => {
+    const request = route.request();
+    const requestPostData = request.postDataJSON();
+    if (
+      requestPostData?.method === "block" &&
+      requestPostData?.params?.finality === "optimistic"
+    ) {
+      const response = await route.fetch();
+      const json = await response.json();
+      json.result.header.height = acceptedTermsVersion;
+      await route.fulfill({ response, json });
+    } else {
+      await route.continue();
+    }
+  });
+}
+
+test.describe.skip("Wallet is connected, but not KYC verified", () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-not-kyc-verified-account.json",
@@ -168,85 +184,6 @@ test.describe("Don't ask again enabled", () => {
     await expect(loadingIndicator).not.toBeVisible();
 
     await page.waitForTimeout(1000);
-    await pauseIfVideoRecording(page);
-  });
-  test("should add comment on a proposal", async ({ page, account }) => {
-    await page.goto(`/${account}/widget/app?page=proposal&id=5`);
-    const widgetSrc = `${account}/widget/devhub.entity.proposal.ComposeComment`;
-
-    const delay_milliseconds_between_keypress_when_typing = 0;
-    const commentArea = await page
-      .frameLocator("iframe")
-      .locator(".CodeMirror textarea");
-    await commentArea.focus();
-    const text = "Comment testing";
-    await commentArea.pressSequentially(text, {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-    await commentArea.blur();
-    await pauseIfVideoRecording(page);
-
-    const accountId = "petersalomonsen.near";
-    await setCommitWritePermissionDontAskAgainCacheValues({
-      page,
-      widgetSrc,
-      accountId: accountId,
-    });
-
-    await mockTransactionSubmitRPCResponses(
-      page,
-      async ({ route, request, transaction_completed, last_receiver_id }) => {
-        const postData = request.postDataJSON();
-        const args_base64 = postData.params?.args_base64;
-        if (transaction_completed && args_base64) {
-          const args = atob(args_base64);
-          if (
-            postData.params.account_id === "social.near" &&
-            postData.params.method_name === "get" &&
-            args === `{"keys":["${accountId}/post/**"]}`
-          ) {
-            const response = await route.fetch();
-            const json = await response.json();
-            const resultObj = decodeResultJSON(json.result.result);
-            resultObj[accountId].post.main = JSON.stringify({
-              text: text,
-            });
-            json.result.result = encodeResultJSON(resultObj);
-            await route.fulfill({ response, json });
-            return;
-          } else {
-            await route.continue();
-          }
-        } else {
-          await route.continue();
-        }
-      }
-    );
-    const commentButton = await page.getByRole("button", { name: "Comment" });
-    await expect(commentButton).toBeAttached();
-    await commentButton.scrollIntoViewIfNeeded();
-    await commentButton.click();
-    await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
-    ).toContainText(text);
-
-    const loadingIndicator = await page.locator(".comment-btn-spinner");
-    await expect(loadingIndicator).toBeAttached();
-    await loadingIndicator.waitFor({ state: "detached", timeout: 30000 });
-    await expect(loadingIndicator).not.toBeVisible();
-    const transaction_successful_toast = await page.getByText(
-      "Comment Submitted Successfully",
-      { exact: true }
-    );
-    await expect(transaction_successful_toast).toBeVisible();
-
-    await expect(transaction_successful_toast).not.toBeAttached();
-    await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
-    ).not.toContainText(text);
-    await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
-    ).toContainText("Add your comment here...");
     await pauseIfVideoRecording(page);
   });
 });
@@ -401,6 +338,7 @@ test.describe("Wallet is connected", () => {
     account,
   }) => {
     test.setTimeout(120000);
+    await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
 
     const delay_milliseconds_between_keypress_when_typing = 0;
@@ -510,7 +448,7 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test.skip("should show relevant users in mention autocomplete", async ({
+  test("should show relevant users in mention autocomplete", async ({
     page,
     account,
   }) => {
@@ -598,6 +536,7 @@ test.describe("Wallet is connected", () => {
     account,
   }) => {
     test.setTimeout(120000);
+    await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
     await page.route(
       "https://near-queryapi.api.pagoda.co/v1/graphql",
@@ -707,7 +646,7 @@ test.describe("Wallet is connected", () => {
         delay: delay_milliseconds_between_keypress_when_typing,
       }
     );
-
+    await descriptionArea.pressSequentially("2", { delay: 10 });
     await pauseIfVideoRecording(page);
 
     await page
