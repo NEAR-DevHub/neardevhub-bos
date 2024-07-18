@@ -69,7 +69,7 @@ export default defineConfig({
     },
     {
       name: "events",
-      testMatch: /(events|proposal)\/.*.spec.js/, // (proposal|events)
+      testMatch: /(events)\/.*.spec.js/, // (proposal|events)
       use: {
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:8080",
@@ -79,7 +79,7 @@ export default defineConfig({
     },
     {
       name: "devhub",
-      testMatch: /(blog|community|other|proposal|sunset)\/.*.spec.js/, // (proposal|events)
+      testMatch: /(blog|community|other|proposal|sunset)\/.*.spec.js/,
       use: {
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:8080",

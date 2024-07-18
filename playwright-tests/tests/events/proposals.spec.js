@@ -646,7 +646,6 @@ test.describe("Wallet is connected", () => {
         delay: delay_milliseconds_between_keypress_when_typing,
       }
     );
-    await descriptionArea.pressSequentially("2", { delay: 10 });
     await pauseIfVideoRecording(page);
 
     await page
