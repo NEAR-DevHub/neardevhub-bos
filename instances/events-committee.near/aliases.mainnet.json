@@ -1,7 +1,9 @@
 {
-  "REPL_DEVHUB": "events-committee.near",
+  "REPL_DEVHUB": "devhub.near",
+  "REPL_EVENTS": "events-committee.near",
   "REPL_DEVHUB_LEGACY": "devgovgigs.near",
-  "REPL_DEVHUB_CONTRACT": "events-committee.near",
+  "REPL_DEVHUB_CONTRACT": "devhub.near",
+  "REPL_EVENTS_CONTRACT": "events-committee.near",
   "REPL_NEAR": "near",
   "REPL_MOB": "mob.near",
   "REPL_EFIZ": "efiz.near",
