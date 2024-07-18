@@ -1,7 +1,7 @@
 const MarkdownEditor = ({ data, onChange, showAutoComplete }) => {
   return (
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDE"}
+      src={"${REPL_EVENTS}/widget/devhub.components.molecule.SimpleMDE"}
       props={{
         data,
         onChange,

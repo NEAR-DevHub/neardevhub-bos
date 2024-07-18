@@ -1,4 +1,4 @@
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url");
 
 if (!href) {
   return <></>;
@@ -50,7 +50,7 @@ const Card = styled.div`
 const CommunityCard = ({ metadata }) => {
   const { handle, logo_url, name, description } = metadata;
   const link = href({
-    widgetSrc: "${REPL_DEVHUB}/widget/app",
+    widgetSrc: "${REPL_EVENTS}/widget/app",
     params: { page: "community", handle: handle },
   });
 

@@ -82,7 +82,7 @@ const Section = styled.div`
 
 return (
   <>
-    {/* <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} /> */}
+    {/* <Widget src={`${REPL_EVENTS}/widget/devhub.components.island.banner`} /> */}
     <Section>
       {/* <h2>
         What is <span style={{ color: "#00EC97" }}>near</span>/dev/hub?

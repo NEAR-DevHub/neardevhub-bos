@@ -115,7 +115,7 @@ return (
       />
     ) : (
       <Widget
-        src={`${REPL_DEVHUB}/widget/devhub.components.organism.Feed.NearQueryApi`}
+        src={`${REPL_EVENTS}/widget/devhub.components.organism.Feed.NearQueryApi`}
         props={{
           GRAPHQL_ENDPOINT,
           filteredAccountIds: filteredAccountIds,

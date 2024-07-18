@@ -4,7 +4,7 @@ const href = props.href;
 
 const [showMenu, setShowMenu] = useState(false);
 
-const { href: linkHref } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+const { href: linkHref } = VM.require("${REPL_EVENTS}/widget/core.lib.url");
 
 linkHref || (linkHref = () => {});
 
@@ -76,7 +76,7 @@ return (
         <Link
           style={{ textDecoration: "none" }}
           to={linkHref({
-            widgetSrc: "${REPL_DEVHUB}/widget/app",
+            widgetSrc: "${REPL_EVENTS}/widget/app",
             params: { page: href },
           })}
         >
@@ -113,7 +113,7 @@ return (
                 <Link
                   style={{ textDecoration: "none" }}
                   to={linkHref({
-                    widgetSrc: "${REPL_DEVHUB}/widget/app",
+                    widgetSrc: "${REPL_EVENTS}/widget/app",
                     params: { page: link.href },
                   })}
                 >

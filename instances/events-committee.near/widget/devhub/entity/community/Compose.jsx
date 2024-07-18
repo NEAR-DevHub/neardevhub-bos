@@ -432,7 +432,7 @@ return (
     {autocompleteEnabled && state.showAccountAutocomplete && (
       <AutoComplete>
         <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
+          src="${REPL_EVENTS}/widget/devhub.components.molecule.AccountAutocomplete"
           props={{
             term: state.mentionInput,
             onSelect: autoCompleteAccountId,

@@ -1,11 +1,11 @@
 const { href, getLinkUsingCurrentGateway } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.url"
+  "${REPL_EVENTS}/widget/core.lib.url"
 ) || {
   href: () => {},
   getLinkUsingCurrentGateway: () => {},
 };
 const { readableDate } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common"
+  "${REPL_EVENTS}/widget/core.lib.common"
 ) || { readableDate: () => {} };
 
 const accountId = context.accountId;
@@ -263,7 +263,7 @@ const LinkProfile = ({ account, children }) => {
 const stepsArray = [1, 2, 3, 4, 5];
 
 const { id, timestamp } = props;
-const proposal = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
+const proposal = Near.view("${REPL_EVENTS_CONTRACT}", "get_proposal", {
   proposal_id: parseInt(id),
 });
 
@@ -274,7 +274,7 @@ if (!proposal) {
       className="d-flex justify-content-center align-items-center w-100"
     >
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
+        src={"${REPL_EVENTS}/widget/devhub.components.molecule.Spinner"}
       />
     </div>
   );
@@ -291,11 +291,11 @@ const authorId = proposal.author_id;
 const blockHeight = parseInt(proposal.social_db_post_block_height);
 const item = {
   type: "social",
-  path: `${REPL_DEVHUB_CONTRACT}/post/main`,
+  path: `${REPL_EVENTS_CONTRACT}/post/main`,
   blockHeight,
 };
 const proposalURL = getLinkUsingCurrentGateway(
-  `${REPL_DEVHUB}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
+  `${REPL_EVENTS}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
 );
 
 const KycVerificationStatus = () => {
@@ -407,7 +407,7 @@ const proposalStatusOptions = [
 const LinkedProposals = () => {
   const linkedProposalsData = [];
   snapshot.linked_proposals.map((item) => {
-    const data = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
+    const data = Near.view("${REPL_EVENTS_CONTRACT}", "get_proposal", {
       proposal_id: item,
     });
     if (data !== null) {
@@ -426,7 +426,7 @@ const LinkedProposals = () => {
           >
             <div className="d-flex gap-2">
               <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+                src={"${REPL_EVENTS}/widget/devhub.entity.proposal.Profile"}
                 props={{
                   accountId: item.snapshot.editor_id,
                 }}
@@ -481,7 +481,7 @@ const RadioButton = ({ value, isChecked, label }) => {
 };
 
 const isAllowedToEditProposal = Near.view(
-  "${REPL_DEVHUB_CONTRACT}",
+  "${REPL_EVENTS_CONTRACT}",
   "is_allowed_to_edit_proposal",
   {
     proposal_id: proposal.id,
@@ -489,7 +489,7 @@ const isAllowedToEditProposal = Near.view(
   }
 );
 
-const isModerator = Near.view("${REPL_DEVHUB_CONTRACT}", "has_moderator", {
+const isModerator = Near.view("${REPL_EVENTS_CONTRACT}", "has_moderator", {
   account_id: accountId,
 });
 
@@ -513,7 +513,7 @@ const editProposal = ({ timeline }) => {
 
   Near.call([
     {
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_EVENTS_CONTRACT}",
       methodName: "edit_proposal",
       args: args,
       gas: 270000000000000,
@@ -524,7 +524,7 @@ const editProposal = ({ timeline }) => {
 const editProposalStatus = ({ timeline }) => {
   Near.call([
     {
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_EVENTS_CONTRACT}",
       methodName: "edit_proposal_timeline",
       args: {
         id: proposal.id,
@@ -619,7 +619,7 @@ const TimelineItems = ({ title, children, value, values }) => {
 };
 
 const link = href({
-  widgetSrc: "${REPL_DEVHUB}/widget/app",
+  widgetSrc: "${REPL_EVENTS}/widget/app",
   params: {
     page: "create-proposal",
     id: proposal.id,
@@ -645,7 +645,7 @@ return (
       }}
     />
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal"}
+      src={"${REPL_EVENTS}/widget/devhub.entity.proposal.ConfirmReviewModal"}
       props={{
         isOpen: isReviewModalOpen,
         onCancelClick: () => setReviewModal(false),
@@ -656,7 +656,7 @@ return (
       }}
     />
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmCancelModal"}
+      src={"${REPL_EVENTS}/widget/devhub.entity.proposal.ConfirmCancelModal"}
       props={{
         isOpen: isCancelModalOpen,
         onCancelClick: () => setCancelModal(false),
@@ -673,7 +673,7 @@ return (
       </div>
       <div className="d-flex gap-2 align-items-center">
         <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.molecule.ShareLinkButton"
+          src="${REPL_EVENTS}/widget/devhub.components.molecule.ShareLinkButton"
           props={{
             postType: "proposal",
             url: proposalURL,
@@ -684,7 +684,7 @@ return (
           isModerator) && (
           <Link to={link} style={{ textDecoration: "none" }}>
             <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+              src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
               props={{
                 label: "Edit",
                 classNames: { root: "grey-btn btn-sm" },
@@ -696,7 +696,7 @@ return (
     </div>
     <div className="d-flex flex-wrap flex-md-nowrap px-3 px-lg-0 gap-2 align-items-center text-sm pb-3 w-100">
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+        src={"${REPL_EVENTS}/widget/devhub.entity.proposal.StatusTag"}
         props={{
           timelineStatus: snapshot.timeline.status,
           size: "sm",
@@ -729,7 +729,7 @@ return (
               <div style={{ minWidth: "fit-content" }}>
                 <Widget
                   src={
-                    "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                    "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
                   }
                   props={{
                     label: "Ready for review",
@@ -758,7 +758,7 @@ return (
               <div style={{ minWidth: "fit-content" }}>
                 <Widget
                   src={
-                    "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                    "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
                   }
                   props={{
                     label: (
@@ -789,7 +789,7 @@ return (
               >
                 <div className="d-none d-sm-flex">
                   <Widget
-                    src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+                    src={"${REPL_EVENTS}/widget/devhub.entity.proposal.Profile"}
                     props={{
                       accountId: authorId,
                     }}
@@ -835,7 +835,7 @@ return (
                     <div>
                       <Widget
                         src={
-                          "${REPL_DEVHUB}/widget/devhub.entity.proposal.MultiSelectLabelsDropdown"
+                          "${REPL_EVENTS}/widget/devhub.entity.proposal.MultiSelectLabelsDropdown"
                         }
                         props={{
                           selected: snapshot.labels,
@@ -853,13 +853,13 @@ return (
                       DESCRIPTION
                     </div>
                     <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+                      src="${REPL_EVENTS}/widget/devhub.components.molecule.MarkdownViewer"
                       props={{ text: snapshot.description }}
                     />
 
                     <div className="d-flex gap-2 align-items-center mt-4">
                       <Widget
-                        src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
+                        src="${REPL_EVENTS}/widget/devhub.entity.proposal.LikeButton"
                         props={{
                           item,
                           proposalId: proposal.id,
@@ -868,7 +868,7 @@ return (
                       />
                       <Widget
                         src={
-                          "${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentIcon"
+                          "${REPL_EVENTS}/widget/devhub.entity.proposal.CommentIcon"
                         }
                         props={{
                           item,
@@ -889,7 +889,7 @@ return (
               <div className="border-bottom pb-4 mt-4">
                 <Widget
                   src={
-                    "${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentsAndLogs"
+                    "${REPL_EVENTS}/widget/devhub.entity.proposal.CommentsAndLogs"
                   }
                   props={{
                     ...props,
@@ -909,7 +909,7 @@ return (
               >
                 <Widget
                   src={
-                    "${REPL_DEVHUB}/widget/devhub.entity.proposal.ComposeComment"
+                    "${REPL_EVENTS}/widget/devhub.entity.proposal.ComposeComment"
                   }
                   props={{
                     ...props,
@@ -970,7 +970,7 @@ return (
               </SidePanelItem>
               <SidePanelItem title="Recipient Verification Status">
                 <Widget
-                  src="${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus"
+                  src="${REPL_EVENTS}/widget/devhub.entity.proposal.VerificationStatus"
                   props={{
                     receiverAccount: snapshot.receiver_account,
                     showGetVerifiedBtn:
@@ -1008,7 +1008,7 @@ return (
                       <div className="mt-2 d-flex flex-column gap-2">
                         <h6 className="mb-0">Proposal Status</h6>
                         <Widget
-                          src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
+                          src="${REPL_EVENTS}/widget/devhub.components.molecule.DropDown"
                           props={{
                             options: proposalStatusOptions,
                             selectedValue: updatedProposalStatus,
@@ -1328,7 +1328,7 @@ return (
                       <div className="border-vertical py-3 my-2">
                         <label className="text-black h6">Supervisor</label>
                         <Widget
-                          src="${REPL_DEVHUB}/widget/devhub.entity.proposal.AccountInput"
+                          src="${REPL_EVENTS}/widget/devhub.entity.proposal.AccountInput"
                           props={{
                             value: supervisor,
                             placeholder: "Enter Supervisor",
@@ -1344,7 +1344,7 @@ return (
                             {paymentHashes.map((item, index) => (
                               <div className="d-flex gap-2 justify-content-between align-items-center">
                                 <Widget
-                                  src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+                                  src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
                                   props={{
                                     className: "flex-grow-1",
                                     value: item,
@@ -1361,7 +1361,7 @@ return (
                                   {index !== paymentHashes.length - 1 ? (
                                     <Widget
                                       src={
-                                        "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                                        "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
                                       }
                                       props={{
                                         classNames: {
@@ -1380,7 +1380,7 @@ return (
                                   ) : (
                                     <Widget
                                       src={
-                                        "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                                        "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
                                       }
                                       props={{
                                         classNames: {
@@ -1404,7 +1404,7 @@ return (
                       <div className="d-flex gap-2 align-items-center justify-content-end text-sm">
                         <Widget
                           src={
-                            "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                            "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
                           }
                           props={{
                             label: "Cancel",
@@ -1419,7 +1419,7 @@ return (
                         />
                         <Widget
                           src={
-                            "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
+                            "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
                           }
                           props={{
                             label: "Save",

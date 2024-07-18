@@ -128,7 +128,7 @@ return (
         <ModalContent>{props.content}</ModalContent>
         <div className="d-flex gap-2 align-items-center justify-content-end mt-2">
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+            src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
             props={{
               classNames: { root: "btn-outline-secondary" },
               label: props.cancelLabel ?? "Cancel",
@@ -136,7 +136,7 @@ return (
             }}
           />
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+            src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
             props={{
               classNames: { root: props.buttonRoot ?? "btn-danger" },
               label: props.confirmLabel ?? "Confirm",

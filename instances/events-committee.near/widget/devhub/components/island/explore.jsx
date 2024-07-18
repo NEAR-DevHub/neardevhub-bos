@@ -181,7 +181,7 @@ const Content = (
 
 return (
   <Widget
-    src="${REPL_DEVHUB}/widget/devhub.components.island.home-section"
+    src="${REPL_EVENTS}/widget/devhub.components.island.home-section"
     props={{
       title: "/explore",
       titleColor: "#555555",

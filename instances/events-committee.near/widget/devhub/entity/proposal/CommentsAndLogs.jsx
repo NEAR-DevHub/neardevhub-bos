@@ -1,5 +1,5 @@
 const { getLinkUsingCurrentGateway } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.url"
+  "${REPL_EVENTS}/widget/core.lib.url"
 ) || { getLinkUsingCurrentGateway: () => {} };
 const snapshotHistory = props.snapshotHistory;
 const proposalId = props.id;
@@ -159,7 +159,7 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  const link = `https://${REPL_DEVHUB}.page/proposal/${proposalId}?accountId=${accountId}&blockHeight=${blockHeight}`;
+  const link = `https://${REPL_EVENTS}.page/proposal/${proposalId}?accountId=${accountId}&blockHeight=${blockHeight}`;
   const hightlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&
     props.accountId === accountId;
@@ -169,7 +169,7 @@ const Comment = ({ commentItem }) => {
       <div className="d-flex gap-2 flex-1">
         <div className="d-none d-sm-flex">
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+            src={"${REPL_EVENTS}/widget/devhub.entity.proposal.Profile"}
             props={{
               accountId: accountId,
             }}
@@ -210,7 +210,7 @@ const Comment = ({ commentItem }) => {
           <div className="p-2 px-3">
             <Widget
               src={
-                "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+                "${REPL_EVENTS}/widget/devhub.components.molecule.MarkdownViewer"
               }
               props={{
                 text: content.text,
@@ -219,7 +219,7 @@ const Comment = ({ commentItem }) => {
 
             <div className="d-flex gap-2 align-items-center mt-4">
               <Widget
-                src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
+                src="${REPL_EVENTS}/widget/devhub.entity.proposal.LikeButton"
                 props={{
                   item: item,
                   notifyAccountId: accountId,
@@ -254,14 +254,14 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
           <span className="inline-flex">
             moved proposal from{" "}
             <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+              src={"${REPL_EVENTS}/widget/devhub.entity.proposal.StatusTag"}
               props={{
                 timelineStatus: oldValue,
               }}
             />
             to{" "}
             <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
+              src={"${REPL_EVENTS}/widget/devhub.entity.proposal.StatusTag"}
               props={{
                 timelineStatus: newValue,
               }}
@@ -299,7 +299,7 @@ const AccountProfile = ({ accountId }) => {
   return (
     <span className="inline-flex fw-bold text-black">
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
+        src={"${REPL_EVENTS}/widget/devhub.entity.proposal.Profile"}
         props={{
           accountId: accountId,
           size: "sm",
@@ -317,7 +317,7 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
         <span>
           accepted
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"}
+            src={"${REPL_EVENTS}/widget/devhub.entity.proposal.AcceptedTerms"}
             props={{ proposalId: proposalId }}
           />
         </span>

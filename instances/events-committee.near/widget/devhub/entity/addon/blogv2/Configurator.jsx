@@ -1,7 +1,7 @@
 const { data, handle, communityAddonId, selectedBlog, permissions } = props;
 
 const { Tile } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
+  VM.require("${REPL_EVENTS}/widget/devhub.components.molecule.Tile") ||
   (() => <></>);
 
 if (!Tile) {
@@ -70,7 +70,7 @@ return (
     <Tile className="p-3 bg-white min-vh-100">
       <Container>
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.index"}
+          src={"${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.editor.index"}
           props={{
             data,
             handle,

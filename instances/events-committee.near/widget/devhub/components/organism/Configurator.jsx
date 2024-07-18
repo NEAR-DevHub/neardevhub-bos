@@ -1,4 +1,4 @@
-const Struct = VM.require("${REPL_DEVHUB}/widget/core.lib.struct");
+const Struct = VM.require("${REPL_EVENTS}/widget/core.lib.struct");
 
 if (!Struct) {
   return <p>Loading modules...</p>;
@@ -138,7 +138,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                 ) : (fieldValue?.length ?? 0) > 0 ? (
                   <Widget
                     src={
-                      "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+                      "${REPL_EVENTS}/widget/devhub.components.molecule.MarkdownViewer"
                     }
                     props={{
                       text: fieldValue,
@@ -150,7 +150,7 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
               </ValueView>
             </div>
             <Widget
-              src={`${REPL_DEVHUB}/widget/devhub.${
+              src={`${REPL_EVENTS}/widget/devhub.${
                 (fieldParamsByType[fieldType] ?? fieldParamsByType["string"])
                   .name
               }`}
@@ -287,7 +287,7 @@ const Configurator = ({
           ) : null}
 
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+            src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
             props={{
               classNames: { root: "btn-outline-danger shadow-none border-0" },
               label: cancelLabel || "Cancel",
@@ -295,7 +295,7 @@ const Configurator = ({
             }}
           />
           <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+            src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
             props={{
               classNames: { root: classNames.submit || "btn-success" },
               disabled: !form.hasUnsubmittedChanges || !isFormValid(),

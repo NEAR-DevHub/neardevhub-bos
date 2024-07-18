@@ -3,7 +3,7 @@
  * https://github.com/sparksuite/simplemde-markdown-editor
  */
 const { getLinkUsingCurrentGateway } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.url"
+  "${REPL_EVENTS}/widget/core.lib.url"
 ) || { getLinkUsingCurrentGateway: () => {} };
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
@@ -46,7 +46,7 @@ ${queryName}(
 }`;
 
 const proposalLink = getLinkUsingCurrentGateway(
-  `${REPL_DEVHUB}/widget/app?page=proposal&id=`
+  `${REPL_EVENTS}/widget/app?page=proposal&id=`
 );
 
 const code = `

@@ -32,7 +32,7 @@ return (
   <Root>
     <Container>
       <Widget
-        src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.provider"
+        src="${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.editor.provider"
         props={{
           handle: props.handle,
           communityAddonId: props.communityAddonId,
@@ -40,7 +40,7 @@ return (
             const { onSubmit, getData, onDelete } = providerProps;
             return (
               <Widget
-                src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.layout"
+                src="${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.editor.layout"
                 props={{
                   getData,
                   parametersData,
@@ -49,7 +49,7 @@ return (
                   selectedBlog: props.selectedBlog,
                   BlogOverview: (p) => (
                     <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.BlogOverview"
+                      src="${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.editor.BlogOverview"
                       props={{
                         ...p,
                         ...providerProps,
@@ -58,7 +58,7 @@ return (
                   ),
                   BlogPostSettings: (p) => (
                     <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.BlogPostSettings"
+                      src="${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.editor.BlogPostSettings"
                       props={{
                         ...p,
                         ...providerProps,
@@ -68,7 +68,7 @@ return (
                   ),
                   Content: (p) => (
                     <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.content"
+                      src="${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.editor.content"
                       props={{
                         onSubmit,
                         onDelete,

@@ -1,5 +1,5 @@
 const { getFeaturedCommunities } = VM.require(
-  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_EVENTS}/widget/core.adapter.devhub-contract"
 );
 
 if (!getFeaturedCommunities) {
@@ -106,7 +106,7 @@ const Cards = communities.map((com) => {
   return {
     title: com.name,
     description: com.description,
-    href: "/${REPL_DEVHUB}/widget/app?page=community&handle=" + com.handle,
+    href: "/${REPL_EVENTS}/widget/app?page=community&handle=" + com.handle,
   };
 });
 
@@ -313,7 +313,7 @@ const Content = (
       ))}
     </MobileCards>
     <CTAContainer>
-      <CTA href="/${REPL_DEVHUB}/widget/app?page=communities">
+      <CTA href="/${REPL_EVENTS}/widget/app?page=communities">
         Explore all communities →
       </CTA>
     </CTAContainer>
@@ -322,7 +322,7 @@ const Content = (
 
 return (
   <Widget
-    src="${REPL_DEVHUB}/widget/devhub.components.island.home-section"
+    src="${REPL_EVENTS}/widget/devhub.components.island.home-section"
     props={{
       title: "/connect",
       children: Content,

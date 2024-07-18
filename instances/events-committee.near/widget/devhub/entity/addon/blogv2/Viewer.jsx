@@ -1,12 +1,12 @@
 const { Card } = VM.require(
-  "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card"
+  "${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.Card"
 );
 
 if (!Card) {
   return <p>Loading modules...</p>;
 }
 
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url") || (() => {});
 
 const {
   data,
@@ -162,7 +162,7 @@ function BlogCardWithLink(flattenedBlog) {
     <Link
       style={{ textDecoration: "none" }}
       to={href({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
+        widgetSrc: "${REPL_EVENTS}/widget/app",
         params: {
           page: "blogv2",
           id: flattenedBlog.id,
@@ -204,7 +204,7 @@ const searchInput = useMemo(
   () => (
     <div className="d-flex flex-wrap gap-4 align-items-center">
       <Widget
-        src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+        src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
         props={{
           className: "flex-grow-1",
           skipPaddingGap: true,
@@ -229,7 +229,7 @@ const categoryInput = useMemo(() => {
   return (
     <div className="d-flex flex-wrap gap-4 align-items-center">
       <Widget
-        src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
+        src="${REPL_EVENTS}/widget/devhub.components.molecule.DropDown"
         props={{
           options: options,
           label: "Category",
