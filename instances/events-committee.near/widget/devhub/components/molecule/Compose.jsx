@@ -84,7 +84,7 @@ const Compose = ({
         {state.selectedTab === "editor" ? (
           <>
             <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDE"}
+              src={"${REPL_EVENTS}/widget/devhub.components.molecule.SimpleMDE"}
               props={{
                 data: { handler: state.handler, content: state.data },
                 onChange: (content) => {
@@ -104,7 +104,7 @@ const Compose = ({
           <div className="card-body">
             <Widget
               src={
-                "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+                "${REPL_EVENTS}/widget/devhub.components.molecule.MarkdownViewer"
               }
               props={{
                 text: state.data,

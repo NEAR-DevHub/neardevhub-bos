@@ -1,5 +1,5 @@
 const { getPost } = VM.require(
-  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_EVENTS}/widget/core.adapter.devhub-contract"
 ) || { getPost: () => {} };
 
 const { Layout, handle } = props;

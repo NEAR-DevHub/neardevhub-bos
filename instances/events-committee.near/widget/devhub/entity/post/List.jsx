@@ -3,10 +3,10 @@
 // The contract will need to be extended with pagination support, yet, even in the current state the page loads much faster.
 // [IndexFeed]: https://near.social/#/mob.near/widget/WidgetSource?src=mob.near/widget/IndexFeed
 
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url");
 
 const { draftState, onDraftStateChange } = VM.require(
-  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
+  "${REPL_EVENTS}/widget/devhub.entity.post.draft"
 );
 
 if (!href) {
@@ -183,7 +183,7 @@ function defaultRenderItem(postId, additionalProps) {
   return (
     <div className="py-2" style={{ minHeight: "150px" }}>
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.entity.post.Post"}
+        src={"${REPL_EVENTS}/widget/devhub.entity.post.Post"}
         props={{
           id: postId,
           expandable: true,
@@ -368,7 +368,7 @@ return (
           }}
           className="fw-bold"
           to={href({
-            widgetSrc: "${REPL_DEVHUB}/widget/app",
+            widgetSrc: "${REPL_EVENTS}/widget/app",
             params: { page: "feed" },
           })}
         >

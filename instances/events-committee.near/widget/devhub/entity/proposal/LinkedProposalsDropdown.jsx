@@ -1,4 +1,4 @@
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url");
 href || (href = () => {});
 
 const linkedProposals = props.linkedProposals;
@@ -111,7 +111,7 @@ return (
           <a
             className="text-decoration-underline flex-1"
             href={href({
-              widgetSrc: "${REPL_DEVHUB}/widget/app",
+              widgetSrc: "${REPL_EVENTS}/widget/app",
               params: {
                 page: "proposal",
                 id: proposal.value,
@@ -138,7 +138,7 @@ return (
     })}
 
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch"
+      src="${REPL_EVENTS}/widget/devhub.components.molecule.DropDownWithSearch"
       props={{
         selectedValue: "",
         onChange: (v) => {

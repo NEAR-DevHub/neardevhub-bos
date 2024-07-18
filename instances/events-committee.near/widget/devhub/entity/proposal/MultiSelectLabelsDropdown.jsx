@@ -13,7 +13,7 @@ const availableOptions = [
   { label: "Other", value: "Other", color: "#9BA1A6" },
 ];
 
-const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
+const { href } = VM.require(`${REPL_EVENTS}/widget/core.lib.url`);
 href || (href = () => {});
 
 const { selected, onChange, disabled, hideDropdown } = props;

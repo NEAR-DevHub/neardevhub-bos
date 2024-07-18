@@ -4,14 +4,14 @@
  */
 
 const { onDraftStateChange } = VM.require(
-  "${REPL_DEVHUB}/widget/devhub.entity.post.draft"
+  "${REPL_EVENTS}/widget/devhub.entity.post.draft"
 );
 
 const { page, ...passProps } = props;
 
 // Import our modules
 const { AppLayout } = VM.require(
-  "${REPL_DEVHUB}/widget/devhub.components.templates.AppLayout"
+  "${REPL_EVENTS}/widget/devhub.components.templates.AppLayout"
 );
 
 if (!AppLayout) {
@@ -47,7 +47,7 @@ function Page() {
     case "create-proposal": {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Editor"}
+          src={"${REPL_EVENTS}/widget/devhub.entity.proposal.Editor"}
           props={{ ...passProps }}
         />
       );
@@ -56,7 +56,7 @@ function Page() {
     case "proposals": {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.page.proposals"}
+          src={"${REPL_EVENTS}/widget/devhub.page.proposals"}
           props={passProps}
         />
       );
@@ -64,7 +64,7 @@ function Page() {
     case "proposal": {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Proposal"}
+          src={"${REPL_EVENTS}/widget/devhub.entity.proposal.Proposal"}
           props={passProps}
         />
       );
@@ -73,7 +73,7 @@ function Page() {
     case "about": {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.page.about"}
+          src={"${REPL_EVENTS}/widget/devhub.page.about"}
           props={passProps}
         />
       );
@@ -81,7 +81,7 @@ function Page() {
     case "admin": {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.page.admin.index"}
+          src={"${REPL_EVENTS}/widget/devhub.page.admin.index"}
           props={passProps}
         />
       );
@@ -89,7 +89,7 @@ function Page() {
     default: {
       return (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.page.proposals"}
+          src={"${REPL_EVENTS}/widget/devhub.page.proposals"}
           props={passProps}
         />
       );

@@ -11,7 +11,7 @@ return (
       }}
     />
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.BadgesList"
+      src="${REPL_EVENTS}/widget/devhub.components.molecule.BadgesList"
       props={{
         accountId,
         mode: "compact",
