@@ -452,17 +452,17 @@ test.describe("Wallet is connected", () => {
     page,
     account,
   }) => {
-    await page.goto(`/${account}/widget/app?page=proposal&id=112`);
+    await page.goto(`/${account}/widget/app?page=proposal&id=2`);
 
     await page.waitForSelector(`iframe`, {
       state: "visible",
     });
 
-    const comment = page.getByRole("link", { name: "geforcy.near" });
+    const comment = page.getByRole("link", { name: "toronto-sc.near" }).first();
     await comment.waitFor();
     await comment.scrollIntoViewIfNeeded();
 
-    const heading = page.getByRole("heading", { name: "Relevant Mentions" });
+    const heading = page.getByText("Add a comment");
     await heading.waitFor();
     await heading.scrollIntoViewIfNeeded();
 
@@ -487,10 +487,10 @@ test.describe("Wallet is connected", () => {
     );
     const liLocators = await liFrameLocators.owner().all();
     const expected = [
-      "thomasguntenaar.near", // author,
-      "theori.near", // supervisor,
-      "neardevdao.near", //  requested_sponsor,
-      "geforcy.near", // comment author,
+      "toronto-sc.near",
+      "yarotska.near",
+      "events-committee.near",
+      "nneoma.near",
     ];
     let mentionSuggestions = [];
     for (let i = 0; i < liLocators.length; i++) {
