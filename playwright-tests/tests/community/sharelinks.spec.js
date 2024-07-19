@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { pauseIfVideoRecording } from "../../testUtils.js";
+import { pauseIfVideoRecording, showPageURLInTest } from "../../testUtils.js";
 
 test.describe("share links", () => {
   test.use({
@@ -12,8 +12,13 @@ test.describe("share links", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
+    await showPageURLInTest(page);
+
     const shareButton = await page.locator("button", { hasText: "Share" });
     await expect(shareButton).toBeVisible();
+
+    await shareButton.hover();
+    await pauseIfVideoRecording(page);
     await shareButton.click();
 
     const linkUrlFromClipboard = await page.evaluate(
@@ -25,8 +30,10 @@ test.describe("share links", () => {
     await pauseIfVideoRecording(page);
     await page.goto(linkUrlFromClipboard);
 
+    await showPageURLInTest(page);
     await expect(await page.getByText("WebAssembly Music")).toBeVisible({
       timeout: 10000,
     });
+    await pauseIfVideoRecording(page);
   });
 });
