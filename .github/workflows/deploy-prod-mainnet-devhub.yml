@@ -7,12 +7,7 @@ jobs:
   deploy-widgets:
     runs-on: ubuntu-latest
     name: Deploy ( or diff from PR ) - Devhub
-    env:
-      NEAR_SOCIAL_DEPLOY_ID: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
-      NEAR_SOCIAL_ACCOUNT_ID: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
-      NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY: ${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}
-      NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY: ${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}
-      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+    environment: devhub.near
     defaults:
       run:
         working-directory: ./instances/devhub.near
@@ -23,7 +18,7 @@ jobs:
       - name: Set replacements
         id: set_replacements
         run: |
-          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value), {"find": "${REPL_POSTHOG_API_KEY}", "replace": "'$POSTHOG_API_KEY'"}]' aliases.mainnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
+          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value), {"find": "${REPL_POSTHOG_API_KEY}", "replace": "'${{ secrets.POSTHOG_API_KEY }}'"}]' aliases.mainnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
 
       - name: Replace placeholders
         uses: flcdrg/replace-multiple-action@v1
@@ -33,8 +28,9 @@ jobs:
           prefix: "(^|.*)"
           suffix: "($|.*)"
 
-      - name: Install bos CLI
+      - name: Install dependencies
         run: |
+          npm ci
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.6/bos-cli-installer.sh | sh
 
       - name: Deploy widgets
@@ -43,7 +39,7 @@ jobs:
           echo "on branch $BRANCH"
           if [[ "$BRANCH" != "main" ]]; then
             echo "Not on main branch, dry run by diff with devhub.near"
-            bos components diff devhub.near network-config mainnet
+            npm run dry-run:devhub
           else
-            bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
+            bos components deploy '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' sign-as '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' network-config mainnet sign-with-plaintext-private-key --signer-public-key '${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}' --signer-private-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}' send
           fi
