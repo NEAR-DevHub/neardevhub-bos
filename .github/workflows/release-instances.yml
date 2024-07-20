@@ -1,0 +1,41 @@
+name: Deploy Components to Mainnet - Events and Infrastructure
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-widgets:
+    name: Deploy (or diff from PR)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target_account:
+          events:
+            environment: events-committee.near
+            dry_run_command: npm run dry-run:events
+            deploy_command: npm run deploy:events
+          infrastructure:
+            environment: infrastructure-committee.near
+            dry_run_command: npm run dry-run:infrastructure
+            deploy_command: npm run deploy:infrastructure
+    environment: ${{ matrix.target_account.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install bos CLI
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.6/bos-cli-installer.sh | sh
+
+      - name: Deploy widgets
+        run: |
+          BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+          echo "on branch $BRANCH"
+          if [[ "$BRANCH" != "main" ]]; then
+            echo "Not on main branch, dry run"
+            ${matrix.target_account.dry_run_command}
+          else
+            ${matrix.target_account.deploy_command} -- '${{ secrets.NEAR_SOCIAL_ACCOUNT_ID }}' sign-as '${{ secrets.NEAR_SOCIAL_ACCOUNT_ID }}' network-config mainnet sign-with-plaintext-private-key --signer-public-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}' --signer-private-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}' send
+          fi
