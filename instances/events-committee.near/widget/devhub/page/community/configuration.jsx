@@ -1,5 +1,5 @@
 const { Tile } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
+  VM.require("${REPL_EVENTS}/widget/devhub.components.molecule.Tile") ||
   (() => <></>);
 
 if (!Tile) {
@@ -49,20 +49,20 @@ return (
     <Tile className={"bg-white"}>
       <Widget
         src={
-          "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.BrandingConfigurator"
+          "${REPL_EVENTS}/widget/devhub.entity.community.configuration.BrandingConfigurator"
         }
         props={{
           onSubmit: sectionSubmit,
           data: communityData,
           hasConfigurePermissions,
-          link: `/${REPL_DEVHUB}/widget/app?page=community&handle=${handle}`,
+          link: `/${REPL_EVENTS}/widget/app?page=community&handle=${handle}`,
         }}
       />
     </Tile>
     <Tile className={"p-3 bg-white"}>
       <Widget
         src={
-          "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
+          "${REPL_EVENTS}/widget/devhub.entity.community.configuration.ConfigurationSection"
         }
         props={{
           title: "Community Information",
@@ -70,7 +70,7 @@ return (
           Configurator: (p) => (
             <Widget
               src={
-                "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.InformationConfigurator"
+                "${REPL_EVENTS}/widget/devhub.entity.community.configuration.InformationConfigurator"
               }
               props={{
                 data: communityData,
@@ -85,7 +85,7 @@ return (
     <Tile className={"p-3 bg-white"}>
       <Widget
         src={
-          "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
+          "${REPL_EVENTS}/widget/devhub.entity.community.configuration.ConfigurationSection"
         }
         props={{
           title: "About",
@@ -93,7 +93,7 @@ return (
           Configurator: (p) => (
             <Widget
               src={
-                "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.AboutConfigurator"
+                "${REPL_EVENTS}/widget/devhub.entity.community.configuration.AboutConfigurator"
               }
               props={{
                 data: communityData,
@@ -108,7 +108,7 @@ return (
     <Tile className={"p-3 bg-white"}>
       <Widget
         src={
-          "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
+          "${REPL_EVENTS}/widget/devhub.entity.community.configuration.ConfigurationSection"
         }
         props={{
           title: "Community Admins",
@@ -116,7 +116,7 @@ return (
           Configurator: (p) => (
             <Widget
               src={
-                "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.AccessControlConfigurator"
+                "${REPL_EVENTS}/widget/devhub.entity.community.configuration.AccessControlConfigurator"
               }
               props={{
                 data: communityData,
@@ -132,7 +132,7 @@ return (
       <Tile className={"p-3 bg-white"}>
         <Widget
           src={
-            "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.ConfigurationSection"
+            "${REPL_EVENTS}/widget/devhub.entity.community.configuration.ConfigurationSection"
           }
           props={{
             title: "Add-Ons",
@@ -140,7 +140,7 @@ return (
             Configurator: (p) => (
               <Widget
                 src={
-                  "${REPL_DEVHUB}/widget/devhub.entity.community.configuration.AddonsConfigurator"
+                  "${REPL_EVENTS}/widget/devhub.entity.community.configuration.AddonsConfigurator"
                 }
                 props={{
                   data: communityData.addons || [],
@@ -159,7 +159,7 @@ return (
         style={{ maxWidth: 896 }}
       >
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+          src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-lg btn-outline-danger border-none" },
             label: "Delete community",
@@ -174,7 +174,7 @@ return (
         style={{ borderTopLeftRadius: "100%" }}
       >
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+          src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "btn-lg btn-success" },
             icon: { type: "svg_icon", variant: "floppy_drive" },

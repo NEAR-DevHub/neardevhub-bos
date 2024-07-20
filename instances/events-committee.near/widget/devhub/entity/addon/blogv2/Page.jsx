@@ -1,5 +1,5 @@
 const { getAccountCommunityPermissions } = VM.require(
-  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_EVENTS}/widget/core.adapter.devhub-contract"
 ) || {
   getAccountCommunityPermissions: () => {},
 };
@@ -131,7 +131,7 @@ function Page({ data, onEdit, accountId, community }) {
         <p>{description}</p>
         <Widget
           src={
-            "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+            "${REPL_EVENTS}/widget/devhub.components.molecule.MarkdownViewer"
           }
           props={{ text: content }}
         />

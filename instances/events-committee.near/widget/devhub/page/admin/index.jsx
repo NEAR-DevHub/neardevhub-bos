@@ -1,5 +1,5 @@
 const { hasModerator, getRootMembers, getAccessControlInfo } = VM.require(
-  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_EVENTS}/widget/core.adapter.devhub-contract"
 );
 
 if (!hasModerator || !getRootMembers || !getAccessControlInfo) {
@@ -58,7 +58,7 @@ function createEditTeam({
     if (!membersAndTeams.includes(member)) {
       // Add member
       txn.push({
-        contractName: "${REPL_DEVHUB_CONTRACT}",
+        contractName: "${REPL_EVENTS_CONTRACT}",
         methodName: "add_member",
         args: {
           member: member,
@@ -79,7 +79,7 @@ function createEditTeam({
   Near.call([
     ...txn,
     {
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_EVENTS_CONTRACT}",
       methodName: contractCall, // add_member || edit_member
       args: {
         member: `team:${teamName}`,
@@ -126,7 +126,7 @@ return (
           aria-labelledby="profile-tab"
         >
           <Widget
-            src="${REPL_DEVHUB}/widget/devhub.page.admin.moderatorsTab"
+            src="${REPL_EVENTS}/widget/devhub.page.admin.moderatorsTab"
             props={{
               accessControlInfo,
               createEditTeam,

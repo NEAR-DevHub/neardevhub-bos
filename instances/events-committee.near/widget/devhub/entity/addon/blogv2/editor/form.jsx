@@ -38,7 +38,7 @@ const InputContainer = ({ heading, description, children }) => {
 const TitleComponent = useMemo(() => {
   return (
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
       props={{
         className: "flex-grow-1",
         value: title,
@@ -60,7 +60,7 @@ const TitleComponent = useMemo(() => {
 const SubtitleComponent = useMemo(() => {
   return (
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
       props={{
         className: "flex-grow-1",
         value: subtitle,
@@ -83,7 +83,7 @@ const CategorySelect = useMemo(() => {
   return (
     <Widget
       src={
-        "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.CategoryDropdown"
+        "${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.editor.CategoryDropdown"
       }
       props={{
         options,
@@ -97,7 +97,7 @@ const CategorySelect = useMemo(() => {
 const DescriptionInput = useMemo(() => {
   return (
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
       props={{
         className: "flex-grow-1",
         onChange: (e) => setDescription(e.target.value),
@@ -119,7 +119,7 @@ const DescriptionInput = useMemo(() => {
 const AuthorInput = useMemo(() => {
   return (
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+      src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
       props={{
         className: "flex-grow-1",
         onChange: (e) => setAuthor(e.target.value),
@@ -151,7 +151,7 @@ const DateInput = () => {
 const ContentEditor = useMemo(() => {
   return (
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
+      src="${REPL_EVENTS}/widget/devhub.components.molecule.MarkdownEditor"
       props={{ data: { content }, onChange: setContent, autoFocus: false }}
     />
   );

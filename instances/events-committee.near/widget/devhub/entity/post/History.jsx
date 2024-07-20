@@ -6,7 +6,7 @@ props.newTab: boolean;
 props.timestamp: number;
 props.referral: any;
 */
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url") || (() => {});
 
 const postId = props.post.id ?? (props.id ? parseInt(props.id) : 0);
 const post =
@@ -78,7 +78,7 @@ const history = (
               <a
                 class="dropdown-item"
                 href={href({
-                  widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
+                  widgetSrc: "${REPL_EVENTS}/widget/devhub.entity.post.Post",
                   params: {
                     id: postId,
                     timestamp: item.timestamp,
@@ -109,7 +109,7 @@ const history = (
             <a
               class="dropdown-item"
               href={href({
-                widgetSrc: "${REPL_DEVHUB}/widget/devhub.entity.post.Post",
+                widgetSrc: "${REPL_EVENTS}/widget/devhub.entity.post.Post",
                 params: {
                   id: postId,
                   timestamp: currentTimestamp,

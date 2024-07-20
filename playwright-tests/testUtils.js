@@ -1,5 +1,21 @@
 import { expect } from "@playwright/test";
 
+export async function showPageURLInTest(page) {
+  await page.evaluate(() => {
+    const urlDiv = document.createElement("div");
+    urlDiv.style.position = "fixed";
+    urlDiv.style.top = "0";
+    urlDiv.style.left = "0";
+    urlDiv.style.backgroundColor = "rgba(255, 200, 200, 0.8)";
+    urlDiv.style.padding = "5px";
+    urlDiv.style.zIndex = "10000";
+    urlDiv.style.fontSize = "12px";
+    urlDiv.style.fontFamily = "Arial, sans-serif";
+    urlDiv.innerText = window.location.href;
+    document.body.appendChild(urlDiv);
+  });
+}
+
 export const pauseIfVideoRecording = async (page) => {
   let isVideoRecorded = (await page.video()) ? true : false;
   if (isVideoRecorded) {

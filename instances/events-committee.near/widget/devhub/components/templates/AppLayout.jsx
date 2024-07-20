@@ -38,7 +38,7 @@ const ContentContainer = styled.div`
 
 const AppHeader = ({ page }) => (
   <Widget
-    src="${REPL_DEVHUB}/widget/devhub.components.organism.Navbar"
+    src="${REPL_EVENTS}/widget/devhub.components.organism.Navbar"
     props={{
       page: page,
       ...props,

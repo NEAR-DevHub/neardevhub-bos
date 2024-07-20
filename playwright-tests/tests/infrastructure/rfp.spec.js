@@ -125,6 +125,7 @@ test.describe("Wallet is connected with admin account", () => {
     );
     await pauseIfVideoRecording(page);
   });
+
   test("should cancel RFP", async ({ page }) => {
     await mockRpcRequest({
       page,
@@ -134,6 +135,7 @@ test.describe("Wallet is connected with admin account", () => {
       modifyOriginalResultFunction: async (originalResult) => {
         console.log(JSON.stringify(originalResult, null, 1));
         originalResult.snapshot.timeline.status = "ACCEPTING_SUBMISSIONS";
+        originalResult.snapshot.linked_proposals = [];
         return originalResult;
       },
     });

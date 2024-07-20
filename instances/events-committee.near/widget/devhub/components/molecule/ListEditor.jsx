@@ -32,7 +32,7 @@ return (
       <Item key={index}>
         <div className="flex-grow-1">
           <Widget
-            src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+            src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
             props={{
               className: "flex-grow-1",
               value: item,
@@ -57,7 +57,7 @@ return (
       <Item>
         <div className="flex-grow-1">
           <Widget
-            src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
+            src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
             props={{
               className: "flex-grow-1",
               skipPaddingGap: true,

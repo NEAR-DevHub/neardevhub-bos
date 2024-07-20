@@ -42,7 +42,7 @@ return (
         <div className="d-flex gap-2 align-items-center justify-content-end mt-2">
           <Link to="https://near.org/signin">
             <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+              src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
               props={{
                 classNames: { root: "btn-outline-secondary" },
                 label: "Sign In",
@@ -51,7 +51,7 @@ return (
           </Link>
           <Link to="https://near.org/signup">
             <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+              src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
               props={{
                 classNames: { root: "black-btn" },
                 label: "Create Account",

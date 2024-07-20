@@ -2,7 +2,7 @@ const NEW_DISCUSSION_POSTED_CONTENT_STORAGE_KEY =
   "new_discussion_posted_content";
 const { handle } = props;
 const { getCommunity, setCommunitySocialDB } = VM.require(
-  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_EVENTS}/widget/core.adapter.devhub-contract"
 );
 
 getCommunity = getCommunity || (() => <></>);
@@ -75,7 +75,7 @@ const [sort, setSort] = useState("desc");
 const [isTransactionFinished, setIsTransactionFinished] = useState(false);
 
 const discussionsAccountId =
-  "discussions." + handle + ".community.${REPL_DEVHUB_CONTRACT}";
+  "discussions." + handle + ".community.${REPL_EVENTS_CONTRACT}";
 
 function checkIfReposted(blockHeight) {
   Near.asyncView("${REPL_SOCIAL_CONTRACT}", "get", {
@@ -101,7 +101,7 @@ function checkIfReposted(blockHeight) {
 function repostOnDiscussions(blockHeight) {
   Near.call([
     {
-      contractName: "${REPL_DEVHUB_CONTRACT}",
+      contractName: "${REPL_EVENTS_CONTRACT}",
       methodName: "create_discussion",
       args: {
         handle,
@@ -191,7 +191,7 @@ return (
           {context.accountId && (
             <div className="card p-4">
               <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.community.Compose"}
+                src={"${REPL_EVENTS}/widget/devhub.entity.community.Compose"}
                 props={{
                   isFinished: () => isTransactionFinished,
                   onSubmit: (v) => {
@@ -235,11 +235,11 @@ return (
           <div className={"card p-4"}>
             <Widget
               key="feed"
-              src="${REPL_DEVHUB}/widget/devhub.components.feed.SubscribedFeed"
+              src="${REPL_EVENTS}/widget/devhub.components.feed.SubscribedFeed"
               props={{
                 sort: sort,
                 accounts: [
-                  `discussions.${handle}.community.${REPL_DEVHUB_CONTRACT}`,
+                  `discussions.${handle}.community.${REPL_EVENTS_CONTRACT}`,
                 ],
               }}
             />
@@ -263,7 +263,7 @@ return (
                 style={{ fontWeight: 500 }}
               >
                 <Widget
-                  src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileCard"
+                  src="${REPL_EVENTS}/widget/devhub.components.molecule.ProfileCard"
                   props={{ accountId }}
                 />
               </div>

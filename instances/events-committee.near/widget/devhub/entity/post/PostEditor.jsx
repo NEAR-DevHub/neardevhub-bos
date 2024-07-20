@@ -1,6 +1,6 @@
-const { normalize } = VM.require("${REPL_DEVHUB}/widget/core.lib.stringUtils");
+const { normalize } = VM.require("${REPL_EVENTS}/widget/core.lib.stringUtils");
 const { getDepositAmountForWriteAccess } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common"
+  "${REPL_EVENTS}/widget/core.lib.common"
 );
 
 getDepositAmountForWriteAccess || (getDepositAmountForWriteAccess = () => {});
@@ -566,7 +566,7 @@ const callDescriptionDiv = () => {
         Description
       </label>
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"}
+        src={"${REPL_EVENTS}/widget/devhub.components.molecule.MarkdownEditor"}
         props={{
           data: { handler: state.handler, content: state.description },
           onChange: (content) => {
@@ -578,7 +578,7 @@ const callDescriptionDiv = () => {
       {autocompleteEnabled && state.showAccountAutocomplete && (
         <AutoComplete>
           <Widget
-            src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
+            src="${REPL_EVENTS}/widget/devhub.components.molecule.AccountAutocomplete"
             props={{
               term: state.mentionInput,
               onSelect: autoCompleteAccountId,
@@ -724,7 +724,7 @@ return (
     <div className="mx-2 mx-md-5 mb-5">
       {showPostPage ? (
         <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.entity.post.Post"}
+          src={"${REPL_EVENTS}/widget/devhub.entity.post.Post"}
           props={{
             id: postId,
             expandable: true,
@@ -856,7 +856,7 @@ return (
             {tab === "preview" && (
               <div className="mb-2">
                 <Widget
-                  src="${REPL_DEVHUB}/widget/devhub.entity.post.Post"
+                  src="${REPL_EVENTS}/widget/devhub.entity.post.Post"
                   props={{
                     isPreview: true,
                     id: 0, // irrelevant

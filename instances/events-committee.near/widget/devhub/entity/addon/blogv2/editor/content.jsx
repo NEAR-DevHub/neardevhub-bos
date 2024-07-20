@@ -1,10 +1,10 @@
 const { Card } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Card") ||
+  VM.require("${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.Card") ||
   (() => <></>);
 const { Page } =
-  VM.require("${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.Page") ||
+  VM.require("${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.Page") ||
   (() => <></>);
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || (() => {});
+const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url") || (() => {});
 
 const categories = [
   {
@@ -554,7 +554,7 @@ return (
             {initialData.status === "PUBLISH" ? (
               <Link
                 to={href({
-                  widgetSrc: "${REPL_DEVHUB}/widget/app",
+                  widgetSrc: "${REPL_EVENTS}/widget/app",
                   params: {
                     page: "blogv2",
                     id: initialData.id,
@@ -579,7 +579,7 @@ return (
       {previewMode === "edit" && (
         <div className="tab-pane show active p-4" id="edit">
           <Widget
-            src="${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.form"
+            src="${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.editor.form"
             props={{
               title,
               setTitle,
@@ -606,7 +606,7 @@ return (
               <>
                 <Widget
                   src={
-                    "${REPL_DEVHUB}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
+                    "${REPL_EVENTS}/widget/devhub.entity.addon.blogv2.editor.ConfirmModal"
                   }
                   props={{
                     isOpen: isDeleteModalOpen,
@@ -622,7 +622,7 @@ return (
                   }}
                 />
                 <Widget
-                  src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                  src={`${REPL_EVENTS}/widget/devhub.components.molecule.Button`}
                   props={{
                     classNames: {
                       root: "btn-outline-danger shadow-none border-0 btn-sm",
@@ -641,7 +641,7 @@ return (
             ) : null}
             <div className="flex gap-x-3">
               <Widget
-                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+                src={`${REPL_EVENTS}/widget/devhub.components.molecule.Button`}
                 props={{
                   classNames: {
                     root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",

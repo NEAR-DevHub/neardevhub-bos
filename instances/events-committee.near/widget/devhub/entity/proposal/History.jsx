@@ -5,14 +5,14 @@ props.newTab: boolean;
 props.timestamp: number;
 props.referral: any;
 */
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
+const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url") || {
   href: () => {},
 };
 const { readableDate } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.common"
+  "${REPL_EVENTS}/widget/core.lib.common"
 ) || { readableDate: () => {} };
 const proposalId = props.id ?? (props.id ? parseInt(props.id) : 0);
-const proposal = Near.view("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
+const proposal = Near.view("${REPL_EVENTS_CONTRACT}", "get_proposal", {
   proposal_id: proposalId,
 });
 if (!proposal || !proposal.snapshot_history) {
@@ -70,7 +70,7 @@ const history = (
               <a
                 class="dropdown-item"
                 href={href({
-                  widgetSrc: "${REPL_DEVHUB}/widget",
+                  widgetSrc: "${REPL_EVENTS}/widget",
                   params: {
                     page: "proposal",
                     id: proposalId,
@@ -102,7 +102,7 @@ const history = (
             <a
               class="dropdown-item"
               href={href({
-                widgetSrc: "${REPL_DEVHUB}/widget/app",
+                widgetSrc: "${REPL_EVENTS}/widget/app",
                 params: {
                   page: "proposal",
                   id: proposalId,

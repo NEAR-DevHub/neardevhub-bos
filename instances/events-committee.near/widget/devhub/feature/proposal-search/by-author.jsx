@@ -4,7 +4,7 @@ const [selectedAuthor, setSelectedAuthor] = useState(null);
 if (!authorsOptions.length) {
   const data = [{ label: "All", value: "" }];
   const authors = Near.view(
-    "${REPL_DEVHUB_CONTRACT}",
+    "${REPL_EVENTS_CONTRACT}",
     "get_all_proposal_authors",
     {}
   );
@@ -27,7 +27,7 @@ const Container = styled.div`
 return (
   <Container>
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
+      src="${REPL_EVENTS}/widget/devhub.components.molecule.DropDown"
       props={{
         options: authorsOptions,
         label: "Author",

@@ -1,5 +1,5 @@
 const { getAllCommunitiesMetadata, createCommunity } = VM.require(
-  "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
+  "${REPL_EVENTS}/widget/core.adapter.devhub-contract"
 );
 
 if (!getAllCommunitiesMetadata || !createCommunity) {
@@ -105,7 +105,7 @@ const StyledDropdown = styled.div`
 
 return (
   <div className="w-100">
-    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.island.banner`} />
+    <Widget src={`${REPL_EVENTS}/widget/devhub.components.island.banner`} />
     <div style={{ background: "#f4f4f4" }}>
       <div
         className="d-flex justify-content-between p-4"
@@ -170,7 +170,7 @@ return (
               <div className="d-flex flex-column justify-content-center align-self-end">
                 <Widget
                   src={
-                    "${REPL_DEVHUB}/widget/devhub.components.molecule.CommunityControl"
+                    "${REPL_EVENTS}/widget/devhub.components.molecule.CommunityControl"
                   }
                   props={{
                     title: "Community",
@@ -185,7 +185,7 @@ return (
       <div className="d-flex flex-wrap align-content-start gap-4 py-2 px-4 w-100 h-100">
         {showSpawner && (
           <Widget
-            src="${REPL_DEVHUB}/widget/devhub.entity.community.Spawner"
+            src="${REPL_EVENTS}/widget/devhub.entity.community.Spawner"
             props={{
               data: null,
               onSubmit: onCommunitySubmit,
@@ -197,7 +197,7 @@ return (
           {searchKey === "" && sort === ""
             ? (communitiesMetadata ?? []).reverse().map((communityMetadata) => (
                 <Widget
-                  src="${REPL_DEVHUB}/widget/devhub.entity.community.Card"
+                  src="${REPL_EVENTS}/widget/devhub.entity.community.Card"
                   props={{
                     format: "small",
                     isBannerEnabled: false,
@@ -207,7 +207,7 @@ return (
               ))
             : SortedAndFiltered(searchKey, sort).map((communityMetadata) => (
                 <Widget
-                  src="${REPL_DEVHUB}/widget/devhub.entity.community.Card"
+                  src="${REPL_EVENTS}/widget/devhub.entity.community.Card"
                   props={{
                     format: "small",
                     isBannerEnabled: false,
