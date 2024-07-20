@@ -72,13 +72,7 @@ const tabs = [];
 
 const onShareClick = () =>
   clipboard
-    .writeText(
-      href({
-        gateway: "near.social",
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
-        params: { page: "community", handle: community.handle },
-      })
-    )
+    .writeText(`https://${REPL_DEVHUB}.page/community/${community.handle}`)
     .then(setLinkCopied(true));
 
 let currentTab = tabs.find((it) => normalize(it.title) === tab);
