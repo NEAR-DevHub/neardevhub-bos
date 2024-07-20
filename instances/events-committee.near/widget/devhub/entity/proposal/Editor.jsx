@@ -741,6 +741,8 @@ const onSubmit = ({ isDraft, isCancel }) => {
         }
       : isDraft
       ? { status: "DRAFT" }
+      : isEditPage
+      ? editProposalData.snapshot.timeline
       : {
           status: "REVIEW",
           sponsor_requested_review: false,
@@ -750,6 +752,10 @@ const onSubmit = ({ isDraft, isCancel }) => {
   const args = { labels: (labels ?? []).map((i) => i.value), body: body };
   if (isEditPage) {
     args["id"] = editProposalData.id;
+  } else {
+    args["accepted_terms_and_conditions_version"] = parseInt(
+      Near.block().header.height
+    );
   }
 
   Near.call([

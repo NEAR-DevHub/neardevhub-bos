@@ -618,23 +618,14 @@ test.describe("Wallet is connected", () => {
     account,
   }) => {
     test.setTimeout(120000);
-    await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
     await page.route(
       "https://near-queryapi.api.pagoda.co/v1/graphql",
       async (route) => {
-        // const request = await route.request();
-        // const requestPostData = request.postDataJSON();
-
         const response = await route.fetch({
           url: "https://near-queryapi.api.pagoda.co/v1/graphql",
         });
-        // const json = await response.json();
 
-        // let proposal2 =
-        //   json.data.thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot.find(
-        //     (proposal) => proposal.proposal_id === 2
-        //   );
         const json = {
           data: {
             thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot:
@@ -693,6 +684,8 @@ test.describe("Wallet is connected", () => {
         await route.fulfill({ response, json });
       }
     );
+    await getCurrentBlockHeight(page);
+
     const delay_milliseconds_between_keypress_when_typing = 100;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
@@ -780,7 +773,7 @@ test.describe("Wallet is connected", () => {
               status: "DRAFT",
             },
           },
-          // accepted_terms_and_conditions_version: 122927956,
+          accepted_terms_and_conditions_version: acceptedTermsVersion,
         },
         null,
         1

@@ -102,6 +102,7 @@ function sortTimelineAndComments() {
         ) {
           startingPoint.timeline.kyc_verified = false;
         }
+
         return {
           editorId: item.editor_id,
           ...getDifferentKeysWithValues(startingPoint, item),
