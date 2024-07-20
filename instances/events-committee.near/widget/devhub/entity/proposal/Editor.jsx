@@ -737,6 +737,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
           status: "CANCELLED",
           sponsor_requested_review: false,
           reviewer_completed_attestation: false,
+          kyc_verified: false,
         }
       : isDraft
       ? { status: "DRAFT" }

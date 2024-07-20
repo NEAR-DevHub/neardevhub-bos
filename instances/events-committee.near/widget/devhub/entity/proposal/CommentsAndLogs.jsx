@@ -93,6 +93,15 @@ function sortTimelineAndComments() {
       .slice(1)
       .map((item, index) => {
         const startingPoint = snapshotHistory[index]; // Set comparison to the previous item
+        // we don't show timeline_version in logs
+        delete startingPoint.timeline.timeline_version;
+        delete item.timeline.timeline_version;
+        if (
+          startingPoint.timeline.kyc_verified === undefined &&
+          item.timeline.kyc_verified === false
+        ) {
+          startingPoint.timeline.kyc_verified = false;
+        }
         return {
           editorId: item.editor_id,
           ...getDifferentKeysWithValues(startingPoint, item),
@@ -270,8 +279,12 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
           </span>
         )
       );
-    case "sponsor_requested_review":
-      return !oldValue && newValue && <span>completed review</span>;
+    case "sponsor_requested_review": {
+      if (!oldValue && newValue) {
+        return <span>completed review</span>;
+      } else if (oldValue && !newValue) return <span>unmarked review</span>;
+      return null;
+    }
     case "reviewer_completed_attestation":
       return !oldValue && newValue && <span>completed attestation</span>;
     case "kyc_verified":
@@ -317,7 +330,7 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
         <span>
           accepted
           <Widget
-            src={"${REPL_EVENTS}/widget/devhub.entity.proposal.AcceptedTerms"}
+            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"}
             props={{ proposalId: proposalId }}
           />
         </span>

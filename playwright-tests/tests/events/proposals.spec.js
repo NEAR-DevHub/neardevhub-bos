@@ -1,9 +1,6 @@
 import { test as base, expect } from "@playwright/test";
 import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
-import {
-  pauseIfVideoRecording,
-  waitForSelectorToBeVisible,
-} from "../../testUtils.js";
+import { pauseIfVideoRecording } from "../../testUtils.js";
 import {
   setCommitWritePermissionDontAskAgainCacheValues,
   setDontAskAgainCacheValues,
@@ -14,7 +11,6 @@ import {
   encodeResultJSON,
 } from "../../util/transaction.js";
 import { mockRpcRequest } from "../../util/rpcmock.js";
-import { mockSocialIndexResponses } from "../../util/socialapi.js";
 
 const test = base.extend({
   // Define an option and provide a default value.
@@ -26,6 +22,26 @@ const test = base.extend({
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
 );
+
+let acceptedTermsVersion = 122927956;
+async function getCurrentBlockHeight(page) {
+  // set current block height for accepted terms and conditions
+  await page.route(`http://localhost:20000/`, async (route) => {
+    const request = route.request();
+    const requestPostData = request.postDataJSON();
+    if (
+      requestPostData?.method === "block" &&
+      requestPostData?.params?.finality === "optimistic"
+    ) {
+      const response = await route.fetch();
+      const json = await response.json();
+      json.result.header.height = acceptedTermsVersion;
+      await route.fulfill({ response, json });
+    } else {
+      await route.continue();
+    }
+  });
+}
 
 test.describe("Wallet is connected, but not KYC verified", () => {
   test.use({
@@ -251,7 +267,7 @@ test.describe("Don't ask again enabled", () => {
   });
 });
 
-test.describe.skip('Moderator with "Don\'t ask again" enabled', () => {
+test.describe('Moderator with "Don\'t ask again" enabled', () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-moderator-access-key.json",
@@ -309,11 +325,11 @@ test.describe.skip('Moderator with "Don\'t ask again" enabled', () => {
     );
 
     await page.goto(`/${account}/widget/app?page=proposal&id=17`);
-    console.log({ account });
+
     await setDontAskAgainCacheValues({
       page,
       contractId: account,
-      widgetSrc: `/${account}/widget/devhub.entity.proposal.Proposal`,
+      widgetSrc: `${account}/widget/devhub.entity.proposal.Proposal`,
       methodName: "edit_proposal_versioned_timeline",
     });
 
@@ -334,9 +350,9 @@ test.describe.skip('Moderator with "Don\'t ask again" enabled', () => {
 
     const callContractToast = await page.getByText("Sending transaction");
     await expect(callContractToast).toBeVisible();
-    await expect(callContractToast).not.toBeAttached({ timeout: 10000 });
+    await expect(callContractToast).not.toBeAttached();
     const timeLineStatusSubmittedToast = await page
-      .getByText("Timeline status submitted")
+      .getByText("Timeline status submitted successfully")
       .first();
     await expect(timeLineStatusSubmittedToast).toBeVisible();
 
@@ -348,7 +364,8 @@ test.describe.skip('Moderator with "Don\'t ask again" enabled', () => {
       { hasText: /.*s ago/ }
     );
     await expect(lastLogItem).toContainText(
-      "moved proposal from REVIEW to APPROVED"
+      "moved proposal from REVIEW to APPROVED",
+      { timeout: 10000 }
     );
     await lastLogItem.scrollIntoViewIfNeeded();
     await expect(timeLineStatusSubmittedToast).not.toBeAttached();
@@ -401,8 +418,8 @@ test.describe("Wallet is connected", () => {
     account,
   }) => {
     test.setTimeout(120000);
+    await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
-
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();
@@ -441,7 +458,10 @@ test.describe("Wallet is connected", () => {
 
     await pauseIfVideoRecording(page);
 
-    await page.frameLocator("iframe").getByText("petersalomonsen.near").click();
+    await page
+      .frameLocator("iframe")
+      .getByText("petersalomonsen.near")
+      .click({ timeout: 10000 });
 
     await descriptionArea.pressSequentially(`. Also mentioning @m`, {
       delay: delay_milliseconds_between_keypress_when_typing,
@@ -479,7 +499,7 @@ test.describe("Wallet is connected", () => {
       null,
       1
     );
-    await expect(transactionText).toEqual(
+    expect(transactionText).toEqual(
       JSON.stringify(
         {
           labels: ["Bounty booster"],
@@ -500,7 +520,7 @@ test.describe("Wallet is connected", () => {
               status: "DRAFT",
             },
           },
-          // accepted_terms_and_conditions_version: 122927956,
+          accepted_terms_and_conditions_version: acceptedTermsVersion,
         },
         null,
         1
@@ -598,6 +618,7 @@ test.describe("Wallet is connected", () => {
     account,
   }) => {
     test.setTimeout(120000);
+    await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
     await page.route(
       "https://near-queryapi.api.pagoda.co/v1/graphql",

@@ -87,7 +87,6 @@ test.describe("Don't ask again enabled", () => {
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
-    console.log({ account });
     await page.goto(`/${account}/widget/app?page=proposals`);
 
     const widgetSrc = `${account}/widget/devhub.entity.proposal.Editor`;
@@ -211,6 +210,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       },
       modifyOriginalResultFunction: (originalResult) => {
         originalResult.snapshot.timeline.status = "REVIEW";
+
         if (isTransactionCompleted) {
           const lastSnapshot =
             originalResult.snapshot_history[
@@ -246,6 +246,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     );
 
     await page.goto(`/${account}/widget/app?page=proposal&id=17`);
+
     await setDontAskAgainCacheValues({
       page,
       contractId: account,
