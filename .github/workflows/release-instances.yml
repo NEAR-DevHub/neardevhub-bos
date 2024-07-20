@@ -18,6 +18,7 @@ jobs:
           - environment: infrastructure-committee.near
             dry_run_command: npm run dry-run:infrastructure
             deploy_command: npm run deploy:infrastructure
+    environment: ${{ matrix.target_account.environment }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,6 +35,7 @@ jobs:
           if [[ "$BRANCH" != "main" ]]; then
             echo "Not on main branch, dry run"
             ${{ matrix.target_account.dry_run_command }}
+            echo "${{ matrix.target_account.deploy_command }} -- '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' sign-as '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' network-config mainnet sign-with-plaintext-private-key --signer-public-key '${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}' --signer-private-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}' send"
           else
             ${{ matrix.target_account.deploy_command }} -- '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' sign-as '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' network-config mainnet sign-with-plaintext-private-key --signer-public-key '${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}' --signer-private-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}' send
           fi
