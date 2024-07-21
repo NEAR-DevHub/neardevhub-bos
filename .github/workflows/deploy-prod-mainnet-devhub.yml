@@ -41,9 +41,4 @@ jobs:
         run: |
           BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           echo "on branch $BRANCH"
-          if [[ "$BRANCH" != "main" ]]; then
-            echo "Not on main branch, dry run by diff with devhub.near"
-            bos components diff devhub.near network-config mainnet
-          else
-            bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
-          fi
+          bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
