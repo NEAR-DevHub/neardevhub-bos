@@ -2,7 +2,7 @@ name: Deploy Widgets to Mainnet - Devhub
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, bug/redeploy]
 jobs:
   deploy-widgets:
     runs-on: ubuntu-latest
@@ -45,5 +45,3 @@ jobs:
             echo "Not on main branch, dry run by diff with devhub.near"
           fi
           bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
-          #   bos components diff devhub.near network-config mainnet
-          # else
