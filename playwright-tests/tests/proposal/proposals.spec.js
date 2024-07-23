@@ -87,7 +87,6 @@ test.describe("Don't ask again enabled", () => {
     await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
       page
     );
-    console.log({ account });
     await page.goto(`/${account}/widget/app?page=proposals`);
 
     const widgetSrc = `${account}/widget/devhub.entity.proposal.Editor`;
@@ -211,6 +210,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       },
       modifyOriginalResultFunction: (originalResult) => {
         originalResult.snapshot.timeline.status = "REVIEW";
+
         if (isTransactionCompleted) {
           const lastSnapshot =
             originalResult.snapshot_history[
@@ -246,6 +246,7 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     );
 
     await page.goto(`/${account}/widget/app?page=proposal&id=17`);
+
     await setDontAskAgainCacheValues({
       page,
       contractId: account,
@@ -340,6 +341,7 @@ test.describe("Wallet is connected", () => {
     test.setTimeout(120000);
     await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
+
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
     await expect(titleArea).toBeEditable();

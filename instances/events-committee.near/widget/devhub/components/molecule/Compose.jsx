@@ -29,6 +29,7 @@ const Compose = ({
   showProposalIdAutoComplete,
   onChangeKeyup,
   handler,
+  sortedRelevantUsers,
 }) => {
   State.init({
     data: data,
@@ -97,6 +98,7 @@ const Compose = ({
                 showProposalIdAutoComplete: showProposalIdAutoComplete,
                 autoFocus: state.autoFocus,
                 onChangeKeyup: onChangeKeyup,
+                sortedRelevantUsers,
               }}
             />
           </>

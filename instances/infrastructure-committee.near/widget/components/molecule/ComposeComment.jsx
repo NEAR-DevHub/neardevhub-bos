@@ -220,10 +220,11 @@ const Compose = useMemo(() => {
         embeddCSS: ComposeEmbeddCSS,
         handler: handler,
         showProposalIdAutoComplete: true,
+        sortedRelevantUsers: props.sortedRelevantUsers,
       }}
     />
   );
-}, [draftComment, handler]);
+}, [draftComment, handler, props.sortedRelevantUsers]);
 
 return (
   <div className="d-flex gap-2">
