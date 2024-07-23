@@ -10,6 +10,6 @@
   "REPL_DEVS": "devs.near",
   "REPL_SOCIAL_CONTRACT": "social.near",
   "REPL_RPC_URL": "https://rpc.mainnet.near.org",
-  "REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME": "megha19_near_events_committee_prod_v1_proposals_with_latest_snapshot",
+  "REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME": "megha19_near_events_committee_prod_v2_proposals_with_latest_snapshot",
   "REPL_INDEXER_HASURA_ROLE": "megha19_near"
 }
