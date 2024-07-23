@@ -1,0 +1,20 @@
+name: Matrix Environment Test Workflow
+
+on:
+  pull_request:
+  push:
+    branches: [ci/matrix]
+
+jobs:
+  matrix-echo:
+    name: Matrix Echo
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target_account:
+          - environment: devhub-dev.testnet
+    environment: ${{ matrix.target_account.environment }}
+    steps:
+      - name: echo
+        run: |
+          echo "${{ vars.TEST_VAR }} ${{ secrets.TEST_SECRET }}"
