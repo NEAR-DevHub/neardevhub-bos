@@ -1,9 +1,5 @@
 {
   "account": "events-committee.near",
-  "accounts": {
-    "deploy": "events-committee.near",
-    "signer": "events-committee.near"
-  },
   "aliasPrefix": "REPL",
   "aliasesContainsPrefix": true,
   "aliases": ["./aliases.mainnet.json"]
