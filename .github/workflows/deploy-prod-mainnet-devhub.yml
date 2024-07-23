@@ -44,7 +44,7 @@ jobs:
             
             #node create-components.mjs
             #near contract call-function as-transaction social.near set file-args components.json prepaid-gas '300.0 Tgas' attached-deposit '0 NEAR' sign-as devhub.near network-config mainnet sign-with-plaintext-private-key --signer-public-key '${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}' --signer-private-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}' send
-            bos components deploy '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' sign-as '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' network-config mainnet sign-with-plaintext-private-key --signer-public-key '${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}' --signer-private-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}' send
+            bos components deploy devhub.near sign-as devhub.near network-config mainnet sign-with-plaintext-private-key --signer-public-key 'ed25519:2i3bnqZND3rhnYr9GNgtcLminRr5dGnwy9dAYavZFtvd' --signer-private-key 'AxLg2kyjYLD2TtWon4QgyZn7ECJy5HFQd3BE2AC4tNZDYXHZj54vCRvAHpWKGc1t991y4JQsPHtAEDgpjaLvwfP' send
           else
             bos components deploy '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' sign-as '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' network-config mainnet sign-with-plaintext-private-key --signer-public-key '${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}' --signer-private-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}' send
           fi
