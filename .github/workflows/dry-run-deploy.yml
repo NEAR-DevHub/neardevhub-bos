@@ -1,13 +1,11 @@
-name: Deploy Widgets to Mainnet - Devhub
+name: Dry run - Devhub
 on:
   pull_request:
-  push:
-    branches: [main]
 jobs:
   deploy-widgets:
     runs-on: ubuntu-latest
     name: Dry run - Devhub
-    environment: devhub.near
+    # environment: devhub.near
     defaults:
       run:
         working-directory: ./instances/devhub.near
