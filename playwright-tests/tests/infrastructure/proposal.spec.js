@@ -1,5 +1,12 @@
-import { test, expect } from "@playwright/test";
+import { test as base, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils";
+
+const test = base.extend({
+  // Define an option and provide a default value.
+  // We can later override it in the config.
+  account: ["infrastructure-committee.near", { option: true }],
+  proposalAuthorAccountId: ["megha19.near", { option: true }],
+});
 
 test.describe("Wallet is connected as admin", () => {
   test.use({
@@ -79,6 +86,67 @@ test.describe("Wallet is connected as admin", () => {
       )
     );
 
+    await pauseIfVideoRecording(page);
+  });
+
+  test("should show relevant users in mention autocomplete", async ({
+    page,
+    account,
+  }) => {
+    await page.goto(`/${account}/widget/app?page=proposal&id=1`);
+
+    await page.waitForSelector(`iframe`, {
+      state: "visible",
+    });
+
+    const proposal = page.getByRole("link", { name: "hemera.near" }).first();
+    await proposal.waitFor();
+    await proposal.scrollIntoViewIfNeeded();
+
+    const comment = page
+      .getByRole("link", { name: "trechriron71.near" })
+      .first();
+    await comment.waitFor();
+    await comment.scrollIntoViewIfNeeded();
+
+    const heading = page.getByText("Add a comment");
+    await heading.waitFor();
+    await heading.scrollIntoViewIfNeeded();
+
+    await page.waitForTimeout(5000);
+
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const commentEditor = page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentEditor.focus();
+    await commentEditor.pressSequentially(
+      `Make sure relevant users show up in a mention. @`,
+      {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      }
+    );
+
+    await pauseIfVideoRecording(page);
+    const iframe = page.frameLocator("iframe");
+    const liFrameLocators = iframe.frameLocator(
+      'ul[id="mentiondropdown"] > li'
+    );
+    const liLocators = await liFrameLocators.owner().all();
+    const expected = [
+      "hemera.near", // author,
+      "infrastructure-committee.near", //  requested_sponsor,
+      "trechriron71.near", // comment author,
+      "root.near",
+    ];
+    let mentionSuggestions = [];
+    for (let i = 0; i < liLocators.length; i++) {
+      const text = await liLocators[i].innerText();
+      mentionSuggestions.push(text);
+    }
+
+    // When I manually test, it shows the correct 4 users
+    expect(mentionSuggestions.slice(0, 4)).toEqual(expected);
     await pauseIfVideoRecording(page);
   });
 });

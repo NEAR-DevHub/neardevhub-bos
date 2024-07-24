@@ -357,6 +357,12 @@ const item = {
   path: `${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}/post/main`,
   blockHeight,
 };
+const comments = Social.index("comment", item, { subscribe: true }) ?? [];
+
+const commentAuthors = [
+  ...new Set(comments.map((comment) => comment.accountId)),
+];
+
 const proposalURL = getLinkUsingCurrentGateway(
   `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
 );
@@ -895,6 +901,11 @@ return (
                     item: item,
                     notifyAccountIds: [authorId],
                     proposalId: proposal.id,
+                    sortedRelevantUsers: [
+                      authorId,
+                      snapshot.requested_sponsor,
+                      ...commentAuthors,
+                    ].filter((user) => user !== accountId),
                   }}
                 />
               </div>

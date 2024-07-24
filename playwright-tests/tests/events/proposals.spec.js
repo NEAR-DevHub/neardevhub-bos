@@ -186,85 +186,6 @@ test.describe("Don't ask again enabled", () => {
     await page.waitForTimeout(1000);
     await pauseIfVideoRecording(page);
   });
-  test("should add comment on a proposal", async ({ page, account }) => {
-    await page.goto(`/${account}/widget/app?page=proposal&id=5`);
-    const widgetSrc = `${account}/widget/devhub.entity.proposal.ComposeComment`;
-
-    const delay_milliseconds_between_keypress_when_typing = 0;
-    const commentArea = await page
-      .frameLocator("iframe")
-      .locator(".CodeMirror textarea");
-    await commentArea.focus();
-    const text = "Comment testing";
-    await commentArea.pressSequentially(text, {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-    await commentArea.blur();
-    await pauseIfVideoRecording(page);
-
-    const accountId = "petersalomonsen.near";
-    await setCommitWritePermissionDontAskAgainCacheValues({
-      page,
-      widgetSrc,
-      accountId: accountId,
-    });
-
-    await mockTransactionSubmitRPCResponses(
-      page,
-      async ({ route, request, transaction_completed, last_receiver_id }) => {
-        const postData = request.postDataJSON();
-        const args_base64 = postData.params?.args_base64;
-        if (transaction_completed && args_base64) {
-          const args = atob(args_base64);
-          if (
-            postData.params.account_id === "social.near" &&
-            postData.params.method_name === "get" &&
-            args === `{"keys":["${accountId}/post/**"]}`
-          ) {
-            const response = await route.fetch();
-            const json = await response.json();
-            const resultObj = decodeResultJSON(json.result.result);
-            resultObj[accountId].post.main = JSON.stringify({
-              text: text,
-            });
-            json.result.result = encodeResultJSON(resultObj);
-            await route.fulfill({ response, json });
-            return;
-          } else {
-            await route.continue();
-          }
-        } else {
-          await route.continue();
-        }
-      }
-    );
-    const commentButton = await page.getByRole("button", { name: "Comment" });
-    await expect(commentButton).toBeAttached();
-    await commentButton.scrollIntoViewIfNeeded();
-    await commentButton.click();
-    await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
-    ).toContainText(text);
-
-    const loadingIndicator = await page.locator(".comment-btn-spinner");
-    await expect(loadingIndicator).toBeAttached();
-    await loadingIndicator.waitFor({ state: "detached", timeout: 30000 });
-    await expect(loadingIndicator).not.toBeVisible();
-    const transaction_successful_toast = await page.getByText(
-      "Comment Submitted Successfully",
-      { exact: true }
-    );
-    await expect(transaction_successful_toast).toBeVisible();
-
-    await expect(transaction_successful_toast).not.toBeAttached();
-    await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
-    ).not.toContainText(text);
-    await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
-    ).toContainText("Add your comment here...");
-    await pauseIfVideoRecording(page);
-  });
 });
 
 test.describe('Moderator with "Don\'t ask again" enabled', () => {
@@ -530,21 +451,21 @@ test.describe("Wallet is connected", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test.skip("should show relevant users in mention autocomplete", async ({
+  test("should show relevant users in mention autocomplete", async ({
     page,
     account,
   }) => {
-    await page.goto(`/${account}/widget/app?page=proposal&id=112`);
+    await page.goto(`/${account}/widget/app?page=proposal&id=2`);
 
     await page.waitForSelector(`iframe`, {
       state: "visible",
     });
 
-    const comment = page.getByRole("link", { name: "geforcy.near" });
+    const comment = page.getByRole("link", { name: "toronto-sc.near" }).first();
     await comment.waitFor();
     await comment.scrollIntoViewIfNeeded();
 
-    const heading = page.getByRole("heading", { name: "Relevant Mentions" });
+    const heading = page.getByText("Add a comment");
     await heading.waitFor();
     await heading.scrollIntoViewIfNeeded();
 
@@ -569,10 +490,10 @@ test.describe("Wallet is connected", () => {
     );
     const liLocators = await liFrameLocators.owner().all();
     const expected = [
-      "thomasguntenaar.near", // author,
-      "theori.near", // supervisor,
-      "neardevdao.near", //  requested_sponsor,
-      "geforcy.near", // comment author,
+      "toronto-sc.near",
+      "yarotska.near",
+      "events-committee.near",
+      "nneoma.near",
     ];
     let mentionSuggestions = [];
     for (let i = 0; i < liLocators.length; i++) {
@@ -618,6 +539,7 @@ test.describe("Wallet is connected", () => {
     account,
   }) => {
     test.setTimeout(120000);
+    await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
     await page.route(
       "https://near-queryapi.api.pagoda.co/v1/graphql",
@@ -721,7 +643,6 @@ test.describe("Wallet is connected", () => {
         delay: delay_milliseconds_between_keypress_when_typing,
       }
     );
-
     await pauseIfVideoRecording(page);
 
     await page

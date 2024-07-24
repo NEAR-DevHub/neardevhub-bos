@@ -11,17 +11,16 @@ const onChangeKeyup = props.onChangeKeyup ?? (() => {}); // in case where we wan
 const height = props.height ?? "390";
 const className = props.className ?? "w-100";
 const embeddCSS = props.embeddCSS;
+const sortedRelevantUsers = props.sortedRelevantUsers || [];
 
 State.init({
   iframeHeight: height,
   message: props.data,
 });
 
-const profilesData = Social.get("*/profile/name", "final");
-const followingData = Social.get(
-  `${context.accountId}/graph/follow/**`,
-  "final"
-);
+const profilesData = Social.get("*/profile/name", "final") ?? {};
+const followingData =
+  Social.get(`${context.accountId}/graph/follow/**`, "final") ?? {};
 
 // SIMPLEMDE CONFIG //
 const fontFamily = props.fontFamily ?? "sans-serif";
@@ -138,7 +137,13 @@ function getSuggestedAccounts(term) {
   let results = [];
 
   term = (term || "").replace(/\W/g, "").toLowerCase();
-  const limit = 5;
+  let limit = 5;
+  if (term.length < 2) {
+   results = [${sortedRelevantUsers
+     .map((u) => "{accountId:'" + u + "', score: 60}")
+     .join(",")}];
+    limit = ${5 + sortedRelevantUsers.length};
+  }
 
   const profiles = Object.entries(profilesData);
 
