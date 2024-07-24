@@ -23,6 +23,6 @@ jobs:
           npm ci
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.6/bos-cli-installer.sh | sh
 
-      - name: Deploy widgets
+      - name: Dry-run widgets
         run: |
           ${{ matrix.target_account.dry_run_command }}
