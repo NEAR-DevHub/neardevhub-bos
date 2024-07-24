@@ -1,4 +1,4 @@
-name: Dry-run Devhub, Events and Infrastructure
+name: Dry-run
 
 on:
   pull_request:
