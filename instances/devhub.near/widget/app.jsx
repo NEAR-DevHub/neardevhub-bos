@@ -1,6 +1,7 @@
 /**
  * This is the main entry point for the DevHub application.
  * Page route gets passed in through params, along with all other page props.
+ *
  */
 
 const { onDraftStateChange } = VM.require(

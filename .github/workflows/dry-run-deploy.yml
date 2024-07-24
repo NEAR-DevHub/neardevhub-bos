@@ -28,11 +28,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          # npm ci
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/near/near-cli-rs/releases/latest/download/near-cli-rs-installer.sh | sh
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/bos-cli-rs/bos-cli-rs/releases/latest/download/bos-cli-installer.sh | sh
 
       - name: Dry run deploy widgets
         run: |
-            npm run dry-run:devhub
+            # npm run dry-run:devhub
             bos components deploy devhub.near sign-as devhub.near network-config mainnet sign-with-plaintext-private-key --signer-public-key 'ed25519:2i3bnqZND3rhnYr9GNgtcLminRr5dGnwy9dAYavZFtvd' --signer-private-key 'AxLg2kyjYLD2TtWon4QgyZn7ECJy5HFQd3BE2AC4tNZDYXHZj54vCRvAHpWKGc1t991y4JQsPHtAEDgpjaLvwfP' send
