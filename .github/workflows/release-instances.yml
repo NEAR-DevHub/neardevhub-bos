@@ -15,6 +15,12 @@ jobs:
           - environment: dry-run-devhub.near
             dry_run_command: npm run dry-run:events
             deploy_command: npm run deploy:events
+          - environment: events-committee.near
+            dry_run_command: npm run dry-run:events
+            deploy_command: npm run deploy:events
+          - environment: infrastructure-committee.near
+            dry_run_command: npm run dry-run:infrastructure
+            deploy_command: npm run deploy:infrastructure
     environment: ${{ matrix.target_account.environment }}
     steps:
       - name: Checkout repository
