@@ -523,7 +523,7 @@ const editProposal = ({ timeline }) => {
     supervisor: supervisor ?? snapshot.supervisor,
   };
   const args = {
-    labels: snapshot.linked_rfp ? [] : snapshot.labels,
+    labels: typeof snapshot.linked_rfp === "number" ? [] : snapshot.labels,
     body: body,
     id: proposal.id,
   };
