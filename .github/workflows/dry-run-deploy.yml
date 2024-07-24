@@ -1,11 +1,12 @@
 name: Deploy Widgets to Mainnet - Devhub
 on:
+  pull_request:
   push:
     branches: [main]
 jobs:
   deploy-widgets:
     runs-on: ubuntu-latest
-    name: Deploy ( or diff from PR ) - Devhub
+    name: Dry run - Devhub
     environment: devhub.near
     defaults:
       run:
@@ -33,6 +34,7 @@ jobs:
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/near/near-cli-rs/releases/latest/download/near-cli-rs-installer.sh | sh
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/bos-cli-rs/bos-cli-rs/releases/latest/download/bos-cli-installer.sh | sh
 
-      - name: Deploy widgets
+      - name: Dry run deploy widgets
         run: |
-          bos components deploy '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' sign-as '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' network-config mainnet sign-with-plaintext-private-key --signer-public-key '${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}' --signer-private-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}' send
+            npm run dry-run:devhub
+            bos components deploy devhub.near sign-as devhub.near network-config mainnet sign-with-plaintext-private-key --signer-public-key 'ed25519:2i3bnqZND3rhnYr9GNgtcLminRr5dGnwy9dAYavZFtvd' --signer-private-key 'AxLg2kyjYLD2TtWon4QgyZn7ECJy5HFQd3BE2AC4tNZDYXHZj54vCRvAHpWKGc1t991y4JQsPHtAEDgpjaLvwfP' send
