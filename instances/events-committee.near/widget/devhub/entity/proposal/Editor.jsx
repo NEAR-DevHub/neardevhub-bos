@@ -897,16 +897,12 @@ const ConsentComponent = useMemo(() => {
           label: (
             <>
               I’ve agree to{" "}
-              <a
-                href={
-                  "https://docs.google.com/document/d/1nRGy7LhpLj56SjN9MseV1x-ubH8O_c6B9DOAZ9qTwMU/edit?usp=sharing"
+              <Widget
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"
                 }
-                className="text-decoration-underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Event Committee’s Terms and Conditions
-              </a>
+                props={{ proposalId: proposalId, portal: "Event Committee" }}
+              />
               and commit to honoring it
             </>
           ),
