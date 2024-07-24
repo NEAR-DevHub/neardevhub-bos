@@ -137,7 +137,7 @@ test.describe("Wallet is connected as admin", () => {
       "hemera.near", // author,
       "infrastructure-committee.near", //  requested_sponsor,
       "trechriron71.near", // comment author,
-      "root.near",
+      "as2.near",
     ];
     let mentionSuggestions = [];
     for (let i = 0; i < liLocators.length; i++) {
