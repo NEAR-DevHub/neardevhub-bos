@@ -62,7 +62,7 @@ test.describe("Wallet is connected as admin", () => {
     await expect(transactionText).toEqual(
       JSON.stringify(
         {
-          labels: [],
+          labels: ["Other"],
           body: {
             proposal_body_version: "V1",
             linked_rfp: 0,
