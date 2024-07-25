@@ -169,6 +169,9 @@ return (
             <Widget
               src="${REPL_DEVHUB}/widget/devhub.components.organism.Feed"
               props={{
+                handle: props.handle,
+                tab: "announcements",
+                page: "community",
                 filteredAccountIds: [communityAccountId],
                 sort: sort,
                 setPostExists: setPostExists,

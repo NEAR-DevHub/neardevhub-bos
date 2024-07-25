@@ -118,6 +118,9 @@ return (
         src={`${REPL_DEVHUB}/widget/devhub.components.organism.Feed.NearQueryApi`}
         props={{
           GRAPHQL_ENDPOINT,
+          page: props.page,
+          handle: props.handle,
+          tab: props.tab,
           filteredAccountIds: filteredAccountIds,
           showFlagAccountFeature: showFlagAccountFeature,
           onNewUnseenPosts: props.onNewUnseenPosts,

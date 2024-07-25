@@ -35,14 +35,14 @@ test.describe("Clipboard permissions", () => {
       "navigator.clipboard.readText()"
     );
 
+    expect(linkUrlFromClipboard).toEqual(
+      "https://devhub.near.page/community/webassemblymusic/announcements?accountId=webassemblymusic.community.devhub.near&blockHeight=116026696"
+    );
     await pauseIfVideoRecording(page);
     await page.goto(linkUrlFromClipboard);
 
     await expect(await page.getByText("WebAssembly Music")).toBeVisible({
       timeout: 10000,
     });
-    expect(linkUrlFromClipboard).toEqual(
-      "https://devhub.near.page/community/webassemblymusic/announcements?accountId=webassemblymusic.community.devhub.near&blockHeight=116026696"
-    );
   });
 });
