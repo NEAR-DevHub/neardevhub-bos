@@ -351,14 +351,12 @@ const proposalStatusOptions = [
       status: TIMELINE_STATUS.REVIEW,
       sponsor_requested_review: false,
       reviewer_completed_attestation: false,
-      kyc_verified: false,
     },
   },
   {
     label: "Approved",
     value: {
       status: TIMELINE_STATUS.APPROVED,
-      kyc_verified: true,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -367,7 +365,6 @@ const proposalStatusOptions = [
     label: "Approved-Conditionally",
     value: {
       status: TIMELINE_STATUS.APPROVED_CONDITIONALLY,
-      kyc_verified: true,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
     },
@@ -378,7 +375,6 @@ const proposalStatusOptions = [
       status: TIMELINE_STATUS.REJECTED,
       sponsor_requested_review: true,
       reviewer_completed_attestation: false,
-      kyc_verified: true,
     },
   },
   {
@@ -387,14 +383,13 @@ const proposalStatusOptions = [
       status: TIMELINE_STATUS.CANCELED,
       sponsor_requested_review: false,
       reviewer_completed_attestation: false,
-      kyc_verified: true,
     },
   },
   {
     label: "Payment-processing",
     value: {
       status: TIMELINE_STATUS.PAYMENT_PROCESSING,
-      kyc_verified: true,
+      kyc_verified: false,
       test_transaction_sent: false,
       request_for_trustees_created: false,
       sponsor_requested_review: true,
@@ -443,11 +438,9 @@ const LinkedProposals = () => {
                 }}
               />
               <div className="d-flex flex-column" style={{ maxWidth: 250 }}>
-                <div className="text-truncate">
-                  <LinkProfile account={item.snapshot.name}>
-                    <b>{item.snapshot.name}</b>
-                  </LinkProfile>
-                </div>
+                <LinkProfile account={item.snapshot.name}>
+                  <b className="text-truncate">{item.snapshot.name}</b>
+                </LinkProfile>
                 <div className="text-sm text-muted">
                   created on {readableDate(item.snapshot.timestamp / 1000000)}
                 </div>
@@ -539,10 +532,10 @@ const editProposalStatus = ({ timeline }) => {
   Near.call([
     {
       contractName: "${REPL_EVENTS_CONTRACT}",
-      methodName: "edit_proposal_versioned_timeline",
+      methodName: "edit_proposal_timeline",
       args: {
         id: proposal.id,
-        timeline: { timeline_version: "V1", ...timeline },
+        timeline: timeline,
       },
       gas: 270000000000000,
     },
@@ -1163,21 +1156,6 @@ return (
                                 .reviewer_completed_attestation
                             }
                           />
-                          <CheckBox
-                            value={updatedProposalStatus.value.kyc_verified}
-                            label="Sponsor verifies KYC/KYB"
-                            disabled={selectedStatusIndex !== 1}
-                            onClick={(value) =>
-                              setUpdatedProposalStatus((prevState) => ({
-                                ...prevState,
-                                value: {
-                                  ...prevState.value,
-                                  kyc_verified: value,
-                                },
-                              }))
-                            }
-                            isChecked={updatedProposalStatus.value.kyc_verified}
-                          />
                         </div>
                       </TimelineItems>
                       <TimelineItems
@@ -1243,6 +1221,21 @@ return (
                         value={TIMELINE_STATUS.PAYMENT_PROCESSING}
                       >
                         <div className="d-flex flex-column gap-2">
+                          <CheckBox
+                            value={updatedProposalStatus.value.kyc_verified}
+                            label="Sponsor verifies KYC/KYB"
+                            disabled={selectedStatusIndex !== 6}
+                            onClick={(value) =>
+                              setUpdatedProposalStatus((prevState) => ({
+                                ...prevState,
+                                value: {
+                                  ...prevState.value,
+                                  kyc_verified: value,
+                                },
+                              }))
+                            }
+                            isChecked={updatedProposalStatus.value.kyc_verified}
+                          />
                           <CheckBox
                             value={
                               updatedProposalStatus.value.test_transaction_sent
@@ -1437,7 +1430,6 @@ return (
                             },
                           }}
                         />
-
                         <Widget
                           src={
                             "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
@@ -1445,17 +1437,10 @@ return (
                           props={{
                             label: "Save",
                             disabled:
-                              ((updatedProposalStatus.value.status ===
-                                TIMELINE_STATUS.APPROVED ||
-                                updatedProposalStatus.value.status ===
-                                  TIMELINE_STATUS.APPROVED_CONDITIONALLY ||
-                                updatedProposalStatus.value.status ===
-                                  TIMELINE_STATUS.PAYMENT_PROCESSING) &&
-                                !updatedProposalStatus.value.kyc_verified) ||
-                              (!supervisor &&
-                                DecisionStage.includes(
-                                  updatedProposalStatus.value.status
-                                )),
+                              !supervisor &&
+                              DecisionStage.includes(
+                                updatedProposalStatus.value.status
+                              ),
                             classNames: { root: "green-btn btn-sm" },
                             onClick: () => {
                               if (snapshot.supervisor !== supervisor) {

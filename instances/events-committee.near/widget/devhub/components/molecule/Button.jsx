@@ -145,7 +145,6 @@ const Button = ({
         disabled ? "disabled" : "",
       ].join(" ")}
       style={{ width: "fit-content" }}
-      disabled={disabled}
       {...restProps}
       data-testid={props.testId ?? "button"}
     >
