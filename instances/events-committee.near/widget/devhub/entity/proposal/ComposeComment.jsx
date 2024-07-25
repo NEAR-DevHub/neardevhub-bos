@@ -17,7 +17,7 @@ const ComposeEmbeddCSS = `
     max-height: 300px !important;
   }
 `;
-const notifyAccountId = props.notifyAccountId;
+const notifyAccountId = props.notifyAccountId ?? [];
 const accountId = context.accountId;
 const item = props.item;
 const [allowGetDraft, setAllowGetDraft] = useState(true);

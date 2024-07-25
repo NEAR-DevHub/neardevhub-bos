@@ -294,6 +294,12 @@ const item = {
   path: `${REPL_EVENTS_CONTRACT}/post/main`,
   blockHeight,
 };
+const comments = Social.index("comment", item, { subscribe: true }) ?? [];
+
+const commentAuthors = [
+  ...new Set(comments.map((comment) => comment.accountId)),
+];
+
 const proposalURL = getLinkUsingCurrentGateway(
   `${REPL_EVENTS}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
 );
@@ -451,6 +457,7 @@ const CheckBox = ({ value, isChecked, label, disabled, onClick }) => {
   return (
     <div className="d-flex gap-2 align-items-center">
       <input
+        data-testid={label}
         class="form-check-input"
         type="checkbox"
         value={value}
@@ -916,6 +923,12 @@ return (
                     item: item,
                     notifyAccountId: authorId,
                     id: proposal.id,
+                    sortedRelevantUsers: [
+                      authorId,
+                      snapshot.supervisor,
+                      snapshot.requested_sponsor,
+                      ...commentAuthors,
+                    ].filter((user) => user !== accountId),
                   }}
                 />
               </div>

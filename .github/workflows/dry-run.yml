@@ -1,0 +1,28 @@
+name: Dry-run
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy-widgets:
+    name: Diff from PR
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target_account:
+          - dry_run_command: npm run dry-run:devhub
+          - dry_run_command: npm run dry-run:events
+          - dry_run_command: npm run dry-run:infrastructure
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.6/bos-cli-installer.sh | sh
+
+      - name: Dry-run widgets
+        run: |
+          ${{ matrix.target_account.dry_run_command }}
