@@ -737,9 +737,12 @@ const onSubmit = ({ isDraft, isCancel }) => {
           status: "CANCELLED",
           sponsor_requested_review: false,
           reviewer_completed_attestation: false,
+          kyc_verified: false,
         }
       : isDraft
       ? { status: "DRAFT" }
+      : isEditPage
+      ? editProposalData.snapshot.timeline
       : {
           status: "REVIEW",
           sponsor_requested_review: false,
@@ -749,6 +752,10 @@ const onSubmit = ({ isDraft, isCancel }) => {
   const args = { labels: (labels ?? []).map((i) => i.value), body: body };
   if (isEditPage) {
     args["id"] = editProposalData.id;
+  } else {
+    args["accepted_terms_and_conditions_version"] = parseInt(
+      Near.block().header.height
+    );
   }
 
   Near.call([
@@ -890,16 +897,12 @@ const ConsentComponent = useMemo(() => {
           label: (
             <>
               I’ve agree to{" "}
-              <a
-                href={
-                  "https://docs.google.com/document/d/1nRGy7LhpLj56SjN9MseV1x-ubH8O_c6B9DOAZ9qTwMU/edit?usp=sharing"
+              <Widget
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"
                 }
-                className="text-decoration-underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Event Committee’s Terms and Conditions
-              </a>
+                props={{ proposalId: proposalId, portal: "Events Committee" }}
+              />
               and commit to honoring it
             </>
           ),
@@ -926,7 +929,7 @@ const ConsentComponent = useMemo(() => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Event Committee’s Code of Conduct
+                Events Committee’s Code of Conduct
               </a>
               and commit to honoring it
             </>
