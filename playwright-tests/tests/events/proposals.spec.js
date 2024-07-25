@@ -553,9 +553,10 @@ test.describe("Wallet is connected", () => {
         //   json.data.thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot.find(
         //     (proposal) => proposal.proposal_id === 2
         //   );
+
         const json = {
           data: {
-            thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot:
+            thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot:
               [
                 {
                   author_id: "meghagoel.near",
@@ -598,7 +599,7 @@ test.describe("Wallet is connected", () => {
                   labels: [],
                 },
               ],
-            thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot_aggregate:
+            thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot_aggregate:
               {
                 aggregate: {
                   count: 7,
