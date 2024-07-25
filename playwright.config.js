@@ -69,7 +69,7 @@ export default defineConfig({
     },
     {
       name: "events",
-      testMatch: /(events|proposal)\/.*.spec.js/, // (proposal|events)
+      testMatch: /(events|proposal)\/.*.spec.js/,
       use: {
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:8080",
