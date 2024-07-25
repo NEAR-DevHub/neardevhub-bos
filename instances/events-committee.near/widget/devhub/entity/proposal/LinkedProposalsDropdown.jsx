@@ -81,7 +81,8 @@ const fetchProposals = () => {
   fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
     if (result.status === 200) {
       if (result.body.data) {
-        const proposalsData = result.body.data[queryName];
+        const proposalsData =
+          result.body.data["${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}"];
 
         const data = [];
         for (const prop of proposalsData) {
