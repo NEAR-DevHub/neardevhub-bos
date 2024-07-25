@@ -556,7 +556,7 @@ test.describe("Wallet is connected", () => {
 
         const json = {
           data: {
-            megha19_near_events_committee_prod_v1_proposals_with_latest_snapshot:
+            thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot:
               [
                 {
                   author_id: "meghagoel.near",
@@ -599,7 +599,7 @@ test.describe("Wallet is connected", () => {
                   labels: [],
                 },
               ],
-            megha19_near_events_committee_prod_v1_proposals_with_latest_snapshot_aggregate:
+            thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot_aggregate:
               {
                 aggregate: {
                   count: 7,
