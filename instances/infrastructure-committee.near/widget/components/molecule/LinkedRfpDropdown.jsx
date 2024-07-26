@@ -1,6 +1,6 @@
 const { RFP_TIMELINE_STATUS, fetchGraphQL, parseJSON } = VM.require(
   `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
-) || { RFP_TIMELINE_STATUS: {}, fetchGraphQL: () => {}, parseJSON: () => {} };
+) || { RFP_TIMELINE_STATUS: {}, parseJSON: () => {} };
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
 href || (href = () => {});
 
@@ -76,6 +76,9 @@ const fetchRfps = () => {
     offset: 0,
     where: buildWhereClause(),
   };
+  if (typeof fetchGraphQL !== "function") {
+    return;
+  }
   fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
     if (result.status === 200) {
       if (result.body.data) {
