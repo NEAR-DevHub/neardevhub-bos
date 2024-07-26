@@ -562,8 +562,6 @@ const computeResults = (term) => {
           processedPosts.index
         );
         const searchResult = search(processedQuery, processedPosts.index);
-        console.log(processedQuery);
-        console.log(searchResult);
         State.update({
           searchResult,
           shownSearchResults: searchResult.slice(0, amountOfResultsToShowFirst),
