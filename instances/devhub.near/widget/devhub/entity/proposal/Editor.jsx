@@ -898,7 +898,7 @@ const ConsentComponent = useMemo(() => {
                 src={
                   "${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"
                 }
-                props={{ proposalId: proposalId }}
+                props={{ proposalId: proposalId, portal: "DevHub" }}
               />
               and commit to honoring it
             </>
