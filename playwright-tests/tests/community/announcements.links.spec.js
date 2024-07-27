@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
+import { mockSocialIndexResponses } from "../../util/socialapi.js";
 
 test.beforeEach(async ({ page }) => {
   await page.route("http://localhost:20000/", async (route) => {
@@ -19,7 +20,40 @@ test.describe("Clipboard permissions", () => {
     },
   });
 
-  test("should share clean URL for announcements", async ({ page }) => {
+  const cleanUrlForAnnouncementsTest = async ({ page, lag }) => {
+    let socialIndexBlockHeight;
+    await mockSocialIndexResponses(page, ({ requestPostData, json }) => {
+      if (
+        requestPostData &&
+        requestPostData.action === "post" &&
+        requestPostData.key === "main"
+      ) {
+        socialIndexBlockHeight = json[0].blockHeight;
+      }
+      return json;
+    });
+    await page.route(
+      "https://near-queryapi.api.pagoda.co/v1/graphql",
+      async (route) => {
+        const request = route.request();
+        const requestPostData = request.postDataJSON();
+
+        if (
+          requestPostData?.query.includes(
+            "dataplatform_near_social_feed_posts"
+          ) &&
+          requestPostData?.query.match("{[ \n]*block_height[ \n]*}") !== null
+        ) {
+          const response = await route.fetch();
+          const json = await response.json();
+          json.data.dataplatform_near_social_feed_posts[0].block_height =
+            socialIndexBlockHeight - lag;
+          await route.fulfill({ json });
+        } else {
+          await route.continue();
+        }
+      }
+    );
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=announcements"
     );
@@ -44,6 +78,18 @@ test.describe("Clipboard permissions", () => {
     await expect(await page.getByText("WebAssembly Music")).toBeVisible({
       timeout: 10000,
     });
+  };
+
+  test("should share clean URL for announcements, using indexer ( no lag )", async ({
+    page,
+  }) => {
+    await cleanUrlForAnnouncementsTest({ page, lag: 0 });
+  });
+
+  test("should share clean URL for announcements, using fallback ( big lag )", async ({
+    page,
+  }) => {
+    await cleanUrlForAnnouncementsTest({ page, lag: 1_000_000 });
   });
 
   test("should handle direct links to the post widget", async ({ page }) => {
