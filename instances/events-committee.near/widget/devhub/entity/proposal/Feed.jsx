@@ -211,8 +211,7 @@ const FeedPage = () => {
     currentlyDisplaying: 0,
   });
 
-  const queryName =
-    "thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot";
+  const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
   const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
       offset: $offset
@@ -245,7 +244,7 @@ const FeedPage = () => {
   function fetchGraphQL(operationsDoc, operationName, variables) {
     return asyncFetch(QUERYAPI_ENDPOINT, {
       method: "POST",
-      headers: { "x-hasura-role": `thomasguntenaar_near` },
+      headers: { "x-hasura-role": `${REPL_INDEXER_HASURA_ROLE}` },
       body: JSON.stringify({
         query: operationsDoc,
         variables: variables,
@@ -332,12 +331,8 @@ const FeedPage = () => {
     fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
       if (result.status === 200) {
         if (result.body.data) {
-          const data =
-            result.body.data
-              .thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot;
-          const totalResult =
-            result.body.data
-              .thomasguntenaar_near_events_committee_proposals_2_proposals_with_latest_snapshot_aggregate;
+          const data = result.body.data[queryName];
+          const totalResult = result.body.data[`${queryName}_aggregate`];
           State.update({ aggregatedCount: totalResult.aggregate.count });
           // Parse timeline
           fetchBlockHeights(data, offset);
