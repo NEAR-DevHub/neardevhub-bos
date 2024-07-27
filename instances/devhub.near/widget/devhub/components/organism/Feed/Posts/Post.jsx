@@ -301,7 +301,7 @@ return (
       />
     )}
     {!state.hasBeenFlagged && (
-      <Post>
+      <Post id={`${accountId.replace(/[^a-z0-9]/g, "")}${blockHeight}`}>
         <>
           {repostData || isRepost ? (
             <Widget
@@ -445,7 +445,6 @@ return (
                     item,
                   }}
                 />
-                COPY URL
                 <Widget
                   src="near/widget/CopyUrlButton"
                   props={{

@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
 import { mockSocialIndexResponses } from "../../util/socialapi.js";
+import { scrollIntoView } from "../../util/scrollintoview.js";
 
 test.beforeEach(async ({ page }) => {
   await page.route("http://localhost:20000/", async (route) => {
@@ -112,5 +113,19 @@ test.describe("Clipboard permissions", () => {
     expect(linkUrlFromClipboard).toEqual(
       "https://devhub.near.page" + directUrlPath
     );
+  });
+
+  test("announcement should scroll into view", async ({ page }) => {
+    await page.goto(
+      "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=announcements&accountId=webassemblymusic.community.devhub.near&blockHeight=112244156"
+    );
+    await scrollIntoView(page);
+    const viewer = await page.locator("near-social-viewer");
+    const announcementElement = await viewer.locator(
+      "css=div#webassemblymusiccommunitydevhubnear112244156"
+    );
+    await expect(announcementElement).toBeVisible();
+
+    await expect(announcementElement).toBeInViewport({ timeout: 10000 });
   });
 });
