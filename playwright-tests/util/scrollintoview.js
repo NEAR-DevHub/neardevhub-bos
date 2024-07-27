@@ -12,9 +12,11 @@ export async function scrollIntoView(page) {
           )}${blockHeight}`;
 
           const linkElement = document.querySelector(linkElementSelector);
-          if (linkElement) {
+          const loadingElement = document.querySelector(
+            'span.spinner-grow-sm[role="status"]'
+          );
+          if (loadingElement === null && linkElement !== null) {
             linkElement.scrollIntoView();
-            console.log("scrolled into view");
             break;
           }
           await new Promise((resolve) => setTimeout(() => resolve(), 500));

@@ -120,6 +120,7 @@ test.describe("Clipboard permissions", () => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=announcements&accountId=webassemblymusic.community.devhub.near&blockHeight=112244156"
     );
+    await showPageURLInTest(page);
     await scrollIntoView(page);
     const viewer = await page.locator("near-social-viewer");
     const announcementElement = await viewer.locator(
@@ -127,6 +128,9 @@ test.describe("Clipboard permissions", () => {
     );
     await expect(announcementElement).toBeVisible();
 
+    await expect(announcementElement).toContainText(
+      "WebAssembly Music is the concept of storing a full length track of music in a tiny file"
+    );
     await expect(announcementElement).toBeInViewport({ timeout: 10000 });
   });
 });
