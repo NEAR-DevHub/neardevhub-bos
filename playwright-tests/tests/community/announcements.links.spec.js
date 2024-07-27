@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { pauseIfVideoRecording } from "../../testUtils.js";
+import { pauseIfVideoRecording, showPageURLInTest } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
 import { mockSocialIndexResponses } from "../../util/socialapi.js";
 import { scrollIntoView } from "../../util/scrollintoview.js";
@@ -76,6 +76,7 @@ test.describe("Clipboard permissions", () => {
     await pauseIfVideoRecording(page);
     await page.goto(linkUrlFromClipboard);
 
+    await showPageURLInTest(page);
     await expect(await page.getByText("WebAssembly Music")).toBeVisible({
       timeout: 10000,
     });
