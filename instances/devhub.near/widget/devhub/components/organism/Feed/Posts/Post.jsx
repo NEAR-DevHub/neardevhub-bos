@@ -6,7 +6,17 @@ let blockHeight =
 const verifications = props.verifications;
 const blockTimestamp = props.blockTimestamp;
 const notifyAccountId = accountId;
-let postUrl = `https://devhub.near.page/${props.page}/${props.handle}/${props.tab}?accountId=${accountId}&blockHeight=${blockHeight}`;
+let postUrl;
+
+if (props.page) {
+  postUrl = `https://${REPL_DEVHUB}.page/${props.page}${
+    props.handle ? `/${props.handle}${props.tab ? `/${props.tab}` : ""}` : ""
+  }`;
+} else {
+  postUrl = `https://${REPL_DEVHUB}.page/${REPL_DEVHUB}/widget/devhub.components.organism.Feed.Posts.Post`;
+}
+postUrl += `?accountId=${accountId}&blockHeight=${blockHeight}`;
+
 const showFlagAccountFeature = props.showFlagAccountFeature;
 const profile = props.profile;
 let repostedByProfile = null;

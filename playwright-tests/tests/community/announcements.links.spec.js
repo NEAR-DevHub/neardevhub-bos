@@ -45,4 +45,26 @@ test.describe("Clipboard permissions", () => {
       timeout: 10000,
     });
   });
+
+  test("should handle direct links to the post widget", async ({ page }) => {
+    const directUrlPath =
+      "/devhub.near/widget/devhub.components.organism.Feed.Posts.Post?accountId=webassemblymusic.community.devhub.near&blockHeight=115859669";
+    await page.goto(directUrlPath);
+
+    const copyUrlButton = await page
+      .locator('[data-component="near/widget/CopyUrlButton"]')
+      .first();
+    await expect(copyUrlButton).toBeVisible({ timeout: 10000 });
+    await copyUrlButton.hover();
+    await expect(await page.getByText("Copy URL to clipboard")).toBeVisible();
+    await copyUrlButton.click();
+
+    const linkUrlFromClipboard = await page.evaluate(
+      "navigator.clipboard.readText()"
+    );
+
+    expect(linkUrlFromClipboard).toEqual(
+      "https://devhub.near.page" + directUrlPath
+    );
+  });
 });
