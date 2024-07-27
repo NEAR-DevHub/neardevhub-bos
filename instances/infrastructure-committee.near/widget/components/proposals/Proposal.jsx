@@ -6,7 +6,6 @@ const {
   getLinkUsingCurrentGateway,
 } = VM.require(`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`) || {
   PROPOSAL_TIMELINE_STATUS: {},
-  fetchGraphQL: () => {},
   parseJSON: () => {},
   isNumber: () => {},
   getLinkUsingCurrentGateway: () => {},
@@ -306,6 +305,9 @@ const fetchSnapshotHistory = () => {
   const variables = {
     where: { proposal_id: { _eq: id } },
   };
+  if (typeof fetchGraphQL !== "function") {
+    return;
+  }
   fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
     if (result.status === 200) {
       if (result.body.data) {
