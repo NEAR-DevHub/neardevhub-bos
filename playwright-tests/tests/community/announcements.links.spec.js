@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording, showPageURLInTest } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
 import { mockSocialIndexResponses } from "../../util/socialapi.js";
-import { scrollIntoView } from "../../util/scrollintoview.js";
 
 test.beforeEach(async ({ page }) => {
   await page.route("http://localhost:20000/", async (route) => {
@@ -121,7 +120,7 @@ test.describe("Clipboard permissions", () => {
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=announcements&accountId=webassemblymusic.community.devhub.near&blockHeight=112244156"
     );
     await showPageURLInTest(page);
-    await scrollIntoView(page);
+
     const viewer = await page.locator("near-social-viewer");
     const announcementElement = await viewer.locator(
       "css=div#webassemblymusiccommunitydevhubnear112244156"

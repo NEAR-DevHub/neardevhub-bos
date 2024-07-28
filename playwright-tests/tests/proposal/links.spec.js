@@ -1,6 +1,5 @@
 import test, { expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
-import { scrollIntoView } from "../../util/scrollintoview.js";
 
 test.describe("share links", () => {
   test.use({
@@ -53,10 +52,9 @@ test.describe("share links", () => {
     await page.goto(
       "/devhub.near/widget/app?page=proposal&id=127&accountId=theori.near&blockHeight=121684702"
     );
-    await scrollIntoView(page);
     const viewer = await page.locator("near-social-viewer");
     const commentElement = await viewer.locator("css=div#theorinear121684702");
-    await expect(commentElement).toBeVisible();
+    await expect(commentElement).toBeVisible({ timeout: 10000 });
 
     await expect(commentElement).toBeInViewport({ timeout: 10000 });
   });
