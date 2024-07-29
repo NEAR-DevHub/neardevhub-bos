@@ -1,6 +1,6 @@
 const { fetchGraphQL } = VM.require(
   `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
-) || { fetchGraphQL: () => {} };
+);
 
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
 href || (href = () => {});
@@ -345,6 +345,9 @@ const FeedPage = () => {
       offset,
       where: buildWhereClause(),
     };
+    if (typeof fetchGraphQL !== "function") {
+      return;
+    }
     fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
       if (result.status === 200) {
         if (result.body.data) {
