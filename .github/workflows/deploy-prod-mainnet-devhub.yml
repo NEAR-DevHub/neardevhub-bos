@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.6/bos-cli-installer.sh | sh
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/bos-cli-rs/bos-cli-rs/releases/download/v0.3.15/bos-cli-installer.sh | sh
 
       - name: Deploy widgets
         run: |

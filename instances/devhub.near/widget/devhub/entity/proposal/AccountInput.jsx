@@ -25,7 +25,10 @@ useEffect(() => {
 
 useEffect(() => {
   const handler = setTimeout(() => {
-    const valid = account.length === 64 || (account ?? "").includes(".near");
+    const valid =
+      account.length === 64 ||
+      (account ?? "").includes(".near") ||
+      (account ?? "").includes(".tg");
     setValidAccount(valid);
     setAutoComplete(!valid);
   }, 100);
