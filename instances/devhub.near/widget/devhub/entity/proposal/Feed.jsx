@@ -1,4 +1,6 @@
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {href : () => {}};
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
+  href: () => {},
+};
 
 const instance = props.instance ?? "";
 const availableCategoryOptions = props.availableCategoryOptions ?? [];
@@ -40,10 +42,9 @@ switch (instance) {
   }
 }
 
-function isNumber(v){
-  return typeof v === "number"
+function isNumber(v) {
+  return typeof v === "number";
 }
-
 
 const Container = styled.div`
   .full-width-div {
