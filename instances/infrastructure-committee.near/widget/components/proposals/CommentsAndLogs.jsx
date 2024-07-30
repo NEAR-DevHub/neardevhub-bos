@@ -8,7 +8,7 @@ const { PROPOSAL_TIMELINE_STATUS, isNumber, getLinkUsingCurrentGateway } =
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
 href || (href = () => {});
 
-const snapshotHistory = props.snapshotHistory;
+const snapshotHistory = props.snapshotHistory ?? [];
 const latestSnapshot = props.latestSnapshot;
 
 const Wrapper = styled.div`
@@ -138,7 +138,7 @@ function sortTimelineAndComments() {
   });
 }
 
-if ((snapshotHistory ?? []).length > 0) {
+if (Array.isArray(snapshotHistory)) {
   sortTimelineAndComments();
 }
 

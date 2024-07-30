@@ -7,7 +7,6 @@ const {
   getLinkUsingCurrentGateway,
 } = VM.require(`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`) || {
   RFP_TIMELINE_STATUS: {},
-  fetchGraphQL: () => {},
   CANCEL_RFP_OPTIONS: {},
   parseJSON: () => {},
   PROPOSALS_APPROVED_STATUS_ARRAY: {},
@@ -296,6 +295,9 @@ const fetchSnapshotHistory = () => {
   const variables = {
     where: { rfp_id: { _eq: id } },
   };
+  if (typeof fetchGraphQL !== "function") {
+    return;
+  }
   fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
     if (result.status === 200) {
       if (result.body.data) {
@@ -421,6 +423,9 @@ function fetchApprovedRfpProposals() {
       proposal_id: { _in: rfp.snapshot.linked_proposals },
     },
   };
+  if (typeof fetchGraphQL !== "function") {
+    return;
+  }
   fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
     if (result.status === 200) {
       if (result.body.data) {
