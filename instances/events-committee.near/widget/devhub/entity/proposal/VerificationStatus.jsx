@@ -12,7 +12,8 @@ const SuccessImg =
 useEffect(() => {
   if (
     receiverAccount.length === 64 ||
-    (receiverAccount ?? "").includes(".near")
+    (receiverAccount ?? "").includes(".near") ||
+    (receiverAccount ?? "").includes(".tg")
   ) {
     useCache(
       () =>
