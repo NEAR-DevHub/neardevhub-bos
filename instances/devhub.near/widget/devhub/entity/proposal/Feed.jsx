@@ -1,8 +1,49 @@
-const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {href : () => {}};
 
-if (!href) {
-  return <p>Loading modules...</p>;
+const instance = props.instance ?? "";
+const availableCategoryOptions = props.availableCategoryOptions ?? [];
+const announcement = props.announcement ?? <></>;
+
+let contract = "";
+let rfpFeedIndexerQueryName = "";
+let proposalFeedIndexerQueryName = "";
+let indexerHasuraRole = "";
+let isDevhub = false;
+let isInfra = false;
+let isEvents = false;
+
+switch (instance) {
+  case "infrastructure-committee.near": {
+    contract = instance;
+    rfpFeedIndexerQueryName =
+      "polyprogrammist_near_devhub_ic_v1_rfps_with_latest_snapshot";
+    proposalFeedIndexerQueryName =
+      "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot";
+    indexerHasuraRole = "polyprogrammist_near";
+    isInfra = true;
+    break;
+  }
+  case "events-committee.near": {
+    contract = instance;
+    proposalFeedIndexerQueryName =
+      "thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot";
+    indexerHasuraRole = "thomasguntenaar_near";
+    isEvents = true;
+    break;
+  }
+  default: {
+    contract = instance;
+    proposalFeedIndexerQueryName =
+      "polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot";
+    indexerHasuraRole = "polyprogrammist_near";
+    isDevhub = true;
+  }
 }
+
+function isNumber(v){
+  return typeof v === "number"
+}
+
 
 const Container = styled.div`
   .full-width-div {
@@ -49,18 +90,8 @@ const Container = styled.div`
     }
   }
 
-  .green-btn {
-    background-color: #04a46e !important;
-    border: none;
-    color: white;
-
-    &:active {
-      color: white;
-    }
-  }
-
   @media screen and (max-width: 768px) {
-    .green-btn {
+    .theme-btn {
       padding: 0.5rem 0.8rem !important;
       min-height: 32px;
     }
@@ -115,14 +146,17 @@ const FeedItem = ({ proposal, index }) => {
   const blockHeight = parseInt(proposal.social_db_post_block_height);
   const item = {
     type: "social",
-    path: `${REPL_DEVHUB_CONTRACT}/post/main`,
+    path: `${contract}/post/main`,
     blockHeight: blockHeight,
   };
+
+  const isLinked = isNumber(proposal.linked_rfp);
+  const rfpData = proposal.rfpData;
 
   return (
     <a
       href={href({
-        widgetSrc: "${REPL_DEVHUB}/widget/app",
+        widgetSrc: `${instance}/widget/app`,
         params: {
           page: "proposal",
           id: proposal.proposal_id,
@@ -147,13 +181,49 @@ const FeedItem = ({ proposal, index }) => {
           <div className="d-flex flex-column gap-2 w-100 text-wrap">
             <div className="d-flex gap-2 align-items-center flex-wrap w-100">
               <div className="h6 mb-0 text-black">{proposal.name}</div>
-              <Widget
-                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryTag"}
-                props={{
-                  category: proposal.category,
-                }}
-              />
+              {(isInfra || isEvents) && (
+                <Widget
+                  src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.MultiSelectLabelsDropdown`}
+                  props={{
+                    selected: proposal.labels,
+                    disabled: true,
+                    hideDropdown: true,
+                    onChange: () => {},
+                    availableOptions: availableCategoryOptions,
+                  }}
+                />
+              )}
+              {isDevhub && (
+                <Widget
+                  src={
+                    "${REPL_DEVHUB}/widget/devhub.entity.proposal.CategoryTag"
+                  }
+                  props={{
+                    category: proposal.category,
+                  }}
+                />
+              )}
             </div>
+            {isLinked && rfpData && (
+              <div className="text-sm text-muted d-flex gap-1 align-items-center">
+                <i class="bi bi-link-45deg"></i>
+                In response to RFP :
+                <a
+                  className="text-decoration-underline flex-1"
+                  href={href({
+                    widgetSrc: `${instance}/widget/app`,
+                    params: {
+                      page: "rfp",
+                      id: rfpData.rfp_id,
+                    },
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {rfpData.name}
+                </a>
+              </div>
+            )}
             <div className="d-flex gap-2 align-items-center flex-wrap flex-sm-nowrap text-sm w-100">
               <div>#{proposal.proposal_id} ･ </div>
               <div className="text-truncate">
@@ -174,6 +244,7 @@ const FeedItem = ({ proposal, index }) => {
                   item,
                   proposalId: proposal.id,
                   notifyAccountId: accountId,
+                  instance,
                 }}
               />
 
@@ -202,7 +273,7 @@ const FeedItem = ({ proposal, index }) => {
 };
 
 const getProposal = (proposal_id) => {
-  return Near.asyncView("${REPL_DEVHUB_CONTRACT}", "get_proposal", {
+  return Near.asyncView(contract, "get_proposal", {
     proposal_id,
   });
 };
@@ -224,9 +295,8 @@ const FeedPage = () => {
     currentlyDisplaying: 0,
   });
 
-  const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
-  const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-    ${queryName}(
+  const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${proposalFeedIndexerQueryName}_bool_exp = {}) {
+    ${proposalFeedIndexerQueryName}(
       offset: $offset
       limit: $limit
       order_by: {proposal_id: desc}
@@ -242,8 +312,10 @@ const FeedPage = () => {
       ts
       timeline
       views
+      labels
+      linked_rfp
     }
-    ${queryName}_aggregate(
+    ${proposalFeedIndexerQueryName}_aggregate(
       order_by: {proposal_id: desc}
       where: $where
     )  {
@@ -256,7 +328,7 @@ const FeedPage = () => {
   function fetchGraphQL(operationsDoc, operationName, variables) {
     return asyncFetch(QUERYAPI_ENDPOINT, {
       method: "POST",
-      headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
+      headers: { "x-hasura-role": indexerHasuraRole },
       body: JSON.stringify({
         query: operationsDoc,
         variables: variables,
@@ -284,7 +356,11 @@ const FeedPage = () => {
     }
 
     if (state.category) {
-      where = { category: { _eq: state.category }, ...where };
+      if (isInfra || isEvents) {
+        where = { labels: { _contains: state.label }, ...where };
+      } else {
+        where = { category: { _eq: state.category }, ...where };
+      }
     }
 
     if (state.stage) {
@@ -335,11 +411,25 @@ const FeedPage = () => {
     fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
       if (result.status === 200) {
         if (result.body.data) {
-          const data = result.body.data[queryName];
-          const totalResult = result.body.data[`${queryName}_aggregate`];
-          State.update({ aggregatedCount: totalResult.aggregate.count });
-          // Parse timeline
-          fetchBlockHeights(data, offset);
+          const data = result.body.data[proposalFeedIndexerQueryName];
+          const totalResult =
+            result.body.data[`${proposalFeedIndexerQueryName}_aggregate`];
+          const promises = data.map((item) => {
+            if (isNumber(item.linked_rfp)) {
+              return fetchGraphQL(rfpQuery, "GetLatestSnapshot", {}).then(
+                (result) => {
+                  const rfpData = result.body.data?.[rfpQueryName];
+                  return { ...item, rfpData: rfpData[0] };
+                }
+              );
+            } else {
+              return Promise.resolve(item);
+            }
+          });
+          Promise.all(promises).then((res) => {
+            State.update({ aggregatedCount: totalResult.aggregate.count });
+            fetchBlockHeights(res, offset);
+          });
         }
       }
     });
@@ -416,7 +506,7 @@ const FeedPage = () => {
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
       <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
         <Heading>
-          DevDAO Proposals
+          Proposals
           <span className="text-muted text-normal">
             ({state.aggregatedCount ?? state.data.length}){" "}
           </span>
@@ -451,6 +541,7 @@ const FeedPage = () => {
                 "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-category"
               }
               props={{
+                categoryOptions: availableCategoryOptions,
                 onStateChange: (select) => {
                   State.update({ category: select.value });
                 },
@@ -471,6 +562,7 @@ const FeedPage = () => {
                 "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-author"
               }
               props={{
+                contract,
                 onAuthorChange: (select) => {
                   State.update({ author: select.value });
                 },
@@ -481,7 +573,7 @@ const FeedPage = () => {
         <div className="mt-2 mt-xs-0">
           <Link
             to={href({
-              widgetSrc: "${REPL_DEVHUB}/widget/app",
+              widgetSrc: `${instance}/widget/app`,
               params: { page: "create-proposal" },
             })}
           >
@@ -493,10 +585,10 @@ const FeedPage = () => {
                     <div>
                       <i class="bi bi-plus-circle-fill"></i>
                     </div>
-                    New Proposal
+                    Submit Proposal
                   </div>
                 ),
-                classNames: { root: "green-btn" },
+                classNames: { root: "theme-btn" },
               }}
             />
           </Link>
@@ -508,56 +600,7 @@ const FeedPage = () => {
         ) : (
           <div className="card no-border rounded-0 mt-4 py-3 full-width-div">
             <div className="container-xl">
-              <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
-                <p className="d-flex gap-3 align-items-center mb-0">
-                  <div>
-                    <i class="bi bi-info-circle"></i>
-                  </div>
-                  <div>
-                    <span className="fw-bold">
-                      Welcome to
-                      <a
-                        href="?page=community&handle=developer-dao&tab=overview"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        DevDAO’s New Proposal Feed!
-                      </a>
-                    </span>
-                    This dedicated space replaces the
-                    <a
-                      href="?page=feed"
-                      className="text-decoration-underline no-space"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      old activity feed
-                    </a>
-                    , making it easier to submit and track funding requests from
-                    DevDAO, the primary organization behind DevHub. To submit a
-                    formal proposal, click New Proposal. See our{" "}
-                    <a
-                      href="?page=community&handle=developer-dao&tab=funding"
-                      className="text-decoration-underline no-space"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      guidelines
-                    </a>
-                    for details. For discussions and brainstorming, please
-                    utilize the relevant{" "}
-                    <a
-                      href="?page=communities"
-                      className="text-decoration-underline no-space"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      communities
-                    </a>
-                    .
-                  </div>
-                </p>
-              </div>
+              {announcement}
               <div className="mt-4 border rounded-2">
                 {state.aggregatedCount === 0 ? (
                   <div class="alert alert-danger m-2" role="alert">

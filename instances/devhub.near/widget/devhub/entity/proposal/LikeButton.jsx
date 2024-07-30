@@ -1,5 +1,6 @@
 const item = props.item;
 const proposalId = props.proposalId;
+const instance = props.instance;
 
 if (!item) {
   return "";
@@ -100,7 +101,7 @@ const likeClick = (e) => {
           type: "proposal/like",
           item,
           proposal: proposalId,
-          widgetAccountId: "${REPL_DEVHUB}",
+          widgetAccountId: instance,
         },
       });
     } else {
