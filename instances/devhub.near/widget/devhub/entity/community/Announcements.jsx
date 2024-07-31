@@ -172,6 +172,7 @@ return (
                 handle: props.handle,
                 tab: "announcements",
                 page: "community",
+                highlight: props.highlight,
                 filteredAccountIds: [communityAccountId],
                 sort: sort,
                 setPostExists: setPostExists,

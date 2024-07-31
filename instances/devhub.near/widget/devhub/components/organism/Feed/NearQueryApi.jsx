@@ -263,6 +263,7 @@ return (
         page: props.page,
         handle: props.handle,
         tab: props.tab,
+        highlight: props.highlight,
         hasMore,
         isLoading,
         loadMorePosts: () => {

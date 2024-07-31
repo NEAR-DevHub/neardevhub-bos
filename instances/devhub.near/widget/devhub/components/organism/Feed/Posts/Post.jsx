@@ -283,6 +283,10 @@ const addNewCommentFn = (newComment) => {
   State.update(state.comments.push(newComment));
 };
 
+const highlight =
+  props.highlight?.accountId === accountId &&
+  props.highlight?.blockHeight === `${blockHeight}`;
+
 return (
   <>
     {state.showToast && (
@@ -301,7 +305,10 @@ return (
       />
     )}
     {!state.hasBeenFlagged && (
-      <Post id={`${accountId.replace(/[^a-z0-9]/g, "")}${blockHeight}`}>
+      <Post
+        id={`${accountId.replace(/[^a-z0-9]/g, "")}${blockHeight}`}
+        style={{ border: highlight ? "2px solid black" : "" }}
+      >
         <>
           {repostData || isRepost ? (
             <Widget

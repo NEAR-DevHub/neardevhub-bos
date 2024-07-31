@@ -51,6 +51,7 @@ const renderItem = (item) => {
           profile: item.profile,
           isRespost: item.isRespost,
           repostData: item.repostData,
+          highlight: props.highlight,
         }}
       />
     </Post>

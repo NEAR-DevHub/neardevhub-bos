@@ -111,6 +111,7 @@ return (
                 page: props.page,
                 handle: props.handle,
                 tab: props.tab,
+                highlight: props.highlight,
               }}
             />
           );
@@ -124,6 +125,7 @@ return (
           page: props.page,
           handle: props.handle,
           tab: props.tab,
+          highlight: props.highlight,
           filteredAccountIds: filteredAccountIds,
           showFlagAccountFeature: showFlagAccountFeature,
           onNewUnseenPosts: props.onNewUnseenPosts,

@@ -115,7 +115,9 @@ test.describe("Clipboard permissions", () => {
     );
   });
 
-  test("announcement should scroll into view", async ({ page }) => {
+  test("announcement should scroll into view and be highlighted", async ({
+    page,
+  }) => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=announcements&accountId=webassemblymusic.community.devhub.near&blockHeight=112244156"
     );
@@ -125,11 +127,15 @@ test.describe("Clipboard permissions", () => {
     const announcementElement = await viewer.locator(
       "css=div#webassemblymusiccommunitydevhubnear112244156"
     );
-    await expect(announcementElement).toBeVisible();
+    await expect(announcementElement).toBeVisible({ timeout: 10000 });
 
     await expect(announcementElement).toContainText(
       "WebAssembly Music is the concept of storing a full length track of music in a tiny file"
     );
     await expect(announcementElement).toBeInViewport({ timeout: 10000 });
+    await expect(announcementElement).toHaveCSS(
+      "border",
+      "2px solid rgb(0, 0, 0)"
+    );
   });
 });
