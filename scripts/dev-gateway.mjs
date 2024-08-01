@@ -2,7 +2,7 @@ import httpServer from "http-server";
 import path from "path";
 import { spawn } from "child_process";
 import { homedir, tmpdir } from "os";
-import { readFile, writeFile, cp } from "fs/promises";
+import { readFile, writeFile, cp, copyFile } from "fs/promises";
 import { rpcProxy } from "./rpc-cache-proxy.mjs";
 
 const instanceName = process.argv[process.argv.length - 1];
@@ -17,6 +17,8 @@ await cp(
   statingWebHostinFolder,
   { recursive: true }
 );
+const web4browserclientFileName = 'web4browserclient.js';
+await copyFile(new URL(web4browserclientFileName, import.meta.url), `${statingWebHostinFolder}/${web4browserclientFileName}`);
 
 const replaceRpc = async (htmlfile) => {
   const indexHtmlFilePath = `${statingWebHostinFolder}/${htmlfile}`;
@@ -24,7 +26,9 @@ const replaceRpc = async (htmlfile) => {
   let indexHtmlData = await readFile(indexHtmlFilePath, "utf8");
   indexHtmlData = indexHtmlData.replace(
     "<near-social-viewer></near-social-viewer>",
-    '<near-social-viewer rpc="http://localhost:20000"></near-social-viewer>'
+    `<near-social-viewer rpc="http://localhost:20000"></near-social-viewer>
+    <script type="module" src="${web4browserclientFileName}"></script>
+    `
   );
   await writeFile(indexHtmlFilePath, indexHtmlData, "utf8");
 };

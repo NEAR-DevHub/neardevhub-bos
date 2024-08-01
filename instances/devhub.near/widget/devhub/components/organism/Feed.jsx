@@ -102,12 +102,16 @@ return (
 
           return (
             <Widget
-              src="${REPL_NEAR}/widget/v1.Posts.Post"
+              src={`${REPL_DEVHUB}/widget/devhub.components.organism.Feed.Posts.Post`}
               loading={<div className="w-100" style={{ height: "200px" }} />}
               props={{
                 accountId: item.accountId,
                 blockHeight: item.blockHeight,
                 filteredAccountIds: filteredAccountIds,
+                page: props.page,
+                handle: props.handle,
+                tab: props.tab,
+                highlight: props.highlight,
               }}
             />
           );
@@ -118,6 +122,10 @@ return (
         src={`${REPL_DEVHUB}/widget/devhub.components.organism.Feed.NearQueryApi`}
         props={{
           GRAPHQL_ENDPOINT,
+          page: props.page,
+          handle: props.handle,
+          tab: props.tab,
+          highlight: props.highlight,
           filteredAccountIds: filteredAccountIds,
           showFlagAccountFeature: showFlagAccountFeature,
           onNewUnseenPosts: props.onNewUnseenPosts,

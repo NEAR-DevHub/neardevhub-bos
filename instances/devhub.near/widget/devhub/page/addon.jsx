@@ -179,6 +179,7 @@ return (
             ...config,
             data: config,
             handle,
+            highlight: props.highlight,
             permissions,
             transactionHashes: props.transactionHashes,
             communityAddonId: addon.id,

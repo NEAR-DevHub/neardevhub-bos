@@ -52,32 +52,9 @@ test.describe("share links", () => {
     await page.goto(
       "/devhub.near/widget/app?page=proposal&id=127&accountId=theori.near&blockHeight=121684702"
     );
-    await page.evaluate(() => {
-      (async function () {
-        const urlSearchParams = new URLSearchParams(location.search);
-        const accountId = urlSearchParams.get("accountId");
-        const blockHeight = urlSearchParams.get("blockHeight");
-        if (accountId && blockHeight) {
-          for (let n = 0; n < 20; n++) {
-            const linkElementSelector = `#${accountId.replace(
-              /[^a-z0-9]/g,
-              ""
-            )}${blockHeight}`;
-
-            const linkElement = document.querySelector(linkElementSelector);
-            if (linkElement) {
-              linkElement.scrollIntoView();
-              console.log("scrolled into view");
-              break;
-            }
-            await new Promise((resolve) => setTimeout(() => resolve(), 500));
-          }
-        }
-      })();
-    });
     const viewer = await page.locator("near-social-viewer");
     const commentElement = await viewer.locator("css=div#theorinear121684702");
-    await expect(commentElement).toBeVisible();
+    await expect(commentElement).toBeVisible({ timeout: 10000 });
 
     await expect(commentElement).toBeInViewport({ timeout: 10000 });
   });
