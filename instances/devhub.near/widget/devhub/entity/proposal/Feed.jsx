@@ -3,43 +3,27 @@ const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
 };
 
 const instance = props.instance ?? "";
-const availableCategoryOptions = props.availableCategoryOptions ?? [];
-const announcement = props.announcement ?? <></>;
 
-let contract = "";
-let rfpFeedIndexerQueryName = "";
-let proposalFeedIndexerQueryName = "";
-let indexerHasuraRole = "";
-let isDevhub = false;
-let isInfra = false;
-let isEvents = false;
+const {
+  contract,
+  rfpFeedIndexerQueryName,
+  proposalFeedAnnouncement,
+  availableCategoryOptions,
+  proposalFeedIndexerQueryName,
+  indexerHasuraRole,
+  isDevhub,
+  isInfra,
+  isEvents,
+} = VM.require(`${instance}/widget/config.data`);
 
-switch (instance) {
-  case "infrastructure-committee.near": {
-    contract = instance;
-    rfpFeedIndexerQueryName =
-      "polyprogrammist_near_devhub_ic_v1_rfps_with_latest_snapshot";
-    proposalFeedIndexerQueryName =
-      "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot";
-    indexerHasuraRole = "polyprogrammist_near";
-    isInfra = true;
-    break;
-  }
-  case "events-committee.near": {
-    contract = instance;
-    proposalFeedIndexerQueryName =
-      "thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot";
-    indexerHasuraRole = "thomasguntenaar_near";
-    isEvents = true;
-    break;
-  }
-  default: {
-    contract = instance;
-    proposalFeedIndexerQueryName =
-      "polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot";
-    indexerHasuraRole = "polyprogrammist_near";
-    isDevhub = true;
-  }
+const loader = (
+  <div className="d-flex justify-content-center align-items-center w-100">
+    <Widget src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"} />
+  </div>
+);
+
+if (!contract) {
+  return loader;
 }
 
 function isNumber(v) {
@@ -485,14 +469,6 @@ const FeedPage = () => {
     });
   };
 
-  const loader = (
-    <div className="d-flex justify-content-center align-items-center w-100">
-      <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner"}
-      />
-    </div>
-  );
-
   useEffect(() => {
     const handler = setTimeout(() => {
       fetchProposals();
@@ -537,17 +513,19 @@ const FeedPage = () => {
             }}
           />
           <div className="d-flex gap-4 align-items-center">
-            <Widget
-              src={
-                "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-category"
-              }
-              props={{
-                categoryOptions: availableCategoryOptions,
-                onStateChange: (select) => {
-                  State.update({ category: select.value });
-                },
-              }}
-            />
+            {!isInfra && (
+              <Widget
+                src={
+                  "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-category"
+                }
+                props={{
+                  categoryOptions: availableCategoryOptions,
+                  onStateChange: (select) => {
+                    State.update({ category: select.value });
+                  },
+                }}
+              />
+            )}
             <Widget
               src={
                 "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-stage"
@@ -601,7 +579,7 @@ const FeedPage = () => {
         ) : (
           <div className="card no-border rounded-0 mt-4 py-3 full-width-div">
             <div className="container-xl">
-              {announcement}
+              {proposalFeedAnnouncement}
               <div className="mt-4 border rounded-2">
                 {state.aggregatedCount === 0 ? (
                   <div class="alert alert-danger m-2" role="alert">

@@ -11,10 +11,14 @@ const { AppLayout } = VM.require(
 );
 
 const { Theme } = VM.require(
+  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/config.theme`
+);
+
+const { CssContainer } = VM.require(
   `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/config.css`
 );
 
-if (!AppLayout || !Theme) {
+if (!AppLayout || !Theme || !CssContainer) {
   return <p>Loading modules...</p>;
 }
 
@@ -109,8 +113,10 @@ function Page() {
 
 return (
   <Theme>
-    <AppLayout page={page}>
-      <Page />
-    </AppLayout>
+    <CssContainer>
+      <AppLayout page={page}>
+        <Page />
+      </AppLayout>
+    </CssContainer>
   </Theme>
 );

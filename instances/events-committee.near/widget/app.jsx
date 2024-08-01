@@ -14,9 +14,10 @@ const { AppLayout } = VM.require(
   "${REPL_EVENTS}/widget/devhub.components.templates.AppLayout"
 );
 
-const { Theme } = VM.require("${REPL_EVENTS}/widget/config.css");
+const { Theme } = VM.require("${REPL_EVENTS}/widget/config.theme");
+const { CssContainer } = VM.require("${REPL_EVENTS}/widget/config.css");
 
-if (!AppLayout || !Theme) {
+if (!AppLayout || !Theme || !CssContainer) {
   return <p>Loading modules...</p>;
 }
 
@@ -92,8 +93,10 @@ function Page() {
 
 return (
   <Theme>
-    <AppLayout page={page}>
-      <Page />
-    </AppLayout>
+    <CssContainer>
+      <AppLayout page={page}>
+        <Page />
+      </AppLayout>
+    </CssContainer>
   </Theme>
 );

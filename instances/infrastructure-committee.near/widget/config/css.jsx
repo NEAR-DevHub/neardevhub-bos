@@ -1,6 +1,4 @@
-const Theme = styled.div`
-  --theme-color: rgb(60, 105, 125);
-
+const CssContainer = styled.div`
   .theme-btn {
     background-color: var(--theme-color) !important;
     border: none;
@@ -21,4 +19,4 @@ const Theme = styled.div`
   }
 `;
 
-return { Theme };
+return { CssContainer };
