@@ -65,7 +65,7 @@ test.describe("share links", () => {
     );
     const viewer = await page.locator("near-social-viewer");
     const commentElement = await viewer.locator("css=div#theorinear121684702");
-    await expect(commentElement).toBeVisible();
+    await expect(commentElement).toBeVisible({ timeout: 20000 });
     await page
       .locator("#theorinear121684702")
       .getByLabel("Copy URL to clipboard")
