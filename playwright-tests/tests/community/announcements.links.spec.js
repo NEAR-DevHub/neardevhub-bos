@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording, showPageURLInTest } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
 import { mockSocialIndexResponses } from "../../util/socialapi.js";
+import { MOCK_RPC_URL } from "../../util/rpcmock.js";
 
 test.beforeEach(async ({ page }) => {
   await page.route(MOCK_RPC_URL, async (route) => {

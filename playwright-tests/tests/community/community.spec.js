@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
+import { MOCK_RPC_URL } from "../../util/rpcmock.js";
 
 test("should load a community page if handle exists", async ({ page }) => {
   await page.goto(

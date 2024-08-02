@@ -7,6 +7,7 @@ import {
   encodeResultJSON,
 } from "../../util/transaction.js";
 import { mockDefaultTabs } from "../../util/addons.js";
+import { MOCK_RPC_URL } from "../../util/rpcmock.js";
 
 test.beforeEach(async ({ page }) => {
   await page.route(MOCK_RPC_URL, async (route) => {
