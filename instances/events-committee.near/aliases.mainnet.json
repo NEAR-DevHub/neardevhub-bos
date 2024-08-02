@@ -11,5 +11,6 @@
   "REPL_SOCIAL_CONTRACT": "social.near",
   "REPL_RPC_URL": "https://rpc.mainnet.near.org",
   "REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME": "thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot",
-  "REPL_INDEXER_HASURA_ROLE": "thomasguntenaar_near"
+  "REPL_INDEXER_HASURA_ROLE": "thomasguntenaar_near",
+  "REPL_POSTHOG_API_KEY": "01234567890123456789012345678901234567890123456"
 }

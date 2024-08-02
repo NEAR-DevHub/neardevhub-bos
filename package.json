@@ -19,6 +19,7 @@
     "bw:dev:devhub": "bw dev instances/devhub.near",
     "bw:build:instance": "npm run bw build instances/$npm_config_instance build/$npm_config_instance && mv build/$npm_config_instance/src/widget/* build/$npm_config_instance/src/ && rm -Rf build/$npm_config_instance/src/widget",
     "bw:build:devhub": "npm run bw:build:instance --instance=devhub.near",
+    "gateway:all": "bw ws dev -g $(node scripts/create-static-hosting-web-gateway-folder.mjs)",
     "gateway:devhub": "node scripts/dev-gateway.mjs devhub.near",
     "dry-run:devhub": "npm run bw:build:devhub && cd ./build/devhub.near && bos components diff devhub.near network-config mainnet",
     "bw:dev:infrastructure": "bw dev instances/infrastructure-committee.near",
