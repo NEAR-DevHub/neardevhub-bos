@@ -5,6 +5,7 @@ import {
   waitForTestIdToBeVisible,
 } from "../../testUtils.js";
 import { setupBlogContentResponses } from "../../util/blogs.js";
+import { MOCK_RPC_URL } from "../../util/rpcmock.js";
 
 const baseUrl =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=first-blog";
