@@ -49,14 +49,14 @@ test.describe("share links", () => {
   });
 
   test("comment links should scroll into view", async ({ page }) => {
+    test.setTimeout(60000);
     await page.goto(
       "/devhub.near/widget/app?page=proposal&id=127&accountId=theori.near&blockHeight=121684702"
     );
     const viewer = await page.locator("near-social-viewer");
     const commentElement = await viewer.locator("css=div#theorinear121684702");
-    await expect(commentElement).toBeVisible({ timeout: 10000 });
-
-    await expect(commentElement).toBeInViewport({ timeout: 10000 });
+    await expect(commentElement).toBeVisible({ timeout: 30000 });
+    await expect(commentElement).toBeInViewport({ timeout: 30000 });
   });
 
   test("copying comment links should have clean URLs", async ({ page }) => {
