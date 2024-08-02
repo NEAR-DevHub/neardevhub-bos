@@ -45,7 +45,7 @@ test.describe("Wallet is connected", () => {
   test("should allow connected user to post from community page", async ({
     page,
   }) => {
-    await page.route("http://localhost:20000/", async (route) => {
+    await page.route(MOCK_RPC_URL, async (route) => {
       await mockDefaultTabs(route);
     });
     test.setTimeout(60000);

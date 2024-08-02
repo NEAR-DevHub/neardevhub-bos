@@ -1,5 +1,4 @@
 import { test as base, expect } from "@playwright/test";
-import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import {
   setCommitWritePermissionDontAskAgainCacheValues,
@@ -10,7 +9,7 @@ import {
   decodeResultJSON,
   encodeResultJSON,
 } from "../../util/transaction.js";
-import { mockRpcRequest } from "../../util/rpcmock.js";
+import { MOCK_RPC_URL, mockRpcRequest } from "../../util/rpcmock.js";
 
 const test = base.extend({
   // Define an option and provide a default value.
@@ -26,7 +25,7 @@ test.afterEach(
 let acceptedTermsVersion = 122927956;
 async function getCurrentBlockHeight(page) {
   // set current block height for accepted terms and conditions
-  await page.route(`http://localhost:20000/`, async (route) => {
+  await page.route(MOCK_RPC_URL, async (route) => {
     const request = route.request();
     const requestPostData = request.postDataJSON();
     if (
@@ -84,9 +83,6 @@ test.describe("Don't ask again enabled", () => {
   });
   test("should create a proposal", async ({ page, account }) => {
     test.setTimeout(120000);
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
     await page.goto(`/${account}/widget/app?page=proposals`);
 
     const widgetSrc = `${account}/widget/devhub.entity.proposal.Editor`;
@@ -200,9 +196,6 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     test.setTimeout(70000);
     let isTransactionCompleted = false;
 
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
     await mockRpcRequest({
       page,
       filterParams: {
@@ -299,9 +292,6 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
   }) => {
     test.setTimeout(60000);
 
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
     await mockRpcRequest({
       page,
       filterParams: {

@@ -9,7 +9,7 @@ import {
 import { mockDefaultTabs } from "../../util/addons.js";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("http://localhost:20000/", async (route) => {
+  await page.route(MOCK_RPC_URL, async (route) => {
     await mockDefaultTabs(route);
   });
 });

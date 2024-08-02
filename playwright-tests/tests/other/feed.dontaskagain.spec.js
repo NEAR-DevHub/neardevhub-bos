@@ -5,7 +5,6 @@ import {
   setDontAskAgainCacheValues,
   findKeysInCache,
 } from "../../util/cache.js";
-import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
 import { mockTransactionSubmitRPCResponses } from "../../util/transaction.js";
 
 const RECEIVER_ID = "devgovgigs.near";
@@ -20,10 +19,6 @@ test.describe("Wallet is connected with devhub access key", () => {
   });
 
   test("should comment to a post", async ({ page }) => {
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
-
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
     await setDontAskAgainCacheValues({
       page,
@@ -94,9 +89,6 @@ test.describe("Wallet is connected with devhub access key", () => {
 
   test("should like a post", async ({ page }) => {
     test.setTimeout(60000);
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
 
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
 
@@ -140,9 +132,6 @@ test.describe("Wallet is connected with devhub access key", () => {
     page,
   }) => {
     test.setTimeout(120000);
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
 
     await page.goto("/devhub.near/widget/app?page=post&id=2261");
 
@@ -212,9 +201,6 @@ test.describe("Wallet is connected", () => {
     page,
   }) => {
     test.setTimeout(60000);
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
 
     await page.goto("/devhub.near/widget/app?page=post&id=2731");
 

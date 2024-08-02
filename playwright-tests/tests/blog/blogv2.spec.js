@@ -11,7 +11,7 @@ const blogPage =
   "/devhub.near/widget/app?page=blogv2&id=published-w5cj1y&community=webassemblymusic";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("http://localhost:20000/", async (route) => {
+  await page.route(MOCK_RPC_URL, async (route) => {
     await mockDefaultTabs(route);
   });
 
