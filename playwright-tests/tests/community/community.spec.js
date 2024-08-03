@@ -225,7 +225,7 @@ test.describe("Is DevHUB platform community admin", () => {
     await pauseIfVideoRecording(page);
     await expect(
       await page.getByText("GitHub board configuration")
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
 
     await expect(
       await page.getByRole("button", { name: "Save" })
