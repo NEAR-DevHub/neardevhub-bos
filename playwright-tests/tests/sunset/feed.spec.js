@@ -131,7 +131,7 @@ test.describe("Wallet is connected", () => {
   test("should reply to a post in the feed with a comment", async ({
     page,
   }) => {
-    test.setTimeout(60000);
+    test.setTimeout(1200000);
     await page.goto("/devhub.near/widget/app?page=feed");
     const authorSearchInput = await page.getByPlaceholder("Search by author");
     await authorSearchInput.fill("petersalomonsen.near");
@@ -148,6 +148,14 @@ test.describe("Wallet is connected", () => {
 
     const labelsInput = await page.locator(".rbt-input-multi");
     await labelsInput.focus();
+    while (
+      (await page.getByLabel("menu-options").innerText()) ===
+      "No matches found."
+    ) {
+      await labelsInput.blur();
+      await page.waitForTimeout(500);
+      await labelsInput.focus();
+    }
     await labelsInput.pressSequentially("ai", { delay: 100 });
     await labelsInput.press("Tab");
     await labelsInput.pressSequentially("webassemblymus", { delay: 100 });

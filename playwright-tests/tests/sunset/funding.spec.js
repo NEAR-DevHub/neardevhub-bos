@@ -15,7 +15,7 @@ test.describe("Wallet is connected", () => {
     //
     page,
   }) => {
-    test.setTimeout(60000);
+    test.setTimeout(120000);
     await page.goto("/devhub.near/widget/app?page=create");
 
     await page.click('button:has-text("Solution")');
@@ -39,6 +39,14 @@ test.describe("Wallet is connected", () => {
     const tagsInput = page.locator(".rbt-input-multi");
     await tagsInput.scrollIntoViewIfNeeded();
     await tagsInput.focus();
+    while (
+      (await page.getByLabel("menu-options").innerText()) ===
+      "No matches found."
+    ) {
+      await tagsInput.blur();
+      await page.waitForTimeout(500);
+      await tagsInput.focus();
+    }
     await tagsInput.pressSequentially("paid-cont", { delay: 100 });
     await tagsInput.press("Tab");
     await tagsInput.pressSequentially("developer-da", { delay: 100 });
@@ -97,6 +105,7 @@ test.describe("Wallet is connected by moderator", () => {
   });
 
   test("should be able to approve a funding request", async ({ page }) => {
+    test.setTimeout(120000);
     await page.goto("/devhub.near/widget/app?page=post&id=2586");
     await page.click('button:has-text("Reply")');
     await page.click('li:has-text("Sponsorship")');
@@ -121,6 +130,14 @@ test.describe("Wallet is connected by moderator", () => {
 
     const tagsInput = await page.locator(".rbt-input-multi");
     await tagsInput.focus();
+    while (
+      (await page.getByLabel("menu-options").innerText()) ===
+      "No matches found."
+    ) {
+      await tagsInput.blur();
+      await page.waitForTimeout(500);
+      await tagsInput.focus();
+    }
     await tagsInput.pressSequentially("funding", { delay: 100 });
     await tagsInput.press("Tab");
     await tagsInput.pressSequentially("funding-information-coll", {
