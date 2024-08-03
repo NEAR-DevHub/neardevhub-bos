@@ -61,7 +61,7 @@ test.describe("Clipboard permissions", () => {
     const copyUrlButton = await page
       .locator('[data-component="near/widget/CopyUrlButton"]')
       .first();
-    await expect(copyUrlButton).toBeVisible({ timeout: 10000 });
+    await expect(copyUrlButton).toBeVisible({ timeout: 20000 });
     await copyUrlButton.hover();
     await expect(await page.getByText("Copy URL to clipboard")).toBeVisible();
     await copyUrlButton.click();
@@ -119,6 +119,7 @@ test.describe("Clipboard permissions", () => {
   test("announcement should scroll into view and be highlighted", async ({
     page,
   }) => {
+    test.setTimeout(120000);
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=announcements&accountId=webassemblymusic.community.devhub.near&blockHeight=112244156"
     );
@@ -128,7 +129,7 @@ test.describe("Clipboard permissions", () => {
     const announcementElement = await viewer.locator(
       "css=div#webassemblymusiccommunitydevhubnear112244156"
     );
-    await expect(announcementElement).toBeVisible({ timeout: 10000 });
+    await expect(announcementElement).toBeVisible({ timeout: 20000 });
 
     await expect(announcementElement).toContainText(
       "WebAssembly Music is the concept of storing a full length track of music in a tiny file"

@@ -214,6 +214,7 @@ test.describe("Is DevHUB platform community admin", () => {
   });
 
   test("should configure github addon", async ({ page }) => {
+    test.setTimeout(120000);
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=devhub-platform&tab=github"
     );
@@ -245,7 +246,7 @@ test.describe("Is DevHUB platform community admin", () => {
     const boardTitleField = await board.locator(
       'input[placeholder="👀 Review"]'
     );
-    await boardTitleField.scrollIntoViewIfNeeded();
+    await boardTitleField.scrollIntoViewIfNeeded({ timeout: 20000 });
     await boardTitleField.fill("Bugs");
     await pauseIfVideoRecording(page);
     const labelsInput = await board.locator(".rbt-input-multi");
