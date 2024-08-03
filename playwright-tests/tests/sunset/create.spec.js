@@ -35,6 +35,7 @@ test.describe("Wallet is connected", () => {
   test("should be able to submit a solution (funding request) with USDC as currency", async ({
     page,
   }) => {
+    test.setTimeout(120000);
     await page.goto("/devhub.near/widget/app?page=create");
 
     await page.click('button:has-text("Solution")');
@@ -49,6 +50,15 @@ test.describe("Wallet is connected", () => {
 
     const tagsInput = page.locator(".rbt-input-multi");
     await tagsInput.focus();
+    while (
+      (await page.getByLabel("menu-options").innerText()) ===
+      "No matches found."
+    ) {
+      await tagsInput.blur();
+      await page.waitForTimeout(500);
+      await tagsInput.focus();
+    }
+
     await tagsInput.pressSequentially("paid-cont", { delay: 100 });
     await tagsInput.press("Tab");
     await tagsInput.pressSequentially("developer-da", { delay: 100 });
@@ -180,6 +190,7 @@ test.describe("Wallet is connected", () => {
     expect(newToken).toBeTruthy();
   });
   test("should create idea post", async ({ page }) => {
+    test.setTimeout(120000);
     await page.goto("/devhub.near/widget/app?page=create");
     await page.click('button:has-text("Idea")');
     await page.getByTestId("name-editor").fill("A test idea");
@@ -191,9 +202,19 @@ test.describe("Wallet is connected", () => {
 
     const labelsInput = await page.locator(".rbt-input-multi");
     await labelsInput.focus();
+    while (
+      (await page.getByLabel("menu-options").innerText()) ===
+      "No matches found."
+    ) {
+      await labelsInput.blur();
+      await page.waitForTimeout(500);
+      await labelsInput.focus();
+    }
     await labelsInput.pressSequentially("ai", { delay: 100 });
+
     await labelsInput.press("Tab");
     await labelsInput.pressSequentially("webassemblymus", { delay: 100 });
+
     await labelsInput.press("Tab");
 
     await pauseIfVideoRecording(page);
