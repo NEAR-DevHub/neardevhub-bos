@@ -101,7 +101,6 @@ function isValidGitHubRepoLink(url) {
 
 const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
   const data = kanbanBoards ? Object.values(kanbanBoards)?.[0] : {};
-  console.log(withUUIDIndex);
   if (!data || !withUUIDIndex || !useQuery || !uuid) {
     return (
       <div class="alert alert-danger" role="alert">
