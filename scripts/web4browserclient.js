@@ -7,7 +7,7 @@
   const accountId = urlSearchParams.get("accountId");
   const blockHeight = urlSearchParams.get("blockHeight");
   if (accountId && blockHeight) {
-    for (let n = 0; n < 20; n++) {
+    for (let n = 0; n < 40; n++) {
       const linkElementSelector = `#${accountId.replace(
         /[^a-z0-9]/g,
         ""

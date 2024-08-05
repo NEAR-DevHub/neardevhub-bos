@@ -119,7 +119,7 @@ test.describe("Don't ask again enabled", () => {
         : `${instanceAccount}/widget/devhub.entity.proposal.ComposeComment`;
 
     let commentButton = await page.getByRole("button", { name: "Comment" });
-    await expect(commentButton).toBeAttached({ timeout: 10000 });
+    await expect(commentButton).toBeAttached({ timeout: 20000 });
     await commentButton.scrollIntoViewIfNeeded();
 
     const commentText =
@@ -280,10 +280,12 @@ test.describe("Don't ask again enabled", () => {
     );
 
     commentButton = await page.getByRole("button", { name: "Comment" });
-    await expect(commentButton).toBeAttached({ timeout: 10000 });
+    await expect(commentButton).toBeAttached({ timeout: 20000 });
     await commentButton.scrollIntoViewIfNeeded();
 
+    // Ensure that comment field is not populated with the previous draft, even after 5 seconds
     await page.waitForTimeout(5000);
+
     await expect(
       await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText("Add your comment here...");

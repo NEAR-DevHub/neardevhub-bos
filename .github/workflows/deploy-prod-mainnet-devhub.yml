@@ -17,7 +17,8 @@ jobs:
       - name: Set replacements
         id: set_replacements
         run: |
-          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value), {"find": "${REPL_POSTHOG_API_KEY}", "replace": "'${{ secrets.POSTHOG_API_KEY }}'"}]' aliases.mainnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
+          jq '.REPL_POSTHOG_API_KEY = "${{ secrets.POSTHOG_API_KEY }}"' aliases.mainnet.json > temp.aliases.mainnet.json && mv temp.aliases.mainnet.json aliases.mainnet.json
+          echo "replacements=$(jq -r '[to_entries[] | .["find"] = "${" + .key + "}" | .["replace"] = .value | del(.key, .value)]' aliases.mainnet.json | tr -d "\n\r")" >> $GITHUB_OUTPUT
 
       - name: Replace placeholders
         uses: flcdrg/replace-multiple-action@v1

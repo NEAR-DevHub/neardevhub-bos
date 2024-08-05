@@ -10,10 +10,6 @@ const { uuid, withUUIDIndex } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.uuid"
 );
 
-uuid || (uuid = () => {});
-withUUIDIndex || (withUUIDIndex = () => {});
-useQuery || (useQuery = () => {});
-
 const AttractableDiv = styled.div`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
   transition: box-shadow 0.6s;
@@ -105,8 +101,7 @@ function isValidGitHubRepoLink(url) {
 
 const GithubViewConfigurator = ({ kanbanBoards, permissions, onSubmit }) => {
   const data = kanbanBoards ? Object.values(kanbanBoards)?.[0] : {};
-
-  if (!data) {
+  if (!data || !withUUIDIndex || !useQuery || !uuid) {
     return (
       <div class="alert alert-danger" role="alert">
         Loading...
