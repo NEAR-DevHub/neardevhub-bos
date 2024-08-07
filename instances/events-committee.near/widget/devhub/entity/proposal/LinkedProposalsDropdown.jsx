@@ -1,4 +1,4 @@
-const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 href || (href = () => {});
 
 const linkedProposals = props.linkedProposals;
@@ -136,7 +136,7 @@ return (
     })}
 
     <Widget
-      src="${REPL_EVENTS}/widget/devhub.components.molecule.DropDownWithSearch"
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch"
       props={{
         selectedValue: "",
         onChange: (v) => {

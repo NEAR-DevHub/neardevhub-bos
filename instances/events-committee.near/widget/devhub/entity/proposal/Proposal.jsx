@@ -1,11 +1,11 @@
 const { href, getLinkUsingCurrentGateway } = VM.require(
-  "${REPL_EVENTS}/widget/core.lib.url"
+  "${REPL_DEVHUB}/widget/core.lib.url"
 ) || {
   href: () => {},
   getLinkUsingCurrentGateway: () => {},
 };
 const { readableDate } = VM.require(
-  "${REPL_EVENTS}/widget/core.lib.common"
+  "${REPL_DEVHUB}/widget/core.lib.common"
 ) || { readableDate: () => {} };
 
 const accountId = context.accountId;
@@ -273,9 +273,7 @@ if (!proposal) {
       style={{ height: "50vh" }}
       className="d-flex justify-content-center align-items-center w-100"
     >
-      <Widget
-        src={"${REPL_EVENTS}/widget/devhub.components.molecule.Spinner"}
-      />
+      <Widget src="${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner" />
     </div>
   );
 }
@@ -659,7 +657,7 @@ return (
       }}
     />
     <Widget
-      src={"${REPL_EVENTS}/widget/devhub.entity.proposal.ConfirmReviewModal"}
+      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal"}
       props={{
         isOpen: isReviewModalOpen,
         onCancelClick: () => setReviewModal(false),
@@ -670,7 +668,7 @@ return (
       }}
     />
     <Widget
-      src={"${REPL_EVENTS}/widget/devhub.entity.proposal.ConfirmCancelModal"}
+      src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmCancelModal"}
       props={{
         isOpen: isCancelModalOpen,
         onCancelClick: () => setCancelModal(false),
@@ -687,7 +685,7 @@ return (
       </div>
       <div className="d-flex gap-2 align-items-center">
         <Widget
-          src="${REPL_EVENTS}/widget/devhub.components.molecule.ShareLinkButton"
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.ShareLinkButton"
           props={{
             postType: "proposal",
             url: proposalURL,
@@ -698,7 +696,7 @@ return (
           isModerator) && (
           <Link to={link} style={{ textDecoration: "none" }}>
             <Widget
-              src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
                 label: "Edit",
                 classNames: { root: "grey-btn btn-sm" },
@@ -710,7 +708,7 @@ return (
     </div>
     <div className="d-flex flex-wrap flex-md-nowrap px-3 px-lg-0 gap-2 align-items-center text-sm pb-3 w-100">
       <Widget
-        src={"${REPL_EVENTS}/widget/devhub.entity.proposal.StatusTag"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
         props={{
           timelineStatus: snapshot.timeline.status,
           size: "sm",
@@ -743,7 +741,7 @@ return (
               <div style={{ minWidth: "fit-content" }}>
                 <Widget
                   src={
-                    "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
+                    "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
                   }
                   props={{
                     label: "Ready for review",
@@ -772,7 +770,7 @@ return (
               <div style={{ minWidth: "fit-content" }}>
                 <Widget
                   src={
-                    "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
+                    "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
                   }
                   props={{
                     label: (
@@ -882,7 +880,7 @@ return (
                       />
                       <Widget
                         src={
-                          "${REPL_EVENTS}/widget/devhub.entity.proposal.CommentIcon"
+                          "${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentIcon"
                         }
                         props={{
                           item,
@@ -1364,7 +1362,7 @@ return (
                             {paymentHashes.map((item, index) => (
                               <div className="d-flex gap-2 justify-content-between align-items-center">
                                 <Widget
-                                  src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
+                                  src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
                                   props={{
                                     className: "flex-grow-1",
                                     value: item,
@@ -1381,7 +1379,7 @@ return (
                                   {index !== paymentHashes.length - 1 ? (
                                     <Widget
                                       src={
-                                        "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
+                                        "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
                                       }
                                       props={{
                                         classNames: {
@@ -1400,7 +1398,7 @@ return (
                                   ) : (
                                     <Widget
                                       src={
-                                        "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
+                                        "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
                                       }
                                       props={{
                                         classNames: {
@@ -1424,7 +1422,7 @@ return (
                       <div className="d-flex gap-2 align-items-center justify-content-end text-sm">
                         <Widget
                           src={
-                            "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
+                            "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
                           }
                           props={{
                             label: "Cancel",
@@ -1440,7 +1438,7 @@ return (
 
                         <Widget
                           src={
-                            "${REPL_EVENTS}/widget/devhub.components.molecule.Button"
+                            "${REPL_DEVHUB}/widget/devhub.components.molecule.Button"
                           }
                           props={{
                             label: "Save",

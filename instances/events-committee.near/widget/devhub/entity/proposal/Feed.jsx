@@ -1,4 +1,4 @@
-const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 if (!href) {
   return <p>Loading modules...</p>;
@@ -165,7 +165,7 @@ const FeedItem = ({ proposal, index }) => {
               />
 
               <Widget
-                src={"${REPL_EVENTS}/widget/devhub.entity.proposal.CommentIcon"}
+                src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentIcon"}
                 props={{
                   item,
                   showOverlay: false,
@@ -177,7 +177,7 @@ const FeedItem = ({ proposal, index }) => {
         </div>
         <div className="align-self-center" style={{ minWidth: "fit-content" }}>
           <Widget
-            src={"${REPL_EVENTS}/widget/devhub.entity.proposal.StatusTag"}
+            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
             props={{
               timelineStatus: proposal.timeline.status,
             }}
@@ -414,9 +414,7 @@ const FeedPage = () => {
 
   const loader = (
     <div className="d-flex justify-content-center align-items-center w-100">
-      <Widget
-        src={"${REPL_EVENTS}/widget/devhub.components.molecule.Spinner"}
-      />
+      <Widget src="${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner" />
     </div>
   );
 
@@ -444,7 +442,7 @@ const FeedPage = () => {
         <div className="d-flex flex-wrap gap-4 align-items-center">
           <Widget
             src={
-              "${REPL_EVENTS}/widget/devhub.feature.proposal-search.by-input"
+              "${REPL_DEVHUB}/widget/devhub.feature.proposal-search.by-input"
             }
             props={{
               search: state.input,
@@ -506,7 +504,7 @@ const FeedPage = () => {
             })}
           >
             <Widget
-              src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
                 label: (
                   <div className="d-flex gap-2 align-items-center">

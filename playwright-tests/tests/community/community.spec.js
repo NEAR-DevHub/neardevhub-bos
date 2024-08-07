@@ -111,8 +111,7 @@ test.describe("Wallet is not connected", () => {
 
 test.describe("Is community admin", () => {
   test.use({
-    storageState:
-      "playwright-tests/storage-states/wallet-connected-community-admin.json",
+    storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
   test("should edit a community", async ({ page }) => {
     await page.goto(

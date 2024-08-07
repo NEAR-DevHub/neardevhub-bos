@@ -167,7 +167,7 @@ return (
       </div>
     )}
     <Widget
-      src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.DropDownWithSearch`}
+      src="${REPL_DEVHUB}/widget/components.molecule.DropDownWithSearch"
       props={{
         disabled: disabled,
         selectedValue: selectedRFP.value,

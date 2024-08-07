@@ -136,7 +136,7 @@ return (
     })}
 
     <Widget
-      src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.DropDownWithSearch`}
+      src="${REPL_DEVHUB}/widget/components.molecule.DropDownWithSearch"
       props={{
         selectedValue: selectedProposals,
         onChange: (v) => {

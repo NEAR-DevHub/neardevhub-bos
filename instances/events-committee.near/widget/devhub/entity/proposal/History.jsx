@@ -5,11 +5,11 @@ props.newTab: boolean;
 props.timestamp: number;
 props.referral: any;
 */
-const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url") || {
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
   href: () => {},
 };
 const { readableDate } = VM.require(
-  "${REPL_EVENTS}/widget/core.lib.common"
+  "${REPL_DEVHUB}/widget/core.lib.common"
 ) || { readableDate: () => {} };
 const proposalId = props.id ?? (props.id ? parseInt(props.id) : 0);
 const proposal = Near.view("${REPL_EVENTS_CONTRACT}", "get_proposal", {

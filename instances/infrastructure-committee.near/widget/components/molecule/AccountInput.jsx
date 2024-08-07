@@ -62,7 +62,7 @@ return (
     {showAccountAutocomplete && (
       <AutoComplete>
         <Widget
-          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete`}
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.AccountAutocomplete"
           props={{
             term: account,
             onSelect: (id) => {

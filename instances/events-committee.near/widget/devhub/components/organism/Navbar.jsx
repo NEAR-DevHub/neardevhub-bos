@@ -2,7 +2,7 @@ const page = props.page;
 
 const [showMenu, setShowMenu] = useState(false);
 
-const { href: linkHref } = VM.require("${REPL_EVENTS}/widget/core.lib.url");
+const { href: linkHref } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 const { hasModerator } = VM.require(
   "${REPL_EVENTS}/widget/core.adapter.devhub-contract"
