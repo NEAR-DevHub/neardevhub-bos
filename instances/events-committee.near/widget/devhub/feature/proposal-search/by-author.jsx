@@ -27,7 +27,7 @@ const Container = styled.div`
 return (
   <Container>
     <Widget
-      src="${REPL_EVENTS}/widget/devhub.components.molecule.DropDown"
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
       props={{
         options: authorsOptions,
         label: "Author",

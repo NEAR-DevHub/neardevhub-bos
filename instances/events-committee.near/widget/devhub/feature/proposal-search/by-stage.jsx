@@ -17,7 +17,7 @@ const setSelected = props.onStateChange ?? (() => {});
 return (
   <div>
     <Widget
-      src="${REPL_EVENTS}/widget/devhub.components.molecule.DropDown"
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
       props={{
         options: options,
         label: "Stage",
