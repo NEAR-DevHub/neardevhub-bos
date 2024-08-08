@@ -3,7 +3,7 @@
  * https://github.com/sparksuite/simplemde-markdown-editor
  */
 const { getLinkUsingCurrentGateway } = VM.require(
-  "${REPL_EVENTS}/widget/core.lib.url"
+  "${REPL_DEVHUB}/widget/core.lib.url"
 ) || { getLinkUsingCurrentGateway: () => {} };
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
