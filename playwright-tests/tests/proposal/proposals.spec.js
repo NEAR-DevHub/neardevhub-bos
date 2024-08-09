@@ -94,7 +94,7 @@ test.describe("Don't ask again enabled", () => {
       contractId: account,
     });
 
-    await page.getByRole("button", { name: " New Proposal" }).click();
+    await page.getByRole("button", { name: " Submit Proposal" }).click();
 
     const titleArea = await page.getByRole("textbox").first();
     await titleArea.fill("Test proposal 123456");
