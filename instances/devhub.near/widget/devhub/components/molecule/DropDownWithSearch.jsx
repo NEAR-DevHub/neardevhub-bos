@@ -8,6 +8,7 @@ const {
   searchByLabel,
   searchByValue,
   onSearch,
+  disabled,
 } = props;
 
 const [searchTerm, setSearchTerm] = useState("");
@@ -113,12 +114,23 @@ const Container = styled.div`
     overflow: hidden;
     white-space: normal;
   }
+
+  .disabled {
+    background-color: #f8f8f8 !important;
+    cursor: not-allowed !important;
+    border-radius: 5px;
+    opacity: inherit !important;
+  }
+
+  .disabled.dropdown-toggle::after {
+    display: none !important;
+  }
 `;
 let searchFocused = false;
 return (
   <Container>
     <div
-      className="custom-select"
+      className="custom-select w-100"
       tabIndex="0"
       onBlur={() => {
         setTimeout(() => {
@@ -126,12 +138,17 @@ return (
         }, 0);
       }}
     >
-      <div className="dropdown-toggle bg-white border rounded-2 btn drop-btn">
+      <div
+        className={
+          "dropdown-toggle bg-white border rounded-2 btn drop-btn w-100 " +
+          (disabled ? "disabled" : "")
+        }
+      >
         <div
           className={`selected-option w-100 text-wrap ${
             selectedOption.label === defaultLabel ? "text-muted" : ""
           }`}
-          onClick={toggleDropdown}
+          onClick={!disabled && toggleDropdown}
         >
           {selectedOption.label}
         </div>

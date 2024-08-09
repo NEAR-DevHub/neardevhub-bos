@@ -15,7 +15,7 @@ test.describe("share links", () => {
     await showPageURLInTest(page);
 
     const shareButton = await page.locator("button", { hasText: "Share" });
-    await expect(shareButton).toBeVisible();
+    await expect(shareButton).toBeVisible({ timeout: 10000 });
 
     await shareButton.hover();
     await pauseIfVideoRecording(page);

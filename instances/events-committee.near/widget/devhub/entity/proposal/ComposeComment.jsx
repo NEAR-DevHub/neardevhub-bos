@@ -76,7 +76,7 @@ if (!accountId) {
     >
       <Link to="https://near.org/signup">
         <Widget
-          src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             classNames: { root: "grey-btn" },
             label: "Sign up",
@@ -237,7 +237,7 @@ return (
       {Compose}
       <div className="d-flex gap-2 align-content-center justify-content-end">
         <Widget
-          src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
+          src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
           props={{
             label: isTxnCreated ? LoadingButtonSpinner : "Comment",
             ["data-testid"]: "compose-comment",

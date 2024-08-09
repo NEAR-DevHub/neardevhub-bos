@@ -42,20 +42,6 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
-    storageState: {
-      cookies: [],
-      origins: [
-        {
-          origin: "http://localhost:8080",
-          localStorage: [
-            {
-              name: "flags",
-              value: JSON.stringify({ bosLoaderUrl: "http://127.0.0.1:3030" }),
-            },
-          ],
-        },
-      ],
-    },
   },
 
   /* Configure projects for major browsers */
@@ -94,11 +80,8 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    env: { POSTHOG_API_KEY: "01234567890123456789012345678901234567890123456" },
-    command: `echo ${process.env.INSTANCE ?? "devhub"}; npm run gateway:${
-      process.env.INSTANCE ?? "devhub"
-    }`,
-    port: 3030,
+    command: `npm run gateway:all`,
+    port: 8080,
     reuseExistingServer: !process.env.CI,
   },
 });

@@ -1,7 +1,7 @@
 const { accessControlInfo, createEditTeam } = props;
 
 const { Tile } =
-  VM.require("${REPL_EVENTS}/widget/devhub.components.molecule.Tile") ||
+  VM.require("${REPL_DEVHUB}/widget/devhub.components.molecule.Tile") ||
   (() => <></>);
 
 if (!Tile) {
@@ -55,7 +55,7 @@ return (
       {editModerators ? (
         <>
           <Widget
-            src="${REPL_EVENTS}/widget/devhub.components.molecule.ListEditor"
+            src="${REPL_DEVHUB}/widget/devhub.components.molecule.ListEditor"
             props={{
               data: {
                 maxLength: 100,
@@ -75,7 +75,7 @@ return (
             }
           >
             <Widget
-              src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
                 classNames: {
                   root: "btn-outline-danger shadow-none border-0",
@@ -85,7 +85,7 @@ return (
               }}
             />
             <Widget
-              src={"${REPL_EVENTS}/widget/devhub.components.molecule.Button"}
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
               props={{
                 classNames: { root: "btn" },
                 icon: {

@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
+import { MOCK_RPC_URL } from "../../util/rpcmock.js";
 
 test("should load a community page if handle exists", async ({ page }) => {
   await page.goto(
@@ -45,7 +46,7 @@ test.describe("Wallet is connected", () => {
   test("should allow connected user to post from community page", async ({
     page,
   }) => {
-    await page.route("http://localhost:20000/", async (route) => {
+    await page.route(MOCK_RPC_URL, async (route) => {
       await mockDefaultTabs(route);
     });
     test.setTimeout(60000);
@@ -110,8 +111,7 @@ test.describe("Wallet is not connected", () => {
 
 test.describe("Is community admin", () => {
   test.use({
-    storageState:
-      "playwright-tests/storage-states/wallet-connected-community-admin.json",
+    storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
   test("should edit a community", async ({ page }) => {
     await page.goto(
@@ -213,6 +213,7 @@ test.describe("Is DevHUB platform community admin", () => {
   });
 
   test("should configure github addon", async ({ page }) => {
+    test.setTimeout(120000);
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=devhub-platform&tab=github"
     );
@@ -223,7 +224,7 @@ test.describe("Is DevHUB platform community admin", () => {
     await pauseIfVideoRecording(page);
     await expect(
       await page.getByText("GitHub board configuration")
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
 
     await expect(
       await page.getByRole("button", { name: "Save" })
@@ -244,7 +245,7 @@ test.describe("Is DevHUB platform community admin", () => {
     const boardTitleField = await board.locator(
       'input[placeholder="👀 Review"]'
     );
-    await boardTitleField.scrollIntoViewIfNeeded();
+    await boardTitleField.scrollIntoViewIfNeeded({ timeout: 20000 });
     await boardTitleField.fill("Bugs");
     await pauseIfVideoRecording(page);
     const labelsInput = await board.locator(".rbt-input-multi");

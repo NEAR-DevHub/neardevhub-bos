@@ -13,6 +13,7 @@ import {
   decodeResultJSON,
   encodeResultJSON,
 } from "../../util/transaction.js";
+import { MOCK_RPC_URL } from "../../util/rpcmock.js";
 
 const baseUrl =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=first-blog";
@@ -39,7 +40,7 @@ const blogPageThirdInstance =
   "/devhub.near/widget/app?page=blogv2&community=webassemblymusic&id=this-is-the-blog-title-xfxkzh";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("http://localhost:20000/", async (route) => {
+  await page.route(MOCK_RPC_URL, async (route) => {
     await mockDefaultTabs(route);
   });
 

@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import { mockDefaultTabs } from "../../util/addons.js";
 import { mockBlogs } from "../../util/blogs.js";
+import { MOCK_RPC_URL } from "../../util/rpcmock.js";
 
 const baseUrl =
   "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=first-blog";
@@ -11,7 +12,7 @@ const blogPage =
   "/devhub.near/widget/app?page=blogv2&id=published-w5cj1y&community=webassemblymusic";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("http://localhost:20000/", async (route) => {
+  await page.route(MOCK_RPC_URL, async (route) => {
     await mockDefaultTabs(route);
   });
 

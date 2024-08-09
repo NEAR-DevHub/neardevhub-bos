@@ -1,8 +1,8 @@
-const { href } = VM.require("${REPL_EVENTS}/widget/core.lib.url");
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 const draftKey = "PROPOSAL_EDIT";
 href || (href = () => {});
 const { getLinkUsingCurrentGateway } = VM.require(
-  "${REPL_EVENTS}/widget/core.lib.url"
+  "${REPL_DEVHUB}/widget/core.lib.url"
 ) || { getLinkUsingCurrentGateway: () => {} };
 const { id, timestamp } = props;
 
@@ -14,7 +14,7 @@ const FundingDocs = getLinkUsingCurrentGateway(
 
 if (!author) {
   return (
-    <Widget src={"${REPL_EVENTS}/widget/devhub.entity.proposal.LoginScreen"} />
+    <Widget src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.LoginScreen"} />
   );
 }
 let editProposalData = null;
@@ -778,9 +778,7 @@ if (loading) {
       style={{ height: "50vh" }}
       className="d-flex justify-content-center align-items-center w-100"
     >
-      <Widget
-        src={"${REPL_EVENTS}/widget/devhub.components.molecule.Spinner"}
-      />
+      <Widget src="${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner" />
     </div>
   );
 }
@@ -836,7 +834,7 @@ const CategoryDropdown = useMemo(() => {
 const TitleComponent = useMemo(() => {
   return (
     <Widget
-      src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
       props={{
         className: "flex-grow-1",
         value: title,
@@ -855,7 +853,7 @@ const TitleComponent = useMemo(() => {
 const SummaryComponent = useMemo(() => {
   return (
     <Widget
-      src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
       props={{
         className: "flex-grow-1",
         value: summary,
@@ -891,7 +889,7 @@ const ConsentComponent = useMemo(() => {
   return (
     <div className="d-flex flex-column gap-2">
       <Widget
-        src={"${REPL_EVENTS}/widget/devhub.components.molecule.Checkbox"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Checkbox"}
         props={{
           value: "toc",
           label: (
@@ -915,7 +913,7 @@ const ConsentComponent = useMemo(() => {
         }}
       />
       <Widget
-        src={"${REPL_EVENTS}/widget/devhub.components.molecule.Checkbox"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Checkbox"}
         props={{
           value: "coc",
           label: (
@@ -990,7 +988,7 @@ const ReceiverAccountComponent = useMemo(() => {
 const AmountComponent = useMemo(() => {
   return (
     <Widget
-      src="${REPL_EVENTS}/widget/devhub.components.molecule.Input"
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Input"
       props={{
         className: "flex-grow-1",
         value: requestedSponsorshipAmount,
@@ -1063,7 +1061,7 @@ if (showProposalPage) {
         {isEditPage ? "Edit" : "Create"} Proposal
       </Heading>
       <Widget
-        src={"${REPL_EVENTS}/widget/devhub.entity.proposal.ConfirmReviewModal"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmReviewModal"}
         props={{
           isOpen: isReviewModalOpen,
           onCancelClick: () => setReviewModal(false),
@@ -1075,7 +1073,7 @@ if (showProposalPage) {
         }}
       />
       <Widget
-        src={"${REPL_EVENTS}/widget/devhub.entity.proposal.ConfirmCancelModal"}
+        src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.ConfirmCancelModal"}
         props={{
           isOpen: isCancelModalOpen,
           onCancelClick: () => setCancelModal(false),
@@ -1165,7 +1163,7 @@ if (showProposalPage) {
                   <div>
                     {isEditPage && (
                       <Widget
-                        src={`${REPL_EVENTS}/widget/devhub.components.molecule.Button`}
+                        src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                         props={{
                           classNames: {
                             root: "btn-outline-danger shadow-none border-0 btn-sm",
@@ -1206,7 +1204,7 @@ if (showProposalPage) {
                       }
                     >
                       <Widget
-                        src={`${REPL_EVENTS}/widget/devhub.components.molecule.Button`}
+                        src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
                         props={{
                           classNames: {
                             root: "d-flex h-100 text-muted fw-bold btn-outline shadow-none border-0 btn-sm",

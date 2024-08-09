@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils";
 import { mockRpcRequest } from "../../util/rpcmock";
 import { setDontAskAgainCacheValues } from "../../util/cache";
-import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader";
 import { mockTransactionSubmitRPCResponses } from "../../util/transaction";
 const os = require("os");
 
@@ -261,9 +260,6 @@ test.describe("Admin with don't ask again enabled", () => {
     test.setTimeout(120000);
     let isTransactionCompleted = false;
     const theNewDescription = "The edited RFP description";
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
 
     await mockRpcRequest({
       page,

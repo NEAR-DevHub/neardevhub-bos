@@ -5,7 +5,6 @@ import {
   getDontAskAgainCacheValues,
   setCommitWritePermissionDontAskAgainCacheValues,
 } from "../../util/cache.js";
-import { modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader } from "../../util/bos-loader.js";
 import {
   mockTransactionSubmitRPCResponses,
   decodeResultJSON,
@@ -13,9 +12,10 @@ import {
 } from "../../util/transaction.js";
 import { mockDefaultTabs } from "../../util/addons.js";
 import { mockSocialIndexResponses } from "../../util/socialapi.js";
+import { MOCK_RPC_URL } from "../../util/rpcmock.js";
 
 test.beforeEach(async ({ page }) => {
-  await page.route("http://localhost:20000/", async (route) => {
+  await page.route(MOCK_RPC_URL, async (route) => {
     await mockDefaultTabs(route);
   });
 });
@@ -34,7 +34,7 @@ test.describe("Wallet is connected", () => {
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions"
     );
     const socialdbaccount = "petersalomonsen.near";
-    const viewsocialdbpostresult = await fetch("http://localhost:20000", {
+    const viewsocialdbpostresult = await fetch(MOCK_RPC_URL, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -102,7 +102,7 @@ test.describe("Wallet is connected", () => {
     );
 
     const socialdbaccount = "petersalomonsen.near";
-    const viewsocialdbpostresult = await fetch("http://localhost:20000", {
+    const viewsocialdbpostresult = await fetch(MOCK_RPC_URL, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -161,9 +161,6 @@ test.describe("Don't ask again enabled", () => {
     "discussions.webassemblymusic.community.devhub.near";
 
   test("should create a discussion", async ({ page }) => {
-    await modifySocialNearGetRPCResponsesInsteadOfGettingWidgetsFromBOSLoader(
-      page
-    );
     let discussion_created = false;
     await mockSocialIndexResponses(page, ({ requestPostData, json }) => {
       if (
@@ -202,7 +199,7 @@ test.describe("Don't ask again enabled", () => {
       accountId: "petersalomonsen.near",
     });
     const socialdbaccount = "petersalomonsen.near";
-    const viewsocialdbpostresult = await fetch("http://localhost:20000", {
+    const viewsocialdbpostresult = await fetch(MOCK_RPC_URL, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

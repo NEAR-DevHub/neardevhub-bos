@@ -1,5 +1,5 @@
 const { getLinkUsingCurrentGateway } = VM.require(
-  "${REPL_EVENTS}/widget/core.lib.url"
+  "${REPL_DEVHUB}/widget/core.lib.url"
 ) || { getLinkUsingCurrentGateway: () => {} };
 const snapshotHistory = props.snapshotHistory;
 const proposalId = props.id;
@@ -264,14 +264,14 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
           <span className="inline-flex">
             moved proposal from{" "}
             <Widget
-              src={"${REPL_EVENTS}/widget/devhub.entity.proposal.StatusTag"}
+              src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
               props={{
                 timelineStatus: oldValue,
               }}
             />
             to{" "}
             <Widget
-              src={"${REPL_EVENTS}/widget/devhub.entity.proposal.StatusTag"}
+              src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.StatusTag"}
               props={{
                 timelineStatus: newValue,
               }}

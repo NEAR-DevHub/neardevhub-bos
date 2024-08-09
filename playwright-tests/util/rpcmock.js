@@ -1,4 +1,4 @@
-export const MOCK_RPC_URL = "http://localhost:20000";
+export const MOCK_RPC_URL = "http://127.0.0.1:8080/api/proxy-rpc";
 
 export async function mockRpcRequest({
   page,

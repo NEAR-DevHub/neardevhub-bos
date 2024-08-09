@@ -4,7 +4,7 @@ const href = props.href;
 
 const [showMenu, setShowMenu] = useState(false);
 
-const { href: linkHref } = VM.require("${REPL_EVENTS}/widget/core.lib.url");
+const { href: linkHref } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 linkHref || (linkHref = () => {});
 

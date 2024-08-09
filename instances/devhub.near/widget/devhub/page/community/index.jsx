@@ -351,6 +351,10 @@ return (
             // below is temporary prop drilling until kanban and github are migrated
             permissions,
             handle: community.handle,
+            highlight: {
+              accountId: props.accountId,
+              blockHeight: props.blockHeight,
+            },
           }}
         />
       </div>

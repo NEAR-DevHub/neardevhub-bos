@@ -1,3 +1,5 @@
+import { MOCK_RPC_URL } from "./rpcmock.js";
+
 const access_keys = [
   {
     access_key: {
@@ -81,10 +83,11 @@ export async function mockTransactionSubmitRPCResponses(page, customhandler) {
     lastViewedAccessKey: undefined,
     last_transaction: undefined,
   };
+
   await page.route(
     (url) =>
       url.origin === "https://rpc.mainnet.near.org" ||
-      url.origin === "http://localhost:20000",
+      url.toString().startsWith(MOCK_RPC_URL),
     async (route) => {
       const request = await route.request();
       const requestPostData = request.postDataJSON();

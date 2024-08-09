@@ -258,8 +258,12 @@ if (!initialized && sort) {
 return (
   <>
     <Widget
-      src="${REPL_NEAR}/widget/Posts.Feed"
+      src={`${REPL_DEVHUB}/widget/devhub.components.organism.Feed.Posts.Feed`}
       props={{
+        page: props.page,
+        handle: props.handle,
+        tab: props.tab,
+        highlight: props.highlight,
         hasMore,
         isLoading,
         loadMorePosts: () => {
