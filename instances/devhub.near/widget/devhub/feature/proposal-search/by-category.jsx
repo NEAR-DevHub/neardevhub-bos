@@ -1,55 +1,21 @@
-const options = [
-  {
-    label: "All",
-    value: "",
-  },
-  {
-    label: "DevDAO Operations",
-    value: "DevDAO Operations",
-  },
-  {
-    label: "DevDAO Platform",
-    value: "DevDAO Platform",
-  },
-  {
-    label: "Events & Hackathons",
-    value: "Events & Hackathons",
-  },
-  {
-    label: "Engagement & Awareness",
-    value: "Engagement & Awareness",
-  },
-  {
-    label: "Decentralized DevRel",
-    value: "Decentralized DevRel",
-  },
-  {
-    label: "Universities & Bootcamps",
-    value: "Universities & Bootcamps",
-  },
-  {
-    label: "Tooling & Infrastructure",
-    value: "Tooling & Infrastructure",
-  },
-  {
-    label: "Other",
-    value: "Other",
-  },
-];
+const categoryOptions = props.categoryOptions ?? [];
 
 const setSelected = props.onStateChange ?? (() => {});
 
+const allOption = [{ label: "All", value: "" }];
+const options = categoryOptions.map((i) => {
+  return { ...i, label: i.title };
+});
+
 return (
-  <div>
-    <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
-      props={{
-        options: options,
-        label: "Category",
-        onUpdate: (v) => {
-          setSelected(v);
-        },
-      }}
-    />
-  </div>
+  <Widget
+    src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
+    props={{
+      options: allOption.concat(options),
+      label: "Category",
+      onUpdate: (v) => {
+        setSelected(v);
+      },
+    }}
+  />
 );

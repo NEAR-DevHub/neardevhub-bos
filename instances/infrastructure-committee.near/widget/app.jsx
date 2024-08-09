@@ -10,26 +10,17 @@ const { AppLayout } = VM.require(
   `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.template.AppLayout`
 );
 
-if (!AppLayout) {
+const { Theme } = VM.require(
+  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/config.theme`
+);
+
+const { CssContainer } = VM.require(
+  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/config.css`
+);
+
+if (!AppLayout || !Theme || !CssContainer) {
   return <p>Loading modules...</p>;
 }
-
-// CSS styles to be used across the app.
-// Define fonts here, as well as any other global styles.
-const Theme = styled.div`
-  a {
-    color: inherit;
-  }
-
-  .attractable {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-    transition: box-shadow 0.6s;
-
-    &:hover {
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
-  }
-`;
 
 if (!page) {
   // If no page is specified, we default to the feed page TEMP
@@ -84,7 +75,7 @@ function Page() {
     case "proposals": {
       return (
         <Widget
-          src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.proposals.Feed`}
+          src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.proposals.Proposals`}
           props={passProps}
         />
       );
@@ -122,8 +113,10 @@ function Page() {
 
 return (
   <Theme>
-    <AppLayout page={page}>
-      <Page />
-    </AppLayout>
+    <CssContainer>
+      <AppLayout page={page}>
+        <Page />
+      </AppLayout>
+    </CssContainer>
   </Theme>
 );
