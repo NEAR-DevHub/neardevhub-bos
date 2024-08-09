@@ -31,8 +31,9 @@ const code = `
     }
 
     a {
-      color: #04a46e;
-    }
+        color: #3c697d;
+        font-weight: 500 !important;
+      }
   </style>
 </head>
 <body>
