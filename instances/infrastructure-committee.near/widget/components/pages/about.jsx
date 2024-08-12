@@ -18,9 +18,10 @@ if (!profile) {
 return (
   <div style={{ width: "-webkit-fill-available" }} className="p-3">
     <Widget
-      src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.Markdown`}
+      src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
       props={{
         content: profile.description,
+        height: "70vh",
       }}
     />
   </div>
