@@ -115,8 +115,11 @@ function transformString(str) {
   // Replace spaces with hyphens
   const transformedStr = lowerCaseStr.replace(/ /g, "-");
 
+  // Replace anything that is not a letter or a number with an empty string
+  const cleanedStr = transformedStr.replace(/[^a-z0-9A-Z]/g, "");
+
   // Return the transformed string
-  return transformedStr;
+  return cleanedStr;
 }
 
 const handleOnSubmit = (v, isEdit) => {
