@@ -1203,7 +1203,16 @@ return (
                           <div>Sponsor makes a final decision:</div>
                           <RadioButton
                             value=""
-                            label={<div className="fw-bold">Approved</div>}
+                            label={
+                              <>
+                                <div className="fw-bold">Approved</div>
+                                <span>
+                                  Recipient will receive invoice instructions
+                                  within 1 business day at the email used for
+                                  KYC/KYB verification.
+                                </span>
+                              </>
+                            }
                             isChecked={
                               updatedProposalStatus.value.status ===
                                 TIMELINE_STATUS.APPROVED ||

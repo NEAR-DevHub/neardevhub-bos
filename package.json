@@ -16,6 +16,7 @@
     "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
     "build": "npm run fmt",
     "bw": "bos-workspace",
+    "bw:dev:instances": "bw ws dev",
     "bw:dev:devhub": "bw dev instances/devhub.near",
     "bw:build:instance": "npm run bw build instances/$npm_config_instance build/$npm_config_instance && mv build/$npm_config_instance/src/widget/* build/$npm_config_instance/src/ && rm -Rf build/$npm_config_instance/src/widget",
     "bw:build:devhub": "npm run bw:build:instance --instance=devhub.near",
