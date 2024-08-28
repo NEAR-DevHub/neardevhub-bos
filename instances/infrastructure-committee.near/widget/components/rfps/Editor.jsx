@@ -291,6 +291,7 @@ const [oldRfpData, setOldRfpData] = useState(null);
 const [timeline, setTimeline] = useState({
   status: RFP_TIMELINE_STATUS.ACCEPTING_SUBMISSIONS,
 });
+const [isCancelModalOpen, setCancelModal] = useState(false);
 
 if (allowDraft) {
   draftRfpData = Storage.privateGet(draftKey);
