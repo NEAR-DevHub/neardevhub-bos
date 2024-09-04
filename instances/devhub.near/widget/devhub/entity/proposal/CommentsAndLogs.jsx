@@ -222,6 +222,11 @@ const Comment = ({ commentItem }) => {
               src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
               props={{
                 content: content.text,
+                embeddCSS: `
+                  body {
+                    font-size:14px;
+                  }
+                `,
               }}
             />
 

@@ -1,5 +1,6 @@
 const content = props.content ?? "";
 const height = props.height;
+const embeddCSS = props.embeddCSS;
 const [iframeHeight, setIframeHeight] = useState("100px");
 
 const code = `
@@ -12,7 +13,6 @@ const code = `
           margin: 0;
           overflow: ${height ? "auto" : "hidden"};
           font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-          font-size:14px;
           line-height:1.5;
         }
 
@@ -24,7 +24,21 @@ const code = `
           font-style: italic;
           font-size: inherit;
         }
+
+        .no-margin {
+          margin: 0px !important;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+          font-weight:500;
+          margin-block:5px;
+        }
+
+        p {
+          white-space: pre-wrap;
+        }
     
+        ${embeddCSS}
       </style>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
@@ -35,16 +49,11 @@ const code = `
       <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
       <script>
       
-      function convertNewlinesToBr(text) {
-        // Replace all newline characters with <br>
-        return text.replace(/(?:\\r\\n|\\r|\\n)/g, '<p></p>');
-      }
+    
 
       function updateContent(content) {
-        const html = marked.parse(content);
-        const parsedContent = convertNewlinesToBr(html);
-        document.getElementById('content').innerHTML = parsedContent;
-
+        document.getElementById('content').innerHTML = marked.parse(content)
+  
         const newHeight = Math.max(
           document.body.scrollHeight,
           document.documentElement.scrollHeight,
@@ -85,9 +94,10 @@ return (
     className="w-100"
     onMessage={(e) => {
       switch (e.handler) {
-        case "IFRAME_HEIGHT":
+        case "IFRAME_HEIGHT": {
           setIframeHeight(`${e.height}px`);
           break;
+        }
       }
     }}
   />

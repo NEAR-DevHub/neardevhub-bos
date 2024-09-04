@@ -108,6 +108,11 @@ const Compose = ({
               src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
               props={{
                 content: state.data,
+                embeddCSS: `
+                body {
+                  font-size: 14px;
+                }
+                `,
               }}
             />
           </div>
