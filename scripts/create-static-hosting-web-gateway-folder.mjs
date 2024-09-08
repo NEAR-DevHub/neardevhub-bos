@@ -11,7 +11,7 @@ await cp(
   { recursive: true }
 );
 const web4browserclientFileName = 'web4browserclient.js';
-await copyFile(new URL(web4browserclientFileName, import.meta.url), `${staticWebHostingFolder}/${web4browserclientFileName}`);
+await copyFile(new URL(`../web4/${web4browserclientFileName}`, import.meta.url), `${staticWebHostingFolder}/${web4browserclientFileName}`);
 
 const replaceRpc = async (htmlfile) => {
   const indexHtmlFilePath = `${staticWebHostingFolder}/${htmlfile}`;
