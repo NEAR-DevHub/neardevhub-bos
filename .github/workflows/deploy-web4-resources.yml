@@ -1,0 +1,24 @@
+name: Deploy web4 resources
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-widgets:
+    runs-on: ubuntu-latest
+    name: Deploy
+    environment: devhub.near
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - name: Deploy web4 resources
+        env:
+          SIGNER_ACCOUNT_ID: ${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}
+          SIGNER_PRIVATE_KEY: ${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}
+        run: |
+          npm run deploy:web4resources
