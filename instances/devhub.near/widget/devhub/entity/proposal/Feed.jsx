@@ -401,12 +401,12 @@ const FeedPage = () => {
             result.body.data[`${proposalFeedIndexerQueryName}_aggregate`];
           const promises = data.map((item) => {
             if (isNumber(item.linked_rfp)) {
-              return fetchGraphQL(rfpQuery, "GetLatestSnapshot", {}).then(
-                (result) => {
-                  const rfpData = result.body.data?.[rfpQueryName];
-                  return { ...item, rfpData: rfpData[0] };
-                }
-              );
+              return fetchGraphQL(rfpQuery, "GetLatestSnapshot", {
+                where: { rfp_id: { _eq: item.linked_rfp } },
+              }).then((result) => {
+                const rfpData = result.body.data?.[rfpQueryName];
+                return { ...item, rfpData: rfpData[0] };
+              });
             } else {
               return Promise.resolve(item);
             }
