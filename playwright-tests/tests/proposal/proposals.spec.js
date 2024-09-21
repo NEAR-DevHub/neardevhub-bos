@@ -477,7 +477,7 @@ test.describe("Wallet is connected", () => {
     );
 
     await pauseIfVideoRecording(page);
-    const iframe = page.frameLocator("iframe");
+    const iframe = page.frameLocator("iframe").last();
     const liFrameLocators = iframe.frameLocator(
       'ul[id="mentiondropdown"] > li'
     );

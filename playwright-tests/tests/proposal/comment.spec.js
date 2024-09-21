@@ -35,8 +35,9 @@ test.describe("Don't ask again enabled", () => {
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentArea = await page
       .frameLocator("iframe")
+      .last()
       .locator(".CodeMirror textarea");
-    await commentArea.focus();
+    await commentArea.focus({ timeout: 20_000 });
     const text = "Comment testing";
     await commentArea.pressSequentially(text, {
       delay: delay_milliseconds_between_keypress_when_typing,
@@ -85,7 +86,7 @@ test.describe("Don't ask again enabled", () => {
     await commentButton.scrollIntoViewIfNeeded();
     await commentButton.click();
     await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
+      await page.frameLocator("iframe").last().locator(".CodeMirror")
     ).toContainText(text);
 
     const loadingIndicator = await page.locator(".comment-btn-spinner");
@@ -100,10 +101,10 @@ test.describe("Don't ask again enabled", () => {
 
     await expect(transaction_successful_toast).not.toBeAttached();
     await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
+      await page.frameLocator("iframe").last().locator(".CodeMirror")
     ).not.toContainText(text);
     await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
+      await page.frameLocator("iframe").last().locator(".CodeMirror")
     ).toContainText("Add your comment here...");
     await pauseIfVideoRecording(page);
   });
@@ -130,6 +131,7 @@ test.describe("Don't ask again enabled", () => {
 
     const commentArea = await page
       .frameLocator("iframe")
+      .last()
       .locator(".CodeMirror textarea");
 
     await pauseIfVideoRecording(page);
@@ -249,10 +251,10 @@ test.describe("Don't ask again enabled", () => {
       timeout: 10000,
     });
     await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
+      await page.frameLocator("iframe").last().locator(".CodeMirror")
     ).not.toContainText(commentText);
     await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
+      await page.frameLocator("iframe").last().locator(".CodeMirror")
     ).toContainText("Add your comment here...");
 
     const submittedTransactionJsonObject =

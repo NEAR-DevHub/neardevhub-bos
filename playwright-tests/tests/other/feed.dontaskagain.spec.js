@@ -42,6 +42,7 @@ test.describe("Wallet is connected with devhub access key", () => {
 
     const commentArea = await page
       .frameLocator("iframe")
+      .last()
       .locator(".CodeMirror textarea");
     await commentArea.focus();
     await commentArea.fill("Some comment");
@@ -158,8 +159,8 @@ test.describe("Wallet is connected with devhub access key", () => {
     await pauseIfVideoRecording(page);
     const commentArea = await page
       .frameLocator("iframe")
+      .last()
       .locator(".CodeMirror textarea");
-    await commentArea.scrollIntoViewIfNeeded();
     await commentArea.focus();
     await commentArea.fill("Some comment");
 
@@ -220,6 +221,7 @@ test.describe("Wallet is connected", () => {
 
     const commentArea = await page
       .frameLocator("iframe")
+      .last()
       .locator(".CodeMirror textarea");
     await commentArea.focus();
     await commentArea.fill("Some comment");

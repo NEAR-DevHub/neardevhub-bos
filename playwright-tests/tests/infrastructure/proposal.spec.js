@@ -128,7 +128,7 @@ test.describe("Wallet is connected as admin", () => {
     );
 
     await pauseIfVideoRecording(page);
-    const iframe = page.frameLocator("iframe");
+    const iframe = page.frameLocator("iframe").last();
     const liFrameLocators = iframe.frameLocator(
       'ul[id="mentiondropdown"] > li'
     );
