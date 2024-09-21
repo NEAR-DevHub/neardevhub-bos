@@ -122,6 +122,7 @@ test.describe("Wallet is connected by moderator", () => {
 
     const descriptionInput = page
       .frameLocator("iframe")
+      .last()
       .locator(".CodeMirror textarea");
     await descriptionInput.focus();
     await descriptionInput.fill(

@@ -289,7 +289,7 @@ test.describe("Don't ask again enabled", () => {
     await page.waitForTimeout(5000);
 
     await expect(
-      await page.frameLocator("iframe").locator(".CodeMirror")
+      await page.frameLocator("iframe").last().locator(".CodeMirror")
     ).toContainText("Add your comment here...");
 
     await pauseIfVideoRecording(page);

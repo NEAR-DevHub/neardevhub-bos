@@ -118,6 +118,7 @@ test.describe("Wallet is connected as admin", () => {
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentEditor = page
       .frameLocator("iframe")
+      .last()
       .locator(".CodeMirror textarea");
     await commentEditor.focus();
     await commentEditor.pressSequentially(
