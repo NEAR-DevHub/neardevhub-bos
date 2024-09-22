@@ -37,6 +37,12 @@ const code = `
         p {
           white-space: pre-wrap;
         }
+
+        img {
+          height: 200px;
+          object-fit:contain;
+          width: -webkit-fill-available;
+        }
     
         ${embeddCSS}
       </style>
