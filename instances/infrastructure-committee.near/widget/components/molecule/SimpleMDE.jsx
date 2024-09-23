@@ -332,6 +332,62 @@ const simplemde = new SimpleMDE({
     "quote",
     "code",
     "link",
+    {
+      name: "image",
+      action: function customFunction(editor) {
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.textContent = 'Uploading...';
+        loadingIndicator.style.position = 'absolute';
+        loadingIndicator.style.top = '10px'; // Adjust position as needed
+        loadingIndicator.style.right = '10px';
+        loadingIndicator.style.display = 'none'; // Initially hidden
+        loadingIndicator.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+        loadingIndicator.style.border = '1px solid #ccc';
+        loadingIndicator.style.padding = '5px';
+        loadingIndicator.style.borderRadius = '5px';
+        document.body.appendChild(loadingIndicator); // Append to the body or desired container
+
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+
+        fileInput.addEventListener('change', async function(event) {
+          const file = event.target.files[0];
+          if (file) {
+            loadingIndicator.style.display = 'block';
+            try {
+              const response = await fetch("https://ipfs.near.social/add", {
+                method: "POST",
+                headers: {
+                  Accept: "application/json"
+                },
+                body: file
+              });
+              const data = await response.json();
+              if (data && data.cid) {
+                const imgSrc = 'https://ipfs.near.social/ipfs/' + data.cid
+                const imgMarkdown = "![" + imgSrc + "](" + imgSrc + ")";
+                editor.codemirror.replaceRange(imgMarkdown, editor.codemirror.getCursor());
+                editor.codemirror.focus();
+              } else {
+                console.error('Image upload failed:', data);
+              }
+            } catch (error) {
+              console.error('Error uploading image:', error);
+            }
+            finally {
+              // Hide the loading indicator when done
+              loadingIndicator.style.display = 'none';
+            }
+          }
+        });
+        
+        fileInput.click();
+      },
+      className: "fa fa-picture-o",
+      title: "Upload Image",
+    },
   ],
   placeholder: \`${placeholder}\`,
   initialValue: "",
