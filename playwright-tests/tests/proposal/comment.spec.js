@@ -133,9 +133,8 @@ test.describe("Don't ask again enabled", () => {
       .frameLocator("iframe")
       .last()
       .locator(".CodeMirror textarea");
-
-    await pauseIfVideoRecording(page);
     await commentArea.focus();
+    await page.waitForTimeout(100);
 
     const isMac = process.platform === "darwin";
 
@@ -263,22 +262,25 @@ test.describe("Don't ask again enabled", () => {
       submittedTransactionJsonObject.data["petersalomonsen.near"].post.comment
     );
     expect(submittedComment.text).toEqual(commentText);
-    let commentElement = await page.locator("#theorinear121684809");
-    await expect(commentElement).toBeVisible({ timeout: 10000 });
+    let commentElement = await page
+      .frameLocator("#theorinear121684809 iframe")
+      .locator("#content");
+    await expect(commentElement).toBeVisible({ timeout: 30_000 });
     await commentElement.scrollIntoViewIfNeeded();
     await expect(commentElement).toContainText(
       "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated.",
-      { timeout: 10000 }
+      { timeout: 30_000 }
     );
 
     await page.reload();
 
-    commentElement = await page.locator("#theorinear121684809");
-    await expect(commentElement).toBeVisible({ timeout: 20000 });
-    await commentElement.scrollIntoViewIfNeeded();
+    commentElement = await page
+      .frameLocator("#theorinear121684809 iframe")
+      .locator("#content");
+    await expect(commentElement).toBeVisible({ timeout: 30_000 });
     await expect(commentElement).toContainText(
       "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated.",
-      { timeout: 10000 }
+      { timeout: 30_000 }
     );
 
     commentButton = await page.getByRole("button", { name: "Comment" });

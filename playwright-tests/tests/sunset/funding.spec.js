@@ -109,6 +109,7 @@ test.describe("Wallet is connected by moderator", () => {
     await page.goto("/devhub.near/widget/app?page=post&id=2586");
     await page.click('button:has-text("Reply")');
     await page.click('li:has-text("Sponsorship")');
+    await page.waitForTimeout(10_000);
     await page
       .getByTestId("name-editor")
       .fill("Sponsorship: DevHub Platform Development Work");
@@ -121,10 +122,10 @@ test.describe("Wallet is connected by moderator", () => {
     await page.getByLabel("Select currency").selectOption("USDC");
 
     const descriptionInput = page
-      .frameLocator("iframe")
-      .last()
+      .frameLocator("#accordion2586 iframe")
       .locator(".CodeMirror textarea");
     await descriptionInput.focus();
+    await page.waitForTimeout(100);
     await descriptionInput.fill(
       "Congrats on getting your funding request approved"
     );

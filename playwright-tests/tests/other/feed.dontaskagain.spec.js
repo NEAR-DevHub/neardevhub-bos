@@ -157,11 +157,12 @@ test.describe("Wallet is connected with devhub access key", () => {
     await commentButton.click();
 
     await pauseIfVideoRecording(page);
+    await page.waitForTimeout(10_000);
     const commentArea = await page
-      .frameLocator("iframe")
-      .last()
+      .frameLocator("#accordion2261 iframe")
       .locator(".CodeMirror textarea");
     await commentArea.focus();
+    await page.waitForTimeout(100);
     await commentArea.fill("Some comment");
 
     await pauseIfVideoRecording(page);
