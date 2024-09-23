@@ -10,9 +10,9 @@ const CommunitySummary = () => {
   return (
     <>
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer"}
         props={{
-          text: community.bio_markdown,
+          content: community.bio_markdown,
         }}
       />
       <small class="text-muted mb-3">

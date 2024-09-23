@@ -105,9 +105,14 @@ const Compose = ({
         ) : (
           <div className="card-body">
             <Widget
-              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer`}
+              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
               props={{
-                text: state.data,
+                content: state.data,
+                embeddCSS: `
+                  body {
+                    font-size: 14px !important;
+                  }
+                `,
               }}
             />
           </div>

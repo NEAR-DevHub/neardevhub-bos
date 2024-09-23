@@ -138,10 +138,10 @@ const defaultFieldsRender = ({ schema, form, isEditable }) => (
                 ) : (fieldValue?.length ?? 0) > 0 ? (
                   <Widget
                     src={
-                      "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+                      "${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer"
                     }
                     props={{
-                      text: fieldValue,
+                      content: fieldValue,
                     }}
                   />
                 ) : (
