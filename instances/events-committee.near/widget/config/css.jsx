@@ -11,6 +11,7 @@ const CssContainer = styled.div`
 
   a {
     color: inherit;
+    text-decoration: inherit;
   }
 `;
 

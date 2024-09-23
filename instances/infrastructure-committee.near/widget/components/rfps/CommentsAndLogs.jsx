@@ -204,13 +204,13 @@ const Comment = ({ commentItem }) => {
           </Header>
           <div className="p-2 px-3">
             <Widget
-              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer`}
+              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
               props={{
-                text: content.text,
+                content: content.text,
               }}
             />
 
-            <div className="d-flex gap-2 align-items-center mt-4">
+            <div className="d-flex gap-2 align-items-center mt-3">
               <Widget
                 src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton`}
                 props={{

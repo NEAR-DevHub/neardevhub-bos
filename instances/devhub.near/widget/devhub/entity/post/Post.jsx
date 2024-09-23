@@ -781,9 +781,9 @@ const descriptionArea = isUnderPost ? (
       text: snapshot.description,
     })} */}
     <Widget
-      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
+      src={"${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer"}
       props={{
-        text: snapshot.description,
+        content: snapshot.description,
       }}
     />
   </LimitedMarkdown>
@@ -794,9 +794,9 @@ const descriptionArea = isUnderPost ? (
         text: state.clamp ? clampedContent : snapshot.description,
       })} */}
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer"}
         props={{
-          text: state.clamp ? clampedContent : snapshot.description,
+          content: state.clamp ? clampedContent : snapshot.description,
         }}
       />
     </div>

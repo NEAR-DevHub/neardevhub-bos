@@ -117,9 +117,9 @@ function Page({ data, onEdit, labels, accountId }) {
         <p>{description}</p>
         <Widget
           src={
-            "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
+            "${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer"
           }
-          props={{ text: content }}
+          props={{ content: content }}
         />
       </Container>
     </>

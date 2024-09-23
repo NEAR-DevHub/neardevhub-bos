@@ -360,7 +360,7 @@ const FeedPage = () => {
 
     if (state.category) {
       if (isInfra || isEvents) {
-        where = { labels: { _contains: state.label }, ...where };
+        where = { labels: { _contains: state.category }, ...where };
       } else {
         where = { category: { _eq: state.category }, ...where };
       }

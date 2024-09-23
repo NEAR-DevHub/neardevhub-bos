@@ -464,6 +464,7 @@ test.describe("Wallet is connected", () => {
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentEditor = page
       .frameLocator("iframe")
+      .last()
       .locator(".CodeMirror textarea");
     await commentEditor.focus();
     await commentEditor.pressSequentially(
@@ -474,7 +475,7 @@ test.describe("Wallet is connected", () => {
     );
 
     await pauseIfVideoRecording(page);
-    const iframe = page.frameLocator("iframe");
+    const iframe = page.frameLocator("iframe").last();
     const liFrameLocators = iframe.frameLocator(
       'ul[id="mentiondropdown"] > li'
     );
@@ -703,14 +704,18 @@ test.describe("Wallet is connected", () => {
     });
     test("should filter proposals by categories", async ({ page, account }) => {
       test.setTimeout(60000);
+      const loader = page.getByRole("img", { name: "loader" });
+      await expect(loader).toBeVisible({ timeout: 20000 });
+      await expect(page.locator(".proposal-card").first()).toBeVisible({
+        timeout: 20000,
+      });
       const category = "Bounty";
       await page.getByRole("button", { name: "Category" }).click();
       await page.getByRole("list").getByText(category).first().click();
       await expect(
         page.getByRole("button", { name: `Category : ${category}` })
       ).toBeVisible();
-      const loader = page.getByRole("img", { name: "loader" });
-      expect(loader).toBeHidden({ timeout: 10000 });
+      await expect(loader).toBeHidden({ timeout: 40000 });
 
       const bountyTag = page.getByText(category, { exact: true }).nth(1);
 
