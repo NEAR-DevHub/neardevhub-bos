@@ -861,15 +861,22 @@ return (
                       SUMMARY
                     </div>
                     <div>{snapshot.summary}</div>
-                    <div className="text-muted h6 border-bottom pb-1 mt-3 mb-4">
+                    <div className="text-muted h6 border-bottom pb-1 mt-3">
                       DESCRIPTION
                     </div>
                     <Widget
-                      src="${REPL_EVENTS}/widget/devhub.components.molecule.MarkdownViewer"
-                      props={{ text: snapshot.description }}
+                      src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
+                      props={{
+                        content: snapshot.description,
+                        embeddCSS: `
+                        body {
+                          font-size: 14px;
+                        }
+                      `,
+                      }}
                     />
 
-                    <div className="d-flex gap-2 align-items-center mt-4">
+                    <div className="d-flex gap-2 align-items-center mt-3">
                       <Widget
                         src="${REPL_EVENTS}/widget/devhub.entity.proposal.LikeButton"
                         props={{

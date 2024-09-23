@@ -151,11 +151,33 @@ const DateInput = () => {
   );
 };
 
+const ComposeEmbeddCSS = `
+  .CodeMirror {
+    border: none !important;
+    min-height: 50px !important;
+  }
+
+  .editor-toolbar {
+    border: none !important;
+  }
+
+  .CodeMirror-scroll{
+    min-height: 50px !important;
+    max-height: 600px !important;
+  }
+`;
+
 const ContentEditor = useMemo(() => {
   return (
     <Widget
-      src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownEditor"
-      props={{ data: { content }, onChange: setContent, autoFocus: false }}
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"
+      props={{
+        data: content,
+        onChange: setContent,
+        height: "250",
+        embeddCSS: ComposeEmbeddCSS,
+        isTailwind: true,
+      }}
     />
   );
 }, []);

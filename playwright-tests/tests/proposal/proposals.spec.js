@@ -455,18 +455,14 @@ test.describe("Wallet is connected", () => {
     });
 
     const comment = page.getByRole("link", { name: "geforcy.near" });
-    await comment.waitFor();
     await comment.scrollIntoViewIfNeeded();
-
-    const heading = page.getByRole("heading", { name: "Relevant Mentions" });
-    await heading.waitFor();
-    await heading.scrollIntoViewIfNeeded();
-
+    await expect(comment).toBeVisible();
     await page.waitForTimeout(5000);
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentEditor = page
       .frameLocator("iframe")
+      .last()
       .locator(".CodeMirror textarea");
     await commentEditor.focus();
     await commentEditor.pressSequentially(
@@ -477,7 +473,7 @@ test.describe("Wallet is connected", () => {
     );
 
     await pauseIfVideoRecording(page);
-    const iframe = page.frameLocator("iframe");
+    const iframe = page.frameLocator("iframe").last();
     const liFrameLocators = iframe.frameLocator(
       'ul[id="mentiondropdown"] > li'
     );
