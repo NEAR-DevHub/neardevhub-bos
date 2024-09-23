@@ -266,7 +266,6 @@ test.describe("Don't ask again enabled", () => {
       .frameLocator("#theorinear121684809 iframe")
       .locator("#content");
     await expect(commentElement).toBeVisible({ timeout: 30_000 });
-    await commentElement.scrollIntoViewIfNeeded();
     await expect(commentElement).toContainText(
       "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated.",
       { timeout: 30_000 }
