@@ -43,7 +43,34 @@ const code = `
           object-fit:contain;
           width: -webkit-fill-available;
         }
+
+        table {
+          border: 1px solid #dee2e6;
+        }
     
+        table th, table td {
+          padding: 0.75rem;
+          vertical-align: top;
+        }
+
+        table td {
+          border-top: 1px solid #dee2e6;
+        }
+        
+        table thead th {
+          vertical-align: bottom;
+          border-bottom: 2px solid #dee2e6;
+        }
+        
+        table tbody + tbody {
+          border-top: 2px solid #dee2e6;
+        }
+        
+        /* Zebra-striping */
+        tbody tr:nth-of-type(odd) {
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+
         ${embeddCSS}
       </style>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
