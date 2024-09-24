@@ -182,6 +182,13 @@ test.describe("Don't ask again enabled", () => {
     await expect(
       await page.getByRole("button", { name: "Edit" })
     ).toBeVisible();
+
+    await expect(
+      await page.locator(
+        '[data-component="devhub.near/widget/devhub.entity.proposal.StatusTag"]'
+      )
+    ).toHaveText("DRAFT");
+
     await pauseIfVideoRecording(page);
   });
 });
