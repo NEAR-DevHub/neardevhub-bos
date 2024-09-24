@@ -19,6 +19,51 @@ test.describe("Wallet is connected as admin", () => {
       timeout: 10000,
     });
   });
+
+  test("should show correct linked RFP to a proposal in feed page", async ({
+    page,
+  }) => {
+    test.setTimeout(120000);
+    await page.goto("/infrastructure-committee.near/widget/app?page=proposals");
+    let proposalId;
+    const linkedRfpId = 0;
+    // add linked RFP to latest proposal
+    await page.route(
+      "https://near-queryapi.api.pagoda.co/v1/graphql",
+      async (route) => {
+        const response = await route.fetch();
+        const json = await response.json();
+        if (
+          json?.data?.[
+            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
+          ]
+        ) {
+          json.data[
+            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
+          ] = json.data[
+            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
+          ].map((i, index) => {
+            if (index === 0) {
+              proposalId = i.proposal_id;
+              return {
+                ...i,
+                linked_rfp: linkedRfpId,
+              };
+            }
+            return i;
+          });
+        }
+        await route.fulfill({ response, json });
+      }
+    );
+    await page.waitForTimeout(10_000);
+    await expect(
+      page.getByTestId(`proposalId_${proposalId}_rfpId_${linkedRfpId}`)
+    ).toBeVisible({
+      timeout: 10000,
+    });
+  });
+
   test("should create proposal", async ({ page }) => {
     await page.goto("/infrastructure-committee.near/widget/app?page=proposals");
 
