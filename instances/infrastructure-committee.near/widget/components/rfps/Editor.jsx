@@ -381,14 +381,6 @@ useEffect(() => {
   showRfpViewModal,
 ]);
 
-useEffect(() => {
-  if (!timeline) {
-    setTimeline({
-      status: RFP_TIMELINE_STATUS.ACCEPTING_SUBMISSIONS,
-    });
-  }
-}, [RFP_TIMELINE_STATUS]);
-
 const InputContainer = ({ heading, description, children }) => {
   return (
     <div className="d-flex flex-column gap-1 gap-sm-2 w-100">
@@ -511,7 +503,9 @@ const onSubmit = () => {
     description: description,
     summary: summary,
     submission_deadline: getTimestamp(submissionDeadline),
-    timeline: timeline ?? RFP_TIMELINE_STATUS.ACCEPTING_SUBMISSIONS,
+    timeline: Object.keys(timeline || {}).length > 0
+      ? timeline
+      : { status: RFP_TIMELINE_STATUS.ACCEPTING_SUBMISSIONS },
   };
   const args = { labels: (labels ?? []).map((i) => i.value), body: body };
   if (isEditPage) {
