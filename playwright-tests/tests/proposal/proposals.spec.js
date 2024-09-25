@@ -131,6 +131,7 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
     await expect(disabledSubmitButton).not.toBeAttached();
 
+    let newProposalId = 0;
     await mockTransactionSubmitRPCResponses(
       page,
       async ({ route, request, transaction_completed, last_receiver_id }) => {
@@ -146,8 +147,82 @@ test.describe("Don't ask again enabled", () => {
             "transaction completed, modifying get_proposal_ids result"
           );
           const resultObj = decodeResultJSON(json.result.result);
-          resultObj.push(1);
+          newProposalId = resultObj[resultObj.length - 1] + 1;
+          resultObj.push(newProposalId);
           console.log(JSON.stringify(resultObj));
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+        } else if (
+          postData.params?.method_name === "get_proposal" &&
+          newProposalId > 0
+        ) {
+          console.log("GET_PROPOSAL", newProposalId);
+          postData.params.args_base64 = btoa(
+            JSON.stringify({ proposal_id: newProposalId - 1 })
+          );
+          console.log("GET_PROPOSAL 2", JSON.stringify(postData));
+          const response = await route.fetch({
+            postData: JSON.stringify(postData),
+          });
+          const json = await response.json();
+
+          console.log("GET_PROPOSAL 22", JSON.stringify(json));
+          let resultObj = decodeResultJSON(json.result.result);
+          console.log("GET_PROPOSAL 3", JSON.stringify(resultObj));
+
+          resultObj = {
+            proposal_version: "V0",
+            id: newProposalId,
+            author_id: "petersalomonsen.near",
+            social_db_post_block_height: "128860426",
+            snapshot: {
+              editor_id: "petersalomonsen.near",
+              timestamp: "1727265468109441208",
+              labels: [],
+              proposal_body_version: "V2",
+              name: "Develop stuff",
+              category: "DevDAO Platform",
+              summary: "summary",
+              description: "description",
+              linked_proposals: [],
+              requested_sponsorship_usd_amount: "2500",
+              requested_sponsorship_paid_in_currency: "USDT",
+              receiver_account: "petersalomonsen.near",
+              requested_sponsor: "neardevdao.near",
+              supervisor: "theori.near",
+              timeline: {
+                timeline_version: "V1",
+                status: "DRAFT",
+                sponsor_requested_review: false,
+                reviewer_completed_attestation: false,
+                kyc_verified: false,
+              },
+              linked_rfp: null,
+            },
+            snapshot_history: [
+              {
+                editor_id: "petersalomonsen.near",
+                timestamp: "1727265421865873611",
+                labels: [],
+                proposal_body_version: "V0",
+                name: "Develop stuff",
+                category: "DevDAO Platform",
+                summary: "summary",
+                description: "description",
+                linked_proposals: [],
+                requested_sponsorship_usd_amount: "2500",
+                requested_sponsorship_paid_in_currency: "USDT",
+                receiver_account: "petersalomonsen.near",
+                requested_sponsor: "neardevdao.near",
+                supervisor: "theori.near",
+                timeline: {
+                  status: "DRAFT",
+                },
+              },
+            ],
+          };
+
           json.result.result = encodeResultJSON(resultObj);
 
           await route.fulfill({ response, json });
@@ -183,11 +258,8 @@ test.describe("Don't ask again enabled", () => {
       await page.getByRole("button", { name: "Edit" })
     ).toBeVisible();
 
-    await expect(
-      await page.locator(
-        '[data-component="devhub.near/widget/devhub.entity.proposal.StatusTag"]'
-      )
-    ).toHaveText("DRAFT");
+    await expect(await page.getByText(`#${newProposalId}`)).toBeVisible();
+    await expect(await page.getByText("DRAFT", { exact: true })).toBeVisible();
 
     await pauseIfVideoRecording(page);
   });
