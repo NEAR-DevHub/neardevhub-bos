@@ -152,6 +152,7 @@ test.describe("Don't ask again enabled", () => {
           const response = await route.fetch();
           const json = await response.json();
 
+          await new Promise((resolve) => setTimeout(() => resolve(), 2000));
           const resultObj = decodeResultJSON(json.result.result);
           if (transaction_completed) {
             newProposalId = resultObj[resultObj.length - 1] + 1;
