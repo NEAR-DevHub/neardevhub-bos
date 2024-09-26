@@ -431,6 +431,7 @@ useEffect(() => {
         "${REPL_DEVHUB_CONTRACT}",
         "get_all_proposal_ids"
       );
+      console.log("PROPOSAL_IDS", proposalIds);
       if (Array.isArray(proposalIds) && !proposalIdsArray) {
         setProposalIdsArray(proposalIds);
       }

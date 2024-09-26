@@ -1,6 +1,8 @@
 import { test as base, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import {
+  getCacheValue,
+  setCacheValue,
   setCommitWritePermissionDontAskAgainCacheValues,
   setDontAskAgainCacheValues,
 } from "../../util/cache.js";
@@ -83,9 +85,19 @@ test.describe("Don't ask again enabled", () => {
   });
   test("should create a proposal", async ({ page, account }) => {
     test.setTimeout(120000);
+
     await page.goto(`/${account}/widget/app?page=proposals`);
 
     const widgetSrc = `${account}/widget/devhub.entity.proposal.Editor`;
+    await setCacheValue({
+      page,
+      key: JSON.stringify({
+        action: "ViewCall",
+        contractId: account,
+        methodName: "get_all_proposal_ids",
+      }),
+      value: [0, 1, 2, 3, 4],
+    });
 
     await setDontAskAgainCacheValues({
       page,
@@ -136,20 +148,16 @@ test.describe("Don't ask again enabled", () => {
       page,
       async ({ route, request, transaction_completed, last_receiver_id }) => {
         const postData = request.postDataJSON();
-        if (
-          transaction_completed &&
-          postData.params?.method_name === "get_all_proposal_ids"
-        ) {
+        if (postData.params?.method_name === "get_all_proposal_ids") {
           const response = await route.fetch();
           const json = await response.json();
 
-          console.log(
-            "transaction completed, modifying get_proposal_ids result"
-          );
           const resultObj = decodeResultJSON(json.result.result);
-          newProposalId = resultObj[resultObj.length - 1] + 1;
-          resultObj.push(newProposalId);
-          console.log(JSON.stringify(resultObj));
+          if (transaction_completed) {
+            newProposalId = resultObj[resultObj.length - 1] + 1;
+            resultObj.push(newProposalId);
+          }
+          console.log("get_all_proposal_ids", JSON.stringify(resultObj));
           json.result.result = encodeResultJSON(resultObj);
 
           await route.fulfill({ response, json });
@@ -161,15 +169,13 @@ test.describe("Don't ask again enabled", () => {
           postData.params.args_base64 = btoa(
             JSON.stringify({ proposal_id: newProposalId - 1 })
           );
-          console.log("GET_PROPOSAL 2", JSON.stringify(postData));
+
           const response = await route.fetch({
             postData: JSON.stringify(postData),
           });
           const json = await response.json();
 
-          console.log("GET_PROPOSAL 22", JSON.stringify(json));
           let resultObj = decodeResultJSON(json.result.result);
-          console.log("GET_PROPOSAL 3", JSON.stringify(resultObj));
 
           resultObj = {
             proposal_version: "V0",
@@ -236,6 +242,7 @@ test.describe("Don't ask again enabled", () => {
     await submitButton.scrollIntoViewIfNeeded();
     await submitButton.hover();
     await pauseIfVideoRecording(page);
+
     await submitButton.click();
     await expect(disabledSubmitButton).toBeAttached();
 
