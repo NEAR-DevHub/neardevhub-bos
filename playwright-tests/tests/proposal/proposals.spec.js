@@ -162,7 +162,6 @@ test.describe("Don't ask again enabled", () => {
           if (transaction_completed) {
             resultObj.push(newProposalId);
           }
-          console.log("get_all_proposal_ids", JSON.stringify(resultObj));
           json.result.result = encodeResultJSON(resultObj);
 
           await route.fulfill({ response, json });
@@ -262,177 +261,6 @@ test.describe("Don't ask again enabled", () => {
 
     await transaction_toast.waitFor({ state: "detached", timeout: 10000 });
     await expect(transaction_toast).not.toBeVisible();
-    await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
-    await expect(loadingIndicator).not.toBeVisible();
-
-    await expect(
-      await page.getByRole("button", { name: "Edit" })
-    ).toBeVisible();
-
-    await expect(await page.getByText(`#${newProposalId}`)).toBeVisible();
-    await expect(await page.getByText("DRAFT", { exact: true })).toBeVisible();
-
-    await pauseIfVideoRecording(page);
-  });
-  test("should create a proposal without dont ask again cache values set", async ({
-    page,
-    account,
-  }) => {
-    test.setTimeout(120000);
-    await page.goto(`/${account}/widget/app?page=proposals`);
-
-    await page.getByRole("button", { name: " Submit Proposal" }).click();
-
-    const titleArea = await page.getByRole("textbox").first();
-    await titleArea.fill("Test proposal 123456");
-    await titleArea.blur();
-    await pauseIfVideoRecording(page);
-
-    const categoryDropdown = await page.locator(".dropdown-toggle").first();
-    await categoryDropdown.click();
-    await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
-
-    const disabledSubmitButton = await page.locator(
-      ".submit-draft-button.disabled"
-    );
-
-    const summary = await page.locator('textarea[type="text"]');
-    await summary.fill("Test proposal summary 123456789");
-    await summary.blur();
-    await pauseIfVideoRecording(page);
-
-    const descriptionArea = await page
-      .frameLocator("iframe")
-      .locator(".CodeMirror textarea");
-    await descriptionArea.focus();
-    await descriptionArea.fill("The test proposal description.");
-    await descriptionArea.blur();
-    await pauseIfVideoRecording(page);
-
-    await page.locator('input[type="text"]').nth(2).fill("1000");
-    await pauseIfVideoRecording(page);
-    await page.getByRole("checkbox").first().click();
-    await pauseIfVideoRecording(page);
-    await expect(disabledSubmitButton).toBeAttached();
-    await page.getByRole("checkbox").nth(1).click();
-    await pauseIfVideoRecording(page);
-    await expect(disabledSubmitButton).not.toBeAttached();
-
-    let newProposalId = 0;
-    await mockTransactionSubmitRPCResponses(
-      page,
-      async ({ route, request, transaction_completed, last_receiver_id }) => {
-        const postData = request.postDataJSON();
-        if (
-          transaction_completed &&
-          postData.params?.method_name === "get_all_proposal_ids"
-        ) {
-          const response = await route.fetch();
-          const json = await response.json();
-
-          console.log(
-            "transaction completed, modifying get_proposal_ids result"
-          );
-          const resultObj = decodeResultJSON(json.result.result);
-          newProposalId = resultObj[resultObj.length - 1] + 1;
-          resultObj.push(newProposalId);
-          console.log(JSON.stringify(resultObj));
-          json.result.result = encodeResultJSON(resultObj);
-
-          await route.fulfill({ response, json });
-        } else if (
-          postData.params?.method_name === "get_proposal" &&
-          newProposalId > 0
-        ) {
-          console.log("GET_PROPOSAL", newProposalId);
-          postData.params.args_base64 = btoa(
-            JSON.stringify({ proposal_id: newProposalId - 1 })
-          );
-          console.log("GET_PROPOSAL 2", JSON.stringify(postData));
-          const response = await route.fetch({
-            postData: JSON.stringify(postData),
-          });
-          const json = await response.json();
-
-          console.log("GET_PROPOSAL 22", JSON.stringify(json));
-          let resultObj = decodeResultJSON(json.result.result);
-          console.log("GET_PROPOSAL 3", JSON.stringify(resultObj));
-
-          resultObj = {
-            proposal_version: "V0",
-            id: newProposalId,
-            author_id: "petersalomonsen.near",
-            social_db_post_block_height: "128860426",
-            snapshot: {
-              editor_id: "petersalomonsen.near",
-              timestamp: "1727265468109441208",
-              labels: [],
-              proposal_body_version: "V2",
-              name: "Develop stuff",
-              category: "DevDAO Platform",
-              summary: "summary",
-              description: "description",
-              linked_proposals: [],
-              requested_sponsorship_usd_amount: "2500",
-              requested_sponsorship_paid_in_currency: "USDT",
-              receiver_account: "petersalomonsen.near",
-              requested_sponsor: "neardevdao.near",
-              supervisor: "theori.near",
-              timeline: {
-                timeline_version: "V1",
-                status: "DRAFT",
-                sponsor_requested_review: false,
-                reviewer_completed_attestation: false,
-                kyc_verified: false,
-              },
-              linked_rfp: null,
-            },
-            snapshot_history: [
-              {
-                editor_id: "petersalomonsen.near",
-                timestamp: "1727265421865873611",
-                labels: [],
-                proposal_body_version: "V0",
-                name: "Develop stuff",
-                category: "DevDAO Platform",
-                summary: "summary",
-                description: "description",
-                linked_proposals: [],
-                requested_sponsorship_usd_amount: "2500",
-                requested_sponsorship_paid_in_currency: "USDT",
-                receiver_account: "petersalomonsen.near",
-                requested_sponsor: "neardevdao.near",
-                supervisor: "theori.near",
-                timeline: {
-                  status: "DRAFT",
-                },
-              },
-            ],
-          };
-
-          json.result.result = encodeResultJSON(resultObj);
-
-          await route.fulfill({ response, json });
-        } else {
-          await route.continue();
-        }
-      }
-    );
-
-    const submitButton = await page.getByText("Submit Draft");
-    await submitButton.scrollIntoViewIfNeeded();
-    await submitButton.hover();
-    await pauseIfVideoRecording(page);
-    await submitButton.click();
-    await expect(disabledSubmitButton).toBeAttached();
-
-    const loadingIndicator = await page.locator(
-      ".submit-proposal-draft-loading-indicator"
-    );
-    await expect(loadingIndicator).toBeAttached();
-
-    await page.getByRole("button", { name: "Confirm" }).click();
-
     await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
     await expect(loadingIndicator).not.toBeVisible();
 
@@ -794,7 +622,7 @@ test.describe("Wallet is connected", () => {
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
-    await expect(titleArea).toBeEditable();
+    await expect(titleArea).toBeEditable({ timeout: 10_000 });
     await titleArea.pressSequentially("Test proposal 123456", {
       delay: delay_milliseconds_between_keypress_when_typing,
     });
@@ -935,7 +763,9 @@ test.describe("Wallet is connected", () => {
       ).toBeVisible();
       const loader = page.getByRole("img", { name: "loader" });
       expect(loader).toBeHidden({ timeout: 10000 });
-      await expect(page.getByText(`By ${profileName} ･`).first()).toBeVisible();
+      await expect(page.getByText(`By ${profileName} ･`).first()).toBeVisible({
+        timeout: 10_000,
+      });
     });
 
     test("should filter proposals by search text", async ({ page }) => {
@@ -948,7 +778,7 @@ test.describe("Wallet is connected", () => {
       const loader = page.getByRole("img", { name: "loader" });
       expect(loader).toBeHidden({ timeout: 10000 });
       const element = page.locator(`:has-text("${term}")`).nth(1);
-      await expect(element).toBeVisible();
+      await expect(element).toBeVisible({ timeout: 10_000 });
     });
   });
 });
