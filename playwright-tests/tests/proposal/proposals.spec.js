@@ -108,8 +108,10 @@ test.describe("Don't ask again enabled", () => {
 
     await page.getByRole("button", { name: " Submit Proposal" }).click();
 
+    const proposalTitle = "Test proposal 123456";
+    const proposalDescription = "The test proposal description.";
     const titleArea = await page.getByRole("textbox").first();
-    await titleArea.fill("Test proposal 123456");
+    await titleArea.fill(proposalTitle);
     await titleArea.blur();
     await pauseIfVideoRecording(page);
 
@@ -130,11 +132,12 @@ test.describe("Don't ask again enabled", () => {
       .frameLocator("iframe")
       .locator(".CodeMirror textarea");
     await descriptionArea.focus();
-    await descriptionArea.fill("The test proposal description.");
+    await descriptionArea.fill(proposalDescription);
     await descriptionArea.blur();
     await pauseIfVideoRecording(page);
 
-    await page.locator('input[type="text"]').nth(2).fill("1000");
+    const proposalAmount = "1000";
+    await page.locator('input[type="text"]').nth(2).fill(proposalAmount);
     await pauseIfVideoRecording(page);
     await page.getByRole("checkbox").first().click();
     await pauseIfVideoRecording(page);
@@ -187,12 +190,12 @@ test.describe("Don't ask again enabled", () => {
               timestamp: "1727265468109441208",
               labels: [],
               proposal_body_version: "V2",
-              name: "Develop stuff",
+              name: proposalTitle,
               category: "DevDAO Platform",
               summary: "summary",
-              description: "description",
+              description: proposalDescription,
               linked_proposals: [],
-              requested_sponsorship_usd_amount: "2500",
+              requested_sponsorship_usd_amount: proposalAmount,
               requested_sponsorship_paid_in_currency: "USDT",
               receiver_account: "petersalomonsen.near",
               requested_sponsor: "neardevdao.near",
@@ -212,12 +215,12 @@ test.describe("Don't ask again enabled", () => {
                 timestamp: "1727265421865873611",
                 labels: [],
                 proposal_body_version: "V0",
-                name: "Develop stuff",
+                name: proposalTitle,
                 category: "DevDAO Platform",
                 summary: "summary",
-                description: "description",
+                description: proposalDescription,
                 linked_proposals: [],
-                requested_sponsorship_usd_amount: "2500",
+                requested_sponsorship_usd_amount: proposalAmount,
                 requested_sponsorship_paid_in_currency: "USDT",
                 receiver_account: "petersalomonsen.near",
                 requested_sponsor: "neardevdao.near",
