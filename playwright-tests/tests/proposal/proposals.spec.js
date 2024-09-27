@@ -152,10 +152,10 @@ test.describe("Don't ask again enabled", () => {
           const response = await route.fetch();
           const json = await response.json();
 
-          await new Promise((resolve) => setTimeout(() => resolve(), 2000));
+          await new Promise((resolve) => setTimeout(() => resolve(), 4000));
           const resultObj = decodeResultJSON(json.result.result);
+          newProposalId = resultObj[resultObj.length - 1] + 1;
           if (transaction_completed) {
-            newProposalId = resultObj[resultObj.length - 1] + 1;
             resultObj.push(newProposalId);
           }
           console.log("get_all_proposal_ids", JSON.stringify(resultObj));
@@ -164,13 +164,12 @@ test.describe("Don't ask again enabled", () => {
           await route.fulfill({ response, json });
         } else if (
           postData.params?.method_name === "get_proposal" &&
-          newProposalId > 0
+          postData.params.args_base64 ===
+            btoa(JSON.stringify({ proposal_id: newProposalId }))
         ) {
-          console.log("GET_PROPOSAL", newProposalId);
           postData.params.args_base64 = btoa(
             JSON.stringify({ proposal_id: newProposalId - 1 })
           );
-
           const response = await route.fetch({
             postData: JSON.stringify(postData),
           });
