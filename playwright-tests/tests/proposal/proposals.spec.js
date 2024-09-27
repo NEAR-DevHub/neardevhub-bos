@@ -119,10 +119,6 @@ test.describe("Don't ask again enabled", () => {
     await categoryDropdown.click();
     await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
 
-    const disabledSubmitButton = await page.locator(
-      ".submit-draft-button.disabled"
-    );
-
     const summary = await page.locator('textarea[type="text"]');
     await summary.fill("Test proposal summary 123456789");
     await summary.blur();
@@ -141,6 +137,11 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
     await page.getByRole("checkbox").first().click();
     await pauseIfVideoRecording(page);
+
+    const disabledSubmitButton = await page.locator(
+      ".submit-draft-button.disabled"
+    );
+
     await expect(disabledSubmitButton).toBeAttached();
     await page.getByRole("checkbox").nth(1).click();
     await pauseIfVideoRecording(page);
