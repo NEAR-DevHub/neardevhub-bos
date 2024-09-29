@@ -86,6 +86,8 @@ test.describe("Don't ask again enabled", () => {
   test("should create a proposal", async ({ page, account }) => {
     test.setTimeout(120000);
 
+    const proposalSubmitterAccount = "petersalomonsen.near";
+
     await page.goto(`/${account}/widget/app?page=proposals`);
 
     const widgetSrc = `${account}/widget/devhub.entity.proposal.Editor`;
@@ -183,10 +185,10 @@ test.describe("Don't ask again enabled", () => {
           resultObj = {
             proposal_version: "V0",
             id: newProposalId,
-            author_id: "petersalomonsen.near",
+            author_id: proposalSubmitterAccount,
             social_db_post_block_height: "128860426",
             snapshot: {
-              editor_id: "petersalomonsen.near",
+              editor_id: proposalSubmitterAccount,
               timestamp: "1727265468109441208",
               labels: [],
               proposal_body_version: "V2",
@@ -197,7 +199,7 @@ test.describe("Don't ask again enabled", () => {
               linked_proposals: [],
               requested_sponsorship_usd_amount: proposalAmount,
               requested_sponsorship_paid_in_currency: "USDT",
-              receiver_account: "petersalomonsen.near",
+              receiver_account: proposalSubmitterAccount,
               requested_sponsor: "neardevdao.near",
               supervisor: "theori.near",
               timeline: {
@@ -211,7 +213,7 @@ test.describe("Don't ask again enabled", () => {
             },
             snapshot_history: [
               {
-                editor_id: "petersalomonsen.near",
+                editor_id: proposalSubmitterAccount,
                 timestamp: "1727265421865873611",
                 labels: [],
                 proposal_body_version: "V0",
@@ -222,7 +224,7 @@ test.describe("Don't ask again enabled", () => {
                 linked_proposals: [],
                 requested_sponsorship_usd_amount: proposalAmount,
                 requested_sponsorship_paid_in_currency: "USDT",
-                receiver_account: "petersalomonsen.near",
+                receiver_account: proposalSubmitterAccount,
                 requested_sponsor: "neardevdao.near",
                 supervisor: "theori.near",
                 timeline: {
@@ -235,6 +237,28 @@ test.describe("Don't ask again enabled", () => {
           json.result.result = encodeResultJSON(resultObj);
 
           await route.fulfill({ response, json });
+        } else if (
+          postData.params?.method_name === "is_allowed_to_edit_proposal" &&
+          postData.params.args_base64 ===
+            btoa(
+              JSON.stringify({
+                proposal_id: newProposalId,
+                editor: proposalSubmitterAccount,
+              })
+            )
+        ) {
+          await route.fulfill({
+            json: {
+              jsonrpc: "2.0",
+              result: {
+                result: encodeResultJSON(true),
+                logs: [],
+                block_height: 17817336,
+                block_hash: "4qkA4sUUG8opjH5Q9bL5mWJTnfR4ech879Db1BZXbx6P",
+              },
+              id: "dontcare",
+            },
+          });
         } else {
           await route.continue();
         }
@@ -264,12 +288,12 @@ test.describe("Don't ask again enabled", () => {
     await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
     await expect(loadingIndicator).not.toBeVisible();
 
+    await expect(await page.getByText(`#${newProposalId}`)).toBeVisible();
+    await expect(await page.getByText("DRAFT", { exact: true })).toBeVisible();
+
     await expect(
       await page.getByRole("button", { name: "Edit" })
     ).toBeVisible();
-
-    await expect(await page.getByText(`#${newProposalId}`)).toBeVisible();
-    await expect(await page.getByText("DRAFT", { exact: true })).toBeVisible();
 
     await pauseIfVideoRecording(page);
   });

@@ -442,9 +442,23 @@ useEffect(() => {
         Array.isArray(proposalIdsArray) &&
         proposalIds.length !== proposalIdsArray.length
       ) {
-        setCreateTxn(false);
-        setProposalId(proposalIds[proposalIds.length - 1]);
-        setShowProposalPage(true);
+        const latestProposalId = proposalIds[proposalIds.length - 1];
+        const latestProposal = Near.view(
+          "${REPL_DEVHUB_CONTRACT}",
+          "get_proposal",
+          {
+            proposal_id: latestProposalId,
+          }
+        );
+
+        if (
+          latestProposal.snapshot.name === title &&
+          latestProposal.snapshot.description === description
+        ) {
+          setCreateTxn(false);
+          setProposalId(proposalIds[proposalIds.length - 1]);
+          setShowProposalPage(true);
+        }
       }
     }
   }
