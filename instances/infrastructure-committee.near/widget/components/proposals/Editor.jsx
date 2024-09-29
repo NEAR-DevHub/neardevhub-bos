@@ -786,7 +786,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
   };
   const args = {
     labels:
-      typeof linkedRfp === "number"
+      typeof linkedRfp === "number" || typeof linkedRfp?.value === "number"
         ? []
         : (labels ?? []).map((i) => i.value ?? i),
     body: body,
