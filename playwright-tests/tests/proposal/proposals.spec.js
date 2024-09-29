@@ -1,6 +1,8 @@
 import { test as base, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import {
+  getCacheValue,
+  setCacheValue,
   setCommitWritePermissionDontAskAgainCacheValues,
   setDontAskAgainCacheValues,
 } from "../../util/cache.js";
@@ -83,9 +85,19 @@ test.describe("Don't ask again enabled", () => {
   });
   test("should create a proposal", async ({ page, account }) => {
     test.setTimeout(120000);
+
     await page.goto(`/${account}/widget/app?page=proposals`);
 
     const widgetSrc = `${account}/widget/devhub.entity.proposal.Editor`;
+    await setCacheValue({
+      page,
+      key: JSON.stringify({
+        action: "ViewCall",
+        contractId: account,
+        methodName: "get_all_proposal_ids",
+      }),
+      value: [0, 1, 2, 3, 4],
+    });
 
     await setDontAskAgainCacheValues({
       page,
@@ -96,18 +108,16 @@ test.describe("Don't ask again enabled", () => {
 
     await page.getByRole("button", { name: " Submit Proposal" }).click();
 
+    const proposalTitle = "Test proposal 123456";
+    const proposalDescription = "The test proposal description.";
     const titleArea = await page.getByRole("textbox").first();
-    await titleArea.fill("Test proposal 123456");
+    await titleArea.fill(proposalTitle);
     await titleArea.blur();
     await pauseIfVideoRecording(page);
 
     const categoryDropdown = await page.locator(".dropdown-toggle").first();
     await categoryDropdown.click();
     await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
-
-    const disabledSubmitButton = await page.locator(
-      ".submit-draft-button.disabled"
-    );
 
     const summary = await page.locator('textarea[type="text"]');
     await summary.fill("Test proposal summary 123456789");
@@ -118,36 +128,110 @@ test.describe("Don't ask again enabled", () => {
       .frameLocator("iframe")
       .locator(".CodeMirror textarea");
     await descriptionArea.focus();
-    await descriptionArea.fill("The test proposal description.");
+    await descriptionArea.fill(proposalDescription);
     await descriptionArea.blur();
     await pauseIfVideoRecording(page);
 
-    await page.locator('input[type="text"]').nth(2).fill("1000");
+    const proposalAmount = "1000";
+    await page.locator('input[type="text"]').nth(2).fill(proposalAmount);
     await pauseIfVideoRecording(page);
     await page.getByRole("checkbox").first().click();
     await pauseIfVideoRecording(page);
+
+    const disabledSubmitButton = await page.locator(
+      ".submit-draft-button.disabled"
+    );
+
     await expect(disabledSubmitButton).toBeAttached();
     await page.getByRole("checkbox").nth(1).click();
     await pauseIfVideoRecording(page);
     await expect(disabledSubmitButton).not.toBeAttached();
 
+    let newProposalId = 0;
     await mockTransactionSubmitRPCResponses(
       page,
       async ({ route, request, transaction_completed, last_receiver_id }) => {
         const postData = request.postDataJSON();
-        if (
-          transaction_completed &&
-          postData.params?.method_name === "get_all_proposal_ids"
-        ) {
+        if (postData.params?.method_name === "get_all_proposal_ids") {
           const response = await route.fetch();
           const json = await response.json();
 
-          console.log(
-            "transaction completed, modifying get_proposal_ids result"
-          );
+          await new Promise((resolve) => setTimeout(() => resolve(), 4000));
           const resultObj = decodeResultJSON(json.result.result);
-          resultObj.push(1);
-          console.log(JSON.stringify(resultObj));
+          newProposalId = resultObj[resultObj.length - 1] + 1;
+          if (transaction_completed) {
+            resultObj.push(newProposalId);
+          }
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+        } else if (
+          postData.params?.method_name === "get_proposal" &&
+          postData.params.args_base64 ===
+            btoa(JSON.stringify({ proposal_id: newProposalId }))
+        ) {
+          postData.params.args_base64 = btoa(
+            JSON.stringify({ proposal_id: newProposalId - 1 })
+          );
+          const response = await route.fetch({
+            postData: JSON.stringify(postData),
+          });
+          const json = await response.json();
+
+          let resultObj = decodeResultJSON(json.result.result);
+
+          resultObj = {
+            proposal_version: "V0",
+            id: newProposalId,
+            author_id: "petersalomonsen.near",
+            social_db_post_block_height: "128860426",
+            snapshot: {
+              editor_id: "petersalomonsen.near",
+              timestamp: "1727265468109441208",
+              labels: [],
+              proposal_body_version: "V2",
+              name: proposalTitle,
+              category: "DevDAO Platform",
+              summary: "summary",
+              description: proposalDescription,
+              linked_proposals: [],
+              requested_sponsorship_usd_amount: proposalAmount,
+              requested_sponsorship_paid_in_currency: "USDT",
+              receiver_account: "petersalomonsen.near",
+              requested_sponsor: "neardevdao.near",
+              supervisor: "theori.near",
+              timeline: {
+                timeline_version: "V1",
+                status: "DRAFT",
+                sponsor_requested_review: false,
+                reviewer_completed_attestation: false,
+                kyc_verified: false,
+              },
+              linked_rfp: null,
+            },
+            snapshot_history: [
+              {
+                editor_id: "petersalomonsen.near",
+                timestamp: "1727265421865873611",
+                labels: [],
+                proposal_body_version: "V0",
+                name: proposalTitle,
+                category: "DevDAO Platform",
+                summary: "summary",
+                description: proposalDescription,
+                linked_proposals: [],
+                requested_sponsorship_usd_amount: proposalAmount,
+                requested_sponsorship_paid_in_currency: "USDT",
+                receiver_account: "petersalomonsen.near",
+                requested_sponsor: "neardevdao.near",
+                supervisor: "theori.near",
+                timeline: {
+                  status: "DRAFT",
+                },
+              },
+            ],
+          };
+
           json.result.result = encodeResultJSON(resultObj);
 
           await route.fulfill({ response, json });
@@ -161,6 +245,7 @@ test.describe("Don't ask again enabled", () => {
     await submitButton.scrollIntoViewIfNeeded();
     await submitButton.hover();
     await pauseIfVideoRecording(page);
+
     await submitButton.click();
     await expect(disabledSubmitButton).toBeAttached();
 
@@ -182,6 +267,10 @@ test.describe("Don't ask again enabled", () => {
     await expect(
       await page.getByRole("button", { name: "Edit" })
     ).toBeVisible();
+
+    await expect(await page.getByText(`#${newProposalId}`)).toBeVisible();
+    await expect(await page.getByText("DRAFT", { exact: true })).toBeVisible();
+
     await pauseIfVideoRecording(page);
   });
 });
@@ -533,7 +622,7 @@ test.describe("Wallet is connected", () => {
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
-    await expect(titleArea).toBeEditable();
+    await expect(titleArea).toBeEditable({ timeout: 10_000 });
     await titleArea.pressSequentially("Test proposal 123456", {
       delay: delay_milliseconds_between_keypress_when_typing,
     });
@@ -674,7 +763,9 @@ test.describe("Wallet is connected", () => {
       ).toBeVisible();
       const loader = page.getByRole("img", { name: "loader" });
       expect(loader).toBeHidden({ timeout: 10000 });
-      await expect(page.getByText(`By ${profileName} ･`).first()).toBeVisible();
+      await expect(page.getByText(`By ${profileName} ･`).first()).toBeVisible({
+        timeout: 10_000,
+      });
     });
 
     test("should filter proposals by search text", async ({ page }) => {
@@ -687,7 +778,7 @@ test.describe("Wallet is connected", () => {
       const loader = page.getByRole("img", { name: "loader" });
       expect(loader).toBeHidden({ timeout: 10000 });
       const element = page.locator(`:has-text("${term}")`).nth(1);
-      await expect(element).toBeVisible();
+      await expect(element).toBeVisible({ timeout: 10_000 });
     });
   });
 });

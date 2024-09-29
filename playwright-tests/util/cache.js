@@ -84,8 +84,8 @@ export async function setCacheValue({ page, key, value }) {
   );
 }
 
-export async function getCacheValue(key) {
-  const storedData = await page.evaluate(async (key) => {
+export async function getCacheValue(page, key) {
+  return await page.evaluate(async (key) => {
     return await new Promise((resolve) => {
       const dbName = "cacheDb";
       const storeName = "cache-v1";
