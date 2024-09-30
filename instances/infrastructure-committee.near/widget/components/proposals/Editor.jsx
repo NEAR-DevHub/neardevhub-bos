@@ -27,6 +27,19 @@ const draftKey = "INFRA_PROPOSAL_EDIT";
 
 const rfpLabelOptions = getGlobalLabels();
 
+const pageLoader = (
+  <div
+    style={{ height: "50vh" }}
+    className="d-flex justify-content-center align-items-center w-100"
+  >
+    <Widget src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner`} />
+  </div>
+);
+
+if (!rfpLabelOptions?.length) {
+  return pageLoader;
+}
+
 if (isEditPage) {
   editProposalData = Near.view(
     "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
@@ -786,7 +799,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
   };
   const args = {
     labels:
-      typeof linkedRfp === "number"
+      typeof linkedRfp === "number" || typeof linkedRfp?.value === "number"
         ? []
         : (labels ?? []).map((i) => i.value ?? i),
     body: body,
@@ -810,16 +823,7 @@ function cleanDraft() {
 }
 
 if (loading) {
-  return (
-    <div
-      style={{ height: "50vh" }}
-      className="d-flex justify-content-center align-items-center w-100"
-    >
-      <Widget
-        src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Spinner`}
-      />
-    </div>
-  );
+  return pageLoader;
 }
 
 const [collapseState, setCollapseState] = useState({});
@@ -865,7 +869,6 @@ const CategoryDropdown = useMemo(() => {
         onChange: (v) => setLabels(v),
         disabled: linkedRfp, // when RFP is linked, labels are disabled
         linkedRfp: linkedRfp,
-
         availableOptions: rfpLabelOptions,
       }}
     />
