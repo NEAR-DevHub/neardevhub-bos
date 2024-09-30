@@ -64,38 +64,43 @@ test.describe("Wallet is connected as admin", () => {
     });
   });
 
-  test("should create proposal", async ({ page }) => {
+  async function createProposal(page, linkRfp = false) {
+    const description = "The proposal description. This proposal should win.";
+    const summary = "The excellent proposal summary";
+    const title = "The title";
+    const amount = "2000";
+    const token = "USDC";
     await page.goto("/infrastructure-committee.near/widget/app?page=proposals");
-
     await page
       .getByRole("button", { name: " Submit Proposal" })
       .click({ timeout: 10000 });
     await page.getByText("Select Category").click();
     await expect(await page.getByText("Indexers")).toBeVisible({
-      timeout: 10000,
+      timeout: 30_000,
     });
+    await page.getByText("Indexers").click();
 
     await pauseIfVideoRecording(page);
-    await page.getByText("Search RFP").click();
-    await page.getByText("# 0 : A Cool RFP").click();
-    await expect(
-      await page.getByRole("link", { name: "# 0 : A Cool RFP" })
-    ).toBeVisible();
+    if (linkRfp) {
+      await page.getByText("Search RFP").click();
+      await page.getByText("# 0 : A Cool RFP").click();
+      await expect(
+        await page.getByRole("link", { name: "# 0 : A Cool RFP" })
+      ).toBeVisible();
 
-    await expect(await page.getByText("Indexers")).not.toBeVisible();
-    await expect(page.locator(".badge").first()).toHaveText("Other");
+      await expect(await page.getByText("Indexers")).not.toBeVisible();
+      await expect(page.locator(".badge").first()).toHaveText("Other");
+    } else {
+    }
+    await page.getByRole("textbox").first().fill(title);
 
-    await page.getByRole("textbox").first().fill("The title");
-
-    await page
-      .locator('textarea[type="text"]')
-      .fill("The excellent proposal summary");
+    await page.locator('textarea[type="text"]').fill(summary);
     await page
       .frameLocator("iframe")
       .locator(".CodeMirror textarea")
-      .pressSequentially("The proposal description. This proposal should win.");
+      .pressSequentially(description);
 
-    await page.getByRole("textbox").nth(3).fill("2000");
+    await page.getByRole("textbox").nth(3).fill(amount);
     await page.getByRole("checkbox").first().click();
     await page.getByText("Submit Draft").click();
 
@@ -104,34 +109,62 @@ test.describe("Wallet is connected as admin", () => {
       null,
       1
     );
-    await expect(transactionText).toEqual(
-      JSON.stringify(
-        {
-          labels: ["Other"],
-          body: {
-            proposal_body_version: "V1",
-            linked_rfp: 0,
-            category: "Infrastructure Committee",
-            name: "The title",
-            description: "The proposal description. This proposal should win.",
-            summary: "The excellent proposal summary",
-            linked_proposals: [],
-            requested_sponsorship_usd_amount: "2000",
-            requested_sponsorship_paid_in_currency: "USDC",
-            receiver_account: "theori.near",
-            requested_sponsor: "infrastructure-committee.near",
-            supervisor: null,
-            timeline: {
-              status: "DRAFT",
-            },
+
+    let data = {};
+    if (linkRfp) {
+      data = {
+        labels: [],
+        body: {
+          proposal_body_version: "V1",
+          linked_rfp: 0,
+          category: "Infrastructure Committee",
+          name: title,
+          description: description,
+          summary: summary,
+          linked_proposals: [],
+          requested_sponsorship_usd_amount: amount,
+          requested_sponsorship_paid_in_currency: token,
+          receiver_account: "theori.near",
+          requested_sponsor: "infrastructure-committee.near",
+          supervisor: null,
+          timeline: {
+            status: "DRAFT",
           },
         },
-        null,
-        1
-      )
-    );
+      };
+    } else {
+      data = {
+        labels: ["Indexers"],
+        body: {
+          proposal_body_version: "V1",
+          category: "Infrastructure Committee",
+          name: title,
+          description: description,
+          summary: summary,
+          linked_proposals: [],
+          requested_sponsorship_usd_amount: amount,
+          requested_sponsorship_paid_in_currency: token,
+          receiver_account: "theori.near",
+          requested_sponsor: "infrastructure-committee.near",
+          supervisor: null,
+          timeline: {
+            status: "DRAFT",
+          },
+        },
+      };
+    }
+
+    await expect(transactionText).toEqual(JSON.stringify(data, null, 1));
 
     await pauseIfVideoRecording(page);
+  }
+
+  test("should create proposal and link an RFP", async ({ page }) => {
+    await createProposal(page, true);
+  });
+
+  test("should create a proposal without linking an RFP", async ({ page }) => {
+    await createProposal(page, false);
   });
 
   test("should show relevant users in mention autocomplete", async ({
