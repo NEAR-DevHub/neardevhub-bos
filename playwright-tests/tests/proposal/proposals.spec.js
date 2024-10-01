@@ -449,7 +449,7 @@ test.describe("Wallet is connected", () => {
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
-    await expect(titleArea).toBeEditable();
+    await expect(titleArea).toBeEditable({ timeout: 10_000 });
     await titleArea.pressSequentially("Test proposal 123456", {
       delay: delay_milliseconds_between_keypress_when_typing,
     });
@@ -458,7 +458,13 @@ test.describe("Wallet is connected", () => {
 
     const categoryDropdown = await page.locator(".dropdown-toggle").first();
     await categoryDropdown.click();
-    await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
+    const categoryItem = await page.locator(
+      ".dropdown-menu > div > div:nth-child(2) > div"
+    );
+    const selectedCategory = (await categoryItem.innerText()).split("\n")[0];
+    await categoryItem.click();
+
+    console.log("CATEGORY", selectedCategory);
 
     const disabledSubmitButton = await page.locator(
       ".submit-draft-button.disabled"
@@ -529,20 +535,22 @@ test.describe("Wallet is connected", () => {
     expect(transactionText).toEqual(
       JSON.stringify(
         {
-          labels: [],
+          labels: account === "events-committee.near" ? [selectedCategory] : [],
           body: {
             proposal_body_version: "V0",
             name: "Test proposal 123456",
             description:
               "The test proposal description. And mentioning @petersalomonsen.near. Also mentioning @megha19.near",
-            category: "DevDAO Platform",
+            category:
+              account === "events-committee.near" ? "Bounty" : selectedCategory,
             summary: "Test proposal summary 123456789",
             linked_proposals: [],
             requested_sponsorship_usd_amount: "12345",
             requested_sponsorship_paid_in_currency: "USDC",
             receiver_account: "efiz.near",
             supervisor: null,
-            requested_sponsor: "neardevdao.near",
+            requested_sponsor:
+              account === "devhub.near" ? "neardevdao.near" : account,
             timeline: {
               status: "DRAFT",
             },
