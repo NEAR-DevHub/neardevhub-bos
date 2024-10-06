@@ -437,6 +437,9 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
   }) => {
     test.setTimeout(60000);
 
+    const isInfrastructureCommittee =
+      account === "infrastructure-committee.near";
+
     await mockRpcRequest({
       page,
       filterParams: {
@@ -447,7 +450,11 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
         return originalResult;
       },
     });
-    await page.goto(`/${account}/widget/app?page=proposal&id=17`);
+    await page.goto(
+      `/${account}/widget/app?page=proposal&id=${
+        isInfrastructureCommittee ? "4" : "17"
+      }`
+    );
 
     const firstStatusBadge = await page
       .locator("div.fw-bold.rounded-2.p-1.px-2")
@@ -455,13 +462,22 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
     await page.locator(".d-flex > div > .bi").click();
 
-    await page.getByTestId("Sponsor verifies KYC/KYB").uncheck();
-    await page.getByRole("button", { name: "Review", exact: true }).click();
-    await page.getByText("Approved", { exact: true }).first().click();
+    const sponsorCheckbox = await page
+      .locator("label")
+      .filter({ hasText: "Sponsor verifies KYC/KYB" })
+      .locator("xpath=preceding-sibling::*[1]");
+    if (isInfrastructureCommittee) {
+      await expect(sponsorCheckbox).toBeDisabled();
+    } else {
+      await sponsorCheckbox.uncheck();
 
-    const saveButton = await page.getByRole("button", { name: "Save" });
-    await saveButton.scrollIntoViewIfNeeded();
-    await expect(saveButton).toBeDisabled();
+      await page.getByRole("button", { name: "Review", exact: true }).click();
+      await page.getByText("Approved", { exact: true }).first().click();
+
+      const saveButton = await page.getByRole("button", { name: "Save" });
+      await saveButton.scrollIntoViewIfNeeded();
+      await expect(saveButton).toBeDisabled();
+    }
   });
 });
 
