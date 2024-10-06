@@ -85,7 +85,11 @@ test.describe("Don't ask again enabled", () => {
 
     await page.goto(`/${account}/widget/app?page=proposals`);
 
-    const widgetSrc = `${account}/widget/devhub.entity.proposal.Editor`;
+    const widgetSrc =
+      account === "infrastructure-committee.near"
+        ? `${account}/widget/components.proposals.Editor`
+        : `${account}/widget/devhub.entity.proposal.Editor`;
+
     await setCacheValue({
       page,
       key: JSON.stringify({
@@ -112,7 +116,9 @@ test.describe("Don't ask again enabled", () => {
     await titleArea.blur();
     await pauseIfVideoRecording(page);
 
-    const categoryDropdown = await page.locator(".dropdown-toggle").first();
+    const categoryDropdown = await page.locator(".dropdown-toggle", {
+      hasText: "Select Category",
+    });
     await categoryDropdown.click();
     await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
 
@@ -132,16 +138,18 @@ test.describe("Don't ask again enabled", () => {
     const proposalAmount = "1000";
     await page.locator('input[type="text"]').nth(2).fill(proposalAmount);
     await pauseIfVideoRecording(page);
-    await page.getByRole("checkbox").first().click();
+    const consentCheckBoxes = await page.getByRole("checkbox");
+    await consentCheckBoxes.first().click();
     await pauseIfVideoRecording(page);
 
     const disabledSubmitButton = await page.locator(
       ".submit-draft-button.disabled"
     );
-
-    await expect(disabledSubmitButton).toBeAttached();
-    await page.getByRole("checkbox").nth(1).click();
-    await pauseIfVideoRecording(page);
+    if ((await consentCheckBoxes.count()) === 2) {
+      await expect(disabledSubmitButton).toBeAttached();
+      await page.getByRole("checkbox").nth(1).click();
+      await pauseIfVideoRecording(page);
+    }
     await expect(disabledSubmitButton).not.toBeAttached();
 
     let newProposalId = 0;
@@ -283,6 +291,9 @@ test.describe("Don't ask again enabled", () => {
     await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
     await expect(loadingIndicator).not.toBeVisible();
 
+    if (account === "infrastructure-committee.near") {
+      await page.getByRole("button", { name: "View Proposal" }).click();
+    }
     await expect(await page.getByText(`#${newProposalId}`)).toBeVisible();
     await expect(await page.getByText("DRAFT", { exact: true })).toBeVisible();
 
