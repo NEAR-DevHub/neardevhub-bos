@@ -316,6 +316,8 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
   }) => {
     test.setTimeout(70000);
     let isTransactionCompleted = false;
+    const isInfrastructureCommittee =
+      account === "infrastructure-committee.near";
 
     await mockRpcRequest({
       page,
@@ -359,13 +361,23 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       }
     );
 
-    await page.goto(`/${account}/widget/app?page=proposal&id=17`);
+    await page.goto(
+      `/${account}/widget/app?page=proposal&id=${
+        isInfrastructureCommittee ? "4" : "17"
+      }`
+    );
+
+    const widgetSrc = isInfrastructureCommittee
+      ? `${account}/widget/components.proposals.Proposal`
+      : `${account}/widget/devhub.entity.proposal.Proposal`;
 
     await setDontAskAgainCacheValues({
       page,
       contractId: account,
-      widgetSrc: `${account}/widget/devhub.entity.proposal.Proposal`,
-      methodName: "edit_proposal_versioned_timeline",
+      widgetSrc,
+      methodName: isInfrastructureCommittee
+        ? "edit_proposal_timeline"
+        : "edit_proposal_versioned_timeline",
     });
 
     const firstStatusBadge = await page
@@ -373,7 +385,13 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       .first();
     await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
     await page.locator(".d-flex > div > .bi").click();
-    await page.getByTestId("Sponsor verifies KYC/KYB").check();
+
+    await page
+      .locator("label")
+      .filter({ hasText: "Sponsor verifies KYC/KYB" })
+      .locator("xpath=preceding-sibling::*[1]")
+      .check();
+
     await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByText("Approved", { exact: true }).first().click();
 
@@ -386,25 +404,31 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     const callContractToast = await page.getByText("Sending transaction");
     await expect(callContractToast).toBeVisible();
     await expect(callContractToast).not.toBeAttached();
-    const timeLineStatusSubmittedToast = await page
-      .getByText("Timeline status submitted successfully")
-      .first();
-    await expect(timeLineStatusSubmittedToast).toBeVisible();
-
+    let timeLineStatusSubmittedToast;
+    if (!isInfrastructureCommittee) {
+      timeLineStatusSubmittedToast = await page
+        .getByText("Timeline status submitted successfully")
+        .first();
+      await expect(timeLineStatusSubmittedToast).toBeVisible();
+    }
     await expect(firstStatusBadge).toHaveText("APPROVED");
+
     await firstStatusBadge.scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
-    const lastLogItem = await page.locator(
-      "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
-      { hasText: /.*s ago/ }
-    );
-    await expect(lastLogItem).toContainText(
-      "moved proposal from REVIEW to APPROVED",
-      { timeout: 10000 }
-    );
-    await lastLogItem.scrollIntoViewIfNeeded();
-    await expect(timeLineStatusSubmittedToast).not.toBeAttached();
-    await pauseIfVideoRecording(page);
+
+    if (!isInfrastructureCommittee) {
+      const lastLogItem = await page.locator(
+        "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
+        { hasText: /.*s ago/ }
+      );
+      await expect(lastLogItem).toContainText(
+        "moved proposal from REVIEW to APPROVED",
+        { timeout: 10000 }
+      );
+      await lastLogItem.scrollIntoViewIfNeeded();
+      await expect(timeLineStatusSubmittedToast).not.toBeAttached();
+      await pauseIfVideoRecording(page);
+    }
   });
 
   test("should not be able to move proposal timeline to decision stage without approving KYC in review stage", async ({
