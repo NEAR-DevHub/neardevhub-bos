@@ -122,7 +122,7 @@ test.describe("Wallet is connected by moderator", () => {
     await page.getByLabel("Select currency").selectOption("USDC");
 
     const descriptionInput = page
-      .frameLocator("#accordion2586 iframe")
+      .frameLocator("iframe")
       .locator(".CodeMirror textarea");
     await descriptionInput.focus();
     await page.waitForTimeout(100);

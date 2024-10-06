@@ -567,6 +567,150 @@ test.describe("Wallet is connected", () => {
     const consentCheckBoxes = await page.getByRole("checkbox");
     await consentCheckBoxes.first().click();
     await pauseIfVideoRecording(page);
+    await expect(disabledSubmitButton).toBeAttached();
+    await page.getByRole("checkbox").nth(1).click();
+    await pauseIfVideoRecording(page);
+    await expect(disabledSubmitButton).not.toBeAttached();
+
+    const submitButton = await page.getByText("Submit Draft");
+    await submitButton.scrollIntoViewIfNeeded();
+    await submitButton.hover();
+    await pauseIfVideoRecording(page);
+    await submitButton.click();
+    const transactionText = JSON.stringify(
+      JSON.parse(await page.locator("div.modal-body code").innerText()),
+      null,
+      1
+    );
+    expect(transactionText).toEqual(
+      JSON.stringify(
+        {
+          labels: [],
+          body: {
+            proposal_body_version: "V0",
+            name: "Test proposal 123456",
+            description:
+              "The test proposal description. And mentioning @petersalomonsen.near. Also mentioning @megha19.near",
+            category: "DevDAO Platform",
+            summary: "Test proposal summary 123456789",
+            linked_proposals: [],
+            requested_sponsorship_usd_amount: "12345",
+            requested_sponsorship_paid_in_currency: "USDC",
+            receiver_account: "efiz.near",
+            supervisor: null,
+            requested_sponsor: "neardevdao.near",
+            timeline: {
+              status: "DRAFT",
+            },
+          },
+          accepted_terms_and_conditions_version: acceptedTermsVersion,
+        },
+        null,
+        1
+      )
+    );
+
+    await pauseIfVideoRecording(page);
+  });
+
+  test("should show relevant users in mention autocomplete", async ({
+    page,
+    account,
+  }) => {
+    await page.goto(`/${account}/widget/app?page=proposal&id=112`);
+
+    await page.waitForSelector(`iframe`, {
+      state: "visible",
+    });
+
+    const comment = page.getByRole("link", { name: "geforcy.near" });
+    await comment.scrollIntoViewIfNeeded();
+    await expect(comment).toBeVisible();
+    await page.waitForTimeout(5000);
+
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const commentEditor = page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentEditor.focus();
+    await commentEditor.pressSequentially(
+      `Make sure relevant users show up in a mention. @`,
+      {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      }
+    );
+
+    await pauseIfVideoRecording(page);
+    const iframe = page.frameLocator("iframe");
+    const liFrameLocators = iframe.frameLocator(
+      'ul[id="mentiondropdown"] > li'
+    );
+    const liLocators = await liFrameLocators.owner().all();
+    const expected = [
+      "thomasguntenaar.near", // author,
+      "theori.near", // supervisor,
+      "neardevdao.near", //  requested_sponsor,
+      "geforcy.near", // comment author,
+    ];
+    let mentionSuggestions = [];
+    for (let i = 0; i < liLocators.length; i++) {
+      const text = await liLocators[i].innerText();
+      mentionSuggestions.push(text);
+    }
+
+    // When I manually test, it shows the correct 4 users
+    expect(mentionSuggestions.slice(0, 4)).toEqual(expected);
+    await pauseIfVideoRecording(page);
+  });
+
+  test("should show only valid input in amount field and show error for invalid", async ({
+    page,
+    account,
+  }) => {
+    test.setTimeout(120000);
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    await page.goto(`/${account}/widget/app?page=create-proposal`);
+    const input = page.locator('input[type="text"]').nth(2);
+    const errorText = await page.getByText(
+      "Please enter the nearest positive whole number."
+    );
+    await input.pressSequentially("12345de", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await expect(errorText).toBeVisible();
+    // clear input field
+    for (let i = 0; i < 7; i++) {
+      await input.press("Backspace", {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      });
+    }
+    await input.pressSequentially("12334", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+    await expect(errorText).toBeHidden();
+    await pauseIfVideoRecording(page);
+  });
+
+  test("should create a proposal, autolink reference to existing proposal", async ({
+    page,
+    account,
+  }) => {
+    test.setTimeout(120000);
+    await getCurrentBlockHeight(page);
+    await page.goto(`/${account}/widget/app?page=create-proposal`);
+
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const titleArea = await page.getByRole("textbox").first();
+    await expect(titleArea).toBeEditable({ timeout: 10_000 });
+    await titleArea.pressSequentially("Test proposal 123456", {
+      delay: delay_milliseconds_between_keypress_when_typing,
+    });
+
+    await pauseIfVideoRecording(page);
+
+    const categoryDropdown = await page.locator(".dropdown-toggle").first();
+    await categoryDropdown.click();
+    await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
 
     const disabledSubmitButton = await page.locator(
       ".submit-draft-button.disabled"

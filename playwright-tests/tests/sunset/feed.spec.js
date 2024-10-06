@@ -143,7 +143,6 @@ test.describe("Wallet is connected", () => {
     await page.getByRole("button", { name: "Comment" }).click();
     await page
       .frameLocator("iframe")
-      .last()
       .locator(".CodeMirror textarea")
       .fill("The comment to the idea");
 

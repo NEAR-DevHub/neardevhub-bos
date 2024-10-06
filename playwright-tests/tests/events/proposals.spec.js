@@ -481,7 +481,6 @@ test.describe("Wallet is connected", () => {
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentEditor = page
       .frameLocator("iframe")
-      .last()
       .locator(".CodeMirror textarea");
     await commentEditor.focus();
     await commentEditor.pressSequentially(
@@ -492,7 +491,7 @@ test.describe("Wallet is connected", () => {
     );
 
     await pauseIfVideoRecording(page);
-    const iframe = page.frameLocator("iframe").last();
+    const iframe = page.frameLocator("iframe");
     const liFrameLocators = iframe.frameLocator(
       'ul[id="mentiondropdown"] > li'
     );

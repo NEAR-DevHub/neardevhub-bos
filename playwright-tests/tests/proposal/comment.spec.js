@@ -35,7 +35,6 @@ test.describe("Don't ask again enabled", () => {
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentArea = await page
       .frameLocator("iframe")
-      .last()
       .locator(".CodeMirror textarea");
     await commentArea.focus({ timeout: 20_000 });
     const text = "Comment testing";
@@ -83,10 +82,10 @@ test.describe("Don't ask again enabled", () => {
     );
     const commentButton = await page.getByRole("button", { name: "Comment" });
     await expect(commentButton).toBeAttached();
-    await commentButton.scrollIntoViewIfNeeded();
+    await commentButton.scrollIntoViewIfNeeded({ timeout: 10_000 });
     await commentButton.click();
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText(text);
 
     const loadingIndicator = await page.locator(".comment-btn-spinner");
@@ -101,10 +100,10 @@ test.describe("Don't ask again enabled", () => {
 
     await expect(transaction_successful_toast).not.toBeAttached();
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).not.toContainText(text);
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText("Add your comment here...");
     await pauseIfVideoRecording(page);
   });
@@ -131,7 +130,6 @@ test.describe("Don't ask again enabled", () => {
 
     const commentArea = await page
       .frameLocator("iframe")
-      .last()
       .locator(".CodeMirror textarea");
     await commentArea.focus();
     await page.waitForTimeout(100);
@@ -250,10 +248,10 @@ test.describe("Don't ask again enabled", () => {
       timeout: 10000,
     });
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).not.toContainText(commentText);
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText("Add your comment here...");
 
     const submittedTransactionJsonObject =
@@ -263,7 +261,7 @@ test.describe("Don't ask again enabled", () => {
     );
     expect(submittedComment.text).toEqual(commentText);
     let commentElement = await page
-      .frameLocator("#theorinear121684809 iframe")
+      .frameLocator("#theorinear121684809")
       .locator("#content");
     await expect(commentElement).toBeVisible({ timeout: 30_000 });
     await expect(commentElement).toContainText(
@@ -274,7 +272,7 @@ test.describe("Don't ask again enabled", () => {
     await page.reload();
 
     commentElement = await page
-      .frameLocator("#theorinear121684809 iframe")
+      .frameLocator("#theorinear121684809")
       .locator("#content");
     await expect(commentElement).toBeVisible({ timeout: 30_000 });
     await expect(commentElement).toContainText(
@@ -290,7 +288,7 @@ test.describe("Don't ask again enabled", () => {
     await page.waitForTimeout(5000);
 
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText("Add your comment here...");
 
     await pauseIfVideoRecording(page);
