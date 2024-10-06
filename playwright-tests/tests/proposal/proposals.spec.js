@@ -138,6 +138,7 @@ test.describe("Don't ask again enabled", () => {
     const proposalAmount = "1000";
     await page.locator('input[type="text"]').nth(2).fill(proposalAmount);
     await pauseIfVideoRecording(page);
+
     const consentCheckBoxes = await page.getByRole("checkbox");
     await consentCheckBoxes.first().click();
     await pauseIfVideoRecording(page);
@@ -502,19 +503,16 @@ test.describe("Wallet is connected", () => {
 
     await pauseIfVideoRecording(page);
 
-    const categoryDropdown = await page.locator(".dropdown-toggle").first();
+    const categoryDropdown = await page.locator(".dropdown-toggle", {
+      hasText: "Select Category",
+    });
+
     await categoryDropdown.click();
     const categoryItem = await page.locator(
       ".dropdown-menu > div > div:nth-child(2) > div"
     );
     const selectedCategory = (await categoryItem.innerText()).split("\n")[0];
     await categoryItem.click();
-
-    console.log("CATEGORY", selectedCategory);
-
-    const disabledSubmitButton = await page.locator(
-      ".submit-draft-button.disabled"
-    );
 
     const summary = await page.locator('textarea[type="text"]');
     await expect(summary).toBeEditable();
@@ -561,11 +559,19 @@ test.describe("Wallet is connected", () => {
       delay: delay_milliseconds_between_keypress_when_typing,
     });
     await pauseIfVideoRecording(page);
-    await page.getByRole("checkbox").first().click();
+
+    const consentCheckBoxes = await page.getByRole("checkbox");
+    await consentCheckBoxes.first().click();
     await pauseIfVideoRecording(page);
-    await expect(disabledSubmitButton).toBeAttached();
-    await page.getByRole("checkbox").nth(1).click();
-    await pauseIfVideoRecording(page);
+
+    const disabledSubmitButton = await page.locator(
+      ".submit-draft-button.disabled"
+    );
+    if ((await consentCheckBoxes.count()) === 2) {
+      await expect(disabledSubmitButton).toBeAttached();
+      await page.getByRole("checkbox").nth(1).click();
+      await pauseIfVideoRecording(page);
+    }
     await expect(disabledSubmitButton).not.toBeAttached();
 
     const submitButton = await page.getByText("Submit Draft");
@@ -573,40 +579,46 @@ test.describe("Wallet is connected", () => {
     await submitButton.hover();
     await pauseIfVideoRecording(page);
     await submitButton.click();
-    const transactionText = JSON.stringify(
-      JSON.parse(await page.locator("div.modal-body code").innerText()),
-      null,
-      1
+    const transactionObject = JSON.parse(
+      await page.locator("div.modal-body code").innerText()
     );
-    expect(transactionText).toEqual(
-      JSON.stringify(
-        {
-          labels: account === "events-committee.near" ? [selectedCategory] : [],
-          body: {
-            proposal_body_version: "V0",
-            name: "Test proposal 123456",
-            description:
-              "The test proposal description. And mentioning @petersalomonsen.near. Also mentioning @megha19.near",
-            category:
-              account === "events-committee.near" ? "Bounty" : selectedCategory,
-            summary: "Test proposal summary 123456789",
-            linked_proposals: [],
-            requested_sponsorship_usd_amount: "12345",
-            requested_sponsorship_paid_in_currency: "USDC",
-            receiver_account: "efiz.near",
-            supervisor: null,
-            requested_sponsor:
-              account === "devhub.near" ? "neardevdao.near" : account,
-            timeline: {
-              status: "DRAFT",
-            },
-          },
-          accepted_terms_and_conditions_version: acceptedTermsVersion,
+    const expectedTransactionObject = {
+      labels: [
+        "events-committee.near",
+        "infrastructure-committee.near",
+      ].includes(account)
+        ? [selectedCategory]
+        : [],
+      body: {
+        proposal_body_version:
+          account === "infrastructure-committee.near" ? "V1" : "V0",
+        name: "Test proposal 123456",
+        description:
+          "The test proposal description. And mentioning @petersalomonsen.near. Also mentioning @megha19.near",
+        category:
+          account === "events-committee.near"
+            ? "Bounty"
+            : account === "infrastructure-committee.near"
+            ? "Infrastructure Committee"
+            : selectedCategory,
+        summary: "Test proposal summary 123456789",
+        linked_proposals: [],
+        requested_sponsorship_usd_amount: "12345",
+        requested_sponsorship_paid_in_currency: "USDC",
+        receiver_account: "efiz.near",
+        supervisor: null,
+        requested_sponsor:
+          account === "devhub.near" ? "neardevdao.near" : account,
+        timeline: {
+          status: "DRAFT",
         },
-        null,
-        1
-      )
-    );
+      },
+    };
+    if (account !== "infrastructure-committee.near") {
+      expectedTransactionObject.accepted_terms_and_conditions_version =
+        acceptedTermsVersion;
+    }
+    expect(transactionObject).toStrictEqual(expectedTransactionObject);
 
     await pauseIfVideoRecording(page);
   });
