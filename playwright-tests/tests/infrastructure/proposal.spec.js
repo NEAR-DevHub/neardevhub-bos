@@ -8,13 +8,6 @@ const test = base.extend({
   proposalAuthorAccountId: ["megha19.near", { option: true }],
 });
 
-async function checkForNewPageLoad(page, url) {
-  const pagePromise = page.waitForEvent("popup");
-  const newTab = await pagePromise;
-  await newTab.waitForLoadState();
-  await expect(newTab).toHaveURL(new RegExp(url));
-}
-
 test.describe("Wallet is connected as admin", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-admin.json",
@@ -243,22 +236,18 @@ test.describe("Wallet is connected as admin", () => {
     await page.waitForTimeout(1000);
     await page.getByRole("button", { name: "Preview" }).click();
     await page.waitForTimeout(10_000);
-    const accountLink = page.getByRole("link", {
-      name: "Hemera @hemera.near",
-      exact: true,
-    });
+    const accountLink = page
+      .locator(".compose-preview")
+      .locator("div[data-component='mob.near/widget/ProfileImage']");
     await expect(accountLink).toBeVisible({ timeout: 20_000 });
     accountLink.click();
-    await checkForNewPageLoad(
-      page,
-      "mob\\.near\\/widget\\/ProfilePage\\?accountId=hemera\\.near"
+    await page.waitForNavigation();
+    await expect(page).toHaveURL(
+      /mob\.near\/widget\/ProfilePage\?accountId=hemera\.near/
     );
   });
 
-  test("should show links and mention in markdown viewer", async ({
-    page,
-    account,
-  }) => {
+  test("should show links in markdown viewer", async ({ page, account }) => {
     test.setTimeout(120000);
     await page.goto(`/${account}/widget/app?page=proposal&id=1`);
     await page.goto(`/${account}/widget/app?page=proposal&id=1`);
@@ -301,6 +290,9 @@ test.describe("Wallet is connected as admin", () => {
     const link = await page.getByRole("link", { name: "link" });
     expect(link).toBeVisible();
     link.click();
-    await checkForNewPageLoad(page, /https:\/\/www\.google\.com\//);
+    const pagePromise = page.waitForEvent("popup");
+    const newTab = await pagePromise;
+    await newTab.waitForLoadState();
+    await expect(newTab).toHaveURL("https://www.google.com");
   });
 });
