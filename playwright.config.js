@@ -48,6 +48,7 @@ export default defineConfig({
   projects: [
     {
       name: "infrastructure",
+      testMatch: /(infrastructure|proposal)\/.*.spec.js/,
       use: {
         ...devices["Desktop Chrome"],
         account: "infrastructure-committee.near",
