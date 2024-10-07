@@ -36,10 +36,7 @@ jobs:
           npx playwright install
       - name: Run tests
         run: |
-          # The whole proposal folder does not work yet
-          # INSTANCE=events npx playwright test --project=events playwright-tests/tests/proposal
-          INSTANCE=events npx playwright test --project=events playwright-tests/tests/proposal/comment.spec.js
-          INSTANCE=events npx playwright test --project=events playwright-tests/tests/proposal/links.spec.js
+          INSTANCE=events npx playwright test --project=events playwright-tests/tests/proposal
   playwright-tests-events:
     name: Events Committee - Playwright tests
     runs-on: ubuntu-latest
