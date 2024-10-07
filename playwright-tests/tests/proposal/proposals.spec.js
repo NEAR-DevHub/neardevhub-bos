@@ -154,6 +154,7 @@ test.describe("Don't ask again enabled", () => {
     await expect(disabledSubmitButton).not.toBeAttached();
 
     let newProposalId = 0;
+    let get_all_proposal_ids_attempt = 0;
     await mockTransactionSubmitRPCResponses(
       page,
       async ({ route, request, transaction_completed, last_receiver_id }) => {
@@ -162,11 +163,14 @@ test.describe("Don't ask again enabled", () => {
           const response = await route.fetch();
           const json = await response.json();
 
-          await new Promise((resolve) => setTimeout(() => resolve(), 4000));
           const resultObj = decodeResultJSON(json.result.result);
           newProposalId = resultObj[resultObj.length - 1] + 1;
           if (transaction_completed) {
-            resultObj.push(newProposalId);
+            if (get_all_proposal_ids_attempt === 1) {
+              resultObj.push(newProposalId);
+            } else {
+              get_all_proposal_ids_attempt++;
+            }
           }
           json.result.result = encodeResultJSON(resultObj);
 

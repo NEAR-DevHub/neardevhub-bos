@@ -463,6 +463,36 @@ const InputContainer = ({ heading, description, children }) => {
   );
 };
 
+function checkIfLatestProposalMatchesTitleAndDescription() {
+  Near.asyncView(
+    "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+    "get_all_proposal_ids"
+  ).then((proposalIds) => {
+    const latestProposalId = proposalIds[proposalIds.length - 1];
+    Near.asyncView(
+      "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+      "get_proposal",
+      {
+        proposal_id: latestProposalId,
+      }
+    ).then((latestProposal) => {
+      if (
+        latestProposal.snapshot.name === title &&
+        latestProposal.snapshot.description === description
+      ) {
+        setCreateTxn(false);
+        setProposalId(proposalIds[proposalIds.length - 1]);
+        setShowProposalViewModal(true);
+      } else {
+        setTimeout(
+          () => checkIfLatestProposalMatchesTitleAndDescription(),
+          500
+        );
+      }
+    });
+  });
+}
+
 // show proposal created after txn approval for popup wallet
 useEffect(() => {
   if (isTxnCreated) {
@@ -480,36 +510,7 @@ useEffect(() => {
         setShowProposalViewModal(true);
       }
     } else {
-      const proposalIds = Near.view(
-        "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
-        "get_all_proposal_ids"
-      );
-      if (Array.isArray(proposalIds) && !proposalIdsArray) {
-        setProposalIdsArray(proposalIds);
-      }
-      if (
-        Array.isArray(proposalIds) &&
-        Array.isArray(proposalIdsArray) &&
-        proposalIds.length !== proposalIdsArray.length
-      ) {
-        const latestProposalId = proposalIds[proposalIds.length - 1];
-        const latestProposal = Near.view(
-          "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
-          "get_proposal",
-          {
-            proposal_id: latestProposalId,
-          }
-        );
-
-        if (
-          latestProposal.snapshot.name === title &&
-          latestProposal.snapshot.description === description
-        ) {
-          setCreateTxn(false);
-          setProposalId(proposalIds[proposalIds.length - 1]);
-          setShowProposalViewModal(true);
-        }
-      }
+      checkIfLatestProposalMatchesTitleAndDescription();
     }
   }
   setLoading(false);
