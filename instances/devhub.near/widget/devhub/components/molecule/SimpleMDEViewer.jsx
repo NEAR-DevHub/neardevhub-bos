@@ -20,9 +20,7 @@ const CssContainer = styled.div`
   
   font-size:14px;
   p {
-    span {
-      white-space: normal;
-    }
+    white-space: normal;
   }
 
   blockquote {

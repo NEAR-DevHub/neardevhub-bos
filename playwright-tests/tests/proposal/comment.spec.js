@@ -260,9 +260,8 @@ test.describe("Don't ask again enabled", () => {
       submittedTransactionJsonObject.data["petersalomonsen.near"].post.comment
     );
     expect(submittedComment.text).toEqual(commentText);
-    let commentElement = await page
-      .frameLocator("#theorinear121684809")
-      .locator("#content");
+    let commentElement = await page.locator("#theorinear121684809 div").nth(4);
+
     await expect(commentElement).toBeVisible({ timeout: 30_000 });
     await expect(commentElement).toContainText(
       "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated.",
@@ -271,9 +270,7 @@ test.describe("Don't ask again enabled", () => {
 
     await page.reload();
 
-    commentElement = await page
-      .frameLocator("#theorinear121684809")
-      .locator("#content");
+    commentElement = await page.locator("#theorinear121684809 div").nth(4);
     await expect(commentElement).toBeVisible({ timeout: 30_000 });
     await expect(commentElement).toContainText(
       "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated.",
