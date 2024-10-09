@@ -1,7 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils";
 import { mockRpcRequest } from "../../util/rpcmock";
-import { setDontAskAgainCacheValues } from "../../util/cache";
+import {
+  setCommitWritePermissionDontAskAgainCacheValues,
+  setDontAskAgainCacheValues,
+} from "../../util/cache";
 import { mockTransactionSubmitRPCResponses } from "../../util/transaction";
 const os = require("os");
 
@@ -11,6 +14,18 @@ const isLinux = os.platform() === "linux";
 test.describe("Wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
+  });
+  test("comment links should scroll into view", async ({ page }) => {
+    test.setTimeout(60000);
+    await page.goto(
+      "/infrastructure-committee.near/widget/app?page=rfp&id=1&accountId=trechriron71.near&blockHeight=129808320"
+    );
+    const viewer = await page.locator("near-social-viewer");
+    const commentElement = await viewer.locator(
+      "css=div#trechriron71near129808320"
+    );
+    await expect(commentElement).toBeVisible({ timeout: 30000 });
+    await expect(commentElement).toBeInViewport({ timeout: 30000 });
   });
   test("should open RFPs and also search with a query that has no results", async ({
     page,
@@ -255,6 +270,9 @@ test.describe("Admin with don't ask again enabled", () => {
   test.use({
     storageState:
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
+    contextOptions: {
+      permissions: ["clipboard-read", "clipboard-write"],
+    },
   });
   test("should edit RFP", async ({ page }) => {
     test.setTimeout(120000);
@@ -319,6 +337,189 @@ test.describe("Admin with don't ask again enabled", () => {
       "Your RFP has been successfully edited"
     );
     await expect(navigationModal).toBeVisible();
+    await pauseIfVideoRecording(page);
+  });
+
+  test("should paste a long comment to a proposal, see that the comment appears after submission, and that the comment field is cleared, even after reloading the page", async ({
+    page,
+  }) => {
+    test.setTimeout(2 * 60000);
+    await page.goto(`/infrastructure-committee.near/widget/app?page=rfp&id=1`);
+    const widgetSrc =
+      "infrastructure-committee.near/widget/components.molecule.ComposeComment";
+
+    page.waitForTimeout(20_000);
+    let commentButton = await page.getByRole("button", { name: "Comment" });
+    await expect(commentButton).toBeAttached({ timeout: 30_000 });
+    await commentButton.scrollIntoViewIfNeeded();
+
+    const commentText = "I'm testing again now.";
+    await page.evaluate(async (text) => {
+      await navigator.clipboard.writeText(text);
+    }, commentText);
+
+    const commentArea = await page
+      .frameLocator("iframe")
+      .last()
+      .locator(".CodeMirror textarea");
+    await commentArea.focus();
+    await page.waitForTimeout(100);
+
+    const isMac = process.platform === "darwin";
+
+    if (isMac) {
+      await page.keyboard.down("Meta"); // Command key on macOS
+      await page.keyboard.press("a");
+      await page.keyboard.press("v");
+      await page.keyboard.up("Meta");
+    } else {
+      await page.keyboard.down("Control"); // Control key on Windows/Linux
+      await page.keyboard.press("a");
+      await page.keyboard.press("v");
+      await page.keyboard.up("Control");
+    }
+
+    await commentArea.blur();
+    await pauseIfVideoRecording(page);
+
+    const userAccount = "petersalomonsen.near";
+    await setCommitWritePermissionDontAskAgainCacheValues({
+      page,
+      widgetSrc,
+      accountId: userAccount,
+    });
+
+    const transactionMockStatus = await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_transaction }) => {
+        const postData = request.postDataJSON();
+        const args_base64 = postData.params?.args_base64;
+
+        if (transaction_completed && args_base64) {
+          const args = atob(args_base64);
+          if (
+            postData.params.account_id === "social.near" &&
+            postData.params.method_name === "get" &&
+            args === `{"keys":["${userAccount}/post/**"]}`
+          ) {
+            const response = await route.fetch();
+            const json = await response.json();
+            const resultObj = decodeResultJSON(json.result.result);
+
+            resultObj[userAccount].post.main = JSON.stringify({
+              text: commentText,
+            });
+            json.result.result = encodeResultJSON(resultObj);
+            completedPromiseResolve(last_transaction);
+            await route.fulfill({ response, json });
+            return;
+          } else {
+            await route.continue();
+          }
+        } else {
+          await route.continue();
+        }
+      }
+    );
+
+    let submittedTransactionJsonObjectPromiseResolve;
+    let submittedTransactionJsonObjectPromise = new Promise(
+      (r) => (submittedTransactionJsonObjectPromiseResolve = r)
+    );
+    await page.route("https://api.near.social/index", async (route) => {
+      if (transactionMockStatus.transaction_completed) {
+        const lastTransactionParamBuffer = Buffer.from(
+          transactionMockStatus.last_transaction.params[0],
+          "base64"
+        );
+
+        const transactionDataJsonStartIndex =
+          lastTransactionParamBuffer.indexOf('{"data":');
+        const transactionDataJsonEndIndex =
+          lastTransactionParamBuffer.indexOf('"}}}}') + '"}}}}'.length;
+        const transactionDataJsonString = lastTransactionParamBuffer.subarray(
+          transactionDataJsonStartIndex,
+          transactionDataJsonEndIndex
+        );
+
+        submittedTransactionJsonObjectPromiseResolve(
+          JSON.parse(transactionDataJsonString.toString())
+        );
+
+        const response = await route.fetch();
+        const json = await response.json();
+        json.push({
+          accountId: userAccount,
+          blockHeight: 129162427,
+          value: {
+            type: "md",
+          },
+        });
+
+        await route.fulfill({ json });
+      } else {
+        await route.continue();
+      }
+    });
+
+    commentButton = await page.getByRole("button", { name: "Comment" });
+    await commentButton.click();
+
+    const loadingIndicator = await page.locator(".comment-btn-spinner");
+    await expect(loadingIndicator).toBeAttached();
+    await loadingIndicator.waitFor({ state: "detached", timeout: 30000 });
+    await expect(loadingIndicator).not.toBeVisible();
+    const transaction_successful_toast = await page.getByText(
+      "Comment Submitted Successfully",
+      { exact: true }
+    );
+    await expect(transaction_successful_toast).toBeVisible();
+
+    await expect(transaction_successful_toast).not.toBeAttached({
+      timeout: 10000,
+    });
+    await expect(
+      await page.frameLocator("iframe").last().locator(".CodeMirror")
+    ).not.toContainText(commentText);
+    await expect(
+      await page.frameLocator("iframe").last().locator(".CodeMirror")
+    ).toContainText("Add your comment here...");
+
+    const submittedTransactionJsonObject =
+      await submittedTransactionJsonObjectPromise;
+    const submittedComment = JSON.parse(
+      submittedTransactionJsonObject.data["petersalomonsen.near"].post.comment
+    );
+    expect(submittedComment.text).toEqual(commentText);
+    let commentElement = await page
+      .frameLocator("#petersalomonsennear129162427 iframe")
+      .locator("#content");
+    await expect(commentElement).toBeVisible({ timeout: 30_000 });
+    await expect(commentElement).toContainText(commentText, {
+      timeout: 30_000,
+    });
+
+    await page.reload();
+
+    commentElement = await page
+      .frameLocator("#petersalomonsennear129162427 iframe")
+      .locator("#content");
+    await expect(commentElement).toBeVisible({ timeout: 30_000 });
+    await expect(commentElement).toContainText(commentText, {
+      timeout: 30_000,
+    });
+
+    commentButton = await page.getByRole("button", { name: "Comment" });
+    await expect(commentButton).toBeAttached({ timeout: 20000 });
+    await commentButton.scrollIntoViewIfNeeded();
+
+    // Ensure that comment field is not populated with the previous draft, even after 5 seconds
+    await page.waitForTimeout(5000);
+
+    await expect(
+      await page.frameLocator("iframe").last().locator(".CodeMirror")
+    ).toContainText("Add your comment here...");
+
     await pauseIfVideoRecording(page);
   });
 });
