@@ -5,7 +5,7 @@ const { RFP_TIMELINE_STATUS, getLinkUsingCurrentGateway } = VM.require(
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
 href || (href = () => {});
 
-const snapshotHistory = props.snapshotHistory;
+const snapshotHistory = props.snapshotHistory ?? [];
 const approvedProposals = props.approvedProposals ?? [];
 
 const Wrapper = styled.div`
@@ -90,7 +90,7 @@ State.init({
 });
 
 function sortTimelineAndComments() {
-  const comments = Social.index("comment", props.item);
+  const comments = Social.index("comment", props.item, { subscribe: true });
 
   if (state.changedKeysListWithValues === null) {
     const changedKeysListWithValues = snapshotHistory
@@ -135,7 +135,7 @@ function sortTimelineAndComments() {
   });
 }
 
-if ((snapshotHistory ?? []).length > 0) {
+if (Array.isArray(snapshotHistory)) {
   sortTimelineAndComments();
 }
 
@@ -147,18 +147,11 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  const link = getLinkUsingCurrentGateway(
-    `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=rfp&id=${props.id}&accountId=${accountId}&blockHeight=${blockHeight}`
-  );
-  function getHighlightCommentStyle() {
-    const highlightComment =
-      parseInt(props.blockHeight ?? "") === blockHeight &&
-      props.accountId === accountId;
+  const link = `https://${REPL_INFRASTRUCTURE_COMMITTEE}.page/rfp/${props.id}?accountId=${accountId}&blockHeight=${blockHeight}`;
 
-    return {
-      border: highlightComment ? "2px solid black" : "",
-    };
-  }
+  const highlightComment =
+    parseInt(props.blockHeight ?? "") === blockHeight &&
+    props.accountId === accountId;
 
   return (
     <div style={{ zIndex: 99, background: "white" }}>
@@ -172,7 +165,8 @@ const Comment = ({ commentItem }) => {
           />
         </div>
         <CommentContainer
-          style={getHighlightCommentStyle()}
+          id={`${accountId.replace(/[^a-z0-9]/g, "")}${blockHeight}`}
+          style={{ border: highlightComment ? "2px solid black" : "" }}
           className="rounded-2 flex-1"
         >
           <Header className="d-flex gap-3 align-items-center p-2 px-3">
