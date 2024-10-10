@@ -167,12 +167,12 @@ test.describe("Wallet is connected as admin", () => {
     await createProposal(page, false);
   });
 
-  test("should show relevant users in mention autocomplete", async ({
+  test("should show relevant users in mention autocomplete and correct name and image in viewer", async ({
     page,
     account,
   }) => {
+    test.setTimeout(120000);
     await page.goto(`/${account}/widget/app?page=proposal&id=1`);
-
     await page.waitForSelector(`iframe`, {
       state: "visible",
     });
@@ -196,7 +196,6 @@ test.describe("Wallet is connected as admin", () => {
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentEditor = page
       .frameLocator("iframe")
-      .last()
       .locator(".CodeMirror textarea");
     await commentEditor.focus();
     await commentEditor.pressSequentially(
@@ -207,7 +206,7 @@ test.describe("Wallet is connected as admin", () => {
     );
 
     await pauseIfVideoRecording(page);
-    const iframe = page.frameLocator("iframe").last();
+    const iframe = page.frameLocator("iframe");
     const liFrameLocators = iframe.frameLocator(
       'ul[id="mentiondropdown"] > li'
     );
@@ -227,5 +226,71 @@ test.describe("Wallet is connected as admin", () => {
     // When I manually test, it shows the correct 4 users
     expect(mentionSuggestions.slice(0, 4)).toEqual(expected);
     await pauseIfVideoRecording(page);
+
+    await page
+      .frameLocator("iframe")
+      .getByRole("button", { name: "hemera.near" })
+      .click();
+    await commentEditor.pressSequentially(" test");
+    await page.waitForTimeout(1000);
+    await page.getByRole("button", { name: "Preview" }).click();
+    await page.waitForTimeout(10_000);
+    const accountLink = page
+      .locator(".compose-preview")
+      .locator("div[data-component='mob.near/widget/ProfileImage']");
+    await expect(accountLink).toBeVisible({ timeout: 20_000 });
+    accountLink.click();
+    await page.waitForNavigation();
+    await expect(page).toHaveURL(
+      /mob\.near\/widget\/ProfilePage\?accountId=hemera\.near/
+    );
+  });
+
+  test("should show links in markdown viewer", async ({ page, account }) => {
+    test.setTimeout(120000);
+    await page.goto(`/${account}/widget/app?page=proposal&id=1`);
+    await page.goto(`/${account}/widget/app?page=proposal&id=1`);
+    await page.waitForSelector(`iframe`, {
+      state: "visible",
+    });
+
+    const proposal = page.getByRole("link", { name: "hemera.near" }).first();
+    await proposal.waitFor();
+    await proposal.scrollIntoViewIfNeeded();
+
+    const comment = page
+      .getByRole("link", { name: "trechriron71.near" })
+      .first();
+    await comment.waitFor();
+    await comment.scrollIntoViewIfNeeded();
+
+    const heading = page.getByText("Add a comment");
+    await heading.waitFor();
+    await heading.scrollIntoViewIfNeeded();
+
+    await page.waitForTimeout(5000);
+
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const commentEditor = page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentEditor.focus();
+    await commentEditor.pressSequentially(
+      `Adding a test [link](https://www.google.com/)`,
+      {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      }
+    );
+    await page.waitForTimeout(1000);
+    await page.getByRole("button", { name: "Preview" }).click();
+
+    // make sure links open in new tab
+    const link = await page.getByRole("link", { name: "link" });
+    expect(link).toBeVisible();
+    link.click();
+    const pagePromise = page.waitForEvent("popup");
+    const newTab = await pagePromise;
+    await newTab.waitForLoadState();
+    await expect(newTab).toHaveURL("https://www.google.com");
   });
 });
