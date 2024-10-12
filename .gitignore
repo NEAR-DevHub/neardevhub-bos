@@ -12,3 +12,4 @@ replacements.*.json.tmp
 test-results
 
 replacements.analytics.sh
+*.mp4

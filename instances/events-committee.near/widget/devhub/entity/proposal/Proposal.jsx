@@ -902,9 +902,7 @@ return (
               </div>
               <div className="border-bottom pb-4 mt-4">
                 <Widget
-                  src={
-                    "${REPL_EVENTS}/widget/devhub.entity.proposal.CommentsAndLogs"
-                  }
+                  src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentsAndLogs`}
                   props={{
                     ...props,
                     id: proposal.id,

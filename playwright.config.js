@@ -64,7 +64,10 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:8080",
         account: "events-committee.near",
+        linksTestProposalId: 1,
         proposalAuthorAccountId: "yarotska.near",
+        linksTestCommentAuthorId: "rimberjack.near",
+        linksTestCommentBlockHeight: 118849805,
       },
     },
     {
