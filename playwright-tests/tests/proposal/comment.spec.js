@@ -1,4 +1,6 @@
-import { test as base, expect } from "@playwright/test";
+import { test } from "../../util/multiinstance.js";
+
+import { expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import { setCommitWritePermissionDontAskAgainCacheValues } from "../../util/cache.js";
 import {
@@ -7,11 +9,56 @@ import {
   encodeResultJSON,
 } from "../../util/transaction.js";
 
-const test = base.extend({
-  // Define an option and provide a default value.
-  // We can later override it in the config.
-  account: ["devhub.near", { option: true }],
-  proposalAuthorAccountId: ["megha19.near", { option: true }],
+test.describe("Wallet connected", () => {
+  test.use({
+    contextOptions: {
+      permissions: ["clipboard-read", "clipboard-write"],
+    },
+    storageState: "playwright-tests/storage-states/wallet-connected.json",
+  });
+  test("should like a proposal comment", async ({
+    page,
+    account: instanceAccount,
+    linksTestProposalId,
+    linksTestCommentAuthorId,
+    linksTestCommentBlockHeight,
+  }) => {
+    await page.goto(
+      `/${instanceAccount}/widget/app?page=proposal&id=${linksTestProposalId}&accountId=${linksTestCommentAuthorId}&blockHeight=${linksTestCommentBlockHeight}`
+    );
+    const viewer = await page.locator("near-social-viewer");
+    const commentElement = await viewer.locator(
+      `css=div#${linksTestCommentAuthorId.replaceAll(
+        /[^0-9a-z]/g,
+        ""
+      )}${linksTestCommentBlockHeight}`
+    );
+    await expect(commentElement).toBeVisible({ timeout: 20000 });
+    await page
+      .locator(
+        `#${linksTestCommentAuthorId.replaceAll(
+          /[^0-9a-z]/g,
+          ""
+        )}${linksTestCommentBlockHeight}`
+      )
+      .locator(`button[title="Like"]`)
+      .click();
+    await page.waitForTimeout(2000);
+
+    const transactionObject = JSON.parse(
+      await page.locator("div.modal-body code").innerText()
+    );
+    const expectedTransactionObject = {
+      "efiz.near": {
+        index: {
+          like: `{\"key\":{\"type\":\"social\",\"path\":\"${linksTestCommentAuthorId}/post/comment\",\"blockHeight\":${linksTestCommentBlockHeight}},\"value\":{\"type\":\"like\"}}`,
+          notify: `{\"key\":\"${linksTestCommentAuthorId}\",\"value\":{\"type\":\"like\",\"item\":{\"type\":\"social\",\"path\":\"${linksTestCommentAuthorId}/post/comment\",\"blockHeight\":${linksTestCommentBlockHeight}}}}`,
+        },
+      },
+    };
+    await expect(transactionObject).toEqual(expectedTransactionObject);
+    await pauseIfVideoRecording(page);
+  });
 });
 
 test.describe("Don't ask again enabled", () => {
