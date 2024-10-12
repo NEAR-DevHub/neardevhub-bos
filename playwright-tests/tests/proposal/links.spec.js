@@ -117,5 +117,15 @@ test.describe("share links", () => {
     );
     await pauseIfVideoRecording(page);
     await page.goto(linkUrlFromClipboard);
+    await expect(page.getByText(`#${linksTestProposalId}`)).toBeVisible();
+    await expect(
+      await page.locator(
+        `css=div#${linksTestCommentAuthorId.replaceAll(
+          /[^0-9a-z]/g,
+          ""
+        )}${linksTestCommentBlockHeight}`
+      )
+    ).toBeInViewport({ timeout: 10_000 });
+    await pauseIfVideoRecording(page);
   });
 });

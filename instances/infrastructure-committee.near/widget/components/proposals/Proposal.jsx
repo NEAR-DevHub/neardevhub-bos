@@ -880,7 +880,7 @@ return (
               </div>
               <div className="border-bottom pb-4 mt-4">
                 <Widget
-                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.proposals.CommentsAndLogs`}
+                  src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentsAndLogs`}
                   props={{
                     ...props,
                     id: proposal.id,
