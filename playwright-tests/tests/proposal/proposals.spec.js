@@ -1,4 +1,5 @@
-import { test as base, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../../util/multiinstance.js";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import { setCacheValue, setDontAskAgainCacheValues } from "../../util/cache.js";
 import {
@@ -7,13 +8,6 @@ import {
   encodeResultJSON,
 } from "../../util/transaction.js";
 import { MOCK_RPC_URL, mockRpcRequest } from "../../util/rpcmock.js";
-
-const test = base.extend({
-  // Define an option and provide a default value.
-  // We can later override it in the config.
-  account: ["devhub.near", { option: true }],
-  proposalAuthorAccountId: ["megha19.near", { option: true }],
-});
 
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
