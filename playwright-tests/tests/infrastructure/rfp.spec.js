@@ -491,9 +491,7 @@ test.describe("Admin with don't ask again enabled", () => {
       submittedTransactionJsonObject.data["petersalomonsen.near"].post.comment
     );
     expect(submittedComment.text).toEqual(commentText);
-    let commentElement = await page
-      .frameLocator("#petersalomonsennear129162427 iframe")
-      .locator("#content");
+    let commentElement = await page.locator("#petersalomonsennear129162427");
     await expect(commentElement).toBeVisible({ timeout: 30_000 });
     await expect(commentElement).toContainText(commentText, {
       timeout: 30_000,
@@ -501,9 +499,7 @@ test.describe("Admin with don't ask again enabled", () => {
 
     await page.reload();
 
-    commentElement = await page
-      .frameLocator("#petersalomonsennear129162427 iframe")
-      .locator("#content");
+    commentElement = await page.locator("#petersalomonsennear129162427");
     await expect(commentElement).toBeVisible({ timeout: 30_000 });
     await expect(commentElement).toContainText(commentText, {
       timeout: 30_000,
