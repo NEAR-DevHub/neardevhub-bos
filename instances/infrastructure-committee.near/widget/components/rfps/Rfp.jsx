@@ -671,11 +671,6 @@ return (
                       src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
                       props={{
                         content: snapshot.description,
-                        embeddCSS: `
-                        body {
-                          font-size: 14px;
-                        }
-                        `,
                       }}
                     />
 

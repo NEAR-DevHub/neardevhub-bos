@@ -3,6 +3,7 @@ const { getLinkUsingCurrentGateway } = VM.require(
 ) || { getLinkUsingCurrentGateway: () => {} };
 const snapshotHistory = props.snapshotHistory;
 const proposalId = props.id;
+const instanceAccount = props.item.path.split("/")[0];
 
 const Wrapper = styled.div`
   position: relative;
@@ -169,7 +170,7 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  const link = `https://${REPL_DEVHUB}.page/proposal/${proposalId}?accountId=${accountId}&blockHeight=${blockHeight}`;
+  const link = `https://${instanceAccount}.page/proposal/${proposalId}?accountId=${accountId}&blockHeight=${blockHeight}`;
   const hightlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&
     props.accountId === accountId;
@@ -222,11 +223,6 @@ const Comment = ({ commentItem }) => {
               src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
               props={{
                 content: content.text,
-                embeddCSS: `
-                  body {
-                    font-size:14px;
-                  }
-                `,
               }}
             />
 

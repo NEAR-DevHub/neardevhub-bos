@@ -1,4 +1,6 @@
-import { test as base, expect } from "@playwright/test";
+import { test } from "../../util/multiinstance.js";
+
+import { expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 import { setCommitWritePermissionDontAskAgainCacheValues } from "../../util/cache.js";
 import {
@@ -7,11 +9,56 @@ import {
   encodeResultJSON,
 } from "../../util/transaction.js";
 
-const test = base.extend({
-  // Define an option and provide a default value.
-  // We can later override it in the config.
-  account: ["devhub.near", { option: true }],
-  proposalAuthorAccountId: ["megha19.near", { option: true }],
+test.describe("Wallet connected", () => {
+  test.use({
+    contextOptions: {
+      permissions: ["clipboard-read", "clipboard-write"],
+    },
+    storageState: "playwright-tests/storage-states/wallet-connected.json",
+  });
+  test("should like a proposal comment", async ({
+    page,
+    account: instanceAccount,
+    linksTestProposalId,
+    linksTestCommentAuthorId,
+    linksTestCommentBlockHeight,
+  }) => {
+    await page.goto(
+      `/${instanceAccount}/widget/app?page=proposal&id=${linksTestProposalId}&accountId=${linksTestCommentAuthorId}&blockHeight=${linksTestCommentBlockHeight}`
+    );
+    const viewer = await page.locator("near-social-viewer");
+    const commentElement = await viewer.locator(
+      `css=div#${linksTestCommentAuthorId.replaceAll(
+        /[^0-9a-z]/g,
+        ""
+      )}${linksTestCommentBlockHeight}`
+    );
+    await expect(commentElement).toBeVisible({ timeout: 20000 });
+    await page
+      .locator(
+        `#${linksTestCommentAuthorId.replaceAll(
+          /[^0-9a-z]/g,
+          ""
+        )}${linksTestCommentBlockHeight}`
+      )
+      .locator(`button[title="Like"]`)
+      .click();
+    await page.waitForTimeout(2000);
+
+    const transactionObject = JSON.parse(
+      await page.locator("div.modal-body code").innerText()
+    );
+    const expectedTransactionObject = {
+      "efiz.near": {
+        index: {
+          like: `{\"key\":{\"type\":\"social\",\"path\":\"${linksTestCommentAuthorId}/post/comment\",\"blockHeight\":${linksTestCommentBlockHeight}},\"value\":{\"type\":\"like\"}}`,
+          notify: `{\"key\":\"${linksTestCommentAuthorId}\",\"value\":{\"type\":\"like\",\"item\":{\"type\":\"social\",\"path\":\"${linksTestCommentAuthorId}/post/comment\",\"blockHeight\":${linksTestCommentBlockHeight}}}}`,
+        },
+      },
+    };
+    await expect(transactionObject).toEqual(expectedTransactionObject);
+    await pauseIfVideoRecording(page);
+  });
 });
 
 test.describe("Don't ask again enabled", () => {
@@ -35,7 +82,6 @@ test.describe("Don't ask again enabled", () => {
     const delay_milliseconds_between_keypress_when_typing = 0;
     const commentArea = await page
       .frameLocator("iframe")
-      .last()
       .locator(".CodeMirror textarea");
     await commentArea.focus({ timeout: 20_000 });
     const text = "Comment testing";
@@ -83,10 +129,10 @@ test.describe("Don't ask again enabled", () => {
     );
     const commentButton = await page.getByRole("button", { name: "Comment" });
     await expect(commentButton).toBeAttached();
-    await commentButton.scrollIntoViewIfNeeded();
+    await commentButton.scrollIntoViewIfNeeded({ timeout: 10_000 });
     await commentButton.click();
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText(text);
 
     const loadingIndicator = await page.locator(".comment-btn-spinner");
@@ -101,10 +147,10 @@ test.describe("Don't ask again enabled", () => {
 
     await expect(transaction_successful_toast).not.toBeAttached();
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).not.toContainText(text);
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText("Add your comment here...");
     await pauseIfVideoRecording(page);
   });
@@ -131,7 +177,6 @@ test.describe("Don't ask again enabled", () => {
 
     const commentArea = await page
       .frameLocator("iframe")
-      .last()
       .locator(".CodeMirror textarea");
     await commentArea.focus();
     await page.waitForTimeout(100);
@@ -250,10 +295,10 @@ test.describe("Don't ask again enabled", () => {
       timeout: 10000,
     });
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).not.toContainText(commentText);
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText("Add your comment here...");
 
     const submittedTransactionJsonObject =
@@ -262,9 +307,8 @@ test.describe("Don't ask again enabled", () => {
       submittedTransactionJsonObject.data["petersalomonsen.near"].post.comment
     );
     expect(submittedComment.text).toEqual(commentText);
-    let commentElement = await page
-      .frameLocator("#theorinear121684809 iframe")
-      .locator("#content");
+    let commentElement = await page.locator("#theorinear121684809 div").nth(4);
+
     await expect(commentElement).toBeVisible({ timeout: 30_000 });
     await expect(commentElement).toContainText(
       "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated.",
@@ -273,9 +317,7 @@ test.describe("Don't ask again enabled", () => {
 
     await page.reload();
 
-    commentElement = await page
-      .frameLocator("#theorinear121684809 iframe")
-      .locator("#content");
+    commentElement = await page.locator("#theorinear121684809 div").nth(4);
     await expect(commentElement).toBeVisible({ timeout: 30_000 });
     await expect(commentElement).toContainText(
       "Typically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated.",
@@ -290,7 +332,7 @@ test.describe("Don't ask again enabled", () => {
     await page.waitForTimeout(5000);
 
     await expect(
-      await page.frameLocator("iframe").last().locator(".CodeMirror")
+      await page.frameLocator("iframe").locator(".CodeMirror")
     ).toContainText("Add your comment here...");
 
     await pauseIfVideoRecording(page);

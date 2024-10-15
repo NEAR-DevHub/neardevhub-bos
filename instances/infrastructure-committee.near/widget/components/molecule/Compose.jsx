@@ -103,16 +103,11 @@ const Compose = ({
             />
           </>
         ) : (
-          <div className="card-body">
+          <div className="card-body compose-preview">
             <Widget
               src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
               props={{
                 content: state.data,
-                embeddCSS: `
-                  body {
-                    font-size: 14px !important;
-                  }
-                `,
               }}
             />
           </div>
