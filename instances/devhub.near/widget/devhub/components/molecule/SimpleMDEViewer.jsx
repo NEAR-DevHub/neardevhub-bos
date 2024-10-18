@@ -1,66 +1,81 @@
 const content = props.content ?? "";
-const height = props.height ?? "200px";
+const embeddCSS = props.embeddCSS;
 
-const code = `
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <style>
-    body {  
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-      height: ${height};
-    }
+const simplemdeCss = fetch(
+  "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
+).body;
+const githubCss = fetch(
+  "https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css"
+).body;
 
-    blockquote {
-      margin: 1em 0;
-      padding-left: 1.5em;
-      border-left: 4px solid #ccc;
-      color: #666;
-      font-style: italic;
-      font-size: inherit;
-    }
+const bootstrapCss = fetch(
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+).body;
 
-    pre {
-      background-color: #f4f4f4;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 1em;
-      overflow-x: auto;
-      font-family: "Courier New", Courier, monospace;
-    }
+if (!simplemdeCss || !githubCss || !bootstrapCss) return "";
 
-    a {
-        color: #3c697d;
-        font-weight: 500 !important;
-      }
-  </style>
-</head>
-<body>
-  <div id="content"></div>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script>
-    let isViewerInitialized = false;
+const CssContainer = styled.div`
+  ${githubCss}
+  ${simplemdeCss}
+  
+  font-size:14px;
+  p {
+    white-space: normal;
+  }
 
-    function updateContent(content) {
-      document.getElementById('content').innerHTML = marked.parse(content);
-    }
+  blockquote {
+    margin: 1em 0;
+    padding-left: 1.5em;
+    border-left: 4px solid #ccc;
+    color: #666;
+    font-style: italic;
+    font-size: inherit;
+  }
 
-    window.addEventListener("message", (event) => {
-      updateContent(event.data.content);
-    });
-  </script>
-</body>
-</html>
+  pre {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1em;
+    overflow-x: auto;
+    font-family: "Courier New", Courier, monospace;
+  }
+
+  a {
+    color: #04a46e;
+  }
+
+  .remove-underline a {
+    text-decoration: none !important;
+  }
+
+  ${embeddCSS}
 `;
 
+const renderMention =
+  props.renderMention ??
+  ((accountId) => (
+    <span
+      key={accountId}
+      className="d-inline-flex remove-underline"
+      style={{ fontWeight: 500 }}
+    >
+      <Widget
+        src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileLine"
+        props={{
+          accountId: accountId.toLowerCase(),
+          hideAccountId: true,
+          tooltip: true,
+        }}
+      />
+    </span>
+  ));
+
+const processedContent = content
+  .replace(/<br\s*\/?>/gi, "  \n")
+  .replace(/\n/g, "  \n");
 return (
-  <iframe
-    srcDoc={code}
-    message={{
-      content: content,
-    }}
-    style={{ height: height }}
-    className="w-100"
-  />
+  <CssContainer>
+    <Markdown text={processedContent} onMention={renderMention} />
+  </CssContainer>
 );

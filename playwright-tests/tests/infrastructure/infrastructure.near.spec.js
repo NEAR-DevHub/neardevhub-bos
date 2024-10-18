@@ -11,7 +11,7 @@ test.describe("Wallet is connected", () => {
     await expect(aboutHeaderLink).toBeVisible();
     await aboutHeaderLink.click();
     await expect(
-      page.frameLocator("iframe").getByRole("heading", { name: "Introduction" })
+      page.getByRole("heading", { name: "Introduction" })
     ).toBeVisible();
 
     const proposalsHeaderLink = await page.getByRole("link", {

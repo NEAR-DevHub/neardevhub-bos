@@ -190,7 +190,13 @@ const FeedItem = ({ proposal, index }) => {
               )}
             </div>
             {isLinked && rfpData && (
-              <div className="text-sm text-muted d-flex gap-1 align-items-center">
+              <div
+                className="text-sm text-muted d-flex gap-1 align-items-center"
+                data-testid={
+                  `proposalId_${proposal.proposal_id}` +
+                  `_rfpId_${rfpData.rfp_id}`
+                }
+              >
                 <i class="bi bi-link-45deg"></i>
                 In response to RFP :
                 <a
@@ -310,6 +316,18 @@ const FeedPage = () => {
     }
   }`;
 
+  const rfpQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${rfpFeedIndexerQueryName}_bool_exp = {}) {
+    ${rfpFeedIndexerQueryName}(
+      offset: $offset
+      limit: $limit
+      order_by: {rfp_id: desc}
+      where: $where
+    ) {
+      name
+      rfp_id
+    }
+  }`;
+
   function fetchGraphQL(operationsDoc, operationName, variables) {
     return asyncFetch(QUERYAPI_ENDPOINT, {
       method: "POST",
@@ -342,7 +360,7 @@ const FeedPage = () => {
 
     if (state.category) {
       if (isInfra || isEvents) {
-        where = { labels: { _contains: state.label }, ...where };
+        where = { labels: { _contains: state.category }, ...where };
       } else {
         where = { category: { _eq: state.category }, ...where };
       }
@@ -401,12 +419,12 @@ const FeedPage = () => {
             result.body.data[`${proposalFeedIndexerQueryName}_aggregate`];
           const promises = data.map((item) => {
             if (isNumber(item.linked_rfp)) {
-              return fetchGraphQL(rfpQuery, "GetLatestSnapshot", {}).then(
-                (result) => {
-                  const rfpData = result.body.data?.[rfpQueryName];
-                  return { ...item, rfpData: rfpData[0] };
-                }
-              );
+              return fetchGraphQL(rfpQuery, "GetLatestSnapshot", {
+                where: { rfp_id: { _eq: item.linked_rfp } },
+              }).then((result) => {
+                const rfpData = result.body.data?.[rfpFeedIndexerQueryName];
+                return { ...item, rfpData: rfpData[0] };
+              });
             } else {
               return Promise.resolve(item);
             }

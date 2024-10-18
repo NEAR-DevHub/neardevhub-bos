@@ -19,38 +19,88 @@ test.describe("Wallet is connected as admin", () => {
       timeout: 10000,
     });
   });
-  test("should create proposal", async ({ page }) => {
-    await page.goto("/infrastructure-committee.near/widget/app?page=proposals");
 
+  test("should show correct linked RFP to a proposal in feed page", async ({
+    page,
+  }) => {
+    test.setTimeout(120000);
+    await page.goto("/infrastructure-committee.near/widget/app?page=proposals");
+    let proposalId;
+    const linkedRfpId = 0;
+    // add linked RFP to latest proposal
+    await page.route(
+      "https://near-queryapi.api.pagoda.co/v1/graphql",
+      async (route) => {
+        const response = await route.fetch();
+        const json = await response.json();
+        if (
+          json?.data?.[
+            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
+          ]
+        ) {
+          json.data[
+            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
+          ] = json.data[
+            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
+          ].map((i, index) => {
+            if (index === 0) {
+              proposalId = i.proposal_id;
+              return {
+                ...i,
+                linked_rfp: linkedRfpId,
+              };
+            }
+            return i;
+          });
+        }
+        await route.fulfill({ response, json });
+      }
+    );
+    await page.waitForTimeout(10_000);
+    await expect(
+      page.getByTestId(`proposalId_${proposalId}_rfpId_${linkedRfpId}`)
+    ).toBeVisible({
+      timeout: 10000,
+    });
+  });
+
+  async function createProposal(page, linkRfp = false) {
+    const description = "The proposal description. This proposal should win.";
+    const summary = "The excellent proposal summary";
+    const title = "The title";
+    const amount = "2000";
+    const token = "USDC";
+    await page.goto("/infrastructure-committee.near/widget/app?page=proposals");
     await page
       .getByRole("button", { name: " Submit Proposal" })
       .click({ timeout: 10000 });
     await page.getByText("Select Category").click();
     await expect(await page.getByText("Indexers")).toBeVisible({
-      timeout: 10000,
+      timeout: 30_000,
     });
+    await page.getByText("Indexers").click();
 
     await pauseIfVideoRecording(page);
-    await page.getByText("Search RFP").click();
-    await page.getByText("# 0 : A Cool RFP").click();
-    await expect(
-      await page.getByRole("link", { name: "# 0 : A Cool RFP" })
-    ).toBeVisible();
+    if (linkRfp) {
+      await page.getByText("Search RFP").click();
+      await page.getByText("# 0 : A Cool RFP").click();
+      await expect(
+        await page.getByRole("link", { name: "# 0 : A Cool RFP" })
+      ).toBeVisible();
 
-    await expect(await page.getByText("Indexers")).not.toBeVisible();
-    await expect(page.locator(".badge").first()).toHaveText("Other");
+      await expect(await page.getByText("Indexers")).not.toBeVisible();
+      await expect(page.locator(".badge").first()).toHaveText("Other");
+    } else {
+    }
+    await page.getByRole("textbox").first().fill(title);
 
-    await page.getByRole("textbox").first().fill("The title");
-
-    await page
-      .locator('textarea[type="text"]')
-      .fill("The excellent proposal summary");
+    await page.locator('textarea[type="text"]').fill(summary);
     await page
       .frameLocator("iframe")
       .locator(".CodeMirror textarea")
-      .pressSequentially("The proposal description. This proposal should win.");
+      .pressSequentially(description);
 
-    await page.getByRole("textbox").nth(3).fill("2000");
+    await page.getByRole("textbox").nth(3).fill(amount);
     await page.getByRole("checkbox").first().click();
     await page.getByText("Submit Draft").click();
 
@@ -59,42 +109,70 @@ test.describe("Wallet is connected as admin", () => {
       null,
       1
     );
-    await expect(transactionText).toEqual(
-      JSON.stringify(
-        {
-          labels: ["Other"],
-          body: {
-            proposal_body_version: "V1",
-            linked_rfp: 0,
-            category: "Infrastructure Committee",
-            name: "The title",
-            description: "The proposal description. This proposal should win.",
-            summary: "The excellent proposal summary",
-            linked_proposals: [],
-            requested_sponsorship_usd_amount: "2000",
-            requested_sponsorship_paid_in_currency: "USDC",
-            receiver_account: "theori.near",
-            requested_sponsor: "infrastructure-committee.near",
-            supervisor: null,
-            timeline: {
-              status: "DRAFT",
-            },
+
+    let data = {};
+    if (linkRfp) {
+      data = {
+        labels: [],
+        body: {
+          proposal_body_version: "V1",
+          linked_rfp: 0,
+          category: "Infrastructure Committee",
+          name: title,
+          description: description,
+          summary: summary,
+          linked_proposals: [],
+          requested_sponsorship_usd_amount: amount,
+          requested_sponsorship_paid_in_currency: token,
+          receiver_account: "theori.near",
+          requested_sponsor: "infrastructure-committee.near",
+          supervisor: null,
+          timeline: {
+            status: "DRAFT",
           },
         },
-        null,
-        1
-      )
-    );
+      };
+    } else {
+      data = {
+        labels: ["Indexers"],
+        body: {
+          proposal_body_version: "V1",
+          category: "Infrastructure Committee",
+          name: title,
+          description: description,
+          summary: summary,
+          linked_proposals: [],
+          requested_sponsorship_usd_amount: amount,
+          requested_sponsorship_paid_in_currency: token,
+          receiver_account: "theori.near",
+          requested_sponsor: "infrastructure-committee.near",
+          supervisor: null,
+          timeline: {
+            status: "DRAFT",
+          },
+        },
+      };
+    }
+
+    await expect(transactionText).toEqual(JSON.stringify(data, null, 1));
 
     await pauseIfVideoRecording(page);
+  }
+
+  test("should create proposal and link an RFP", async ({ page }) => {
+    await createProposal(page, true);
   });
 
-  test("should show relevant users in mention autocomplete", async ({
+  test("should create a proposal without linking an RFP", async ({ page }) => {
+    await createProposal(page, false);
+  });
+
+  test("should show relevant users in mention autocomplete and correct name and image in viewer", async ({
     page,
     account,
   }) => {
+    test.setTimeout(120000);
     await page.goto(`/${account}/widget/app?page=proposal&id=1`);
-
     await page.waitForSelector(`iframe`, {
       state: "visible",
     });
@@ -147,5 +225,71 @@ test.describe("Wallet is connected as admin", () => {
 
     expect(mentionSuggestions.slice(0, 4)).toEqual(expected);
     await pauseIfVideoRecording(page);
+
+    await page
+      .frameLocator("iframe")
+      .getByRole("button", { name: "hemera.near" })
+      .click();
+    await commentEditor.pressSequentially(" test");
+    await page.waitForTimeout(1000);
+    await page.getByRole("button", { name: "Preview" }).click();
+    await page.waitForTimeout(10_000);
+    const accountLink = page
+      .locator(".compose-preview")
+      .locator("div[data-component='mob.near/widget/ProfileImage']");
+    await expect(accountLink).toBeVisible({ timeout: 20_000 });
+    accountLink.click();
+    await page.waitForNavigation();
+    await expect(page).toHaveURL(
+      /mob\.near\/widget\/ProfilePage\?accountId=hemera\.near/
+    );
+  });
+
+  test("should show links in markdown viewer", async ({ page, account }) => {
+    test.setTimeout(120000);
+    await page.goto(`/${account}/widget/app?page=proposal&id=1`);
+    await page.goto(`/${account}/widget/app?page=proposal&id=1`);
+    await page.waitForSelector(`iframe`, {
+      state: "visible",
+    });
+
+    const proposal = page.getByRole("link", { name: "hemera.near" }).first();
+    await proposal.waitFor();
+    await proposal.scrollIntoViewIfNeeded();
+
+    const comment = page
+      .getByRole("link", { name: "trechriron71.near" })
+      .first();
+    await comment.waitFor();
+    await comment.scrollIntoViewIfNeeded();
+
+    const heading = page.getByText("Add a comment");
+    await heading.waitFor();
+    await heading.scrollIntoViewIfNeeded();
+
+    await page.waitForTimeout(5000);
+
+    const delay_milliseconds_between_keypress_when_typing = 0;
+    const commentEditor = page
+      .frameLocator("iframe")
+      .locator(".CodeMirror textarea");
+    await commentEditor.focus();
+    await commentEditor.pressSequentially(
+      `Adding a test [link](https://www.google.com/)`,
+      {
+        delay: delay_milliseconds_between_keypress_when_typing,
+      }
+    );
+    await page.waitForTimeout(1000);
+    await page.getByRole("button", { name: "Preview" }).click();
+
+    // make sure links open in new tab
+    const link = await page.getByRole("link", { name: "link" });
+    expect(link).toBeVisible();
+    link.click();
+    const pagePromise = page.waitForEvent("popup");
+    const newTab = await pagePromise;
+    await newTab.waitForLoadState();
+    await expect(newTab).toHaveURL("https://www.google.com");
   });
 });

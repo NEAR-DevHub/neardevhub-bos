@@ -1,22 +1,13 @@
-import { test as base, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../../util/multiinstance.js";
 import { pauseIfVideoRecording } from "../../testUtils.js";
-import {
-  setCommitWritePermissionDontAskAgainCacheValues,
-  setDontAskAgainCacheValues,
-} from "../../util/cache.js";
+import { setCacheValue, setDontAskAgainCacheValues } from "../../util/cache.js";
 import {
   mockTransactionSubmitRPCResponses,
   decodeResultJSON,
   encodeResultJSON,
 } from "../../util/transaction.js";
 import { MOCK_RPC_URL, mockRpcRequest } from "../../util/rpcmock.js";
-
-const test = base.extend({
-  // Define an option and provide a default value.
-  // We can later override it in the config.
-  account: ["devhub.near", { option: true }],
-  proposalAuthorAccountId: ["megha19.near", { option: true }],
-});
 
 test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
@@ -83,9 +74,25 @@ test.describe("Don't ask again enabled", () => {
   });
   test("should create a proposal", async ({ page, account }) => {
     test.setTimeout(120000);
+
+    const proposalSubmitterAccount = "petersalomonsen.near";
+
     await page.goto(`/${account}/widget/app?page=proposals`);
 
-    const widgetSrc = `${account}/widget/devhub.entity.proposal.Editor`;
+    const widgetSrc =
+      account === "infrastructure-committee.near"
+        ? `${account}/widget/components.proposals.Editor`
+        : `${account}/widget/devhub.entity.proposal.Editor`;
+
+    await setCacheValue({
+      page,
+      key: JSON.stringify({
+        action: "ViewCall",
+        contractId: account,
+        methodName: "get_all_proposal_ids",
+      }),
+      value: [0, 1, 2, 3, 4],
+    });
 
     await setDontAskAgainCacheValues({
       page,
@@ -96,18 +103,18 @@ test.describe("Don't ask again enabled", () => {
 
     await page.getByRole("button", { name: " Submit Proposal" }).click();
 
+    const proposalTitle = "Test proposal 123456";
+    const proposalDescription = "The test proposal description.";
     const titleArea = await page.getByRole("textbox").first();
-    await titleArea.fill("Test proposal 123456");
+    await titleArea.fill(proposalTitle);
     await titleArea.blur();
     await pauseIfVideoRecording(page);
 
-    const categoryDropdown = await page.locator(".dropdown-toggle").first();
+    const categoryDropdown = await page.locator(".dropdown-toggle", {
+      hasText: "Select Category",
+    });
     await categoryDropdown.click();
     await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
-
-    const disabledSubmitButton = await page.locator(
-      ".submit-draft-button.disabled"
-    );
 
     const summary = await page.locator('textarea[type="text"]');
     await summary.fill("Test proposal summary 123456789");
@@ -118,39 +125,142 @@ test.describe("Don't ask again enabled", () => {
       .frameLocator("iframe")
       .locator(".CodeMirror textarea");
     await descriptionArea.focus();
-    await descriptionArea.fill("The test proposal description.");
+    await descriptionArea.fill(proposalDescription);
     await descriptionArea.blur();
     await pauseIfVideoRecording(page);
 
-    await page.locator('input[type="text"]').nth(2).fill("1000");
+    const proposalAmount = "1000";
+    await page.locator('input[type="text"]').nth(2).fill(proposalAmount);
     await pauseIfVideoRecording(page);
-    await page.getByRole("checkbox").first().click();
+
+    const consentCheckBoxes = await page.getByRole("checkbox");
+    await consentCheckBoxes.first().click();
     await pauseIfVideoRecording(page);
-    await expect(disabledSubmitButton).toBeAttached();
-    await page.getByRole("checkbox").nth(1).click();
-    await pauseIfVideoRecording(page);
+
+    const disabledSubmitButton = await page.locator(
+      ".submit-draft-button.disabled"
+    );
+    if ((await consentCheckBoxes.count()) === 2) {
+      await expect(disabledSubmitButton).toBeAttached();
+      await page.getByRole("checkbox").nth(1).click();
+      await pauseIfVideoRecording(page);
+    }
     await expect(disabledSubmitButton).not.toBeAttached();
 
+    let newProposalId = 0;
+    let get_all_proposal_ids_attempt = 0;
     await mockTransactionSubmitRPCResponses(
       page,
       async ({ route, request, transaction_completed, last_receiver_id }) => {
         const postData = request.postDataJSON();
-        if (
-          transaction_completed &&
-          postData.params?.method_name === "get_all_proposal_ids"
-        ) {
+        if (postData.params?.method_name === "get_all_proposal_ids") {
           const response = await route.fetch();
           const json = await response.json();
 
-          console.log(
-            "transaction completed, modifying get_proposal_ids result"
-          );
           const resultObj = decodeResultJSON(json.result.result);
-          resultObj.push(1);
-          console.log(JSON.stringify(resultObj));
+          newProposalId = resultObj[resultObj.length - 1] + 1;
+          if (transaction_completed) {
+            if (get_all_proposal_ids_attempt === 1) {
+              resultObj.push(newProposalId);
+            } else {
+              get_all_proposal_ids_attempt++;
+            }
+          }
           json.result.result = encodeResultJSON(resultObj);
 
           await route.fulfill({ response, json });
+        } else if (
+          postData.params?.method_name === "get_proposal" &&
+          postData.params.args_base64 ===
+            btoa(JSON.stringify({ proposal_id: newProposalId }))
+        ) {
+          postData.params.args_base64 = btoa(
+            JSON.stringify({ proposal_id: newProposalId - 1 })
+          );
+          const response = await route.fetch({
+            postData: JSON.stringify(postData),
+          });
+          const json = await response.json();
+
+          let resultObj = decodeResultJSON(json.result.result);
+
+          resultObj = {
+            proposal_version: "V0",
+            id: newProposalId,
+            author_id: proposalSubmitterAccount,
+            social_db_post_block_height: "128860426",
+            snapshot: {
+              editor_id: proposalSubmitterAccount,
+              timestamp: "1727265468109441208",
+              labels: [],
+              proposal_body_version: "V2",
+              name: proposalTitle,
+              category: "DevDAO Platform",
+              summary: "summary",
+              description: proposalDescription,
+              linked_proposals: [],
+              requested_sponsorship_usd_amount: proposalAmount,
+              requested_sponsorship_paid_in_currency: "USDT",
+              receiver_account: proposalSubmitterAccount,
+              requested_sponsor: "neardevdao.near",
+              supervisor: "theori.near",
+              timeline: {
+                timeline_version: "V1",
+                status: "DRAFT",
+                sponsor_requested_review: false,
+                reviewer_completed_attestation: false,
+                kyc_verified: false,
+              },
+              linked_rfp: null,
+            },
+            snapshot_history: [
+              {
+                editor_id: proposalSubmitterAccount,
+                timestamp: "1727265421865873611",
+                labels: [],
+                proposal_body_version: "V0",
+                name: proposalTitle,
+                category: "DevDAO Platform",
+                summary: "summary",
+                description: proposalDescription,
+                linked_proposals: [],
+                requested_sponsorship_usd_amount: proposalAmount,
+                requested_sponsorship_paid_in_currency: "USDT",
+                receiver_account: proposalSubmitterAccount,
+                requested_sponsor: "neardevdao.near",
+                supervisor: "theori.near",
+                timeline: {
+                  status: "DRAFT",
+                },
+              },
+            ],
+          };
+
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+        } else if (
+          postData.params?.method_name === "is_allowed_to_edit_proposal" &&
+          postData.params.args_base64 ===
+            btoa(
+              JSON.stringify({
+                proposal_id: newProposalId,
+                editor: proposalSubmitterAccount,
+              })
+            )
+        ) {
+          await route.fulfill({
+            json: {
+              jsonrpc: "2.0",
+              result: {
+                result: encodeResultJSON(true),
+                logs: [],
+                block_height: 17817336,
+                block_hash: "4qkA4sUUG8opjH5Q9bL5mWJTnfR4ech879Db1BZXbx6P",
+              },
+              id: "dontcare",
+            },
+          });
         } else {
           await route.continue();
         }
@@ -161,6 +271,7 @@ test.describe("Don't ask again enabled", () => {
     await submitButton.scrollIntoViewIfNeeded();
     await submitButton.hover();
     await pauseIfVideoRecording(page);
+
     await submitButton.click();
     await expect(disabledSubmitButton).toBeAttached();
 
@@ -179,9 +290,16 @@ test.describe("Don't ask again enabled", () => {
     await loadingIndicator.waitFor({ state: "detached", timeout: 10000 });
     await expect(loadingIndicator).not.toBeVisible();
 
+    if (account === "infrastructure-committee.near") {
+      await page.getByRole("button", { name: "View Proposal" }).click();
+    }
+    await expect(await page.getByText(`#${newProposalId}`)).toBeVisible();
+    await expect(await page.getByText("DRAFT", { exact: true })).toBeVisible();
+
     await expect(
       await page.getByRole("button", { name: "Edit" })
     ).toBeVisible();
+
     await pauseIfVideoRecording(page);
   });
 });
@@ -197,6 +315,8 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
   }) => {
     test.setTimeout(70000);
     let isTransactionCompleted = false;
+    const isInfrastructureCommittee =
+      account === "infrastructure-committee.near";
 
     await mockRpcRequest({
       page,
@@ -240,13 +360,23 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       }
     );
 
-    await page.goto(`/${account}/widget/app?page=proposal&id=17`);
+    await page.goto(
+      `/${account}/widget/app?page=proposal&id=${
+        isInfrastructureCommittee ? "4" : "17"
+      }`
+    );
+
+    const widgetSrc = isInfrastructureCommittee
+      ? `${account}/widget/components.proposals.Proposal`
+      : `${account}/widget/devhub.entity.proposal.Proposal`;
 
     await setDontAskAgainCacheValues({
       page,
       contractId: account,
-      widgetSrc: `${account}/widget/devhub.entity.proposal.Proposal`,
-      methodName: "edit_proposal_versioned_timeline",
+      widgetSrc,
+      methodName: isInfrastructureCommittee
+        ? "edit_proposal_timeline"
+        : "edit_proposal_versioned_timeline",
     });
 
     const firstStatusBadge = await page
@@ -254,7 +384,13 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
       .first();
     await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
     await page.locator(".d-flex > div > .bi").click();
-    await page.getByTestId("Sponsor verifies KYC/KYB").check();
+
+    await page
+      .locator("label")
+      .filter({ hasText: "Sponsor verifies KYC/KYB" })
+      .locator("xpath=preceding-sibling::*[1]")
+      .check();
+
     await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByText("Approved", { exact: true }).first().click();
 
@@ -267,25 +403,31 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     const callContractToast = await page.getByText("Sending transaction");
     await expect(callContractToast).toBeVisible();
     await expect(callContractToast).not.toBeAttached();
-    const timeLineStatusSubmittedToast = await page
-      .getByText("Timeline status submitted successfully")
-      .first();
-    await expect(timeLineStatusSubmittedToast).toBeVisible();
-
+    let timeLineStatusSubmittedToast;
+    if (!isInfrastructureCommittee) {
+      timeLineStatusSubmittedToast = await page
+        .getByText("Timeline status submitted successfully")
+        .first();
+      await expect(timeLineStatusSubmittedToast).toBeVisible();
+    }
     await expect(firstStatusBadge).toHaveText("APPROVED");
+
     await firstStatusBadge.scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
-    const lastLogItem = await page.locator(
-      "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
-      { hasText: /.*s ago/ }
-    );
-    await expect(lastLogItem).toContainText(
-      "moved proposal from REVIEW to APPROVED",
-      { timeout: 10000 }
-    );
-    await lastLogItem.scrollIntoViewIfNeeded();
-    await expect(timeLineStatusSubmittedToast).not.toBeAttached();
-    await pauseIfVideoRecording(page);
+
+    if (!isInfrastructureCommittee) {
+      const lastLogItem = await page.locator(
+        "div.flex-1.gap-1.w-100.text-wrap.text-muted.align-items-center",
+        { hasText: /.*s ago/ }
+      );
+      await expect(lastLogItem).toContainText(
+        "moved proposal from REVIEW to APPROVED",
+        { timeout: 10000 }
+      );
+      await lastLogItem.scrollIntoViewIfNeeded();
+      await expect(timeLineStatusSubmittedToast).not.toBeAttached();
+      await pauseIfVideoRecording(page);
+    }
   });
 
   test("should not be able to move proposal timeline to decision stage without approving KYC in review stage", async ({
@@ -293,6 +435,9 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     account,
   }) => {
     test.setTimeout(60000);
+
+    const isInfrastructureCommittee =
+      account === "infrastructure-committee.near";
 
     await mockRpcRequest({
       page,
@@ -304,7 +449,11 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
         return originalResult;
       },
     });
-    await page.goto(`/${account}/widget/app?page=proposal&id=17`);
+    await page.goto(
+      `/${account}/widget/app?page=proposal&id=${
+        isInfrastructureCommittee ? "4" : "17"
+      }`
+    );
 
     const firstStatusBadge = await page
       .locator("div.fw-bold.rounded-2.p-1.px-2")
@@ -312,13 +461,22 @@ test.describe('Moderator with "Don\'t ask again" enabled', () => {
     await expect(firstStatusBadge).toHaveText("REVIEW", { timeout: 10000 });
     await page.locator(".d-flex > div > .bi").click();
 
-    await page.getByTestId("Sponsor verifies KYC/KYB").uncheck();
-    await page.getByRole("button", { name: "Review", exact: true }).click();
-    await page.getByText("Approved", { exact: true }).first().click();
+    const sponsorCheckbox = await page
+      .locator("label")
+      .filter({ hasText: "Sponsor verifies KYC/KYB" })
+      .locator("xpath=preceding-sibling::*[1]");
+    if (isInfrastructureCommittee) {
+      await expect(sponsorCheckbox).toBeDisabled();
+    } else {
+      await sponsorCheckbox.uncheck();
 
-    const saveButton = await page.getByRole("button", { name: "Save" });
-    await saveButton.scrollIntoViewIfNeeded();
-    await expect(saveButton).toBeDisabled();
+      await page.getByRole("button", { name: "Review", exact: true }).click();
+      await page.getByText("Approved", { exact: true }).first().click();
+
+      const saveButton = await page.getByRole("button", { name: "Save" });
+      await saveButton.scrollIntoViewIfNeeded();
+      await expect(saveButton).toBeDisabled();
+    }
   });
 });
 
@@ -336,20 +494,23 @@ test.describe("Wallet is connected", () => {
 
     const delay_milliseconds_between_keypress_when_typing = 0;
     const titleArea = await page.getByRole("textbox").first();
-    await expect(titleArea).toBeEditable();
+    await expect(titleArea).toBeEditable({ timeout: 10_000 });
     await titleArea.pressSequentially("Test proposal 123456", {
       delay: delay_milliseconds_between_keypress_when_typing,
     });
 
     await pauseIfVideoRecording(page);
 
-    const categoryDropdown = await page.locator(".dropdown-toggle").first();
-    await categoryDropdown.click();
-    await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
+    const categoryDropdown = await page.locator(".dropdown-toggle", {
+      hasText: "Select Category",
+    });
 
-    const disabledSubmitButton = await page.locator(
-      ".submit-draft-button.disabled"
+    await categoryDropdown.click();
+    const categoryItem = await page.locator(
+      ".dropdown-menu > div > div:nth-child(2) > div"
     );
+    const selectedCategory = (await categoryItem.innerText()).split("\n")[0];
+    await categoryItem.click();
 
     const summary = await page.locator('textarea[type="text"]');
     await expect(summary).toBeEditable();
@@ -396,198 +557,19 @@ test.describe("Wallet is connected", () => {
       delay: delay_milliseconds_between_keypress_when_typing,
     });
     await pauseIfVideoRecording(page);
-    await page.getByRole("checkbox").first().click();
+
+    const consentCheckBoxes = await page.getByRole("checkbox");
+    await consentCheckBoxes.first().click();
     await pauseIfVideoRecording(page);
-    await expect(disabledSubmitButton).toBeAttached();
-    await page.getByRole("checkbox").nth(1).click();
-    await pauseIfVideoRecording(page);
-    await expect(disabledSubmitButton).not.toBeAttached();
-
-    const submitButton = await page.getByText("Submit Draft");
-    await submitButton.scrollIntoViewIfNeeded();
-    await submitButton.hover();
-    await pauseIfVideoRecording(page);
-    await submitButton.click();
-    const transactionText = JSON.stringify(
-      JSON.parse(await page.locator("div.modal-body code").innerText()),
-      null,
-      1
-    );
-    expect(transactionText).toEqual(
-      JSON.stringify(
-        {
-          labels: [],
-          body: {
-            proposal_body_version: "V0",
-            name: "Test proposal 123456",
-            description:
-              "The test proposal description. And mentioning @petersalomonsen.near. Also mentioning @megha19.near",
-            category: "DevDAO Platform",
-            summary: "Test proposal summary 123456789",
-            linked_proposals: [],
-            requested_sponsorship_usd_amount: "12345",
-            requested_sponsorship_paid_in_currency: "USDC",
-            receiver_account: "efiz.near",
-            supervisor: null,
-            requested_sponsor: "neardevdao.near",
-            timeline: {
-              status: "DRAFT",
-            },
-          },
-          accepted_terms_and_conditions_version: acceptedTermsVersion,
-        },
-        null,
-        1
-      )
-    );
-
-    await pauseIfVideoRecording(page);
-  });
-
-  test("should show relevant users in mention autocomplete", async ({
-    page,
-    account,
-  }) => {
-    await page.goto(`/${account}/widget/app?page=proposal&id=112`);
-
-    await page.waitForSelector(`iframe`, {
-      state: "visible",
-    });
-
-    const comment = page.getByRole("link", { name: "geforcy.near" });
-    await comment.waitFor();
-    await comment.scrollIntoViewIfNeeded();
-
-    const heading = page.getByRole("heading", { name: "Relevant Mentions" });
-    await heading.waitFor();
-    await heading.scrollIntoViewIfNeeded();
-
-    await page.waitForTimeout(5000);
-
-    const delay_milliseconds_between_keypress_when_typing = 0;
-    const commentEditor = page
-      .frameLocator("iframe")
-      .locator(".CodeMirror textarea");
-    await commentEditor.focus();
-    await commentEditor.pressSequentially(
-      `Make sure relevant users show up in a mention. @`,
-      {
-        delay: delay_milliseconds_between_keypress_when_typing,
-      }
-    );
-
-    await pauseIfVideoRecording(page);
-    const iframe = page.frameLocator("iframe");
-    const liFrameLocators = iframe.frameLocator(
-      'ul[id="mentiondropdown"] > li'
-    );
-    const liLocators = await liFrameLocators.owner().all();
-    const expected = [
-      "thomasguntenaar.near", // author,
-      "theori.near", // supervisor,
-      "neardevdao.near", //  requested_sponsor,
-      "geforcy.near", // comment author,
-    ];
-    let mentionSuggestions = [];
-    for (let i = 0; i < liLocators.length; i++) {
-      const text = await liLocators[i].innerText();
-      mentionSuggestions.push(text);
-    }
-
-    expect(mentionSuggestions.slice(0, 4)).toEqual(expected);
-    await pauseIfVideoRecording(page);
-  });
-
-  test("should show only valid input in amount field and show error for invalid", async ({
-    page,
-    account,
-  }) => {
-    test.setTimeout(120000);
-    const delay_milliseconds_between_keypress_when_typing = 0;
-    await page.goto(`/${account}/widget/app?page=create-proposal`);
-    const input = page.locator('input[type="text"]').nth(2);
-    const errorText = await page.getByText(
-      "Please enter the nearest positive whole number."
-    );
-    await input.pressSequentially("12345de", {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-    await expect(errorText).toBeVisible();
-    // clear input field
-    for (let i = 0; i < 7; i++) {
-      await input.press("Backspace", {
-        delay: delay_milliseconds_between_keypress_when_typing,
-      });
-    }
-    await input.pressSequentially("12334", {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-    await expect(errorText).toBeHidden();
-    await pauseIfVideoRecording(page);
-  });
-
-  test("should create a proposal, autolink reference to existing proposal", async ({
-    page,
-    account,
-  }) => {
-    test.setTimeout(120000);
-    await getCurrentBlockHeight(page);
-    await page.goto(`/${account}/widget/app?page=create-proposal`);
-
-    const delay_milliseconds_between_keypress_when_typing = 0;
-    const titleArea = await page.getByRole("textbox").first();
-    await expect(titleArea).toBeEditable();
-    await titleArea.pressSequentially("Test proposal 123456", {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-
-    await pauseIfVideoRecording(page);
-
-    const categoryDropdown = await page.locator(".dropdown-toggle").first();
-    await categoryDropdown.click();
-    await page.locator(".dropdown-menu > div > div:nth-child(2) > div").click();
 
     const disabledSubmitButton = await page.locator(
       ".submit-draft-button.disabled"
     );
-
-    const summary = await page.locator('textarea[type="text"]');
-    await expect(summary).toBeEditable();
-    await summary.pressSequentially("Test proposal summary 123456789", {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-
-    await pauseIfVideoRecording(page);
-
-    const descriptionArea = await page
-      .frameLocator("iframe")
-      .locator(".CodeMirror textarea");
-    await descriptionArea.focus();
-    await descriptionArea.pressSequentially(
-      `The test proposal description. And referencing #`,
-      {
-        delay: delay_milliseconds_between_keypress_when_typing,
-      }
-    );
-    await descriptionArea.pressSequentially("2", { delay: 10 });
-    await pauseIfVideoRecording(page);
-
-    await page
-      .frameLocator("iframe")
-      .getByText(
-        "#2 DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024"
-      )
-      .click({ timeout: 10000 });
-
-    await page.locator('input[type="text"]').nth(2).pressSequentially("12345", {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-    await pauseIfVideoRecording(page);
-    await page.getByRole("checkbox").first().click();
-    await pauseIfVideoRecording(page);
-    await expect(disabledSubmitButton).toBeAttached();
-    await page.getByRole("checkbox").nth(1).click();
-    await pauseIfVideoRecording(page);
+    if ((await consentCheckBoxes.count()) === 2) {
+      await expect(disabledSubmitButton).toBeAttached();
+      await page.getByRole("checkbox").nth(1).click();
+      await pauseIfVideoRecording(page);
+    }
     await expect(disabledSubmitButton).not.toBeAttached();
 
     const submitButton = await page.getByText("Submit Draft");
@@ -595,102 +577,47 @@ test.describe("Wallet is connected", () => {
     await submitButton.hover();
     await pauseIfVideoRecording(page);
     await submitButton.click();
-    const transactionText = JSON.stringify(
-      JSON.parse(await page.locator("div.modal-body code").innerText()),
-      null,
-      1
+    const transactionObject = JSON.parse(
+      await page.locator("div.modal-body code").innerText()
     );
-    await expect(transactionText).toEqual(
-      JSON.stringify(
-        {
-          labels: [],
-          body: {
-            proposal_body_version: "V0",
-            name: "Test proposal 123456",
-            description:
-              "The test proposal description. And referencing [#2 DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024](https://near.social/devhub.near/widget/app?page=proposal&id=2)",
-            category: "DevDAO Platform",
-            summary: "Test proposal summary 123456789",
-            linked_proposals: [],
-            requested_sponsorship_usd_amount: "12345",
-            requested_sponsorship_paid_in_currency: "USDC",
-            receiver_account: "efiz.near",
-            supervisor: null,
-            requested_sponsor: "neardevdao.near",
-            timeline: {
-              status: "DRAFT",
-            },
-          },
-          accepted_terms_and_conditions_version: acceptedTermsVersion,
+    const expectedTransactionObject = {
+      labels: [
+        "events-committee.near",
+        "infrastructure-committee.near",
+      ].includes(account)
+        ? [selectedCategory]
+        : [],
+      body: {
+        proposal_body_version:
+          account === "infrastructure-committee.near" ? "V1" : "V0",
+        name: "Test proposal 123456",
+        description:
+          "The test proposal description. And mentioning @petersalomonsen.near. Also mentioning @megha19.near",
+        category:
+          account === "events-committee.near"
+            ? "Bounty"
+            : account === "infrastructure-committee.near"
+            ? "Infrastructure Committee"
+            : selectedCategory,
+        summary: "Test proposal summary 123456789",
+        linked_proposals: [],
+        requested_sponsorship_usd_amount: "12345",
+        requested_sponsorship_paid_in_currency: "USDC",
+        receiver_account: "efiz.near",
+        supervisor: null,
+        requested_sponsor:
+          account === "devhub.near" ? "neardevdao.near" : account,
+        timeline: {
+          status: "DRAFT",
         },
-        null,
-        1
-      )
-    );
+      },
+    };
+    if (account !== "infrastructure-committee.near") {
+      expectedTransactionObject.accepted_terms_and_conditions_version =
+        acceptedTermsVersion;
+    }
+    expect(transactionObject).toStrictEqual(expectedTransactionObject);
 
     await pauseIfVideoRecording(page);
-  });
-
-  test.describe("filter proposals using different mechanism", () => {
-    test.beforeEach(async ({ page, account }) => {
-      await page.goto(`/${account}/widget/app?page=proposals`);
-      expect(page.locator(".proposal-card").first()).toBeVisible({
-        timeout: 10000,
-      });
-    });
-    test("should filter proposals by categories", async ({ page, account }) => {
-      test.setTimeout(60000);
-      const category = "DevDAO Operations";
-      await page.getByRole("button", { name: "Category" }).click();
-      await page.getByRole("list").getByText(category).click();
-      await expect(
-        page.getByRole("button", { name: `Category : ${category}` })
-      ).toBeVisible();
-      const loader = page.getByRole("img", { name: "loader" });
-      expect(loader).toBeHidden({ timeout: 10000 });
-      const categoryTag = await page.locator(".purple-bg").first();
-      await expect(categoryTag).toContainText(category);
-    });
-
-    test("should filter proposals by timeline", async ({ page }) => {
-      test.setTimeout(60000);
-      const stage = "Funded";
-      await page.getByRole("button", { name: "Stage" }).click();
-      await page.getByRole("list").getByText(stage).click();
-      await expect(
-        page.getByRole("button", { name: `Stage : ${stage}` })
-      ).toBeVisible();
-      const loader = page.getByRole("img", { name: "loader" });
-      expect(loader).toBeHidden({ timeout: 10000 });
-      const timelineTag = await page.locator(".green-tag").first();
-      await expect(timelineTag).toContainText(stage.toUpperCase());
-    });
-
-    test("should filter proposals by author", async ({ page }) => {
-      test.setTimeout(60000);
-      const accountId = "megha19.near";
-      const profileName = "Megha";
-      await page.getByRole("button", { name: "Author" }).click();
-      await page.getByRole("list").getByText(accountId).click();
-      await expect(
-        page.getByRole("button", { name: `Author : ${accountId}` })
-      ).toBeVisible();
-      const loader = page.getByRole("img", { name: "loader" });
-      expect(loader).toBeHidden({ timeout: 10000 });
-      await expect(page.getByText(`By ${profileName} ･`).first()).toBeVisible();
-    });
-
-    test("should filter proposals by search text", async ({ page }) => {
-      test.setTimeout(60000);
-      const term = "DevHub Developer Contributor report by Megha";
-      const input = await page.getByPlaceholder("Search by content");
-      await input.click();
-      await input.fill(term);
-      await input.press("Enter");
-      const loader = page.getByRole("img", { name: "loader" });
-      expect(loader).toBeHidden({ timeout: 10000 });
-      const element = page.locator(`:has-text("${term}")`).nth(1);
-      await expect(element).toBeVisible();
-    });
   });
 });

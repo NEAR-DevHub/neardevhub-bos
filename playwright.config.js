@@ -48,9 +48,13 @@ export default defineConfig({
   projects: [
     {
       name: "infrastructure",
+      testMatch: /(infrastructure|proposal)\/.*.spec.js/,
       use: {
         ...devices["Desktop Chrome"],
         account: "infrastructure-committee.near",
+        linksTestProposalId: 1,
+        linksTestCommentAuthorId: "as2.near",
+        linksTestCommentBlockHeight: 124005661,
       },
     },
     {
@@ -60,7 +64,10 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:8080",
         account: "events-committee.near",
+        linksTestProposalId: 1,
         proposalAuthorAccountId: "yarotska.near",
+        linksTestCommentAuthorId: "rimberjack.near",
+        linksTestCommentBlockHeight: 118849805,
       },
     },
     {
@@ -71,6 +78,9 @@ export default defineConfig({
         baseURL: "http://localhost:8080",
         account: "devhub.near",
         proposalAuthorAccountId: "megha19.near",
+        linksTestProposalId: 127,
+        linksTestCommentAuthorId: "theori.near",
+        linksTestCommentBlockHeight: 121684702,
       },
     },
   ],
