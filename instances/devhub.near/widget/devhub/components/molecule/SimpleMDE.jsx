@@ -234,7 +234,7 @@ async function getSuggestedProposals(id) {
       };
     }
   }
-  await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
+  await asyncFetch("https://geforcy.com", {
     method: "POST",
     headers: { "x-hasura-role": "polyprogrammist_near" },
     body: JSON.stringify({

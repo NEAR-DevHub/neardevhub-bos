@@ -270,7 +270,7 @@ const getProposal = (proposal_id) => {
 };
 
 const FeedPage = () => {
-  const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
+  const QUERYAPI_ENDPOINT = `https://geforcy.com`;
 
   State.init({
     data: [],

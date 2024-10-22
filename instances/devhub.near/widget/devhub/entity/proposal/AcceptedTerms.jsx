@@ -8,7 +8,7 @@ State.init({
 
 const proposalId = props.proposalId;
 
-const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
+const QUERYAPI_ENDPOINT = `https://geforcy.com`;
 const fetchGraphQL = (operationsDoc, operationName, variables) => {
   return asyncFetch(QUERYAPI_ENDPOINT, {
     method: "POST",

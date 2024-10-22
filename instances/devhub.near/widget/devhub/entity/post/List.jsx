@@ -13,7 +13,7 @@ if (!href) {
   return <p>Loading modules...</p>;
 }
 
-const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
+const QUERYAPI_ENDPOINT = `https://geforcy.com/`;
 
 const queryName =
   props.queryName ?? `bo_near_devhub_v38_posts_with_latest_snapshot`;

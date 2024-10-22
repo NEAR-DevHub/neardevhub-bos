@@ -4,7 +4,7 @@ const { getPost } = VM.require(
 
 const { Layout, handle } = props;
 
-const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
+const QUERYAPI_ENDPOINT = `https://geforcy.com/`;
 
 const fetchGraphQL = (operationsDoc, operationName, variables) => {
   return fetch(QUERYAPI_ENDPOINT, {

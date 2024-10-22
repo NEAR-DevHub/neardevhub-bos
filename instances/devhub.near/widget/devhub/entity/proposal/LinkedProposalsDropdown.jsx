@@ -6,7 +6,7 @@ const onChange = props.onChange;
 const [selectedProposals, setSelectedProposals] = useState(linkedProposals);
 const [proposalsOptions, setProposalsOptions] = useState([]);
 const [searchProposalId, setSearchProposalId] = useState("");
-const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
+const QUERYAPI_ENDPOINT = `https://geforcy.com`;
 const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
 const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
 ${queryName}(

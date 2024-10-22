@@ -9,7 +9,7 @@ const Loader = styled.div`
   padding: 20px;
 `;
 
-const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
+const QUERYAPI_ENDPOINT = `https://geforcy.com/`;
 const DISPLAY_COUNT = 10;
 
 const fetchGraphQL = (operationsDoc, operationName, variables) => {
