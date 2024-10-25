@@ -260,6 +260,16 @@ const LinkProfile = ({ account, children }) => {
 const stepsArray = [1, 2, 3, 4, 5];
 
 const { id, timestamp } = props;
+
+if (id === undefined) {
+  return (
+    <Widget
+      src={`${REPL_DEVHUB}/widget/devhub.page.notfound`}
+      props={{ missing: "proposal id" }}
+    />
+  );
+}
+
 const proposal = Near.view("${REPL_EVENTS_CONTRACT}", "get_proposal", {
   proposal_id: parseInt(id),
 });
