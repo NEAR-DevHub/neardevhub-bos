@@ -6,7 +6,7 @@ const { href: linkHref } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 const { hasModerator } =
   VM.require("${REPL_EVENTS}/widget/core.adapter.devhub-contract") ||
-  (hasModerator = () => {});
+  (() => {});
 
 linkHref || (linkHref = () => {});
 

@@ -45,7 +45,7 @@ test.describe("Wallet is connected", () => {
   }) => {
     test.setTimeout(60000);
 
-    await navigateToAdminPage(page);
+    await page.goto(adminPageRoute);
 
     await fillCommunityHandle(page, "thomasguntenaar");
 
@@ -220,7 +220,7 @@ test.describe("Wallet is not connected", () => {
   test("should show banner that the user doesn't have access", async ({
     page,
   }) => {
-    await navigateToAdminPage(page);
+    await page.goto(adminPageRoute);
     const buttonSelector = "h2.alert.alert-danger";
     const banner = await page.waitForSelector(buttonSelector, {
       state: "visible",
