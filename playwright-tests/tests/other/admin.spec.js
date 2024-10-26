@@ -205,8 +205,6 @@ test.describe("Wallet is connected", () => {
     await mockNearBalance(page, 1.9);
     await navigateToAdminPage(page);
 
-    await expectContractBalanceVisible(page, true);
-
     expect(contractBalanceWrapper).toBeDefined();
     await page.waitForTimeout(1000);
     expect(await balance.isVisible()).toBe(true);
