@@ -3,6 +3,7 @@ const { getLinkUsingCurrentGateway } = VM.require(
 ) || { getLinkUsingCurrentGateway: () => {} };
 const snapshotHistory = props.snapshotHistory;
 const proposalId = props.id;
+const instanceAccount = props.item.path.split("/")[0];
 
 const Wrapper = styled.div`
   position: relative;
@@ -169,7 +170,7 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  const link = `https://${REPL_DEVHUB}.page/proposal/${proposalId}?accountId=${accountId}&blockHeight=${blockHeight}`;
+  const link = `https://${instanceAccount}.page/proposal/${proposalId}?accountId=${accountId}&blockHeight=${blockHeight}`;
   const hightlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&
     props.accountId === accountId;
@@ -219,15 +220,13 @@ const Comment = ({ commentItem }) => {
           </Header>
           <div className="p-2 px-3">
             <Widget
-              src={
-                "${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
-              }
+              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
               props={{
-                text: content.text,
+                content: content.text,
               }}
             />
 
-            <div className="d-flex gap-2 align-items-center mt-4">
+            <div className="d-flex gap-2 align-items-center mt-3">
               <Widget
                 src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LikeButton"
                 props={{

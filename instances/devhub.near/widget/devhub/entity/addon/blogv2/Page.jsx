@@ -193,8 +193,8 @@ return (
         <div data-testid="blog-date">{formattedDate}</div>
       </div>
       <Widget
-        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"}
-        props={{ text: content }}
+        src={"${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer"}
+        props={{ content: content }}
       />
     </Container>
   </>

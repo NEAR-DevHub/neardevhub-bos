@@ -11,11 +11,15 @@
     "replace-in-files": "^3.0.0",
     "simple-git-hooks": "^2.9.0"
   },
+  "resolutions": {
+    "ws": "^7.5.10"
+  },
   "scripts": {
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
     "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
     "build": "npm run fmt",
     "bw": "bos-workspace",
+    "deploy:web4resources": "node scripts/deployweb4resources.mjs",
     "bw:dev:instances": "bw ws dev",
     "bw:dev:devhub": "bw dev instances/devhub.near",
     "bw:build:instance": "npm run bw build instances/$npm_config_instance build/$npm_config_instance && mv build/$npm_config_instance/src/widget/* build/$npm_config_instance/src/ && rm -Rf build/$npm_config_instance/src/widget",

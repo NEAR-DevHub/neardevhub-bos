@@ -1,8 +1,5 @@
-const { href, getLinkUsingCurrentGateway } = VM.require(
-  "${REPL_DEVHUB}/widget/core.lib.url"
-) || {
+const { href } = VM.require("${REPL_DEVHUB}/widget/core.lib.url") || {
   href: () => {},
-  getLinkUsingCurrentGateway: () => {},
 };
 const { readableDate } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.common"
@@ -298,9 +295,7 @@ const commentAuthors = [
   ...new Set(comments.map((comment) => comment.accountId)),
 ];
 
-const proposalURL = getLinkUsingCurrentGateway(
-  `${REPL_EVENTS}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
-);
+const proposalURL = `https://${REPL_EVENTS_CONTRACT}.page/proposal/${proposal.id}`;
 
 const KycVerificationStatus = () => {
   const isVerified = true;
@@ -861,15 +856,17 @@ return (
                       SUMMARY
                     </div>
                     <div>{snapshot.summary}</div>
-                    <div className="text-muted h6 border-bottom pb-1 mt-3 mb-4">
+                    <div className="text-muted h6 border-bottom pb-1 mt-3">
                       DESCRIPTION
                     </div>
                     <Widget
-                      src="${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer"
-                      props={{ text: snapshot.description }}
+                      src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
+                      props={{
+                        content: snapshot.description,
+                      }}
                     />
 
-                    <div className="d-flex gap-2 align-items-center mt-4">
+                    <div className="d-flex gap-2 align-items-center mt-3">
                       <Widget
                         src="${REPL_EVENTS}/widget/devhub.entity.proposal.LikeButton"
                         props={{
@@ -900,9 +897,7 @@ return (
               </div>
               <div className="border-bottom pb-4 mt-4">
                 <Widget
-                  src={
-                    "${REPL_EVENTS}/widget/devhub.entity.proposal.CommentsAndLogs"
-                  }
+                  src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentsAndLogs`}
                   props={{
                     ...props,
                     id: proposal.id,

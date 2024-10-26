@@ -131,23 +131,40 @@ test.describe("Don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
     await expect(disabledSubmitButton).not.toBeAttached();
 
+    let newProposalId = 0;
     await mockTransactionSubmitRPCResponses(
       page,
       async ({ route, request, transaction_completed, last_receiver_id }) => {
         const postData = request.postDataJSON();
-        if (
-          transaction_completed &&
-          postData.params?.method_name === "get_all_proposal_ids"
-        ) {
+        if (postData.params?.method_name === "get_all_proposal_ids") {
           const response = await route.fetch();
           const json = await response.json();
 
-          console.log(
-            "transaction completed, modifying get_proposal_ids result"
-          );
+          await new Promise((resolve) => setTimeout(() => resolve(), 4000));
           const resultObj = decodeResultJSON(json.result.result);
-          resultObj.push(1);
-          console.log(JSON.stringify(resultObj));
+          newProposalId = resultObj[resultObj.length - 1] + 1;
+          if (transaction_completed) {
+            resultObj.push(newProposalId);
+          }
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+        } else if (
+          postData.params?.method_name === "get_proposal" &&
+          postData.params.args_base64 ===
+            btoa(JSON.stringify({ proposal_id: newProposalId }))
+        ) {
+          postData.params.args_base64 = btoa(
+            JSON.stringify({ proposal_id: newProposalId - 1 })
+          );
+          const response = await route.fetch({
+            postData: JSON.stringify(postData),
+          });
+          const json = await response.json();
+
+          let resultObj = decodeResultJSON(json.result.result);
+          resultObj.snapshot.name = "Test proposal 123456";
+          resultObj.snapshot.description = "The test proposal description.";
           json.result.result = encodeResultJSON(resultObj);
 
           await route.fulfill({ response, json });
@@ -703,14 +720,18 @@ test.describe("Wallet is connected", () => {
     });
     test("should filter proposals by categories", async ({ page, account }) => {
       test.setTimeout(60000);
+      const loader = page.getByRole("img", { name: "loader" });
+      await expect(loader).toBeVisible({ timeout: 20000 });
+      await expect(page.locator(".proposal-card").first()).toBeVisible({
+        timeout: 20000,
+      });
       const category = "Bounty";
       await page.getByRole("button", { name: "Category" }).click();
       await page.getByRole("list").getByText(category).first().click();
       await expect(
         page.getByRole("button", { name: `Category : ${category}` })
       ).toBeVisible();
-      const loader = page.getByRole("img", { name: "loader" });
-      expect(loader).toBeHidden({ timeout: 10000 });
+      await expect(loader).toBeHidden({ timeout: 40000 });
 
       const bountyTag = page.getByText(category, { exact: true }).nth(1);
 

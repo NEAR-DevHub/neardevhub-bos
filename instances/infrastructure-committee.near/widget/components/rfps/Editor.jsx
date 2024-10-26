@@ -393,6 +393,10 @@ const InputContainer = ({ heading, description, children }) => {
   );
 };
 
+function cleanDraft() {
+  Storage.privateSet(draftKey, null);
+}
+
 // show RFP created after txn approval for popup wallet
 useEffect(() => {
   if (isTxnCreated) {
@@ -405,6 +409,7 @@ useEffect(() => {
         typeof oldRfpData === "object" &&
         JSON.stringify(editRfpData) !== JSON.stringify(oldRfpData)
       ) {
+        cleanDraft();
         setCreateTxn(false);
         setRfpId(editRfpData.id);
         setShowRfpViewModal(true);
@@ -422,6 +427,7 @@ useEffect(() => {
         Array.isArray(rfpIdsArray) &&
         rfpIds.length !== rfpIdsArray.length
       ) {
+        cleanDraft();
         setCreateTxn(false);
         setRfpId(rfpIds[rfpIds.length - 1]);
         setShowRfpViewModal(true);
@@ -456,8 +462,8 @@ useEffect(() => {
             transaction_method_name == "edit_rfp";
 
           if (is_edit_or_add_rfp_transaction) {
+            cleanDraft();
             setShowRfpViewModal(true);
-            Storage.privateSet(draftKey, null);
           }
           // show the latest created rfp to user
           if (transaction_method_name == "add_rfp") {
@@ -503,7 +509,10 @@ const onSubmit = () => {
     description: description,
     summary: summary,
     submission_deadline: getTimestamp(submissionDeadline),
-    timeline: timeline,
+    timeline:
+      Object.keys(timeline || {}).length > 0
+        ? timeline
+        : { status: RFP_TIMELINE_STATUS.ACCEPTING_SUBMISSIONS },
   };
   const args = { labels: (labels ?? []).map((i) => i.value), body: body };
   if (isEditPage) {
@@ -519,10 +528,6 @@ const onSubmit = () => {
     },
   ]);
 };
-
-function cleanDraft() {
-  Storage.privateSet(draftKey, null);
-}
 
 if (loading) {
   return (

@@ -1,15 +1,9 @@
-const {
-  PROPOSAL_TIMELINE_STATUS,
-  fetchGraphQL,
-  parseJSON,
-  isNumber,
-  getLinkUsingCurrentGateway,
-} = VM.require(`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`) || {
-  PROPOSAL_TIMELINE_STATUS: {},
-  parseJSON: () => {},
-  isNumber: () => {},
-  getLinkUsingCurrentGateway: () => {},
-};
+const { PROPOSAL_TIMELINE_STATUS, fetchGraphQL, parseJSON, isNumber } =
+  VM.require(`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`) || {
+    PROPOSAL_TIMELINE_STATUS: {},
+    parseJSON: () => {},
+    isNumber: () => {},
+  };
 
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
 href || (href = () => {});
@@ -365,9 +359,7 @@ const commentAuthors = [
   ...new Set(comments.map((comment) => comment.accountId)),
 ];
 
-const proposalURL = getLinkUsingCurrentGateway(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=proposal&id=${proposal.id}&timestamp=${snapshot.timestamp}`
-);
+const proposalURL = `https://${REPL_INFRASTRUCTURE_COMMITTEE}.page/proposal/${proposal.id}`;
 
 const SidePanelItem = ({ title, children, hideBorder, ishidden }) => {
   return (
@@ -670,9 +662,9 @@ return (
       </div>
       <div className="d-flex gap-2 align-items-center">
         <Widget
-          src={`${REPL_NEAR}/widget/ShareButton`}
+          src="${REPL_DEVHUB}/widget/devhub.components.molecule.ShareLinkButton"
           props={{
-            postType: "post",
+            postType: "proposal",
             url: proposalURL,
           }}
         />
@@ -841,15 +833,17 @@ return (
                       SUMMARY
                     </div>
                     <div>{snapshot.summary}</div>
-                    <div className="text-muted h6 border-bottom pb-1 mt-3 mb-4">
+                    <div className="text-muted h6 border-bottom pb-1 mt-3">
                       DESCRIPTION
                     </div>
                     <Widget
-                      src={`${REPL_DEVHUB}/widget/devhub.components.molecule.MarkdownViewer`}
-                      props={{ text: snapshot.description }}
+                      src={`${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDEViewer`}
+                      props={{
+                        content: snapshot.description,
+                      }}
                     />
 
-                    <div className="d-flex gap-2 align-items-center mt-4">
+                    <div className="d-flex gap-2 align-items-center mt-3">
                       <Widget
                         src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.LikeButton`}
                         props={{
@@ -878,7 +872,7 @@ return (
               </div>
               <div className="border-bottom pb-4 mt-4">
                 <Widget
-                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.proposals.CommentsAndLogs`}
+                  src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.CommentsAndLogs`}
                   props={{
                     ...props,
                     id: proposal.id,

@@ -25,6 +25,10 @@
           "value": "{\"accountId\":\"theori.near\",\"allKeys\":[\"ed25519:9enAAsDiQ2NvKU2TsHLETp96sYeN2qkbHxhpXLjCQThS\"]}"
         },
         {
+          "name": "infrastructure-committee.near_wallet_auth_key",
+          "value": "{\"accountId\":\"theori.near\",\"allKeys\":[\"ed25519:G6PXTFq5xNvyYL4LttWVvHo7srmfGuTumX5W7JyXV21P\"]}"
+        },
+        {
           "name": "near-api-js:keystore:theori.near:mainnet",
           "value": "ed25519:67p9ygtfVNZz5AzMkeN4bqstCck8RWxWDthcTa7JaBvxkrBRTc6A43SsuPy9LdtiR6XtSRD1HiS4KQTWCZw83FKS"
         },
@@ -39,6 +43,10 @@
         {
           "name": "events-committee.near:keystore:theori.near:mainnet",
           "value": "ed25519:2fBVgJF9NpbAsGfNsGVZGbA1wX46Xyqcn9pZZ9hLA6BpawvDbeD9CAuXDteHMGa3mRuTg9pMQJqvqNhGRfUzYhtc"
+        },
+        {
+          "name": "infrastructure-committee.near:keystore:theori.near:mainnet",
+          "value": "ed25519:3WZFLnory8LU1iji6dXPrhQr4bq7SvaAH68i7odEzJ8N1acMn8LjAU8py84LmiQkgVs4x5Ma1XaFy1BpQGuBRVS1"
         },
         {
           "name": "near-social-vm:v01::accountId:",

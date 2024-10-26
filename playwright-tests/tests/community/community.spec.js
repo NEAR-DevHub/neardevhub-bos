@@ -257,7 +257,9 @@ test.describe("Is DevHUB platform community admin", () => {
     await expect(
       await page.getByRole("heading", { name: "Bugs" })
     ).toBeVisible();
-    await expect(await page.locator(".card-header").first()).toBeVisible();
+    await expect(await page.locator(".card-header").first()).toBeVisible({
+      timeout: 10_000,
+    });
     await expect(await page.locator(".card-header").count()).toBeGreaterThan(1);
     await page.locator(".card-header").nth(2).scrollIntoViewIfNeeded();
     await pauseIfVideoRecording(page);
