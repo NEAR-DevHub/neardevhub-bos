@@ -34,6 +34,15 @@ const accountId = context.accountId;
 
 const { id, timestamp } = props;
 
+if (id === undefined) {
+  return (
+    <Widget
+      src={`${REPL_DEVHUB}/widget/devhub.page.notfound`}
+      props={{ missing: "rfp id" }}
+    />
+  );
+}
+
 const Container = styled.div`
   .full-width-div {
     width: 100vw;

@@ -81,12 +81,7 @@ function Page() {
       );
     }
     default: {
-      return (
-        <Widget
-          src={"${REPL_EVENTS}/widget/devhub.page.proposals"}
-          props={passProps}
-        />
-      );
+      return <Widget src={"${REPL_DEVHUB}/widget/devhub.page.notfound"} />;
     }
   }
 }
