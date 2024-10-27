@@ -1020,7 +1020,7 @@ const AmountComponent = useMemo(() => {
 const CurrencyComponent = useMemo(() => {
   return (
     <Widget
-      src="${REPL_EVENTS}/widget/devhub.components.molecule.DropDown"
+      src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
       props={{
         options: tokensOptions,
         selectedValue: requestedSponsorshipToken,
