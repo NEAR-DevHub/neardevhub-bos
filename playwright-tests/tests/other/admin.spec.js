@@ -1,4 +1,38 @@
 import { test, expect } from "@playwright/test";
+import { mockMainnetRpcRequest } from "../../util/rpcmock";
+
+const adminPageRoute = "/devhub.near/widget/app?page=admin";
+const adminButtonSelector = `button[data-testid="preview-homepage"]`;
+
+async function navigateToAdminPage(page) {
+  await page.goto(adminPageRoute);
+  await page.waitForSelector(adminButtonSelector, { state: "visible" });
+}
+
+async function fillCommunityHandle(page, handle) {
+  const communityHandleInputSelector = "input[placeholder='Community handle']";
+  await page.locator(communityHandleInputSelector).nth(4).click();
+  await page.locator(communityHandleInputSelector).nth(4).fill(handle);
+}
+
+async function mockNearBalance(page, balanceLeft) {
+  const storageUsage = (55 - balanceLeft) * 100000; // 0.00001 NEAR per byte
+  await mockMainnetRpcRequest({
+    page,
+    filterParams: {
+      request_type: "view_account",
+    },
+    mockedResult: {
+      amount: "55000000000000000000000000", // balance on account 55 NEAR
+      block_hash: "2KiPPwUK6MakeWt9cRgHdVKfsJcHX8HkhL9tGYCwHDDA",
+      block_height: 131251870,
+      code_hash: "AUHmE71SPjnq8S3EW7m8ompfVBJxwCt4YfVvFLHtvVnr",
+      locked: "0",
+      storage_paid_at: 0,
+      storage_usage: storageUsage,
+    },
+  });
+}
 
 test.describe("Wallet is connected", () => {
   // sign in to wallet
@@ -10,20 +44,11 @@ test.describe("Wallet is connected", () => {
     page,
   }) => {
     test.setTimeout(60000);
-    await page.goto("/devhub.near/widget/app?page=admin");
 
-    const buttonSelector = `button[data-testid="preview-homepage"]`;
-    // Wait for the preview homepage to appear
-    await page.waitForSelector(buttonSelector, {
-      state: "visible",
-    });
+    await page.goto(adminPageRoute);
 
-    // Click on Community handle input
-    await page.getByPlaceholder("Community handle").nth(4).click();
-    await page
-      .getByPlaceholder("Community handle")
-      .nth(4)
-      .fill("thomasguntenaar");
+    await fillCommunityHandle(page, "thomasguntenaar");
+
     await page.getByTestId("add-to-list").click();
     await page.getByRole("button", { name: " Submit" }).click();
     await page.getByText("Close").click();
@@ -40,12 +65,7 @@ test.describe("Wallet is connected", () => {
   });
 
   test("should be able to manage moderators", async ({ page }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
-    const buttonSelector = `button[data-testid="preview-homepage"]`;
-    // Wait for the first post button to be visible
-    await page.waitForSelector(buttonSelector, {
-      state: "visible",
-    });
+    await navigateToAdminPage(page);
     await page.getByRole("tab", { name: "Moderators" }).click();
     await page.getByTestId("edit-members").click();
     const inputElement = page.locator(
@@ -62,12 +82,7 @@ test.describe("Wallet is connected", () => {
   });
 
   test("should be able to manage restricted labels", async ({ page }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
-    const buttonSelector = `button[data-testid="preview-homepage"]`;
-    // Wait for the first post button to be visible
-    await page.waitForSelector(buttonSelector, {
-      state: "visible",
-    });
+    await navigateToAdminPage(page);
     await page.getByRole("tab", { name: "Restricted labels" }).click();
     await page.getByTestId("create-team").click();
     await page.getByRole("button", { name: "Cancel" }).click();
@@ -158,20 +173,11 @@ test.describe("Wallet is connected", () => {
     await page.getByLabel("Close").click();
   });
 
-  test("shouldn't be able to add a none existing community handle without a warning", async ({
+  test("shouldn't be able to add a non-existing community handle without a warning", async ({
     page,
   }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
-    const buttonSelector = `button[data-testid="preview-homepage"]`;
-    // Wait for the first post  button to be visible
-    await page.waitForSelector(buttonSelector, {
-      state: "visible",
-    });
-    await page.getByPlaceholder("Community handle").nth(4).click();
-    await page
-      .getByPlaceholder("Community handle")
-      .nth(4)
-      .fill("arandomnonsensehandlethatwouldnotexist");
+    await navigateToAdminPage(page);
+    await fillCommunityHandle(page, "arandomnonsensehandlethatwouldnotexist");
     await page.getByTestId("add-to-list").click();
     await page.getByTestId("add-to-list").click();
     await page
@@ -180,19 +186,40 @@ test.describe("Wallet is connected", () => {
       )
       .click();
   });
+
+  test("should be able to see contract balance if the balance is lower than 2 NEAR", async ({
+    page,
+  }) => {
+    await navigateToAdminPage(page);
+    await mockNearBalance(page, 5);
+
+    const contractBalanceWrapper = await page.getByTestId(
+      "contract-balance-wrapper"
+    );
+    expect(contractBalanceWrapper).toBeDefined();
+    await page.waitForTimeout(1000);
+    const balance = await page.getByTestId("contract-balance");
+    expect(await balance.isVisible()).toBe(false);
+
+    // Under 2 NEAR
+    await mockNearBalance(page, 1.9);
+    await navigateToAdminPage(page);
+
+    expect(contractBalanceWrapper).toBeDefined();
+    await page.waitForTimeout(1000);
+    expect(await balance.isVisible()).toBe(true);
+  });
 });
 
-test.describe("Wallet is not connect", () => {
+test.describe("Wallet is not connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-not-connected.json",
   });
   test("should show banner that the user doesn't have access", async ({
     page,
   }) => {
-    await page.goto("/devhub.near/widget/app?page=admin");
+    await page.goto(adminPageRoute);
     const buttonSelector = "h2.alert.alert-danger";
-    // Wait for the first post history button to be visible
-
     const banner = await page.waitForSelector(buttonSelector, {
       state: "visible",
     });

@@ -192,6 +192,15 @@ return (
   <Navbar className="position-relative">
     <Logo />
     <div className="d-flex gap-3 align-items-center">
+      {isModerator ? (
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.components.island.contract-balance"
+          props={{
+            accountId: "${REPL_INFRASTRUCTURE_COMMITTEE}",
+            dark: false,
+          }}
+        />
+      ) : null}
       <LinksContainer>
         {links.map((link) => (
           <Widget
