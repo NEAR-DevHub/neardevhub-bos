@@ -4,9 +4,9 @@ const [showMenu, setShowMenu] = useState(false);
 
 const { href: linkHref } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
-const { hasModerator } = VM.require(
-  "${REPL_EVENTS}/widget/core.adapter.devhub-contract"
-);
+const { hasModerator } =
+  VM.require("${REPL_EVENTS}/widget/core.adapter.devhub-contract") ||
+  (() => {});
 
 linkHref || (linkHref = () => {});
 
@@ -139,21 +139,19 @@ let links = [
   },
 ];
 
-if (hasModerator) {
-  const isDevHubModerator = hasModerator({
-    account_id: context.accountId,
-  });
+const isAdmin = hasModerator({
+  account_id: context.accountId,
+});
 
-  if (isDevHubModerator) {
-    links = [
-      {
-        title: "Admin",
-        href: "admin",
-        links: [],
-      },
-      ...links,
-    ];
-  }
+if (isAdmin) {
+  links = [
+    {
+      title: "Admin",
+      href: "admin",
+      links: [],
+    },
+    ...links,
+  ];
 }
 
 const MobileNav = styled.div`
@@ -205,6 +203,15 @@ return (
     <div className="d-flex justify-content-between container-xl">
       <Logo />
       <div className="d-flex gap-3 align-items-center">
+        {isAdmin ? (
+          <Widget
+            src="${REPL_DEVHUB}/widget/devhub.components.island.contract-balance"
+            props={{
+              accountId: "events-committee.near",
+              dark: true,
+            }}
+          />
+        ) : null}
         <LinksContainer>
           {links.map((link) => (
             <Widget
