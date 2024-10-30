@@ -410,7 +410,7 @@ useEffect(() => {
 }, [snapshot]);
 
 function fetchApprovedRfpProposals() {
-  const queryName = "${REPL_RFP_INDEXER_QUERY_NAME}";
+  const queryName = "${REPL_PROPOSAL_QUERY_NAME}";
   const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
       offset: $offset
