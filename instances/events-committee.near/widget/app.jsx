@@ -23,7 +23,7 @@ if (!AppLayout || !Theme || !CssContainer) {
 
 if (!page) {
   // If no page is specified, we default to the feed page TEMP
-  page = "home";
+  page = "proposals";
 }
 
 // This is our navigation, rendering the page based on the page parameter
@@ -38,7 +38,6 @@ function Page() {
         />
       );
     }
-
     case "proposals": {
       return (
         <Widget
