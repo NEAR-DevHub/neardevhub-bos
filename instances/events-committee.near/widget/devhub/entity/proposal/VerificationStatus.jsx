@@ -15,28 +15,30 @@ useEffect(() => {
     (receiverAccount ?? "").includes(".near") ||
     (receiverAccount ?? "").includes(".tg")
   ) {
-    useCache(
-      () =>
-        asyncFetch(
-          `https://neardevhub-kyc-proxy.shuttleapp.rs/kyc/${receiverAccount}`
-        ).then((res) => {
-          let displayableText = "";
-          switch (res.body.kyc_status) {
-            case "Approved":
-              displayableText = "Verified";
-              break;
-            case "Pending":
-              displayableText = "Pending";
-              break;
-            default:
-              displayableText = "Not Verfied";
-              break;
-          }
-          setVerificationStatus(displayableText);
-        }),
-      "ky-check-proposal" + receiverAccount,
-      { subscribe: false }
-    );
+    asyncFetch(
+      `https://neardevhub-kyc-proxy-gvbr.shuttle.app/kyc/${receiverAccount}`
+    ).then((res) => {
+      let displayableText = "";
+      switch (res.body.kyc_status) {
+        case "APPROVED":
+          displayableText = "Verified";
+          break;
+        case "PENDING":
+          displayableText = "Pending";
+          break;
+        case "EXPIRED":
+          displayableText = "Expired";
+          break;
+        case "NOT_SUBMITTED":
+        case "REJECTED":
+          displayableText = "Not Verfied";
+          break;
+        default:
+          displayableText = "Failed to get status";
+          break;
+      }
+      setVerificationStatus(displayableText);
+    });
   }
 }, [receiverAccount]);
 
@@ -233,21 +235,29 @@ const VerificationBtn = () => {
 
 return (
   <div>
-    <div className="d-flex text-black justify-content-between align-items-center">
-      <div className="d-flex" style={{ gap: "12px" }}>
-        <img
-          className="align-self-center object-fit-cover"
-          src={verificationStatus === "Verified" ? SuccessImg : WarningImg}
-          height={imageSize}
-        />
-        <div className="d-flex flex-column justify-content-center">
-          <div className="h6 mb-0">Fractal</div>
-          <div className="text-sm text-muted">{verificationStatus}</div>
+    {!verificationStatus ? (
+      <span
+        className="spinner-grow spinner-grow-sm me-1"
+        role="status"
+        aria-hidden="true"
+      />
+    ) : (
+      <div className="d-flex text-black justify-content-between align-items-center">
+        <div className="d-flex" style={{ gap: "12px" }}>
+          <img
+            className="align-self-center object-fit-cover"
+            src={verificationStatus === "Verified" ? SuccessImg : WarningImg}
+            height={imageSize}
+          />
+          <div className="d-flex flex-column justify-content-center">
+            <div className="h6 mb-0">Fractal</div>
+            <div className="text-sm text-muted">{verificationStatus}</div>
+          </div>
         </div>
+        {verificationStatus !== "Verified" && showGetVerifiedBtn && (
+          <VerificationBtn />
+        )}
       </div>
-      {verificationStatus !== "Verified" && showGetVerifiedBtn && (
-        <VerificationBtn />
-      )}
-    </div>
+    )}
   </div>
 );
