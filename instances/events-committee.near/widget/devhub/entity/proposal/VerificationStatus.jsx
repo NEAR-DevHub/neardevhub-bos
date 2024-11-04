@@ -31,7 +31,7 @@ useEffect(() => {
           break;
         case "NOT_SUBMITTED":
         case "REJECTED":
-          displayableText = "Not Verfied";
+          displayableText = "Not Verified";
           break;
         default:
           displayableText = "Failed to get status";
