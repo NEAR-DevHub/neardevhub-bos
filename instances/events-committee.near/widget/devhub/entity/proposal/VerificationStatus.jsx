@@ -39,6 +39,8 @@ useEffect(() => {
       }
       setVerificationStatus(displayableText);
     });
+  } else {
+    setVerificationStatus("Invalid receipient wallet address");
   }
 }, [receiverAccount]);
 
