@@ -397,6 +397,29 @@ function cleanDraft() {
   Storage.privateSet(draftKey, null);
 }
 
+function checkIfLatestRFPMatchesTitleAndDescription() {
+  Near.asyncView(
+    "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+    "get_all_rfp_ids"
+  ).then((rfpIds) => {
+    const latestRFPId = rfpIds[rfpIds.length - 1];
+    Near.asyncView("${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}", "get_rfp", {
+      rfp_id: latestRFPId,
+    }).then((latestRFP) => {
+      if (
+        latestRFP.snapshot.name === title &&
+        latestRFP.snapshot.description === description
+      ) {
+        setCreateTxn(false);
+        setRfpId(rfpIds[rfpIds.length - 1]);
+        setShowRfpViewModal(true);
+      } else {
+        setTimeout(() => checkIfLatestRFPMatchesTitleAndDescription(), 500);
+      }
+    });
+  });
+}
+
 // show RFP created after txn approval for popup wallet
 useEffect(() => {
   if (isTxnCreated) {
@@ -415,23 +438,7 @@ useEffect(() => {
         setShowRfpViewModal(true);
       }
     } else {
-      const rfpIds = Near.view(
-        "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
-        "get_all_rfp_ids"
-      );
-      if (Array.isArray(rfpIds) && !rfpIdsArray) {
-        setRfpIdsArray(rfpIds);
-      }
-      if (
-        Array.isArray(rfpIds) &&
-        Array.isArray(rfpIdsArray) &&
-        rfpIds.length !== rfpIdsArray.length
-      ) {
-        cleanDraft();
-        setCreateTxn(false);
-        setRfpId(rfpIds[rfpIds.length - 1]);
-        setShowRfpViewModal(true);
-      }
+      checkIfLatestRFPMatchesTitleAndDescription();
     }
   }
 });
@@ -830,7 +837,8 @@ return (
                       </div>
                     ),
                     onClick: onSubmit,
-                    disabled: disabledSubmitBtn,
+                    disabled: disabledSubmitBtn || isTxnCreated,
+                    loading: isTxnCreated,
                   }}
                 />
               </div>

@@ -2,14 +2,40 @@ import { test, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils";
 import { mockRpcRequest } from "../../util/rpcmock";
 import {
+  setCacheValue,
   setCommitWritePermissionDontAskAgainCacheValues,
   setDontAskAgainCacheValues,
 } from "../../util/cache";
-import { mockTransactionSubmitRPCResponses } from "../../util/transaction";
+import {
+  decodeResultJSON,
+  encodeResultJSON,
+  mockTransactionSubmitRPCResponses,
+} from "../../util/transaction";
 const os = require("os");
 
 const isMac = os.platform() === "darwin";
 const isLinux = os.platform() === "linux";
+
+async function mockGlobalLabels(page) {
+  await mockRpcRequest({
+    page,
+    filterParams: {
+      method_name: "get_global_labels",
+    },
+    mockedResult: [
+      {
+        value: "Data Lakes",
+        title: "Data Lakes",
+        color: [0, 255, 0],
+      },
+      {
+        value: "Explorers",
+        title: "Explorers",
+        color: [0, 255, 255],
+      },
+    ],
+  });
+}
 
 test.describe("Wallet is connected", () => {
   test.use({
@@ -66,78 +92,6 @@ test.describe("Wallet is connected", () => {
 test.describe("Wallet is connected with admin account", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected-admin.json",
-  });
-  test("admin should be able see the create RFP button and fill the form", async ({
-    page,
-  }) => {
-    test.setTimeout(120000);
-    await mockRpcRequest({
-      page,
-      filterParams: {
-        method_name: "get_global_labels",
-      },
-      mockedResult: [
-        {
-          value: "Data Lakes",
-          title: "Data Lakes",
-          color: [0, 255, 0],
-        },
-        {
-          value: "Explorers",
-          title: "Explorers",
-          color: [0, 255, 255],
-        },
-      ],
-    });
-
-    await page.goto("/infrastructure-committee.near/widget/app?page=rfps");
-    await page.getByRole("button", { name: " Create RFP" }).click();
-    await page.getByText("Select Category").click();
-    await page.getByText("Explorers").click();
-    await expect(page.locator(".badge")).toHaveText("Explorers");
-    await page.locator('input[type="text"]').pressSequentially("test title");
-    await page.locator('input[type="date"]').pressSequentially("12/12/2030");
-    await page
-      .locator('textarea[type="text"]')
-      .pressSequentially("the rfp summary");
-    const descriptionInput = await page
-      .frameLocator("iframe")
-      .locator(".CodeMirror");
-    await descriptionInput.click();
-    await descriptionInput.pressSequentially("The RFP description");
-    await page.getByRole("checkbox").first().click();
-
-    const submitButton = await page.getByRole("button", { name: "Submit" });
-    await submitButton.scrollIntoViewIfNeeded();
-    await expect(submitButton).toBeEnabled();
-    await pauseIfVideoRecording(page);
-    await submitButton.click();
-
-    const transactionText = JSON.stringify(
-      JSON.parse(await page.locator("div.modal-body code").innerText()),
-      null,
-      1
-    );
-    await expect(transactionText).toEqual(
-      JSON.stringify(
-        {
-          labels: ["Explorers"],
-          body: {
-            rfp_body_version: "V0",
-            name: "test title",
-            description: "The RFP description",
-            summary: "the rfp summary",
-            submission_deadline: "1923264000000000000",
-            timeline: {
-              status: "ACCEPTING_SUBMISSIONS",
-            },
-          },
-        },
-        null,
-        1
-      )
-    );
-    await pauseIfVideoRecording(page);
   });
 
   test("should cancel RFP", async ({ page }) => {
@@ -274,8 +228,140 @@ test.describe("Admin with don't ask again enabled", () => {
       permissions: ["clipboard-read", "clipboard-write"],
     },
   });
+  test("admin should be able to create RFP", async ({ page }) => {
+    test.setTimeout(140_000);
+    await mockGlobalLabels(page);
+    await page.goto("/infrastructure-committee.near/widget/app?page=rfps");
+    const title = "test title";
+    const summary = "the rfp summary";
+    const description = "The RFP description";
+    const submissionDate = "12/12/2030";
+    const RFPSubmitterAccount = "petersalomonsen.near";
+    await setCacheValue({
+      page,
+      key: JSON.stringify({
+        action: "ViewCall",
+        contractId: "infrastructure-committee.near",
+        methodName: "get_all_rfp_ids",
+      }),
+      value: [0, 1, 2, 3, 4],
+    });
+    await setDontAskAgainCacheValues({
+      page,
+      widgetSrc: "infrastructure-committee.near/widget/components.rfps.Editor",
+      methodName: "add_rfp",
+      contractId: "infrastructure-committee.near",
+    });
+    await page.getByRole("button", { name: " Create RFP" }).click();
+    await page.getByText("Select Category").click();
+    await page.getByText("Explorers").click();
+    await expect(page.locator(".badge")).toHaveText("Explorers");
+    await page.locator('input[type="text"]').pressSequentially(title);
+    await page.locator('input[type="date"]').pressSequentially(submissionDate);
+    await page.locator('textarea[type="text"]').pressSequentially(summary);
+    const descriptionInput = await page
+      .frameLocator("iframe")
+      .locator(".CodeMirror");
+    await descriptionInput.click();
+    await descriptionInput.pressSequentially(description);
+    await page.getByRole("checkbox").first().click();
+
+    let newRFPId = 0;
+    let get_all_rfps_ids_attempt = 0;
+    await mockTransactionSubmitRPCResponses(
+      page,
+      async ({ route, request, transaction_completed, last_receiver_id }) => {
+        const postData = request.postDataJSON();
+        if (postData.params?.method_name === "get_all_rfp_ids") {
+          const response = await route.fetch();
+          const json = await response.json();
+          const resultObj = decodeResultJSON(json.result.result);
+          json.result.result = encodeResultJSON(resultObj);
+          newRFPId = resultObj[resultObj.length - 1] + 1;
+          if (transaction_completed) {
+            if (get_all_rfps_ids_attempt === 1) {
+              resultObj.push(newRFPId);
+            } else {
+              get_all_rfps_ids_attempt++;
+            }
+          }
+          json.result.result = encodeResultJSON(resultObj);
+          await route.fulfill({ response, json });
+        } else if (
+          postData.params?.method_name === "get_rfp" &&
+          postData.params.args_base64 ===
+            btoa(JSON.stringify({ rfp_id: newRFPId }))
+        ) {
+          postData.params.args_base64 = btoa(
+            JSON.stringify({ rfp_id: newRFPId - 1 })
+          );
+          const response = await route.fetch({
+            postData: JSON.stringify(postData),
+          });
+          const json = await response.json();
+
+          let resultObj = decodeResultJSON(json.result.result);
+          resultObj = {
+            rfp_version: "V0",
+            id: newRFPId,
+            author_id: RFPSubmitterAccount,
+            social_db_post_block_height: "128860426",
+            snapshot: {
+              editor_id: RFPSubmitterAccount,
+              timestamp: "1727265468109441208",
+              block_height: "131661163",
+              labels: ["Explorers"],
+              rfp_body_version: "V0",
+              name: title,
+              summary: summary,
+              description: description,
+              timeline: {
+                status: "ACCEPTING_SUBMISSIONS",
+              },
+              submission_deadline: "1728950400000000000",
+              linked_proposals: [],
+            },
+            snapshot_history: [],
+          };
+
+          json.result.result = encodeResultJSON(resultObj);
+
+          await route.fulfill({ response, json });
+        } else {
+          await route.continue();
+        }
+      }
+    );
+    const submitButton = await page.getByRole("button", { name: "Submit" });
+    await submitButton.scrollIntoViewIfNeeded();
+    await expect(submitButton).toBeEnabled();
+    await pauseIfVideoRecording(page);
+    await submitButton.click();
+    expect(submitButton).toBeDisabled();
+    const transaction_toast = await page.getByText(
+      `Calling contract infrastructure-committee.near with method add_rfp`
+    );
+    await expect(transaction_toast).toBeVisible();
+
+    await transaction_toast.waitFor({ state: "detached", timeout: 10000 });
+    await expect(transaction_toast).not.toBeVisible();
+
+    // check for navigation modal
+    const navigationModal = await page.getByText(
+      "Your RFP has been successfully published"
+    );
+    await expect(navigationModal).toBeVisible();
+    await page.getByRole("button", { name: "View RFP" }).click();
+    await expect(page.url()).toBe(
+      `http://localhost:8080/infrastructure-committee.near/widget/app?page=rfp&id=${newRFPId}`
+    );
+
+    await pauseIfVideoRecording(page);
+  });
+
   test("should edit RFP", async ({ page }) => {
     test.setTimeout(120000);
+    const editRfpId = 0;
     let isTransactionCompleted = false;
     const theNewDescription = "The edited RFP description";
 
@@ -311,7 +397,9 @@ test.describe("Admin with don't ask again enabled", () => {
       }
     );
 
-    await page.goto("/infrastructure-committee.near/widget/app?page=rfp&id=0");
+    await page.goto(
+      `/infrastructure-committee.near/widget/app?page=rfp&id=${editRfpId}`
+    );
     await setDontAskAgainCacheValues({
       page,
       widgetSrc: "infrastructure-committee.near/widget/components.rfps.Editor",
@@ -328,15 +416,30 @@ test.describe("Admin with don't ask again enabled", () => {
     await descriptionArea.blur();
 
     await pauseIfVideoRecording(page);
-    await page.getByRole("button", { name: "Submit" }).click();
-    const transactionToast = await page.locator(".toast-header");
-    await expect(transactionToast).toHaveText("Sending transaction");
-    await expect(transactionToast).not.toBeAttached({ timeout: 10000 });
+    const submitButton = await page.getByRole("button", { name: "Submit" });
+    await submitButton.scrollIntoViewIfNeeded();
+    await expect(submitButton).toBeEnabled();
+    await pauseIfVideoRecording(page);
+    await submitButton.click();
+    expect(submitButton).toBeDisabled();
+    const transaction_toast = await page.getByText(
+      `Calling contract infrastructure-committee.near with method edit_rfp`
+    );
+    await expect(transaction_toast).toBeVisible();
+
+    await transaction_toast.waitFor({ state: "detached", timeout: 10000 });
+    await expect(transaction_toast).not.toBeVisible();
+
     // check for navigation modal
     const navigationModal = await page.getByText(
       "Your RFP has been successfully edited"
     );
     await expect(navigationModal).toBeVisible();
+    await page.getByRole("button", { name: "View RFP" }).click();
+    await expect(page.url()).toBe(
+      `http://localhost:8080/infrastructure-committee.near/widget/app?page=rfp&id=${editRfpId}`
+    );
+
     await pauseIfVideoRecording(page);
   });
 
