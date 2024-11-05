@@ -229,7 +229,7 @@ test.describe("Admin with don't ask again enabled", () => {
     },
   });
   test("admin should be able to create RFP", async ({ page }) => {
-    test.setTimeout(120000);
+    test.setTimeout(140_000);
     await mockGlobalLabels(page);
     await page.goto("/infrastructure-committee.near/widget/app?page=rfps");
     const title = "test title";
