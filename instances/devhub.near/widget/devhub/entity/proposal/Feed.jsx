@@ -354,9 +354,6 @@ const FeedPage = () => {
 
   const buildWhereClause = () => {
     let where = {};
-    if (state.author) {
-      where = { author_id: { _eq: state.author }, ...where };
-    }
 
     if (state.category) {
       if (isInfra || isEvents) {
@@ -366,13 +363,6 @@ const FeedPage = () => {
       }
     }
 
-    if (state.stage) {
-      // timeline is stored as jsonb
-      where = {
-        timeline: { _cast: { String: { _regex: `${state.stage}` } } },
-        ...where,
-      };
-    }
     if (state.input) {
       const { number, text } = separateNumberAndText(state.input);
       if (number) {
@@ -399,6 +389,30 @@ const FeedPage = () => {
     fetchProposals(state.data.length);
   };
 
+  /**
+   *  { name: { _iregex: `${text}` } },
+      { summary: { _iregex: `${text}` } },
+      { descriptio
+   */
+
+  function fetchCacheApi(variables) {
+    // TODO: move to config
+    const ENDPOINT = "https://devhub-cache-api-rs.fly.dev";
+    console.log("Fetching cache api", variables);
+
+    return asyncFetch(
+      `${ENDPOINT}/proposals?offset=${variables.offset}&limit=${variables.limit}&stage=${variables.stage}&author_id=${variables.author_id}&category=${variables.category}`,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+        },
+      }
+    ).catch((error) => {
+      console.log("Error fetching cache api", error);
+    });
+  }
+
   const fetchProposals = (offset) => {
     if (!offset) {
       offset = 0;
@@ -409,32 +423,32 @@ const FeedPage = () => {
     const variables = {
       limit: FETCH_LIMIT,
       offset,
-      where: buildWhereClause(),
+      author_id: state.author,
+      stage: state.stage,
+      category: state.category,
     };
-    fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-      if (result.status === 200) {
-        if (result.body.data) {
-          const data = result.body.data[proposalFeedIndexerQueryName];
-          const totalResult =
-            result.body.data[`${proposalFeedIndexerQueryName}_aggregate`];
-          const promises = data.map((item) => {
-            if (isNumber(item.linked_rfp)) {
-              return fetchGraphQL(rfpQuery, "GetLatestSnapshot", {
-                where: { rfp_id: { _eq: item.linked_rfp } },
-              }).then((result) => {
-                const rfpData = result.body.data?.[rfpFeedIndexerQueryName];
-                return { ...item, rfpData: rfpData[0] };
-              });
-            } else {
-              return Promise.resolve(item);
-            }
+    fetchCacheApi(variables).then((result) => {
+      console.log("result", result);
+      let data = result.body.records;
+      let totalResult = { aggregate: { count: data.length } }; // TODO
+
+      const promises = data.map((item) => {
+        if (isNumber(item.linked_rfp)) {
+          return; // TODO index RFPs
+          fetchGraphQL(rfpQuery, "GetLatestSnapshot", {
+            where: { rfp_id: { _eq: item.linked_rfp } },
+          }).then((result) => {
+            const rfpData = result.body.data?.[rfpFeedIndexerQueryName];
+            return { ...item, rfpData: rfpData[0] };
           });
-          Promise.all(promises).then((res) => {
-            State.update({ aggregatedCount: totalResult.aggregate.count });
-            fetchBlockHeights(res, offset);
-          });
+        } else {
+          return Promise.resolve(item);
         }
-      }
+      });
+      Promise.all(promises).then((res) => {
+        State.update({ aggregatedCount: totalResult.aggregate.count });
+        fetchBlockHeights(res, offset);
+      });
     });
   };
 
