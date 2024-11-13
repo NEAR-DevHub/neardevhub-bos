@@ -10,7 +10,6 @@ const {
   proposalFeedAnnouncement,
   availableCategoryOptions,
   proposalFeedIndexerQueryName,
-  indexerHasuraRole,
   isDevhub,
   isInfra,
   isEvents,
@@ -269,14 +268,19 @@ const getProposal = (proposal_id) => {
   });
 };
 
+const getRfp = (rfp_id) => {
+  return Near.asyncView(contract, "get_rfp", {
+    rfp_id,
+  });
+};
+
 const FeedPage = () => {
-  const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
 
   State.init({
     data: [],
     author: "",
     stage: "",
-    sort: "",
+    sort: "id_desc",
     category: "",
     input: "",
     loading: false,
@@ -285,104 +289,6 @@ const FeedPage = () => {
     aggregatedCount: null,
     currentlyDisplaying: 0,
   });
-
-  const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${proposalFeedIndexerQueryName}_bool_exp = {}) {
-    ${proposalFeedIndexerQueryName}(
-      offset: $offset
-      limit: $limit
-      order_by: {proposal_id: desc}
-      where: $where
-    ) {
-      author_id
-      block_height
-      name
-      category
-      summary
-      editor_id
-      proposal_id
-      ts
-      timeline
-      views
-      labels
-      linked_rfp
-    }
-    ${proposalFeedIndexerQueryName}_aggregate(
-      order_by: {proposal_id: desc}
-      where: $where
-    )  {
-      aggregate {
-        count
-      }
-    }
-  }`;
-
-  const rfpQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${rfpFeedIndexerQueryName}_bool_exp = {}) {
-    ${rfpFeedIndexerQueryName}(
-      offset: $offset
-      limit: $limit
-      order_by: {rfp_id: desc}
-      where: $where
-    ) {
-      name
-      rfp_id
-    }
-  }`;
-
-  function fetchGraphQL(operationsDoc, operationName, variables) {
-    return asyncFetch(QUERYAPI_ENDPOINT, {
-      method: "POST",
-      headers: { "x-hasura-role": indexerHasuraRole },
-      body: JSON.stringify({
-        query: operationsDoc,
-        variables: variables,
-        operationName: operationName,
-      }),
-    });
-  }
-
-  function separateNumberAndText(str) {
-    const numberRegex = /\d+/;
-
-    if (numberRegex.test(str)) {
-      const number = str.match(numberRegex)[0];
-      const text = str.replace(numberRegex, "").trim();
-      return { number: parseInt(number), text };
-    } else {
-      return { number: null, text: str.trim() };
-    }
-  }
-
-  const buildWhereClause = () => {
-    let where = {};
-
-    if (state.category) {
-      if (isInfra || isEvents) {
-        where = { labels: { _contains: state.category }, ...where };
-      } else {
-        where = { category: { _eq: state.category }, ...where };
-      }
-    }
-
-    if (state.input) {
-      const { number, text } = separateNumberAndText(state.input);
-      if (number) {
-        where = { proposal_id: { _eq: number }, ...where };
-      }
-
-      if (text) {
-        where = {
-          _or: [
-            { name: { _iregex: `${text}` } },
-            { summary: { _iregex: `${text}` } },
-            { description: { _iregex: `${text}` } },
-          ],
-          ...where,
-        };
-      }
-    }
-
-    return where;
-  };
 
   const makeMoreItems = () => {
     State.update({ makeMoreLoader: true });
@@ -394,15 +300,24 @@ const FeedPage = () => {
     console.log("Fetching endpoint", ENDPOINT);
     console.log("Fetching cache api", variables);
 
+    let fetchUrl = `${ENDPOINT}/proposals?order=${variables.order}&limit=${variables.limit}&offset=${variables.offset}`;
+
+    if (variables.author_id) {
+      fetchUrl += `&filters.author_id=${variables.author_id}`;
+    }
+    if (variables.stage) {
+      fetchUrl += `&filters.stage=${variables.stage}`;
+    }
+    if (variables.category) {
+      if (isInfra || isEvents) {
+        fetchUrl += `&filters.labels=${variables.category}`;
+      } else {
+        fetchUrl += `&filters.category=${variables.category}`;
+      }
+    }
+    console.log("Fetching.. ", fetchUrl);
     return asyncFetch(
-      `${ENDPOINT}/proposals?\
-      order=${variables.sort}\
-      &limit=${variables.limit}\
-      &offset=${variables.offset}\
-      &filters.category=${variables.category}\
-      &filters.labels=${variables.labels}\
-      &filters.author_id=${variables.author_id}\
-      &filters.stage=${variables.stage}`,
+      fetchUrl,
       {
         method: "GET",
         headers: {
@@ -437,12 +352,13 @@ const FeedPage = () => {
 
       const promises = data.map((item) => {
         if (isNumber(item.linked_rfp)) {
-          fetchGraphQL(rfpQuery, "GetLatestSnapshot", {
-            where: { rfp_id: { _eq: item.linked_rfp } },
-          }).then((result) => {
-            const rfpData = result.body.data?.[rfpFeedIndexerQueryName];
+          // TODO fetch individual rfp's -> name & rfp_id
+          getRfp(item.linked_rfp).then((result) => {
+
+            console.log({ result })
+            const rfpData = result.body.data;
             return { ...item, rfpData: rfpData[0] };
-          });
+          }) 
         } else {
           return Promise.resolve(item);
         }
