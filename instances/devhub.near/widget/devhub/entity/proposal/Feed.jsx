@@ -389,19 +389,20 @@ const FeedPage = () => {
     fetchProposals(state.data.length);
   };
 
-  /**
-   *  { name: { _iregex: `${text}` } },
-      { summary: { _iregex: `${text}` } },
-      { descriptio
-   */
-
   function fetchCacheApi(variables) {
-    // TODO: move to config
-    const ENDPOINT = "https://devhub-cache-api-rs.fly.dev";
+    const ENDPOINT = "${REPL_CACHE_URL}";
+    console.log("Fetching endpoint", ENDPOINT);
     console.log("Fetching cache api", variables);
 
     return asyncFetch(
-      `${ENDPOINT}/proposals?offset=${variables.offset}&limit=${variables.limit}&stage=${variables.stage}&author_id=${variables.author_id}&category=${variables.category}`,
+      `${ENDPOINT}/proposals?\
+      order=${variables.sort}\
+      &limit=${variables.limit}\
+      &offset=${variables.offset}\
+      &filters.category=${variables.category}\
+      &filters.labels=${variables.labels}\
+      &filters.author_id=${variables.author_id}\
+      &filters.stage=${variables.stage}`,
       {
         method: "GET",
         headers: {
@@ -421,20 +422,21 @@ const FeedPage = () => {
     State.update({ loading: true });
     const FETCH_LIMIT = 10;
     const variables = {
+      order: state.sort,
       limit: FETCH_LIMIT,
       offset,
+      category: state.category,
+      labels: state.labels,
       author_id: state.author,
       stage: state.stage,
-      category: state.category,
     };
     fetchCacheApi(variables).then((result) => {
       console.log("result", result);
       let data = result.body.records;
-      let totalResult = { aggregate: { count: data.length } }; // TODO
+      let totalResult = { aggregate: { count: result.body.total_records } }; // TODO
 
       const promises = data.map((item) => {
         if (isNumber(item.linked_rfp)) {
-          return; // TODO index RFPs
           fetchGraphQL(rfpQuery, "GetLatestSnapshot", {
             where: { rfp_id: { _eq: item.linked_rfp } },
           }).then((result) => {
@@ -462,10 +464,8 @@ const FeedPage = () => {
       ...new Set([...newItems, ...state.data].map((i) => JSON.stringify(i))),
     ].map((i) => JSON.parse(i));
     // Sorting in the front end
-    if (state.sort === "proposal_id" || state.sort === "") {
+    if (state.sort === "id_desc" || state.sort === "") {
       items.sort((a, b) => b.proposal_id - a.proposal_id);
-    } else if (state.sort === "views") {
-      items.sort((a, b) => b.views - a.views);
     }
 
     return items;
