@@ -275,7 +275,6 @@ const getRfp = (rfp_id) => {
 };
 
 const FeedPage = () => {
-
   State.init({
     data: [],
     author: "",
@@ -316,15 +315,12 @@ const FeedPage = () => {
       }
     }
     console.log("Fetching.. ", fetchUrl);
-    return asyncFetch(
-      fetchUrl,
-      {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-        },
-      }
-    ).catch((error) => {
+    return asyncFetch(fetchUrl, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+      },
+    }).catch((error) => {
       console.log("Error fetching cache api", error);
     });
   }
@@ -354,11 +350,10 @@ const FeedPage = () => {
         if (isNumber(item.linked_rfp)) {
           // TODO fetch individual rfp's -> name & rfp_id
           getRfp(item.linked_rfp).then((result) => {
-
-            console.log({ result })
+            console.log({ result });
             const rfpData = result.body.data;
             return { ...item, rfpData: rfpData[0] };
-          }) 
+          });
         } else {
           return Promise.resolve(item);
         }
