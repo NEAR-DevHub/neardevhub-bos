@@ -1,0 +1,6 @@
+{
+  "account": "treasury-templar.near",
+  "aliasPrefix": "REPL",
+  "aliasesContainsPrefix": true,
+  "aliases": ["./aliases.mainnet.json"]
+}
