@@ -301,18 +301,15 @@ const FeedPage = () => {
     let searchInput = encodeURI(searchTerm);
     let searchUrl = `${ENDPOINT}/proposals/search/${searchInput}`;
 
+    console.log(searchUrl);
     return asyncFetch(searchUrl, {
       method: "GET",
       headers: {
         accept: "application/json",
       },
-    })
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        console.log("Error searching cache api", error);
-      });
+    }).catch((error) => {
+      console.log("Error searching cache api", error);
+    });
   }
 
   const searchProposals = () => {
@@ -321,25 +318,25 @@ const FeedPage = () => {
 
     searchCacheApi().then((result) => {
       console.log("result", result);
-      // let data = result.body.records;
-      // let totalResult = { aggregate: { count: result.body.total_records } }; // TODO
+      let data = result.body.records;
 
-      // const promises = data.map((item) => {
-      //   if (isNumber(item.linked_rfp)) {
-      //     // TODO fetch individual rfp's -> name & rfp_id
-      //     getRfp(item.linked_rfp).then((result) => {
-      //       console.log({ result });
-      //       const rfpData = result.body.data;
-      //       return { ...item, rfpData: rfpData[0] };
-      //     });
-      //   } else {
-      //     return Promise.resolve(item);
-      //   }
-      // });
-      // Promise.all(promises).then((res) => {
-      //   State.update({ aggregatedCount: totalResult.aggregate.count });
-      //   fetchBlockHeights(res, offset);
-      // });
+      const promises = data.map((item) => {
+        console.log("item.linked_rfp ", item.linked_rfp);
+        if (isNumber(item.linked_rfp)) {
+          // TODO fetch individual rfp's via the cache instead of RPC directly -> name & rfp_id
+          getRfp(item.linked_rfp).then((result) => {
+            console.log({ result });
+            const rfpData = result.body.data;
+            return { ...item, rfpData: rfpData[0] };
+          });
+        } else {
+          return Promise.resolve(item);
+        }
+      });
+      Promise.all(promises).then((res) => {
+        State.update({ aggregatedCount: result.body.total_records });
+        fetchBlockHeights(res, offset);
+      });
     });
   };
 
@@ -455,10 +452,13 @@ const FeedPage = () => {
     }
   };
 
-  // TODO use the search here
   useEffect(() => {
     const handler = setTimeout(() => {
-      searchProposals();
+      if (state.input) {
+        searchProposals();
+      } else {
+        fetchProposals();
+      }
     }, 1000);
 
     return () => {
