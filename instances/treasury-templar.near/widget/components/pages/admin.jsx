@@ -120,7 +120,7 @@ return (
             Moderators
           </Tab>
         </li>
-        <li class="nav-item" role="presentation">
+        {/* <li class="nav-item" role="presentation">
           <Tab
             className="nav-link"
             id="about-tab"
@@ -133,7 +133,7 @@ return (
           >
             About
           </Tab>
-        </li>
+        </li> */}
       </ul>
       <div class="tab-content" id="myTabContent">
         <div
