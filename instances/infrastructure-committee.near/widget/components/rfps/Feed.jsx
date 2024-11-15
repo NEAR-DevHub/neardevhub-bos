@@ -313,18 +313,6 @@ const FeedPage = () => {
       stage: state.stage ? encodeURIComponent(state.stage) : "",
     };
 
-    // fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-    //   if (result.status === 200) {
-    //     if (result.body.data) {
-    //       const data = result.body.data?.[queryName];
-    //       const totalResult = result.body.data?.[`${queryName}_aggregate`];
-    //       State.update({ aggregatedCount: totalResult.aggregate.count });
-    //       // Parse timeline
-    //       fetchBlockHeights(data, offset);
-    //     }
-    //   }
-    // });
-
     fetchCacheApi(variables).then((result) => {
       const body = result.body;
       State.update({ aggregatedCount: body.total_records });
