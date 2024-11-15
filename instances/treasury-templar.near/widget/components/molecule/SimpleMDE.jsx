@@ -29,8 +29,8 @@ const fontFamily = props.fontFamily ?? "sans-serif";
 const alignToolItems = props.alignToolItems ?? "right";
 const placeholder = props.placeholder ?? "";
 const showAccountAutoComplete = props.showAutoComplete ?? false;
-const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
-const showRfpIdAutoComplete = props.showRfpIdAutoComplete ?? false;
+const showProposalIdAutoComplete = false;
+const showRfpIdAutoComplete = false;
 const autoFocus = props.autoFocus ?? false;
 
 const proposalQueryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";

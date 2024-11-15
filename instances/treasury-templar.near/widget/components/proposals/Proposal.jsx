@@ -279,57 +279,38 @@ const proposal = Near.view(
 
 const [snapshotHistory, setSnapshotHistory] = useState([]);
 
-const queryName = "${REPL_PROPOSAL_QUERY_NAME}";
-const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-  ${queryName}(
-    offset: $offset
-    limit: $limit
-    order_by: {ts: asc}
-    where: $where
-  ) {
-    editor_id
-    name
-    summary
-    description
-    ts
-    proposal_id
-    timeline
-    labels
-    linked_proposals
-    linked_rfp
-    requested_sponsorship_usd_amount
-    requested_sponsorship_paid_in_currency
-    receiver_account
-    requested_sponsor
-    supervisor
-  }
-}`;
+// need to fix it
+function fetchSnapshotHistory() {
+  const ENDPOINT = "${REPL_CACHE_URL}";
 
-const fetchSnapshotHistory = () => {
-  const variables = {
-    where: { proposal_id: { _eq: id } },
-  };
-  if (typeof fetchGraphQL !== "function") {
-    return;
-  }
-  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const data = result.body.data?.[queryName];
-        const history = data.map((item) => {
-          const proposalData = {
-            ...item,
-            timestamp: item.ts,
-            timeline: parseJSON(item.timeline),
-          };
-          delete proposalData.ts;
-          return proposalData;
-        });
-        setSnapshotHistory(history);
-      }
-    }
-  });
-};
+  let searchInput = encodeURI(id);
+  let searchUrl = `${ENDPOINT}/proposals/search/${searchInput}`;
+
+  console.log(searchUrl);
+  return asyncFetch(searchUrl, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+    },
+  })
+    .catch((error) => {
+      console.log("Error searching cache api", error);
+    })
+    .then((result) => {
+      console.log("result", result);
+      let data = result.body.records;
+      const history = data.map((item) => {
+        const proposalData = {
+          ...item,
+          timestamp: item.ts,
+          timeline: parseJSON(item.timeline),
+        };
+        delete proposalData.ts;
+        return proposalData;
+      });
+      setSnapshotHistory(history);
+    });
+}
 
 useEffect(() => {
   fetchSnapshotHistory();

@@ -279,52 +279,38 @@ const rfp = Near.view("${REPL_TREASURY_TEMPLAR_CONTRACT}", "get_rfp", {
   rfp_id: parseInt(id),
 });
 
-const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
-const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-  ${queryName}(
-    offset: $offset
-    limit: $limit
-    order_by: {ts: asc}
-    where: $where
-  ) {
-    editor_id
-    name
-    summary
-    description
-    ts
-    rfp_id
-    timeline
-    labels
-    submission_deadline
-    linked_proposals
-  }
-}`;
+// need to fix it
+function fetchSnapshotHistory() {
+  const ENDPOINT = "${REPL_CACHE_URL}";
 
-const fetchSnapshotHistory = () => {
-  const variables = {
-    where: { rfp_id: { _eq: id } },
-  };
-  if (typeof fetchGraphQL !== "function") {
-    return;
-  }
-  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const data = result.body.data?.[queryName];
-        const history = data.map((item) => {
-          const rfpData = {
-            ...item,
-            timestamp: item.ts,
-            timeline: parseJSON(item.timeline),
-          };
-          delete rfpData.ts;
-          return rfpData;
-        });
-        setSnapshotHistory(history);
-      }
-    }
-  });
-};
+  let searchInput = encodeURI(id);
+  let searchUrl = `${ENDPOINT}/rfps/search/${searchInput}`;
+
+  console.log(searchUrl);
+  return asyncFetch(searchUrl, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+    },
+  })
+    .catch((error) => {
+      console.log("Error searching cache api", error);
+    })
+    .then((result) => {
+      console.log("result", result);
+      let data = result.body.records;
+      const history = data.map((item) => {
+        const rfpData = {
+          ...item,
+          timestamp: item.ts,
+          timeline: parseJSON(item.timeline),
+        };
+        delete rfpData.ts;
+        return rfpData;
+      });
+      setSnapshotHistory(history);
+    });
+}
 
 useEffect(() => {
   fetchSnapshotHistory();
@@ -410,45 +396,18 @@ useEffect(() => {
 }, [snapshot]);
 
 function fetchApprovedRfpProposals() {
-  const queryName = "${REPL_PROPOSAL_QUERY_NAME}";
-  const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-    ${queryName}(
-      offset: $offset
-      limit: $limit
-      order_by: {proposal_id: desc}
-      where: $where
-    ) {
-      proposal_id
-      name
-      timeline
-    }
-  }`;
-
-  const FETCH_LIMIT = 50;
-  const variables = {
-    limit: FETCH_LIMIT,
-    offset,
-    where: {
-      proposal_id: { _in: rfp.snapshot.linked_proposals },
-    },
-  };
-  if (typeof fetchGraphQL !== "function") {
-    return;
-  }
-  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const data = result.body.data?.[queryName];
-        const approved = [];
-        data.map((item) => {
-          const timeline = parseJSON(item.timeline);
-          if (PROPOSALS_APPROVED_STATUS_ARRAY.includes(timeline.status)) {
-            approved.push(item);
-          }
-        });
-        setApprovedProposals(approved);
+  snapshot.linked_proposals.map((item) => {
+    Near.asyncView("${REPL_TREASURY_TEMPLAR_CONTRACT}", "get_proposal", {
+      proposal_id: item,
+    }).then((item) => {
+      const timeline = parseJSON(item.snapshot.timeline);
+      if (PROPOSALS_APPROVED_STATUS_ARRAY.includes(timeline.status)) {
+        setApprovedProposals([
+          ...approvedProposals,
+          { proposal_id: item.id, ...item.snapshot },
+        ]);
       }
-    }
+    });
   });
 }
 
@@ -493,7 +452,9 @@ const accessControlInfo =
 const moderatorList =
   accessControlInfo?.members_list?.["team:moderators"]?.children;
 
-fetchApprovedRfpProposals();
+useEffect(() => {
+  fetchApprovedRfpProposals();
+}, []);
 
 const SubmitProposalBtn = () => {
   return (

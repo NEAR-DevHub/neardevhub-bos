@@ -780,7 +780,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
   const body = {
     proposal_body_version: "V1",
     linked_rfp: linkedRfp?.value,
-    category: "Infrastructure Committee",
+    category: "Templar",
     name: title,
     description: description,
     summary: summary,
@@ -788,7 +788,7 @@ const onSubmit = ({ isDraft, isCancel }) => {
     requested_sponsorship_usd_amount: requestedSponsorshipAmount,
     requested_sponsorship_paid_in_currency: requestedSponsorshipToken.value,
     receiver_account: receiverAccount,
-    requested_sponsor: "infrastructure-committee.near",
+    requested_sponsor: "templar.sputnik-dao.near",
     supervisor: supervisor,
     timeline: isCancel
       ? {
