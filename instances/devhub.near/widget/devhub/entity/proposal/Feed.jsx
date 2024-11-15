@@ -275,7 +275,6 @@ const getRfp = (rfp_id) => {
 };
 
 const FeedPage = () => {
-
   State.init({
     data: [],
     author: "",
@@ -339,7 +338,7 @@ const FeedPage = () => {
         fetchBlockHeights(res, offset);
       });
     });
-  };
+  }
 
   function fetchCacheApi(variables) {
     const ENDPOINT = "${REPL_CACHE_URL}";
@@ -370,7 +369,7 @@ const FeedPage = () => {
     }).catch((error) => {
       console.log("Error fetching cache api", error);
     });
-  };
+  }
 
   function fetchProposals(offset) {
     if (!offset) {
@@ -407,7 +406,7 @@ const FeedPage = () => {
         fetchBlockHeights(res, offset);
       });
     });
-  };
+  }
 
   useEffect(() => {
     State.update({ searchLoader: true });

@@ -275,7 +275,6 @@ const getRfp = (rfp_id) => {
 };
 
 const FeedPage = () => {
-
   State.init({
     data: [],
     author: "",
@@ -318,7 +317,7 @@ const FeedPage = () => {
     }).catch((error) => {
       console.log("Error searching cache api", error);
     });
-  };
+  }
 
   function searchProposals() {
     if (state.loading) return;
@@ -346,7 +345,7 @@ const FeedPage = () => {
         fetchBlockHeights(res, offset);
       });
     });
-  };
+  }
 
   function fetchCacheApi(variables) {
     const ENDPOINT = "${REPL_CACHE_URL}";
@@ -377,7 +376,7 @@ const FeedPage = () => {
     }).catch((error) => {
       console.log("Error fetching cache api", error);
     });
-  };
+  }
 
   function fetchProposals(offset) {
     if (!offset) {
@@ -414,7 +413,7 @@ const FeedPage = () => {
         fetchBlockHeights(res, offset);
       });
     });
-  };
+  }
 
   useEffect(() => {
     State.update({ searchLoader: true });
@@ -454,9 +453,7 @@ const FeedPage = () => {
       });
     } else {
       let sorted = [...data].sort((a, b) => {
-        return (
-          statusOrder[a.timeline.status] - statusOrder[b.timeline.status]
-        );
+        return statusOrder[a.timeline.status] - statusOrder[b.timeline.status];
       });
       State.update({
         data: sorted,
