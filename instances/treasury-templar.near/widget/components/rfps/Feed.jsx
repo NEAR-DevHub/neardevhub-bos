@@ -252,7 +252,7 @@ const FeedPage = () => {
     State.update({ loading: true });
 
     searchCacheApi().then((result) => {
-      let body = result.body;
+      let body = result.body.records;
       const data = [];
       const acceptingData = [];
       for (const prop of body) {
@@ -282,11 +282,7 @@ const FeedPage = () => {
       fetchUrl += `&filters.stage=${variables.stage}`;
     }
     if (variables.category) {
-      if (isInfra || isEvents) {
-        fetchUrl += `&filters.labels=${variables.category}`;
-      } else {
-        fetchUrl += `&filters.category=${variables.category}`;
-      }
+      fetchUrl += `&filters.labels=${variables.category}`;
     }
 
     State.update({ isFiltered: variables.category || variables.stage });
@@ -318,7 +314,7 @@ const FeedPage = () => {
       order: state.sort,
       limit: FETCH_LIMIT,
       offset,
-      category: state.category ? encodeURIComponent(state.category) : "",
+      category: state.label ? encodeURIComponent(state.label) : "",
       stage: state.stage ? encodeURIComponent(state.stage) : "",
     };
 
@@ -529,6 +525,8 @@ const FeedPage = () => {
                       </div>
                     )}
                   </div>
+                ) : state.loading ? (
+                  loader
                 ) : state.aggregatedCount > 0 ? (
                   <InfiniteScroll
                     pageStart={0}
