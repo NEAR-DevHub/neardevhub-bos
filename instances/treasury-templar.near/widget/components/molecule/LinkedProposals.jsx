@@ -34,7 +34,7 @@ return (
       return (
         <a
           href={href({
-            widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+            widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
             params: {
               page: "proposal",
               id: item.id,

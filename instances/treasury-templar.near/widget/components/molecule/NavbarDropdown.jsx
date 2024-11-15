@@ -76,7 +76,7 @@ return (
         <Link
           style={{ textDecoration: "none" }}
           to={linkHref({
-            widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+            widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
             params: { page: href },
           })}
         >
@@ -113,7 +113,7 @@ return (
                 <Link
                   style={{ textDecoration: "none" }}
                   to={linkHref({
-                    widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+                    widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
                     params: { page: link.href },
                   })}
                 >

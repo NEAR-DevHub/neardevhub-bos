@@ -12,7 +12,7 @@ const {
   isDevhub,
   isInfra,
   isEvents,
-} = VM.require(`${instance}/widget/config.data`);
+} = VM.require(`${instance}/widget/portal-config.data`);
 
 const loader = (
   <div className="d-flex justify-content-center align-items-center w-100">
@@ -139,7 +139,7 @@ const FeedItem = ({ proposal, index }) => {
   return (
     <a
       href={href({
-        widgetSrc: `${instance}/widget/app`,
+        widgetSrc: `${instance}/widget/portal`,
         params: {
           page: "proposal",
           id: proposal.proposal_id,
@@ -200,7 +200,7 @@ const FeedItem = ({ proposal, index }) => {
                 <a
                   className="text-decoration-underline flex-1"
                   href={href({
-                    widgetSrc: `${instance}/widget/app`,
+                    widgetSrc: `${instance}/widget/portal`,
                     params: {
                       page: "rfp",
                       id: rfpData.rfp_id,
@@ -543,7 +543,7 @@ const FeedPage = () => {
         <div className="mt-2 mt-xs-0">
           <Link
             to={href({
-              widgetSrc: `${instance}/widget/app`,
+              widgetSrc: `${instance}/widget/portal`,
               params: { page: "create-proposal" },
             })}
           >

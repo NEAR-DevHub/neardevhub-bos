@@ -342,7 +342,7 @@ const item = {
   blockHeight,
 };
 const rfpURL = getLinkUsingCurrentGateway(
-  `${REPL_TREASURY_TEMPLAR}/widget/app?page=rfp&id=${rfp.id}&timestamp=${snapshot.timestamp}`
+  `${REPL_TREASURY_TEMPLAR}/widget/portal?page=rfp&id=${rfp.id}&timestamp=${snapshot.timestamp}`
 );
 
 const SidePanelItem = ({ title, children, hideBorder, ishidden }) => {
@@ -370,7 +370,7 @@ const isAllowedToWriteRfp = Near.view(
 );
 
 const link = href({
-  widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+  widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
   params: {
     page: "create-rfp",
     id: rfp.id,
@@ -458,7 +458,7 @@ const SubmitProposalBtn = () => {
     <div style={{ minWidth: "fit-content" }}>
       <Link
         to={href({
-          widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+          widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
           params: { page: "create-proposal", rfp_id: rfp.id },
         })}
       >

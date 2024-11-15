@@ -607,7 +607,7 @@ const TimelineItems = ({ title, children, value, values }) => {
 };
 
 const link = href({
-  widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+  widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
   params: {
     page: "create-proposal",
     id: proposal.id,

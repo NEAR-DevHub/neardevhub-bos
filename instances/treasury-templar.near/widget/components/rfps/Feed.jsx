@@ -117,7 +117,7 @@ const FeedItem = ({ rfp, index }) => {
   return (
     <a
       href={href({
-        widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+        widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
         params: {
           page: "rfp",
           id: rfp.rfp_id,
@@ -463,7 +463,7 @@ const FeedPage = () => {
           <div className="mt-2 mt-xs-0">
             <Link
               to={href({
-                widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+                widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
                 params: { page: "create-rfp" },
               })}
             >

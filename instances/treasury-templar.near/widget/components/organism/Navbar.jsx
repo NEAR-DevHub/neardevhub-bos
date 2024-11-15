@@ -21,7 +21,7 @@ const Logo = () => {
     <Wrapper>
       <Link
         to={linkHref({
-          widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+          widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
           params: { page: "about" },
         })}
       >
@@ -229,7 +229,7 @@ return (
               <MobileLink
                 key={`mobile-link-${idx}`}
                 className={link.href === props.page && "active"}
-                href={`/${REPL_TREASURY_TEMPLAR}/widget/app?page=${link.href}`}
+                href={`/${REPL_TREASURY_TEMPLAR}/widget/portal?page=${link.href}`}
               >
                 {link.title}
               </MobileLink>
@@ -249,7 +249,7 @@ return (
                   <MobileLink
                     key={`nested-link-${idx}`}
                     className={link.href === props.page && "active"}
-                    href={`/${REPL_TREASURY_TEMPLAR}/widget/app?page=${it.href}`}
+                    href={`/${REPL_TREASURY_TEMPLAR}/widget/portal?page=${it.href}`}
                   >
                     /{it.title}
                   </MobileLink>
