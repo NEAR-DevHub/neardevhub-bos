@@ -252,26 +252,9 @@ const FeedPage = () => {
     State.update({ loading: true });
 
     searchCacheApi().then((result) => {
-      let body = result.body.records;
-      const data = [];
-      const acceptingData = [];
-      for (const prop of body) {
-        const timeline = parseJSON(prop.timeline);
-        const label = "# " + prop.rfp_id + " : " + prop.name;
-        const value = prop.rfp_id;
-        if (timeline.status === RFP_TIMELINE_STATUS.ACCEPTING_SUBMISSIONS) {
-          acceptingData.push({
-            label,
-            value,
-          });
-        }
-        data.push({
-          label,
-          value,
-        });
-      }
-      setAcceptingRfpsOption(acceptingData);
-      setAllRfpOptions(data);
+      const body = result.body;
+      State.update({ aggregatedCount: body.total_records });
+      fetchBlockHeights(body.records, offset);
     });
   }
 
@@ -445,10 +428,6 @@ const FeedPage = () => {
               className: "w-xs-100",
               onSearch: (input) => {
                 State.update({ input });
-                fetchRfps();
-              },
-              onEnter: () => {
-                fetchRfps();
               },
             }}
           />
