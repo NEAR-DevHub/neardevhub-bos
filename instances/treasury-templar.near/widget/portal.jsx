@@ -10,10 +10,12 @@ const { AppLayout } = VM.require(
   `${REPL_TREASURY_TEMPLAR}/widget/components.template.AppLayout`
 );
 
-const { Theme } = VM.require(`${REPL_TREASURY_TEMPLAR}/widget/config.theme`);
+const { Theme } = VM.require(
+  `${REPL_TREASURY_TEMPLAR}/widget/portal-config.theme`
+);
 
 const { CssContainer } = VM.require(
-  `${REPL_TREASURY_TEMPLAR}/widget/config.css`
+  `${REPL_TREASURY_TEMPLAR}/widget/portal-config.css`
 );
 
 if (!AppLayout || !Theme || !CssContainer) {
@@ -93,57 +95,6 @@ function Page() {
         <Widget
           src={`${REPL_TREASURY_TEMPLAR}/widget/components.pages.admin`}
           props={passProps}
-        />
-      );
-    }
-    // FOR TREASURY, SINCE WE USE SAME ACCOUNT TO DEPLOY BOTH
-    case "dashboard": {
-      return (
-        <Widget
-          src="${REPL_TREASURY_BASE_DEPLOYMENT_ACCOUNT}/widget/pages.dashboard.index"
-          props={propsToSend}
-        />
-      );
-    }
-    case "settings": {
-      return (
-        <Widget
-          src={
-            "${REPL_TREASURY_BASE_DEPLOYMENT_ACCOUNT}/widget/pages.settings.index"
-          }
-          props={propsToSend}
-        />
-      );
-    }
-    case "payments": {
-      return (
-        <Widget
-          src={
-            "${REPL_TREASURY_BASE_DEPLOYMENT_ACCOUNT}/widget/pages.payments.index"
-          }
-          props={propsToSend}
-        />
-      );
-    }
-
-    case "stake-delegation": {
-      return (
-        <Widget
-          src={
-            "${REPL_TREASURY_BASE_DEPLOYMENT_ACCOUNT}/widget/pages.stake-delegation.index"
-          }
-          props={propsToSend}
-        />
-      );
-    }
-
-    case "asset-exchange": {
-      return (
-        <Widget
-          src={
-            "${REPL_TREASURY_BASE_DEPLOYMENT_ACCOUNT}/widget/pages.asset-exchange.index"
-          }
-          props={propsToSend}
         />
       );
     }

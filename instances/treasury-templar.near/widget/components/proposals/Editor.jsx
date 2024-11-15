@@ -1195,14 +1195,14 @@ return (
                     to={
                       isEditPage
                         ? href({
-                            widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+                            widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
                             params: {
                               page: "proposal",
                               id: parseInt(id),
                             },
                           })
                         : href({
-                            widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+                            widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
                             params: {
                               page: "proposals",
                             },

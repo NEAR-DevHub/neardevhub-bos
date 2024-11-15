@@ -140,7 +140,7 @@ return (
         <div className="d-flex gap-2 justify-content-center mt-2">
           <Link
             to={linkHref({
-              widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+              widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
               params: { page: "rfp", id: rfpId },
             })}
           >

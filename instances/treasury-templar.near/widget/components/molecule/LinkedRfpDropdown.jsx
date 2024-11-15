@@ -107,7 +107,7 @@ return (
         <a
           className="text-decoration-underline flex-1"
           href={href({
-            widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/app`,
+            widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
             params: {
               page: "rfp",
               id: selectedRFP.value,

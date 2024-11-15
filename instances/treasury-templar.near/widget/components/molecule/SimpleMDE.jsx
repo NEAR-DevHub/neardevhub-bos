@@ -35,7 +35,7 @@ const autoFocus = props.autoFocus ?? false;
 
 const proposalQueryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
 const proposalLink = getLinkUsingCurrentGateway(
-  `${REPL_TREASURY_TEMPLAR}/widget/app?page=proposal&id=`
+  `${REPL_TREASURY_TEMPLAR}/widget/portal?page=proposal&id=`
 );
 const proposalQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${proposalQueryName}_bool_exp = {}) {
 ${proposalQueryName}(
@@ -51,7 +51,7 @@ ${proposalQueryName}(
 
 const rfpQueryName = "${REPL_RFP_FEED_INDEXER_QUERY_NAME}";
 const rfpLink = getLinkUsingCurrentGateway(
-  `${REPL_TREASURY_TEMPLAR}/widget/app?page=rfp&id=`
+  `${REPL_TREASURY_TEMPLAR}/widget/portal?page=rfp&id=`
 );
 const rfpQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${rfpQueryName}_bool_exp = {}) {
 ${rfpQueryName}(
