@@ -234,9 +234,6 @@ const FeedPage = () => {
   });
 
   function searchCacheApi() {
-    console.log(
-      `search url: ${REPL_CACHE_URL}/rfps/search/${encodeURI(state.input)}`
-    );
     return asyncFetch(
       `${REPL_CACHE_URL}/rfps/search/${encodeURI(state.input)}`,
       {
@@ -255,7 +252,6 @@ const FeedPage = () => {
     State.update({ loading: true });
 
     searchCacheApi().then((result) => {
-      console.log("search result", result);
       let body = result.body;
       const data = [];
       const acceptingData = [];

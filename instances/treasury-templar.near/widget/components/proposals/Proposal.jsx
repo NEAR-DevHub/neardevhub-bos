@@ -283,11 +283,7 @@ const [snapshotHistory, setSnapshotHistory] = useState([]);
 function fetchSnapshotHistory() {
   const ENDPOINT = "${REPL_CACHE_URL}";
 
-  let searchInput = encodeURI(id);
-  let searchUrl = `${ENDPOINT}/proposals/search/${searchInput}`;
-
-  console.log(searchUrl);
-  return asyncFetch(searchUrl, {
+  return asyncFetch(`${ENDPOINT}/proposal/${id}/snapshots`, {
     method: "GET",
     headers: {
       accept: "application/json",
@@ -297,8 +293,7 @@ function fetchSnapshotHistory() {
       console.log("Error searching cache api", error);
     })
     .then((result) => {
-      console.log("result", result);
-      let data = result.body.records;
+      let data = result.body;
       const history = data.map((item) => {
         const proposalData = {
           ...item,
