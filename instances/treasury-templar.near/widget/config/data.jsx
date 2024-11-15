@@ -38,7 +38,7 @@ const categoryOptions = [
 ];
 
 return {
-  contract: "treasury-templar.near",
+  contract: "${REPL_TREASURY_TEMPLAR_CONTRACT}",
   proposalFeedIndexerQueryName:
     "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot",
   rfpFeedIndexerQueryName:

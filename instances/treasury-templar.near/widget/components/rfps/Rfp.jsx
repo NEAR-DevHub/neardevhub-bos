@@ -283,11 +283,7 @@ const rfp = Near.view("${REPL_TREASURY_TEMPLAR_CONTRACT}", "get_rfp", {
 function fetchSnapshotHistory() {
   const ENDPOINT = "${REPL_CACHE_URL}";
 
-  let searchInput = encodeURI(id);
-  let searchUrl = `${ENDPOINT}/rfps/search/${searchInput}`;
-
-  console.log(searchUrl);
-  return asyncFetch(searchUrl, {
+  return asyncFetch(`${ENDPOINT}/rfp/${id}/snapshots`, {
     method: "GET",
     headers: {
       accept: "application/json",
@@ -297,8 +293,7 @@ function fetchSnapshotHistory() {
       console.log("Error searching cache api", error);
     })
     .then((result) => {
-      console.log("result", result);
-      let data = result.body.records;
+      let data = result.body;
       const history = data.map((item) => {
         const rfpData = {
           ...item,
@@ -306,6 +301,8 @@ function fetchSnapshotHistory() {
           timeline: parseJSON(item.timeline),
         };
         delete rfpData.ts;
+        delete rfpData.block_height;
+
         return rfpData;
       });
       setSnapshotHistory(history);
@@ -402,8 +399,8 @@ function fetchApprovedRfpProposals() {
     }).then((item) => {
       const timeline = parseJSON(item.snapshot.timeline);
       if (PROPOSALS_APPROVED_STATUS_ARRAY.includes(timeline.status)) {
-        setApprovedProposals([
-          ...approvedProposals,
+        setApprovedProposals((prevApprovedProposals) => [
+          ...prevApprovedProposals,
           { proposal_id: item.id, ...item.snapshot },
         ]);
       }
