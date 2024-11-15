@@ -493,9 +493,6 @@ const FeedPage = () => {
               onSearch: (input) => {
                 State.update({ input });
               },
-              onEnter: () => {
-                fetchProposals();
-              },
             }}
           />
           <Widget
