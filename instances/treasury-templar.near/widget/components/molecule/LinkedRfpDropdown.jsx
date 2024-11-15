@@ -20,20 +20,6 @@ const [allRfpOptions, setAllRfpOptions] = useState([]);
 const [searchRFPId, setSearchRfpId] = useState("");
 const [initialStateApplied, setInitialState] = useState(false);
 
-const queryName = "${REPL_RFP_FEED_INDEXER_QUERY_NAME}";
-const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-  ${queryName}(
-    offset: $offset
-    limit: $limit
-    order_by: {rfp_id: desc}
-    where: $where
-  ) {
-    name
-    rfp_id
-    timeline
-  }
-  }`;
-
 function separateNumberAndText(str) {
   const numberRegex = /\d+/;
 
@@ -46,69 +32,48 @@ function separateNumberAndText(str) {
   }
 }
 
-const buildWhereClause = () => {
-  // show only accepting submissions stage rfps
-  let where = {};
-  const { number, text } = separateNumberAndText(searchRFPId);
+function searchRfps() {
+  const ENDPOINT = "${REPL_CACHE_URL}";
+  let searchInput = encodeURI(searchRFPId);
+  let searchUrl = searchInput
+    ? `${ENDPOINT}/rfps/search/${searchInput}`
+    : `${ENDPOINT}/rfps`;
 
-  if (number) {
-    where = { rfp_id: { _eq: number }, ...where };
-  }
-
-  if (text) {
-    where = {
-      _or: [
-        { name: { _iregex: `${text}` } },
-        { summary: { _iregex: `${text}` } },
-        { description: { _iregex: `${text}` } },
-      ],
-      ...where,
-    };
-  }
-
-  return where;
-};
-
-const fetchRfps = () => {
-  const FETCH_LIMIT = 30;
-  const variables = {
-    limit: FETCH_LIMIT,
-    offset: 0,
-    where: buildWhereClause(),
-  };
-  if (typeof fetchGraphQL !== "function") {
-    return;
-  }
-  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const rfpsData = result.body.data?.[queryName];
-        const data = [];
-        const acceptingData = [];
-        for (const prop of rfpsData) {
-          const timeline = parseJSON(prop.timeline);
-          const label = "# " + prop.rfp_id + " : " + prop.name;
-          const value = prop.rfp_id;
-          if (timeline.status === RFP_TIMELINE_STATUS.ACCEPTING_SUBMISSIONS) {
-            acceptingData.push({
-              label,
-              value,
-            });
-          }
-          data.push({
+  return asyncFetch(searchUrl, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+    },
+  })
+    .then((result) => {
+      const rfpsData = result.body.records;
+      const data = [];
+      const acceptingData = [];
+      for (const prop of rfpsData) {
+        const timeline = parseJSON(prop.timeline);
+        const label = "# " + prop.rfp_id + " : " + prop.name;
+        const value = prop.rfp_id;
+        if (timeline.status === RFP_TIMELINE_STATUS.ACCEPTING_SUBMISSIONS) {
+          acceptingData.push({
             label,
             value,
           });
         }
-        setAcceptingRfpsOption(acceptingData);
-        setAllRfpOptions(data);
+        data.push({
+          label,
+          value,
+        });
       }
-    }
-  });
-};
+      setAcceptingRfpsOption(acceptingData);
+      setAllRfpOptions(data);
+    })
+    .catch((error) => {
+      console.log("Error searching cache api", error);
+    });
+}
 
 useEffect(() => {
-  fetchRfps();
+  searchRfps();
 }, [searchRFPId]);
 
 useEffect(() => {
