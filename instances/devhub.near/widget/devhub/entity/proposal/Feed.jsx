@@ -294,6 +294,55 @@ const FeedPage = () => {
     fetchProposals(state.data.length);
   };
 
+  function searchCacheApi() {
+    const ENDPOINT = "${REPL_CACHE_URL}";
+
+    let searchTerm = state.input;
+    let searchInput = encodeURI(searchTerm);
+    let searchUrl = `${ENDPOINT}/proposals/search/${searchInput}`;
+
+    return asyncFetch(searchUrl, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+      },
+    })
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log("Error searching cache api", error);
+      });
+  }
+
+  const searchProposals = () => {
+    if (state.loading) return;
+    State.update({ loading: true });
+
+    searchCacheApi().then((result) => {
+      console.log("result", result);
+      // let data = result.body.records;
+      // let totalResult = { aggregate: { count: result.body.total_records } }; // TODO
+
+      // const promises = data.map((item) => {
+      //   if (isNumber(item.linked_rfp)) {
+      //     // TODO fetch individual rfp's -> name & rfp_id
+      //     getRfp(item.linked_rfp).then((result) => {
+      //       console.log({ result });
+      //       const rfpData = result.body.data;
+      //       return { ...item, rfpData: rfpData[0] };
+      //     });
+      //   } else {
+      //     return Promise.resolve(item);
+      //   }
+      // });
+      // Promise.all(promises).then((res) => {
+      //   State.update({ aggregatedCount: totalResult.aggregate.count });
+      //   fetchBlockHeights(res, offset);
+      // });
+    });
+  };
+
   function fetchCacheApi(variables) {
     const ENDPOINT = "${REPL_CACHE_URL}";
     console.log("Fetching endpoint", ENDPOINT);
@@ -336,19 +385,18 @@ const FeedPage = () => {
       order: state.sort,
       limit: FETCH_LIMIT,
       offset,
-      category: state.category,
-      labels: state.labels,
-      author_id: state.author,
-      stage: state.stage,
+      category: state.category ? encodeURIComponent(state.category) : "",
+      author_id: state.author ? encodeURIComponent(state.author) : "",
+      stage: state.stage ? encodeURIComponent(state.stage) : "",
     };
     fetchCacheApi(variables).then((result) => {
       console.log("result", result);
       let data = result.body.records;
-      let totalResult = { aggregate: { count: result.body.total_records } }; // TODO
 
       const promises = data.map((item) => {
+        console.log("item.linked_rfp ", item.linked_rfp);
         if (isNumber(item.linked_rfp)) {
-          // TODO fetch individual rfp's -> name & rfp_id
+          // TODO fetch individual rfp's via the cache instead of RPC directly -> name & rfp_id
           getRfp(item.linked_rfp).then((result) => {
             console.log({ result });
             const rfpData = result.body.data;
@@ -359,7 +407,7 @@ const FeedPage = () => {
         }
       });
       Promise.all(promises).then((res) => {
-        State.update({ aggregatedCount: totalResult.aggregate.count });
+        State.update({ aggregatedCount: result.body.total_records });
         fetchBlockHeights(res, offset);
       });
     });
@@ -383,38 +431,34 @@ const FeedPage = () => {
   };
 
   const fetchBlockHeights = (data, offset) => {
-    let promises = data.map((item) => getProposal(item.proposal_id));
-    Promise.all(promises).then((blockHeights) => {
-      data = data.map((item, index) => ({
-        ...item,
-        timeline: JSON.parse(item.timeline),
-        social_db_post_block_height:
-          blockHeights[index].social_db_post_block_height,
-      }));
-      if (offset) {
-        let newData = mergeItems(data);
-        State.update({
-          data: newData,
-          currentlyDisplaying: newData.length,
-          loading: false,
-          searchLoader: false,
-          makeMoreLoader: false,
-        });
-      } else {
-        State.update({
-          data,
-          currentlyDisplaying: data.length,
-          loading: false,
-          searchLoader: false,
-          makeMoreLoader: false,
-        });
-      }
-    });
+    data = data.map((item, index) => ({
+      ...item,
+      timeline: JSON.parse(item.timeline),
+    }));
+    if (offset) {
+      let newData = mergeItems(data);
+      State.update({
+        data: newData,
+        currentlyDisplaying: newData.length,
+        loading: false,
+        searchLoader: false,
+        makeMoreLoader: false,
+      });
+    } else {
+      State.update({
+        data,
+        currentlyDisplaying: data.length,
+        loading: false,
+        searchLoader: false,
+        makeMoreLoader: false,
+      });
+    }
   };
 
+  // TODO use the search here
   useEffect(() => {
     const handler = setTimeout(() => {
-      fetchProposals();
+      searchProposals();
     }, 1000);
 
     return () => {
