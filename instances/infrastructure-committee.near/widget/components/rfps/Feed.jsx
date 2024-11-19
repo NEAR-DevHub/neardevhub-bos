@@ -163,7 +163,7 @@ const FeedItem = ({ rfp, index }) => {
                 className="d-flex flex-column gap-1"
                 style={{ maxWidth: "70%" }}
               >
-                <div className="fw-semi-bold">Summay</div>
+                <div className="fw-semi-bold">Summary</div>
 
                 <div>{rfp.summary}</div>
               </div>
@@ -239,7 +239,7 @@ const FeedPage = () => {
 
   function searchCacheApi() {
     console.log(
-      `search url: ${REPL_CACHE_URL}/rfps/search/${encodeURI(state.input)}`
+      `Searching url: ${REPL_CACHE_URL}/rfps/search/${encodeURI(state.input)}`
     );
     return asyncFetch(
       `${REPL_CACHE_URL}/rfps/search/${encodeURI(state.input)}`,
@@ -282,6 +282,7 @@ const FeedPage = () => {
 
     State.update({ isFiltered: variables.category || variables.stage });
 
+    console.log(`Fetching url: ${fetchUrl}`);
     return asyncFetch(fetchUrl, {
       method: "GET",
       headers: {
