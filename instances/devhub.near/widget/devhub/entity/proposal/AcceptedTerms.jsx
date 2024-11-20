@@ -6,50 +6,49 @@ State.init({
   proposalBlockHeight: null,
 });
 
-const proposalId = props.proposalId;
+// TODO is instance defined:?
+const instance = props.instance ?? "";
 
-const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
-const fetchGraphQL = (operationsDoc, operationName, variables) => {
-  return asyncFetch(QUERYAPI_ENDPOINT, {
-    method: "POST",
-    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
-    body: JSON.stringify({
-      query: operationsDoc,
-      variables: variables,
-      operationName: operationName,
-    }),
-  });
-};
+console.log("Instance accepted terms", instance);
 
-const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
-const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-    ${queryName}(
-      offset: $offset
-      limit: $limit
-      order_by: {proposal_id: desc}
-      where: $where
-    ) {
-      block_height
+const { cacheUrl } = VM.require(`${instance}/widget/config.data`);
+
+const fetchAndSetProposalSnapshot = async () => {
+  try {
+    const response = await asyncFetch(
+      `${cacheUrl}/proposal/${props.proposalId}/snapshots`,
+      {
+        method: "GET",
+        headers: { accept: "application/json" },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch snapshots: ${response.status}`);
     }
-  }`;
 
-const variables = {
-  limit: 10,
-  offset,
-  where: { proposal_id: { _eq: proposalId } },
-};
-
-fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-  if (result.status === 200) {
-    if (result.body.data) {
-      const data = result.body.data?.[queryName];
-      State.update({ proposalBlockHeight: data[0].block_height });
+    const snapshots = response.body;
+    if (!Array.isArray(snapshots) || snapshots.length === 0) {
+      throw new Error("No snapshots found");
     }
+
+    // Get the most recent snapshot
+    const latestSnapshot = snapshots.reduce((latest, current) =>
+      current.block_height > latest.block_height ? current : latest
+    );
+
+    State.update({ proposalBlockHeight: latestSnapshot.block_height });
+  } catch (error) {
+    console.error("Failed to fetch proposal snapshot:", error);
   }
-});
+};
+
+// Fetch snapshot data on component mount
+fetchAndSetProposalSnapshot();
 
 let acceptedTermsVersion = Near.block().header.height;
 
+// TODO refactor this
 if (state.proposalBlockHeight !== null) {
   const data = fetch(
     `https://mainnet.neardata.xyz/v0/block/${state.proposalBlockHeight}`

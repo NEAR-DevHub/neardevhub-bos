@@ -10,6 +10,7 @@ const {
   proposalFeedAnnouncement,
   availableCategoryOptions,
   proposalFeedIndexerQueryName,
+  cacheUrl,
   isDevhub,
   isInfra,
   isEvents,
@@ -295,13 +296,11 @@ const FeedPage = () => {
   };
 
   function searchCacheApi() {
-    const ENDPOINT = "${REPL_CACHE_URL}";
-
     let searchTerm = state.input;
     let searchInput = encodeURI(searchTerm);
-    let searchUrl = `${ENDPOINT}/proposals/search/${searchInput}`;
+    let searchUrl = `${cacheUrl}/proposals/search/${searchInput}`;
 
-    console.log(searchUrl);
+    console.log("searchUrl, ", searchUrl);
     return asyncFetch(searchUrl, {
       method: "GET",
       headers: {
@@ -341,11 +340,9 @@ const FeedPage = () => {
   }
 
   function fetchCacheApi(variables) {
-    const ENDPOINT = "${REPL_CACHE_URL}";
-    console.log("Fetching endpoint", ENDPOINT);
     console.log("Fetching cache api", variables);
 
-    let fetchUrl = `${ENDPOINT}/proposals?order=${variables.order}&limit=${variables.limit}&offset=${variables.offset}`;
+    let fetchUrl = `${cacheUrl}/proposals?order=${variables.order}&limit=${variables.limit}&offset=${variables.offset}`;
 
     if (variables.author_id) {
       fetchUrl += `&filters.author_id=${variables.author_id}`;

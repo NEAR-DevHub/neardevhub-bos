@@ -5,6 +5,10 @@
 const { getLinkUsingCurrentGateway } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.url"
 ) || { getLinkUsingCurrentGateway: () => {} };
+
+const instance = props.instance ?? "";
+console.log("Instance simplemde", instance);
+
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
 const onChangeKeyup = props.onChangeKeyup ?? (() => {}); // in case where we want immediate action
@@ -88,11 +92,11 @@ const code = `
   }
   
   .CodeMirror {
-    min-height:200px !important; // for autocomplete to be visble 
+    min-height:200px !important; // for autocomplete to be visible 
   }
 
   .CodeMirror-scroll {
-    min-height:200px !important; // for autocomplete to be visble 
+    min-height:200px !important; // for autocomplete to be visible 
   }
 
   ${embeddCSS}
@@ -212,46 +216,28 @@ function extractNumbers(str) {
   return numbers;
 };
 
+function searchCacheApi(searchProposalId) {
+  let searchInput = encodeURI(searchProposalId);
+  let searchUrl = "${cacheUrl}/proposals/search/" + searchInput;
+
+  console.log("searchUrl, ", searchUrl);
+  return asyncFetch(searchUrl, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+    },
+  }).catch((error) => {
+    console.log("Error searching cache api", error);
+  });
+}
+
 async function getSuggestedProposals(id) {
   let results = [];
-  const variables = {
-    limit: 5,
-    offset: 0,
-    where: {},
-  };
+  
   if (id) {
-    const proposalId = extractNumbers(id);
-    if (proposalId) {
-      variables["where"] = { proposal_id: { _eq: id } };
-    } else {
-      variables["where"] = {
-        _or: [
-          { name: { _iregex: id } },
-          { summary: { _iregex: id } },
-          { description: { _iregex: id } },
-        ],
-      };
-    }
+    const searchResults = await searchCacheApi(id);
+    results = searchResults.body.records;
   }
-  await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
-    method: "POST",
-    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
-    body: JSON.stringify({
-      query: query,
-      variables: variables,
-      operationName: "GetLatestSnapshot",
-    }),
-  })
-    .then((res) => {
-      const proposals =
-        res?.data?.[
-          "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}"
-        ];
-      results = proposals;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
   return results;
 };
 
@@ -402,7 +388,7 @@ if (showAccountAutoComplete) {
         });
       });
     }
-    // show dropwdown only when @ is at first place or when there is a space before @
+    // show dropdown only when @ is at first place or when there is a space before @
       if (!mentionToken && (token.string === "@" && cursor.ch === 1 || token.string === "@" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ')) {
         mentionToken = token;
         mentionCursorStart = cursor;
@@ -496,7 +482,7 @@ if (showProposalIdAutoComplete) {
       }
     }
 
-    // show dropwdown only when there is space before # or it's first char
+    // show dropdown only when there is space before # or it's first char
       if (!proposalId && (token.string === "#" && cursor.ch === 1 || token.string === "#" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ')) {
         proposalId = token;
         referenceCursorStart = cursor;
