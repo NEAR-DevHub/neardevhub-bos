@@ -34,7 +34,7 @@ function Page() {
       return (
         <Widget
           src={"${REPL_EVENTS}/widget/devhub.entity.proposal.Editor"}
-          props={{ ...passProps }}
+          props={{ ...passProps, instance: "events-committee.near" }}
         />
       );
     }

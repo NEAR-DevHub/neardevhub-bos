@@ -85,7 +85,7 @@ const Compose = ({
         {state.selectedTab === "editor" ? (
           <>
             <Widget
-              src={"${REPL_EVENTS}/widget/devhub.components.molecule.SimpleMDE"}
+              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDE"}
               props={{
                 data: { handler: state.handler, content: state.data },
                 onChange: (content) => {
