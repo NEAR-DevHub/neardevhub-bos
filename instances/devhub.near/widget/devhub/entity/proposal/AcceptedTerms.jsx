@@ -21,14 +21,15 @@ const fetchAndSetProposalSnapshot = () => {
     headers: { accept: "application/json" },
   })
     .then((response) => {
+      console.log("Response accepted terms", response);
       if (!response.ok) {
-        throw new Error(`Failed to fetch snapshots: ${response.status}`);
+        console.error(`Failed to fetch snapshots: ${response.status}`);
       }
       return response.body;
     })
     .then((snapshots) => {
       if (!Array.isArray(snapshots) || snapshots.length === 0) {
-        throw new Error("No snapshots found");
+        console.error("No snapshots found");
       }
 
       // Get the most recent snapshot

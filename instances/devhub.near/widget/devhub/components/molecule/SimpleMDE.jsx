@@ -433,9 +433,11 @@ if (showProposalIdAutoComplete) {
   let proposalId;
   let referenceCursorStart;
   const dropdown = document.getElementById("referencedropdown");
+  // Create loader element once and store it
   const loader = document.createElement('div');
   loader.className = 'loader';
   loader.textContent = 'Loading...';
+  let isLoaderAttached = false;
 
   simplemde.codemirror.on("keydown", () => {
     if (proposalId && event.key === 'ArrowDown') {
@@ -453,15 +455,22 @@ if (showProposalIdAutoComplete) {
       try {
         const proposalIdInput = cm.getRange(referenceCursorStart, cursor);
         dropdown.innerHTML = ''; // Clear previous content
-        dropdown.appendChild(loader); // Show loader
+
+        if (!isLoaderAttached) {
+          dropdown.appendChild(loader);
+          isLoaderAttached = true;
+        }
 
         const suggestedProposals = await getSuggestedProposals(proposalIdInput);
+
+        // Clear dropdown including loader
         dropdown.innerHTML = suggestedProposals
         .map(
           (item) =>
             '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + "#" + item?.proposal_id + " " + item.name + '</button></li>'
         )
         .join("");
+        isLoaderAttached = false;
 
         dropdown.querySelectorAll("li").forEach((li) => {
           li.addEventListener("click", () => {
@@ -482,11 +491,8 @@ if (showProposalIdAutoComplete) {
         });
       } catch (error) {
         console.error('Error fetching data:', error);
-        // Handle error: Remove loader
-        dropdown.innerHTML = ''; // Clear previous content
-      } finally {
-        // Remove loader
-        dropdown.removeChild(loader);
+        dropdown.innerHTML = ''; // Clear content on error
+        isLoaderAttached = false;
       }
     }
 

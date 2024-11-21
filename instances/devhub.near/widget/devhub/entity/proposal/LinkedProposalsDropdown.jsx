@@ -91,7 +91,7 @@ return (
               setSelectedProposals(updatedLinkedProposals);
             }}
           >
-            <i class="bi bi-trash3-fill"></i>
+            <i className="bi bi-trash3-fill"></i>
           </div>
         </div>
       );
@@ -100,7 +100,7 @@ return (
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDownWithSearch"
       props={{
-        selectedValue: "",
+        selectedValue: selectedProposals,
         onChange: (v) => {
           if (!selectedProposals.some((item) => item.value === v.value)) {
             setSelectedProposals([...selectedProposals, v]);
