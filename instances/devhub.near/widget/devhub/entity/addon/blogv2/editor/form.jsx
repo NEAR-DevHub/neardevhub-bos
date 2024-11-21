@@ -172,7 +172,7 @@ const ContentEditor = useMemo(() => {
     <Widget
       src="${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"
       props={{
-        ...props, // drilling instance
+        instance: "${REPL_DEVHUB}",
         data: content,
         onChange: setContent,
         height: "250",

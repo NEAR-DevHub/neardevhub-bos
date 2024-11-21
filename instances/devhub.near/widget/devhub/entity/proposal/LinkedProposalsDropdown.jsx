@@ -11,7 +11,7 @@ const linkedProposals = props.linkedProposals;
 const onChange = props.onChange;
 const [selectedProposals, setSelectedProposals] = useState(linkedProposals);
 const [proposalsOptions, setProposalsOptions] = useState([]);
-const [searchProposalId, setSearchProposalId] = useState("");
+const [textAfterHash, setTextAfterHash] = useState("");
 
 useEffect(() => {
   if (JSON.stringify(linkedProposals) !== JSON.stringify(selectedProposals)) {
@@ -25,8 +25,8 @@ useEffect(() => {
   }
 }, [selectedProposals]);
 
-function searchCacheApi() {
-  let searchInput = encodeURI(searchProposalId);
+function searchCacheApi(input) {
+  let searchInput = encodeURI(input);
   let searchUrl = `${cacheUrl}/proposals/search/${searchInput}`;
 
   console.log("searchUrl, ", searchUrl);
@@ -40,11 +40,11 @@ function searchCacheApi() {
   });
 }
 
-function searchProposals() {
+function searchProposals(input) {
   if (state.loading) return;
   State.update({ loading: true });
 
-  searchCacheApi().then((result) => {
+  searchCacheApi(input).then((result) => {
     console.log("result", result);
     let proposalsData = result.body.records;
 
@@ -60,8 +60,10 @@ function searchProposals() {
 }
 
 useEffect(() => {
-  searchProposals();
-}, [searchProposalId]);
+  if (textAfterHash.trim()) {
+    searchProposals(textAfterHash);
+  }
+}, [textAfterHash]);
 
 return (
   <>
@@ -112,7 +114,7 @@ return (
         defaultLabel: "Search proposals",
         searchByValue: true,
         onSearch: (value) => {
-          setSearchProposalId(value);
+          setTextAfterHash(value);
         },
       }}
     />

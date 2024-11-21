@@ -189,17 +189,12 @@ function getSuggestedAccounts(term) {
   return results;
 }
 
-async function asyncFetch(endpoint, { method, headers, body }) {
+async function asyncFetch(endpoint, { method, headers }) {
   try {
     const response = await fetch(endpoint, {
       method: method,
       headers: headers,
-      body: body
     });
-
-    // TODO: CORS issue: origin is null in iframe
-    console.log("Response", response);
-
 
     if (!response.ok) {
       throw new Error("HTTP error!");
@@ -240,11 +235,12 @@ function searchCacheApi(searchProposalId) {
 
 async function getSuggestedProposals(id) {
   let results = [];
-  console.log("getSuggestedProposals", id);
+  console.log("getSuggestedProposals id:", id);
 
   if (id) {
     const searchResults = await searchCacheApi(id);
-    results = searchResults?.body?.records || [];
+    console.log("searchResults", searchResults);
+    results = searchResults?.records || [];
   }
   return results;
 };
@@ -437,7 +433,7 @@ if (showProposalIdAutoComplete) {
   const loader = document.createElement('div');
   loader.className = 'loader';
   loader.textContent = 'Loading...';
-  let isLoaderAttached = false;
+  // let isLoaderAttached = false;
 
   simplemde.codemirror.on("keydown", () => {
     if (proposalId && event.key === 'ArrowDown') {
@@ -456,10 +452,11 @@ if (showProposalIdAutoComplete) {
         const proposalIdInput = cm.getRange(referenceCursorStart, cursor);
         dropdown.innerHTML = ''; // Clear previous content
 
-        if (!isLoaderAttached) {
-          dropdown.appendChild(loader);
-          isLoaderAttached = true;
-        }
+        dropdown.appendChild(loader);
+        // if (!isLoaderAttached) {
+        //   dropdown.appendChild(loader);
+        //   isLoaderAttached = true;
+        // }
 
         const suggestedProposals = await getSuggestedProposals(proposalIdInput);
 
@@ -470,7 +467,6 @@ if (showProposalIdAutoComplete) {
             '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + "#" + item?.proposal_id + " " + item.name + '</button></li>'
         )
         .join("");
-        isLoaderAttached = false;
 
         dropdown.querySelectorAll("li").forEach((li) => {
           li.addEventListener("click", () => {
@@ -491,8 +487,11 @@ if (showProposalIdAutoComplete) {
         });
       } catch (error) {
         console.error('Error fetching data:', error);
-        dropdown.innerHTML = ''; // Clear content on error
-        isLoaderAttached = false;
+        // Handle error: Remove loader
+        dropdown.innerHTML = ''; // Clear previous content
+      } finally {
+        // Remove loader
+        dropdown.removeChild(loader);
       }
     }
 

@@ -187,11 +187,11 @@ test.describe("Wallet is connected", () => {
       .click();
   });
 
-  test("should be able to see contract balance if the balance is lower than 2 NEAR", async ({
+  test("should be alerted when the contract balance reaches under 2 NEAR", async ({
     page,
   }) => {
-    await navigateToAdminPage(page);
     await mockNearBalance(page, 5);
+    await navigateToAdminPage(page);
 
     const contractBalanceWrapper = await page.getByTestId(
       "contract-balance-wrapper"
@@ -199,15 +199,19 @@ test.describe("Wallet is connected", () => {
     expect(contractBalanceWrapper).toBeDefined();
     await page.waitForTimeout(1000);
     const balance = await page.getByTestId("contract-balance");
-    expect(await balance.isVisible()).toBe(false);
+    expect(
+      await balance.isVisible(),
+      "Balance should be hidden but is visible"
+    ).toBe(false);
 
     // Under 2 NEAR
     await mockNearBalance(page, 1.9);
     await navigateToAdminPage(page);
 
-    expect(contractBalanceWrapper).toBeDefined();
+    // Contract balance should be visible to admins
+    expect(contractBalanceWrapper, "Balance should be defined").toBeDefined();
     await page.waitForTimeout(1000);
-    expect(await balance.isVisible()).toBe(true);
+    expect(await balance.isVisible(), "Balance should be visible").toBe(true);
   });
 });
 

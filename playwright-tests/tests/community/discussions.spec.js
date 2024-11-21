@@ -71,7 +71,9 @@ test.describe("Wallet is connected", () => {
     await discussionPostEditor.scrollIntoViewIfNeeded();
     await discussionPostEditor.fill(socialdbpostcontent.text);
 
-    await page.getByTestId("post-btn").click();
+    const postBtn = await page.getByTestId("post-btn");
+    await postBtn.scrollIntoViewIfNeeded();
+    await postBtn.click();
 
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions&transactionHashes=mi2a1KwagRFZhpqBNKhKaCTkHVj98J8tZnxSr1NpxSQ"
