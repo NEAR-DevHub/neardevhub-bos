@@ -8,6 +8,8 @@ const { getLinkUsingCurrentGateway } = VM.require(
 
 const instance = props.instance ?? "";
 console.log("Instance simplemde", instance);
+const { cacheUrl, contract } = VM.require(`${instance}/widget/config.data`);
+console.log("Contract in simplemde", contract);
 
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
@@ -48,7 +50,7 @@ ${queryName}(
 }`;
 
 const proposalLink = getLinkUsingCurrentGateway(
-  `${REPL_DEVHUB}/widget/app?page=proposal&id=`
+  `${contract}/widget/app?page=proposal&id=`
 );
 
 const code = `
@@ -195,6 +197,10 @@ async function asyncFetch(endpoint, { method, headers, body }) {
       body: body
     });
 
+    // TODO: CORS issue: origin is null in iframe
+    console.log("Response", response);
+
+
     if (!response.ok) {
       throw new Error("HTTP error!");
     }
@@ -218,6 +224,7 @@ function extractNumbers(str) {
 
 function searchCacheApi(searchProposalId) {
   let searchInput = encodeURI(searchProposalId);
+  // TODO: CORS issue: origin is null in iframe
   let searchUrl = "${cacheUrl}/proposals/search/" + searchInput;
 
   console.log("searchUrl, ", searchUrl);
@@ -233,10 +240,11 @@ function searchCacheApi(searchProposalId) {
 
 async function getSuggestedProposals(id) {
   let results = [];
-  
+  console.log("getSuggestedProposals", id);
+
   if (id) {
     const searchResults = await searchCacheApi(id);
-    results = searchResults.body.records;
+    results = searchResults?.body?.records || [];
   }
   return results;
 };

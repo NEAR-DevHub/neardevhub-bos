@@ -6,41 +6,41 @@ State.init({
   proposalBlockHeight: null,
 });
 
-// TODO is instance defined:?
 const instance = props.instance ?? "";
-
+// TODO is instance defined:?
 console.log("Instance accepted terms", instance);
 
 const { cacheUrl } = VM.require(`${instance}/widget/config.data`);
 
-const fetchAndSetProposalSnapshot = async () => {
-  try {
-    const response = await asyncFetch(
-      `${cacheUrl}/proposal/${props.proposalId}/snapshots`,
-      {
-        method: "GET",
-        headers: { accept: "application/json" },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch snapshots: ${response.status}`);
-    }
-
-    const snapshots = response.body;
-    if (!Array.isArray(snapshots) || snapshots.length === 0) {
-      throw new Error("No snapshots found");
-    }
-
-    // Get the most recent snapshot
-    const latestSnapshot = snapshots.reduce((latest, current) =>
-      current.block_height > latest.block_height ? current : latest
-    );
-
-    State.update({ proposalBlockHeight: latestSnapshot.block_height });
-  } catch (error) {
-    console.error("Failed to fetch proposal snapshot:", error);
+const fetchAndSetProposalSnapshot = () => {
+  if (!props.proposalId) {
+    return;
   }
+  asyncFetch(`${cacheUrl}/proposal/${props.proposalId}/snapshots`, {
+    method: "GET",
+    headers: { accept: "application/json" },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch snapshots: ${response.status}`);
+      }
+      return response.body;
+    })
+    .then((snapshots) => {
+      if (!Array.isArray(snapshots) || snapshots.length === 0) {
+        throw new Error("No snapshots found");
+      }
+
+      // Get the most recent snapshot
+      const latestSnapshot = snapshots.reduce((latest, current) =>
+        current.block_height > latest.block_height ? current : latest
+      );
+
+      State.update({ proposalBlockHeight: latestSnapshot.block_height });
+    })
+    .catch((error) => {
+      console.error("Failed to fetch proposal snapshot:", error);
+    });
 };
 
 // Fetch snapshot data on component mount
@@ -48,7 +48,6 @@ fetchAndSetProposalSnapshot();
 
 let acceptedTermsVersion = Near.block().header.height;
 
-// TODO refactor this
 if (state.proposalBlockHeight !== null) {
   const data = fetch(
     `https://mainnet.neardata.xyz/v0/block/${state.proposalBlockHeight}`
