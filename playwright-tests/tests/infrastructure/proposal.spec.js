@@ -29,20 +29,14 @@ test.describe("Wallet is connected as admin", () => {
     const linkedRfpId = 0;
     // add linked RFP to latest proposal
     await page.route(
-      "https://near-queryapi.api.pagoda.co/v1/graphql",
+      // TODO check if the query params are correct
+      "https://infra-cache-api-rs.fly.dev/proposals?order=id_desc&limit=10&offset=0",
       async (route) => {
         const response = await route.fetch();
         const json = await response.json();
-        if (
-          json?.data?.[
-            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
-          ]
-        ) {
-          json.data[
-            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
-          ] = json.data[
-            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
-          ].map((i, index) => {
+
+        if (json?.records) {
+          json.records = json.records.map((i, index) => {
             if (index === 0) {
               proposalId = i.proposal_id;
               return {

@@ -549,66 +549,122 @@ test.describe("Wallet is connected", () => {
     await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
     await page.route(
-      "https://near-queryapi.api.pagoda.co/v1/graphql",
+      "https://events-cache-api-rs.fly.dev/proposals?order=id_desc&limit=10&offset=0",
       async (route) => {
         const response = await route.fetch({
-          url: "https://near-queryapi.api.pagoda.co/v1/graphql",
+          url: "https://events-cache-api-rs.fly.dev/proposals?order=id_desc&limit=10&offset=0",
         });
 
         const json = {
-          data: {
-            thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot:
-              [
-                {
-                  author_id: "meghagoel.near",
-                  block_height: 118172036,
-                  name: "DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024",
-                  category: "Bounty",
-                  summary: "Testing labels",
-                  editor_id: "meghagoel.near",
-                  proposal_id: 2,
-                  ts: 1714757281087668547,
-                  timeline: '{"status":"DRAFT"}',
-                  views: 2,
-                  labels: ["Bounty booster", "Hackathon", "Bounty"],
-                },
-                {
-                  author_id: "theori.near",
-                  block_height: 118170904,
-                  name: "Testing",
-                  category: "Bounty booster",
-                  summary: "This is a lovely test",
-                  editor_id: "theori.near",
-                  proposal_id: 1,
-                  ts: 1714755795920292298,
-                  timeline:
-                    '{"status":"REVIEW","sponsor_requested_review":true,"reviewer_completed_attestation":false}',
-                  views: 2,
-                  labels: [],
-                },
-                {
-                  author_id: "thomasguntenaar.near",
-                  block_height: 118102057,
-                  name: "First Proposal",
-                  category: "Bounty",
-                  summary: "Summary",
-                  editor_id: "thomasguntenaar.near",
-                  proposal_id: 0,
-                  ts: 1714667557333547274,
-                  timeline: '{"status":"DRAFT"}',
-                  views: 1,
-                  labels: [],
-                },
-              ],
-            thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot_aggregate:
-              {
-                aggregate: {
-                  count: 7,
-                },
-              },
-          },
+          records: [
+            {
+              author_id: "meghagoel.near",
+              block_height: 118172036,
+              name: "DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024",
+              category: "Bounty",
+              summary: "Testing labels",
+              editor_id: "meghagoel.near",
+              proposal_id: 2,
+              ts: 1714757281087668547,
+              timeline: '{"status":"DRAFT"}',
+              views: 2,
+              labels: ["Bounty booster", "Hackathon", "Bounty"],
+            },
+            {
+              author_id: "theori.near",
+              block_height: 118170904,
+              name: "Testing",
+              category: "Bounty booster",
+              summary: "This is a lovely test",
+              editor_id: "theori.near",
+              proposal_id: 1,
+              ts: 1714755795920292298,
+              timeline:
+                '{"status":"REVIEW","sponsor_requested_review":true,"reviewer_completed_attestation":false}',
+              views: 2,
+              labels: [],
+            },
+            {
+              author_id: "thomasguntenaar.near",
+              block_height: 118102057,
+              name: "First Proposal",
+              category: "Bounty",
+              summary: "Summary",
+              editor_id: "thomasguntenaar.near",
+              proposal_id: 0,
+              ts: 1714667557333547274,
+              timeline: '{"status":"DRAFT"}',
+              views: 1,
+              labels: [],
+            },
+          ],
+          page: 1,
+          total_pages: 7,
+          limit: 10,
+          total_records: 7,
         };
         console.log({ response, json });
+
+        await route.fulfill({ response, json });
+      }
+    );
+
+    await page.route(
+      "https://events-cache-api-rs.fly.dev/proposals?order=id_desc&limit=10&offset=0",
+      async (route) => {
+        console.log("WE ARE HERE");
+        const response = await route.fetch({
+          url: "https://events-cache-api-rs.fly.dev/proposals?order=id_desc&limit=10&offset=0",
+        });
+
+        const json = {
+          records: [
+            {
+              author_id: "meghagoel.near",
+              block_height: 118172036,
+              name: "DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024",
+              category: "Bounty",
+              summary: "Testing labels",
+              editor_id: "meghagoel.near",
+              proposal_id: 2,
+              ts: 1714757281087668547,
+              timeline: '{"status":"DRAFT"}',
+              views: 2,
+              labels: ["Bounty booster", "Hackathon", "Bounty"],
+            },
+            {
+              author_id: "theori.near",
+              block_height: 118170904,
+              name: "Testing",
+              category: "Bounty booster",
+              summary: "This is a lovely test",
+              editor_id: "theori.near",
+              proposal_id: 1,
+              ts: 1714755795920292298,
+              timeline:
+                '{"status":"REVIEW","sponsor_requested_review":true,"reviewer_completed_attestation":false}',
+              views: 2,
+              labels: [],
+            },
+            {
+              author_id: "thomasguntenaar.near",
+              block_height: 118102057,
+              name: "First Proposal",
+              category: "Bounty",
+              summary: "Summary",
+              editor_id: "thomasguntenaar.near",
+              proposal_id: 0,
+              ts: 1714667557333547274,
+              timeline: '{"status":"DRAFT"}',
+              views: 1,
+              labels: [],
+            },
+          ],
+          page: 1,
+          total_pages: 7,
+          limit: 10,
+          total_records: 7,
+        };
 
         await route.fulfill({ response, json });
       }
