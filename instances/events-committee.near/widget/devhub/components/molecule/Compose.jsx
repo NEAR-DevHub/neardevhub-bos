@@ -87,6 +87,7 @@ const Compose = ({
             <Widget
               src={"${REPL_DEVHUB}/widget/devhub.components.molecule.SimpleMDE"}
               props={{
+                instance: props.instance,
                 data: { handler: state.handler, content: state.data },
                 onChange: (content) => {
                   State.update({ data: content, handler: "update" });

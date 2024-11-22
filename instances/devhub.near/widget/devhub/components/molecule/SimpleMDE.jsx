@@ -203,7 +203,7 @@ function extractNumbers(str) {
 
 function searchCacheApi(searchProposalId) {
   let searchInput = encodeURI(searchProposalId);
-  // TODO: CORS issue: origin is null in iframe
+  
   let searchUrl = "${cacheUrl}/proposals/search/" + searchInput;
 
   console.log("searchUrl, ", searchUrl);

@@ -199,7 +199,7 @@ const Compose = useMemo(() => {
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
       props={{
-        ...props, // drilling instance
+        instance: props.instance,
         data: comment,
         onChangeKeyup: setComment,
         autocompleteEnabled: true,
