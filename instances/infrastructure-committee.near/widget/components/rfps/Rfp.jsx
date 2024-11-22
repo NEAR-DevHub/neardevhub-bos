@@ -278,6 +278,27 @@ const rfp = Near.view("${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}", "get_rfp", {
   rfp_id: parseInt(id),
 });
 
+const queryName = "${REPL_RFP_INDEXER_QUERY_NAME}";
+const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
+  ${queryName}(
+    offset: $offset
+    limit: $limit
+    order_by: {ts: asc}
+    where: $where
+  ) {
+    editor_id
+    name
+    summary
+    description
+    ts
+    rfp_id
+    timeline
+    labels
+    submission_deadline
+    linked_proposals
+  }
+}`;
+
 const fetchSnapshotHistory = () => {
   asyncFetch(`https://infra-cache-api-rs.fly.dev/rfp/${id}/snapshots`, {
     method: "GET",

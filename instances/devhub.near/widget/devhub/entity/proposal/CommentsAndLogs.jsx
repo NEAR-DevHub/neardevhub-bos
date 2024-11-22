@@ -4,6 +4,12 @@ const { getLinkUsingCurrentGateway } = VM.require(
 const snapshotHistory = props.snapshotHistory;
 const proposalId = props.id;
 const instanceAccount = props.item.path.split("/")[0];
+const acceptedTermsComponent = props.acceptedTermsComponent ?? (
+  <Widget
+    src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"}
+    props={{ proposalId: proposalId }}
+  />
+);
 
 const Wrapper = styled.div`
   position: relative;
@@ -332,10 +338,7 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
       return (
         <span>
           accepted
-          <Widget
-            src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"}
-            props={{ ...props, proposalId: proposalId }}
-          />
+          {acceptedTermsComponent}
         </span>
       );
     }
