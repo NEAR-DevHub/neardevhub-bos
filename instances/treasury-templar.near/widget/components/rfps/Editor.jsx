@@ -648,12 +648,14 @@ const ConsentComponent = useMemo(() => {
             <>
               I’ve read{" "}
               <a
-                href={CoCDocs}
+                href={href({
+                  widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/components.proposals.TermsAndConditions`,
+                })}
                 className="text-decoration-underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Templar's Code of Conduct
+                Templar's Terms and Condition
               </a>
               and commit to honoring it
             </>
