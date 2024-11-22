@@ -27,10 +27,8 @@ test.describe("Wallet is connected as admin", () => {
     await page.goto("/infrastructure-committee.near/widget/app?page=proposals");
     let proposalId;
     const linkedRfpId = 0;
-    // add linked RFP to latest proposal
     await page.route(
-      // TODO check if the query params are correct
-      "https://infra-cache-api-rs.fly.dev/proposals?order=id_desc&limit=10&offset=0",
+      "https://infra-cache-api-rs.fly.dev/proposals?order=id_desc&limit=20&offset=0",
       async (route) => {
         const response = await route.fetch();
         const json = await response.json();

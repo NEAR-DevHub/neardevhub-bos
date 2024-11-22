@@ -193,8 +193,7 @@ const FeedItem = ({ proposal, index }) => {
               <div
                 className="text-sm text-muted d-flex gap-1 align-items-center"
                 data-testid={
-                  `proposalId_${proposal.proposal_id}` +
-                  `_rfpId_${rfpData.rfp_id}`
+                  `proposalId_${proposal.proposal_id}` + `_rfpId_${rfpData.id}`
                 }
               >
                 <i class="bi bi-link-45deg"></i>
