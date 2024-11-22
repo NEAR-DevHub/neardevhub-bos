@@ -305,7 +305,6 @@ const FeedPage = () => {
     let searchInput = encodeURI(searchTerm);
     let searchUrl = `${cacheUrl}/proposals/search/${searchInput}`;
 
-    console.log("searchUrl proposals.feed", searchUrl);
     return asyncFetch(searchUrl, {
       method: "GET",
       headers: {
@@ -333,14 +332,12 @@ const FeedPage = () => {
       });
       Promise.all(promises).then((proposalsWithRfpData) => {
         State.update({ aggregatedCount: body.total_records });
-        fetchBlockHeights(proposalsWithRfpData, offset);
+        fetchBlockHeights(proposalsWithRfpData, 0);
       });
     });
   }
 
   function fetchCacheApi(variables) {
-    console.log("Fetching cache api", variables);
-
     let fetchUrl = `${cacheUrl}/proposals?order=${variables.order}&limit=${variables.limit}&offset=${variables.offset}`;
 
     if (variables.author_id) {
@@ -356,7 +353,6 @@ const FeedPage = () => {
         fetchUrl += `&filters.category=${variables.category}`;
       }
     }
-    console.log("Fetching.. ", fetchUrl);
     return asyncFetch(fetchUrl, {
       method: "GET",
       headers: {

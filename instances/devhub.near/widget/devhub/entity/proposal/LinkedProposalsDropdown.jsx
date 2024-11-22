@@ -3,8 +3,6 @@ href || (href = () => {});
 
 const instance = props.instance ?? "";
 
-console.log("Instance linked proposals dropdown", instance);
-
 const { cacheUrl, contract } = VM.require(`${instance}/widget/config.data`);
 
 const linkedProposals = props.linkedProposals;
@@ -29,7 +27,6 @@ function searchCacheApi(input) {
   let searchInput = encodeURI(input);
   let searchUrl = `${cacheUrl}/proposals/search/${searchInput}`;
 
-  console.log("searchUrl, ", searchUrl);
   return asyncFetch(searchUrl, {
     method: "GET",
     headers: {
@@ -45,7 +42,6 @@ function searchProposals(input) {
   State.update({ loading: true });
 
   searchCacheApi(input).then((result) => {
-    console.log("result", result);
     let proposalsData = result.body.records;
 
     const data = [];

@@ -284,7 +284,6 @@ const fetchSnapshotHistory = () => {
     headers: { accept: "application/json" },
   })
     .then((response) => {
-      console.log("Response accepted terms", response);
       if (!response.ok) {
         console.error(`Failed to fetch snapshots: ${response.status}`);
       }

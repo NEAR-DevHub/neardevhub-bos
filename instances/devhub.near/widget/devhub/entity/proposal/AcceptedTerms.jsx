@@ -7,8 +7,6 @@ State.init({
 });
 
 const instance = props.instance ?? "";
-// TODO is instance defined:?
-console.log("Instance accepted terms", instance);
 
 const { cacheUrl } = VM.require(`${instance}/widget/config.data`);
 
@@ -21,7 +19,6 @@ const fetchAndSetProposalSnapshot = () => {
     headers: { accept: "application/json" },
   })
     .then((response) => {
-      console.log("Response accepted terms", response);
       if (!response.ok) {
         console.error(`Failed to fetch snapshots: ${response.status}`);
       }

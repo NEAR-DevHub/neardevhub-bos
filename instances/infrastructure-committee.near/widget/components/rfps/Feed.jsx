@@ -238,9 +238,6 @@ const FeedPage = () => {
   });
 
   function searchCacheApi() {
-    console.log(
-      `Searching url: ${REPL_CACHE_URL}/rfps/search/${encodeURI(state.input)}`
-    );
     return asyncFetch(
       `${REPL_CACHE_URL}/rfps/search/${encodeURI(state.input)}`,
       {
@@ -259,7 +256,6 @@ const FeedPage = () => {
     State.update({ loading: true });
 
     searchCacheApi().then((result) => {
-      console.log("search result", result);
       let body = result.body;
       State.update({ aggregatedCount: body.total_records });
       fetchBlockHeights(body.records, 0);
@@ -282,7 +278,6 @@ const FeedPage = () => {
 
     State.update({ isFiltered: variables.category || variables.stage });
 
-    console.log(`Fetching url: ${fetchUrl}`);
     return asyncFetch(fetchUrl, {
       method: "GET",
       headers: {

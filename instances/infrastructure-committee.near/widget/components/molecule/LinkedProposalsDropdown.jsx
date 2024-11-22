@@ -28,7 +28,6 @@ function searchProposals(input) {
   State.update({ loading: true });
 
   searchCacheApi("proposals", input).then((result) => {
-    console.log("result", result);
     let proposalsData = result.body.records;
 
     const data = [];

@@ -206,7 +206,6 @@ function searchCacheApi(searchProposalId) {
   
   let searchUrl = "${cacheUrl}/proposals/search/" + searchInput;
 
-  console.log("searchUrl, ", searchUrl);
   return asyncFetch(searchUrl, {
     method: "GET",
     headers: {
@@ -219,11 +218,9 @@ function searchCacheApi(searchProposalId) {
 
 async function getSuggestedProposals(id) {
   let results = [];
-  console.log("getSuggestedProposals id:", id);
 
   if (id) {
     const searchResults = await searchCacheApi(id);
-    console.log("searchResults", searchResults);
     results = searchResults?.records || [];
   }
   return results;

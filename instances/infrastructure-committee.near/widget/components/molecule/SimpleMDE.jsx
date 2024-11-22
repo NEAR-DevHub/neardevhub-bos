@@ -204,7 +204,6 @@ function searchCacheApi(entity, searchProposalId) {
   let searchInput = encodeURI(searchProposalId);
   let searchUrl = "${cacheUrl}/"+entity+"/search/" + searchInput;
 
-  console.log("searchUrl, ", searchUrl);
   return asyncFetch(searchUrl, {
     method: "GET",
     headers: {
@@ -217,20 +216,18 @@ function searchCacheApi(entity, searchProposalId) {
 
 async function getSuggestedRfps(id) {
   let results = [];
-  console.log("getSuggestedRfps id:", id);
-  const searchResults = await searchCacheApi('rfp', id)
-  console.log("RFP searchResults in getSuggestedRfps", searchResults);
-  results = searchResults?.records || [];
+  if (id) {
+    const searchResults = await searchCacheApi('rfp', id);
+    results = searchResults?.records || [];
+  }
   return results;
 };
 
 async function getSuggestedProposals(id) {
   let results = [];
-  console.log("getSuggestedProposals id:", id);
 
   if (id) {
     const searchResults = await searchCacheApi('proposals', id);
-    console.log("searchResults", searchResults);
     results = searchResults?.records || [];
   }
   return results;

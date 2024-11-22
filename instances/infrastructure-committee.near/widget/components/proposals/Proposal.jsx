@@ -286,14 +286,12 @@ const fetchSnapshotHistory = () => {
     headers: { accept: "application/json" },
   })
     .then((response) => {
-      console.log("Response accepted terms", response);
       if (!response.ok) {
         console.error(`Failed to fetch snapshots: ${response.status}`);
       }
       return response.body;
     })
     .then((snapshots) => {
-      console.log("Snapshots infra proposals.Proposal", snapshots);
       const history = snapshots.map((item) => {
         const proposalData = {
           ...item,

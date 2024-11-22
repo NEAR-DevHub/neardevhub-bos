@@ -314,31 +314,25 @@ const FeedPage = () => {
     State.update({ loading: true });
 
     searchCacheApi().then((result) => {
-      console.log("result", result);
-      let data = result.body.records;
+      let body = result.body;
 
-      const promises = data.map((item) => {
-        if (isNumber(item.linked_rfp)) {
-          // TODO fetch individual rfp's via the cache instead of RPC directly -> name & rfp_id
-          getRfp(item.linked_rfp).then((result) => {
-            console.log({ result });
-            const rfpData = result.body.data;
-            return { ...item, rfpData: rfpData[0] };
+      const promises = body.records.map((proposal) => {
+        if (isNumber(proposal.linked_rfp)) {
+          getRfp(proposal.linked_rfp).then((rfp) => {
+            return { ...proposal, rfpData: rfp };
           });
         } else {
-          return Promise.resolve(item);
+          return Promise.resolve(proposal);
         }
       });
-      Promise.all(promises).then((res) => {
-        State.update({ aggregatedCount: result.body.total_records });
-        fetchBlockHeights(res, offset);
+      Promise.all(promises).then((proposalsWithRfpData) => {
+        State.update({ aggregatedCount: body.total_records });
+        fetchBlockHeights(proposalsWithRfpData, 0);
       });
     });
   }
 
   function fetchCacheApi(variables) {
-    console.log("Fetching cache api", variables);
-
     let fetchUrl = `${cacheUrl}/proposals?order=${variables.order}&limit=${variables.limit}&offset=${variables.offset}`;
 
     if (variables.author_id) {
@@ -354,7 +348,6 @@ const FeedPage = () => {
         fetchUrl += `&filters.category=${variables.category}`;
       }
     }
-    console.log("Fetching.. ", fetchUrl);
     return asyncFetch(fetchUrl, {
       method: "GET",
       headers: {
@@ -382,21 +375,18 @@ const FeedPage = () => {
     };
     fetchCacheApi(variables).then((result) => {
       const body = result.body;
-      const promises = body.records.map((item) => {
-        if (isNumber(item.linked_rfp)) {
-          // TODO fetch individual rfp's via the cache instead of RPC directly -> name & rfp_id
-          getRfp(item.linked_rfp).then((result) => {
-            console.log({ result });
-            const rfpData = body.data;
-            return { ...item, rfpData: rfpData[0] };
+      const promises = body.records.map((proposal) => {
+        if (isNumber(proposal.linked_rfp)) {
+          getRfp(proposal.linked_rfp).then((rfp) => {
+            return { ...proposal, rfpData: rfp };
           });
         } else {
-          return Promise.resolve(item);
+          return Promise.resolve(proposal);
         }
       });
-      Promise.all(promises).then((res) => {
+      Promise.all(promises).then((proposalsWithRfpData) => {
         State.update({ aggregatedCount: body.total_records });
-        fetchBlockHeights(res, offset);
+        fetchBlockHeights(proposalsWithRfpData, offset);
       });
     });
   }
