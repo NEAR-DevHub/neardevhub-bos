@@ -7,9 +7,7 @@ const { getLinkUsingCurrentGateway } = VM.require(
 ) || { getLinkUsingCurrentGateway: () => {} };
 
 const instance = props.instance ?? "";
-console.log("Instance simplemde", instance);
 const { cacheUrl, contract } = VM.require(`${instance}/widget/config.data`);
-console.log("Contract in simplemde", contract);
 
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
@@ -35,19 +33,6 @@ const placeholder = props.placeholder ?? "";
 const showAccountAutoComplete = props.showAutoComplete ?? false;
 const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
 const autoFocus = props.autoFocus ?? false;
-
-const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
-const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-${queryName}(
-  offset: $offset
-  limit: $limit
-  order_by: {proposal_id: desc}
-  where: $where
-) {
-  name
-  proposal_id
-}
-}`;
 
 const proposalLink = getLinkUsingCurrentGateway(
   `${contract}/widget/app?page=proposal&id=`
@@ -135,7 +120,6 @@ let isEditorInitialized = false;
 let followingData = {};
 let profilesData = {};
 let proposalLink = '';
-let query = '';
 let showAccountAutoComplete = ${showAccountAutoComplete};
 let showProposalIdAutoComplete = ${showProposalIdAutoComplete};
 
@@ -433,7 +417,6 @@ if (showProposalIdAutoComplete) {
   const loader = document.createElement('div');
   loader.className = 'loader';
   loader.textContent = 'Loading...';
-  // let isLoaderAttached = false;
 
   simplemde.codemirror.on("keydown", () => {
     if (proposalId && event.key === 'ArrowDown') {
@@ -451,13 +434,8 @@ if (showProposalIdAutoComplete) {
       try {
         const proposalIdInput = cm.getRange(referenceCursorStart, cursor);
         dropdown.innerHTML = ''; // Clear previous content
-
-        dropdown.appendChild(loader);
-        // if (!isLoaderAttached) {
-        //   dropdown.appendChild(loader);
-        //   isLoaderAttached = true;
-        // }
-
+        dropdown.appendChild(loader); // Show loader
+       
         const suggestedProposals = await getSuggestedProposals(proposalIdInput);
 
         // Clear dropdown including loader
@@ -544,9 +522,6 @@ window.addEventListener("message", (event) => {
   if (event.data.profilesData) {
     profilesData = JSON.parse(event.data.profilesData);
   }
-  if (event.data.query) {
-    query = event.data.query;
-  }
   if (event.data.proposalLink) {
     proposalLink = event.data.proposalLink;
   }
@@ -569,7 +544,6 @@ return (
       content: props.data?.content ?? "",
       followingData,
       profilesData: JSON.stringify(profilesData),
-      query: query,
       handler: props.data.handler,
       proposalLink: proposalLink,
     }}
