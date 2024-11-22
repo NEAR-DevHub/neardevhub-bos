@@ -1,28 +1,15 @@
-const { fetchGraphQL } = VM.require(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
-);
-
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
 href || (href = () => {});
+
+const { fetchCacheApi, searchCacheApi } = VM.require(
+  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
+);
 
 const linkedProposals = props.linkedProposals;
 const onChange = props.onChange;
 const [selectedProposals, setSelectedProposals] = useState(linkedProposals);
 const [proposalsOptions, setProposalsOptions] = useState([]);
-const [searchProposalId, setSearchProposalId] = useState("");
-
-const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
-const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-${queryName}(
-  offset: $offset
-  limit: $limit
-  order_by: {proposal_id: desc}
-  where: $where
-) {
-  name
-  proposal_id
-}
-}`;
+const [textAfterHash, setTextAfterHash] = useState("");
 
 useEffect(() => {
   if (JSON.stringify(linkedProposals) !== JSON.stringify(selectedProposals)) {
@@ -36,70 +23,30 @@ useEffect(() => {
   }
 }, [selectedProposals]);
 
-function separateNumberAndText(str) {
-  const numberRegex = /\d+/;
+function searchProposals(input) {
+  if (state.loading) return;
+  State.update({ loading: true });
 
-  if (numberRegex.test(str)) {
-    const number = str.match(numberRegex)[0];
-    const text = str.replace(numberRegex, "").trim();
-    return { number: parseInt(number), text };
-  } else {
-    return { number: null, text: str.trim() };
-  }
+  searchCacheApi("proposals", input).then((result) => {
+    console.log("result", result);
+    let proposalsData = result.body.records;
+
+    const data = [];
+    for (const prop of proposalsData) {
+      data.push({
+        label: "# " + prop.proposal_id + " : " + prop.name,
+        value: prop.proposal_id,
+      });
+    }
+    setProposalsOptions(data);
+  });
 }
 
-const buildWhereClause = () => {
-  let where = {};
-  const { number, text } = separateNumberAndText(searchProposalId);
-
-  if (number) {
-    where = { proposal_id: { _eq: number }, ...where };
-  }
-
-  if (text) {
-    where = {
-      _or: [
-        { name: { _iregex: `${text}` } },
-        { summary: { _iregex: `${text}` } },
-        { description: { _iregex: `${text}` } },
-      ],
-      ...where,
-    };
-  }
-
-  return where;
-};
-
-const fetchProposals = () => {
-  const FETCH_LIMIT = 30;
-  const variables = {
-    limit: FETCH_LIMIT,
-    offset: 0,
-    where: buildWhereClause(),
-  };
-  if (typeof fetchGraphQL !== "function") {
-    return;
-  }
-  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const proposalsData = result.body.data?.[queryName];
-        const data = [];
-        for (const prop of proposalsData) {
-          data.push({
-            label: "# " + prop.proposal_id + " : " + prop.name,
-            value: prop.proposal_id,
-          });
-        }
-        setProposalsOptions(data);
-      }
-    }
-  });
-};
-
 useEffect(() => {
-  fetchProposals();
-}, [searchProposalId]);
+  if (textAfterHash.trim()) {
+    searchProposals(textAfterHash);
+  }
+}, [textAfterHash]);
 
 return (
   <>
@@ -150,7 +97,7 @@ return (
         defaultLabel: "Search proposals",
         searchByValue: true,
         onSearch: (value) => {
-          setSearchProposalId(value);
+          setTextAfterHash(value);
         },
       }}
     />

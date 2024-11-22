@@ -328,7 +328,6 @@ const FeedPage = () => {
       let data = result.body.records;
 
       const promises = data.map((item) => {
-        console.log("item.linked_rfp ", item.linked_rfp);
         if (isNumber(item.linked_rfp)) {
           // TODO fetch individual rfp's via the cache instead of RPC directly -> name & rfp_id
           getRfp(item.linked_rfp).then((result) => {
@@ -396,7 +395,6 @@ const FeedPage = () => {
     fetchCacheApi(variables).then((result) => {
       const body = result.body;
       const promises = body.records.map((item) => {
-        console.log("item.linked_rfp ", item.linked_rfp);
         if (isNumber(item.linked_rfp)) {
           // TODO fetch individual rfp's via the cache instead of RPC directly -> name & rfp_id
           getRfp(item.linked_rfp).then((result) => {

@@ -18,11 +18,9 @@ State.init({
   message: props.data,
 });
 
-const profilesData = Social.get("*/profile/name", "final");
-const followingData = Social.get(
-  `${context.accountId}/graph/follow/**`,
-  "final"
-);
+const profilesData = Social.get("*/profile/name", "final") ?? {};
+const followingData =
+  Social.get(`${context.accountId}/graph/follow/**`, "final") ?? {};
 
 // SIMPLEMDE CONFIG //
 const fontFamily = props.fontFamily ?? "sans-serif";
@@ -33,37 +31,9 @@ const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
 const showRfpIdAutoComplete = props.showRfpIdAutoComplete ?? false;
 const autoFocus = props.autoFocus ?? false;
 
-const proposalQueryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
 const proposalLink = getLinkUsingCurrentGateway(
   `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=proposal&id=`
 );
-const proposalQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${proposalQueryName}_bool_exp = {}) {
-${proposalQueryName}(
-  offset: $offset
-  limit: $limit
-  order_by: {proposal_id: desc}
-  where: $where
-) {
-  name
-  proposal_id
-}
-}`;
-
-const rfpQueryName = "${REPL_RFP_FEED_INDEXER_QUERY_NAME}";
-const rfpLink = getLinkUsingCurrentGateway(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=rfp&id=`
-);
-const rfpQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${rfpQueryName}_bool_exp = {}) {
-${rfpQueryName}(
-  offset: $offset
-  limit: $limit
-  order_by: {rfp_id: desc}
-  where: $where
-) {
-  rfp_id
-  name
-}
-}`;
 
 const code = `
 <!doctype html>
@@ -146,12 +116,8 @@ let codeMirrorInstance;
 let isEditorInitialized = false;
 let followingData = {};
 let profilesData = {};
-let proposalQuery = '';
 let proposalLink = '';
-let proposalQueryName = '';
-let rfpQuery = '';
 let rfpLink = '';
-let rfpQueryName = '';
 let showAccountAutoComplete = ${showAccountAutoComplete};
 let showProposalIdAutoComplete = ${showProposalIdAutoComplete};
 let showRfpIdAutoComplete = ${showRfpIdAutoComplete}
@@ -206,12 +172,11 @@ function getSuggestedAccounts(term) {
   return results;
 }
 
-async function asyncFetch(endpoint, { method, headers, body }) {
+async function asyncFetch(endpoint, { method, headers }) {
   try {
     const response = await fetch(endpoint, {
       method: method,
       headers: headers,
-      body: body
     });
 
     if (!response.ok) {
@@ -235,89 +200,39 @@ function extractNumbers(str) {
   return numbers;
 };
 
+function searchCacheApi(entity, searchProposalId) {
+  let searchInput = encodeURI(searchProposalId);
+  let searchUrl = "${cacheUrl}/"+entity+"/search/" + searchInput;
+
+  console.log("searchUrl, ", searchUrl);
+  return asyncFetch(searchUrl, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+    },
+  }).catch((error) => {
+    console.log("Error searching cache api", error);
+  });
+}
+
 async function getSuggestedRfps(id) {
   let results = [];
-  const variables = {
-    limit: 3,
-    offset: 0,
-    where: {},
-  };
-  if (id) {
-    const rfpId = extractNumbers(id);
-    if (rfpId) {
-      variables["where"] = { rfp_id: { _eq: id } };
-    } else {
-      variables["where"] = {
-        _or: [
-          { name: { _iregex: id } },
-          { summary: { _iregex: id } },
-          { description: { _iregex: id} },
-        ]
-      };
-    }
-  }
-  await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
-    method: "POST",
-    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
-    body: JSON.stringify({
-      query: rfpQuery,
-      variables: variables,
-      operationName: "GetLatestSnapshot",
-    }),
-  })
-    .then((res) => {
-      const rfps =
-        res?.data?.[
-          rfpQueryName
-        ];
-      results = rfps;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  console.log("getSuggestedRfps id:", id);
+  const searchResults = await searchCacheApi('rfp', id)
+  console.log("RFP searchResults in getSuggestedRfps", searchResults);
+  results = searchResults?.records || [];
   return results;
 };
 
 async function getSuggestedProposals(id) {
   let results = [];
-  const variables = {
-    limit: 3,
-    offset: 0,
-    where: {},
-  };
+  console.log("getSuggestedProposals id:", id);
+
   if (id) {
-    const proposalId = extractNumbers(id);
-    if (proposalId) {
-      variables["where"] = { proposal_id: { _eq: id } };
-    } else {
-      variables["where"] = {
-        _or: [
-          { name: { _iregex: id } },
-          { summary: { _iregex: id } },
-          { description: { _iregex: id} },
-        ]
-      };
-    }
+    const searchResults = await searchCacheApi('proposals', id);
+    console.log("searchResults", searchResults);
+    results = searchResults?.records || [];
   }
-  await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
-    method: "POST",
-    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
-    body: JSON.stringify({
-      query: proposalQuery,
-      variables: variables,
-      operationName: "GetLatestSnapshot",
-    }),
-  })
-    .then((res) => {
-      const proposals =
-        res?.data?.[
-          proposalQueryName
-        ];
-      results = proposals;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
   return results;
 };
 
@@ -468,7 +383,7 @@ if (showAccountAutoComplete) {
         });
       });
     }
-    // show dropwdown only when @ is at first place or when there is a space before @
+    // show dropdown only when @ is at first place or when there is a space before @
       if (!mentionToken && (token.string === "@" && cursor.ch === 1 || token.string === "@" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ')) {
         mentionToken = token;
         mentionCursorStart = cursor;
@@ -505,6 +420,7 @@ if (showProposalIdAutoComplete) {
   let proposalId;
   let referenceCursorStart;
   const dropdown = document.getElementById("referencedropdown");
+  // Create loader element once and store it
   const loader = document.createElement('div');
   loader.className = 'loader';
   loader.textContent = 'Loading...';
@@ -572,7 +488,7 @@ if (showProposalIdAutoComplete) {
       }
     }
 
-    // show dropwdown only when there is space before # or it's first char
+    // show dropdown only when there is space before # or it's first char
       if (!proposalId && (token.string === "#" && cursor.ch === 1 || token.string === "#" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ')) {
         proposalId = token;
         referenceCursorStart = cursor;
@@ -621,26 +537,12 @@ window.addEventListener("message", (event) => {
   if (event.data.profilesData) {
     profilesData = JSON.parse(event.data.profilesData);
   }
-  if (event.data.proposalQuery) {
-    proposalQuery = event.data.proposalQuery;
-  }
-  if (event.data.proposalQueryName) {
-    proposalQueryName = event.data.proposalQueryName;
-  }
   if (event.data.proposalLink) {
     proposalLink = event.data.proposalLink;
-  }
-
-  if (event.data.rfpQuery) {
-    rfpQuery = event.data.rfpQuery;
-  }
-  if (event.data.rfpQueryName) {
-    rfpQueryName = event.data.rfpQueryName;
   }
   if (event.data.rfpLink) {
     rfpLink = event.data.rfpLink;
   }
-  
 });
 </script>
 </body>
@@ -660,13 +562,9 @@ return (
       content: props.data?.content ?? "",
       followingData,
       profilesData: JSON.stringify(profilesData),
-      proposalQuery: proposalQuery,
-      proposalQueryName: proposalQueryName,
-      proposalLink: proposalLink,
-      rfpQuery: rfpQuery,
-      rfpQueryName: rfpQueryName,
-      rfpLink: rfpLink,
       handler: props.data.handler,
+      proposalLink: proposalLink,
+      rfpLink: rfpLink,
     }}
     onMessage={(e) => {
       switch (e.handler) {
