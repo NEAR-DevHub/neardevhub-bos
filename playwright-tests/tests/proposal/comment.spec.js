@@ -9,6 +9,10 @@ import {
   encodeResultJSON,
 } from "../../util/transaction.js";
 
+test.afterEach(
+  async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
+);
+
 test.describe("Wallet connected", () => {
   test.use({
     contextOptions: {
@@ -85,6 +89,8 @@ test.describe("Don't ask again enabled", () => {
       .locator(".CodeMirror textarea");
     await commentArea.focus({ timeout: 20_000 });
     const text = "Comment testing";
+    // focus on the comment area
+    await commentArea.focus({ timeout: 20_000 });
     await commentArea.pressSequentially(text, {
       delay: delay_milliseconds_between_keypress_when_typing,
     });

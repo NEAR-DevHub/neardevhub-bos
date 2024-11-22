@@ -37,6 +37,10 @@ async function mockGlobalLabels(page) {
   });
 }
 
+test.afterEach(
+  async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
+);
+
 test.describe("Wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
@@ -443,7 +447,7 @@ test.describe("Admin with don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test("should paste a long comment to a proposal, see that the comment appears after submission, and that the comment field is cleared, even after reloading the page", async ({
+  test("should paste a long comment to a rfp, see that the comment appears after submission, and that the comment field is cleared, even after reloading the page", async ({
     page,
   }) => {
     test.setTimeout(2 * 60000);
@@ -456,7 +460,9 @@ test.describe("Admin with don't ask again enabled", () => {
     await expect(commentButton).toBeAttached({ timeout: 30_000 });
     await commentButton.scrollIntoViewIfNeeded();
 
-    const commentText = "I'm testing again now.";
+    const commentText =
+      "Hi @petersalomonsen.near – congratulations! This message confirms your funding request approval by @neardevdao.near. We're excited to sponsor your work! This approval follows our review process involving various Work Groups and DevDAO Moderators, as outlined in our [guidelines](/devhub.near/widget/app?page=community&handle=developer-dao&tab=Funding). Please note that the funding distribution is contingent on successfully passing our KYC/B and paperwork process.\n\nHere’s what to expect:\n\n**Funding Steps**\n\n1. **KYC/KYB Verification:** A DevDAO Moderator will move your proposal to the Payment Processing Stage and verify that you have completed verification to ensure compliance. If you are not verified, your DevHub Moderator will contact you on Telegram with instructions on how to proceed. To receive funding, you must get verified through Fractal, a trusted third-party identification verification solution. Your verification badge is valid for 365 days and needs renewal upon expiration OR if your personal information changes, such as your name, address, or ID expiration.\n2. **Information Collection:** Once verified, a DevDAO Moderator will contact you via Telegram and request that you complete the Funding Request Form using Airtable.\n3. **Processing:** Our legal team will verify your application details to ensure compliance. They will then send you an email requesting your signature for the underlying agreement via Ironclad.\n4. **Invoicing & Payment:** Once we receive your signed agreement, our finance team will email you instructions to submit the final invoice using Request Finance. Once we receive your invoice, our finance team will send a test transaction confirmation email. Once you confirm the test transaction, we will distribute the funds and post a payment link on your proposal.\n\n**Funding Conversion Notice**\n\nOnce you receive your funding, we urge you to exercise caution if attempting to convert your funds. Some third-party tools may impose significant swapping fees.\n\n**Visibility**\n\nWe track the funding process on each proposal using the timeline and comments. However, you are welcome to reach out to the DevDAO Moderator with any questions. \n\n**Timeline**\n\nTypically, funds are disbursed within 10 business days, but the timeline can vary depending on the project's complexity and paperwork. Your DevDAO Moderator will keep you updated.";
+
     await page.evaluate(async (text) => {
       await navigator.clipboard.writeText(text);
     }, commentText);
@@ -466,6 +472,7 @@ test.describe("Admin with don't ask again enabled", () => {
       .last()
       .locator(".CodeMirror textarea");
     await commentArea.focus();
+    await expect(commentArea).toBeFocused();
     await page.waitForTimeout(100);
 
     const isMac = process.platform === "darwin";

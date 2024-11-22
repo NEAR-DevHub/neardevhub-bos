@@ -449,7 +449,10 @@ const accessControlInfo =
 const moderatorList =
   accessControlInfo?.members_list?.["team:moderators"]?.children;
 
-fetchApprovedRfpProposals();
+
+useEffect(() => {
+  fetchApprovedRfpProposals();
+}, [snapshot]);
 
 const SubmitProposalBtn = () => {
   return (
