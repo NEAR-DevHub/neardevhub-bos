@@ -449,7 +449,6 @@ const accessControlInfo =
 const moderatorList =
   accessControlInfo?.members_list?.["team:moderators"]?.children;
 
-
 useEffect(() => {
   fetchApprovedRfpProposals();
 }, [snapshot]);
