@@ -865,6 +865,14 @@ return (
                     item: item,
                     snapshotHistory: snapshotHistory,
                     latestSnapshot: snapshot,
+                    acceptedTermsComponent: (
+                      <Widget
+                        src={
+                          "${REPL_TREASURY_TEMPLAR}/widget/components.proposals.AcceptedTerms"
+                        }
+                        props={{ proposalId: proposalId }}
+                      />
+                    ),
                   }}
                 />
               </div>

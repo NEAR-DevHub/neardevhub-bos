@@ -908,8 +908,8 @@ return (
               <p className="para-x">
                 regularly update the relevant Supervisor in writing (e.g. by
                 email or via
-                https://near.social/devhub.near/widget/app?page=home) on the
-                progress of completion of the Purpose;
+                https://near.social/treasury-templar.near/widget/portal?page=proposals)
+                on the progress of completion of the Purpose;
               </p>
             </li>
             <li className="ordered-list-item">
@@ -1574,7 +1574,7 @@ return (
             </h4>
             <p className="para-x single-type">
               If you have any questions about these Terms please contact us via
-              legal@near.foundation.
+              info@templarprotocol.com.
             </p>
           </div>
         </div>
