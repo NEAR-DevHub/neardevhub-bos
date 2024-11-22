@@ -75,6 +75,11 @@ test.describe("Wallet is connected as admin", () => {
     await pauseIfVideoRecording(page);
     if (linkRfp) {
       await page.getByText("Search RFP").click();
+      // write 0 in the input field
+      let input = page.getByPlaceholder("Search by Id");
+      // let input = await page.getByTestId("rfp-search-input");
+      // const input = await page.locator('input[type="text"]');
+      await input.fill("0", { delay: 100 });
       await page.getByText("# 0 : A Cool RFP").click();
       await expect(
         await page.getByRole("link", { name: "# 0 : A Cool RFP" })
