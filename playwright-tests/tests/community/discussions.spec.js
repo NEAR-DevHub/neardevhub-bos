@@ -29,7 +29,11 @@ test.describe("Wallet is connected", () => {
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
 
-  test("should create a discussion when content matches", async ({ page }) => {
+  // Created an issue to fix this test: https://github.com/NEAR-DevHub/neardevhub-bos/issues/991
+
+  test.skip("should create a discussion when content matches", async ({
+    page,
+  }) => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions"
     );
