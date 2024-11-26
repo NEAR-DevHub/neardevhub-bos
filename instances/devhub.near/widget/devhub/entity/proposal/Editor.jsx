@@ -884,6 +884,7 @@ const DescriptionComponent = useMemo(() => {
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
       props={{
+        instance: props.instance,
         data: description,
         onChange: setDescription,
         autocompleteEnabled: true,
@@ -908,7 +909,7 @@ const ConsentComponent = useMemo(() => {
                 src={
                   "${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"
                 }
-                props={{ proposalId: proposalId, portal: "DevHub" }}
+                props={{ ...props, proposalId: proposalId, portal: "DevHub" }}
               />
               and commit to honoring it
             </>
