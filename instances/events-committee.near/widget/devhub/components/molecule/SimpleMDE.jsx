@@ -3,7 +3,7 @@
  * https://github.com/sparksuite/simplemde-markdown-editor
  */
 const { getLinkUsingCurrentGateway } = VM.require(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
+  "${REPL_DEVHUB}/widget/core.lib.url"
 ) || { getLinkUsingCurrentGateway: () => {} };
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
@@ -18,11 +18,9 @@ State.init({
   message: props.data,
 });
 
-const profilesData = Social.get("*/profile/name", "final");
-const followingData = Social.get(
-  `${context.accountId}/graph/follow/**`,
-  "final"
-);
+const profilesData = Social.get("*/profile/name", "final") ?? {};
+const followingData =
+  Social.get(`${context.accountId}/graph/follow/**`, "final") ?? {};
 
 // SIMPLEMDE CONFIG //
 const fontFamily = props.fontFamily ?? "sans-serif";
@@ -30,15 +28,11 @@ const alignToolItems = props.alignToolItems ?? "right";
 const placeholder = props.placeholder ?? "";
 const showAccountAutoComplete = props.showAutoComplete ?? false;
 const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
-const showRfpIdAutoComplete = props.showRfpIdAutoComplete ?? false;
 const autoFocus = props.autoFocus ?? false;
 
-const proposalQueryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
-const proposalLink = getLinkUsingCurrentGateway(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=proposal&id=`
-);
-const proposalQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${proposalQueryName}_bool_exp = {}) {
-${proposalQueryName}(
+const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
+const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
+${queryName}(
   offset: $offset
   limit: $limit
   order_by: {proposal_id: desc}
@@ -49,21 +43,9 @@ ${proposalQueryName}(
 }
 }`;
 
-const rfpQueryName = "${REPL_RFP_FEED_INDEXER_QUERY_NAME}";
-const rfpLink = getLinkUsingCurrentGateway(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=rfp&id=`
+const proposalLink = getLinkUsingCurrentGateway(
+  `${REPL_EVENTS}/widget/app?page=proposal&id=`
 );
-const rfpQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${rfpQueryName}_bool_exp = {}) {
-${rfpQueryName}(
-  offset: $offset
-  limit: $limit
-  order_by: {rfp_id: desc}
-  where: $where
-) {
-  rfp_id
-  name
-}
-}`;
 
 const code = `
 <!doctype html>
@@ -146,21 +128,16 @@ let codeMirrorInstance;
 let isEditorInitialized = false;
 let followingData = {};
 let profilesData = {};
-let proposalQuery = '';
 let proposalLink = '';
-let proposalQueryName = '';
-let rfpQuery = '';
-let rfpLink = '';
-let rfpQueryName = '';
+let query = '';
 let showAccountAutoComplete = ${showAccountAutoComplete};
 let showProposalIdAutoComplete = ${showProposalIdAutoComplete};
-let showRfpIdAutoComplete = ${showRfpIdAutoComplete}
 
 function getSuggestedAccounts(term) {
   let results = [];
 
   term = (term || "").replace(/\W/g, "").toLowerCase();
-   let limit = 5;
+  let limit = 5;
   if (term.length < 2) {
    results = [${sortedRelevantUsers
      .map((u) => "{accountId:'" + u + "', score: 60}")
@@ -235,53 +212,10 @@ function extractNumbers(str) {
   return numbers;
 };
 
-async function getSuggestedRfps(id) {
-  let results = [];
-  const variables = {
-    limit: 3,
-    offset: 0,
-    where: {},
-  };
-  if (id) {
-    const rfpId = extractNumbers(id);
-    if (rfpId) {
-      variables["where"] = { rfp_id: { _eq: id } };
-    } else {
-      variables["where"] = {
-        _or: [
-          { name: { _iregex: id } },
-          { summary: { _iregex: id } },
-          { description: { _iregex: id} },
-        ]
-      };
-    }
-  }
-  await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
-    method: "POST",
-    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
-    body: JSON.stringify({
-      query: rfpQuery,
-      variables: variables,
-      operationName: "GetLatestSnapshot",
-    }),
-  })
-    .then((res) => {
-      const rfps =
-        res?.data?.[
-          rfpQueryName
-        ];
-      results = rfps;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  return results;
-};
-
 async function getSuggestedProposals(id) {
   let results = [];
   const variables = {
-    limit: 3,
+    limit: 5,
     offset: 0,
     where: {},
   };
@@ -294,8 +228,8 @@ async function getSuggestedProposals(id) {
         _or: [
           { name: { _iregex: id } },
           { summary: { _iregex: id } },
-          { description: { _iregex: id} },
-        ]
+          { description: { _iregex: id } },
+        ],
       };
     }
   }
@@ -303,7 +237,7 @@ async function getSuggestedProposals(id) {
     method: "POST",
     headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
     body: JSON.stringify({
-      query: proposalQuery,
+      query: query,
       variables: variables,
       operationName: "GetLatestSnapshot",
     }),
@@ -311,7 +245,7 @@ async function getSuggestedProposals(id) {
     .then((res) => {
       const proposals =
         res?.data?.[
-          proposalQueryName
+          "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}"
         ];
       results = proposals;
     })
@@ -523,27 +457,17 @@ if (showProposalIdAutoComplete) {
 
     const createReferenceDropDownOptions = async () => {
       try {
-        const input = cm.getRange(referenceCursorStart, cursor);
+        const proposalIdInput = cm.getRange(referenceCursorStart, cursor);
         dropdown.innerHTML = ''; // Clear previous content
         dropdown.appendChild(loader); // Show loader
 
-        const suggestedProposals = await getSuggestedProposals(input);
-        const suggestedRFPs = await getSuggestedRfps(input);
-
-       const proposalItems = suggestedProposals
+        const suggestedProposals = await getSuggestedProposals(proposalIdInput);
+        dropdown.innerHTML = suggestedProposals
         .map(
           (item) =>
-            '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + "#" + item?.proposal_id + " Proposal: " + item.name + '</button></li>'
+            '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + "#" + item?.proposal_id + " " + item.name + '</button></li>'
         )
         .join("");
-
-        const rfpItems = suggestedRFPs
-        .map(
-          (item) =>
-            '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + "#" + item?.rfp_id + " RFP: " + " " + item.name + '</button></li>'
-        )
-        .join("");
-        dropdown.innerHTML = proposalItems + rfpItems;
 
         dropdown.querySelectorAll("li").forEach((li) => {
           li.addEventListener("click", () => {
@@ -551,7 +475,7 @@ if (showProposalIdAutoComplete) {
             const startIndex = selectedText.indexOf('#') + 1; 
             const endIndex = selectedText.indexOf(' ', startIndex);
             const id = endIndex !== -1 ? selectedText.substring(startIndex, endIndex) : selectedText.substring(startIndex);
-            const link = (selectedText.includes("RFP:") ? rfpLink : proposalLink) + id;
+            const link = proposalLink + id;
             const adjustedStart = {
               line: referenceCursorStart.line,
               ch: referenceCursorStart.ch - 1
@@ -621,26 +545,12 @@ window.addEventListener("message", (event) => {
   if (event.data.profilesData) {
     profilesData = JSON.parse(event.data.profilesData);
   }
-  if (event.data.proposalQuery) {
-    proposalQuery = event.data.proposalQuery;
-  }
-  if (event.data.proposalQueryName) {
-    proposalQueryName = event.data.proposalQueryName;
+  if (event.data.query) {
+    query = event.data.query;
   }
   if (event.data.proposalLink) {
     proposalLink = event.data.proposalLink;
   }
-
-  if (event.data.rfpQuery) {
-    rfpQuery = event.data.rfpQuery;
-  }
-  if (event.data.rfpQueryName) {
-    rfpQueryName = event.data.rfpQueryName;
-  }
-  if (event.data.rfpLink) {
-    rfpLink = event.data.rfpLink;
-  }
-  
 });
 </script>
 </body>
@@ -660,13 +570,9 @@ return (
       content: props.data?.content ?? "",
       followingData,
       profilesData: JSON.stringify(profilesData),
-      proposalQuery: proposalQuery,
-      proposalQueryName: proposalQueryName,
-      proposalLink: proposalLink,
-      rfpQuery: rfpQuery,
-      rfpQueryName: rfpQueryName,
-      rfpLink: rfpLink,
+      query: query,
       handler: props.data.handler,
+      proposalLink: proposalLink,
     }}
     onMessage={(e) => {
       switch (e.handler) {

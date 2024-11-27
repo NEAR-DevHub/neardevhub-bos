@@ -90,7 +90,6 @@ return {
   contract: "devhub.near",
   proposalFeedIndexerQueryName:
     "polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot",
-  cacheUrl: "${REPL_CACHE_URL}",
   indexerHasuraRole: "polyprogrammist_near",
   isDevhub: true,
   proposalFeedAnnouncement,

@@ -5,10 +5,6 @@
 const { getLinkUsingCurrentGateway } = VM.require(
   "${REPL_DEVHUB}/widget/core.lib.url"
 ) || { getLinkUsingCurrentGateway: () => {} };
-
-const instance = props.instance ?? "";
-const { cacheUrl, contract } = VM.require(`${instance}/widget/config.data`);
-
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
 const onChangeKeyup = props.onChangeKeyup ?? (() => {}); // in case where we want immediate action
@@ -34,8 +30,21 @@ const showAccountAutoComplete = props.showAutoComplete ?? false;
 const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
 const autoFocus = props.autoFocus ?? false;
 
+const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
+const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
+${queryName}(
+  offset: $offset
+  limit: $limit
+  order_by: {proposal_id: desc}
+  where: $where
+) {
+  name
+  proposal_id
+}
+}`;
+
 const proposalLink = getLinkUsingCurrentGateway(
-  `${contract}/widget/app?page=proposal&id=`
+  `${REPL_DEVHUB}/widget/app?page=proposal&id=`
 );
 
 const code = `
@@ -79,11 +88,11 @@ const code = `
   }
   
   .CodeMirror {
-    min-height:200px !important; // for autocomplete to be visible 
+    min-height:200px !important; // for autocomplete to be visble 
   }
 
   .CodeMirror-scroll {
-    min-height:200px !important; // for autocomplete to be visible 
+    min-height:200px !important; // for autocomplete to be visble 
   }
 
   ${embeddCSS}
@@ -120,6 +129,7 @@ let isEditorInitialized = false;
 let followingData = {};
 let profilesData = {};
 let proposalLink = '';
+let query = '';
 let showAccountAutoComplete = ${showAccountAutoComplete};
 let showProposalIdAutoComplete = ${showProposalIdAutoComplete};
 
@@ -173,11 +183,12 @@ function getSuggestedAccounts(term) {
   return results;
 }
 
-async function asyncFetch(endpoint, { method, headers }) {
+async function asyncFetch(endpoint, { method, headers, body }) {
   try {
     const response = await fetch(endpoint, {
       method: method,
       headers: headers,
+      body: body
     });
 
     if (!response.ok) {
@@ -201,28 +212,46 @@ function extractNumbers(str) {
   return numbers;
 };
 
-function searchCacheApi(searchProposalId) {
-  let searchInput = encodeURI(searchProposalId);
-  
-  let searchUrl = "${cacheUrl}/proposals/search/" + searchInput;
-
-  return asyncFetch(searchUrl, {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-    },
-  }).catch((error) => {
-    console.log("Error searching cache api", error);
-  });
-}
-
 async function getSuggestedProposals(id) {
   let results = [];
-
+  const variables = {
+    limit: 5,
+    offset: 0,
+    where: {},
+  };
   if (id) {
-    const searchResults = await searchCacheApi(id);
-    results = searchResults?.records || [];
+    const proposalId = extractNumbers(id);
+    if (proposalId) {
+      variables["where"] = { proposal_id: { _eq: id } };
+    } else {
+      variables["where"] = {
+        _or: [
+          { name: { _iregex: id } },
+          { summary: { _iregex: id } },
+          { description: { _iregex: id } },
+        ],
+      };
+    }
   }
+  await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
+    method: "POST",
+    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
+    body: JSON.stringify({
+      query: query,
+      variables: variables,
+      operationName: "GetLatestSnapshot",
+    }),
+  })
+    .then((res) => {
+      const proposals =
+        res?.data?.[
+          "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}"
+        ];
+      results = proposals;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   return results;
 };
 
@@ -373,7 +402,7 @@ if (showAccountAutoComplete) {
         });
       });
     }
-    // show dropdown only when @ is at first place or when there is a space before @
+    // show dropwdown only when @ is at first place or when there is a space before @
       if (!mentionToken && (token.string === "@" && cursor.ch === 1 || token.string === "@" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ')) {
         mentionToken = token;
         mentionCursorStart = cursor;
@@ -410,7 +439,6 @@ if (showProposalIdAutoComplete) {
   let proposalId;
   let referenceCursorStart;
   const dropdown = document.getElementById("referencedropdown");
-  // Create loader element once and store it
   const loader = document.createElement('div');
   loader.className = 'loader';
   loader.textContent = 'Loading...';
@@ -432,10 +460,8 @@ if (showProposalIdAutoComplete) {
         const proposalIdInput = cm.getRange(referenceCursorStart, cursor);
         dropdown.innerHTML = ''; // Clear previous content
         dropdown.appendChild(loader); // Show loader
-       
-        const suggestedProposals = await getSuggestedProposals(proposalIdInput);
 
-        // Clear dropdown including loader
+        const suggestedProposals = await getSuggestedProposals(proposalIdInput);
         dropdown.innerHTML = suggestedProposals
         .map(
           (item) =>
@@ -470,7 +496,7 @@ if (showProposalIdAutoComplete) {
       }
     }
 
-    // show dropdown only when there is space before # or it's first char
+    // show dropwdown only when there is space before # or it's first char
       if (!proposalId && (token.string === "#" && cursor.ch === 1 || token.string === "#" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ')) {
         proposalId = token;
         referenceCursorStart = cursor;
@@ -519,6 +545,9 @@ window.addEventListener("message", (event) => {
   if (event.data.profilesData) {
     profilesData = JSON.parse(event.data.profilesData);
   }
+  if (event.data.query) {
+    query = event.data.query;
+  }
   if (event.data.proposalLink) {
     proposalLink = event.data.proposalLink;
   }
@@ -541,6 +570,7 @@ return (
       content: props.data?.content ?? "",
       followingData,
       profilesData: JSON.stringify(profilesData),
+      query: query,
       handler: props.data.handler,
       proposalLink: proposalLink,
     }}

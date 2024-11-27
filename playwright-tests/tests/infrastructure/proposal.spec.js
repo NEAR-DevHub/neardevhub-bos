@@ -27,14 +27,22 @@ test.describe("Wallet is connected as admin", () => {
     await page.goto("/infrastructure-committee.near/widget/app?page=proposals");
     let proposalId;
     const linkedRfpId = 0;
+    // add linked RFP to latest proposal
     await page.route(
-      "https://infra-cache-api-rs.fly.dev/proposals?order=id_desc&limit=20&offset=0",
+      "https://near-queryapi.api.pagoda.co/v1/graphql",
       async (route) => {
         const response = await route.fetch();
         const json = await response.json();
-
-        if (json?.records) {
-          json.records = json.records.map((i, index) => {
+        if (
+          json?.data?.[
+            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
+          ]
+        ) {
+          json.data[
+            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
+          ] = json.data[
+            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
+          ].map((i, index) => {
             if (index === 0) {
               proposalId = i.proposal_id;
               return {
@@ -75,8 +83,6 @@ test.describe("Wallet is connected as admin", () => {
     await pauseIfVideoRecording(page);
     if (linkRfp) {
       await page.getByText("Search RFP").click();
-      let input = page.getByPlaceholder("Search by Id");
-      await input.fill("0", { delay: 100 });
       await page.getByText("# 0 : A Cool RFP").click();
       await expect(
         await page.getByRole("link", { name: "# 0 : A Cool RFP" })

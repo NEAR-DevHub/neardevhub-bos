@@ -154,7 +154,7 @@ function Page() {
       return (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Editor"}
-          props={{ ...passProps, instance: "devhub.near" }}
+          props={{ ...passProps }}
         />
       );
     }
@@ -163,7 +163,7 @@ function Page() {
       return (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.page.proposals"}
-          props={{ ...passProps, instance: "devhub.near" }}
+          props={passProps}
         />
       );
     }
@@ -171,7 +171,7 @@ function Page() {
       return (
         <Widget
           src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Proposal"}
-          props={{ ...passProps, instance: "devhub.near" }}
+          props={passProps}
         />
       );
     }
