@@ -6,7 +6,7 @@ const { href: linkHref } = VM.require("${REPL_DEVHUB}/widget/core.lib.url");
 
 const { hasModerator } = VM.require(
   "${REPL_DEVHUB}/widget/core.adapter.devhub-contract"
-);
+) || { hasModerator: () => {} };
 
 linkHref || (linkHref = () => {});
 
@@ -167,21 +167,19 @@ let links = [
   },
 ];
 
-if (hasModerator) {
-  const isDevHubModerator = hasModerator({
-    account_id: context.accountId,
-  });
+const isDevHubModerator = hasModerator({
+  account_id: context.accountId,
+});
 
-  if (isDevHubModerator) {
-    links = [
-      {
-        title: "/admin",
-        href: "admin",
-        links: [],
-      },
-      ...links,
-    ];
-  }
+if (isDevHubModerator) {
+  links = [
+    {
+      title: "/admin",
+      href: "admin",
+      links: [],
+    },
+    ...links,
+  ];
 }
 
 const MobileNav = styled.div`
@@ -232,6 +230,15 @@ return (
   <Navbar className="position-relative">
     <Logo />
     <div className="d-flex gap-3 align-items-center">
+      {isDevHubModerator ? (
+        <Widget
+          src="${REPL_DEVHUB}/widget/devhub.components.island.contract-balance"
+          props={{
+            accountId: "${REPL_DEVHUB}",
+            dark: false,
+          }}
+        />
+      ) : null}
       <LinksContainer>
         {links.map((link) => (
           <Widget

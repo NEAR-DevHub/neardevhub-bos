@@ -260,6 +260,16 @@ const LinkProfile = ({ account, children }) => {
 const stepsArray = [1, 2, 3, 4, 5];
 
 const { id, timestamp } = props;
+
+if (id === undefined) {
+  return (
+    <Widget
+      src={`${REPL_DEVHUB}/widget/devhub.page.notfound`}
+      props={{ missing: "proposal id" }}
+    />
+  );
+}
+
 const proposal = Near.view("${REPL_EVENTS_CONTRACT}", "get_proposal", {
   proposal_id: parseInt(id),
 });
@@ -1021,7 +1031,7 @@ return (
                       <div className="mt-2 d-flex flex-column gap-2">
                         <h6 className="mb-0">Proposal Status</h6>
                         <Widget
-                          src="${REPL_EVENTS}/widget/devhub.components.molecule.DropDown"
+                          src="${REPL_DEVHUB}/widget/devhub.components.molecule.DropDown"
                           props={{
                             options: proposalStatusOptions,
                             selectedValue: updatedProposalStatus,

@@ -34,6 +34,15 @@ const accountId = context.accountId;
 
 const { id, timestamp } = props;
 
+if (id === undefined) {
+  return (
+    <Widget
+      src={`${REPL_DEVHUB}/widget/devhub.page.notfound`}
+      props={{ missing: "rfp id" }}
+    />
+  );
+}
+
 const Container = styled.div`
   .full-width-div {
     width: 100vw;
@@ -401,7 +410,7 @@ useEffect(() => {
 }, [snapshot]);
 
 function fetchApprovedRfpProposals() {
-  const queryName = "${REPL_RFP_INDEXER_QUERY_NAME}";
+  const queryName = "${REPL_PROPOSAL_QUERY_NAME}";
   const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
     ${queryName}(
       offset: $offset

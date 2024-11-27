@@ -11,3 +11,10 @@ test.describe("Wallet is connected, but not KYC verified", () => {
   });
   test.skip("should write a first test", async ({ page }) => {});
 });
+
+test("Default page should be proposals", async ({ page }) => {
+  await page.goto(`/events-committee.near/widget/app`);
+  await expect(
+    await page.locator("button", { hasText: "Submit Proposal" })
+  ).toBeVisible();
+});

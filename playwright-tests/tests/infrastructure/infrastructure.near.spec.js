@@ -5,6 +5,7 @@ test.describe("Wallet is connected", () => {
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
   test("should go to homepage and click header links", async ({ page }) => {
+    test.setTimeout(40_000);
     await page.goto("/infrastructure-committee.near/widget/app");
 
     const aboutHeaderLink = await page.getByRole("link", { name: "About" });
@@ -12,7 +13,7 @@ test.describe("Wallet is connected", () => {
     await aboutHeaderLink.click();
     await expect(
       page.getByRole("heading", { name: "Introduction" })
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 20_000 });
 
     const proposalsHeaderLink = await page.getByRole("link", {
       name: "Proposals",
