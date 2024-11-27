@@ -1,3 +1,7 @@
+const { fetchGraphQL } = VM.require(
+  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
+);
+
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
 href || (href = () => {});
 
@@ -106,6 +110,8 @@ const Heading = styled.div`
 const rfpLabelOptions = getGlobalLabels();
 
 const FeedItem = ({ rfp, index }) => {
+  const accountId = rfp.author_id;
+  const profile = Social.get(`${accountId}/profile/**`, "final");
   // We will have to get the rfp from the contract to get the block height.
   const blockHeight = parseInt(rfp.social_db_post_block_height);
   const item = {
@@ -163,7 +169,7 @@ const FeedItem = ({ rfp, index }) => {
                 className="d-flex flex-column gap-1"
                 style={{ maxWidth: "70%" }}
               >
-                <div className="fw-semi-bold">Summary</div>
+                <div className="fw-semi-bold">Summay</div>
 
                 <div>{rfp.summary}</div>
               </div>
@@ -227,7 +233,7 @@ const FeedPage = () => {
     data: [],
     cachedItems: {},
     stage: "",
-    sort: "id_desc",
+    sort: "",
     label: "",
     input: "",
     loading: false,
@@ -237,56 +243,91 @@ const FeedPage = () => {
     isFiltered: false,
   });
 
-  function searchCacheApi() {
-    return asyncFetch(
-      `${REPL_CACHE_URL}/rfps/search/${encodeURI(state.input)}`,
-      {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-        },
-      }
-    ).catch((error) => {
-      console.log("Error searching cache api", error);
-    });
-  }
+  const queryName = "${REPL_RFP_FEED_INDEXER_QUERY_NAME}";
 
-  function searchRfps() {
-    if (state.loading) return;
-    State.update({ loading: true });
-
-    searchCacheApi().then((result) => {
-      let body = result.body;
-      State.update({ aggregatedCount: body.total_records });
-      fetchBlockHeights(body.records, 0);
-    });
-  }
-
-  function fetchCacheApi(variables) {
-    let fetchUrl = `${REPL_CACHE_URL}/rfps?order=${variables.order}&limit=${variables.limit}&offset=${variables.offset}`;
-
-    if (variables.stage) {
-      fetchUrl += `&filters.stage=${variables.stage}`;
+  const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
+    ${queryName}(
+      offset: $offset
+      limit: $limit
+      order_by: {rfp_id: desc}
+      where: $where
+    ) {
+      author_id
+      block_height
+      name
+      summary
+      editor_id
+      rfp_id
+      timeline
+      views
+      labels
+      submission_deadline
+      linked_proposals
     }
-    if (variables.category) {
-      if (isInfra || isEvents) {
-        fetchUrl += `&filters.labels=${variables.category}`;
-      } else {
-        fetchUrl += `&filters.category=${variables.category}`;
+    ${queryName}_aggregate(
+      order_by: {rfp_id: desc}
+      where: $where
+    )  {
+      aggregate {
+        count
       }
     }
+  }`;
 
-    State.update({ isFiltered: variables.category || variables.stage });
+  function separateNumberAndText(str) {
+    const numberRegex = /\d+/;
 
-    return asyncFetch(fetchUrl, {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-      },
-    }).catch((error) => {
-      console.log("Error fetching cache api", error);
-    });
+    if (numberRegex.test(str)) {
+      const number = str.match(numberRegex)[0];
+      const text = str.replace(numberRegex, "").trim();
+      return { number: parseInt(number), text };
+    } else {
+      return { number: null, text: str.trim() };
+    }
   }
+
+  const buildWhereClause = () => {
+    let where = {};
+
+    if (state.label) {
+      where = { labels: { _contains: state.label }, ...where };
+    }
+
+    if (state.stage) {
+      // timeline is stored as jsonb
+      where = {
+        timeline: { _cast: { String: { _regex: `${state.stage}` } } },
+        ...where,
+      };
+    }
+    if (state.input) {
+      const { number, text } = separateNumberAndText(state.input);
+      if (number) {
+        where = { rfp_id: { _eq: number }, ...where };
+      }
+
+      if (text) {
+        where = {
+          _or: [
+            { name: { _iregex: `${text}` } },
+            { summary: { _iregex: `${text}` } },
+            { description: { _iregex: `${text}` } },
+          ],
+          ...where,
+        };
+      }
+    }
+    State.update({ isFiltered: Object.keys(where).length > 0 });
+    return where;
+  };
+
+  const buildOrderByClause = () => {
+    /**
+     * TODO
+     * Most commented -> edit contract and indexer
+     * Unanswered -> 0 comments
+     */
+  };
 
   const makeMoreItems = () => {
     if (state.aggregatedCount <= state.currentlyDisplaying) return;
@@ -298,21 +339,25 @@ const FeedPage = () => {
       offset = 0;
     }
     if (state.loading) return;
-    State.update({ loading: true });
-
     const FETCH_LIMIT = 10;
     const variables = {
-      order: state.sort,
       limit: FETCH_LIMIT,
       offset,
-      category: state.category ? encodeURIComponent(state.category) : "",
-      stage: state.stage ? encodeURIComponent(state.stage) : "",
+      where: buildWhereClause(),
     };
-
-    fetchCacheApi(variables).then((result) => {
-      const body = result.body;
-      State.update({ aggregatedCount: body.total_records });
-      fetchBlockHeights(body.records, offset);
+    if (typeof fetchGraphQL !== "function") {
+      return;
+    }
+    fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
+      if (result.status === 200) {
+        if (result.body.data) {
+          const data = result.body.data?.[queryName];
+          const totalResult = result.body.data?.[`${queryName}_aggregate`];
+          State.update({ aggregatedCount: totalResult.aggregate.count });
+          // Parse timeline
+          fetchBlockHeights(data, offset);
+        }
+      }
     });
   };
 
@@ -345,21 +390,7 @@ const FeedPage = () => {
 
   useEffect(() => {
     fetchRfps();
-  }, [state.sort, state.label, state.stage]);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (state.input) {
-        searchRfps();
-      } else {
-        fetchRfps();
-      }
-    }, 1000);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [state.input]);
+  }, [state.input, state.sort, state.label, state.stage]);
 
   const mergeItems = (newItems) => {
     const items = [

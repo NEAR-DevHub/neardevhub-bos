@@ -62,7 +62,7 @@ const buildWhereClause = () => {
 function fetchGraphQL(operationsDoc, operationName, variables) {
   return asyncFetch(QUERYAPI_ENDPOINT, {
     method: "POST",
-    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
+    headers: { "x-hasura-role": `${REPL_INDEXER_HASURA_ROLE}` },
     body: JSON.stringify({
       query: operationsDoc,
       variables: variables,
@@ -81,7 +81,8 @@ const fetchProposals = () => {
   fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
     if (result.status === 200) {
       if (result.body.data) {
-        const proposalsData = result.body.data[queryName];
+        const proposalsData =
+          result.body.data["${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}"];
 
         const data = [];
         for (const prop of proposalsData) {
@@ -108,7 +109,7 @@ return (
           <a
             className="text-decoration-underline flex-1"
             href={href({
-              widgetSrc: "${REPL_DEVHUB}/widget/app",
+              widgetSrc: "${REPL_EVENTS}/widget/app",
               params: {
                 page: "proposal",
                 id: proposal.value,

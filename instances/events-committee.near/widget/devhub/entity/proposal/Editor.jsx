@@ -520,7 +520,7 @@ useEffect(() => {
   }
 }, [props.transactionHashes]);
 
-const DropdownBtnContainer = styled.div`
+const DropdowntBtnContainer = styled.div`
   font-size: 13px;
   min-width: 150px;
 
@@ -670,7 +670,7 @@ const SubmitBtn = () => {
   const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
 
   return (
-    <DropdownBtnContainer>
+    <DropdowntBtnContainer>
       <div
         className="custom-select"
         tabIndex="0"
@@ -722,7 +722,7 @@ const SubmitBtn = () => {
           </div>
         )}
       </div>
-    </DropdownBtnContainer>
+    </DropdowntBtnContainer>
   );
 };
 
@@ -885,7 +885,6 @@ const DescriptionComponent = useMemo(() => {
     <Widget
       src={"${REPL_EVENTS}/widget/devhub.components.molecule.Compose"}
       props={{
-        instance: props.instance,
         data: description,
         onChange: setDescription,
         autocompleteEnabled: true,
@@ -973,7 +972,7 @@ const LinkedProposalsComponent = useMemo(() => {
         Link any relevant proposals (e.g. previous milestones).
       </div>
       <Widget
-        src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
+        src="${REPL_EVENTS}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
         props={{
           onChange: setLinkedProposals,
           linkedProposals: linkedProposals,

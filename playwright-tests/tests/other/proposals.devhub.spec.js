@@ -283,7 +283,6 @@ test.describe("Wallet is connected", () => {
       const loader = page.getByRole("img", { name: "loader" });
       expect(loader).toBeHidden({ timeout: 10000 });
       const element = page.locator(`:has-text("${term}")`).nth(1);
-      await expect(await element.innerText()).toContain(term);
       await expect(element).toBeVisible({ timeout: 10_000 });
     });
   });

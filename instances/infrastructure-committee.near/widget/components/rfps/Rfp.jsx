@@ -1,5 +1,6 @@
 const {
   RFP_TIMELINE_STATUS,
+  fetchGraphQL,
   CANCEL_RFP_OPTIONS,
   parseJSON,
   PROPOSALS_APPROVED_STATUS_ARRAY,
@@ -278,29 +279,51 @@ const rfp = Near.view("${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}", "get_rfp", {
   rfp_id: parseInt(id),
 });
 
+const queryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
+const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
+  ${queryName}(
+    offset: $offset
+    limit: $limit
+    order_by: {ts: asc}
+    where: $where
+  ) {
+    editor_id
+    name
+    summary
+    description
+    ts
+    rfp_id
+    timeline
+    labels
+    submission_deadline
+    linked_proposals
+  }
+}`;
+
 const fetchSnapshotHistory = () => {
-  asyncFetch(`https://infra-cache-api-rs.fly.dev/rfp/${id}/snapshots`, {
-    method: "GET",
-    headers: { accept: "application/json" },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        console.error(`Failed to fetch snapshots: ${response.status}`);
+  const variables = {
+    where: { rfp_id: { _eq: id } },
+  };
+  if (typeof fetchGraphQL !== "function") {
+    return;
+  }
+  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
+    if (result.status === 200) {
+      if (result.body.data) {
+        const data = result.body.data?.[queryName];
+        const history = data.map((item) => {
+          const rfpData = {
+            ...item,
+            timestamp: item.ts,
+            timeline: parseJSON(item.timeline),
+          };
+          delete rfpData.ts;
+          return rfpData;
+        });
+        setSnapshotHistory(history);
       }
-      return response.body;
-    })
-    .then((snapshots) => {
-      const history = snapshots.map((item) => {
-        const rfpData = {
-          ...item,
-          timestamp: item.ts,
-          timeline: parseJSON(item.timeline),
-        };
-        delete rfpData.ts;
-        return rfpData;
-      });
-      setSnapshotHistory(history);
-    });
+    }
+  });
 };
 
 useEffect(() => {
@@ -387,22 +410,45 @@ useEffect(() => {
 }, [snapshot]);
 
 function fetchApprovedRfpProposals() {
-  snapshot.linked_proposals.map((item) => {
-    Near.asyncView(
-      "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
-      "get_proposal",
-      {
-        proposal_id: item,
+  const queryName = "${REPL_PROPOSAL_QUERY_NAME}";
+  const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
+    ${queryName}(
+      offset: $offset
+      limit: $limit
+      order_by: {proposal_id: desc}
+      where: $where
+    ) {
+      proposal_id
+      name
+      timeline
+    }
+  }`;
+
+  const FETCH_LIMIT = 50;
+  const variables = {
+    limit: FETCH_LIMIT,
+    offset,
+    where: {
+      proposal_id: { _in: rfp.snapshot.linked_proposals },
+    },
+  };
+  if (typeof fetchGraphQL !== "function") {
+    return;
+  }
+  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
+    if (result.status === 200) {
+      if (result.body.data) {
+        const data = result.body.data?.[queryName];
+        const approved = [];
+        data.map((item) => {
+          const timeline = parseJSON(item.timeline);
+          if (PROPOSALS_APPROVED_STATUS_ARRAY.includes(timeline.status)) {
+            approved.push(item);
+          }
+        });
+        setApprovedProposals(approved);
       }
-    ).then((item) => {
-      const timeline = parseJSON(item.snapshot.timeline);
-      if (PROPOSALS_APPROVED_STATUS_ARRAY.includes(timeline.status)) {
-        setApprovedProposals((prevApprovedProposals) => [
-          ...prevApprovedProposals,
-          { proposal_id: item.id, ...item.snapshot },
-        ]);
-      }
-    });
+    }
   });
 }
 
@@ -449,9 +495,7 @@ const accessControlInfo =
 const moderatorList =
   accessControlInfo?.members_list?.["team:moderators"]?.children;
 
-useEffect(() => {
-  fetchApprovedRfpProposals();
-}, [snapshot]);
+fetchApprovedRfpProposals();
 
 const SubmitProposalBtn = () => {
   return (

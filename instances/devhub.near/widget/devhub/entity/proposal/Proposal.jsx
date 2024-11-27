@@ -939,7 +939,6 @@ return (
                   }
                   props={{
                     ...props,
-                    instance: props.instance,
                     item: item,
                     notifyAccountId: authorId,
                     id: proposal.id,

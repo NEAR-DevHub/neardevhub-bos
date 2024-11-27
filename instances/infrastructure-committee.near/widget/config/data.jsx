@@ -65,8 +65,7 @@ return {
   rfpFeedIndexerQueryName:
     "polyprogrammist_near_devhub_ic_v1_rfps_with_latest_snapshot",
   indexerHasuraRole: "polyprogrammist_near",
-  cacheUrl: "${REPL_CACHE_URL}",
   isInfra: true,
   proposalFeedAnnouncement,
-  availableCategoryOptions: getGlobalLabels(),
+  aavailableCategoryOptions: getGlobalLabels(),
 };

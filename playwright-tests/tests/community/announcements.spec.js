@@ -122,7 +122,6 @@ test.describe("Don't ask again enabled", () => {
     /*  
     // We can have this test when we can trust the indexer to be live, but it will fail if falling back to the social.index  
     await page.route(
-      TODO sunset
       "https://near-queryapi.api.pagoda.co/v1/graphql",
       async (route) => {
         const request = route.request();

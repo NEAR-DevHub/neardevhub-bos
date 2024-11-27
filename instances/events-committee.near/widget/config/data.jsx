@@ -46,7 +46,6 @@ return {
   proposalFeedIndexerQueryName:
     "thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot",
   indexerHasuraRole: "thomasguntenaar_near",
-  cacheUrl: "${REPL_CACHE_URL}",
   isEvents: true,
   proposalFeedAnnouncement,
   availableCategoryOptions: categoryOptions,
