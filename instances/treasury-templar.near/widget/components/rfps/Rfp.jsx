@@ -5,7 +5,7 @@ const {
   parseJSON,
   PROPOSALS_APPROVED_STATUS_ARRAY,
   getLinkUsingCurrentGateway,
-} = VM.require(`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`) || {
+} = VM.require(`${REPL_TREASURY_TEMPLAR}/widget/core.common`) || {
   RFP_TIMELINE_STATUS: {},
   CANCEL_RFP_OPTIONS: {},
   parseJSON: () => {},
@@ -20,7 +20,7 @@ const { readableDate } = VM.require(
 ) || { readableDate: () => {} };
 
 const { getGlobalLabels } = VM.require(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.core.lib.contract`
+  `${REPL_TREASURY_TEMPLAR}/widget/components.core.lib.contract`
 ) || { getGlobalLabels: () => {} };
 
 const accountId = context.accountId;
@@ -156,14 +156,14 @@ const Container = styled.div`
   }
 
   .blue-btn {
-    background-color: #3c697d;
+    background-color: #8942d9;
     border: none;
     color: white;
   }
 
   .form-check-input:checked {
-    background-color: #3c697d !important;
-    border-color: #3c697d !important;
+    background-color: #8942d9 !important;
+    border-color: #8942d9 !important;
   }
 
   .dropdown-toggle:after {
@@ -275,56 +275,39 @@ const LinkProfile = ({ account, children }) => {
 
 const [snapshotHistory, setSnapshotHistory] = useState([]);
 
-const rfp = Near.view("${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}", "get_rfp", {
+const rfp = Near.view("${REPL_TREASURY_TEMPLAR_CONTRACT}", "get_rfp", {
   rfp_id: parseInt(id),
 });
 
-const queryName = "${REPL_RFP_INDEXER_QUERY_NAME}";
-const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-  ${queryName}(
-    offset: $offset
-    limit: $limit
-    order_by: {ts: asc}
-    where: $where
-  ) {
-    editor_id
-    name
-    summary
-    description
-    ts
-    rfp_id
-    timeline
-    labels
-    submission_deadline
-    linked_proposals
-  }
-}`;
+// need to fix it
+function fetchSnapshotHistory() {
+  const ENDPOINT = "${REPL_CACHE_URL}";
 
-const fetchSnapshotHistory = () => {
-  const variables = {
-    where: { rfp_id: { _eq: id } },
-  };
-  if (typeof fetchGraphQL !== "function") {
-    return;
-  }
-  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const data = result.body.data?.[queryName];
-        const history = data.map((item) => {
-          const rfpData = {
-            ...item,
-            timestamp: item.ts,
-            timeline: parseJSON(item.timeline),
-          };
-          delete rfpData.ts;
-          return rfpData;
-        });
-        setSnapshotHistory(history);
-      }
-    }
-  });
-};
+  return asyncFetch(`${ENDPOINT}/rfp/${id}/snapshots`, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+    },
+  })
+    .catch((error) => {
+      console.log("Error searching cache api", error);
+    })
+    .then((result) => {
+      let data = result.body;
+      const history = data.map((item) => {
+        const rfpData = {
+          ...item,
+          timestamp: item.ts,
+          timeline: parseJSON(item.timeline),
+        };
+        delete rfpData.ts;
+        delete rfpData.block_height;
+
+        return rfpData;
+      });
+      setSnapshotHistory(history);
+    });
+}
 
 useEffect(() => {
   fetchSnapshotHistory();
@@ -355,11 +338,11 @@ const authorId = rfp.author_id;
 const blockHeight = parseInt(rfp.social_db_post_block_height);
 const item = {
   type: "social",
-  path: `${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}/post/main`,
+  path: `${REPL_TREASURY_TEMPLAR_CONTRACT}/post/main`,
   blockHeight,
 };
 const rfpURL = getLinkUsingCurrentGateway(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app?page=rfp&id=${rfp.id}&timestamp=${snapshot.timestamp}`
+  `${REPL_TREASURY_TEMPLAR}/widget/portal?page=rfp&id=${rfp.id}&timestamp=${snapshot.timestamp}`
 );
 
 const SidePanelItem = ({ title, children, hideBorder, ishidden }) => {
@@ -379,7 +362,7 @@ const SidePanelItem = ({ title, children, hideBorder, ishidden }) => {
 };
 
 const isAllowedToWriteRfp = Near.view(
-  "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+  "${REPL_TREASURY_TEMPLAR_CONTRACT}",
   "is_allowed_to_write_rfps",
   {
     editor: accountId,
@@ -387,7 +370,7 @@ const isAllowedToWriteRfp = Near.view(
 );
 
 const link = href({
-  widgetSrc: `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app`,
+  widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
   params: {
     page: "create-rfp",
     id: rfp.id,
@@ -410,52 +393,25 @@ useEffect(() => {
 }, [snapshot]);
 
 function fetchApprovedRfpProposals() {
-  const queryName = "${REPL_PROPOSAL_QUERY_NAME}";
-  const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-    ${queryName}(
-      offset: $offset
-      limit: $limit
-      order_by: {proposal_id: desc}
-      where: $where
-    ) {
-      proposal_id
-      name
-      timeline
-    }
-  }`;
-
-  const FETCH_LIMIT = 50;
-  const variables = {
-    limit: FETCH_LIMIT,
-    offset,
-    where: {
-      proposal_id: { _in: rfp.snapshot.linked_proposals },
-    },
-  };
-  if (typeof fetchGraphQL !== "function") {
-    return;
-  }
-  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const data = result.body.data?.[queryName];
-        const approved = [];
-        data.map((item) => {
-          const timeline = parseJSON(item.timeline);
-          if (PROPOSALS_APPROVED_STATUS_ARRAY.includes(timeline.status)) {
-            approved.push(item);
-          }
-        });
-        setApprovedProposals(approved);
+  snapshot.linked_proposals.map((item) => {
+    Near.asyncView("${REPL_TREASURY_TEMPLAR_CONTRACT}", "get_proposal", {
+      proposal_id: item,
+    }).then((item) => {
+      const timeline = parseJSON(item.snapshot.timeline);
+      if (PROPOSALS_APPROVED_STATUS_ARRAY.includes(timeline.status)) {
+        setApprovedProposals((prevApprovedProposals) => [
+          ...prevApprovedProposals,
+          { proposal_id: item.id, ...item.snapshot },
+        ]);
       }
-    }
+    });
   });
 }
 
 const editRFPStatus = () => {
   Near.call([
     {
-      contractName: "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+      contractName: "${REPL_TREASURY_TEMPLAR_CONTRACT}",
       methodName: "edit_rfp_timeline",
       args: {
         id: rfp.id,
@@ -469,7 +425,7 @@ const editRFPStatus = () => {
 const onCancelRFP = (value) => {
   Near.call([
     {
-      contractName: "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+      contractName: "${REPL_TREASURY_TEMPLAR_CONTRACT}",
       methodName: "cancel_rfp",
       args: {
         id: rfp.id,
@@ -488,21 +444,21 @@ const onCancelRFP = (value) => {
 };
 
 const accessControlInfo =
-  Near.view(
-    "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
-    "get_access_control_info"
-  ) ?? null;
+  Near.view("${REPL_TREASURY_TEMPLAR_CONTRACT}", "get_access_control_info") ??
+  null;
 const moderatorList =
   accessControlInfo?.members_list?.["team:moderators"]?.children;
 
-fetchApprovedRfpProposals();
+useEffect(() => {
+  fetchApprovedRfpProposals();
+}, []);
 
 const SubmitProposalBtn = () => {
   return (
     <div style={{ minWidth: "fit-content" }}>
       <Link
         to={href({
-          widgetSrc: `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app`,
+          widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
           params: { page: "create-proposal", rfp_id: rfp.id },
         })}
       >
@@ -524,7 +480,7 @@ const SubmitProposalBtn = () => {
 return (
   <Container className="d-flex flex-column gap-2 w-100 mt-4">
     <Widget
-      src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.ConfirmCancelModal`}
+      src={`${REPL_TREASURY_TEMPLAR}/widget/components.rfps.ConfirmCancelModal`}
       props={{
         isOpen: isCancelModalOpen,
         onCancelClick: () => {
@@ -539,7 +495,7 @@ return (
       }}
     />
     <Widget
-      src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.WarningModal`}
+      src={`${REPL_TREASURY_TEMPLAR}/widget/components.rfps.WarningModal`}
       props={{
         isOpen: isWarningModalOpen,
         onConfirmClick: () => {
@@ -576,7 +532,7 @@ return (
     </div>
     <div className="d-flex flex-wrap flex-md-nowrap px-3 px-lg-0 gap-2 align-items-center text-sm pb-3 w-100">
       <Widget
-        src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.StatusTag`}
+        src={`${REPL_TREASURY_TEMPLAR}/widget/components.rfps.StatusTag`}
         props={{
           timelineStatus: snapshot.timeline.status,
           size: "sm",
@@ -658,7 +614,7 @@ return (
                       RFP CATEGORY
                       <div className="my-2">
                         <Widget
-                          src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.MultiSelectCategoryDropdown`}
+                          src={`${REPL_TREASURY_TEMPLAR}/widget/components.molecule.MultiSelectCategoryDropdown`}
                           props={{
                             selected: snapshot.labels,
                             disabled: true,
@@ -685,7 +641,7 @@ return (
 
                     <div className="d-flex gap-2 align-items-center mt-3">
                       <Widget
-                        src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.LikeButton`}
+                        src={`${REPL_TREASURY_TEMPLAR}/widget/components.molecule.LikeButton`}
                         props={{
                           item,
                           rfpId: rfp.id,
@@ -712,7 +668,7 @@ return (
               </div>
               <div className="border-bottom pb-4 mt-4">
                 <Widget
-                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.CommentsAndLogs`}
+                  src={`${REPL_TREASURY_TEMPLAR}/widget/components.rfps.CommentsAndLogs`}
                   props={{
                     ...props,
                     id: rfp.id,
@@ -731,7 +687,7 @@ return (
                 className="pt-4"
               >
                 <Widget
-                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.ComposeComment`}
+                  src={`${REPL_TREASURY_TEMPLAR}/widget/components.molecule.ComposeComment`}
                   props={{
                     ...props,
                     item: item,
@@ -780,7 +736,7 @@ return (
                 }
               >
                 <Widget
-                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.TimelineConfigurator`}
+                  src={`${REPL_TREASURY_TEMPLAR}/widget/components.rfps.TimelineConfigurator`}
                   props={{
                     timeline: timeline,
                     setTimeline: (v) => {
@@ -843,7 +799,7 @@ return (
                 ishidden={!approvedProposals.length}
               >
                 <Widget
-                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.LinkedProposals`}
+                  src={`${REPL_TREASURY_TEMPLAR}/widget/components.molecule.LinkedProposals`}
                   props={{
                     linkedProposalIds: (approvedProposals ?? []).map(
                       (i) => i.proposal_id
@@ -862,7 +818,7 @@ return (
                 ishidden={!snapshot.linked_proposals.length}
               >
                 <Widget
-                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.LinkedProposals`}
+                  src={`${REPL_TREASURY_TEMPLAR}/widget/components.molecule.LinkedProposals`}
                   props={{
                     linkedProposalIds: snapshot.linked_proposals,
                     showStatus:

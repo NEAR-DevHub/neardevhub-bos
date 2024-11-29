@@ -92,7 +92,7 @@ State.init({
 function sortTimelineAndComments() {
   const comments = Social.index("comment", props.item, { subscribe: true });
 
-  if (state.changedKeysListWithValues === null) {
+  if (state.changedKeysListWithValues === null && snapshotHistory.length > 0) {
     const changedKeysListWithValues = snapshotHistory
       .slice(1)
       .map((item, index) => {
@@ -135,9 +135,11 @@ function sortTimelineAndComments() {
   });
 }
 
-if (Array.isArray(snapshotHistory)) {
-  sortTimelineAndComments();
-}
+useEffect(() => {
+  if (Array.isArray(snapshotHistory)) {
+    sortTimelineAndComments();
+  }
+}, [snapshotHistory]);
 
 const Comment = ({ commentItem }) => {
   const { accountId, blockHeight } = commentItem;
