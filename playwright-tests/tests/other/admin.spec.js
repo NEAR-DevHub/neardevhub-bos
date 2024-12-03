@@ -190,8 +190,8 @@ test.describe("Wallet is connected", () => {
   test("should be able to see contract balance if the balance is lower than 2 NEAR", async ({
     page,
   }) => {
-    await navigateToAdminPage(page);
     await mockNearBalance(page, 5);
+    await navigateToAdminPage(page);
 
     const contractBalanceWrapper = await page.getByTestId(
       "contract-balance-wrapper"

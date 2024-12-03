@@ -310,7 +310,10 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
 
 const AccountProfile = ({ accountId }) => {
   return (
-    <span className="inline-flex fw-bold text-black">
+    <span
+      className="inline-flex fw-bold text-black"
+      style={{ verticalAlign: "top" }}
+    >
       <Widget
         src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile"}
         props={{
