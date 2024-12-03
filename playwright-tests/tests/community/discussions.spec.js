@@ -29,7 +29,10 @@ test.describe("Wallet is connected", () => {
     storageState: "playwright-tests/storage-states/wallet-connected-peter.json",
   });
 
-  test("should create a discussion when content matches", async ({ page }) => {
+  // test uses an older transaction hash which doesn't return in RPC (so skipping for now, ticket #998)
+  test.skip("should create a discussion when content matches", async ({
+    page,
+  }) => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic&tab=discussions"
     );

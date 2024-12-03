@@ -58,7 +58,7 @@ const renderMention =
     <span
       key={accountId}
       className="d-inline-flex remove-underline"
-      style={{ fontWeight: 500 }}
+      style={{ fontWeight: 500, verticalAlign: "top" }}
     >
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.components.molecule.ProfileLine"
