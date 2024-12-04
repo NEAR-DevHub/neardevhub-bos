@@ -30,9 +30,13 @@ test.describe("feed", () => {
         )
         .allInnerTexts();
 
-      const localLinks = await page
+      const localLinks = [];
+      for (const linkElement of await page
         .locator("a")
-        .filter({ has: page.locator(".proposal-card") });
+        .filter({ has: page.locator(".proposal-card") })
+        .all()) {
+        localLinks.push(await linkElement.getAttribute("href"));
+      }
 
       await page.goto(`https://${account}.page/proposals`);
       await expect(page.locator(".proposal-card").first()).toBeVisible({
@@ -49,10 +53,16 @@ test.describe("feed", () => {
         await page.getByRole("img", { name: "loader" })
       ).not.toBeVisible();
 
-      const prodLinks = await page
+      const prodLinks = [];
+      for (const linkElement of await page
         .locator("a")
-        .filter({ has: page.locator(".proposal-card") });
+        .filter({ has: page.locator(".proposal-card") })
+        .all()) {
+        prodLinks.push(await linkElement.getAttribute("href"));
+      }
 
+      console.log(localLinks);
+      console.log(prodLinks);
       expect(localLinks).toEqual(prodLinks);
       const prodStatusTags = await page
         .locator(
