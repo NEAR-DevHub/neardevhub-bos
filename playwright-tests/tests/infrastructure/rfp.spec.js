@@ -37,6 +37,10 @@ async function mockGlobalLabels(page) {
   });
 }
 
+test.afterEach(
+  async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
+);
+
 test.describe("Wallet is connected", () => {
   test.use({
     storageState: "playwright-tests/storage-states/wallet-connected.json",
@@ -443,7 +447,7 @@ test.describe("Admin with don't ask again enabled", () => {
     await pauseIfVideoRecording(page);
   });
 
-  test("should paste a long comment to a proposal, see that the comment appears after submission, and that the comment field is cleared, even after reloading the page", async ({
+  test("should paste a comment to a rfp, see that the comment appears after submission, and that the comment field is cleared, even after reloading the page", async ({
     page,
   }) => {
     test.setTimeout(2 * 60000);
@@ -457,6 +461,7 @@ test.describe("Admin with don't ask again enabled", () => {
     await commentButton.scrollIntoViewIfNeeded();
 
     const commentText = "I'm testing again now.";
+
     await page.evaluate(async (text) => {
       await navigator.clipboard.writeText(text);
     }, commentText);
@@ -466,6 +471,7 @@ test.describe("Admin with don't ask again enabled", () => {
       .last()
       .locator(".CodeMirror textarea");
     await commentArea.focus();
+    await expect(commentArea).toBeFocused();
     await page.waitForTimeout(100);
 
     const isMac = process.platform === "darwin";
