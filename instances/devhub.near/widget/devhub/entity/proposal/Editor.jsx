@@ -974,6 +974,7 @@ const LinkedProposalsComponent = useMemo(() => {
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
         props={{
+          instance: "${REPL_DEVHUB}",
           onChange: setLinkedProposals,
           linkedProposals: linkedProposals,
         }}
