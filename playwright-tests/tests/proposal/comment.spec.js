@@ -13,7 +13,7 @@ test.afterEach(
   async ({ page }) => await page.unrouteAll({ behavior: "ignoreErrors" })
 );
 
-test.describe("Wallet connected", () => {
+test.describe("Wallet is connected", () => {
   test.use({
     contextOptions: {
       permissions: ["clipboard-read", "clipboard-write"],
