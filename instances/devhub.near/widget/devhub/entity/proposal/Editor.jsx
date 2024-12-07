@@ -884,6 +884,7 @@ const DescriptionComponent = useMemo(() => {
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
       props={{
+        instance: "${REPL_DEVHUB}",
         data: description,
         onChange: setDescription,
         autocompleteEnabled: true,

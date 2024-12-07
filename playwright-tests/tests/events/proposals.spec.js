@@ -548,71 +548,40 @@ test.describe("Wallet is connected", () => {
     test.setTimeout(120000);
     await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
-    await page.route(
-      "https://near-queryapi.api.pagoda.co/v1/graphql",
-      async (route) => {
-        const response = await route.fetch({
-          url: "https://near-queryapi.api.pagoda.co/v1/graphql",
-        });
+    // await page.route(
+    //   "https://events-cache-api-rs.fly.dev/proposals/search/2",
+    //   async (route) => {
+    //     const response = await route.fetch({
+    //       url: "https://events-cache-api-rs.fly.dev/proposals/search/2",
+    //     });
 
-        const json = {
-          data: {
-            thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot:
-              [
-                {
-                  author_id: "meghagoel.near",
-                  block_height: 118172036,
-                  name: "DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024",
-                  category: "Bounty",
-                  summary: "Testing labels",
-                  editor_id: "meghagoel.near",
-                  proposal_id: 2,
-                  ts: 1714757281087668547,
-                  timeline: '{"status":"DRAFT"}',
-                  views: 2,
-                  labels: ["Bounty booster", "Hackathon", "Bounty"],
-                },
-                {
-                  author_id: "theori.near",
-                  block_height: 118170904,
-                  name: "Testing",
-                  category: "Bounty booster",
-                  summary: "This is a lovely test",
-                  editor_id: "theori.near",
-                  proposal_id: 1,
-                  ts: 1714755795920292298,
-                  timeline:
-                    '{"status":"REVIEW","sponsor_requested_review":true,"reviewer_completed_attestation":false}',
-                  views: 2,
-                  labels: [],
-                },
-                {
-                  author_id: "thomasguntenaar.near",
-                  block_height: 118102057,
-                  name: "First Proposal",
-                  category: "Bounty",
-                  summary: "Summary",
-                  editor_id: "thomasguntenaar.near",
-                  proposal_id: 0,
-                  ts: 1714667557333547274,
-                  timeline: '{"status":"DRAFT"}',
-                  views: 1,
-                  labels: [],
-                },
-              ],
-            thomasguntenaar_near_event_committee_prod_v1_proposals_with_latest_snapshot_aggregate:
-              {
-                aggregate: {
-                  count: 7,
-                },
-              },
-          },
-        };
-        console.log({ response, json });
+    //     const json = {
+    //       records: [
+    //         {
+    //           author_id: "meghagoel.near",
+    //           block_height: 118172036,
+    //           name: "DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024",
+    //           category: "Bounty",
+    //           summary: "Testing labels",
+    //           editor_id: "meghagoel.near",
+    //           proposal_id: 2,
+    //           ts: 1714757281087668547,
+    //           timeline: '{"status":"DRAFT"}',
+    //           views: 2,
+    //           labels: ["Bounty booster", "Hackathon", "Bounty"],
+    //         },
+    //       ],
+    //       page: 1,
+    //       total_pages: 1,
+    //       limit: 10,
+    //       total_records: 1,
+    //     };
+    //     console.log({ response, json });
 
-        await route.fulfill({ response, json });
-      }
-    );
+    //     await route.fulfill({ response, json });
+    //   }
+    // );
+
     await getCurrentBlockHeight(page);
 
     const delay_milliseconds_between_keypress_when_typing = 100;
@@ -650,12 +619,13 @@ test.describe("Wallet is connected", () => {
         delay: delay_milliseconds_between_keypress_when_typing,
       }
     );
+    await descriptionArea.pressSequentially("2", { delay: 10 });
     await pauseIfVideoRecording(page);
 
     await page
       .frameLocator("iframe")
       .getByText(
-        "#2 DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024"
+        "NEAR Toronto Hackathon Proposal [Hackbox Cohort 1 - Q2 2024] | #PoweredByHackbox"
       )
       .click({ timeout: 10000 });
 
@@ -688,7 +658,7 @@ test.describe("Wallet is connected", () => {
             proposal_body_version: "V0",
             name: "Test proposal 123456",
             description:
-              "The test proposal description. And referencing [#2 DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024](https://near.social/events-committee.near/widget/app?page=proposal&id=2)",
+              "The test proposal description. And referencing [#2 NEAR Toronto Hackathon Proposal [Hackbox Cohort 1 - Q2 2024] | #PoweredByHackbox](https://near.social/events-committee.near/widget/app?page=proposal&id=2)",
             category: "Bounty",
             summary: "Test proposal summary 123456789",
             linked_proposals: [],
