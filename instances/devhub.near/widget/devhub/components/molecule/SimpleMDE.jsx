@@ -203,7 +203,6 @@ function extractNumbers(str) {
 
 function searchCacheApi(searchProposalId) {
   let searchInput = encodeURI(searchProposalId);
-  
   let searchUrl = "${cacheUrl}/proposals/search/" + searchInput;
 
   return asyncFetch(searchUrl, {
