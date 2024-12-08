@@ -12,21 +12,12 @@ const proposalFeedAnnouncement = (
             target="_blank"
             rel="noopener noreferrer"
           >
-            DevDAO’s New Proposal Feed!
+            DevDAO’s Proposal Feed!
           </a>
         </span>
-        This dedicated space replaces the
-        <a
-          href="?page=feed"
-          className="text-decoration-underline no-space"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          old activity feed
-        </a>
-        , making it easier to submit and track funding requests from DevDAO, the
-        primary organization behind DevHub. To submit a formal proposal, click
-        New Proposal. See our{" "}
+        This dedicated space makes it easier to submit and track funding requests
+        from DevDAO, the primary organization behind DevHub. To submit a formal
+        proposal, click New Proposal. See our{" "}
         <a
           href="?page=community&handle=developer-dao&tab=funding"
           className="text-decoration-underline no-space"
@@ -35,8 +26,7 @@ const proposalFeedAnnouncement = (
         >
           guidelines
         </a>
-        for details. For discussions and brainstorming, please utilize the
-        relevant{" "}
+        for details. Or checkout relevant{" "}
         <a
           href="?page=communities"
           className="text-decoration-underline no-space"

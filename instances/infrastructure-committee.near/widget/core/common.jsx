@@ -16,7 +16,6 @@ const PROPOSAL_TIMELINE_STATUS = {
   FUNDED: "FUNDED",
 };
 
-const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
 const cacheUrl = "https://infra-cache-api-rs.fly.dev";
 
 /**
@@ -65,17 +64,7 @@ function searchCacheApi(entity, searchTerm) {
   });
 }
 
-async function fetchGraphQL(operationsDoc, operationName, variables) {
-  return asyncFetch(QUERYAPI_ENDPOINT, {
-    method: "POST",
-    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
-    body: JSON.stringify({
-      query: operationsDoc,
-      variables: variables,
-      operationName: operationName,
-    }),
-  });
-}
+
 
 const CANCEL_RFP_OPTIONS = {
   CANCEL_PROPOSALS: "CANCEL_PROPOSALS",
@@ -117,7 +106,6 @@ function getLinkUsingCurrentGateway(url) {
 return {
   RFP_TIMELINE_STATUS,
   PROPOSAL_TIMELINE_STATUS,
-  fetchGraphQL,
   CANCEL_RFP_OPTIONS,
   parseJSON,
   isNumber,

@@ -4,35 +4,6 @@ const { getPost } = VM.require(
 
 const { Layout, handle } = props;
 
-const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
-
-const fetchGraphQL = (operationsDoc, operationName, variables) => {
-  return fetch(QUERYAPI_ENDPOINT, {
-    method: "POST",
-    headers: { "x-hasura-role": `bo_near` },
-    body: JSON.stringify({
-      query: operationsDoc,
-      variables: variables,
-      operationName: operationName,
-    }),
-  });
-};
-
-const queryName =
-  props.queryName ?? `bo_near_devhub_v38_posts_with_latest_snapshot`;
-
-const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $where: ${queryName}_bool_exp = {}) {
-    ${queryName}(
-      limit: $limit
-      offset: $offset
-      order_by: {block_height: desc}
-      where: $where
-    ) {
-      post_id
-    }
-  }
-`;
-
 const includeLabels = ["blog", handle];
 
 const buildWhereClause = () => {
@@ -65,15 +36,7 @@ const buildWhereClause = () => {
 
 const variables = { limit: DISPLAY_COUNT, offset, where: buildWhereClause() };
 
-const posts = fetch(QUERYAPI_ENDPOINT, {
-  method: "POST",
-  headers: { "x-hasura-role": `bo_near` },
-  body: JSON.stringify({
-    query: query,
-    variables: variables,
-    operationName: "DevhubPostsQuery",
-  }),
-});
+const posts = [];
 
 const handleOnChange = (v) => {
   console.log("onChange", v);
