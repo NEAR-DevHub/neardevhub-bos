@@ -1,4 +1,5 @@
 const options = [
+  { label: "All", value: "" },
   { label: "Most recent", value: "id_desc" }, // proposal_id desc
   { label: "Oldest", value: "id_asc" }, // proposal_id desc
   { label: "Recently updated", value: "ts_desc" }, // timestamp desc
