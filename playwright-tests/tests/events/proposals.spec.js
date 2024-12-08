@@ -548,6 +548,7 @@ test.describe("Wallet is connected", () => {
     test.setTimeout(120000);
     await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
+
     await getCurrentBlockHeight(page);
 
     const delay_milliseconds_between_keypress_when_typing = 100;
