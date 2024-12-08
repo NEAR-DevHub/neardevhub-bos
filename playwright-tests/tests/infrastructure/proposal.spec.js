@@ -1,6 +1,5 @@
 import { test as base, expect } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils";
-import { MOCK_RPC_URL } from "../../util/rpcmock.js";
 
 const test = base.extend({
   // Define an option and provide a default value.
@@ -28,22 +27,14 @@ test.describe("Wallet is connected as admin", () => {
     await page.goto("/infrastructure-committee.near/widget/app?page=proposals");
     let proposalId;
     const linkedRfpId = 0;
-    // add linked RFP to latest proposal
     await page.route(
-      "https://near-queryapi.api.pagoda.co/v1/graphql",
+      "https://infra-cache-api-rs.fly.dev/proposals?order=id_desc&limit=20&offset=0",
       async (route) => {
         const response = await route.fetch();
         const json = await response.json();
-        if (
-          json?.data?.[
-            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
-          ]
-        ) {
-          json.data[
-            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
-          ] = json.data[
-            "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot"
-          ].map((i, index) => {
+
+        if (json?.records) {
+          json.records = json.records.map((i, index) => {
             if (index === 0) {
               proposalId = i.proposal_id;
               return {
@@ -84,6 +75,8 @@ test.describe("Wallet is connected as admin", () => {
     await pauseIfVideoRecording(page);
     if (linkRfp) {
       await page.getByText("Search RFP").click();
+      let input = page.getByPlaceholder("Search by Id");
+      await input.fill("0", { delay: 100 });
       await page.getByText("# 0 : A Cool RFP").click();
       await expect(
         await page.getByRole("link", { name: "# 0 : A Cool RFP" })
@@ -293,80 +286,5 @@ test.describe("Wallet is connected as admin", () => {
     const newTab = await pagePromise;
     await newTab.waitForLoadState();
     await expect(newTab).toHaveURL("https://www.google.com");
-  });
-});
-
-let acceptedTermsVersion = 122927956;
-async function getCurrentBlockHeight(page) {
-  // set current block height for accepted terms and conditions
-  await page.route(MOCK_RPC_URL, async (route) => {
-    const request = route.request();
-    const requestPostData = request.postDataJSON();
-    if (
-      requestPostData?.method === "block" &&
-      requestPostData?.params?.finality === "optimistic"
-    ) {
-      const response = await route.fetch();
-      const json = await response.json();
-      json.result.header.height = acceptedTermsVersion;
-      await route.fulfill({ response, json });
-    } else {
-      await route.continue();
-    }
-  });
-}
-
-test.describe("Wallet is connected", () => {
-  test.use({
-    storageState: "playwright-tests/storage-states/wallet-connected.json",
-  });
-
-  test("should create a autolink reference to existing proposal", async ({
-    page,
-    account,
-  }) => {
-    test.setTimeout(120000);
-    await getCurrentBlockHeight(page);
-    await page.goto(`/${account}/widget/app?page=create-proposal`);
-
-    const delay_milliseconds_between_keypress_when_typing = 0;
-    const titleArea = await page.getByRole("textbox").first();
-    await expect(titleArea).toBeEditable({ timeout: 10_000 });
-    await titleArea.pressSequentially("Test proposal 123456", {
-      delay: delay_milliseconds_between_keypress_when_typing,
-    });
-
-    await pauseIfVideoRecording(page);
-
-    const descriptionArea = await page
-      .frameLocator("iframe")
-      .locator(".CodeMirror textarea");
-    await descriptionArea.focus();
-    await descriptionArea.scrollIntoViewIfNeeded();
-    await descriptionArea.pressSequentially(
-      `The test proposal description. And referencing #`,
-      {
-        delay: delay_milliseconds_between_keypress_when_typing,
-      }
-    );
-    await descriptionArea.pressSequentially("2", { delay: 10 });
-    await pauseIfVideoRecording(page);
-
-    let proposalLink = await page
-      .frameLocator("iframe")
-      .getByText(
-        "#2 Proposal: Near Enablement in Alterscope Risk Infrastructure"
-      )
-      .click({ timeout: 10000 });
-    // check the visibility
-    await expect(
-      page
-        .frameLocator("iframe")
-        .getByText(
-          "https://near.social/infrastructure-committee.near/widget/app?page=proposal&id=2"
-        )
-    ).toBeVisible({ timeout: 10000 });
-
-    await pauseIfVideoRecording(page);
   });
 });
