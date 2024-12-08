@@ -15,9 +15,9 @@ const proposalFeedAnnouncement = (
             DevDAO’s Proposal Feed!
           </a>
         </span>
-        This dedicated space makes it easier to submit and track funding requests
-        from DevDAO, the primary organization behind DevHub. To submit a formal
-        proposal, click New Proposal. See our{" "}
+        This dedicated space makes it easier to submit and track funding
+        requests from DevDAO, the primary organization behind DevHub. To submit
+        a formal proposal, click New Proposal. See our{" "}
         <a
           href="?page=community&handle=developer-dao&tab=funding"
           className="text-decoration-underline no-space"

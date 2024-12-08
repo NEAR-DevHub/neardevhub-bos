@@ -64,8 +64,6 @@ function searchCacheApi(entity, searchTerm) {
   });
 }
 
-
-
 const CANCEL_RFP_OPTIONS = {
   CANCEL_PROPOSALS: "CANCEL_PROPOSALS",
   UNLINK_PROPOSALS: "UNLINK_PROPOSALSS",
