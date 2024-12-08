@@ -334,7 +334,7 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
           accepted
           <Widget
             src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"}
-            props={{ proposalId: proposalId }}
+            props={{ ...props, proposalId: proposalId }}
           />
         </span>
       );
