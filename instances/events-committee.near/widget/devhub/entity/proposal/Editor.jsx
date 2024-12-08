@@ -910,7 +910,11 @@ const ConsentComponent = useMemo(() => {
                 src={
                   "${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"
                 }
-                props={{ proposalId: proposalId, portal: "Events Committee" }}
+                props={{
+                  ...props,
+                  proposalId: proposalId,
+                  portal: "Events Committee",
+                }}
               />
               and commit to honoring it
             </>
@@ -973,8 +977,9 @@ const LinkedProposalsComponent = useMemo(() => {
         Link any relevant proposals (e.g. previous milestones).
       </div>
       <Widget
-        src="${REPL_EVENTS}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
+        src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
         props={{
+          instance: "${REPL_EVENTS}",
           onChange: setLinkedProposals,
           linkedProposals: linkedProposals,
         }}

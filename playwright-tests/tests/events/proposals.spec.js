@@ -548,39 +548,6 @@ test.describe("Wallet is connected", () => {
     test.setTimeout(120000);
     await getCurrentBlockHeight(page);
     await page.goto(`/${account}/widget/app?page=create-proposal`);
-    // await page.route(
-    //   "https://events-cache-api-rs.fly.dev/proposals/search/2",
-    //   async (route) => {
-    //     const response = await route.fetch({
-    //       url: "https://events-cache-api-rs.fly.dev/proposals/search/2",
-    //     });
-
-    //     const json = {
-    //       records: [
-    //         {
-    //           author_id: "meghagoel.near",
-    //           block_height: 118172036,
-    //           name: "DevHub Developer Contributor report by Thomas for 03/11/2024 – 04/12/2024",
-    //           category: "Bounty",
-    //           summary: "Testing labels",
-    //           editor_id: "meghagoel.near",
-    //           proposal_id: 2,
-    //           ts: 1714757281087668547,
-    //           timeline: '{"status":"DRAFT"}',
-    //           views: 2,
-    //           labels: ["Bounty booster", "Hackathon", "Bounty"],
-    //         },
-    //       ],
-    //       page: 1,
-    //       total_pages: 1,
-    //       limit: 10,
-    //       total_records: 1,
-    //     };
-    //     console.log({ response, json });
-
-    //     await route.fulfill({ response, json });
-    //   }
-    // );
 
     await getCurrentBlockHeight(page);
 
