@@ -84,6 +84,7 @@ test.describe("Wallet is connected as admin", () => {
     await pauseIfVideoRecording(page);
     if (linkRfp) {
       await page.getByText("Search RFP").click();
+      await page.getByPlaceholder("Search by Id").fill("0");
       await page.getByText("# 0 : A Cool RFP").click();
       await expect(
         await page.getByRole("link", { name: "# 0 : A Cool RFP" })
