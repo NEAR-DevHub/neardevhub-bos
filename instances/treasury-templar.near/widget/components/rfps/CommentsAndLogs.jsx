@@ -1,5 +1,5 @@
 const { RFP_TIMELINE_STATUS, getLinkUsingCurrentGateway } = VM.require(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
+  `${REPL_TREASURY_TEMPLAR}/widget/core.common`
 ) || { RFP_TIMELINE_STATUS: {}, getLinkUsingCurrentGateway: () => {} };
 
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
@@ -92,7 +92,7 @@ State.init({
 function sortTimelineAndComments() {
   const comments = Social.index("comment", props.item, { subscribe: true });
 
-  if (state.changedKeysListWithValues === null && snapshotHistory.length > 0) {
+  if (state.changedKeysListWithValues === null && snapshotHistory.length) {
     const changedKeysListWithValues = snapshotHistory
       .slice(1)
       .map((item, index) => {
@@ -149,7 +149,7 @@ const Comment = ({ commentItem }) => {
     blockHeight,
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
-  const link = `https://${REPL_INFRASTRUCTURE_COMMITTEE}.page/rfp/${props.id}?accountId=${accountId}&blockHeight=${blockHeight}`;
+  const link = `https://${REPL_TREASURY_TEMPLAR}.page/rfp/${props.id}?accountId=${accountId}&blockHeight=${blockHeight}`;
 
   const highlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&
@@ -243,7 +243,7 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
           <span className="inline-flex">
             moved RFP to{" "}
             <Widget
-              src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.StatusTag`}
+              src={`${REPL_TREASURY_TEMPLAR}/widget/components.rfps.StatusTag`}
               props={{
                 timelineStatus: newValue,
               }}
@@ -266,14 +266,14 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
           <span className="inline-flex">
             moved RFP from{" "}
             <Widget
-              src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.StatusTag`}
+              src={`${REPL_TREASURY_TEMPLAR}/widget/components.rfps.StatusTag`}
               props={{
                 timelineStatus: oldValue,
               }}
             />
             to{" "}
             <Widget
-              src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.StatusTag`}
+              src={`${REPL_TREASURY_TEMPLAR}/widget/components.rfps.StatusTag`}
               props={{
                 timelineStatus: newValue,
               }}
@@ -314,7 +314,7 @@ const LinkToProposal = ({ id, children }) => {
     <a
       className="text-decoration-underline flex-1"
       href={href({
-        widgetSrc: `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app`,
+        widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
         params: {
           page: "proposal",
           id: id,
