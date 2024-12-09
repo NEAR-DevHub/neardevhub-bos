@@ -516,7 +516,7 @@ useEffect(() => {
   }
 }, [props.transactionHashes]);
 
-const DropdowntBtnContainer = styled.div`
+const DropdownBtnContainer = styled.div`
   font-size: 13px;
   min-width: 150px;
 
@@ -666,7 +666,7 @@ const SubmitBtn = () => {
   const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
 
   return (
-    <DropdowntBtnContainer>
+    <DropdownBtnContainer>
       <div
         className="custom-select"
         tabIndex="0"
@@ -718,7 +718,7 @@ const SubmitBtn = () => {
           </div>
         )}
       </div>
-    </DropdowntBtnContainer>
+    </DropdownBtnContainer>
   );
 };
 
