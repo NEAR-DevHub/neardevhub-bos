@@ -34,6 +34,7 @@ test.describe("Clipboard permissions", () => {
       return json;
     });
     await page.route(
+      // TODO sunset
       "https://near-queryapi.api.pagoda.co/v1/graphql",
       async (route) => {
         const request = route.request();
