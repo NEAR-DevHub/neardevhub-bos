@@ -1,9 +1,10 @@
-const { PROPOSAL_TIMELINE_STATUS, fetchGraphQL, parseJSON, isNumber } =
-  VM.require(`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`) || {
-    PROPOSAL_TIMELINE_STATUS: {},
-    parseJSON: () => {},
-    isNumber: () => {},
-  };
+const { PROPOSAL_TIMELINE_STATUS, parseJSON, isNumber } = VM.require(
+  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
+) || {
+  PROPOSAL_TIMELINE_STATUS: {},
+  parseJSON: () => {},
+  isNumber: () => {},
+};
 
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
 href || (href = () => {});
@@ -279,56 +280,29 @@ const proposal = Near.view(
 
 const [snapshotHistory, setSnapshotHistory] = useState([]);
 
-const queryName = "${REPL_PROPOSAL_QUERY_NAME}";
-const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-  ${queryName}(
-    offset: $offset
-    limit: $limit
-    order_by: {ts: asc}
-    where: $where
-  ) {
-    editor_id
-    name
-    summary
-    description
-    ts
-    proposal_id
-    timeline
-    labels
-    linked_proposals
-    linked_rfp
-    requested_sponsorship_usd_amount
-    requested_sponsorship_paid_in_currency
-    receiver_account
-    requested_sponsor
-    supervisor
-  }
-}`;
-
 const fetchSnapshotHistory = () => {
-  const variables = {
-    where: { proposal_id: { _eq: id } },
-  };
-  if (typeof fetchGraphQL !== "function") {
-    return;
-  }
-  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const data = result.body.data?.[queryName];
-        const history = data.map((item) => {
-          const proposalData = {
-            ...item,
-            timestamp: item.ts,
-            timeline: parseJSON(item.timeline),
-          };
-          delete proposalData.ts;
-          return proposalData;
-        });
-        setSnapshotHistory(history);
+  asyncFetch(`https://infra-cache-api-rs.fly.dev/proposal/${id}/snapshots`, {
+    method: "GET",
+    headers: { accept: "application/json" },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        console.error(`Failed to fetch snapshots: ${response.status}`);
       }
-    }
-  });
+      return response.body;
+    })
+    .then((snapshots) => {
+      const history = snapshots.map((item) => {
+        const proposalData = {
+          ...item,
+          timestamp: item.ts,
+          timeline: parseJSON(item.timeline),
+        };
+        delete proposalData.ts;
+        return proposalData;
+      });
+      setSnapshotHistory(history);
+    });
 };
 
 useEffect(() => {
