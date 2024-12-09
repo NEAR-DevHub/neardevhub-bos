@@ -5,10 +5,5 @@
   "REPL_NEAR": "near",
   "REPL_RPC_URL": "https://rpc.mainnet.near.org",
   "REPL_RFP_IMAGE": "https://ipfs.near.social/ipfs/bafkreicbygt4kajytlxij24jj6tkg2ppc2dw3dlqhkermkjjfgdfnlizzy",
-  "REPL_RFP_FEED_INDEXER_QUERY_NAME": "polyprogrammist_near_devhub_ic_v1_rfps_with_latest_snapshot",
-  "REPL_RFP_INDEXER_QUERY_NAME": "polyprogrammist_near_devhub_ic_v1_rfp_snapshots",
-  "REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME": "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot",
-  "REPL_PROPOSAL_QUERY_NAME": "polyprogrammist_near_devhub_ic_v1_proposal_snapshots",
-  "REPL_INDEXER_HASURA_ROLE": "polyprogrammist_near",
   "REPL_CACHE_URL": "https://infra-cache-api-rs.fly.dev"
 }

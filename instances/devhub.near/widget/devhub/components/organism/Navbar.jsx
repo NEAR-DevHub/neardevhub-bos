@@ -134,11 +134,11 @@ const MobileMenu = styled.button`
 `;
 
 let links = [
-  {
-    title: "/feed",
-    href: "announcements",
-    links: [],
-  },
+  // {
+  //   title: "/feed",
+  //   href: "announcements",
+  //   links: [],
+  // },
   {
     title: "/communities",
     href: "communities",

@@ -172,7 +172,7 @@ function getPostIds(tag, offset) {
 }
 
 if (!state.items || searchConditionChanged()) {
-  getPostIds();
+  // getPostIds();
 }
 
 function defaultRenderItem(postId, additionalProps) {
@@ -198,7 +198,7 @@ function defaultRenderItem(postId, additionalProps) {
             if (typeof props.updateTagInput === "function") {
               props.updateTagInput(tag);
             }
-            getPostIds(tag);
+            // getPostIds(tag);
           },
           transactionHashes: props.transactionHashes,
         }}
@@ -290,7 +290,7 @@ const makeMoreItems = () => {
     !state.loading
   ) {
     State.update({ loading: true });
-    getPostIds(null, state.items.length);
+    // getPostIds(null, state.items.length);
   }
 };
 
