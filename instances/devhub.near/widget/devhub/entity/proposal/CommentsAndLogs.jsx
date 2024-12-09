@@ -171,7 +171,7 @@ const Comment = ({ commentItem }) => {
   };
   const content = JSON.parse(Social.get(item.path, blockHeight) ?? "null");
   const link = `https://${instanceAccount}.page/proposal/${proposalId}?accountId=${accountId}&blockHeight=${blockHeight}`;
-  const hightlightComment =
+  const highlightComment =
     parseInt(props.blockHeight ?? "") === blockHeight &&
     props.accountId === accountId;
 
@@ -188,7 +188,7 @@ const Comment = ({ commentItem }) => {
         </div>
         <CommentContainer
           id={`${accountId.replace(/[^a-z0-9]/g, "")}${blockHeight}`}
-          style={{ border: hightlightComment ? "2px solid black" : "" }}
+          style={{ border: highlightComment ? "2px solid black" : "" }}
           className="rounded-2 flex-1"
         >
           <Header className="d-flex gap-3 align-items-center p-2 px-3">
