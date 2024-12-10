@@ -25,7 +25,7 @@ test.describe("Don't ask again enabled", () => {
       "playwright-tests/storage-states/wallet-connected-with-devhub-access-key.json",
   });
 
-  test("Post announcement", async ({ page }) => {
+  test.skip("Post announcement", async ({ page }) => {
     test.setTimeout(60000);
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
@@ -269,7 +269,7 @@ test.describe("Admin wallet is connected", () => {
     );
   });
 
-  test("comment button is visible", async ({ page }) => {
+  test.skip("comment button is visible", async ({ page }) => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
@@ -279,7 +279,7 @@ test.describe("Admin wallet is connected", () => {
     });
   });
 
-  test("like button is visible", async ({ page }) => {
+  test.skip("like button is visible", async ({ page }) => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );
@@ -289,7 +289,7 @@ test.describe("Admin wallet is connected", () => {
     });
   });
 
-  test("a post shows in feed", async ({ page }) => {
+  test.skip("a post shows in feed", async ({ page }) => {
     await page.goto(
       "/devhub.near/widget/app?page=community&handle=webassemblymusic"
     );

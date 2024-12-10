@@ -1,0 +1,10 @@
+{
+  "REPL_DEVHUB": "devhub.near",
+  "REPL_TREASURY_TEMPLAR": "treasury-templar.near",
+  "REPL_TREASURY_TEMPLAR_CONTRACT": "treasury-templar.near",
+  "REPL_TREASURY_BASE_DEPLOYMENT_ACCOUNT": "treasury-templar.near",
+  "REPL_NEAR": "near",
+  "REPL_RPC_URL": "https://rpc.mainnet.near.org",
+  "REPL_RFP_IMAGE": "https://ipfs.near.social/ipfs/bafkreicbygt4kajytlxij24jj6tkg2ppc2dw3dlqhkermkjjfgdfnlizzy",
+  "REPL_CACHE_URL": "https://templar-cache-api-rs.fly.dev"
+}

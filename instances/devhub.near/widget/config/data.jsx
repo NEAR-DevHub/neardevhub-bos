@@ -87,6 +87,7 @@ const categoryOptions = [
 ];
 
 return {
+  portalName: "Devhub",
   contract: "devhub.near",
   proposalFeedIndexerQueryName:
     "polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot",
