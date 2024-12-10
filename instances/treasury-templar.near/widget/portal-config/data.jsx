@@ -3,6 +3,7 @@ const { getGlobalLabels } = VM.require(
 ) || { getGlobalLabels: () => {} };
 
 return {
+  portalName: "Templar",
   contract: "${REPL_TREASURY_TEMPLAR_CONTRACT}",
   proposalFeedIndexerQueryName: "",
   rfpFeedIndexerQueryName: "",

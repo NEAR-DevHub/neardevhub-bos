@@ -8,7 +8,7 @@ State.init({
 
 const instance = props.instance ?? "";
 
-const { cacheUrl } = VM.require(`${instance}/widget/config.data`);
+const { cacheUrl, portalName } = VM.require(`${instance}/widget/config.data`);
 
 const fetchAndSetProposalSnapshot = () => {
   if (!props.proposalId) {
@@ -81,6 +81,6 @@ return (
     target="_blank"
     rel="noopener noreferrer"
   >
-    DevHub’s Terms and Conditions
+    {portalName}'s Terms and Conditions
   </a>
 );

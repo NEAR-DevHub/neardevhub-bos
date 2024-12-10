@@ -7,7 +7,7 @@ const instanceAccount = props.item.path.split("/")[0];
 const acceptedTermsComponent = props.acceptedTermsComponent ?? (
   <Widget
     src={"${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"}
-    props={{ proposalId: proposalId }}
+    props={{ proposalId: proposalId, instance: instanceAccount }}
   />
 );
 
@@ -101,6 +101,7 @@ function sortTimelineAndComments() {
       .map((item, index) => {
         const startingPoint = snapshotHistory[index]; // Set comparison to the previous item
         // we don't show timeline_version in logs
+        delete startingPoint.block_height;
         delete startingPoint.timeline.timeline_version;
         delete item.timeline.timeline_version;
         if (

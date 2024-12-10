@@ -861,8 +861,7 @@ return (
                     ...props,
                     id: proposal.id,
                     item: item,
-                    snapshotHistory: snapshotHistory,
-                    latestSnapshot: snapshot,
+                    snapshotHistory: [...proposal.snapshot_history, snapshot],
                   }}
                 />
               </div>

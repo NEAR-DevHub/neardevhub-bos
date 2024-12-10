@@ -5,6 +5,7 @@
 const { getLinkUsingCurrentGateway } = VM.require(
   `${REPL_TREASURY_TEMPLAR}/widget/core.common`
 ) || { getLinkUsingCurrentGateway: () => {} };
+
 const data = props.data;
 const onChange = props.onChange ?? (() => {});
 const onChangeKeyup = props.onChangeKeyup ?? (() => {}); // in case where we want immediate action
@@ -12,58 +13,28 @@ const height = props.height ?? "390";
 const className = props.className ?? "w-100";
 const embeddCSS = props.embeddCSS;
 const sortedRelevantUsers = props.sortedRelevantUsers || [];
-
+const cacheUrl = "${REPL_CACHE_URL}";
 State.init({
   iframeHeight: height,
   message: props.data,
 });
 
-const profilesData = Social.get("*/profile/name", "final");
-const followingData = Social.get(
-  `${context.accountId}/graph/follow/**`,
-  "final"
-);
+const profilesData = Social.get("*/profile/name", "final") ?? {};
+const followingData =
+  Social.get(`${context.accountId}/graph/follow/**`, "final") ?? {};
 
 // SIMPLEMDE CONFIG //
 const fontFamily = props.fontFamily ?? "sans-serif";
 const alignToolItems = props.alignToolItems ?? "right";
 const placeholder = props.placeholder ?? "";
 const showAccountAutoComplete = props.showAutoComplete ?? false;
-const showProposalIdAutoComplete = false;
+const showProposalIdAutoComplete = props.showProposalIdAutoComplete ?? false;
 const showRfpIdAutoComplete = false;
 const autoFocus = props.autoFocus ?? false;
 
-const proposalQueryName = "${REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME}";
 const proposalLink = getLinkUsingCurrentGateway(
-  `${REPL_TREASURY_TEMPLAR}/widget/portal?page=proposal&id=`
+  `${REPL_TREASURY_TEMPLAR}/widget/app?page=proposal&id=`
 );
-const proposalQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${proposalQueryName}_bool_exp = {}) {
-${proposalQueryName}(
-  offset: $offset
-  limit: $limit
-  order_by: {proposal_id: desc}
-  where: $where
-) {
-  name
-  proposal_id
-}
-}`;
-
-const rfpQueryName = "${REPL_RFP_FEED_INDEXER_QUERY_NAME}";
-const rfpLink = getLinkUsingCurrentGateway(
-  `${REPL_TREASURY_TEMPLAR}/widget/portal?page=rfp&id=`
-);
-const rfpQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${rfpQueryName}_bool_exp = {}) {
-${rfpQueryName}(
-  offset: $offset
-  limit: $limit
-  order_by: {rfp_id: desc}
-  where: $where
-) {
-  rfp_id
-  name
-}
-}`;
 
 const code = `
 <!doctype html>
@@ -106,11 +77,11 @@ const code = `
   }
   
   .CodeMirror {
-    min-height:200px !important; // for autocomplete to be visble 
+    min-height:200px !important; // for autocomplete to be visible 
   }
 
   .CodeMirror-scroll {
-    min-height:200px !important; // for autocomplete to be visble 
+    min-height:200px !important; // for autocomplete to be visible 
   }
 
   ${embeddCSS}
@@ -146,12 +117,7 @@ let codeMirrorInstance;
 let isEditorInitialized = false;
 let followingData = {};
 let profilesData = {};
-let proposalQuery = '';
 let proposalLink = '';
-let proposalQueryName = '';
-let rfpQuery = '';
-let rfpLink = '';
-let rfpQueryName = '';
 let showAccountAutoComplete = ${showAccountAutoComplete};
 let showProposalIdAutoComplete = ${showProposalIdAutoComplete};
 let showRfpIdAutoComplete = ${showRfpIdAutoComplete}
@@ -160,7 +126,7 @@ function getSuggestedAccounts(term) {
   let results = [];
 
   term = (term || "").replace(/\W/g, "").toLowerCase();
-   let limit = 5;
+  let limit = 5;
   if (term.length < 2) {
    results = [${sortedRelevantUsers
      .map((u) => "{accountId:'" + u + "', score: 60}")
@@ -206,12 +172,11 @@ function getSuggestedAccounts(term) {
   return results;
 }
 
-async function asyncFetch(endpoint, { method, headers, body }) {
+async function asyncFetch(endpoint, { method, headers }) {
   try {
     const response = await fetch(endpoint, {
       method: method,
       headers: headers,
-      body: body
     });
 
     if (!response.ok) {
@@ -235,89 +200,36 @@ function extractNumbers(str) {
   return numbers;
 };
 
+function searchCacheApi(entity, searchProposalId) {
+  let searchInput = encodeURI(searchProposalId);
+  let searchUrl = "${cacheUrl}/"+entity+"/search/" + searchInput;
+
+  return asyncFetch(searchUrl, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+    },
+  }).catch((error) => {
+    console.log("Error searching cache api", error);
+  });
+}
+
 async function getSuggestedRfps(id) {
   let results = [];
-  const variables = {
-    limit: 3,
-    offset: 0,
-    where: {},
-  };
   if (id) {
-    const rfpId = extractNumbers(id);
-    if (rfpId) {
-      variables["where"] = { rfp_id: { _eq: id } };
-    } else {
-      variables["where"] = {
-        _or: [
-          { name: { _iregex: id } },
-          { summary: { _iregex: id } },
-          { description: { _iregex: id} },
-        ]
-      };
-    }
+    const searchResults = await searchCacheApi('rfp', id);
+    results = searchResults?.records || [];
   }
-  await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
-    method: "POST",
-    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
-    body: JSON.stringify({
-      query: rfpQuery,
-      variables: variables,
-      operationName: "GetLatestSnapshot",
-    }),
-  })
-    .then((res) => {
-      const rfps =
-        res?.data?.[
-          rfpQueryName
-        ];
-      results = rfps;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
   return results;
 };
 
 async function getSuggestedProposals(id) {
   let results = [];
-  const variables = {
-    limit: 3,
-    offset: 0,
-    where: {},
-  };
+
   if (id) {
-    const proposalId = extractNumbers(id);
-    if (proposalId) {
-      variables["where"] = { proposal_id: { _eq: id } };
-    } else {
-      variables["where"] = {
-        _or: [
-          { name: { _iregex: id } },
-          { summary: { _iregex: id } },
-          { description: { _iregex: id} },
-        ]
-      };
-    }
+    const searchResults = await searchCacheApi('proposals', id);
+    results = searchResults?.records || [];
   }
-  await asyncFetch("https://near-queryapi.api.pagoda.co/v1/graphql", {
-    method: "POST",
-    headers: { "x-hasura-role": "${REPL_INDEXER_HASURA_ROLE}" },
-    body: JSON.stringify({
-      query: proposalQuery,
-      variables: variables,
-      operationName: "GetLatestSnapshot",
-    }),
-  })
-    .then((res) => {
-      const proposals =
-        res?.data?.[
-          proposalQueryName
-        ];
-      results = proposals;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
   return results;
 };
 
@@ -468,7 +380,7 @@ if (showAccountAutoComplete) {
         });
       });
     }
-    // show dropwdown only when @ is at first place or when there is a space before @
+    // show dropdown only when @ is at first place or when there is a space before @
       if (!mentionToken && (token.string === "@" && cursor.ch === 1 || token.string === "@" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ')) {
         mentionToken = token;
         mentionCursorStart = cursor;
@@ -505,6 +417,7 @@ if (showProposalIdAutoComplete) {
   let proposalId;
   let referenceCursorStart;
   const dropdown = document.getElementById("referencedropdown");
+  // Create loader element once and store it
   const loader = document.createElement('div');
   loader.className = 'loader';
   loader.textContent = 'Loading...';
@@ -526,25 +439,26 @@ if (showProposalIdAutoComplete) {
         const input = cm.getRange(referenceCursorStart, cursor);
         dropdown.innerHTML = ''; // Clear previous content
         dropdown.appendChild(loader); // Show loader
-
+    
         const suggestedProposals = await getSuggestedProposals(input);
         const suggestedRFPs = await getSuggestedRfps(input);
-
-       const proposalItems = suggestedProposals
-        .map(
-          (item) =>
-            '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + "#" + item?.proposal_id + " Proposal: " + item.name + '</button></li>'
-        )
-        .join("");
-
+    
+        const proposalItems = suggestedProposals
+          .map(
+            (item) =>
+              '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + "#" + item?.proposal_id + " Proposal: " + item.name + '</button></li>'
+          )
+          .join("");
+    
         const rfpItems = suggestedRFPs
-        .map(
-          (item) =>
-            '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + "#" + item?.rfp_id + " RFP: " + " " + item.name + '</button></li>'
-        )
-        .join("");
+          .map(
+            (item) =>
+              '<li><button class="dropdown-item cursor-pointer w-100 text-wrap">' + "#" + item?.rfp_id + " RFP: " + " " + item.name + '</button></li>'
+          )
+          .join("");
+    
         dropdown.innerHTML = proposalItems + rfpItems;
-
+    
         dropdown.querySelectorAll("li").forEach((li) => {
           li.addEventListener("click", () => {
             const selectedText = li.textContent.trim();
@@ -564,14 +478,15 @@ if (showProposalIdAutoComplete) {
         });
       } catch (error) {
         console.error('Error fetching data:', error);
-        // Handle error: Remove loader
         dropdown.innerHTML = ''; // Clear previous content
       } finally {
-        // Remove loader
-        dropdown.removeChild(loader);
+        // Safely remove loader if it's still part of the dropdown
+        if (dropdown.contains(loader)) {
+          dropdown.removeChild(loader);
+        }
       }
-    }
-
+    };
+    
     // show dropwdown only when there is space before # or it's first char
       if (!proposalId && (token.string === "#" && cursor.ch === 1 || token.string === "#" && cm.getTokenAt({line:cursor.line, ch: cursor.ch - 1}).string == ' ')) {
         proposalId = token;
@@ -621,26 +536,12 @@ window.addEventListener("message", (event) => {
   if (event.data.profilesData) {
     profilesData = JSON.parse(event.data.profilesData);
   }
-  if (event.data.proposalQuery) {
-    proposalQuery = event.data.proposalQuery;
-  }
-  if (event.data.proposalQueryName) {
-    proposalQueryName = event.data.proposalQueryName;
-  }
   if (event.data.proposalLink) {
     proposalLink = event.data.proposalLink;
-  }
-
-  if (event.data.rfpQuery) {
-    rfpQuery = event.data.rfpQuery;
-  }
-  if (event.data.rfpQueryName) {
-    rfpQueryName = event.data.rfpQueryName;
   }
   if (event.data.rfpLink) {
     rfpLink = event.data.rfpLink;
   }
-  
 });
 </script>
 </body>
@@ -660,13 +561,9 @@ return (
       content: props.data?.content ?? "",
       followingData,
       profilesData: JSON.stringify(profilesData),
-      proposalQuery: proposalQuery,
-      proposalQueryName: proposalQueryName,
-      proposalLink: proposalLink,
-      rfpQuery: rfpQuery,
-      rfpQueryName: rfpQueryName,
-      rfpLink: rfpLink,
       handler: props.data.handler,
+      proposalLink: proposalLink,
+      rfpLink: rfpLink,
     }}
     onMessage={(e) => {
       switch (e.handler) {

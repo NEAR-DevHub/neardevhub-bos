@@ -279,7 +279,6 @@ const rfp = Near.view("${REPL_TREASURY_TEMPLAR_CONTRACT}", "get_rfp", {
   rfp_id: parseInt(id),
 });
 
-// need to fix it
 function fetchSnapshotHistory() {
   const ENDPOINT = "${REPL_CACHE_URL}";
 
@@ -305,7 +304,7 @@ function fetchSnapshotHistory() {
 
         return rfpData;
       });
-      setSnapshotHistory(history);
+      setSnapshotHistory([...history].reverse());
     });
 }
 
