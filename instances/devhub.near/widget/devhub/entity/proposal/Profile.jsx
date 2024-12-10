@@ -5,8 +5,8 @@ const Avatar = styled.div`
   &.sm {
     min-width: 26px;
     max-width: 26px;
-    min-height: 26px;
-    max-height: 26px;
+    min-height: 24px;
+    max-height: 24px;
   }
   &.md {
     min-width: 40px;
@@ -33,7 +33,7 @@ const profileUrl = `/near/widget/ProfilePage?accountId=${accountId}`;
 return (
   <Link href={profileUrl}>
     <div className="d-flex gap-2 align-items-center">
-      <Avatar className={size}>
+      <Avatar className={size + " d-flex"}>
         <Widget
           src="${REPL_MOB}/widget/Image"
           props={{

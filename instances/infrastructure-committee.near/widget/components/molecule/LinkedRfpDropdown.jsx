@@ -1,6 +1,10 @@
-const { RFP_TIMELINE_STATUS, fetchGraphQL, parseJSON } = VM.require(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
-) || { RFP_TIMELINE_STATUS: {}, parseJSON: () => {} };
+const { RFP_TIMELINE_STATUS, parseJSON, fetchCacheApi, searchCacheApi } =
+  VM.require(`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`) || {
+    RFP_TIMELINE_STATUS: {},
+    parseJSON: () => {},
+    fetchCacheApi: () => {},
+    searchCacheApi: () => {},
+  };
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
 href || (href = () => {});
 
@@ -20,69 +24,14 @@ const [allRfpOptions, setAllRfpOptions] = useState([]);
 const [searchRFPId, setSearchRfpId] = useState("");
 const [initialStateApplied, setInitialState] = useState(false);
 
-const queryName = "${REPL_RFP_FEED_INDEXER_QUERY_NAME}";
-const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${queryName}_bool_exp = {}) {
-  ${queryName}(
-    offset: $offset
-    limit: $limit
-    order_by: {rfp_id: desc}
-    where: $where
-  ) {
-    name
-    rfp_id
-    timeline
-  }
-  }`;
-
-function separateNumberAndText(str) {
-  const numberRegex = /\d+/;
-
-  if (numberRegex.test(str)) {
-    const number = str.match(numberRegex)[0];
-    const text = str.replace(numberRegex, "").trim();
-    return { number: parseInt(number), text };
-  } else {
-    return { number: null, text: str.trim() };
-  }
-}
-
-const buildWhereClause = () => {
-  // show only accepting submissions stage rfps
-  let where = {};
-  const { number, text } = separateNumberAndText(searchRFPId);
-
-  if (number) {
-    where = { rfp_id: { _eq: number }, ...where };
-  }
-
-  if (text) {
-    where = {
-      _or: [
-        { name: { _iregex: `${text}` } },
-        { summary: { _iregex: `${text}` } },
-        { description: { _iregex: `${text}` } },
-      ],
-      ...where,
-    };
-  }
-
-  return where;
-};
-
 const fetchRfps = () => {
-  const FETCH_LIMIT = 30;
-  const variables = {
-    limit: FETCH_LIMIT,
-    offset: 0,
-    where: buildWhereClause(),
-  };
-  if (typeof fetchGraphQL !== "function") {
+  if (typeof searchCacheApi !== "function") {
     return;
   }
-  fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
+  searchCacheApi("rfps", searchRFPId).then(async (result) => {
     if (result.status === 200) {
-      if (result.body.data) {
-        const rfpsData = result.body.data?.[queryName];
+      if (result.body.records) {
+        const rfpsData = result.body.records;
         const data = [];
         const acceptingData = [];
         for (const prop of rfpsData) {

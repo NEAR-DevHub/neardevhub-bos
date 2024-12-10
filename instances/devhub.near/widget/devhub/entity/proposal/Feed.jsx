@@ -10,7 +10,7 @@ const {
   proposalFeedAnnouncement,
   availableCategoryOptions,
   proposalFeedIndexerQueryName,
-  indexerHasuraRole,
+  cacheUrl,
   isDevhub,
   isInfra,
   isEvents,
@@ -193,8 +193,7 @@ const FeedItem = ({ proposal, index }) => {
               <div
                 className="text-sm text-muted d-flex gap-1 align-items-center"
                 data-testid={
-                  `proposalId_${proposal.proposal_id}` +
-                  `_rfpId_${rfpData.rfp_id}`
+                  `proposalId_${proposal.proposal_id}` + `_rfpId_${rfpData.id}`
                 }
               >
                 <i class="bi bi-link-45deg"></i>
@@ -269,14 +268,18 @@ const getProposal = (proposal_id) => {
   });
 };
 
-const FeedPage = () => {
-  const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql`;
+const getRfp = (rfp_id) => {
+  return Near.asyncView(contract, "get_rfp", {
+    rfp_id,
+  });
+};
 
+const FeedPage = () => {
   State.init({
     data: [],
     author: "",
     stage: "",
-    sort: "",
+    sort: "id_desc",
     category: "",
     input: "",
     loading: false,
@@ -286,120 +289,76 @@ const FeedPage = () => {
     currentlyDisplaying: 0,
   });
 
-  const query = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${proposalFeedIndexerQueryName}_bool_exp = {}) {
-    ${proposalFeedIndexerQueryName}(
-      offset: $offset
-      limit: $limit
-      order_by: {proposal_id: desc}
-      where: $where
-    ) {
-      author_id
-      block_height
-      name
-      category
-      summary
-      editor_id
-      proposal_id
-      ts
-      timeline
-      views
-      labels
-      linked_rfp
-    }
-    ${proposalFeedIndexerQueryName}_aggregate(
-      order_by: {proposal_id: desc}
-      where: $where
-    )  {
-      aggregate {
-        count
-      }
-    }
-  }`;
-
-  const rfpQuery = `query GetLatestSnapshot($offset: Int = 0, $limit: Int = 10, $where: ${rfpFeedIndexerQueryName}_bool_exp = {}) {
-    ${rfpFeedIndexerQueryName}(
-      offset: $offset
-      limit: $limit
-      order_by: {rfp_id: desc}
-      where: $where
-    ) {
-      name
-      rfp_id
-    }
-  }`;
-
-  function fetchGraphQL(operationsDoc, operationName, variables) {
-    return asyncFetch(QUERYAPI_ENDPOINT, {
-      method: "POST",
-      headers: { "x-hasura-role": indexerHasuraRole },
-      body: JSON.stringify({
-        query: operationsDoc,
-        variables: variables,
-        operationName: operationName,
-      }),
-    });
-  }
-
-  function separateNumberAndText(str) {
-    const numberRegex = /\d+/;
-
-    if (numberRegex.test(str)) {
-      const number = str.match(numberRegex)[0];
-      const text = str.replace(numberRegex, "").trim();
-      return { number: parseInt(number), text };
-    } else {
-      return { number: null, text: str.trim() };
-    }
-  }
-
-  const buildWhereClause = () => {
-    let where = {};
-    if (state.author) {
-      where = { author_id: { _eq: state.author }, ...where };
-    }
-
-    if (state.category) {
-      if (isInfra || isEvents) {
-        where = { labels: { _contains: state.category }, ...where };
-      } else {
-        where = { category: { _eq: state.category }, ...where };
-      }
-    }
-
-    if (state.stage) {
-      // timeline is stored as jsonb
-      where = {
-        timeline: { _cast: { String: { _regex: `${state.stage}` } } },
-        ...where,
-      };
-    }
-    if (state.input) {
-      const { number, text } = separateNumberAndText(state.input);
-      if (number) {
-        where = { proposal_id: { _eq: number }, ...where };
-      }
-
-      if (text) {
-        where = {
-          _or: [
-            { name: { _iregex: `${text}` } },
-            { summary: { _iregex: `${text}` } },
-            { description: { _iregex: `${text}` } },
-          ],
-          ...where,
-        };
-      }
-    }
-
-    return where;
-  };
-
   const makeMoreItems = () => {
     State.update({ makeMoreLoader: true });
     fetchProposals(state.data.length);
   };
 
-  const fetchProposals = (offset) => {
+  function searchCacheApi() {
+    let searchTerm = state.input;
+    let searchInput = encodeURI(searchTerm);
+    let searchUrl = `${cacheUrl}/proposals/search/${searchInput}`;
+
+    return asyncFetch(searchUrl, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+      },
+    }).catch((error) => {
+      console.log("Error searching cache api", error);
+    });
+  }
+
+  function searchProposals() {
+    if (state.loading) return;
+    State.update({ loading: true });
+
+    searchCacheApi().then((result) => {
+      let body = result.body;
+
+      const promises = body.records.map((proposal) => {
+        if (isNumber(proposal.linked_rfp)) {
+          getRfp(proposal.linked_rfp).then((rfp) => {
+            return { ...proposal, rfpData: rfp };
+          });
+        } else {
+          return Promise.resolve(proposal);
+        }
+      });
+      Promise.all(promises).then((proposalsWithRfpData) => {
+        State.update({ aggregatedCount: body.total_records });
+        fetchBlockHeights(proposalsWithRfpData, 0);
+      });
+    });
+  }
+
+  function fetchCacheApi(variables) {
+    let fetchUrl = `${cacheUrl}/proposals?order=${variables.order}&limit=${variables.limit}&offset=${variables.offset}`;
+
+    if (variables.author_id) {
+      fetchUrl += `&filters.author_id=${variables.author_id}`;
+    }
+    if (variables.stage) {
+      fetchUrl += `&filters.stage=${variables.stage}`;
+    }
+    if (variables.category) {
+      if (isInfra || isEvents) {
+        fetchUrl += `&filters.labels=${variables.category}`;
+      } else {
+        fetchUrl += `&filters.category=${variables.category}`;
+      }
+    }
+    return asyncFetch(fetchUrl, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+      },
+    }).catch((error) => {
+      console.log("Error fetching cache api", error);
+    });
+  }
+
+  function fetchProposals(offset) {
     if (!offset) {
       offset = 0;
     }
@@ -407,36 +366,30 @@ const FeedPage = () => {
     State.update({ loading: true });
     const FETCH_LIMIT = 10;
     const variables = {
+      order: state.sort,
       limit: FETCH_LIMIT,
       offset,
-      where: buildWhereClause(),
+      category: state.category ? encodeURIComponent(state.category) : "",
+      author_id: state.author ? encodeURIComponent(state.author) : "",
+      stage: state.stage ? encodeURIComponent(state.stage) : "",
     };
-    fetchGraphQL(query, "GetLatestSnapshot", variables).then(async (result) => {
-      if (result.status === 200) {
-        if (result.body.data) {
-          const data = result.body.data[proposalFeedIndexerQueryName];
-          const totalResult =
-            result.body.data[`${proposalFeedIndexerQueryName}_aggregate`];
-          const promises = data.map((item) => {
-            if (isNumber(item.linked_rfp)) {
-              return fetchGraphQL(rfpQuery, "GetLatestSnapshot", {
-                where: { rfp_id: { _eq: item.linked_rfp } },
-              }).then((result) => {
-                const rfpData = result.body.data?.[rfpFeedIndexerQueryName];
-                return { ...item, rfpData: rfpData[0] };
-              });
-            } else {
-              return Promise.resolve(item);
-            }
+    fetchCacheApi(variables).then((result) => {
+      const body = result.body;
+      const promises = body.records.map((proposal) => {
+        if (isNumber(proposal.linked_rfp)) {
+          getRfp(proposal.linked_rfp).then((rfp) => {
+            return { ...proposal, rfpData: rfp };
           });
-          Promise.all(promises).then((res) => {
-            State.update({ aggregatedCount: totalResult.aggregate.count });
-            fetchBlockHeights(res, offset);
-          });
+        } else {
+          return Promise.resolve(proposal);
         }
-      }
+      });
+      Promise.all(promises).then((proposalsWithRfpData) => {
+        State.update({ aggregatedCount: body.total_records });
+        fetchBlockHeights(proposalsWithRfpData, offset);
+      });
     });
-  };
+  }
 
   useEffect(() => {
     State.update({ searchLoader: true });
@@ -448,48 +401,45 @@ const FeedPage = () => {
       ...new Set([...newItems, ...state.data].map((i) => JSON.stringify(i))),
     ].map((i) => JSON.parse(i));
     // Sorting in the front end
-    if (state.sort === "proposal_id" || state.sort === "") {
+    if (state.sort === "id_desc" || state.sort === "") {
       items.sort((a, b) => b.proposal_id - a.proposal_id);
-    } else if (state.sort === "views") {
-      items.sort((a, b) => b.views - a.views);
     }
 
     return items;
   };
 
   const fetchBlockHeights = (data, offset) => {
-    let promises = data.map((item) => getProposal(item.proposal_id));
-    Promise.all(promises).then((blockHeights) => {
-      data = data.map((item, index) => ({
-        ...item,
-        timeline: JSON.parse(item.timeline),
-        social_db_post_block_height:
-          blockHeights[index].social_db_post_block_height,
-      }));
-      if (offset) {
-        let newData = mergeItems(data);
-        State.update({
-          data: newData,
-          currentlyDisplaying: newData.length,
-          loading: false,
-          searchLoader: false,
-          makeMoreLoader: false,
-        });
-      } else {
-        State.update({
-          data,
-          currentlyDisplaying: data.length,
-          loading: false,
-          searchLoader: false,
-          makeMoreLoader: false,
-        });
-      }
-    });
+    data = data.map((item, index) => ({
+      ...item,
+      timeline: JSON.parse(item.timeline),
+    }));
+    if (offset) {
+      let newData = mergeItems(data);
+      State.update({
+        data: newData,
+        currentlyDisplaying: newData.length,
+        loading: false,
+        searchLoader: false,
+        makeMoreLoader: false,
+      });
+    } else {
+      State.update({
+        data,
+        currentlyDisplaying: data.length,
+        loading: false,
+        searchLoader: false,
+        makeMoreLoader: false,
+      });
+    }
   };
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      fetchProposals();
+      if (state.input) {
+        searchProposals();
+      } else {
+        fetchProposals();
+      }
     }, 1000);
 
     return () => {

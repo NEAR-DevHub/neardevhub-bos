@@ -516,7 +516,7 @@ useEffect(() => {
   }
 }, [props.transactionHashes]);
 
-const DropdowntBtnContainer = styled.div`
+const DropdownBtnContainer = styled.div`
   font-size: 13px;
   min-width: 150px;
 
@@ -666,7 +666,7 @@ const SubmitBtn = () => {
   const selectedOption = btnOptions.find((i) => i.value === selectedStatus);
 
   return (
-    <DropdowntBtnContainer>
+    <DropdownBtnContainer>
       <div
         className="custom-select"
         tabIndex="0"
@@ -718,7 +718,7 @@ const SubmitBtn = () => {
           </div>
         )}
       </div>
-    </DropdowntBtnContainer>
+    </DropdownBtnContainer>
   );
 };
 
@@ -884,6 +884,7 @@ const DescriptionComponent = useMemo(() => {
     <Widget
       src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Compose"}
       props={{
+        instance: "${REPL_DEVHUB}",
         data: description,
         onChange: setDescription,
         autocompleteEnabled: true,
@@ -908,7 +909,7 @@ const ConsentComponent = useMemo(() => {
                 src={
                   "${REPL_DEVHUB}/widget/devhub.entity.proposal.AcceptedTerms"
                 }
-                props={{ proposalId: proposalId, portal: "DevHub" }}
+                props={{ ...props, proposalId: proposalId, portal: "DevHub" }}
               />
               and commit to honoring it
             </>
@@ -973,6 +974,7 @@ const LinkedProposalsComponent = useMemo(() => {
       <Widget
         src="${REPL_DEVHUB}/widget/devhub.entity.proposal.LinkedProposalsDropdown"
         props={{
+          instance: "${REPL_DEVHUB}",
           onChange: setLinkedProposals,
           linkedProposals: linkedProposals,
         }}
