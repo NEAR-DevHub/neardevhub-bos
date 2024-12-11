@@ -691,6 +691,7 @@ test.describe("Wallet is connected", () => {
     test("should filter proposals by author", async ({ page }) => {
       test.setTimeout(60000);
       const accountId = "yarotska.near";
+      const profileName = "yarotska";
       await page.getByRole("button", { name: "Author" }).click();
       await page.getByRole("list").getByText(accountId).click();
       await expect(
@@ -698,7 +699,9 @@ test.describe("Wallet is connected", () => {
       ).toBeVisible();
       const loader = page.getByRole("img", { name: "loader" });
       expect(loader).toBeHidden({ timeout: 10000 });
-      await expect(page.getByText(`By ${accountId} ･`).first()).toBeVisible();
+      await expect(
+        page.getByText(`By ${profileName ?? accountId} ･`).first()
+      ).toBeVisible();
     });
 
     test("should filter proposals by search text", async ({ page }) => {
