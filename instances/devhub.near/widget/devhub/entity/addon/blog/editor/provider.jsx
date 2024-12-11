@@ -4,38 +4,6 @@ const { getPost } = VM.require(
 
 const { Layout, handle } = props;
 
-const includeLabels = ["blog", handle];
-
-const buildWhereClause = () => {
-  let where = {};
-  if (props.author) {
-    where = { author_id: { _eq: props.author }, ...where };
-  }
-  if (props.term) {
-    where = { description: { _ilike: `%${props.term}%` }, ...where };
-  }
-  if (includeLabels && Array.isArray(includeLabels)) {
-    const labelConditions = includeLabels.map((label) => ({
-      labels: { _contains: label },
-    }));
-
-    where = { _and: [...labelConditions, where] };
-  }
-  if (props.excludeLabels && Array.isArray(props.excludeLabels)) {
-    const labelConditions = props.excludeLabels.map((label) => ({
-      labels: { _nin: label },
-    }));
-
-    where = { _and: [...labelConditions, where] };
-  }
-  if (!props.recency) {
-    where = { parent_id: { _is_null: true }, ...where };
-  }
-  return where;
-};
-
-const variables = { limit: DISPLAY_COUNT, offset, where: buildWhereClause() };
-
 const posts = [];
 
 const handleOnChange = (v) => {
