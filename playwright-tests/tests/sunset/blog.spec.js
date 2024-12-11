@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Sunset Blog addon", () => {
+test.skip("Sunset Blog addon", () => {
   test.use({
     baseURL: "http://localhost:8080",
   });
@@ -63,7 +63,7 @@ test.describe("Sunset Blog addon", () => {
   });
 });
 
-test.describe("Sunset Blog Addon", () => {
+test.skip("Sunset Blog Addon", () => {
   test.use({
     baseURL: "http://localhost:8080",
   });

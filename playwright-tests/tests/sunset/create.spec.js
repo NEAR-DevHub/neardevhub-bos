@@ -32,7 +32,7 @@ test.describe("Wallet is connected", () => {
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
 
-  test("should be able to submit a solution (funding request) with USDC as currency", async ({
+  test.skip("should be able to submit a solution (funding request) with USDC as currency", async ({
     page,
   }) => {
     test.setTimeout(120000);

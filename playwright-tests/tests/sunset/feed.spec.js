@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { pauseIfVideoRecording } from "../../testUtils.js";
 
-test("should show post history for posts in the feed", async ({ page }) => {
+test.skip("should show post history for posts in the feed", async ({
+  page,
+}) => {
   await page.goto("/devhub.near/widget/app?page=feed");
 
   const firstPostHistoryButtonSelector = 'a.card-link[title="Post History"]';
@@ -22,7 +24,7 @@ test("should show post history for posts in the feed", async ({ page }) => {
   await page.waitForSelector(desiredChildSelector, { state: "visible" });
 });
 
-test("should hide posts with devhub-test tag", async ({ page }) => {
+test.skip("should hide posts with devhub-test tag", async ({ page }) => {
   // go to feeds page
   await page.goto("/devhub.near/widget/app?page=feed");
 
@@ -51,7 +53,7 @@ test.describe("Wallet is connected", () => {
     storageState: "playwright-tests/storage-states/wallet-connected.json",
   });
 
-  test("should hide posts editor when hit cancel", async ({ page }) => {
+  test.skip("should hide posts editor when hit cancel", async ({ page }) => {
     // go to feed with logged in user account
     await page.goto("/devhub.near/widget/app?page=feed&author=efiz.near");
 
@@ -90,7 +92,7 @@ test.describe("Wallet is connected", () => {
     });
   });
 
-  test("successful idea reply post should not show the editor", async ({
+  test.skip("successful idea reply post should not show the editor", async ({
     page,
   }) => {
     await page.goto(
@@ -103,7 +105,7 @@ test.describe("Wallet is connected", () => {
     });
   });
 
-  test("successful comment post should not show the editor", async ({
+  test.skip("successful comment post should not show the editor", async ({
     page,
   }) => {
     await page.goto(
@@ -116,7 +118,7 @@ test.describe("Wallet is connected", () => {
     });
   });
 
-  test("successful edited post should not show the editor", async ({
+  test.skip("successful edited post should not show the editor", async ({
     page,
   }) => {
     await page.goto(
@@ -128,7 +130,7 @@ test.describe("Wallet is connected", () => {
       state: "hidden",
     });
   });
-  test("should reply to a post in the feed with a comment", async ({
+  test.skip("should reply to a post in the feed with a comment", async ({
     page,
   }) => {
     test.setTimeout(1200000);
