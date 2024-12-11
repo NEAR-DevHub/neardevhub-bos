@@ -59,6 +59,7 @@ const categoryOptions = [
 ];
 
 return {
+  portalName: "Infrastructure Committee",
   contract: "infrastructure-committee.near",
   proposalFeedIndexerQueryName:
     "polyprogrammist_near_devhub_ic_v1_proposals_with_latest_snapshot",

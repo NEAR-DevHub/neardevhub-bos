@@ -1,15 +1,14 @@
-const { PROPOSAL_TIMELINE_STATUS, parseJSON, isNumber } = VM.require(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/core.common`
-) || {
-  PROPOSAL_TIMELINE_STATUS: {},
-  parseJSON: () => {},
-  isNumber: () => {},
-};
+const { PROPOSAL_TIMELINE_STATUS, fetchGraphQL, parseJSON, isNumber } =
+  VM.require(`${REPL_TREASURY_TEMPLAR}/widget/core.common`) || {
+    PROPOSAL_TIMELINE_STATUS: {},
+    parseJSON: () => {},
+    isNumber: () => {},
+  };
 
 const { href } = VM.require(`${REPL_DEVHUB}/widget/core.lib.url`);
 href || (href = () => {});
 const { getGlobalLabels } = VM.require(
-  `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.core.lib.contract`
+  `${REPL_TREASURY_TEMPLAR}/widget/components.core.lib.contract`
 ) || { getGlobalLabels: () => {} };
 
 const { readableDate } = VM.require(
@@ -271,7 +270,7 @@ if (id === undefined) {
 }
 
 const proposal = Near.view(
-  "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+  "${REPL_TREASURY_TEMPLAR_CONTRACT}",
   "get_proposal",
   {
     proposal_id: parseInt(id),
@@ -280,19 +279,22 @@ const proposal = Near.view(
 
 const [snapshotHistory, setSnapshotHistory] = useState([]);
 
-const fetchSnapshotHistory = () => {
-  asyncFetch(`https://infra-cache-api-rs.fly.dev/proposal/${id}/snapshots`, {
+// need to fix it
+function fetchSnapshotHistory() {
+  const ENDPOINT = "${REPL_CACHE_URL}";
+
+  return asyncFetch(`${ENDPOINT}/proposal/${id}/snapshots`, {
     method: "GET",
-    headers: { accept: "application/json" },
+    headers: {
+      accept: "application/json",
+    },
   })
-    .then((response) => {
-      if (!response.ok) {
-        console.error(`Failed to fetch snapshots: ${response.status}`);
-      }
-      return response.body;
+    .catch((error) => {
+      console.log("Error searching cache api", error);
     })
-    .then((snapshots) => {
-      const history = snapshots.map((item) => {
+    .then((result) => {
+      let data = result.body;
+      const history = data.map((item) => {
         const proposalData = {
           ...item,
           timestamp: item.ts,
@@ -303,7 +305,7 @@ const fetchSnapshotHistory = () => {
       });
       setSnapshotHistory(history);
     });
-};
+}
 
 useEffect(() => {
   fetchSnapshotHistory();
@@ -334,7 +336,7 @@ const authorId = proposal.author_id;
 const blockHeight = parseInt(proposal.social_db_post_block_height);
 const item = {
   type: "social",
-  path: `${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}/post/main`,
+  path: `${REPL_TREASURY_TEMPLAR_CONTRACT}/post/main`,
   blockHeight,
 };
 const comments = Social.index("comment", item, { subscribe: true }) ?? [];
@@ -343,7 +345,7 @@ const commentAuthors = [
   ...new Set(comments.map((comment) => comment.accountId)),
 ];
 
-const proposalURL = `https://${REPL_INFRASTRUCTURE_COMMITTEE}.page/proposal/${proposal.id}`;
+const proposalURL = `https://${REPL_TREASURY_TEMPLAR}.page/proposal/${proposal.id}`;
 
 const SidePanelItem = ({ title, children, hideBorder, ishidden }) => {
   return (
@@ -467,7 +469,7 @@ const RadioButton = ({ value, isChecked, label }) => {
 };
 
 const isAllowedToEditProposal = Near.view(
-  "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+  "${REPL_TREASURY_TEMPLAR_CONTRACT}",
   "is_allowed_to_edit_proposal",
   {
     proposal_id: proposal.id,
@@ -476,7 +478,7 @@ const isAllowedToEditProposal = Near.view(
 );
 
 const isModerator = Near.view(
-  "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+  "${REPL_TREASURY_TEMPLAR_CONTRACT}",
   "is_allowed_to_write_rfps",
   {
     editor: context.accountId,
@@ -508,7 +510,7 @@ const editProposal = ({ timeline }) => {
 
   Near.call([
     {
-      contractName: "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+      contractName: "${REPL_TREASURY_TEMPLAR_CONTRACT}",
       methodName: "edit_proposal",
       args: args,
       gas: 270000000000000,
@@ -519,7 +521,7 @@ const editProposal = ({ timeline }) => {
 const editProposalStatus = ({ timeline }) => {
   Near.call([
     {
-      contractName: "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
+      contractName: "${REPL_TREASURY_TEMPLAR_CONTRACT}",
       methodName: "edit_proposal_timeline",
       args: {
         id: proposal.id,
@@ -605,7 +607,7 @@ const TimelineItems = ({ title, children, value, values }) => {
 };
 
 const link = href({
-  widgetSrc: `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app`,
+  widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
   params: {
     page: "create-proposal",
     id: proposal.id,
@@ -803,7 +805,7 @@ return (
                     </div>
                     <div>
                       <Widget
-                        src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.MultiSelectCategoryDropdown`}
+                        src={`${REPL_TREASURY_TEMPLAR}/widget/components.molecule.MultiSelectCategoryDropdown`}
                         props={{
                           selected: snapshot.labels,
                           disabled: true,
@@ -829,7 +831,7 @@ return (
 
                     <div className="d-flex gap-2 align-items-center mt-3">
                       <Widget
-                        src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.LikeButton`}
+                        src={`${REPL_TREASURY_TEMPLAR}/widget/components.molecule.LikeButton`}
                         props={{
                           item,
                           proposalId: proposal.id,
@@ -862,6 +864,14 @@ return (
                     id: proposal.id,
                     item: item,
                     snapshotHistory: [...proposal.snapshot_history, snapshot],
+                    acceptedTermsComponent: (
+                      <Widget
+                        src={
+                          "${REPL_TREASURY_TEMPLAR}/widget/components.proposals.AcceptedTerms"
+                        }
+                        props={{ proposalId: proposalId }}
+                      />
+                    ),
                   }}
                 />
               </div>
@@ -874,7 +884,7 @@ return (
                 className="pt-4"
               >
                 <Widget
-                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.ComposeComment`}
+                  src={`${REPL_TREASURY_TEMPLAR}/widget/components.molecule.ComposeComment`}
                   props={{
                     ...props,
                     item: item,
@@ -907,7 +917,7 @@ return (
                 ishidden={!isNumber(snapshot.linked_rfp)}
               >
                 <Widget
-                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.LinkedRfps`}
+                  src={`${REPL_TREASURY_TEMPLAR}/widget/components.molecule.LinkedRfps`}
                   props={{
                     linkedRfpIds: [snapshot.linked_rfp],
                   }}
@@ -920,7 +930,7 @@ return (
                 ishidden={!snapshot.linked_proposals.length}
               >
                 <Widget
-                  src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.molecule.LinkedProposals`}
+                  src={`${REPL_TREASURY_TEMPLAR}/widget/components.molecule.LinkedProposals`}
                   props={{
                     linkedProposalIds: snapshot.linked_proposals,
                   }}

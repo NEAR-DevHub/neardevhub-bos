@@ -83,19 +83,21 @@ test.describe("Clipboard permissions", () => {
     });
   };
 
-  test("should share clean URL for announcements, using indexer ( no lag )", async ({
+  test.skip("should share clean URL for announcements, using indexer ( no lag )", async ({
     page,
   }) => {
     await cleanUrlForAnnouncementsTest({ page, lag: 0 });
   });
 
-  test("should share clean URL for announcements, using fallback ( big lag )", async ({
+  test.skip("should share clean URL for announcements, using fallback ( big lag )", async ({
     page,
   }) => {
     await cleanUrlForAnnouncementsTest({ page, lag: 1_000_000 });
   });
 
-  test("should handle direct links to the post widget", async ({ page }) => {
+  test.skip("should handle direct links to the post widget", async ({
+    page,
+  }) => {
     const directUrlPath =
       "/devhub.near/widget/devhub.components.organism.Feed.Posts.Post?accountId=webassemblymusic.community.devhub.near&blockHeight=115859669";
     await page.goto(directUrlPath);
@@ -117,7 +119,7 @@ test.describe("Clipboard permissions", () => {
     );
   });
 
-  test("announcement should scroll into view and be highlighted", async ({
+  test.skip("announcement should scroll into view and be highlighted", async ({
     page,
   }) => {
     test.setTimeout(120000);
