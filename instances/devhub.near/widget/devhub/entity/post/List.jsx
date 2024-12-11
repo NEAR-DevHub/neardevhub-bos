@@ -13,48 +13,6 @@ if (!href) {
   return <p>Loading modules...</p>;
 }
 
-const QUERYAPI_ENDPOINT = `https://near-queryapi.api.pagoda.co/v1/graphql/`;
-
-const queryName =
-  props.queryName ?? `bo_near_devhub_v38_posts_with_latest_snapshot`;
-const totalQueryName =
-  props.totalQueryName ??
-  "bo_near_devhub_v38_posts_with_latest_snapshot_aggregate";
-const query = `query DevhubPostsQuery($limit: Int = 100, $offset: Int = 0, $where: ${queryName}_bool_exp = {}) {
-    ${queryName}(
-      limit: $limit
-      offset: $offset
-      order_by: {ts: desc}
-      where: $where
-    ) {
-      post_id
-    }
-  }
-`;
-
-const totalQuery = `query DevhubTotalPostsQuery($where: ${queryName}_bool_exp = {}) {
-  ${totalQueryName}(
-      where: $where
-    ) {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
-
-function fetchGraphQL(operationsDoc, operationName, variables) {
-  return asyncFetch(QUERYAPI_ENDPOINT, {
-    method: "POST",
-    headers: { "x-hasura-role": `bo_near` },
-    body: JSON.stringify({
-      query: operationsDoc,
-      variables: variables,
-      operationName: operationName,
-    }),
-  });
-}
-
 function searchConditionChanged() {
   return (
     props.author != state.author ||
@@ -83,98 +41,6 @@ State.init({
   displayCount: initialRenderLimit,
 });
 
-function getPostIds(tag, offset) {
-  if (searchConditionChanged()) {
-    updateSearchCondition();
-  }
-  let where = {};
-  let authorId = props.author;
-  let label = tag || props.tag;
-  if (authorId) {
-    where = { author_id: { _eq: authorId }, ...where };
-  }
-  if (props.term) {
-    where = { description: { _ilike: `%${props.term}%` }, ...where };
-  }
-  if (label) {
-    if (typeof label === "string") {
-      // Handle a single label
-      where = { labels: { _contains: label }, ...where };
-    } else if (Array.isArray(label)) {
-      // Handle an array of labels
-      where = {
-        labels: {
-          _containsAny: label,
-        },
-        ...where,
-      };
-    }
-  }
-  if (!props.recency) {
-    // show only top level posts
-    where = { parent_id: { _is_null: true }, ...where };
-  }
-
-  // Don't show blog and devhub-test posts
-  where = {
-    _and: [
-      {
-        _not: {
-          labels: { _contains: "blog" },
-          parent_id: { _is_null: true },
-          post_type: { _eq: "Comment" },
-        },
-      },
-      {
-        _not: {
-          labels: { _contains: "devhub-test" },
-        },
-      },
-    ],
-    ...where,
-  };
-
-  if (!offset) {
-    fetchGraphQL(totalQuery, "DevhubTotalPostsQuery", {
-      where,
-    }).then((result) => {
-      const data = result.body.data[totalQueryName];
-      State.update({
-        totalItems: data.aggregate.count,
-      });
-    });
-  }
-
-  fetchGraphQL(query, "DevhubPostsQuery", {
-    limit: 50,
-    offset: offset ?? 0,
-    where,
-  }).then((result) => {
-    if (result.status === 200) {
-      if (result.body.data) {
-        const data = result.body.data[queryName];
-        if (offset) {
-          State.update({
-            postIds: state.postIds.concat(data.map((p) => p.post_id)),
-            loading: false,
-          });
-        } else {
-          State.update({
-            postIds: data.map((p) => p.post_id),
-            loading: false,
-          });
-        }
-      }
-    } else {
-      State.update({ loading: false });
-    }
-  });
-}
-
-if (!state.items || searchConditionChanged()) {
-  getPostIds();
-}
-
 function defaultRenderItem(postId, additionalProps) {
   if (!additionalProps) {
     additionalProps = {};
@@ -198,7 +64,6 @@ function defaultRenderItem(postId, additionalProps) {
             if (typeof props.updateTagInput === "function") {
               props.updateTagInput(tag);
             }
-            getPostIds(tag);
           },
           transactionHashes: props.transactionHashes,
         }}
@@ -271,10 +136,7 @@ const initialItems = postIds;
 
 const jInitialItems = JSON.stringify(initialItems);
 if (state.jInitialItems !== jInitialItems) {
-  // const jIndex = JSON.stringify(index);
-  // if (jIndex !== state.jIndex) {
   State.update({
-    jIndex,
     jInitialItems,
     items: initialItems,
     cachedItems: {},
@@ -290,7 +152,6 @@ const makeMoreItems = () => {
     !state.loading
   ) {
     State.update({ loading: true });
-    getPostIds(null, state.items.length);
   }
 };
 

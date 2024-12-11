@@ -92,7 +92,7 @@ test.describe("Wallet is connected", () => {
     });
   });
 
-  test("successful idea reply post should not show the editor", async ({
+  test.skip("successful idea reply post should not show the editor", async ({
     page,
   }) => {
     await page.goto(
@@ -105,7 +105,7 @@ test.describe("Wallet is connected", () => {
     });
   });
 
-  test("successful comment post should not show the editor", async ({
+  test.skip("successful comment post should not show the editor", async ({
     page,
   }) => {
     await page.goto(
@@ -118,7 +118,7 @@ test.describe("Wallet is connected", () => {
     });
   });
 
-  test("successful edited post should not show the editor", async ({
+  test.skip("successful edited post should not show the editor", async ({
     page,
   }) => {
     await page.goto(

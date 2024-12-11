@@ -131,15 +131,6 @@ function Page() {
         />
       );
     }
-    // ?page=feed
-    case "feed": {
-      return (
-        <Widget
-          src={"${REPL_DEVHUB}/widget/devhub.page.feed"}
-          props={passProps}
-        />
-      );
-    }
     // ?page=create
     case "create": {
       return (
