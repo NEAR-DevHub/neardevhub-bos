@@ -2,7 +2,823 @@ const code = `
 <html>
    <head>
       <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-      <style type="text/css">@import url(https://themes.googleusercontent.com/fonts/css?kit=dpiI8CyVsrzWsJLBFKehGpLhv3qFjX7dUn1mYxfCXhI);ol.lst-kix_list_3-1{list-style-type:none}ol.lst-kix_list_3-2{list-style-type:none}.lst-kix_list_3-1>li{counter-increment:lst-ctn-kix_list_3-1}ol.lst-kix_list_3-3{list-style-type:none}ol.lst-kix_list_3-4.start{counter-reset:lst-ctn-kix_list_3-4 0}ol.lst-kix_list_3-4{list-style-type:none}.lst-kix_list_2-1>li{counter-increment:lst-ctn-kix_list_2-1}ol.lst-kix_list_3-0{list-style-type:none}.lst-kix_list_1-1>li{counter-increment:lst-ctn-kix_list_1-1}ol.lst-kix_list_2-6.start{counter-reset:lst-ctn-kix_list_2-6 0}.lst-kix_list_3-0>li:before{content:"" counter(lst-ctn-kix_list_3-0,lower-roman) ". "}ol.lst-kix_list_3-1.start{counter-reset:lst-ctn-kix_list_3-1 0}.lst-kix_list_3-1>li:before{content:"" counter(lst-ctn-kix_list_3-1,lower-latin) ". "}.lst-kix_list_3-2>li:before{content:"" counter(lst-ctn-kix_list_3-2,lower-roman) ". "}ol.lst-kix_list_1-8.start{counter-reset:lst-ctn-kix_list_1-8 0}ol.lst-kix_list_2-3.start{counter-reset:lst-ctn-kix_list_2-3 0}.lst-kix_list_3-5>li:before{content:"" counter(lst-ctn-kix_list_3-5,lower-roman) ". "}.lst-kix_list_3-4>li:before{content:"" counter(lst-ctn-kix_list_3-4,lower-latin) ". "}ol.lst-kix_list_1-5.start{counter-reset:lst-ctn-kix_list_1-5 0}.lst-kix_list_3-3>li:before{content:"" counter(lst-ctn-kix_list_3-3,decimal) ". "}ol.lst-kix_list_3-5{list-style-type:none}ol.lst-kix_list_3-6{list-style-type:none}ol.lst-kix_list_3-7{list-style-type:none}ol.lst-kix_list_3-8{list-style-type:none}.lst-kix_list_3-8>li:before{content:"" counter(lst-ctn-kix_list_3-8,lower-roman) ". "}.lst-kix_list_2-0>li{counter-increment:lst-ctn-kix_list_2-0}.lst-kix_list_2-3>li{counter-increment:lst-ctn-kix_list_2-3}.lst-kix_list_3-6>li:before{content:"" counter(lst-ctn-kix_list_3-6,decimal) ". "}.lst-kix_list_3-7>li:before{content:"" counter(lst-ctn-kix_list_3-7,lower-latin) ". "}.lst-kix_list_1-2>li{counter-increment:lst-ctn-kix_list_1-2}ol.lst-kix_list_3-7.start{counter-reset:lst-ctn-kix_list_3-7 0}.lst-kix_list_3-2>li{counter-increment:lst-ctn-kix_list_3-2}ol.lst-kix_list_2-2{list-style-type:none}ol.lst-kix_list_2-3{list-style-type:none}ol.lst-kix_list_2-4{list-style-type:none}ol.lst-kix_list_2-5{list-style-type:none}.lst-kix_list_1-4>li{counter-increment:lst-ctn-kix_list_1-4}ol.lst-kix_list_2-0{list-style-type:none}ol.lst-kix_list_1-6.start{counter-reset:lst-ctn-kix_list_1-6 0}ol.lst-kix_list_2-1{list-style-type:none}ol.lst-kix_list_3-3.start{counter-reset:lst-ctn-kix_list_3-3 0}ol.lst-kix_list_2-6{list-style-type:none}ol.lst-kix_list_2-7{list-style-type:none}ol.lst-kix_list_2-8{list-style-type:none}ol.lst-kix_list_1-0.start{counter-reset:lst-ctn-kix_list_1-0 0}.lst-kix_list_3-0>li{counter-increment:lst-ctn-kix_list_3-0}.lst-kix_list_3-3>li{counter-increment:lst-ctn-kix_list_3-3}.lst-kix_list_3-6>li{counter-increment:lst-ctn-kix_list_3-6}.lst-kix_list_2-5>li{counter-increment:lst-ctn-kix_list_2-5}.lst-kix_list_2-8>li{counter-increment:lst-ctn-kix_list_2-8}ol.lst-kix_list_3-2.start{counter-reset:lst-ctn-kix_list_3-2 0}.lst-kix_list_2-2>li{counter-increment:lst-ctn-kix_list_2-2}ol.lst-kix_list_2-4.start{counter-reset:lst-ctn-kix_list_2-4 0}ol.lst-kix_list_1-3{list-style-type:none}ol.lst-kix_list_1-4{list-style-type:none}.lst-kix_list_2-6>li:before{content:"" counter(lst-ctn-kix_list_2-6,decimal) ". "}.lst-kix_list_2-7>li:before{content:"" counter(lst-ctn-kix_list_2-7,lower-latin) ". "}.lst-kix_list_2-7>li{counter-increment:lst-ctn-kix_list_2-7}.lst-kix_list_3-7>li{counter-increment:lst-ctn-kix_list_3-7}ol.lst-kix_list_1-5{list-style-type:none}ol.lst-kix_list_1-6{list-style-type:none}ol.lst-kix_list_1-0{list-style-type:none}.lst-kix_list_2-4>li:before{content:"" counter(lst-ctn-kix_list_2-4,lower-latin) ". "}.lst-kix_list_2-5>li:before{content:"" counter(lst-ctn-kix_list_2-5,lower-roman) ". "}.lst-kix_list_2-8>li:before{content:"" counter(lst-ctn-kix_list_2-8,lower-roman) ". "}ol.lst-kix_list_1-1{list-style-type:none}ol.lst-kix_list_1-2{list-style-type:none}ol.lst-kix_list_3-0.start{counter-reset:lst-ctn-kix_list_3-0 0}ol.lst-kix_list_1-7{list-style-type:none}.lst-kix_list_1-7>li{counter-increment:lst-ctn-kix_list_1-7}ol.lst-kix_list_1-8{list-style-type:none}ol.lst-kix_list_3-8.start{counter-reset:lst-ctn-kix_list_3-8 0}ol.lst-kix_list_2-5.start{counter-reset:lst-ctn-kix_list_2-5 0}.lst-kix_list_2-6>li{counter-increment:lst-ctn-kix_list_2-6}.lst-kix_list_3-8>li{counter-increment:lst-ctn-kix_list_3-8}ol.lst-kix_list_1-7.start{counter-reset:lst-ctn-kix_list_1-7 0}ol.lst-kix_list_2-2.start{counter-reset:lst-ctn-kix_list_2-2 0}.lst-kix_list_1-5>li{counter-increment:lst-ctn-kix_list_1-5}.lst-kix_list_1-8>li{counter-increment:lst-ctn-kix_list_1-8}ol.lst-kix_list_1-4.start{counter-reset:lst-ctn-kix_list_1-4 0}.lst-kix_list_3-5>li{counter-increment:lst-ctn-kix_list_3-5}ol.lst-kix_list_1-1.start{counter-reset:lst-ctn-kix_list_1-1 0}.lst-kix_list_3-4>li{counter-increment:lst-ctn-kix_list_3-4}.lst-kix_list_2-4>li{counter-increment:lst-ctn-kix_list_2-4}ol.lst-kix_list_3-6.start{counter-reset:lst-ctn-kix_list_3-6 0}ol.lst-kix_list_1-3.start{counter-reset:lst-ctn-kix_list_1-3 0}ol.lst-kix_list_2-8.start{counter-reset:lst-ctn-kix_list_2-8 0}ol.lst-kix_list_1-2.start{counter-reset:lst-ctn-kix_list_1-2 0}.lst-kix_list_1-0>li:before{content:"" counter(lst-ctn-kix_list_1-0,decimal) ". "}.lst-kix_list_1-1>li:before{content:"" counter(lst-ctn-kix_list_1-0,decimal) "." counter(lst-ctn-kix_list_1-1,decimal) ". "}.lst-kix_list_1-2>li:before{content:"" counter(lst-ctn-kix_list_1-0,decimal) "." counter(lst-ctn-kix_list_1-1,decimal) "." counter(lst-ctn-kix_list_1-2,decimal) ". "}ol.lst-kix_list_2-0.start{counter-reset:lst-ctn-kix_list_2-0 0}.lst-kix_list_1-3>li:before{content:"" counter(lst-ctn-kix_list_1-0,decimal) "." counter(lst-ctn-kix_list_1-1,decimal) "." counter(lst-ctn-kix_list_1-2,decimal) "." counter(lst-ctn-kix_list_1-3,decimal) ". "}.lst-kix_list_1-4>li:before{content:"" counter(lst-ctn-kix_list_1-0,decimal) "." counter(lst-ctn-kix_list_1-1,decimal) "." counter(lst-ctn-kix_list_1-2,decimal) "." counter(lst-ctn-kix_list_1-3,decimal) "." counter(lst-ctn-kix_list_1-4,decimal) ". "}ol.lst-kix_list_3-5.start{counter-reset:lst-ctn-kix_list_3-5 0}.lst-kix_list_1-0>li{counter-increment:lst-ctn-kix_list_1-0}.lst-kix_list_1-6>li{counter-increment:lst-ctn-kix_list_1-6}.lst-kix_list_1-7>li:before{content:"" counter(lst-ctn-kix_list_1-0,decimal) "." counter(lst-ctn-kix_list_1-1,decimal) "." counter(lst-ctn-kix_list_1-2,decimal) "." counter(lst-ctn-kix_list_1-3,decimal) "." counter(lst-ctn-kix_list_1-4,decimal) "." counter(lst-ctn-kix_list_1-5,decimal) "." counter(lst-ctn-kix_list_1-6,decimal) "." counter(lst-ctn-kix_list_1-7,decimal) ". "}ol.lst-kix_list_2-7.start{counter-reset:lst-ctn-kix_list_2-7 0}.lst-kix_list_1-3>li{counter-increment:lst-ctn-kix_list_1-3}.lst-kix_list_1-5>li:before{content:"" counter(lst-ctn-kix_list_1-0,decimal) "." counter(lst-ctn-kix_list_1-1,decimal) "." counter(lst-ctn-kix_list_1-2,decimal) "." counter(lst-ctn-kix_list_1-3,decimal) "." counter(lst-ctn-kix_list_1-4,decimal) "." counter(lst-ctn-kix_list_1-5,decimal) ". "}.lst-kix_list_1-6>li:before{content:"" counter(lst-ctn-kix_list_1-0,decimal) "." counter(lst-ctn-kix_list_1-1,decimal) "." counter(lst-ctn-kix_list_1-2,decimal) "." counter(lst-ctn-kix_list_1-3,decimal) "." counter(lst-ctn-kix_list_1-4,decimal) "." counter(lst-ctn-kix_list_1-5,decimal) "." counter(lst-ctn-kix_list_1-6,decimal) ". "}li.li-bullet-0:before{margin-left:-18pt;white-space:nowrap;display:inline-block;min-width:18pt}.lst-kix_list_2-0>li:before{content:"" counter(lst-ctn-kix_list_2-0,lower-roman) ". "}.lst-kix_list_2-1>li:before{content:"" counter(lst-ctn-kix_list_2-1,lower-latin) ". "}ol.lst-kix_list_2-1.start{counter-reset:lst-ctn-kix_list_2-1 0}.lst-kix_list_1-8>li:before{content:"" counter(lst-ctn-kix_list_1-0,decimal) "." counter(lst-ctn-kix_list_1-1,decimal) "." counter(lst-ctn-kix_list_1-2,decimal) "." counter(lst-ctn-kix_list_1-3,decimal) "." counter(lst-ctn-kix_list_1-4,decimal) "." counter(lst-ctn-kix_list_1-5,decimal) "." counter(lst-ctn-kix_list_1-6,decimal) "." counter(lst-ctn-kix_list_1-7,decimal) "." counter(lst-ctn-kix_list_1-8,decimal) ". "}.lst-kix_list_2-2>li:before{content:"" counter(lst-ctn-kix_list_2-2,lower-roman) ". "}.lst-kix_list_2-3>li:before{content:"" counter(lst-ctn-kix_list_2-3,decimal) ". "}ol{margin:0;padding:0}table td,table th{padding:0}.c20{border-right-style:solid;padding:5pt 5pt 5pt 5pt;border-bottom-color:#ffffff;border-top-width:1pt;border-right-width:1pt;border-left-color:#ffffff;vertical-align:top;border-right-color:#ffffff;border-left-width:1pt;border-top-style:solid;border-left-style:solid;border-bottom-width:1pt;width:330.8pt;border-top-color:#ffffff;border-bottom-style:solid}.c3{border-right-style:solid;padding:5pt 5pt 5pt 5pt;border-bottom-color:#ffffff;border-top-width:1pt;border-right-width:1pt;border-left-color:#ffffff;vertical-align:top;border-right-color:#ffffff;border-left-width:1pt;border-top-style:solid;border-left-style:solid;border-bottom-width:1pt;width:124.5pt;border-top-color:#ffffff;border-bottom-style:solid}.c18{margin-left:144pt;padding-top:10pt;padding-left:0pt;padding-bottom:10pt;line-height:1.1500000000000001;page-break-after:avoid;orphans:2;widows:2;text-align:justify}.c14{margin-left:108pt;padding-top:10pt;padding-left:0pt;padding-bottom:10pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:justify}.c16{margin-left:36pt;padding-top:0pt;padding-left:0pt;padding-bottom:10pt;line-height:1.2;orphans:2;widows:2;text-align:justify}.c1{margin-left:36pt;padding-top:10pt;padding-left:0pt;padding-bottom:0pt;line-height:1.2;orphans:2;widows:2;text-align:justify}.c11{margin-left:72pt;padding-top:10pt;padding-left:0pt;padding-bottom:10pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:justify}.c51{color:#000000;font-weight:400;text-decoration:none;vertical-align:baseline;font-size:8pt;font-family:"Arial";font-style:normal}.c49{padding-top:10pt;text-indent:-18pt;padding-bottom:0pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:center}.c40{margin-left:76.5pt;padding-top:0pt;padding-bottom:10pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:justify}.c27{margin-left:72pt;padding-top:0pt;padding-bottom:10pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:justify}.c8{margin-left:36pt;padding-top:10pt;padding-bottom:10pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:justify}.c45{margin-left:72pt;padding-top:10pt;padding-bottom:0pt;line-height:1.2;orphans:2;widows:2;text-align:justify}.c0{color:#000000;font-weight:400;text-decoration:none;vertical-align:baseline;font-size:11pt;font-family:"Roboto";font-style:normal}.c9{color:#000000;font-weight:400;text-decoration:none;vertical-align:baseline;font-size:11pt;font-family:"Arial";font-style:normal}.c10{color:#000000;font-weight:700;text-decoration:none;vertical-align:baseline;font-size:11pt;font-family:"Arial";font-style:normal}.c36{padding-top:0pt;padding-bottom:0pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:right;height:11pt}.c44{padding-top:10pt;padding-bottom:6pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:justify}.c35{padding-top:0pt;padding-bottom:0pt;line-height:1.0;orphans:2;widows:2;text-align:justify}.c30{padding-top:10pt;padding-bottom:0pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:left}.c26{padding-top:0pt;padding-bottom:4pt;line-height:1.2;orphans:2;widows:2;text-align:justify}.c19{padding-top:10pt;padding-bottom:10pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:justify}.c50{padding-top:0pt;padding-bottom:0pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:justify}.c47{padding-top:0pt;padding-bottom:10pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:justify}.c2{padding-top:10pt;padding-bottom:0pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:justify}.c29{padding-top:0pt;padding-bottom:10pt;line-height:1.1500000000000001;orphans:2;widows:2;text-align:left}.c33{padding-top:0pt;padding-bottom:0pt;line-height:1.0;orphans:2;widows:2;text-align:left}.c34{color:#000000;text-decoration:none;vertical-align:baseline;font-size:15pt;font-style:normal}.c15{color:#000000;text-decoration:none;vertical-align:baseline;font-size:11pt;font-style:normal}.c38{width:100%;margin-left:3pt;border-spacing:0;border-collapse:collapse;margin-right:auto}.c22{text-decoration-skip-ink:none;-webkit-text-decoration-skip:none;color:#1155cc;text-decoration:underline}.c42{padding-top:0pt;padding-bottom:0pt;line-height:1.0;text-align:justify}.c6{padding-top:10pt;padding-bottom:0pt;line-height:1.1500000000000001;text-align:justify}.c48{text-decoration-skip-ink:none;-webkit-text-decoration-skip:none;text-decoration:underline}.c21{padding-left:0pt;page-break-after:avoid}.c23{margin-left:144pt;padding-left:0pt}.c43{color:inherit;text-decoration:inherit}.c5{font-weight:700;font-family:"Roboto"}.c7{font-weight:400;font-family:"Roboto"}.c17{margin-left:36pt;padding-left:0pt}.c4{padding:0;margin:0}.c25{margin-left:72pt;padding-left:0pt}.c32{margin-left:36pt}.c46{margin-left:72pt}.c13{height:0pt}.c41{font-style:italic}.c31{font-size:11pt}.c39{height:11pt}.c12{height:69.3pt}.c28{padding-left:0pt}.c24{page-break-after:avoid}.title{padding-top:0pt;color:#000000;font-size:26pt;padding-bottom:3pt;font-family:"Arial";line-height:1.1500000000000001;page-break-after:avoid;orphans:2;widows:2;text-align:left}.subtitle{padding-top:0pt;color:#666666;font-size:15pt;padding-bottom:16pt;font-family:"Arial";line-height:1.1500000000000001;page-break-after:avoid;orphans:2;widows:2;text-align:left}li{color:#000000;font-size:11pt;font-family:"Arial"}p{margin:0;color:#000000;font-size:11pt;font-family:"Arial"}h1{padding-top:10pt;color:#000000;font-weight:700;font-size:11pt;padding-bottom:10pt;font-family:"Arial";line-height:1.1500000000000001;page-break-after:avoid;orphans:2;widows:2;text-align:justify}h2{padding-top:18pt;color:#000000;font-size:16pt;padding-bottom:6pt;font-family:"Arial";line-height:1.1500000000000001;page-break-after:avoid;orphans:2;widows:2;text-align:left}h3{padding-top:16pt;color:#434343;font-size:14pt;padding-bottom:4pt;font-family:"Arial";line-height:1.1500000000000001;page-break-after:avoid;orphans:2;widows:2;text-align:left}h4{padding-top:14pt;color:#666666;font-size:12pt;padding-bottom:4pt;font-family:"Arial";line-height:1.1500000000000001;page-break-after:avoid;orphans:2;widows:2;text-align:left}h5{padding-top:12pt;color:#666666;font-size:11pt;padding-bottom:4pt;font-family:"Arial";line-height:1.1500000000000001;page-break-after:avoid;orphans:2;widows:2;text-align:left}h6{padding-top:12pt;color:#666666;font-size:11pt;padding-bottom:4pt;font-family:"Arial";line-height:1.1500000000000001;page-break-after:avoid;font-style:italic;orphans:2;widows:2;text-align:left}</style>
+      <style type="text/css">@import url(https://themes.googleusercontent.com/fonts/css?kit=dpiI8CyVsrzWsJLBFKehGpLhv3qFjX7dUn1mYxfCXhI);
+         ol.lst-kix_list_3-1 {
+         list-style-type: none
+         }
+         ol.lst-kix_list_3-2 {
+         list-style-type: none
+         }
+         .lst-kix_list_3-1>li {
+         counter-increment: lst-ctn-kix_list_3-1
+         }
+         ol.lst-kix_list_3-3 {
+         list-style-type: none
+         }
+         ol.lst-kix_list_3-4.start {
+         counter-reset: lst-ctn-kix_list_3-4 0
+         }
+         ol.lst-kix_list_3-4 {
+         list-style-type: none
+         }
+         .lst-kix_list_2-1>li {
+         counter-increment: lst-ctn-kix_list_2-1
+         }
+         ol.lst-kix_list_3-0 {
+         list-style-type: none
+         }
+         .lst-kix_list_1-1>li {
+         counter-increment: lst-ctn-kix_list_1-1
+         }
+         ol.lst-kix_list_2-6.start {
+         counter-reset: lst-ctn-kix_list_2-6 0
+         }
+         .lst-kix_list_3-0>li:before {
+         content: "" counter(lst-ctn-kix_list_3-0, lower-roman) ". ";
+         }
+         ol.lst-kix_list_3-1.start {
+         counter-reset: lst-ctn-kix_list_3-1 0;
+         }
+         .lst-kix_list_3-1>li:before {
+         content: "" counter(lst-ctn-kix_list_3-1, lower-latin) ". ";
+         }
+         .lst-kix_list_3-2>li:before {
+         content: "" counter(lst-ctn-kix_list_3-2, lower-roman) ". ";
+         }
+         ol.lst-kix_list_1-8.start {
+         counter-reset: lst-ctn-kix_list_1-8 0;
+         }
+         ol.lst-kix_list_2-3.start {
+         counter-reset: lst-ctn-kix_list_2-3 0;
+         }
+         .lst-kix_list_3-5>li:before {
+         content: "" counter(lst-ctn-kix_list_3-5, lower-roman) ". ";
+         }
+         .lst-kix_list_3-4>li:before {
+         content: "" counter(lst-ctn-kix_list_3-4, lower-latin) ". ";
+         }
+         ol.lst-kix_list_1-5.start {
+         counter-reset: lst-ctn-kix_list_1-5 0;
+         }
+         .lst-kix_list_3-3>li:before {
+         content: "" counter(lst-ctn-kix_list_3-3, decimal) ". ";
+         }
+         ol.lst-kix_list_3-5 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_3-6 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_3-7 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_3-8 {
+         list-style-type: none;
+         }
+         .lst-kix_list_3-8>li:before {
+         content: "" counter(lst-ctn-kix_list_3-8, lower-roman) ". ";
+         }
+         .lst-kix_list_2-0>li {
+         counter-increment: lst-ctn-kix_list_2-0;
+         }
+         .lst-kix_list_2-3>li {
+         counter-increment: lst-ctn-kix_list_2-3;
+         }
+         .lst-kix_list_3-6>li:before {
+         content: "" counter(lst-ctn-kix_list_3-6, decimal) ". ";
+         }
+         .lst-kix_list_3-7>li:before {
+         content: "" counter(lst-ctn-kix_list_3-7, lower-latin) ". ";
+         }
+         .lst-kix_list_1-2>li {
+         counter-increment: lst-ctn-kix_list_1-2;
+         }
+         ol.lst-kix_list_3-7.start {
+         counter-reset: lst-ctn-kix_list_3-7 0;
+         }
+         .lst-kix_list_3-2>li {
+         counter-increment: lst-ctn-kix_list_3-2;
+         }
+         ol.lst-kix_list_2-2 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_2-3 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_2-4 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_2-5 {
+         list-style-type: none;
+         }
+         .lst-kix_list_1-4>li {
+         counter-increment: lst-ctn-kix_list_1-4;
+         }
+         ol.lst-kix_list_2-0 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_1-6.start {
+         counter-reset: lst-ctn-kix_list_1-6 0;
+         }
+         ol.lst-kix_list_2-1 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_3-3.start {
+         counter-reset: lst-ctn-kix_list_3-3 0;
+         }
+         ol.lst-kix_list_2-6 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_2-7 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_2-8 {
+         list-style-type: none;
+         }
+         ol.lst-kix_list_1-0.start {
+         counter-reset: lst-ctn-kix_list_1-0 0
+         }
+         .lst-kix_list_3-0>li {
+         counter-increment: lst-ctn-kix_list_3-0
+         }
+         .lst-kix_list_3-3>li {
+         counter-increment: lst-ctn-kix_list_3-3
+         }
+         .lst-kix_list_3-6>li {
+         counter-increment: lst-ctn-kix_list_3-6
+         }
+         .lst-kix_list_2-5>li {
+         counter-increment: lst-ctn-kix_list_2-5
+         }
+         .lst-kix_list_2-8>li {
+         counter-increment: lst-ctn-kix_list_2-8
+         }
+         ol.lst-kix_list_3-2.start {
+         counter-reset: lst-ctn-kix_list_3-2 0
+         }
+         .lst-kix_list_2-2>li {
+         counter-increment: lst-ctn-kix_list_2-2
+         }
+         ol.lst-kix_list_2-4.start {
+         counter-reset: lst-ctn-kix_list_2-4 0
+         }
+         ol.lst-kix_list_1-3 {
+         list-style-type: none
+         }
+         ol.lst-kix_list_1-4 {
+         list-style-type: none
+         }
+         .lst-kix_list_2-6>li:before {
+         content: "" counter(lst-ctn-kix_list_2-6, decimal) ". "
+         }
+         .lst-kix_list_2-7>li:before {
+         content: "" counter(lst-ctn-kix_list_2-7, lower-latin) ". "
+         }
+         .lst-kix_list_2-7>li {
+         counter-increment: lst-ctn-kix_list_2-7
+         }
+         .lst-kix_list_3-7>li {
+         counter-increment: lst-ctn-kix_list_3-7
+         }
+         ol.lst-kix_list_1-5 {
+         list-style-type: none
+         }
+         ol.lst-kix_list_1-6 {
+         list-style-type: none
+         }
+         ol.lst-kix_list_1-0 {
+         list-style-type: none
+         }
+         .lst-kix_list_2-4>li:before {
+         content: "" counter(lst-ctn-kix_list_2-4, lower-latin) ". "
+         }
+         .lst-kix_list_2-5>li:before {
+         content: "" counter(lst-ctn-kix_list_2-5, lower-roman) ". "
+         }
+         .lst-kix_list_2-8>li:before {
+         content: "" counter(lst-ctn-kix_list_2-8, lower-roman) ". "
+         }
+         ol.lst-kix_list_1-1 {
+         list-style-type: none
+         }
+         ol.lst-kix_list_1-2 {
+         list-style-type: none
+         }
+         ol.lst-kix_list_3-0.start {
+         counter-reset: lst-ctn-kix_list_3-0 0
+         }
+         ol.lst-kix_list_1-7 {
+         list-style-type: none
+         }
+         .lst-kix_list_1-7>li {
+         counter-increment: lst-ctn-kix_list_1-7
+         }
+         ol.lst-kix_list_1-8 {
+         list-style-type: none
+         }
+         ol.lst-kix_list_3-8.start {
+         counter-reset: lst-ctn-kix_list_3-8 0
+         }
+         ol.lst-kix_list_2-5.start {
+         counter-reset: lst-ctn-kix_list_2-5 0
+         }
+         .lst-kix_list_2-6>li {
+         counter-increment: lst-ctn-kix_list_2-6
+         }
+         .lst-kix_list_3-8>li {
+         counter-increment: lst-ctn-kix_list_3-8
+         }
+         ol.lst-kix_list_1-7.start {
+         counter-reset: lst-ctn-kix_list_1-7 0
+         }
+         ol.lst-kix_list_2-2.start {
+         counter-reset: lst-ctn-kix_list_2-2 0
+         }
+         .lst-kix_list_1-5>li {
+         counter-increment: lst-ctn-kix_list_1-5
+         }
+         .lst-kix_list_1-8>li {
+         counter-increment: lst-ctn-kix_list_1-8
+         }
+         ol.lst-kix_list_1-4.start {
+         counter-reset: lst-ctn-kix_list_1-4 0
+         }
+         .lst-kix_list_3-5>li {
+         counter-increment: lst-ctn-kix_list_3-5
+         }
+         ol.lst-kix_list_1-1.start {
+         counter-reset: lst-ctn-kix_list_1-1 0
+         }
+         .lst-kix_list_3-4>li {
+         counter-increment: lst-ctn-kix_list_3-4
+         }
+         .lst-kix_list_2-4>li {
+         counter-increment: lst-ctn-kix_list_2-4
+         }
+         ol.lst-kix_list_3-6.start {
+         counter-reset: lst-ctn-kix_list_3-6 0
+         }
+         ol.lst-kix_list_1-3.start {
+         counter-reset: lst-ctn-kix_list_1-3 0
+         }
+         ol.lst-kix_list_2-8.start {
+         counter-reset: lst-ctn-kix_list_2-8 0
+         }
+         ol.lst-kix_list_1-2.start {
+         counter-reset: lst-ctn-kix_list_1-2 0
+         }
+         .lst-kix_list_1-0>li:before {
+         content: "" counter(lst-ctn-kix_list_1-0, decimal) ". "
+         }
+         .lst-kix_list_1-1>li:before {
+         content: "" counter(lst-ctn-kix_list_1-0, decimal) "." counter(lst-ctn-kix_list_1-1, decimal) ". "
+         }
+         .lst-kix_list_1-2>li:before {
+         content: "" counter(lst-ctn-kix_list_1-0, decimal) "." counter(lst-ctn-kix_list_1-1, decimal) "." counter(lst-ctn-kix_list_1-2, decimal) ". "
+         }
+         ol.lst-kix_list_2-0.start {
+         counter-reset: lst-ctn-kix_list_2-0 0
+         }
+         .lst-kix_list_1-3>li:before {
+         content: "" counter(lst-ctn-kix_list_1-0, decimal) "." counter(lst-ctn-kix_list_1-1, decimal) "." counter(lst-ctn-kix_list_1-2, decimal) "." counter(lst-ctn-kix_list_1-3, decimal) ". "
+         }
+         .lst-kix_list_1-4>li:before {
+         content: "" counter(lst-ctn-kix_list_1-0, decimal) "." counter(lst-ctn-kix_list_1-1, decimal) "." counter(lst-ctn-kix_list_1-2, decimal) "." counter(lst-ctn-kix_list_1-3, decimal) "." counter(lst-ctn-kix_list_1-4, decimal) ". "
+         }
+         ol.lst-kix_list_3-5.start {
+         counter-reset: lst-ctn-kix_list_3-5 0
+         }
+         .lst-kix_list_1-0>li {
+         counter-increment: lst-ctn-kix_list_1-0
+         }
+         .lst-kix_list_1-6>li {
+         counter-increment: lst-ctn-kix_list_1-6
+         }
+         .lst-kix_list_1-7>li:before {
+         content: "" counter(lst-ctn-kix_list_1-0, decimal) "." counter(lst-ctn-kix_list_1-1, decimal) "." counter(lst-ctn-kix_list_1-2, decimal) "." counter(lst-ctn-kix_list_1-3, decimal) "." counter(lst-ctn-kix_list_1-4, decimal) "." counter(lst-ctn-kix_list_1-5, decimal) "." counter(lst-ctn-kix_list_1-6, decimal) "." counter(lst-ctn-kix_list_1-7, decimal) ". "
+         }
+         ol.lst-kix_list_2-7.start {
+         counter-reset: lst-ctn-kix_list_2-7 0
+         }
+         .lst-kix_list_1-3>li {
+         counter-increment: lst-ctn-kix_list_1-3
+         }
+         .lst-kix_list_1-5>li:before {
+         content: "" counter(lst-ctn-kix_list_1-0, decimal) "." counter(lst-ctn-kix_list_1-1, decimal) "." counter(lst-ctn-kix_list_1-2, decimal) "." counter(lst-ctn-kix_list_1-3, decimal) "." counter(lst-ctn-kix_list_1-4, decimal) "." counter(lst-ctn-kix_list_1-5, decimal) ". "
+         }
+         .lst-kix_list_1-6>li:before {
+         content: "" counter(lst-ctn-kix_list_1-0, decimal) "." counter(lst-ctn-kix_list_1-1, decimal) "." counter(lst-ctn-kix_list_1-2, decimal) "." counter(lst-ctn-kix_list_1-3, decimal) "." counter(lst-ctn-kix_list_1-4, decimal) "." counter(lst-ctn-kix_list_1-5, decimal) "." counter(lst-ctn-kix_list_1-6, decimal) ". "
+         }
+         li.li-bullet-0:before {
+         margin-left: -18pt;
+         white-space: nowrap;
+         display: inline-block;
+         min-width: 20pt;
+         margin-right: 10px !important;
+         }
+         .lst-kix_list_2-0>li:before {
+         content: "" counter(lst-ctn-kix_list_2-0, lower-roman) ". "
+         }
+         .lst-kix_list_2-1>li:before {
+         content: "" counter(lst-ctn-kix_list_2-1, lower-latin) ". "
+         }
+         ol.lst-kix_list_2-1.start {
+         counter-reset: lst-ctn-kix_list_2-1 0
+         }
+         .lst-kix_list_1-8>li:before {
+         content: "" counter(lst-ctn-kix_list_1-0, decimal) "." counter(lst-ctn-kix_list_1-1, decimal) "." counter(lst-ctn-kix_list_1-2, decimal) "." counter(lst-ctn-kix_list_1-3, decimal) "." counter(lst-ctn-kix_list_1-4, decimal) "." counter(lst-ctn-kix_list_1-5, decimal) "." counter(lst-ctn-kix_list_1-6, decimal) "." counter(lst-ctn-kix_list_1-7, decimal) "." counter(lst-ctn-kix_list_1-8, decimal) ". "
+         }
+         .lst-kix_list_2-2>li:before {
+         content: "" counter(lst-ctn-kix_list_2-2, lower-roman) ". "
+         }
+         .lst-kix_list_2-3>li:before {
+         content: "" counter(lst-ctn-kix_list_2-3, decimal) ". "
+         }
+         ol {
+         margin: 0;
+         padding: 0
+         }
+         table td,
+         table th {
+         padding: 0
+         }
+         .c20 {
+         border-right-style: solid;
+         padding: 5pt 5pt 5pt 5pt;
+         border-bottom-color: #ffffff;
+         border-top-width: 1pt;
+         border-right-width: 1pt;
+         border-left-color: #ffffff;
+         vertical-align: top;
+         border-right-color: #ffffff;
+         border-left-width: 1pt;
+         border-top-style: solid;
+         border-left-style: solid;
+         border-bottom-width: 1pt;
+         width: 330.8pt;
+         border-top-color: #ffffff;
+         border-bottom-style: solid
+         }
+         .c3 {
+         border-right-style: solid;
+         padding: 5pt 5pt 5pt 5pt;
+         border-bottom-color: #ffffff;
+         border-top-width: 1pt;
+         border-right-width: 1pt;
+         border-left-color: #ffffff;
+         vertical-align: top;
+         border-right-color: #ffffff;
+         border-left-width: 1pt;
+         border-top-style: solid;
+         border-left-style: solid;
+         border-bottom-width: 1pt;
+         width: 124.5pt;
+         border-top-color: #ffffff;
+         border-bottom-style: solid
+         }
+         .c18 {
+         margin-left: 144pt;
+         padding-top: 10pt;
+         padding-left: 0pt;
+         padding-bottom: 10pt;
+         line-height: 1.1500000000000001;
+         page-break-after: avoid;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c14 {
+         margin-left: 108pt;
+         padding-top: 10pt;
+         padding-left: 0pt;
+         padding-bottom: 10pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c16 {
+         margin-left: 36pt;
+         padding-top: 0pt;
+         padding-left: 0pt;
+         padding-bottom: 10pt;
+         line-height: 1.2;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c1 {
+         margin-left: 36pt;
+         padding-top: 10pt;
+         padding-left: 0pt;
+         padding-bottom: 0pt;
+         line-height: 1.2;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c11 {
+         margin-left: 72pt;
+         padding-top: 10pt;
+         padding-left: 0pt;
+         padding-bottom: 10pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c51 {
+         color: #000000;
+         font-weight: 400;
+         text-decoration: none;
+         vertical-align: baseline;
+         font-size: 8pt;
+         font-family: "Arial";
+         font-style: normal
+         }
+         .c49 {
+         padding-top: 10pt;
+         text-indent: -18pt;
+         padding-bottom: 0pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: center
+         }
+         .c40 {
+         margin-left: 76.5pt;
+         padding-top: 0pt;
+         padding-bottom: 10pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c27 {
+         margin-left: 72pt;
+         padding-top: 0pt;
+         padding-bottom: 10pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c8 {
+         margin-left: 36pt;
+         padding-top: 10pt;
+         padding-bottom: 10pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c45 {
+         margin-left: 72pt;
+         padding-top: 10pt;
+         padding-bottom: 0pt;
+         line-height: 1.2;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c0 {
+         color: #000000;
+         font-weight: 400;
+         text-decoration: none;
+         vertical-align: baseline;
+         font-size: 11pt;
+         font-family: "Roboto";
+         font-style: normal
+         }
+         .c9 {
+         color: #000000;
+         font-weight: 400;
+         text-decoration: none;
+         vertical-align: baseline;
+         font-size: 11pt;
+         font-family: "Arial";
+         font-style: normal
+         }
+         .c10 {
+         color: #000000;
+         font-weight: 700;
+         text-decoration: none;
+         vertical-align: baseline;
+         font-size: 11pt;
+         font-family: "Arial";
+         font-style: normal
+         }
+         .c36 {
+         padding-top: 0pt;
+         padding-bottom: 0pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: right;
+         height: 11pt
+         }
+         .c44 {
+         padding-top: 10pt;
+         padding-bottom: 6pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c35 {
+         padding-top: 0pt;
+         padding-bottom: 0pt;
+         line-height: 1.0;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c30 {
+         padding-top: 10pt;
+         padding-bottom: 0pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: left
+         }
+         .c26 {
+         padding-top: 0pt;
+         padding-bottom: 4pt;
+         line-height: 1.2;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c19 {
+         padding-top: 10pt;
+         padding-bottom: 10pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c50 {
+         padding-top: 0pt;
+         padding-bottom: 0pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c47 {
+         padding-top: 0pt;
+         padding-bottom: 10pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c2 {
+         padding-top: 10pt;
+         padding-bottom: 0pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         .c29 {
+         padding-top: 0pt;
+         padding-bottom: 10pt;
+         line-height: 1.1500000000000001;
+         orphans: 2;
+         widows: 2;
+         text-align: left
+         }
+         .c33 {
+         padding-top: 0pt;
+         padding-bottom: 0pt;
+         line-height: 1.0;
+         orphans: 2;
+         widows: 2;
+         text-align: left
+         }
+         .c34 {
+         color: #000000;
+         text-decoration: none;
+         vertical-align: baseline;
+         font-size: 15pt;
+         font-style: normal
+         }
+         .c15 {
+         color: #000000;
+         text-decoration: none;
+         vertical-align: baseline;
+         font-size: 11pt;
+         font-style: normal
+         }
+         .c38 {
+         width: 100%;
+         margin-left: 3pt;
+         border-spacing: 0;
+         border-collapse: collapse;
+         margin-right: auto
+         }
+         .c22 {
+         text-decoration-skip-ink: none;
+         -webkit-text-decoration-skip: none;
+         color: #1155cc;
+         text-decoration: underline
+         }
+         .c42 {
+         padding-top: 0pt;
+         padding-bottom: 0pt;
+         line-height: 1.0;
+         text-align: justify
+         }
+         .c6 {
+         padding-top: 10pt;
+         padding-bottom: 0pt;
+         line-height: 1.1500000000000001;
+         text-align: justify
+         }
+         .c48 {
+         text-decoration-skip-ink: none;
+         -webkit-text-decoration-skip: none;
+         text-decoration: underline
+         }
+         .c21 {
+         padding-left: 0pt;
+         page-break-after: avoid
+         }
+         .c23 {
+         margin-left: 144pt;
+         padding-left: 0pt
+         }
+         .c43 {
+         color: inherit;
+         text-decoration: inherit
+         }
+         .c5 {
+         font-weight: 700;
+         font-family: "Roboto"
+         }
+         .c7 {
+         font-weight: 400;
+         font-family: "Roboto"
+         }
+         .c17 {
+         margin-left: 36pt;
+         padding-left: 0pt
+         }
+         .c4 {
+         padding: 0;
+         margin: 0
+         }
+         .c25 {
+         margin-left: 72pt;
+         padding-left: 0pt
+         }
+         .c32 {
+         margin-left: 36pt
+         }
+         .c46 {
+         margin-left: 72pt
+         }
+         .c13 {
+         height: 0pt
+         }
+         .c41 {
+         font-style: italic
+         }
+         .c31 {
+         font-size: 11pt
+         }
+         .c39 {
+         height: 11pt
+         }
+         .c12 {
+         height: 69.3pt
+         }
+         .c28 {
+         padding-left: 0pt
+         }
+         .c24 {
+         page-break-after: avoid
+         }
+         .title {
+         padding-top: 0pt;
+         color: #000000;
+         font-size: 26pt;
+         padding-bottom: 3pt;
+         font-family: "Arial";
+         line-height: 1.1500000000000001;
+         page-break-after: avoid;
+         orphans: 2;
+         widows: 2;
+         text-align: left
+         }
+         .subtitle {
+         padding-top: 0pt;
+         color: #666666;
+         font-size: 15pt;
+         padding-bottom: 16pt;
+         font-family: "Arial";
+         line-height: 1.1500000000000001;
+         page-break-after: avoid;
+         orphans: 2;
+         widows: 2;
+         text-align: left
+         }
+         li {
+         color: #000000;
+         font-size: 11pt;
+         font-family: "Arial"
+         }
+         p {
+         margin: 0;
+         color: #000000;
+         font-size: 11pt;
+         font-family: "Arial"
+         }
+         h1 {
+         padding-top: 10pt;
+         color: #000000;
+         font-weight: 700;
+         font-size: 11pt;
+         padding-bottom: 10pt;
+         font-family: "Arial";
+         line-height: 1.1500000000000001;
+         page-break-after: avoid;
+         orphans: 2;
+         widows: 2;
+         text-align: justify
+         }
+         h2 {
+         padding-top: 18pt;
+         color: #000000;
+         font-size: 16pt;
+         padding-bottom: 6pt;
+         font-family: "Arial";
+         line-height: 1.1500000000000001;
+         page-break-after: avoid;
+         orphans: 2;
+         widows: 2;
+         text-align: left
+         }
+         h3 {
+         padding-top: 16pt;
+         color: #434343;
+         font-size: 14pt;
+         padding-bottom: 4pt;
+         font-family: "Arial";
+         line-height: 1.1500000000000001;
+         page-break-after: avoid;
+         orphans: 2;
+         widows: 2;
+         text-align: left
+         }
+         h4 {
+         padding-top: 14pt;
+         color: #666666;
+         font-size: 12pt;
+         padding-bottom: 4pt;
+         font-family: "Arial";
+         line-height: 1.1500000000000001;
+         page-break-after: avoid;
+         orphans: 2;
+         widows: 2;
+         text-align: left
+         }
+         h5 {
+         padding-top: 12pt;
+         color: #666666;
+         font-size: 11pt;
+         padding-bottom: 4pt;
+         font-family: "Arial";
+         line-height: 1.1500000000000001;
+         page-break-after: avoid;
+         orphans: 2;
+         widows: 2;
+         text-align: left
+         }
+         h6 {
+         padding-top: 12pt;
+         color: #666666;
+         font-size: 11pt;
+         padding-bottom: 4pt;
+         font-family: "Arial";
+         line-height: 1.1500000000000001;
+         page-break-after: avoid;
+         font-style: italic;
+         orphans: 2;
+         widows: 2;
+         text-align: left
+         }
+         ol.receipient {
+         counter-reset: lst-ctn-kix_list_1-1 0;  !important;
+         }
+         ol.tokens{
+         counter-reset: lst-ctn-kix_list_1-1 1;  !important;
+         }
+         ol.intellectual {
+         counter-reset: lst-ctn-kix_list_1-1 3 lst-ctn-kix_list_1-2 0 !important;
+         }
+      </style>
    </head>
    <body class="c37 doc-content">
       <div>
@@ -255,7 +1071,7 @@ const code = `
          <li class="c25 c44 li-bullet-0"><span class="c7">Grant payments denominated in USD, with payout currency NEAR, will be converted to NEAR based on the spot price at the time the payment proposal is created by the DevHub team in the NEAR Treasury Tool </span><span class="c7">(the &ldquo;Devhub Payment Proposal&rdquo;)</span><span class="c7">. The Foundation, at its sole discretion, aims to </span><span class="c7">pay outstanding DevHub Payment Proposals swiftly</span><span class="c0">&nbsp;however, the Recipient acknowledges and accepts that price fluctuations can and do occur and that the time at which the Devhub Payment Proposal is created in the NEAR Treasury Tool is the relevant time at which the currency conversion rate between USD and NEAR will apply. &nbsp;The Foundation will not be held liable for any fluctuations in the price of NEAR.</span></li>
          <li class="c11 li-bullet-0"><span class="c0">All costs relating to pursuing the Purpose will be borne by you.</span></li>
       </ol>
-      <ol class="c4 lst-kix_list_1-0" start="4">
+      <ol class="c4 tokens lst-kix_list_1-0" start="4">
          <li class="c8 c21 li-bullet-0">
             <h1 id="h.tyjcwt" style="display:inline"><span class="c15 c5">Tokens as Grant Payment</span></h1>
          </li>
@@ -304,7 +1120,7 @@ const code = `
          </li>
       </ol>
       <p class="c19"><span class="c0">&nbsp;In exchange for the Grant, you undertake that you will: </span></p>
-      <ol class="c4 lst-kix_list_1-1" start="7">
+      <ol class="c4 receipient lst-kix_list_1-1" start="1">
          <li class="c11 li-bullet-0"><span class="c0">use the Grant solely for the Purpose and for no other purpose;</span></li>
          <li class="c11 li-bullet-0"><span class="c0">perform your obligations under these Terms:</span></li>
       </ol>
@@ -406,7 +1222,7 @@ const code = `
          <li class="c11 li-bullet-0"><span class="c0">Nothing in this Agreement will be construed as a representation or agreement that the Foundation will not develop or have developed products, concepts, systems or techniques that are similar to or compete with any products, concepts, systems or techniques contemplated by or embodied in any materials or information provided by you (including its team members) to the Foundation in connection with this Agreement and/or the Grant.</span></li>
          <li class="c11 li-bullet-0"><span class="c7">The Foundation owns or has a license to use all existing and future rights, titles and interests in and to the logos, trade names, strap lines, trade or service marks (registered or unregistered), accompanying artwork, designs, slogans, texts and other collateral marketing signs of the Foundation or the NEAR Technology, including all associated Intellectual Property Rights (&ldquo;</span><span class="c5">NEAR Marks</span><span class="c7">&rdquo;). The Foundation grants to you the non-transferable and non-exclusive right to use the NEAR Marks as necessary for the purposes of this Agreement and until its termination, provided that you will strictly:</span></li>
       </ol>
-      <ol class="c4 lst-kix_list_1-2 start" start="1">
+      <ol class="c4 intellectual lst-kix_list_1-2 start" start="3">
          <li class="c14 li-bullet-0"><span class="c7">follow all brand guidelines provided by the Foundation, including (without limitation), the guidelines found at </span><span class="c7 c48"><a class="c43" href="https://www.google.com/url?q=https://near.org/brand/&amp;sa=D&amp;source=editors&amp;ust=1740400423941761&amp;usg=AOvVaw2KaPi4Pg3ctU_D22ys-hqc">https://near.org/brand/</a></span><span class="c0">. These guidelines may cover aspects such as logo usage, color schemes, typography, and more; and</span></li>
          <li class="c14 li-bullet-0"><span class="c0">collaborate with the Foundation to coordinate the use of the NEAR Marks in any promotional materials, events, or activities. It is mandatory for you to obtain written approval from the Foundation before using the NEAR Marks in any capacity.</span></li>
       </ol>
@@ -490,7 +1306,8 @@ const code = `
          <p class="c36"><span class="c51"></span></p>
       </div>
    </body>
-</html>`;
+</html>
+`;
 
 return (
   <iframe
