@@ -15,8 +15,10 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-      - name: Install dependencies
-        run: npm ci
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2t64 libffi-dev libx264-dev
       - name: Run code formatting check
         run: npm run fmt:check
   playwright-tests-proposal:
@@ -53,7 +55,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2 libffi-dev libx264-dev
+          sudo apt-get install -y libasound2t64 libffi-dev libx264-dev
       - name: Install dependencies
         run: |
           npm ci
