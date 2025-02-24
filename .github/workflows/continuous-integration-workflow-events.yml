@@ -19,6 +19,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libasound2t64 libffi-dev libx264-dev
+      - name: Install dependencies
+        run: |
+          npm ci
       - name: Run code formatting check
         run: npm run fmt:check
   playwright-tests-proposal:
