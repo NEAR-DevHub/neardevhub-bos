@@ -35,14 +35,21 @@ jobs:
           cache: "npm"
       - name: Install system dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libasound2t64 libffi-dev libx264-dev
+          sudo apt-get update --fix-missing
+          sudo apt-get install -y --no-install-recommends \
+            libasound2t64 libffi-dev libx264-dev
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+      - name: Debug installed packages
+        run: |
+          dpkg -l | grep asound || echo "libasound2t64 is missing!"
+          dpkg -l | grep ffi || echo "libffi-dev is missing!"
+          dpkg -l | grep x264 || echo "libx264-dev is missing!"
       - name: Install dependencies
         run: |
           npm ci
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/mpeterdev/bos-loader/releases/download/v0.7.1/bos-loader-v0.7.1-installer.sh | sh
-          npx playwright install-deps
-          npx playwright install
+          npx playwright install --with-deps
       - name: Run tests
         run: |
           INSTANCE=events npx playwright test --project=events playwright-tests/tests/proposal
