@@ -21,7 +21,7 @@ jobs:
         run: npm run fmt:check
   playwright-tests-proposal:
     name: Proposal - Playwright tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,7 +39,7 @@ jobs:
           INSTANCE=infrastructure npx playwright test --project=infrastructure playwright-tests/tests/proposal/comment.spec.js
   playwright-tests-infra:
     name: Infrastructure Committee - Playwright tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

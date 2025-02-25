@@ -21,7 +21,7 @@ jobs:
         run: npm run fmt:check
   playwright-tests-blog:
     name: Blog - Playwright tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,7 +39,7 @@ jobs:
           INSTANCE=devhub npx playwright test --project=devhub playwright-tests/tests/blog
   playwright-tests-community:
     name: Community - Playwright tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -57,7 +57,7 @@ jobs:
           INSTANCE=devhub npx playwright test --project=devhub playwright-tests/tests/community
   playwright-tests-other:
     name: Other - Playwright tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -75,7 +75,7 @@ jobs:
           INSTANCE=devhub npx playwright test --project=devhub playwright-tests/tests/other
   playwright-tests-proposal:
     name: Proposal - Playwright tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -93,7 +93,7 @@ jobs:
           INSTANCE=devhub npx playwright test --project=devhub playwright-tests/tests/proposal
   playwright-tests-sunset:
     name: Sunset - Playwright tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

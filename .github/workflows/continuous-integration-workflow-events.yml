@@ -28,8 +28,6 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-      - name: Upgrade Playwright
-        run: npm i -g @playwright/test@latest
       - name: Install dependencies
         run: |
           npm ci
