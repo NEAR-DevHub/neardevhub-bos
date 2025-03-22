@@ -281,7 +281,7 @@ const proposal = Near.view(
 const [snapshotHistory, setSnapshotHistory] = useState([]);
 
 const fetchSnapshotHistory = () => {
-  asyncFetch(`https://infra-cache-api-rs.fly.dev/proposal/${id}/snapshots`, {
+  asyncFetch(`https://infra-cache-api-rs-2.fly.dev/proposal/${id}/snapshots`, {
     method: "GET",
     headers: { accept: "application/json" },
   })

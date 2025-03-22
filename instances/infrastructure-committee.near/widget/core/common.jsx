@@ -16,7 +16,7 @@ const PROPOSAL_TIMELINE_STATUS = {
   FUNDED: "FUNDED",
 };
 
-const cacheUrl = "https://infra-cache-api-rs.fly.dev";
+const cacheUrl = "https://infra-cache-api-rs-2.fly.dev";
 
 /**
  * Get proposals or rfps from cache api

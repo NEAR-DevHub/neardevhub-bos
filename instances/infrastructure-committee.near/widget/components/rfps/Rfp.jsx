@@ -279,7 +279,7 @@ const rfp = Near.view("${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}", "get_rfp", {
 });
 
 const fetchSnapshotHistory = () => {
-  asyncFetch(`https://infra-cache-api-rs.fly.dev/rfp/${id}/snapshots`, {
+  asyncFetch(`https://infra-cache-api-rs-2.fly.dev/rfp/${id}/snapshots`, {
     method: "GET",
     headers: { accept: "application/json" },
   })
