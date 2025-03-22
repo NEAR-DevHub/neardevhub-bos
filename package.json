@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "NEAR DevHub widgets for NEAR Social",
   "devDependencies": {
-    "@playwright/test": "^1.42.1",
+    "@playwright/test": "^1.50.1",
     "bos-workspace": "1.0.0-alpha.27",
     "http-server": "^14.1.1",
     "near-bos-webcomponent": "^0.0.9",
