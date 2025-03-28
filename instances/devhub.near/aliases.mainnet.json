@@ -11,5 +11,5 @@
   "REPL_PROPOSAL_FEED_INDEXER_QUERY_NAME": "polyprogrammist_near_devhub_prod_v1_proposals_with_latest_snapshot",
   "REPL_INDEXER_HASURA_ROLE": "polyprogrammist_near",
   "REPL_POSTHOG_API_KEY": "01234567890123456789012345678901234567890123456",
-  "REPL_CACHE_URL": "https://devhub-cache-api-rs.fly.dev"
+  "REPL_CACHE_URL": "https://devhub-cache-api-rs-2.fly.dev"
 }

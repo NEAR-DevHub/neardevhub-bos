@@ -202,7 +202,7 @@ function extractNumbers(str) {
 
 function searchCacheApi(entity, searchProposalId) {
   let searchInput = encodeURI(searchProposalId);
-  let searchUrl = "https://infra-cache-api-rs.fly.dev/"+entity+"/search/" + searchInput;
+  let searchUrl = "https://infra-cache-api-rs-2.fly.dev/"+entity+"/search/" + searchInput;
 
   return asyncFetch(searchUrl, {
     method: "GET",

@@ -29,7 +29,7 @@ test.describe("Wallet is connected as admin", () => {
     let proposalId;
     const linkedRfpId = 0;
     await page.route(
-      "https://infra-cache-api-rs.fly.dev/proposals?order=id_desc&limit=20&offset=0",
+      "https://infra-cache-api-rs-2.fly.dev/proposals?order=id_desc&limit=20&offset=0",
       async (route) => {
         const response = await route.fetch();
         const json = await response.json();
