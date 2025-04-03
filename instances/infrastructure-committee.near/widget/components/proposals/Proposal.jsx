@@ -961,6 +961,7 @@ return (
                     showGetVerifiedBtn:
                       accountId === snapshot.receiver_account ||
                       accountId === authorId,
+                    instance: "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
                   }}
                 />
               </SidePanelItem>

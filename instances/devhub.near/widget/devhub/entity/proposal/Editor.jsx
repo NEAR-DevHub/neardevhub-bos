@@ -1281,6 +1281,7 @@ if (showProposalPage) {
                           receiverAccount: receiverAccount,
                           showGetVerifiedBtn: true,
                           imageSize: 30,
+                          instance: "${REPL_DEVHUB}",
                         }}
                       />
                     </div>

@@ -1284,6 +1284,7 @@ return (
                         receiverAccount: receiverAccount,
                         showGetVerifiedBtn: true,
                         imageSize: 30,
+                        instance: "${REPL_TREASURY_TEMPLAR}",
                       }}
                     />
                   </div>

@@ -184,7 +184,7 @@ const VerificationBtn = () => {
         onBlur={() => {
           setTimeout(() => {
             setKycOptions(false);
-          }, 100);
+          }, 300);
         }}
       >
         <div
@@ -206,8 +206,8 @@ const VerificationBtn = () => {
                 rel="noopener noreferrer"
                 href={
                   option.value === "KYC"
-                    ? "https://go.fractal.id/near-social-kyc"
-                    : "https://go.fractal.id/near-social-kyb"
+                    ? "https://app.fractal.id/authorize?response_type=code&scope=contact%3Aread%20verification.plus%3Aread%20verification.plus.details%3Aread%20verification.selfie%3Aread%20verification.selfie.details%3Aread%20verification.wallet-near%3Aread%20verification.wallet-near.details%3Aread&client_id=GhXcNDPiS5XwqbWCNXpdyS8qpdV8mcK3GyAfNtjUJcM&redirect_uri=https%3A%2F%2Fnear.foundation%2F&user_role=person"
+                    : "https://app.fractal.id/authorize?response_type=code&scope=contact%3Aread%20verification.plus%3Aread%20verification.plus.details%3Aread%20verification.selfie%3Aread%20verification.selfie.details%3Aread%20verification.wallet-near%3Aread%20verification.wallet-near.details%3Aread&client_id=IKjGG_v4aQoWiq-cVmPJ4cN_CRg8pQ0DpoFjthBZztI&redirect_uri=https%3A%2F%2Fnear.foundation%2F&user_role=institution"
                 }
               >
                 <div

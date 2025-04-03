@@ -1300,6 +1300,7 @@ return (
                         receiverAccount: receiverAccount,
                         showGetVerifiedBtn: true,
                         imageSize: 30,
+                        instance: "${REPL_INFRASTRUCTURE_COMMITTEE_CONTRACT}",
                       }}
                     />
                   </div>
