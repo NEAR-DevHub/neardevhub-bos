@@ -1009,6 +1009,7 @@ return (
                     showGetVerifiedBtn:
                       accountId === snapshot.receiver_account ||
                       accountId === authorId,
+                    instance: "${REPL_DEVHUB}",
                   }}
                 />
               </SidePanelItem>
