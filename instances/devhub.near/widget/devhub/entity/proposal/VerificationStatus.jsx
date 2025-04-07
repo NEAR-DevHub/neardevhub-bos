@@ -2,24 +2,13 @@ const receiverAccount = props.receiverAccount;
 const showGetVerifiedBtn = props.showGetVerifiedBtn;
 const [verificationStatus, setVerificationStatus] = useState(null);
 const imageSize = props.imageSize ?? 40;
-const instance = props.instance;
 
-const devhubInstance = "${REPL_DEVHUB}";
 const WarningImg =
   "https://ipfs.near.social/ipfs/bafkreieq4222tf3hkbccfnbw5kpgedm3bf2zcfgzbnmismxav2phqdwd7q";
 
 const SuccessImg =
   "https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm";
 
-const kycLink =
-  instance === devhubInstance
-    ? "https://app.fractal.id/authorize?response_type=code&scope=contact%3Aread%20verification.plus%3Aread%20verification.plus.details%3Aread%20verification.selfie%3Aread%20verification.selfie.details%3Aread%20verification.wallet-near%3Aread%20verification.wallet-near.details%3Aread&client_id=GhXcNDPiS5XwqbWCNXpdyS8qpdV8mcK3GyAfNtjUJcM&redirect_uri=https%3A%2F%2Fnear.foundation%2F&user_role=person"
-    : "https://go.fractal.id/near-social-kyc";
-
-const kycBLink =
-  instance === devhubInstance
-    ? "https://app.fractal.id/authorize?response_type=code&scope=contact%3Aread%20verification.plus%3Aread%20verification.plus.details%3Aread%20verification.selfie%3Aread%20verification.selfie.details%3Aread%20verification.wallet-near%3Aread%20verification.wallet-near.details%3Aread&client_id=IKjGG_v4aQoWiq-cVmPJ4cN_CRg8pQ0DpoFjthBZztI&redirect_uri=https%3A%2F%2Fnear.foundation%2F&user_role=institution"
-    : "https://go.fractal.id/near-social-kyb";
 useEffect(() => {
   if (
     receiverAccount.length === 64 ||
@@ -206,14 +195,17 @@ const VerificationBtn = () => {
             <i class="bi bi-box-arrow-up-right"></i>
           </div>
         </div>
-
         {kycOptionsOpen && (
           <div className="options-card left">
             {btnOptions.map((option) => (
               <a
                 target="_blank"
                 rel="noopener noreferrer"
-                href={option.value === "KYC" ? kycLink : kycBLink}
+                href={
+                  option.value === "KYC"
+                    ? "https://go.fractal.id/near-social-kyc"
+                    : "https://go.fractal.id/near-social-kyb"
+                }
               >
                 <div
                   key={option.value}
