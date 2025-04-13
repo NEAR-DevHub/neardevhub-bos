@@ -2800,12 +2800,6 @@ const code = `<html>
   </h1>
   <br />
   <br />
-  <p class="c18">
-    <span class="c2 c0"
-      >Online version published here:
-      https://near.social/devhub.near/widget/devhub.entity.proposal.TermsAndConditions</span
-    >
-  </p>
   <p class="c1"><span class="c2 c0">Last updated: 2 April 2025 </span></p>
   <p class="c1">
     <span class="c0"
