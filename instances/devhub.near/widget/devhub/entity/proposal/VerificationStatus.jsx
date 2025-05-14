@@ -42,104 +42,7 @@ useEffect(() => {
   }
 }, [receiverAccount]);
 
-const DropdowntBtnContainer = styled.div`
-  font-size: 13px;
-  min-width: 150px;
-
-  .custom-select {
-    position: relative;
-  }
-
-  .select-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius-top: 5px;
-    cursor: pointer;
-    background-color: #fff;
-    border-radius: 5px;
-  }
-
-  .no-border {
-    border: none !important;
-  }
-
-  .options-card {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 200%;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    padding: 0.5rem;
-    z-index: 99;
-    font-size: 13px;
-    border-radius: 0.375rem !important;
-  }
-
-  .left {
-    right: 0 !important;
-    left: auto !important;
-  }
-
-  @media screen and (max-width: 768px) {
-    .options-card {
-      right: 0 !important;
-      left: auto !important;
-    }
-  }
-
-  .option {
-    margin-block: 2px;
-    padding: 5px;
-    cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
-    transition: background-color 0.3s ease;
-    border-radius: 0.375rem !important;
-  }
-
-  .option:hover {
-    background-color: #f0f0f0; /* Custom hover effect color */
-  }
-
-  .option:last-child {
-    border-bottom: none;
-  }
-
-  .selected {
-    background-color: #f0f0f0;
-  }
-
-  .disabled {
-    background-color: #f4f4f4 !important;
-    cursor: not-allowed !important;
-    font-weight: 500;
-    color: #b3b3b3;
-  }
-
-  .disabled .circle {
-    opacity: 0.5;
-  }
-
-  .circle {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-  }
-
-  .grey {
-    background-color: #818181;
-  }
-
-  .green {
-    background-color: #04a46e;
-  }
-
-  a:hover {
-    text-decoration: none;
-  }
-
+const Container = styled.div`
   .black-btn {
     background-color: #000 !important;
     border: none;
@@ -150,90 +53,32 @@ const DropdowntBtnContainer = styled.div`
   }
 `;
 
-const [kycOptionsOpen, setKycOptions] = useState(false);
+const [isToastActive, setToastActive] = useState(false);
 
-const VerificationBtn = () => {
-  const btnOptions = [
-    {
-      src: "https://ipfs.near.social/ipfs/bafkreidqveupkcc7e3rko2e67lztsqrfnjzw3ceoajyglqeomvv7xznusm",
-      label: "KYC",
-      description: "Choose this if you are an individual.",
-      value: "KYC",
-    },
-    {
-      src: "https://ipfs.near.social/ipfs/bafkreic5ksax6b45pelvxm6a2v2j465jgbitpzrxtzpmn6zehl23gocwxm",
-      label: "KYB",
-      description: "Choose this if you are a business or corporate entity..",
-      value: "KYB",
-    },
-  ];
-
-  const toggleDropdown = () => {
-    setKycOptions(!kycOptionsOpen);
-  };
-
+const Toast = () => {
   return (
-    <DropdowntBtnContainer>
-      <div
-        className="custom-select"
-        tabIndex="0"
-        id="getVerifiedButton"
-        onClick={toggleDropdown}
-        onBlur={() => {
-          setTimeout(() => {
-            setKycOptions(false);
-          }, 200);
-        }}
-      >
-        <div
-          className={
-            "select-header no-border black-btn btn d-inline-flex align-items-center gap-2"
-          }
-        >
-          <div className="d-flex align-items-center gap-1">
-            Get Verified
-            <i class="bi bi-box-arrow-up-right"></i>
+    isToastActive && (
+      <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div className={`toast show`}>
+          <div class="toast-body d-flex gap-2">
+            <div>
+              Contact a DevHub Moderator to get your personalized verification
+              link.
+            </div>
+            <i
+              class="bi bi-x h4 mb-0 cursor-pointer"
+              onClick={() => setToastActive(false)}
+            ></i>
           </div>
         </div>
-        {kycOptionsOpen && (
-          <div className="options-card left">
-            {btnOptions.map((option) => (
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href={
-                  option.value === "KYC"
-                    ? "https://go.fractal.id/near-social-kyc"
-                    : "https://go.fractal.id/near-social-kyb"
-                }
-              >
-                <div
-                  key={option.value}
-                  className={`option ${
-                    selectedOption.value === option.value ? "selected" : ""
-                  }`}
-                >
-                  <div className={`d-flex gap-2 align-items-center`}>
-                    <img src={option.src} height={30} />
-                    <div>
-                      <div className="fw-bold">{option.label}</div>
-                      <div className="text-muted text-xs">
-                        {option.description}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
       </div>
-    </DropdowntBtnContainer>
+    )
   );
 };
 
 return (
-  <div>
+  <Container>
+    <Toast />
     {!verificationStatus ? (
       <span
         className="spinner-grow spinner-grow-sm me-1"
@@ -254,9 +99,14 @@ return (
           </div>
         </div>
         {verificationStatus !== "Verified" && showGetVerifiedBtn && (
-          <VerificationBtn />
+          <button
+            className="black-btn btn"
+            onClick={() => setToastActive(true)}
+          >
+            Get Verified
+          </button>
         )}
       </div>
     )}
-  </div>
+  </Container>
 );
