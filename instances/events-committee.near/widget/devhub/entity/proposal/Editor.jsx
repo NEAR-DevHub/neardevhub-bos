@@ -1287,7 +1287,7 @@ if (showProposalPage) {
                   >
                     <div className="border border-1 p-3 rounded-2">
                       <Widget
-                        src="${REPL_EVENTS}/widget/devhub.entity.proposal.VerificationStatus"
+                        src="${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus"
                         props={{
                           receiverAccount: receiverAccount,
                           showGetVerifiedBtn: true,
