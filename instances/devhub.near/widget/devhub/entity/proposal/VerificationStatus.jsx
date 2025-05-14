@@ -62,7 +62,7 @@ const Toast = () => {
         <div className={`toast show`}>
           <div class="toast-body d-flex gap-2">
             <div>
-              Contact a DevHub moderator to get your personalized verification
+              Contact a DevHub Moderator to get your personalized verification
               link.
             </div>
             <i
