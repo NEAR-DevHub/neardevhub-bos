@@ -994,7 +994,7 @@ return (
               </SidePanelItem>
               <SidePanelItem title="Recipient Verification Status">
                 <Widget
-                  src="${REPL_EVENTS}/widget/devhub.entity.proposal.VerificationStatus"
+                  src="${REPL_DEVHUB}/widget/devhub.entity.proposal.VerificationStatus"
                   props={{
                     receiverAccount: snapshot.receiver_account,
                     showGetVerifiedBtn:
