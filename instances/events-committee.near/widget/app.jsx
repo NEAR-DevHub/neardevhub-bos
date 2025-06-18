@@ -33,7 +33,7 @@ function Page() {
     case "create-proposal": {
       return (
         <Widget
-          src={"${REPL_EVENTS}/widget/devhub.entity.proposal.Editor"}
+          src={"${REPL_EVENTS}/widget/devhub.page.proposals"}
           props={{ ...passProps, instance: "events-committee.near" }}
         />
       );

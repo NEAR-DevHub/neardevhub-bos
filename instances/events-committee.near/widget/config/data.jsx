@@ -1,23 +1,33 @@
-const proposalFeedAnnouncement = (
-  <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
-    <p className="d-flex gap-3 align-items-center mb-0">
-      <div>
-        <i class="bi bi-info-circle"></i>
-      </div>
-      <div>
-        <span className="fw-bold">
-          Welcome to the Events Committee Proposal Feed!
-        </span>
-        This dedicated space makes it easy to submit and track funding proposals
-        from the Events Committee, the cross-team organization responsible for
-        hosting and sponsoring developer-focused events. You are welcome to
-        respond to any RFPs that are accepting submissions or submit an
-        independent proposal.
-      </div>
-    </p>
-  </div>
-);
+const BannerWrapper = styled.div`
+  background-image: linear-gradient(rgb(251 32 32), rgb(187 6 6));
+  color: white;
+  .text-sm {
+    font-size: 13px;
+  }
+`;
 
+const proposalFeedAnnouncement = (
+  <BannerWrapper className="d-flex gap-3 align-items-center mb-4 p-3 rounded-3">
+    <div>
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+    <div>
+      <div className="fw-bold">This page is now archived! </div>
+      <div className="text-sm">
+        Visit
+        <a
+          href="https://nearn.io/"
+          className="text-decoration-underline d-inline-block"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          NEARN
+        </a>
+        to discover the latest opportunities.
+      </div>
+    </div>
+  </BannerWrapper>
+);
 const categoryOptions = [
   { title: "Bounty", value: "Bounty", color: [124, 102, 220] },
   {

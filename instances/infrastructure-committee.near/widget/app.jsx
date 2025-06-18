@@ -58,7 +58,7 @@ function Page() {
     case "create-rfp": {
       return (
         <Widget
-          src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.Editor`}
+          src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.rfps.Feed`}
           props={passProps}
         />
       );
@@ -66,8 +66,8 @@ function Page() {
     case "create-proposal": {
       return (
         <Widget
-          src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.proposals.Editor`}
-          props={{ ...passProps }}
+          src={`${REPL_INFRASTRUCTURE_COMMITTEE}/widget/components.proposals.Proposals`}
+          props={passProps}
         />
       );
     }

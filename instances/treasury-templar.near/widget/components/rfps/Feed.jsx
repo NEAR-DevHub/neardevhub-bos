@@ -461,27 +461,21 @@ const FeedPage = () => {
         </div>
         {isAllowedToWriteRfp && (
           <div className="mt-2 mt-xs-0">
-            <Link
-              to={href({
-                widgetSrc: `${REPL_TREASURY_TEMPLAR}/widget/portal`,
-                params: { page: "create-rfp" },
-              })}
-            >
-              <Widget
-                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-                props={{
-                  label: (
-                    <div className="d-flex gap-2 align-items-center">
-                      <div>
-                        <i className="bi bi-plus-circle-fill"></i>
-                      </div>
-                      Create RFP
+            <Widget
+              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+              props={{
+                label: (
+                  <div className="d-flex gap-2 align-items-center">
+                    <div>
+                      <i className="bi bi-plus-circle-fill"></i>
                     </div>
-                  ),
-                  classNames: { root: "blue-btn" },
-                }}
-              />
-            </Link>
+                    Create RFP
+                  </div>
+                ),
+                classNames: { root: "blue-btn" },
+                disabled: true,
+              }}
+            />
           </div>
         )}
       </div>

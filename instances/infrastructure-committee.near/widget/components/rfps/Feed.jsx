@@ -419,6 +419,14 @@ const FeedPage = () => {
     }
   );
 
+  const BannerWrapper = styled.div`
+    background-image: linear-gradient(rgb(251 32 32), rgb(187 6 6));
+    color: white;
+    .text-sm {
+      font-size: 13px;
+    }
+  `;
+
   return (
     <Container className="w-100 py-4 px-2 d-flex flex-column gap-3">
       <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center">
@@ -473,27 +481,21 @@ const FeedPage = () => {
         </div>
         {isAllowedToWriteRfp && (
           <div className="mt-2 mt-xs-0">
-            <Link
-              to={href({
-                widgetSrc: `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app`,
-                params: { page: "create-rfp" },
-              })}
-            >
-              <Widget
-                src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-                props={{
-                  label: (
-                    <div className="d-flex gap-2 align-items-center">
-                      <div>
-                        <i className="bi bi-plus-circle-fill"></i>
-                      </div>
-                      Create RFP
+            <Widget
+              src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+              props={{
+                label: (
+                  <div className="d-flex gap-2 align-items-center">
+                    <div>
+                      <i className="bi bi-plus-circle-fill"></i>
                     </div>
-                  ),
-                  classNames: { root: "blue-btn" },
-                }}
-              />
-            </Link>
+                    Create RFP
+                  </div>
+                ),
+                classNames: { root: "blue-btn" },
+                disabled: true,
+              }}
+            />
           </div>
         )}
       </div>
@@ -503,25 +505,27 @@ const FeedPage = () => {
         ) : (
           <div className="card no-border rounded-0 mt-4 py-3 full-width-div">
             <div className="container-xl">
-              <div className="bg-blue text-sm mt-2 p-3 rounded-3">
-                <p className="d-flex gap-3 align-items-center mb-0">
-                  <div>
-                    <i className="bi bi-info-circle"></i>
+              <BannerWrapper className="d-flex gap-3 align-items-center mb-4 p-3 rounded-3">
+                <div>
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div>
+                  <div className="fw-bold">This page is now archived! </div>
+                  <div className="text-sm">
+                    To submit proposals, visit the
+                    <a
+                      href="https://nearn.io/infra-committee/"
+                      className="text-decoration-underline d-inline-block"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      NEARN Infrastructure Committee
+                    </a>
+                    page to view the latest opportunities.
                   </div>
-                  <div>
-                    <span className="fw-bold">
-                      Welcome to the Infrastructure RFP Feed!
-                    </span>
-                    This space features request for proposals (RFPs) by the NEAR
-                    Infrastructure Committee for improving enhancements
-                    pertaining to wallets, indexers, RPC services, explorers,
-                    oracles, bridges, NEAR Protocol features, and related
-                    ecosystem upgrades. You are welcome to respond to any RFPs
-                    that are accepting submissions or submit an independent
-                    proposal on the proposals page.
-                  </div>
-                </p>
-              </div>
+                </div>
+              </BannerWrapper>
+
               <div className="mt-4 border rounded-2">
                 {state.aggregatedCount === 0 ? (
                   <div className="m-2">
