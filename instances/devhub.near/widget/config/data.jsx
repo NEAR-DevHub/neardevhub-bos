@@ -1,43 +1,32 @@
+const BannerWrapper = styled.div`
+  background-image: linear-gradient(rgb(251 32 32), rgb(187 6 6));
+  color: white;
+  .text-sm {
+    font-size: 13px;
+  }
+`;
+
 const proposalFeedAnnouncement = (
-  <div className="text-muted bg-grey text-sm mt-2 p-3 rounded-3">
-    <p className="d-flex gap-3 align-items-center mb-0">
-      <div>
-        <i class="bi bi-info-circle"></i>
-      </div>
-      <div>
-        <span className="fw-bold">
-          Welcome to
-          <a
-            href="?page=community&handle=developer-dao&tab=overview"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            DevDAO’s Proposal Feed!
-          </a>
-        </span>
-        This space makes it easy to submit and track funding requests from
-        DevDAO. To submit a formal proposal, click New Proposal. See our{" "}
+  <BannerWrapper className="d-flex gap-3 align-items-center mb-4 p-3 rounded-3">
+    <div>
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+    <div>
+      <div className="fw-bold">This page is now archived! </div>
+      <div className="text-sm">
+        To submit proposals, visit the
         <a
-          href="?page=community&handle=developer-dao&tab=funding"
-          className="text-decoration-underline no-space"
+          href="https://nearn.io/devhub/"
+          className="text-decoration-underline"
           target="_blank"
           rel="noopener noreferrer"
         >
-          guidelines
+          NEARN DevHub
         </a>
-        for details. You can also explore relevant{" "}
-        <a
-          href="?page=communities"
-          className="text-decoration-underline no-space"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          communities
-        </a>{" "}
-        to connect and collaborate with builders.
+        page to view the latest opportunities.
       </div>
-    </p>
-  </div>
+    </div>
+  </BannerWrapper>
 );
 
 const categoryOptions = [

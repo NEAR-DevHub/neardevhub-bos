@@ -531,27 +531,21 @@ const FeedPage = () => {
           </div>
         </div>
         <div className="mt-2 mt-xs-0">
-          <Link
-            to={href({
-              widgetSrc: `${instance}/widget/app`,
-              params: { page: "create-proposal" },
-            })}
-          >
-            <Widget
-              src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
-              props={{
-                label: (
-                  <div className="d-flex gap-2 align-items-center">
-                    <div>
-                      <i class="bi bi-plus-circle-fill"></i>
-                    </div>
-                    Submit Proposal
+          <Widget
+            src={"${REPL_DEVHUB}/widget/devhub.components.molecule.Button"}
+            props={{
+              label: (
+                <div className="d-flex gap-2 align-items-center">
+                  <div>
+                    <i class="bi bi-plus-circle-fill"></i>
                   </div>
-                ),
-                classNames: { root: "theme-btn" },
-              }}
-            />
-          </Link>
+                  Submit Proposal
+                </div>
+              ),
+              classNames: { root: "theme-btn" },
+              disabled: true,
+            }}
+          />
         </div>
       </div>
       <div style={{ minHeight: "50vh" }}>

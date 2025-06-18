@@ -456,24 +456,18 @@ useEffect(() => {
 const SubmitProposalBtn = () => {
   return (
     <div style={{ minWidth: "fit-content" }}>
-      <Link
-        to={href({
-          widgetSrc: `${REPL_INFRASTRUCTURE_COMMITTEE}/widget/app`,
-          params: { page: "create-proposal", rfp_id: rfp.id },
-        })}
-      >
-        <Widget
-          src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
-          props={{
-            label: (
-              <div className="d-flex align-items-center gap-2">
-                <i className="bi bi-plus-circle"></i>Submit Proposal
-              </div>
-            ),
-            classNames: { root: "blue-btn" },
-          }}
-        />
-      </Link>
+      <Widget
+        src={`${REPL_DEVHUB}/widget/devhub.components.molecule.Button`}
+        props={{
+          label: (
+            <div className="d-flex align-items-center gap-2">
+              <i className="bi bi-plus-circle"></i>Submit Proposal
+            </div>
+          ),
+          classNames: { root: "blue-btn" },
+          disabled: true,
+        }}
+      />
     </div>
   );
 };
