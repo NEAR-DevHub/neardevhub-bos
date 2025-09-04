@@ -1,9 +1,4 @@
 name: CI - Infrastructure Committee
-on:
-  pull_request:
-  push:
-    branches:
-      - main
 
 jobs:
   prettier:

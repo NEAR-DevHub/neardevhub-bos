@@ -1,9 +1,4 @@
 name: CI - Events Committee
-on:
-  pull_request:
-  push:
-    branches:
-      - main
 
 jobs:
   prettier:
