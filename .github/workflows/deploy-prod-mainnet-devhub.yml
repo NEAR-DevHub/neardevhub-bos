@@ -31,8 +31,8 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/bos-cli-rs/bos-cli-rs/releases/download/v0.3.15/bos-cli-installer.sh | sh
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/bos-cli-rs/bos-cli-rs/releases/download/v0.4.1/bos-cli-installer.sh | sh
 
       - name: Deploy widgets
         run: |
-          bos components deploy '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' sign-as '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' network-config mainnet sign-with-plaintext-private-key --signer-public-key '${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}' --signer-private-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}' send
+          bos components deploy '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' sign-as '${{ vars.NEAR_SOCIAL_ACCOUNT_ID }}' network-config mainnet-fastnear sign-with-plaintext-private-key --signer-public-key '${{ vars.NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY }}' --signer-private-key '${{ secrets.NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY }}' send
