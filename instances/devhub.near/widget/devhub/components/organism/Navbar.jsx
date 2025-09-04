@@ -101,11 +101,6 @@ const MenuIcon = () => (
 const Navbar = styled.div`
   padding: 1.5rem 0rem;
 
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-
   background: #f4f4f4;
 
   @media screen and (max-width: 768px) {
@@ -223,79 +218,100 @@ const MobileLink = styled.a`
 
 return (
   <Navbar className="position-relative">
-    <Logo />
-    <div className="d-flex gap-3 align-items-center">
-      {isDevHubModerator ? (
-        <Widget
-          src="${REPL_DEVHUB}/widget/devhub.components.island.contract-balance"
-          props={{
-            accountId: "${REPL_DEVHUB}",
-            dark: false,
-          }}
-        />
-      ) : null}
-      <LinksContainer>
-        {links.map((link) => (
+    <div className="d-flex justify-content-between align-items-center">
+      <Logo />
+      <div className="d-flex gap-3 align-items-center">
+        {isDevHubModerator ? (
           <Widget
-            src="${REPL_DEVHUB}/widget/devhub.components.molecule.NavbarDropdown"
+            src="${REPL_DEVHUB}/widget/devhub.components.island.contract-balance"
             props={{
-              title: link.title,
-              href: link.href,
-              links: link.links,
-              page: page,
+              accountId: "${REPL_DEVHUB}",
+              dark: false,
             }}
           />
-        ))}
-      </LinksContainer>
-      {context.accountId && <ProfileIcon />}
-      <MobileMenu onClick={() => setShowMenu(!showMenu)}>
-        <MenuIcon />
-      </MobileMenu>
-    </div>
-    {showMenu && (
-      <MobileNav>
-        <div
-          onClick={() => setShowMenu(!showMenu)}
-          style={{ cursor: "pointer" }}
-        >
-          <i className="bi bi-x" style={{ fontSize: 20, color: "#F4F4F4" }}></i>
-        </div>
-        <div className="d-flex flex-column gap-2">
-          {links.map((link, idx) =>
-            link.href ? (
-              <MobileLink
-                key={`mobile-link-${idx}`}
-                className={link.href === props.page && "active"}
-                href={`/${REPL_DEVHUB}/widget/app?page=${link.href}`}
-              >
-                {link.title}
-              </MobileLink>
-            ) : (
-              link.links.map((it, idx) =>
-                it.href.startsWith("http://") ||
-                it.href.startsWith("https://") ? (
-                  <MobileLink
-                    key={`nested-link-${idx}`}
-                    className={link.href === props.page && "active"}
-                    href={it.href}
-                    target="no_blank"
-                  >
-                    /{it.title}
-                  </MobileLink>
-                ) : (
-                  <MobileLink
-                    key={`nested-link-${idx}`}
-                    className={link.href === props.page && "active"}
-                    href={`/${REPL_DEVHUB}/widget/app?page=${it.href}`}
-                  >
-                    /{it.title}
-                  </MobileLink>
+        ) : null}
+        <LinksContainer>
+          {links.map((link) => (
+            <Widget
+              src="${REPL_DEVHUB}/widget/devhub.components.molecule.NavbarDropdown"
+              props={{
+                title: link.title,
+                href: link.href,
+                links: link.links,
+                page: page,
+              }}
+            />
+          ))}
+        </LinksContainer>
+        {context.accountId && <ProfileIcon />}
+        <MobileMenu onClick={() => setShowMenu(!showMenu)}>
+          <MenuIcon />
+        </MobileMenu>
+      </div>
+      {showMenu && (
+        <MobileNav>
+          <div
+            onClick={() => setShowMenu(!showMenu)}
+            style={{ cursor: "pointer" }}
+          >
+            <i
+              className="bi bi-x"
+              style={{ fontSize: 20, color: "#F4F4F4" }}
+            ></i>
+          </div>
+          <div className="d-flex flex-column gap-2">
+            {links.map((link, idx) =>
+              link.href ? (
+                <MobileLink
+                  key={`mobile-link-${idx}`}
+                  className={link.href === props.page && "active"}
+                  href={`/${REPL_DEVHUB}/widget/app?page=${link.href}`}
+                >
+                  {link.title}
+                </MobileLink>
+              ) : (
+                link.links.map((it, idx) =>
+                  it.href.startsWith("http://") ||
+                  it.href.startsWith("https://") ? (
+                    <MobileLink
+                      key={`nested-link-${idx}`}
+                      className={link.href === props.page && "active"}
+                      href={it.href}
+                      target="no_blank"
+                    >
+                      /{it.title}
+                    </MobileLink>
+                  ) : (
+                    <MobileLink
+                      key={`nested-link-${idx}`}
+                      className={link.href === props.page && "active"}
+                      href={`/${REPL_DEVHUB}/widget/app?page=${it.href}`}
+                    >
+                      /{it.title}
+                    </MobileLink>
+                  )
                 )
               )
-            )
-          )}
-        </div>
-      </MobileNav>
-    )}
+            )}
+          </div>
+        </MobileNav>
+      )}
+    </div>
+    <div
+      className="text-white text-center mt-2 rounded-3 px-4 py-2 fw-bold"
+      style={{
+        background: "linear-gradient(to right, #00140D, #167553, #167553)",
+      }}
+    >
+      ⚠️ This page is now archived! Visit{" "}
+      <a
+        className="text-decoration-underline"
+        href="https://nearn.io/devhub/"
+        target="_blank"
+      >
+        DevHub
+      </a>{" "}
+      on NEARN to see the latest opportunities.
+    </div>
   </Navbar>
 );
